@@ -499,7 +499,8 @@ mica.entityTaxonomyConfig
               'forClassName': {
                 'title': $filter('translate')('taxonomy-config.criterion-dialog.for-classname-attribute'),
                 'default': '',
-                'type': 'string'
+                'type': 'string',
+                'readonly': isStatic
               }
             }
           },
