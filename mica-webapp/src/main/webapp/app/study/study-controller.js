@@ -215,6 +215,7 @@ mica.study
     'FormDirtyStateObserver',
     'StudyUpdateWarningService',
     'MicaUtil',
+    'LocaleStringUtils',
     mica.study.DataCollectionEventEditController
   ])
 

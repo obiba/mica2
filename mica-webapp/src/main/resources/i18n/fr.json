@@ -80,7 +80,8 @@
     "messages": {
       "error": {
         "unique-id": "L'ID doit être unique.",
-        "invalid-id": "L'ID ne doit pas contenir de caractères spéciaux, utiliser des caractères alpha-numériques."
+        "invalid-id": "L'ID ne doit pas contenir de caractères spéciaux, utiliser des caractères alpha-numériques.",
+        "invalid-ym-date": "Le jour doit être compris entre {{arg0}} et {{arg1}}."
       }
     }
   },

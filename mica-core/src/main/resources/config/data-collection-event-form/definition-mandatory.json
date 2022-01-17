@@ -86,7 +86,10 @@
             "dateOptions": {
               "dateFormat": "yyyy-MM-dd",
               "yearRef": "_startYear",
-              "monthRef": "_startMonth"
+              "monthRef": "_startMonth",
+              "validationMessage": {
+                "invalidYMDate": "t(global.messages.error.invalid-ym-date)"
+              }
             }
           },
           {
@@ -95,7 +98,10 @@
               "dateFormat": "yyyy-MM-dd",
               "yearRef": "_endYear",
               "monthRef": "_endMonth",
-              "lastDay": true
+              "lastDay": true,
+              "validationMessage": {
+                "invalidYMDate": "t(global.messages.error.invalid-ym-date)"
+              }
             }
           }
         ]
