@@ -573,16 +573,19 @@ class TableFixedHeaderUtility {
         setTimeout(() => {
           const filter = document.querySelector('#study-filter-shortcut');
           const tabPane = document.querySelector(".tab-pane .show");
-          if (tabPane && filter && filter.parentNode) {
-            const toolbar = tabPane.querySelector('div.toolbar')
-            if (toolbar) {
+          if (filter && filter.parentNode) {
+            if (tabPane) {
+              const toolbar = tabPane.querySelector('div.toolbar')
+              if (toolbar) {
+                filter.parentNode.removeChild(filter);
+                toolbar.prepend(filter);
+              }
+            } else {
               filter.parentNode.removeChild(filter);
-              toolbar.prepend(filter);
+              document.querySelector('#study-filter-shortcut-container').prepend(filter);
             }
-          } else {
-            filter.parentNode.removeChild(filter);
-            document.querySelector('#study-filter-shortcut-container').prepend(filter);
           }
+
         }, 150);
       },
       refreshQueries() {
