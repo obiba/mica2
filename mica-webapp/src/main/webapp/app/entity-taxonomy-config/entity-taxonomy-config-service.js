@@ -226,7 +226,7 @@ mica.entityTaxonomyConfig
 
       this.getForClassName = function (content) {
         if (content && content.attributes) {
-          return getAttribute(content.attributes, 'forClassName', null);
+          return getAttribute(content.attributes, 'forClassName', '');
         }
 
         return null;
@@ -405,8 +405,19 @@ mica.entityTaxonomyConfig
         return data;
       }
 
-      function getVocabularyFormData(forClassName, content, siblings, onRangeChange) {
+      function getVocabularyFormData(forClassName, content, possibleClassNames, siblings, onRangeChange) {
         var isStatic = VocabularyAttributeService.isStatic(content, forClassName);
+
+        var classNameTitleMap = [
+          {
+            'value': '',
+            'name': $filter('translate')('global.default')
+          }
+        ];
+
+        if (Array.isArray(possibleClassNames)) {
+          possibleClassNames.forEach(choice => classNameTitleMap.push({ 'name': choice, 'value': choice }));
+        }
 
         var data = {
           schema: {
@@ -484,6 +495,11 @@ mica.entityTaxonomyConfig
               'facetExpanded': {
                 'title': $filter('translate')('taxonomy-config.criterion-dialog.facet-expanded'),
                 'type': 'boolean'
+              },
+              'forClassName': {
+                'title': $filter('translate')('taxonomy-config.criterion-dialog.for-classname-attribute'),
+                'default': '',
+                'type': 'string'
               }
             }
           },
@@ -528,6 +544,12 @@ mica.entityTaxonomyConfig
                       'condition': 'model.type && model.type !== \'string\'',
                       'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.range-aggregation-help') + '</p>',
                       'onChange': onRangeChange
+                    },
+                    {
+                      'key': 'forClassName',
+                      'type': 'select',
+                      'titleMap': classNameTitleMap,
+                      'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.for-classname-attribute-help') + '</p>'
                     }
                   ]
                 },
@@ -594,6 +616,7 @@ mica.entityTaxonomyConfig
           data.model.facetExpanded = VocabularyAttributeService.getFacetExpanded(content);
           data.model.termsSortKey = VocabularyAttributeService.getTermsSortKey(content);
           data.model.rangeAggregation = VocabularyAttributeService.getRange(content);
+          data.model.forClassName = VocabularyAttributeService.getForClassName(content);
         }
         return data;
       }
@@ -737,7 +760,7 @@ mica.entityTaxonomyConfig
             convertFromLocalizedString(data.model, model.content, ['title', 'description']);
 
             model.content.attributes = model.content.attributes || [];
-            VocabularyAttributeService.setForClassName(model.content.attributes, model.forClassName);
+            VocabularyAttributeService.setForClassName(model.content.attributes, data.model.forClassName);
 
             if (data.model.type) {
               VocabularyAttributeService.setType(model.content.attributes, data.model.type);
@@ -803,7 +826,7 @@ mica.entityTaxonomyConfig
           case 'taxonomy':
             return getTaxonomyFormData(model.content);
           case 'criterion':
-            return getVocabularyFormData(model.forClassName, model.content, model.siblings, model.onRangeChange);
+            return getVocabularyFormData(model.forClassName, model.content, model.possibleClassNames, model.siblings, model.onRangeChange);
           case 'term':
             return getTermFormData(model.forClassName, model.content, model.valueType || 'string', model.siblings, model.vocabulary);
         }

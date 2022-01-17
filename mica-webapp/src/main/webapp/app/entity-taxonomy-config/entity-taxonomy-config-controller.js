@@ -43,6 +43,12 @@ mica.entitySfConfig
       };
 
       var navigateToVocabulary = function(content) {
+        if ($scope.target.name === 'study') {
+          $scope.model.possibleClassNames = ['Study', 'HarmonizationStudy'];
+        } else if ($scope.target.name === 'dataset') {
+          $scope.model.possibleClassNames = ['CollectedDataset', 'HarmonizedDataset'];
+        }
+
         $scope.model.content = content;
         $scope.model.children = content.terms ? content.terms : [];
         $scope.model.type = 'criterion';
@@ -94,8 +100,6 @@ mica.entitySfConfig
         children: null,
         type: 'taxonomy'
       };
-
-      console.log('EEEEEEEEE', $scope.forClassName, $scope.model);
 
       $scope.onSave = onSave;
       $scope.navigateToVocabulary = navigateToVocabulary;
@@ -323,7 +327,7 @@ mica.entitySfConfig
               EntitySchemaFormFieldsService,
               model) {
 
-      $scope.model = model;
+      $scope.model = model; //
       var apply = function () {
         $scope.$broadcast('schemaFormValidate');
 

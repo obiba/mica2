@@ -486,7 +486,7 @@ class TableFixedHeaderUtility {
   const queryAlertListener  = new MicaQueryAlertListener();
 
   function foundAttributeIsOk(studyTypeSelection, foundAttr) {
-    let isOk = !foundAttr || foundAttr.value === 'Network';
+    let isOk = !foundAttr || foundAttr.value.length === 0 || foundAttr.value === 'Network';
 
     if (studyTypeSelection.study) {
       isOk = isOk || foundAttr.value === 'Study' || foundAttr.value === 'StudyDataset';
