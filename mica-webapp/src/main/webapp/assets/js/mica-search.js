@@ -485,28 +485,28 @@ class TableFixedHeaderUtility {
 
   const queryAlertListener  = new MicaQueryAlertListener();
 
-  function processTaxonomyForStudyTypeSelection(studyTypeSelection, taxonomy) {
-    function foundAttributeIsOk(foundAttr) {
-      let isOk = !foundAttr || foundAttr.value === 'Network';
+  function foundAttributeIsOk(studyTypeSelection, foundAttr) {
+    let isOk = !foundAttr || foundAttr.value === 'Network';
 
-      if (studyTypeSelection.study) {
-        isOk = isOk || foundAttr.value === 'Study' || foundAttr.value === 'StudyDataset';
-      } else if (studyTypeSelection.harmonization) {
-        isOk = isOk || foundAttr.value === 'HarmonizationStudy' || foundAttr.value === 'HarmonizationDataset';
-      } else {
-        isOk = true;
-      }
-
-      return isOk
+    if (studyTypeSelection.study) {
+      isOk = isOk || foundAttr.value === 'Study' || foundAttr.value === 'StudyDataset';
+    } else if (studyTypeSelection.harmonization) {
+      isOk = isOk || foundAttr.value === 'HarmonizationStudy' || foundAttr.value === 'HarmonizationDataset';
+    } else {
+      isOk = true;
     }
 
+    return isOk
+  }
+
+  function processTaxonomyForStudyTypeSelection(studyTypeSelection, taxonomy) {
     if (studyTypeSelection.study || studyTypeSelection.harmonization) {
       let clone = JSON.parse(JSON.stringify(taxonomy));
-      let clonedVocabularies = clone.vocabularies.filter(voc => { let foundAttr = voc.attributes.find(attr => attr.key === 'forClassName'); return foundAttributeIsOk(foundAttr); });
+      let clonedVocabularies = clone.vocabularies.filter(voc => { let foundAttr = voc.attributes.find(attr => attr.key === 'forClassName'); return foundAttributeIsOk(studyTypeSelection, foundAttr); });
 
       clonedVocabularies.forEach(voc => {
         if (Array.isArray(voc.terms)) {
-          voc.terms = voc.terms.filter(term => { let foundAttr = (term.attributes || []).find(attr => attr.key === 'className'); return foundAttributeIsOk(foundAttr); });
+          voc.terms = voc.terms.filter(term => { let foundAttr = (term.attributes || []).find(attr => attr.key === 'className'); return foundAttributeIsOk(studyTypeSelection, foundAttr); });
         }
       });
 
@@ -516,10 +516,6 @@ class TableFixedHeaderUtility {
     }
 
     return taxonomy;
-  }
-
-  function processQueriesForStudyTypeSelection(studyTypeSelection, taxonomy, queries) {
-    console.log('processQueriesForStudyTypeSelection', studyTypeSelection, taxonomy, queries);
   }
 
   new Vue({
@@ -568,7 +564,8 @@ class TableFixedHeaderUtility {
         hasCoverageTermsWithZeroHits: false,
         queryForFullCoverage: null,
         queriesWithZeroHitsToUpdate: [],
-        coverageFixedHeaderHandler: null
+        coverageFixedHeaderHandler: null,
+        previousStudyTypeSelection: null
       };
     },
     methods: {
@@ -682,7 +679,7 @@ class TableFixedHeaderUtility {
         console.debug('Executing ' + this.queryType + ' query ...');
         EventBus.$emit(this.queryType, 'I am the result of a ' + this.queryType + ' query');
       },
-      onClearQuery() {
+      setLocation(searchQuery) {
         const urlParts = MicaTreeQueryUrl.parseUrl();
         const searchParams = urlParts.searchParams || {};
 
@@ -690,13 +687,40 @@ class TableFixedHeaderUtility {
         const type = searchParams.type || TYPES.VARIABLES;
 
         let params = [`type=${type}`];
+        if (searchQuery) {
+          params.push(`query=${searchQuery}`);
+        }
 
         const urlSearch = params.join("&");
         const hash = `${display}?${urlSearch}`;
 
         window.location.hash = `#${hash}`;
       },
+
+      onClearQuery() {
+        this.setLocation();
+      },
       onLocationChanged(payload) {
+        let studyTypeSelection = MicaTreeQueryUrl.getStudyTypeSelection(MicaTreeQueryUrl.getTree());
+        let studyTypeSelectionWasDifferent = this.previousStudyTypeSelection &&
+          (this.previousStudyTypeSelection.all !== studyTypeSelection.all ||
+            this.previousStudyTypeSelection.study !== studyTypeSelection.study ||
+            this.previousStudyTypeSelection.harmonization !== studyTypeSelection.harmonization
+          );
+
+        this.previousStudyTypeSelection = studyTypeSelection;
+
+        if (studyTypeSelectionWasDifferent) {
+          let studyClassName = 'Study';
+          if (studyTypeSelection.all) {
+            studyClassName = ['Study', 'HarmonizationStudy'];
+          } else if (studyTypeSelection.harmonization) {
+            studyClassName = 'HarmonizationStudy';
+          }
+
+          this.setLocation(new RQL.Query('study', [new RQL.Query('', [new RQL.Query('in', ['Mica_study.className', studyClassName])])]).toString());
+        }
+
         this.downloadUrlObject = MicaTreeQueryUrl.getDownloadUrl(payload);
 
         let tree = MicaTreeQueryUrl.getTree();
@@ -741,17 +765,6 @@ class TableFixedHeaderUtility {
         this.queryToNetworksCart = makeQueryToCart(tree, TARGETS.NETWORK, ['acronym.*']);
 
         this.refreshQueries();
-
-        // clean queries and args that shouldn't be there based on studyType query
-        let studyTypeSelection = MicaTreeQueryUrl.getStudyTypeSelection(tree);
-        if (studyTypeSelection.study || studyTypeSelection.harmonization) {
-          // ignore Mica_study.className query, everything else must be checked
-          // use eventBus to emit updates
-          for (const targetQuery in MicaTreeQueryUrl.getTreeQueries()) {
-            let workingQueries = MicaTreeQueryUrl.getTreeQueries()[targetQuery];
-            processQueriesForStudyTypeSelection(studyTypeSelection, this.taxonomies[`Mica_${targetQuery}`], Criterion.splitQuery(workingQueries));
-          }
-        }
 
         // result
         $(`.nav-pills #${payload.display}-tab`).tab('show');
