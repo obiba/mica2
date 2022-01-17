@@ -573,7 +573,7 @@ class TableFixedHeaderUtility {
         setTimeout(() => {
           const filter = document.querySelector('#study-filter-shortcut');
           const tabPane = document.querySelector(".tab-pane .show");
-          if (tabPane) {
+          if (tabPane && filter && filter.parentNode) {
             const toolbar = tabPane.querySelector('div.toolbar')
             if (toolbar) {
               filter.parentNode.removeChild(filter);
