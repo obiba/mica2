@@ -1,0 +1,95 @@
+[
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-12 col-md-6",
+            "items": [
+              "version"
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-12 col-md-6",
+            "items": [
+              "participants"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-12 col-md-6",
+            "items": [
+              {
+                "key": "qualitativeQuantitative",
+                "type": "radios",
+                "titleMap": [
+                  {
+                    "value": "qualitative",
+                    "name": "t(harmonization-protocol.qualitative-quantitative.enum.qualitative)"
+                  },
+                  {
+                    "value": "quantitative",
+                    "name": "t(harmonization-protocol.qualitative-quantitative.enum.quantitative)"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-12 col-md-6",
+            "items": [
+              {
+                "key": "prospectiveRetrospective",
+                "type": "radios",
+                "titleMap": [
+                  {
+                    "value": "prospective",
+                    "name": "t(harmonization-protocol.prospective-retrospective.enum.prospective)"
+                  },
+                  {
+                    "value": "retrospective",
+                    "name": "t(harmonization-protocol.prospective-retrospective.enum.retrospective)"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "key": "informationContent",
+        "type": "obibaSimpleMde"
+      },
+      {
+        "key": "procedures",
+        "type": "obibaSimpleMde"
+      },
+      {
+        "key": "additionalInformation",
+        "type": "obibaSimpleMde"
+      }
+    ]
+  }
+]

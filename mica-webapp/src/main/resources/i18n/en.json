@@ -122,7 +122,7 @@
       "study-with-variables": "Individual Study with Variables",
       "harmonization-studies": "Harmonization Initiatives",
       "collected-datasets": "Collected Datasets",
-      "harmonized-datasets": "Harmonized Datasets",
+      "harmonized-datasets": "Harmonization Protocols",
       "variables": "Variables",
       "study-variables": "Individual Study Variables",
       "study-variable": "Individual Study Variable",
@@ -250,8 +250,8 @@
     "datasets-help": "Index that allows to search for datasets of any type and associated variables.",
     "collected-datasets": "Collected datasets",
     "collected-datasets-help": "Index that allows to search for collected datasets and associated variables.",
-    "harmonized-datasets": "Harmonized datasets",
-    "harmonized-datasets-help": "Index that allows to search for harmonized datasets and associated variables.",
+    "harmonized-datasets": "Harmonization Protocols",
+    "harmonized-datasets-help": "Index that allows to search for Harmonization Protocols and associated variables.",
     "persons": "Persons",
     "persons-help": "Index that allows to search persons who can be associated to studies or networks.",
     "files": "Files",
@@ -441,8 +441,8 @@
     "network-enabled-help": "Network section is accessible.",
     "collected-dataset-enabled": "Collected datasets section enabled",
     "collected-dataset-enabled-help": "Collected datasets section is accessible.",
-    "harmonized-dataset-enabled": "Harmonized datasets section enabled",
-    "harmonized-dataset-enabled-help": "Harmonized datasets section is accessible.",
+    "harmonized-dataset-enabled": "Harmonization protocols section enabled",
+    "harmonized-dataset-enabled-help": "Harmonization protocols section is accessible.",
     "import-studies-feature-enabled": "Import studies feature enabled",
     "import-studies-feature-enabled-help": "Import studies feature is accessible.",
     "signup-enabled": "Sign-up enabled",
@@ -481,11 +481,11 @@
       "collected-dataset-subject": "Subject of collected dataset status notification",
       "collected-dataset-help": "Send email notifications when collected dataset status changes to Deleted, to Under review or to Draft.",
       "collected-dataset-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId}, ${status}.",
-      "harmonized-dataset-title": "Harmonized Dataset Updates",
-      "harmonized-dataset-info": "Recipients of harmonized dataset updates notifications have at least <code>Editor</code> permission (when status is Draft) or <code>Reviewer</code> permission (when status is Deleted or Under Review).",
-      "harmonized-dataset": "On harmonized dataset status changed notification",
-      "harmonized-dataset-subject": "Subject of harmonized dataset status notification",
-      "harmonized-dataset-help": "Send email notifications when harmonized dataset status changes to Deleted, to Under review or to Draft.",
+      "harmonized-dataset-title": "Harmonization Protocol Updates",
+      "harmonized-dataset-info": "Recipients of harmonization protocol updates notifications have at least <code>Editor</code> permission (when status is Draft) or <code>Reviewer</code> permission (when status is Deleted or Under Review).",
+      "harmonized-dataset": "On harmonization protocol status changed notification",
+      "harmonized-dataset-subject": "Subject of harmonization protocol status notification",
+      "harmonized-dataset-help": "Send email notifications when harmonization protocol status changes to Deleted, to Under review or to Draft.",
       "harmonized-dataset-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId}, ${status}.",
       "file-title": "File Updates",
       "file-info": "Recipients of file updates notifications have at least <code>Editor</code> permission (when status is Draft) or <code>Reviewer</code> permission (when status is Deleted or Under Review).",
@@ -814,6 +814,26 @@
     },
     "none": "No studies."
   },
+  "harmonization-protocol": {
+    "version": "Version",
+    "information-content": "Information Content",
+    "participants": "Number of Participants",
+    "procedures": "Procedures",
+    "qualitative-quantitative": {
+      "title": "Qualitative/Quantitative Effort",
+      "enum": {
+        "qualitative": "Qualitative",
+        "quantitative": "Quantitative"
+      }
+    },
+    "prospective-retrospective": {
+      "title": "Prospective/Retrospective Effort",
+      "enum": {
+        "prospective": "Prospective",
+        "retrospective": "Retrospective"
+      }
+    }
+  },
   "contact": {
     "add": {
       "member": "Add {{type}}",
@@ -940,8 +960,8 @@
     "table-name": "Name",
     "table-description": "Description",
     "data-schema": {
-      "title": "Harmonized Dataset",
-      "info": "The variables of the harmonized dataset are the reference variables. This is a simple data dictionary: no data summaries will be extracted from the Opal table."
+      "title": "Harmonization Protocol",
+      "info": "The variables of the harmonization protocol are the reference variables. This is a simple data dictionary: no data summaries will be extracted from the Opal table."
     },
     "index": "Index",
     "add-study-table": "Add Study Table",
@@ -959,8 +979,8 @@
     },
     "harmonization":{
       "missing-attributes":"In harmonization table, these attributes are mandatory : project, table, studyId, populationId",
-      "study-not-published":"Before publishing a harmonized dataset, its linked harmonization initiative must already be published",
-      "population-not-published":"Before publishing a harmonized dataset, its linked population must already be published"
+      "study-not-published":"Before publishing a harmonization protocol, its linked harmonization initiative must already be published",
+      "population-not-published":"Before publishing a harmonization protocol, its linked population must already be published"
     },
     "collection":{
       "study-not-published":"Before publishing a collected dataset, its linked individual study must already be published",
@@ -1029,8 +1049,8 @@
   },
   "collected-datasets": "Collected Datasets",
   "collected-dataset": "Collected Dataset",
-  "harmonized-datasets": "Harmonized Datasets",
-  "harmonized-dataset": "Harmonized Dataset",
+  "harmonized-datasets": "Harmonization Protocols",
+  "harmonized-dataset": "Harmonization Protocol",
   "network": {
     "name": "Name",
     "logo": "Logo",
@@ -1318,7 +1338,7 @@
       "dce-individual" : "Data Collection Event (DCE)",
       "dce-harmonization" : "Population",
       "network" : "Network",
-      "dataschema": "Harmonized Dataset",
+      "dataschema": "Harmonization Protocol",
       "dataset": "Dataset",
       "dataset-collected": "Collected ",
       "dataset-harmonized": "Harmonized",
@@ -1496,7 +1516,7 @@
   "new-network": "New Network",
   "new-study": "New Study",
   "new-collected-dataset": "New Collected Dataset",
-  "new-harmonized-dataset": "New Harmonized Dataset",
+  "new-harmonized-dataset": "New Harmonization Protocol",
   "new-data-access-request": "New Data Access Request",
   "new-project": "New Research Project",
   "title": "Title",
@@ -1540,7 +1560,7 @@
       "individual-study-config": "Configure Study form, permissions and search.",
       "harmonization-study-config": "Configure Harmonization Initiative form, permissions and search.",
       "collected-dataset-config": "Configure Collected Dataset form, permissions and search.",
-      "harmonized-dataset-config": "Configure Harmonized Dataset form, permissions and search.",
+      "harmonized-dataset-config": "Configure Harmonization Protocol form, permissions and search.",
       "data-access-config": "Configure Data Access Request form.",
       "project-config": "Configure Research Project form.",
       "file-system": "Manage file system.",
@@ -1955,10 +1975,10 @@
     }
   },
   "harmonized-dataset-config" : {
-    "title" : "Harmonized Dataset Configuration",
+    "title" : "Harmonization Protocol Configuration",
     "schema-form": {
       "title": "Form",
-      "info": "The custom harmonized dataset form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+      "info": "The custom harmonization protocol form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
     }
   },
   "data-access-config": {
@@ -2442,7 +2462,7 @@
     "Study": "Individual Studies",
     "HarmonizationStudy": "Harmonization Initiatives",
     "StudyDataset": "Collected Datasets",
-    "HarmonizationDataset": "Harmonized Datasets",
+    "HarmonizationDataset": "Harmonization Protocols",
     "DataAccessRequest": "Data Access Requests",
     "Network": "Networks",
     "Project": "Projects",

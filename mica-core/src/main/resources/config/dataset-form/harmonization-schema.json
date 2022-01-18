@@ -1,0 +1,45 @@
+{
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "integer",
+      "title": "t(harmonization-protocol.version)"
+    },
+    "participants": {
+      "type": "integer",
+      "title": "t(harmonization-protocol.participants)"
+    },
+    "qualitativeQuantitative": {
+      "type": "string",
+      "title": "t(harmonization-protocol.qualitative-quantitative.title)",
+      "enum": [
+        "qualitative",
+        "quantitative"
+      ]
+    },
+    "prospectiveRetrospective": {
+      "type": "string",
+      "title": "t(harmonization-protocol.prospective-retrospective.title)",
+      "enum": [
+        "prospective",
+        "retrospective"
+      ]
+    },
+    "informationContent": {
+      "type": "object",
+      "title": "t(harmonization-protocol.information-content)",
+      "format": "obibaSimpleMde"
+    },
+    "procedures": {
+      "type": "object",
+      "title": "t(harmonization-protocol.procedures)",
+      "format": "obibaSimpleMde"
+    },
+    "additionalInformation": {
+      "type": "object",
+      "title": "t(global.additional-information)",
+      "format": "obibaSimpleMde"
+    }
+  },
+  "required": []
+}
