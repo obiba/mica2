@@ -178,9 +178,11 @@ public class VariableController extends BaseController {
       params.put("studyPublished", published);
       params.put("study", study);
       Population population = study.findPopulation(variable.getPopulationId().replace(variable.getStudyId() + ":", ""));
-      params.put("population", population);
-      DataCollectionEvent dce = population.findDataCollectionEvent(variable.getDceId().replace(variable.getPopulationId() + ":", ""));
-      params.put("dce", dce);
+      if (population != null) {
+        params.put("population", population);
+        DataCollectionEvent dce = population.findDataCollectionEvent(variable.getDceId().replace(variable.getPopulationId() + ":", ""));
+        params.put("dce", dce);
+      }
       if (DatasetVariable.Type.Harmonized.equals(variable.getVariableType())) {
         HarmonizationDataset dataset = getHarmonizationDataset(variable.getDatasetId());
         if (DatasetVariable.OpalTableType.Study.equals(variable.getOpalTableType())) {
