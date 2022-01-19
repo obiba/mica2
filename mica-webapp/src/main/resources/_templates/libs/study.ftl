@@ -39,7 +39,7 @@
             <div class="card card-info card-outline">
               <div class="card-header">
                 <h3 class="card-title">
-                    <@message "study_taxonomy.vocabulary.additionalInformation.title"/>
+                    <@message "global.additional-information"/>
                 </h3>
                 <div class="card-tools">
                   <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
@@ -669,13 +669,15 @@
       <h3 class="card-title"><@message "variables-classifications"/></h3>
     </div>
     <div class="card-body">
-      <div class="row">
-        <div class="col mb-4">
-          <select id="select-bucket" class="form-control select2">
-            <option value="_all" selected><#if type == "Individual"><@message "all-dces"/><#else><@message "all-populations"/></#if></option>
-          </select>
+      <#if type == "Individual">
+        <div class="row">
+          <div class="col mb-4">
+            <select id="select-bucket" class="form-control select2">
+              <option value="_all" selected><@message "all-dces"/></option>
+            </select>
+          </div>
         </div>
-      </div>
+      </#if>
       <div class="row">
         <div class="col" id="chartsContainer"></div>
       </div>

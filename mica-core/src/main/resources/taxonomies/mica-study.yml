@@ -2381,18 +2381,6 @@
   "attributes":
     "static": "true"
     "type": "keyword"
-- "name": "harmonizationDesign"
-  "title":
-    "en": "Harmonization Study Design"
-    "fr": "Conception de l'étude d'harmonisation"
-  "description":
-    "en": "Harmonization Study Design."
-    "fr": "Conception de l'étude d'harmonisation."
-  "attributes":
-    "field": "model.harmonizationDesign"
-    "alias": "model-harmonizationDesign"
-    "localized": "true"
-    "forClassName": "HarmonizationStudy"
 - "name": "sets"
   "title":
     "en": "Sets"

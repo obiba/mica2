@@ -160,7 +160,7 @@
               </div>
             </div>
           <#elseif (studyTables?? && studyTables?size != 0) || (harmonizationTables?? && harmonizationTables?size != 0)>
-            <div class="col-lg-6">
+            <div class="col">
               <div class="card card-info card-outline">
                 <div class="card-header">
                   <h3 class="card-title"><@message "studies-included"/></h3>
@@ -216,7 +216,6 @@
                           <thead>
                           <tr>
                             <th><@message "study"/></th>
-                            <th><@message "population"/></th>
                           </tr>
                           </thead>
                           <tbody>
@@ -225,13 +224,6 @@
                               <td>
                                 <a href="${contextPath}/study/${table.study.id}">
                                   ${localize(table.study.acronym)}
-                                </a>
-                              </td>
-                              <td>
-                                <#assign popId="${table.study.id}-${table.population.id}">
-                                <@populationDialog id=popId population=table.population></@populationDialog>
-                                <a href="#" data-toggle="modal" data-target="#modal-${popId}">
-                                  ${localize(table.population.name)}
                                 </a>
                               </td>
                             </tr>
