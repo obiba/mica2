@@ -1951,6 +1951,8 @@
       "terms-sort-key": "Terms Listing Order",
       "range-aggregation": "Has Range Intervals",
       "range-aggregation-help": "Numerical criterion with terms as range intervals.",
+      "for-classname-attribute": "Class Name",
+      "for-classname-attribute-help": "The class name of the object for which this configuration will apply to.",
       "error": {
         "duplicate-criterion-alias": "This field is already associated with a criterion. Only a numerical field can have two criteria, a discrete and a range criterion."
       }

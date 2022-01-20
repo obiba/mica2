@@ -1931,6 +1931,8 @@
       "terms-sort-key": "L'ordre d'affichage des termes",
       "range-aggregation": "A des intervalles de portées",
       "range-aggregation-help": "Critère numérique avec des termes comme intervalles de portées.",
+      "for-classname-attribute": "Nome de la classe",
+      "for-classname-attribute-help": "Nom de la classe de l'object auquel cette configuration s’appliquera.",
       "error": {
         "duplicate-criterion-alias": "Ce champ est déjà associé à un critère. Seul un champ numérique peut comporter deux critères, un critère discret et un critère de portée."
       }
