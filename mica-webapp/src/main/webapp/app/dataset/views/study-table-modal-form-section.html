@@ -6,39 +6,18 @@
   </div>
 
   <div ng-if="selected.isHarmonizationTable">
-    <p class="help-block" translate>dataset.harmonization-study-table.info</p>
-
-    <h4 translate>dataset.study-population.title</h4>
-
-    <p class="help-block" translate>dataset.study-population.info</p>
-
     <div class="row">
       <div class="col-md-6">
         <div class="form-group"
           ng-class="{'has-error': (form['study'].$dirty || form.saveAttempted) && form['study'].$invalid}">
           <label class="control-label">
-            <span translate>study.label</span>
+            <span translate>harmonization-initiative.short-label</span>
             <span>*</span>
           </label>
           <ui-select theme="bootstrap" name="study" ng-model="selected.study" reset-search-input="true" required="true">
             <ui-select-match>{{$select.selected.id}}</ui-select-match>
             <ui-select-choices repeat="study in harmonizationStudies| filter: {id: $select.search}">
               <span ng-bind-html="study.id | highlight: $select.search"></span>
-            </ui-select-choices>
-          </ui-select>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="form-group"
-          ng-class="{'has-error': (form['population'].$dirty || form.saveAttempted) && form['population'].$invalid}">
-          <label class="control-label">
-            <span translate>study.population</span>
-            <span>*</span>
-          </label>
-          <ui-select theme="bootstrap" name="population" ng-model="selected.study.population" reset-search-input="true" required="true">
-            <ui-select-match>{{$select.selected.id}}</ui-select-match>
-            <ui-select-choices repeat="population in selected.study.populationSummaries | filter: $select.search">
-              <span ng-bind-html="population.id | highlight: $select.search"></span> - <span ng-bind-html="population.name[0].value | highlight: $select.search"></span>
             </ui-select-choices>
           </ui-select>
         </div>

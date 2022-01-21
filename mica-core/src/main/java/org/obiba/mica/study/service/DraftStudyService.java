@@ -11,9 +11,10 @@
 package org.obiba.mica.study.service;
 
 import org.obiba.mica.core.service.DraftDocumentService;
+import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.Study;
 
-public interface DraftStudyService extends DraftDocumentService<Study> {
+public interface DraftStudyService extends DraftDocumentService<BaseStudy> {
 
   IndividualStudyService getIndividualStudyService();
 

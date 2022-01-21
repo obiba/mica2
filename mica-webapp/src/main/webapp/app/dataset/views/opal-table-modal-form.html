@@ -15,7 +15,8 @@
     <div class="modal-header">
       <button type="button" class="close" aria-hidden="true" ng-click="cancel()">&times;</button>
       <h4 class="modal-title" id="myStudyLabel">
-        <span translate>dataset.study-table.title</span>
+        <span ng-if="!selected.isHarmonizationTable" translate>dataset.study-table.title</span>
+        <span ng-if="selected.isHarmonizationTable" translate>harmonization-protocol.initiative-table</span>
       </h4>
     </div>
 

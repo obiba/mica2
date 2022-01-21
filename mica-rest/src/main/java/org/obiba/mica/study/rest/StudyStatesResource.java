@@ -108,7 +108,7 @@ public class StudyStatesResource {
     if(limit == null) limit = MAX_LIMIT;
     if(limit < 0) throw new IllegalArgumentException("limit cannot be negative");
 
-    DocumentService.Documents<Study> studyDocuments = draftStudyService.find(from, limit, sort, order,
+    DocumentService.Documents<BaseStudy> studyDocuments = draftStudyService.find(from, limit, sort, order,
       null, query, null, null, accessibleIdFilter);
 
     totalCount = studyDocuments.getTotal();

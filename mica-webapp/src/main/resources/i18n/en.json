@@ -64,6 +64,9 @@
     "default": "Default",
     "chronological": "Chronological",
     "network": "Network",
+    "studies-initiatives": "Studies/Initiatives",
+    "study-initiative": "Study/Initiative",
+    "add-study-initiative": "Add Study/Initiative",
     "individual-study": "Individual Study",
     "individual-studies": "Individual Studies",
     "harmonization-study": "Harmonization Initiative",
@@ -310,8 +313,8 @@
     "anonymous-username-help": "User that is configured for unauthenticated Portal usage.",
     "cart-enabled": "Cart of variables enabled",
     "cart-enabled-help": "Cart of variables creation and management is enabled.",
-    "studies-cart-enabled": "Cart of studies enabled",
-    "studies-cart-enabled-help": "Cart of studies creation and management is enabled.",
+    "studies-cart-enabled": "Cart of studies and initiatives enabled",
+    "studies-cart-enabled-help": "Cart of studies and initiatives creation and management is enabled.",
     "networks-cart-enabled": "Cart of networks enabled",
     "networks-cart-enabled-help": "Cart of networks creation and management is enabled.",
     "comments-required": "Comments Required",
@@ -428,7 +431,7 @@
     "variableSummaryRequiresAuthentication-help": "The user needs to be identified when accessing to the variable summary statistics (and related operations like contingency table).",
     "sections": "Sections",
     "repository-enabled": "Repository enabled",
-    "repository-enabled-help": "Show network, study, dataset, variable pages with the search interface.",
+    "repository-enabled-help": "Show network, initiative, study, protocol, dataset, variable pages with the search interface.",
     "project-enabled": "Project section enabled",
     "project-enabled-help": "Show approved research projects pages.",
     "data-access-enabled": "Data access enabled",
@@ -443,8 +446,8 @@
     "collected-dataset-enabled-help": "Collected datasets section is accessible.",
     "harmonized-dataset-enabled": "Harmonization protocols section enabled",
     "harmonized-dataset-enabled-help": "Harmonization protocols section is accessible.",
-    "import-studies-feature-enabled": "Import studies feature enabled",
-    "import-studies-feature-enabled-help": "Import studies feature is accessible.",
+    "import-studies-feature-enabled": "Import studies and initiatives feature enabled",
+    "import-studies-feature-enabled-help": "Import studies and initiatives feature is accessible.",
     "signup-enabled": "Sign-up enabled",
     "signup-enabled-help": "New users can sign-up.",
     "signup-with-password": "Sign-up with password",
@@ -453,7 +456,7 @@
     "signup-groups-help": "Sign-up groups to automatically apply to new users.",
     "signup-groups-form-help": "Space separated group names that will be to automatically apply to new users.",
     "roles": "Membership Roles",
-    "roles-help": "A person can be member of a study or of a network with one of the listed roles. * Use the prefix <a href='#/admin/translations/edit?filter=contact.label.'>'contact.label.'</a> to change the translation.",
+    "roles-help": "A person can be member of an initiative, a study or of a network with one of the listed roles. * Use the prefix <a href='#/admin/translations/edit?filter=contact.label.'>'contact.label.'</a> to change the translation.",
     "add-role": "Add Role",
     "delete-role-title": "Delete Role",
     "delete-role-confirm": "This operation will remove members with this role from all documents, i.e. studies, networks. Are you sure you want to delete role \"{{role}}\"?",
@@ -571,6 +574,7 @@
     }
   },
   "studies": "Studies",
+  "initiatives": "Initiatives",
   "numberOfParticipants": {
     "label": "Number of participants",
     "participants": "Number of participants",
@@ -814,7 +818,17 @@
     },
     "none": "No studies."
   },
+  "harmonization-initiative": {
+    "short-label": "Initiative",
+    "publish-protocols": "Publish Protocols",
+    "add-initiative": "Add Initiative",
+    "import": {
+      "button": "Import Initiatives"
+    }
+  },
   "harmonization-protocol": {
+    "initiative-table": "Initiative Table",
+    "add": "Add Protocol",
     "version": "Version",
     "information-content": "Information Content",
     "participants": "Number of Participants",
@@ -925,7 +939,7 @@
     },
     "harmonization-study": {
       "title": "Harmonization Initiative",
-      "info": "A harmonization initiative linked to this dataset."
+      "info": "A harmonization initiative linked to this protocol."
     },
     "harmonization-study-population": {
       "title": "Harmonization Study Population",
@@ -964,7 +978,7 @@
       "info": "The variables of the harmonization protocol are the reference variables. This is a simple data dictionary: no data summaries will be extracted from the Opal table."
     },
     "index": "Index",
-    "add-study-table": "Add Study Table",
+    "add-study-table": "Add Table",
     "none": "No datasets.",
     "crosstab": {
       "title": "Contingency Table",
@@ -1344,7 +1358,7 @@
       "dataset-harmonized": "Harmonized",
       "collection": "Individual",
       "individual": "Individual",
-      "harmonization": "Harmonization"
+      "harmonization": "Initiative"
     },
     "coverage-select": {
       "all": "All",
@@ -1366,7 +1380,7 @@
       "participants": "Participants",
       "other-design": "Other design",
       "individual": "Individual",
-      "harmonization": "Harmonization"
+      "harmonization": "Initiative"
     },
     "dataset": {
       "facet-label": "Dataset",
@@ -1515,6 +1529,7 @@
   "new-folder": "New Folder",
   "new-network": "New Network",
   "new-study": "New Study",
+  "new-initiative": "New Initiative",
   "new-collected-dataset": "New Collected Dataset",
   "new-harmonized-dataset": "New Harmonization Protocol",
   "new-data-access-request": "New Data Access Request",
@@ -2393,7 +2408,7 @@
       "status": "Status",
       "type": "Type",
       "type-individual":"Individual",
-      "type-harmonization":"Harmonization",
+      "type-harmonization":"Initiative",
       "population": {
         "name": "Population",
         "source-of-recruitment": "Sources of Recruitment",
@@ -2430,24 +2445,22 @@
     "title": "Persons",
     "none": "No persons.",
     "add-networks": "Add Networks",
-    "add-studies": "Add Studies",
+    "add-studies": "Add Studies/Initiatives",
     "no-entity-memberships": "No membership roles.",
     "add-person": "Add Person",
-    "no-memberships": "{{fullname}} is not a member of any network or study.",
+    "no-memberships": "{{fullname}} is not a member of any network, study or initiative.",
     "entity-roles-help": "At least one role must be selected.",
     "network-entities-roles-help": "To add a membership select at least one role and one network.",
-    "study-entities-roles-help": "To add a membership select at least one role and one study.",
+    "study-entities-roles-help": "To add a membership select at least one role and one study or initiative.",
     "network-roles-table-help": "List of membership roles for each network.",
-    "study-roles-table-help": "List of membership roles for each study.",
-    "network-member-of-all": "{{fullname}} is member of all networks.",
-    "study-member-of-all": "{{fullname}} is member of all studies.",
+    "study-roles-table-help": "List of membership roles for each study or initiative.",
     "update-roles-dialog": {
       "title": "Update Roles",
       "message": "Select one or more roles to assign to {{member}}."
     },
     "entity-list-dialog": {
       "network-title": "Add Member to Networks",
-      "study-title": "Add Member to Studies"
+      "study-title": "Add Member to Studies/Initiatives"
     },
     "delete-dialog":{
       "title": "Delete Person",

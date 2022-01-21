@@ -32,7 +32,7 @@ mica.persons
     return this;
   }])
   .service('EntityMembershipService', ['$filter', '$translate', 'LocalizedValues',
-    function($filter, $translate, LocalizedValues) {
+    function($filter, $translate, LocalizedValues, typeFilter) {
 
       function groupRolesByEntity(type, memberships) {
         const lang = $translate.use();

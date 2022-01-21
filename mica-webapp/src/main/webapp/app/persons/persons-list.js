@@ -51,6 +51,14 @@
       return url;
     }
 
+    __splitStudyMemberships(studyMemberships, filter) {
+      return studyMemberships.filter(membership => {
+        if ('obiba.mica.PersonDto.StudyMembershipDto.meta' in membership) {
+          return filter === membership['obiba.mica.PersonDto.StudyMembershipDto.meta'].type
+        }
+      });
+    }
+
     __getPersons(query, from, limit, exclude) {
       const searchQuery = query ? mica.commons.cleanupQuery(query) : query;
       this.loading = true;

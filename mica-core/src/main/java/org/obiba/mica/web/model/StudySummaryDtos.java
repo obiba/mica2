@@ -85,7 +85,7 @@ class StudySummaryDtos {
     if (study instanceof Study) {
       builder = asCollectionStudyDtoBuilder((Study) study, isPublished, variablesCount);
     } else {
-      builder = asHarmonizationStudyDtoBuilder((HarmonizationStudy) study, true, variablesCount);
+      builder = asHarmonizationStudyDtoBuilder((HarmonizationStudy) study, isPublished, variablesCount);
     }
 
     if(study.hasModel()) builder.setContent(JSONUtils.toJSON(study.getModel()));
