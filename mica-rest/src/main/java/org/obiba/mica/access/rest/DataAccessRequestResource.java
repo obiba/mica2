@@ -208,7 +208,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
       if (new Date().before(timeline.getEndDate()))
         throw new BadRequestException("Cannot archive: data access request end date not reached");
       request.setArchived(true);
-      dataAccessRequestService.save(request);
+      dataAccessRequestService.archive(request, true);
     } else {
       throw new BadRequestException("Cannot archive: data access request must have been approved before being archived");
     }
@@ -222,8 +222,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
       throw new AuthorizationException();
     }
     DataAccessRequest request = dataAccessRequestService.findById(id);
-    request.setArchived(false);
-    dataAccessRequestService.save(request);
+    dataAccessRequestService.archive(request, false);
     return Response.noContent().build();
   }
 
