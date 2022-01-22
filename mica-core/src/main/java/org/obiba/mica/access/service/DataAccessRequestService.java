@@ -94,6 +94,11 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
     return save(request, DateTime.now());
   }
 
+  public DataAccessRequest archive(@NotNull DataAccessRequest request, boolean archived) {
+    request.setArchived(archived);
+    return save(request, null);
+  }
+
   public DataAccessRequest saveActionsLogs(@NotNull DataAccessRequest request) {
     DataAccessRequest saved = findById(request.getId());
     saved.setActionLogHistory(request.getActionLogHistory());
