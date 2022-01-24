@@ -52,9 +52,6 @@ const DataTableDefaults = {
 };
 
 const EntityResult = {
-  props: {
-    studyTypeSelection: Object
-  },
   data() {
     return {
       dataTable: null,
@@ -62,7 +59,8 @@ const EntityResult = {
       type: null,
       target: null,
       showResult: false,
-      selections: []
+      selections: [],
+      studyTypeSelection: {all: true, study: false, harmonization: false}
     };
   },
   computed: {
@@ -86,7 +84,7 @@ const EntityResult = {
     onResults(payload) {
       if (!this.dataTable) return;
       const pageInfo = this.dataTable.page.info();
-      var parsed = this.parser.parse(payload.response, this.getMicaConfig(), this.localize, this.getDisplayOptions(), this.studyTypeSelection);
+      var parsed = this.parser.parse(payload.response, this.getMicaConfig(), this.localize, this.getDisplayOptions(), payload.studyTypeSelection || this.studyTypeSelection);
       this.showResult = parsed.totalHits > 0;
       if (!this.showResult) return;
 

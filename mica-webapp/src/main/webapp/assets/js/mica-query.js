@@ -775,6 +775,8 @@ class MicaQueryExecutor {
   __executeQuery(tree, type ,display, noUrlUpdate) {
     console.debug(`__executeQuery`);
 
+    let studyTypeSelection = MicaTreeQueryUrl.getStudyTypeSelection(tree);
+
     axios
       .get(`${contextPath}/ws/${type}/_rql?query=${tree.serialize()}`)
       .then(response => {
@@ -788,7 +790,7 @@ class MicaQueryExecutor {
           tree.findAndDeleteQuery((name) => 'sort' === name);
           tree.findAndDeleteQuery((name) => 'locale' === name);
           this.__updateLocation(type, display, tree, noUrlUpdate);
-          EventBus.$emit(`${type}-results`, {type, response: response.data, from: limitQuery.args[0], size: limitQuery.args[1]});
+          EventBus.$emit(`${type}-results`, {studyTypeSelection, type, response: response.data, from: limitQuery.args[0], size: limitQuery.args[1]});
         }
       });
   }
@@ -864,6 +866,8 @@ class MicaQueryExecutor {
 
   __updateLocation(type, display, tree, replace, bucket) {
     const query = tree.serialize();
+    let studyTypeSelection = MicaTreeQueryUrl.getStudyTypeSelection(tree);
+
     console.debug(`__updateLocation ${type} ${display} ${query} - history states ${history.length}`);
     let params = [`type=${type}`, `query=${query}`];
     if (bucket) {
@@ -878,7 +882,7 @@ class MicaQueryExecutor {
       history.pushState(null, "", `#${hash}`);
     }
 
-    this._eventBus.$emit(EVENTS.LOCATION_CHANGED, {type, display, tree, bucket});
+    this._eventBus.$emit(EVENTS.LOCATION_CHANGED, {type, display, tree, bucket, studyTypeSelection});
   }
 
   /**

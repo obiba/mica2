@@ -704,7 +704,7 @@ class TableFixedHeaderUtility {
         this.setLocation();
       },
       onLocationChanged(payload) {
-        let studyTypeSelection = MicaTreeQueryUrl.getStudyTypeSelection(MicaTreeQueryUrl.getTree());
+        let studyTypeSelection = payload.studyTypeSelection || MicaTreeQueryUrl.getStudyTypeSelection(MicaTreeQueryUrl.getTree());
         let studyTypeSelectionWasDifferent = this.currentStudyTypeSelection &&
           (this.currentStudyTypeSelection.all !== studyTypeSelection.all ||
             this.currentStudyTypeSelection.study !== studyTypeSelection.study ||
