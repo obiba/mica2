@@ -52,6 +52,9 @@ const DataTableDefaults = {
 };
 
 const EntityResult = {
+  props: {
+    studyTypeSelection: Object
+  },
   data() {
     return {
       dataTable: null,
@@ -83,7 +86,7 @@ const EntityResult = {
     onResults(payload) {
       if (!this.dataTable) return;
       const pageInfo = this.dataTable.page.info();
-      var parsed = this.parser.parse(payload.response, this.getMicaConfig(), this.localize, this.getDisplayOptions());
+      var parsed = this.parser.parse(payload.response, this.getMicaConfig(), this.localize, this.getDisplayOptions(), this.studyTypeSelection);
       this.showResult = parsed.totalHits > 0;
       if (!this.showResult) return;
 
@@ -524,7 +527,17 @@ const VariablesResult = {
   computed: {
     // table headers
     variableColumnNames: function() {
-      return this.getDisplayOptions().variableColumns
+      let displayOptions = this.getDisplayOptions();
+      let columnKey = 'variableColumns';
+      if (this.studyTypeSelection) {
+        if (this.studyTypeSelection.study) {
+          columnKey = 'variableColumnsIndividual';
+        } else if(this.studyTypeSelection.harmonization) {
+          columnKey = 'variableColumnsHarmonization';
+        }
+      }
+
+      return (displayOptions[columnKey] || displayOptions.variableColumns)
         .filter(col => {
           if (col === 'type') {
             return this.withCollectedDatasets && this.withHarmonizedDatasets;
@@ -583,7 +596,17 @@ const StudiesResult = {
   computed:{
     // study headers, 1st row
     studyColumnItems: function() {
-      return this.getDisplayOptions().studyColumns
+      let displayOptions = this.getDisplayOptions();
+      let columnKey = 'studyColumns';
+      if (this.studyTypeSelection) {
+        if (this.studyTypeSelection.study) {
+          columnKey = 'studyColumnsIndividual';
+        } else if(this.studyTypeSelection.harmonization) {
+          columnKey = 'studyColumnsHarmonization';
+        }
+      }
+
+      return (displayOptions[columnKey] || displayOptions.studyColumns)
         .filter(col => {
           if (col === 'type') {
             return this.withCollectedDatasets && this.withHarmonizedDatasets;
@@ -608,8 +631,18 @@ const StudiesResult = {
     },
     // study headers, 2nd row
     studyColumnItems2: function() {
+      let displayOptions = this.getDisplayOptions();
+      let columnKey = 'studyColumns';
+      if (this.studyTypeSelection) {
+        if (this.studyTypeSelection.study) {
+          columnKey = 'studyColumnsIndividual';
+        } else if(this.studyTypeSelection.harmonization) {
+          columnKey = 'studyColumnsHarmonization';
+        }
+      }
+
       const items2 = [];
-      this.getDisplayOptions().studyColumns
+      (displayOptions[columnKey] || displayOptions.studyColumns)
         .filter(col => {
           if (col === 'individual') {
             return this.withCollectedDatasets;
@@ -732,7 +765,17 @@ const NetworksResult = {
   computed: {
     // network headers, 1st row
     networkColumnItems: function() {
-      return this.getDisplayOptions().networkColumns
+      let displayOptions = this.getDisplayOptions();
+      let columnKey = 'networkColumns';
+      if (this.studyTypeSelection) {
+        if (this.studyTypeSelection.study) {
+          columnKey = 'networkColumnsIndividual';
+        } else if(this.studyTypeSelection.harmonization) {
+          columnKey = 'networkColumnsHarmonization';
+        }
+      }
+
+      return (displayOptions[columnKey] || displayOptions.networkColumns)
         .filter(col => {
           if (col === 'type') {
             return this.withCollectedDatasets && this.withHarmonizedDatasets;
@@ -755,8 +798,18 @@ const NetworksResult = {
     },
     // network headers, 2nd row
     networkColumnItems2: function() {
+      let displayOptions = this.getDisplayOptions();
+      let columnKey = 'networkColumns';
+      if (this.studyTypeSelection) {
+        if (this.studyTypeSelection.study) {
+          columnKey = 'networkColumnsIndividual';
+        } else if(this.studyTypeSelection.harmonization) {
+          columnKey = 'networkColumnsHarmonization';
+        }
+      }
+
       const items2 = [];
-      this.getDisplayOptions().networkColumns
+      (displayOptions[columnKey] || displayOptions.networkColumns)
         .filter(col => {
           if (col === 'datasets') {
             return this.withCollectedDatasets || this.withHarmonizedDatasets;
@@ -835,7 +888,17 @@ const DatasetsResult = {
   computed: {
     // dataset headers
     datasetColumnNames: function() {
-      return this.getDisplayOptions().datasetColumns
+      let displayOptions = this.getDisplayOptions();
+      let columnKey = 'datasetColumns';
+      if (this.studyTypeSelection) {
+        if (this.studyTypeSelection.study) {
+          columnKey = 'datasetColumnsIndividual';
+        } else if(this.studyTypeSelection.harmonization) {
+          columnKey = 'datasetColumnsHarmonization';
+        }
+      }
+
+      return (displayOptions[columnKey] || displayOptions.datasetColumns)
         .filter(col => {
           if (col === 'type') {
             return this.withCollectedDatasets && this.withHarmonizedDatasets;

@@ -565,7 +565,7 @@ class TableFixedHeaderUtility {
         queryForFullCoverage: null,
         queriesWithZeroHitsToUpdate: [],
         coverageFixedHeaderHandler: null,
-        previousStudyTypeSelection: null
+        currentStudyTypeSelection: null
       };
     },
     methods: {
@@ -705,13 +705,13 @@ class TableFixedHeaderUtility {
       },
       onLocationChanged(payload) {
         let studyTypeSelection = MicaTreeQueryUrl.getStudyTypeSelection(MicaTreeQueryUrl.getTree());
-        let studyTypeSelectionWasDifferent = this.previousStudyTypeSelection &&
-          (this.previousStudyTypeSelection.all !== studyTypeSelection.all ||
-            this.previousStudyTypeSelection.study !== studyTypeSelection.study ||
-            this.previousStudyTypeSelection.harmonization !== studyTypeSelection.harmonization
+        let studyTypeSelectionWasDifferent = this.currentStudyTypeSelection &&
+          (this.currentStudyTypeSelection.all !== studyTypeSelection.all ||
+            this.currentStudyTypeSelection.study !== studyTypeSelection.study ||
+            this.currentStudyTypeSelection.harmonization !== studyTypeSelection.harmonization
           );
 
-        this.previousStudyTypeSelection = studyTypeSelection;
+        this.currentStudyTypeSelection = studyTypeSelection;
 
         if (studyTypeSelectionWasDifferent) {
           let studyClassName = 'Study';

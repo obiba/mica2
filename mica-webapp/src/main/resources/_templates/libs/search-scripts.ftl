@@ -150,9 +150,21 @@
 
   Mica.display = {
     variableColumns: ['${searchVariableColumns?join("', '")}'],
+    variableColumnsHarmonization: ['${searchVariableColumnsHarmonization?join("', '")}'],
+    variableColumnsIndividual: ['${searchVariableColumnsIndividual?join("', '")}'],
+
     datasetColumns: ['${searchDatasetColumns?join("', '")}'],
+    datasetColumnsHarmonization: ['${searchDatasetColumnsHarmonization?join("', '")}'],
+    datasetColumnsIndividual: ['${searchDatasetColumnsIndividual?join("', '")}'],
+
     studyColumns: ['${searchStudyColumns?join("', '")}'],
+    studyColumnsHarmonization: ['${searchStudyColumnsHarmonization?join("', '")}'],
+    studyColumnsIndividual: ['${searchStudyColumnsIndividual?join("', '")}'],
+
     networkColumns: ['${searchNetworkColumns?join("', '")}'],
+    networkColumnsHarmonization: ['${searchNetworkColumnsHarmonization?join("', '")}'],
+    networkColumnsIndividual: ['${searchNetworkColumnsIndividual?join("', '")}'],
+
     searchCriteriaMenus: ['${searchCriteriaMenus?join("', '")}']
   };
 

@@ -101,9 +101,20 @@
 <#assign searchNetworkListDisplay = (config.networkEnabled && !config.singleNetworkEnabled)/>
 <!-- List tables by type (ID column ('name' or 'acronym') is always first) -->
 <#assign searchVariableColumns = ["label+description", "valueType", "annotations", "type", "study", "population", "data-collection-event", "dataset"]/>
+<#assign searchVariableColumnsHarmonization = ["label+description", "valueType", "annotations", "study", "dataset"]/>
+<#assign searchVariableColumnsIndividual = ["label+description", "valueType", "annotations", "study", "population", "data-collection-event", "dataset"]/>
+
 <#assign searchDatasetColumns = ["name", "type", "networks", "studies", "variables"]/>
+<#assign searchDatasetColumnsHarmonization = ["name", "networks", "studies", "variables"]/>
+<#assign searchDatasetColumnsIndividual = ["name", "networks", "studies", "variables"]/>
+
 <#assign searchStudyColumns = ["name", "type", "study-design", "data-sources-available", "participants", "networks", "individual", "harmonization"]/>
+<#assign searchStudyColumnsHarmonization = ["name", "networks", "harmonization"]/>
+<#assign searchStudyColumnsIndividual = ["name", "study-design", "data-sources-available", "participants", "networks", "individual"]/>
+
 <#assign searchNetworkColumns = ["name", "studies", "datasets", "variables"]/>
+<#assign searchNetworkColumnsHarmonization = ["name", "studies", "datasets", "variables"]/>
+<#assign searchNetworkColumnsIndividual = ["name", "studies", "datasets", "variables"]/>
 <!-- Extracted fields on search by type -->
 <#assign searchVariableFields = ["attributes.label.*", "attributes.description.*", "variableType", "valueType", "categories.*", "unit", "populationId", "dceId", "datasetId", "datasetAcronym", "attributes.Mlstr_area*"]/>
 <#assign searchDatasetFields = ["acronym.*","name.*","variableType","studyTable.studyId","studyTable.project","studyTable.table","studyTable.populationId","studyTable.dataCollectionEventId","harmonizationTable.studyId","harmonizationTable.project","harmonizationTable.table","harmonizationTable.populationId"]/>

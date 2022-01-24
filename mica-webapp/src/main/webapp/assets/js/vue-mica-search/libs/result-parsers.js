@@ -224,10 +224,19 @@ class VariablesResultParser {
     this.normalizePath = normalizePath;
   }
 
-  parse(data, micaConfig, localize, displayOptions) {
+  parse(data, micaConfig, localize, displayOptions, studyTypeSelection) {
     const variablesResult = data.variableResultDto;
     const tr = Vue.filter('translate') || (value => value);
     const taxonomyTitle = Vue.filter('taxonomy-title') || (value => value);
+
+    let columnKey = 'variableColumns';
+    if (studyTypeSelection) {
+      if (studyTypeSelection.study) {
+        columnKey = 'variableColumnsIndividual';
+      } else if(studyTypeSelection.harmonization) {
+        columnKey = 'variableColumnsHarmonization';
+      }
+    }
 
     if (!variablesResult) {
       throw new Error("No variable results available.");
@@ -253,7 +262,7 @@ class VariablesResultParser {
       let path = this.normalizePath(`/variable/${summary.id}`);
       let row = ['<i class="far fa-square"></i>', summary.id, `<a href="${path}">${summary.name}</a>`,];
 
-      displayOptions.variableColumns.forEach(column => {
+      (displayOptions[columnKey] || displayOptions.variableColumns).forEach(column => {
         switch (column) {
           case 'label':
           case 'label+description': {
@@ -348,8 +357,17 @@ class StudiesResultParser {
      return '-';
   }
 
-  parse(data, micaConfig, localize, displayOptions) {
+  parse(data, micaConfig, localize, displayOptions, studyTypeSelection) {
     const studiesResult = data.studyResultDto;
+
+    let columnKey = 'studyColumns';
+    if (studyTypeSelection) {
+      if (studyTypeSelection.study) {
+        columnKey = 'studyColumnsIndividual';
+      } else if(studyTypeSelection.harmonization) {
+        columnKey = 'studyColumnsHarmonization';
+      }
+    }
 
     if (!studiesResult) {
       throw new Error("No network results available.");
@@ -389,7 +407,7 @@ class StudiesResultParser {
       let path = this.normalizePath(`/study/${summary.id}`);
       let row = [`<a href="${path}">${localize(summary.acronym)}</a>`];
 
-      displayOptions.studyColumns.forEach(column => {
+      (displayOptions[columnKey] || displayOptions.studyColumns).forEach(column => {
         switch (column) {
           case 'name': {
             row.push(localize(summary.name));
@@ -490,10 +508,19 @@ class DatasetsResultParser {
     this.locale = locale;
   }
 
-  parse(data, micaConfig, localize, displayOptions) {
+  parse(data, micaConfig, localize, displayOptions, studyTypeSelection) {
     const datasetsResult = data.datasetResultDto;
     const tr = Vue.filter('translate') || (value => value);
     const taxonomyFilter = Vue.filter('taxonomy-title') || (value => value);
+
+    let columnKey = 'datasetColumns';
+    if (studyTypeSelection) {
+      if (studyTypeSelection.study) {
+        columnKey = 'datasetColumnsIndividual';
+      } else if(studyTypeSelection.harmonization) {
+        columnKey = 'datasetColumnsHarmonization';
+      }
+    }
 
     if (!datasetsResult) {
       throw new Error("No dataset results available.");
@@ -524,7 +551,7 @@ class DatasetsResultParser {
       const stats = dataset['obiba.mica.CountStatsDto.datasetCountStats'] || {};
       let anchor = (type, value) => `<a href="" class="query-anchor" data-target="dataset" data-target-id="${dataset.id}" data-type="${type}">${value.toLocaleString(this.locale)}</a>`;
 
-      displayOptions.datasetColumns.forEach(column => {
+      (displayOptions[columnKey] || displayOptions.datasetColumns).forEach(column => {
         switch (column) {
           case 'name': {
             row.push(localize(dataset.name));
@@ -572,8 +599,17 @@ class NetworksResultParser {
     this.locale = locale;
   }
 
-  parse(data, micaConfig, localize, displayOptions) {
+  parse(data, micaConfig, localize, displayOptions, studyTypeSelection) {
     const networksResult = data.networkResultDto;
+
+    let columnKey = 'networkColumns';
+    if (studyTypeSelection) {
+      if (studyTypeSelection.study) {
+        columnKey = 'networkColumnsIndividual';
+      } else if(studyTypeSelection.harmonization) {
+        columnKey = 'networkColumnsHarmonization';
+      }
+    }
 
     if (!networksResult) {
       throw new Error("No network results available.");
@@ -601,7 +637,7 @@ class NetworksResultParser {
       let path = this.normalizePath(`/network/${network.id}`);
       let row = [`<a href="${path}">${localize(network.acronym)}</a>`];
 
-      displayOptions.networkColumns.forEach(column => {
+      (displayOptions[columnKey] || displayOptions.networkColumns).forEach(column => {
         switch (column) {
           case 'name': {
             row.push(localize(network.name));
