@@ -112,9 +112,9 @@
 <#assign searchStudyColumnsHarmonization = ["name", "networks", "harmonization"]/>
 <#assign searchStudyColumnsIndividual = ["name", "study-design", "data-sources-available", "participants", "networks", "individual"]/>
 
-<#assign searchNetworkColumns = ["name", "studies", "datasets", "variables"]/>
-<#assign searchNetworkColumnsHarmonization = ["name", "studies", "datasets", "variables"]/>
-<#assign searchNetworkColumnsIndividual = ["name", "studies", "datasets", "variables"]/>
+<#assign searchNetworkColumns = ["name", "studies", "individual", "harmonization"]/>
+<#assign searchNetworkColumnsHarmonization = ["name", "studies", "harmonization"]/>
+<#assign searchNetworkColumnsIndividual = ["name", "studies", "individual"]/>
 <!-- Extracted fields on search by type -->
 <#assign searchVariableFields = ["attributes.label.*", "attributes.description.*", "variableType", "valueType", "categories.*", "unit", "populationId", "dceId", "datasetId", "datasetAcronym", "attributes.Mlstr_area*"]/>
 <#assign searchDatasetFields = ["acronym.*","name.*","variableType","studyTable.studyId","studyTable.project","studyTable.table","studyTable.populationId","studyTable.dataCollectionEventId","harmonizationTable.studyId","harmonizationTable.project","harmonizationTable.table","harmonizationTable.populationId"]/>

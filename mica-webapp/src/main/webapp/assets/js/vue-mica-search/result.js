@@ -778,6 +778,10 @@ const NetworksResult = {
         .filter(col => {
           if (col === 'type') {
             return this.withCollectedDatasets && this.withHarmonizedDatasets;
+          } else if (col === 'individual') {
+            return this.withCollectedDatasets;
+          } else if (col === 'harmonization') {
+            return this.withHarmonizedDatasets;
           } else if (col === 'studies') {
             return this.withStudies;
           } else if (col === 'datasets') {
@@ -812,13 +816,20 @@ const NetworksResult = {
         .filter(col => {
           if (col === 'datasets') {
             return this.withCollectedDatasets || this.withHarmonizedDatasets;
+          } else if (col === 'individual') {
+            return this.withCollectedDatasets;
+          } else if (col === 'harmonization') {
+            return this.withHarmonizedDatasets;
           } else if (col === 'variables') {
             return this.withCollectedDatasets || this.withHarmonizedDatasets;
           }
           return false;
         })
-        .forEach(col => {
-          if (col === 'datasets') {
+        .forEach((col, id) => {
+          if (['individual', 'harmonization'].includes(col)) {
+            items2.push({id: id, name: 'datasets', title: ''});
+            items2.push({id: id, name: 'variables', title: ''});
+          } else if (col === 'datasets') {
             items2.push({ name: 'collected'});
             items2.push({ name: 'harmonized'});
           } else if (col === 'variables') {

@@ -665,6 +665,28 @@ class NetworksResultParser {
             }
             break;
           }
+          case 'individual': {
+            if (micaConfig.isCollectedDatasetEnabled) {
+              row.push(stats.studyDatasets
+                ? anchor("datasets", stats.studyDatasets, "Study")
+                : "-");
+              row.push(stats.studyVariables
+                ? anchor("variables", stats.studyVariables, "Study")
+                : "-");
+            }
+            break;
+          }
+          case 'harmonization': {
+            if (micaConfig.isHarmonizedDatasetEnabled) {
+              row.push(stats.harmonizationDatasets
+                ? anchor("datasets", stats.harmonizationDatasets, "HarmonizationStudy")
+                : "-");
+              row.push(stats.dataschemaVariables
+                ? anchor("variables", stats.dataschemaVariables, "HarmonizationStudy")
+                : "-");
+            }
+            break;
+          }
           default:
             row.push('');
             console.debug('Wrong network table column: ' + column);
