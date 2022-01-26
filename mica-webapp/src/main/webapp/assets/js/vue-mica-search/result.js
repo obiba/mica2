@@ -88,39 +88,6 @@ const EntityResult = {
       this.showResult = this.parsed.totalHits > 0;
       if (!this.showResult) this.parsed = [];
     },
-    /**
-     * DataTable AJAX callback used to send pagination events
-     */
-    onAjaxCallback(data, callback) {
-      if (this.ajaxCallback) {
-        // this is called when paginating or page size is changed
-        if (this.manualPagination) {
-          this.manualPagination = false;
-        } else {
-          this.getEventBus().$emit("query-type-paginate", {
-            display: "list",
-            type: `${this.type}`,
-            target: `${this.target}`,
-            from: data.start,
-            size: data.length
-          });
-        }
-      } else {
-        // first time table is registered
-        this.ajaxCallback = callback;
-      }
-    },
-    /**
-     * Registers the DataTable
-     */
-    registerTable() {
-      this.dataTable = this.registerDataTable(`vosr-${this.type}-result`, {
-        processing: true,
-        serverSide: true,
-        ajax: this.onAjaxCallback.bind(this),
-        fixedHeader: true
-      });
-    },
     clearSelections() {
       this.selections = [];
     },
@@ -158,28 +125,110 @@ const EntityResult = {
     normalizePath: (path) => {
       return contextPath + path;
     },
-    localize: (entries) => StringLocalizer.localize(entries),
-    registerDataTable(tableId, options) {
-      const mergedOptions = Object.assign(options, DataTableDefaults);
-      mergedOptions.language = {
-        url: contextPath + '/assets/i18n/mlstr-datatables.' + Mica.locale + '.json'
-      };
-      const dTable = $('#' + tableId).DataTable(mergedOptions);
-      dTable.on('draw.dt', function() {
-        // bs tooltip
-        $('[data-toggle="tooltip"]').tooltip();
-      });
+    headerSelectionEventHandler(event) {
+      const tableSelector = `#vosr-${this.type}-result`;
+      // fa icons
+      const checkedIconClassName = 'fa-check-square';
+      const notCheckedIconClassName = 'fa-square';
 
-      // checkboxes only for variables
-      if ('vosr-variables-result' === tableId) {
-        initSelectDataTable(dTable, options);
+      let headerSelectionIcon = event.target;
+      let isHeaderChecked = headerSelectionIcon.classList.contains(checkedIconClassName);
+
+      if (isHeaderChecked) {
+        headerSelectionIcon.classList.remove(checkedIconClassName);
+        headerSelectionIcon.classList.add(notCheckedIconClassName);
+      } else {
+        headerSelectionIcon.classList.remove(notCheckedIconClassName);
+        headerSelectionIcon.classList.add(checkedIconClassName);
       }
 
-      return dTable;
-    }
+      let selectionIds = [];
+      document.querySelectorAll(`${tableSelector} tbody i[data-item-id]`).forEach((row) => {
+        if (isHeaderChecked) {
+          row.classList.remove(checkedIconClassName);
+          row.classList.add(notCheckedIconClassName);
+        } else {
+          row.classList.remove(notCheckedIconClassName);
+          row.classList.add(checkedIconClassName);
+        }
+        selectionIds.push(row.dataset.itemId);
+      });
+
+      if (selectionIds.length > 0) {
+        this.onSelectionChanged(selectionIds, !isHeaderChecked);
+      }
+    },
+    rowItemSelectionEventHandler(event) {
+      // fa icons
+      const checkedIconClassName = 'fa-check-square';
+      const notCheckedIconClassName = 'fa-square';
+
+      let element = event.target;
+      let isElementChecked = element.classList.contains(checkedIconClassName);
+
+      if (isElementChecked) {
+        element.classList.remove(checkedIconClassName);
+        element.classList.add(notCheckedIconClassName);
+      } else {
+        element.classList.remove(notCheckedIconClassName);
+        element.classList.add(checkedIconClassName);
+      }
+
+      this.onSelectionChanged([element.dataset.itemId], !isElementChecked);
+    },
+    setHeaderSelectionClickEvent(tableSelector) {
+      let headerSelectionIcon = document.querySelector(`${tableSelector} thead i`);
+
+      if (headerSelectionIcon) {
+        headerSelectionIcon.removeEventListener('click', this.headerSelectionEventHandler);
+        headerSelectionIcon.addEventListener('click', this.headerSelectionEventHandler);
+      }
+    },
+    setResultSelectionClickEvent(element) {
+      if (element) {
+        element.removeEventListener('click', this.rowItemSelectionEventHandler);
+        element.addEventListener('click', this.rowItemSelectionEventHandler);
+      }
+    },
+    setCheckBoxesCheckStatusAndEvents() {
+      // fa icons
+      const checkedIconClassName = 'fa-check-square';
+      const notCheckedIconClassName = 'fa-square';
+
+      const tableSelector = `#vosr-${this.type}-result`;
+      this.setHeaderSelectionClickEvent(tableSelector);
+
+      let headerSelectionIcon = document.querySelector(`${tableSelector} thead i`);
+
+      if (headerSelectionIcon) {
+        headerSelectionIcon.classList.remove(checkedIconClassName);
+        headerSelectionIcon.classList.add(notCheckedIconClassName);
+      }
+
+      let tableResultRows = [...document.querySelectorAll(`${tableSelector} tbody i[data-item-id]`)];
+
+      tableResultRows.forEach((row) => {
+        let itemId = row.dataset.itemId;
+
+        if (this.isSelected(itemId)) {
+          row.classList.remove(notCheckedIconClassName);
+          row.classList.add(checkedIconClassName);
+        } else {
+          row.classList.remove(checkedIconClassName);
+          row.classList.add(notCheckedIconClassName);
+        }
+
+        this.setResultSelectionClickEvent(row);
+      });
+    },
+    localize: (entries) => StringLocalizer.localize(entries)
+  },
+  updated() {
+    this.$nextTick(() => this.setCheckBoxesCheckStatusAndEvents());
   },
   mounted() {
     console.debug(`${this.type} result table mounted...`);
+
     this.getEventBus().register(`${this.type}-results`,this.onResults.bind(this));
     this.getEventBus().register("clear-results-selections", this.clearSelections.bind(this));
   },
@@ -258,19 +307,6 @@ const GraphicResult = {
   },
   data: function() {
     const agg = this.chartDataset.options.agg;
-
-    let totals = this.chartDataset.options.withTotals ? {countTotal: 0, subAggTotal: 0} : null;
-
-    if (this.chartDataset.options.withTotals) {
-      this.chartDataset.tableData.rows.forEach(row => {
-        totals.countTotal += row.count;
-        if (row.subAgg !== undefined) {
-          totals.subAggTotal += row.subAgg;
-        } else {
-          totals.subAggTotal = undefined;
-        }
-      });
-    }
 
     return {
       chart: null,
@@ -480,32 +516,6 @@ const VariablesResult = {
       parser: new VariablesResultParser(this.normalizePath),
       type: "variables",
       target: "variable"
-    }
-  },
-  methods: {
-    registerTable() { // override registerTable to add checkbox specific options
-      this.dataTable = this.registerDataTable(`vosr-${this.type}-result`, {
-        processing: true,
-        serverSide: true,
-        ajax: this.onAjaxCallback.bind(this),
-        fixedHeader: true,
-        isSelected: this.isSelected.bind(this),
-        onSelectionChanged: this.onSelectionChanged.bind(this),
-        columnDefs: [{ // the checkbox
-          orderable: false,
-          className: 'select-checkbox',
-          targets: 0
-        }, { // the ID
-            visible: false,
-            searchable: false,
-            targets: 1
-        }],
-        select: {
-          style: 'multi',
-          selector: 'td:first-child',
-          info: false
-        }
-      });
     }
   },
   computed: {

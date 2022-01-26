@@ -567,8 +567,8 @@ class TableFixedHeaderUtility {
         queriesWithZeroHitsToUpdate: [],
         coverageFixedHeaderHandler: null,
         currentStudyTypeSelection: null,
-        pagination: new OBiBaPagination('obiba-pagination-top', true, this.onPagination),
-        pageSizeSelector: new OBiBaPageSizeSelector('obiba-page-size-selector-top', DEFAULT_PAGE_SIZES, DEFAULT_PAGE_SIZE, this.onPageSizeChanged)
+        pagination: null,
+        pageSizeSelector: null
       };
     },
     methods: {
@@ -1176,6 +1176,10 @@ class TableFixedHeaderUtility {
     },
     mounted() {
       console.debug('Mounted QueryBuilder');
+
+      this.pagination = new OBiBaPagination('obiba-pagination-top', true, this.onPagination),
+      this.pageSizeSelector = new OBiBaPageSizeSelector('obiba-page-size-selector-top', DEFAULT_PAGE_SIZES, DEFAULT_PAGE_SIZE, this.onPageSizeChanged);
+
       EventBus.register('taxonomy-selection', this.onTaxonomySelection);
       EventBus.register(EVENTS.LOCATION_CHANGED, this.onLocationChanged.bind(this));
 
