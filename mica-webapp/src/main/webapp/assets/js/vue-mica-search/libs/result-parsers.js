@@ -260,7 +260,7 @@ class VariablesResultParser {
     summaries.forEach(summary => {
 
       let path = this.normalizePath(`/variable/${summary.id}`);
-      let row = ['<i class="far fa-square"></i>', summary.id, `<a href="${path}">${summary.name}</a>`,];
+      let row = ['<i class="far fa-square"></i>', `<a data-item-id="${summary.id}" href="${path}">${summary.name}</a>`,];
 
       (displayOptions[columnKey] || displayOptions.variableColumns).forEach(column => {
         switch (column) {

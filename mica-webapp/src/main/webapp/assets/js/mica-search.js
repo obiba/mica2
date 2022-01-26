@@ -526,6 +526,7 @@ class TableFixedHeaderUtility {
         taxonomies: {},
         targets: [],
         display: DISPLAYS.LISTS,
+        currentListType: null,
         message: '',
         selectedTaxonomy: null,
         selectedTaxonomyTitle: null,
@@ -565,7 +566,9 @@ class TableFixedHeaderUtility {
         queryForFullCoverage: null,
         queriesWithZeroHitsToUpdate: [],
         coverageFixedHeaderHandler: null,
-        currentStudyTypeSelection: null
+        currentStudyTypeSelection: null,
+        pagination: new OBiBaPagination('obiba-pagination-top', true, this.onPagination),
+        pageSizeSelector: new OBiBaPageSizeSelector('obiba-page-size-selector-top', DEFAULT_PAGE_SIZES, DEFAULT_PAGE_SIZE, this.onPageSizeChanged)
       };
     },
     methods: {
@@ -727,18 +730,6 @@ class TableFixedHeaderUtility {
         this.downloadUrlObject = MicaTreeQueryUrl.getDownloadUrl(payload);
 
         let tree = MicaTreeQueryUrl.getTree();
-
-        const target = TYPES_TARGETS_MAP[payload.type];
-        if (target) {
-          const limitQuery = tree.search((name, args, parent) => 'limit' === name && parent.name === target);
-          if (limitQuery) {
-            const size = limitQuery.args[1];
-            const table = $(`table[id=vosr-${payload.type}-result]`).DataTable();
-            if (table) {
-              table.page.len(size); // do not use draw() otherwise the query gets executed forever!
-            }
-          }
-        }
 
         // query string to copy
         tree.findAndDeleteQuery((name) => 'limit' === name);
@@ -953,15 +944,19 @@ class TableFixedHeaderUtility {
           switch (payload.type) {
             case TYPES.VARIABLES:
               dto = 'variableResultDto';
+              this.currentListType = TYPES.VARIABLES;
               break;
             case TYPES.DATASETS:
               dto = 'datasetResultDto';
+              this.currentListType = TYPES.DATASETS;
               break;
             case TYPES.STUDIES:
               dto = 'studyResultDto';
+              this.currentListType = TYPES.STUDIES;
               break;
             case TYPES.NETWORKS:
               dto = 'networkResultDto';
+              this.currentListType = TYPES.NETWORKS;
               break;
           }
 
@@ -969,7 +964,7 @@ class TableFixedHeaderUtility {
             throw new Error(`Payload has invalid type ${payload.type}`);
           }
 
-          this.hasListResult = data[dto].totalHits > 0;
+          this.hasListResult = (data[dto] || {totalHits: 0}).totalHits > 0;
 
           if (data.variableResultDto && data.variableResultDto.totalHits) {
             this.counts.variables = data.variableResultDto.totalHits.toLocaleString();
@@ -988,7 +983,6 @@ class TableFixedHeaderUtility {
           }
 
           let tree = MicaTreeQueryUrl.getTree();
-
           const target = TYPES_TARGETS_MAP[payload.type];
           if (target) {
             const limitQuery = tree.search((name, args, parent) => 'limit' === name && parent.name === target);
@@ -1007,7 +1001,18 @@ class TableFixedHeaderUtility {
                 const urlSearch = params.join("&");
                 const hash = `${display}?${urlSearch}`;
 
+                // for pagination and size selector
+                let from = limitQuery.args[0];
+                let size = limitQuery.args[1];
+                this.pagination.update((data[dto] || {totalHits: 0}).totalHits, size, (from/size)+1);
+                this.pageSizeSelector.update(size);
+
                 window.location.hash = `#${hash}`;
+              } else {
+                let from = limitQuery.args[0];
+                let size = limitQuery.args[1];
+                this.pagination.update((data[dto] || {totalHits: 0}).totalHits, size, (from/size)+1);
+                this.pageSizeSelector.update(size);
               }
             }
           }
@@ -1114,6 +1119,24 @@ class TableFixedHeaderUtility {
       },
       onFullCoverage() {
         EventBus.$emit(EVENTS.QUERY_TYPE_UPDATES_SELECTION, {updates: [{target: fromBucketToTarget(this.selectedBucket), query: this.queryForFullCoverage, display: DISPLAYS.COVERAGE}]});
+      },
+      onPagination(data) {
+        EventBus.$emit(EVENTS.QUERY_TYPE_PAGINATE, {
+          display: DISPLAYS.LISTS,
+          type: this.currentListType,
+          target: TYPES_TARGETS_MAP[this.currentListType],
+          from: data.from,
+          size: data.size
+        });
+      },
+      onPageSizeChanged(data) {
+        EventBus.$emit(EVENTS.QUERY_TYPE_PAGINATE, {
+          display: DISPLAYS.LISTS,
+          type: this.currentListType,
+          target: TYPES_TARGETS_MAP[this.currentListType],
+          from: 0,
+          size: data.size
+        });
       }
     },
     computed: {

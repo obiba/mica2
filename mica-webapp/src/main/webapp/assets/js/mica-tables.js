@@ -15,7 +15,7 @@ const initSelectDataTable = function(dTable, options) {
   const checkHeaderSelector = headerSelector + ' i';
   const checkRowSelector = 'td.' + selectClassName + ' i';
 
-  dTable.on('draw', function() {
+  dTable.on('draw', function() { //
     // init selection header (because of paging, then selection event will be triggered)
     $(checkHeaderSelector).removeClass(checkedIconClassName).addClass(notCheckedIconClassName);
     // apply selection

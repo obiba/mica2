@@ -60,7 +60,8 @@ const EntityResult = {
       target: null,
       showResult: false,
       selections: [],
-      studyTypeSelection: {all: true, study: false, harmonization: false}
+      studyTypeSelection: {all: true, study: false, harmonization: false},
+      parsed: []
     };
   },
   computed: {
@@ -82,30 +83,10 @@ const EntityResult = {
      * Callback invoked when request response arrives
      */
     onResults(payload) {
-      if (!this.dataTable) return;
-      const pageInfo = this.dataTable.page.info();
       this.studyTypeSelection = payload.studyTypeSelection || this.studyTypeSelection;
-      var parsed = this.parser.parse(payload.response, this.getMicaConfig(), this.localize, this.getDisplayOptions(), this.studyTypeSelection);
-      this.showResult = parsed.totalHits > 0;
-      if (!this.showResult) return;
-
-      this.ajaxCallback({
-        data: parsed.data,
-        recordsTotal: parsed.totalHits,
-        recordsFiltered: parsed.totalHits
-      });
-
-      const start = payload.hasOwnProperty("from") ? payload.from : null;
-      if (start !== null && pageInfo.start !== start) {
-        // The start has come from the query and not from pagination
-        this.manualPagination = true;
-        this.dataTable.page(start / pageInfo.length).draw(false);
-        this.ajaxCallback({
-          data: parsed.data,
-          recordsTotal: parsed.totalHits,
-          recordsFiltered: parsed.totalHits
-        });
-      }
+      this.parsed = this.parser.parse(payload.response, this.getMicaConfig(), this.localize, this.getDisplayOptions(), this.studyTypeSelection);
+      this.showResult = this.parsed.totalHits > 0;
+      if (!this.showResult) this.parsed = [];
     },
     /**
      * DataTable AJAX callback used to send pagination events
@@ -478,11 +459,15 @@ const VariablesResult = {
           <thead>
             <tr>
               <th><i class="far fa-square"></i></th>
-              <th></th>
               <th class="column-name">{{ "name" | translate }}</th>
               <th v-for="(column, index) in variableColumnNames" :key="index" :class="'column-'+ column" >{{ column | translate }}</th>
             </tr>
           </thead>
+          <tbody>
+            <tr v-for="parsedItem in parsed.data">
+              <td v-for="cell in parsedItem" v-html="cell"></td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -547,9 +532,6 @@ const VariablesResult = {
         })
         .map(col => col === 'label+description' ? 'label' : col);
     }
-  },
-  mounted() {
-    this.registerTable();
   }
 }
 
@@ -578,6 +560,11 @@ const StudiesResult = {
               </th>
             </tr>
           </thead>
+          <tbody>
+            <tr v-for="parsedItem in parsed.data">
+              <td v-for="cell in parsedItem" v-html="cell"></td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -710,8 +697,6 @@ const StudiesResult = {
   },
   mounted() {
     console.debug('Studies Result Mounted...');
-    this.registerTable();
-
     $('#vosr-studies-result').on('click', 'a.query-anchor', this.onAnchorClicked);
   }
 };
@@ -746,6 +731,11 @@ const NetworksResult = {
               </th>
             </tr>
           </thead>
+          <tbody>
+            <tr v-for="parsedItem in parsed.data">
+              <td v-for="cell in parsedItem" v-html="cell"></td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -850,7 +840,6 @@ const NetworksResult = {
   },
   mounted() {
     console.debug('Networks Result Mounted...');
-    this.registerTable();
     $('#vosr-networks-result').on('click', 'a.query-anchor', this.onAnchorClicked);
   }
 }
@@ -867,6 +856,11 @@ const DatasetsResult = {
               <th v-for="(column, index) in datasetColumnNames" :key="index" :class="'column-' + column">{{ column | translate }}</th>
             </tr>
           </thead>
+          <tbody>
+            <tr v-for="parsedItem in parsed.data">
+              <td v-for="cell in parsedItem" v-html="cell"></td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -928,7 +922,6 @@ const DatasetsResult = {
   },
   mounted() {
     console.debug('Datasets Result Mounted...');
-    this.registerTable();
     $('#vosr-datasets-result').on('click', 'a.query-anchor', this.onAnchorClicked);
   }
 };

@@ -171,100 +171,113 @@
                     <@message "results-lists-text"/>
                   </p>
 
-                  <div class="mt-3 clearfix" v-cloak>
-                    <ul class="nav nav-pills float-left" id="results-tab" role="tablist">
-                      <#if searchVariableListDisplay>
-                        <li class="nav-item">
-                          <a class="nav-link active" id="variables-tab" data-toggle="pill" href="#variables" role="tab" @click="onSelectResult('variables', 'variable')"
-                             aria-controls="variables" aria-selected="true"><@message "variables"/> <span id="variable-count" class="badge badge-light">{{counts.variables}}</span></a>
-                        </li>
-                      </#if>
-                      <#if searchDatasetListDisplay>
-                        <li class="nav-item">
-                          <a class="nav-link" id="datasets-tab" data-toggle="pill" href="#datasets" role="tab" @click="onSelectResult('datasets', 'dataset')"
-                             aria-controls="datasets" aria-selected="false"><@message "datasets"/> <span id="dataset-count" class="badge badge-light">{{counts.datasets}}</span></a>
-                        </li>
-                      </#if>
-                      <#if searchStudyListDisplay>
-                        <li class="nav-item">
-                          <a class="nav-link" id="studies-tab" data-toggle="pill" href="#studies" role="tab" @click="onSelectResult('studies', 'study')"
-                             aria-controls="studies" aria-selected="false"><@message "studies"/> <span id="study-count" class="badge badge-light">{{counts.studies}}</span></a>
-                        </li>
-                      </#if>
-                      <#if searchNetworkListDisplay>
-                        <li class="nav-item">
-                          <a class="nav-link" id="networks-tab" data-toggle="pill" href="#networks" role="tab" @click="onSelectResult('networks', 'network')"
-                             aria-controls="networks" aria-selected="false"><@message "networks"/> <span id="network-count" class="badge badge-light">{{counts.networks}}</span></a>
-                        </li>
-                      </#if>
-                    </ul>
-                    <div class="float-right mt-1">
-                      <#if exportStudiesQueryEnabled>
-                        <button id="export-studies" type="button" class="btn btn-info btn-sm" v-if="isStudiesToolsVisible" @click="onDownloadExportQueryResult">
-                          <i class="fas fa-download"></i> <@message "export"/></span>
-                        </button>
-                      </#if>
-                      <#if studiesCompareEnabled>
-                        <button id="compare-studies" type="button" class="btn btn-info btn-sm ml-2" v-if="isStudiesToolsVisible" @click="onCompare">
-                          <i class="fas fa-grip-lines-vertical"></i> <@message "compare"/></span>
-                        </button>
-                      </#if>
-                      <#if exportNetworksQueryEnabled>
-                        <button id="export-networks" type="button" class="btn btn-info btn-sm" v-if="isNetworksToolsVisible" @click="onDownloadExportQueryResult">
-                          <i class="fas fa-download"></i> <@message "export"/></span>
-                        </button>
-                      </#if>
-                      <#if networksCompareEnabled>
-                        <button id="compare-networks" type="button" class="btn btn-info btn-sm ml-2" v-if="isNetworksToolsVisible" @click="onCompare">
-                          <i class="fas fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge badge-light studies-selection-count"></span>
-                        </button>
-                      </#if>
-                      <#if cartEnabled>
-                        <#if user??>
-                          <#if variablesCartEnabled>
-                            <#if listsEnabled>
-                              <div class="btn-group" v-if="isVariablesToolsVisible">
-                                <button id="cart-add-variables" type="button" class="btn btn-sm btn-success" @click="onAddToCart" title="<@message "sets.cart.add-variables-to-cart"/>">
-                                  <i class="fas fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
-                                <button type="button" class="btn btn-sm btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown"></button>
-                                <div ref="listsDropdownMenu" class="dropdown-menu dropdown-menu-right" style="min-width: 24em;">
-                                  <form class="px-3 py-3" v-if="numberOfSetsRemaining > 0">
-                                    <div class="form-group mb-0">
-                                      <div class="input-group">
-                                        <input type="text" class="form-control" placeholder="<@message "sets.add.modal.create-new"/>" v-model="newVariableSetName" @keyup.enter.prevent.stop="onAddToSet()">
-                                        <div class="input-group-append">
-                                          <button v-bind:class="{ disabled: !newVariableSetName }" class="btn btn-success" type="button" @click="onAddToSet()">
-                                            <i class="fa fa-plus"></i> <@message "global.add"/>
-                                          </button>
+                  <div class="row">
+                    <div class="mt-3 col clearfix" v-cloak>
+                      <ul class="nav nav-pills float-left" id="results-tab" role="tablist">
+                          <#if searchVariableListDisplay>
+                            <li class="nav-item">
+                              <a class="nav-link active" id="variables-tab" data-toggle="pill" href="#variables" role="tab" @click="onSelectResult('variables', 'variable')"
+                                 aria-controls="variables" aria-selected="true"><@message "variables"/> <span id="variable-count" class="badge badge-light">{{counts.variables}}</span></a>
+                            </li>
+                          </#if>
+                          <#if searchDatasetListDisplay>
+                            <li class="nav-item">
+                              <a class="nav-link" id="datasets-tab" data-toggle="pill" href="#datasets" role="tab" @click="onSelectResult('datasets', 'dataset')"
+                                 aria-controls="datasets" aria-selected="false"><@message "datasets"/> <span id="dataset-count" class="badge badge-light">{{counts.datasets}}</span></a>
+                            </li>
+                          </#if>
+                          <#if searchStudyListDisplay>
+                            <li class="nav-item">
+                              <a class="nav-link" id="studies-tab" data-toggle="pill" href="#studies" role="tab" @click="onSelectResult('studies', 'study')"
+                                 aria-controls="studies" aria-selected="false"><@message "studies"/> <span id="study-count" class="badge badge-light">{{counts.studies}}</span></a>
+                            </li>
+                          </#if>
+                          <#if searchNetworkListDisplay>
+                            <li class="nav-item">
+                              <a class="nav-link" id="networks-tab" data-toggle="pill" href="#networks" role="tab" @click="onSelectResult('networks', 'network')"
+                                 aria-controls="networks" aria-selected="false"><@message "networks"/> <span id="network-count" class="badge badge-light">{{counts.networks}}</span></a>
+                            </li>
+                          </#if>
+                      </ul>
+                      <div class="float-right mt-1">
+                          <#if exportStudiesQueryEnabled>
+                            <button id="export-studies" type="button" class="btn btn-info btn-sm" v-if="isStudiesToolsVisible" @click="onDownloadExportQueryResult">
+                              <i class="fas fa-download"></i> <@message "export"/></span>
+                            </button>
+                          </#if>
+                          <#if studiesCompareEnabled>
+                            <button id="compare-studies" type="button" class="btn btn-info btn-sm ml-2" v-if="isStudiesToolsVisible" @click="onCompare">
+                              <i class="fas fa-grip-lines-vertical"></i> <@message "compare"/></span>
+                            </button>
+                          </#if>
+                          <#if exportNetworksQueryEnabled>
+                            <button id="export-networks" type="button" class="btn btn-info btn-sm" v-if="isNetworksToolsVisible" @click="onDownloadExportQueryResult">
+                              <i class="fas fa-download"></i> <@message "export"/></span>
+                            </button>
+                          </#if>
+                          <#if networksCompareEnabled>
+                            <button id="compare-networks" type="button" class="btn btn-info btn-sm ml-2" v-if="isNetworksToolsVisible" @click="onCompare">
+                              <i class="fas fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge badge-light studies-selection-count"></span>
+                            </button>
+                          </#if>
+                          <#if cartEnabled>
+                              <#if user??>
+                                  <#if variablesCartEnabled>
+                                      <#if listsEnabled>
+                                        <div class="btn-group" v-if="isVariablesToolsVisible">
+                                          <button id="cart-add-variables" type="button" class="btn btn-sm btn-success" @click="onAddToCart" title="<@message "sets.cart.add-variables-to-cart"/>">
+                                            <i class="fas fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
+                                          <button type="button" class="btn btn-sm btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown"></button>
+                                          <div ref="listsDropdownMenu" class="dropdown-menu dropdown-menu-right" style="min-width: 24em;">
+                                            <form class="px-3 py-3" v-if="numberOfSetsRemaining > 0">
+                                              <div class="form-group mb-0">
+                                                <div class="input-group">
+                                                  <input type="text" class="form-control" placeholder="<@message "sets.add.modal.create-new"/>" v-model="newVariableSetName" @keyup.enter.prevent.stop="onAddToSet()">
+                                                  <div class="input-group-append">
+                                                    <button v-bind:class="{ disabled: !newVariableSetName }" class="btn btn-success" type="button" @click="onAddToSet()">
+                                                      <i class="fa fa-plus"></i> <@message "global.add"/>
+                                                    </button>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </form>
+                                            <div class="dropdown-divider" v-if="variableSets.length > 0 && numberOfSetsRemaining > 0"></div>
+                                            <button type="button" class="dropdown-item" v-for="set in variableSets" v-bind:key="set.id" @click="onAddToSet(set.id)">
+                                              {{ normalizeSetName(set) }}
+                                              <span class="badge badge-light float-right">{{ set.count }}</span>
+                                            </button>
+                                          </div>
                                         </div>
-                                      </div>
-                                    </div>
-                                  </form>
-                                  <div class="dropdown-divider" v-if="variableSets.length > 0 && numberOfSetsRemaining > 0"></div>
-                                  <button type="button" class="dropdown-item" v-for="set in variableSets" v-bind:key="set.id" @click="onAddToSet(set.id)">
-                                    {{ normalizeSetName(set) }}
-                                    <span class="badge badge-light float-right">{{ set.count }}</span>
-                                  </button>
-                                </div>
-                              </div>
-                            <#else>
-                              <button id="cart-add-variables" type="button" class="btn btn-sm btn-success" v-if="isVariablesToolsVisible" @click="onAddToCart" title="<@message "sets.cart.add-variables-to-cart"/>">
-                                <i class="fas fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
-                            </#if>
+                                      <#else>
+                                        <button id="cart-add-variables" type="button" class="btn btn-sm btn-success" v-if="isVariablesToolsVisible" @click="onAddToCart" title="<@message "sets.cart.add-variables-to-cart"/>">
+                                          <i class="fas fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
+                                      </#if>
+                                  </#if>
+                                  <#if studiesCartEnabled>
+                                    <button id="cart-add-studies" type="button" class="btn btn-sm btn-success ml-2" v-if="isStudiesToolsVisible" @click="onAddToCart" title="<@message "sets.cart.add-studies-to-cart"/>">
+                                      <i class="fas fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
+                                  </#if>
+                                  <#if networksCartEnabled>
+                                    <button id="cart-add-networks" type="button" class="btn btn-sm btn-success ml-2" v-if="isNetworksToolsVisible" @click="onAddToCart" title="<@message "sets.cart.add-networks-to-cart"/>">
+                                      <i class="fas fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
+                                  </#if>
+                              <#else>
+                                <a href="${contextPath}/signin?redirect=${contextPath}/search" class="btn btn-sm btn-success" title="<@message "sets.cart.signin-to-add-to-cart"/>">
+                                  <i class="fas fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></a>
+                              </#if>
                           </#if>
-                          <#if studiesCartEnabled>
-                            <button id="cart-add-studies" type="button" class="btn btn-sm btn-success ml-2" v-if="isStudiesToolsVisible" @click="onAddToCart" title="<@message "sets.cart.add-studies-to-cart"/>">
-                              <i class="fas fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
-                          </#if>
-                          <#if networksCartEnabled>
-                            <button id="cart-add-networks" type="button" class="btn btn-sm btn-success ml-2" v-if="isNetworksToolsVisible" @click="onAddToCart" title="<@message "sets.cart.add-networks-to-cart"/>">
-                              <i class="fas fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
-                          </#if>
-                        <#else>
-                          <a href="${contextPath}/signin?redirect=${contextPath}/search" class="btn btn-sm btn-success" title="<@message "sets.cart.signin-to-add-to-cart"/>">
-                            <i class="fas fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></a>
-                        </#if>
-                      </#if>
+                      </div>
+                    </div>
+
+                    <div class="col d-flex align-items-center justify-content-end">
+                      <div class="d-inline-flex">
+                          <span class="ml-2 mr-1">
+                            <select class="custom-select" id="obiba-page-size-selector-top"></select>
+                          </span>
+                        <nav id="obiba-pagination-top" aria-label="Top pagination" class="mt-0">
+                          <ul class="pagination mb-0"></ul>
+                        </nav>
+                      </div>
                     </div>
                   </div>
 
