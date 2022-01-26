@@ -268,22 +268,22 @@
                           </#if>
                       </div>
                     </div>
-
-                    <div class="col d-flex align-items-center justify-content-end">
-                      <div class="d-inline-flex">
-                          <span class="ml-2 mr-1">
-                            <select class="custom-select" id="obiba-page-size-selector-top"></select>
-                          </span>
-                        <nav id="obiba-pagination-top" aria-label="Top pagination" class="mt-0">
-                          <ul class="pagination mb-0"></ul>
-                        </nav>
-                      </div>
-                    </div>
                   </div>
 
                   <div id="study-filter-shortcut-container" class="mt-2">
                     <div id="study-filter-shortcut" class="row">
-                      <div class="col"><study-filter-shortcut></study-filter-shortcut></div>
+                      <div class="col d-flex align-items-center"><study-filter-shortcut></study-filter-shortcut></div>
+
+                      <div class="col d-flex align-items-center justify-content-end">
+                        <div class="d-inline-flex">
+                          <span class="ml-2 mr-1">
+                            <select class="custom-select" id="obiba-page-size-selector-top"></select>
+                          </span>
+                          <nav id="obiba-pagination-top" aria-label="Top pagination" class="mt-0">
+                            <ul class="pagination mb-0"></ul>
+                          </nav>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
