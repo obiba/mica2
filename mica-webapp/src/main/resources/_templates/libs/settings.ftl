@@ -101,11 +101,11 @@
 <#assign searchNetworkListDisplay = (config.networkEnabled && !config.singleNetworkEnabled)/>
 <!-- List tables by type (ID column ('name' or 'acronym') is always first) -->
 <#assign searchVariableColumns = ["label+description", "valueType", "annotations", "type", "study", "population", "data-collection-event", "dataset"]/>
-<#assign searchVariableColumnsHarmonization = ["label+description", "valueType", "annotations", "study", "dataset"]/>
+<#assign searchVariableColumnsHarmonization = ["label+description", "valueType", "annotations", "initiative", "protocol"]/>
 <#assign searchVariableColumnsIndividual = ["label+description", "valueType", "annotations", "study", "population", "data-collection-event", "dataset"]/>
 
 <#assign searchDatasetColumns = ["name", "type", "networks", "studies", "variables"]/>
-<#assign searchDatasetColumnsHarmonization = ["name", "networks", "studies", "variables"]/>
+<#assign searchDatasetColumnsHarmonization = ["name", "networks", "initiatives", "variables"]/>
 <#assign searchDatasetColumnsIndividual = ["name", "networks", "studies", "variables"]/>
 
 <#assign searchStudyColumns = ["name", "type", "study-design", "data-sources-available", "participants", "networks", "individual", "harmonization"]/>

@@ -301,6 +301,14 @@ class VariablesResultParser {
             break;
           }
 
+          case 'initiative': {
+            if (!micaConfig.isSingleStudyEnabled) {
+              path = this.normalizePath(`/study/${summary.studyId}`);
+              row.push(`<a href="${path}">${localize(summary.studyAcronym)}</a>`);
+            }
+            break;
+          }
+
           case 'population': {
             path = this.normalizePath(`/study/${summary.studyId}`);
             if (summary.populationName) {
@@ -321,6 +329,11 @@ class VariablesResultParser {
             break;
           }
           case 'dataset': {
+            path = this.normalizePath(`/dataset/${summary.datasetId}`);
+            row.push(`<a href="${path}">${localize(summary.datasetAcronym)}</a>`);
+            break;
+          }
+          case 'protocol': {
             path = this.normalizePath(`/dataset/${summary.datasetId}`);
             row.push(`<a href="${path}">${localize(summary.datasetAcronym)}</a>`);
             break;
@@ -570,6 +583,12 @@ class DatasetsResultParser {
             break;
           }
           case 'studies': {
+            if (!micaConfig.isSingleStudyEnabled) {
+              row.push(stats.studies ? anchor('studies', stats.studies) : '-');
+            }
+            break;
+          }
+          case 'initiatives': {
             if (!micaConfig.isSingleStudyEnabled) {
               row.push(stats.studies ? anchor('studies', stats.studies) : '-');
             }

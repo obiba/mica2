@@ -535,7 +535,7 @@ const VariablesResult = {
         .filter(col => {
           if (col === 'type') {
             return this.withCollectedDatasets && this.withHarmonizedDatasets;
-          } else if (col === 'study') {
+          } else if (col === 'study' || col === 'initiative') {
             return this.withStudies;
           }
           return true;
@@ -651,7 +651,7 @@ const StudiesResult = {
         })
         .forEach((col, id) => {
           if (['individual', 'harmonization'].includes(col)) {
-            items2.push({id: id, name: 'datasets', title: ''});
+            items2.push({id: id, name: (this.studyTypeSelection.harmonization ? 'protocols' : 'datasets'), title: ''});
             items2.push({id: id, name: 'variables', title: ''});
           } else if (['datasets', 'variables'].includes(col)) {
             if (this.withCollectedDatasets) {
@@ -827,7 +827,7 @@ const NetworksResult = {
         })
         .forEach((col, id) => {
           if (['individual', 'harmonization'].includes(col)) {
-            items2.push({id: id, name: 'datasets', title: ''});
+            items2.push({id: id, name: (this.studyTypeSelection.harmonization ? 'protocols' : 'datasets'), title: ''});
             items2.push({id: id, name: 'variables', title: ''});
           } else if (col === 'datasets') {
             items2.push({ name: 'collected'});
@@ -918,7 +918,7 @@ const DatasetsResult = {
             return this.withCollectedDatasets && this.withHarmonizedDatasets;
           } else if (col === 'networks') {
             return this.withNetworks;
-          } else if (col === 'studies') {
+          } else if (col === 'studies' || col === 'initiatives') {
             return this.withStudies;
           }
           return true;
