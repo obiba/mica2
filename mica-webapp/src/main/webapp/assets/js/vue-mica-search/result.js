@@ -991,7 +991,8 @@ const RowPopup = {
   `,
   name: 'row-popup',
   props: {
-    state: RowPopupState
+    state: RowPopupState,
+    typeSelection: Object
   },
   data() {
     return {
@@ -1021,20 +1022,17 @@ const RowPopup = {
         translate('search.coverage-dce-cols.dce')
       ],
       datasetId: [translate('search.coverage-buckets.dataset')],
-      studyId: [translate('search.coverage-buckets.study')]
+      studyId: [translate('search.coverage-buckets.study')],
+      harmonization: [translate('search.coverage-dce-cols.harmonization')]
     };
 
   },
   methods: {
     initContent() {
       const model = this.state.getModel();
-      this.content = model.title.trim().split(/:/);
-      this.headers = this.headersMap[model.field].slice(0);
-
-      // cleanup content when there are no DCE
-      if ("dceId" === model.field && this.content.length < 3) {
-        this.headers.pop();
-      }
+      let content = model.title.trim().split(/:/);
+      this.content = this.typeSelection && this.typeSelection.harmonization ? [content[0]] : content;
+      this.headers = this.typeSelection && this.typeSelection.harmonization ? this.headersMap['harmonization'] : this.headersMap[model.field].slice(0);
     },
     beforeDestroy() {
       clearTimeout(this.timeoutId);
@@ -1083,12 +1081,12 @@ const CoverageResult = {
     <div v-show="showResult">
       <div class="row">
         <div id="coverage-table-container" class="col table-responsive">
-          <row-popup :state="rowPopupState"></row-popup>
+          <row-popup :type-selection="studyTypeSelection" :state="rowPopupState"></row-popup>
           <table v-if="table" id="vosr-coverage-result" class="table table-striped" width="100%">
             <thead>
               <tr>
                 <th v-bind:rowspan="bucketStartsWithDce ? 1 : 2" v-bind:colspan="table.cols.colSpan">
-                  {{ ('coverage-buckets-' + bucketName) | translate}}
+                  <span v-if="!studyTypeSelection || !studyTypeSelection.harmonization">{{ ('coverage-buckets-' + bucketName) | translate}}</span>
                 </th>
                 <th v-for="(header, index) in table.vocabularyHeaders" v-bind:key="index" v-bind:colspan="header.termsCount">
                   <!-- TODO popover -->
@@ -1101,7 +1099,7 @@ const CoverageResult = {
                 </th>
               </tr>
               <tr>
-                <th v-if="bucketStartsWithDce" v-bind:colspan="studyTypeSelection.harmonization ? 3 : 1">{{ "study" | translate }}</th>
+                <th v-if="bucketStartsWithDce" v-bind:colspan="studyTypeSelection.harmonization ? 3 : 1">{{ (studyTypeSelection && studyTypeSelection.harmonization ? "coverage-buckets-harmonization" : "study") | translate }}</th>
                 <th v-if="bucketStartsWithDce" v-show="!studyTypeSelection.harmonization">{{ "population" | translate }}</th>
                 <th v-if="bucketStartsWithDce" v-show="!studyTypeSelection.harmonization">{{ "data-collection-event" | translate }}</th>
 

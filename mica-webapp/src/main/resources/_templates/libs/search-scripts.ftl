@@ -59,6 +59,7 @@
     "coverage-buckets-study": "<@message "coverage-buckets-study"/>",
     "coverage-buckets-dce": "<@message "coverage-buckets-dce"/>",
     "coverage-buckets-dataset": "<@message "coverage-buckets-dataset"/>",
+    "coverage-buckets-harmonization": "<@message "coverage-buckets-harmonization"/>",
     "no-coverage-available": "<@message "no-coverage-available"/>",
     "coverage-end-date-ongoing": "<@message "coverage-end-date-ongoing"/>",
     "missing-variable-query": "<@message "missing-variable-query"/>",
@@ -107,6 +108,7 @@
     "search.coverage-dce-cols.study": "<@message "search.coverage-dce-cols.study"/>",
     "search.coverage-dce-cols.population": "<@message "search.coverage-dce-cols.population"/>",
     "search.coverage-dce-cols.dce": "<@message "search.coverage-dce-cols.dce"/>",
+    "search.coverage-dce-cols.harmonization": "<@message "search.coverage-dce-cols.harmonization"/>",
     "search.coverage-buckets.dataset": "<@message "search.coverage-buckets.dataset"/>",
     "search.coverage-buckets.study": "<@message "search.coverage-buckets.study"/>"
   };

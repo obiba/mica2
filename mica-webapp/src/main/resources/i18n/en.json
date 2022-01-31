@@ -1338,7 +1338,8 @@
     "coverage-dce-cols": {
       "study": "Study",
       "population": "Population",
-      "dce": "DCE"
+      "dce": "DCE",
+      "harmonization": "Initiative"
     },
     "coverage-hide-missing": "Hide missing",
     "coverage-show-missing": "Show missing",

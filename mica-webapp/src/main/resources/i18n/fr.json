@@ -1304,7 +1304,8 @@
     "coverage-dce-cols": {
       "study": "Étude",
       "population": "Population",
-      "dce": "ECD"
+      "dce": "ECD",
+      "harmonization": "Initiative"
     },
     "coverage-hide-missing": "Cacher manquant",
     "coverage-show-missing": "Afficher manquant",
