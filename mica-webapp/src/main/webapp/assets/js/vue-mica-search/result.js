@@ -1085,8 +1085,9 @@ const CoverageResult = {
           <table v-if="table" id="vosr-coverage-result" class="table table-striped" width="100%">
             <thead>
               <tr>
-                <th v-bind:rowspan="bucketStartsWithDce ? 1 : 2" v-bind:colspan="table.cols.colSpan">
+                <th v-bind:rowspan="bucketStartsWithDce ? 1 : 2" v-bind:colspan="studyTypeSelection && studyTypeSelection.harmonization ? 3 : table.cols.colSpan">
                   <span v-if="!studyTypeSelection || !studyTypeSelection.harmonization">{{ ('coverage-buckets-' + bucketName) | translate}}</span>
+                  <span v-else>{{ 'coverage-buckets-harmonization' | translate}}</span>
                 </th>
                 <th v-for="(header, index) in table.vocabularyHeaders" v-bind:key="index" v-bind:colspan="header.termsCount">
                   <!-- TODO popover -->
@@ -1099,7 +1100,7 @@ const CoverageResult = {
                 </th>
               </tr>
               <tr>
-                <th v-if="bucketStartsWithDce" v-bind:colspan="studyTypeSelection.harmonization ? 3 : 1">{{ (studyTypeSelection && studyTypeSelection.harmonization ? "coverage-buckets-harmonization" : "study") | translate }}</th>
+                <th v-if="bucketStartsWithDce" v-bind:colspan="studyTypeSelection && studyTypeSelection.harmonization ? 3 : 1">{{ (studyTypeSelection && studyTypeSelection.harmonization ? "coverage-buckets-harmonization" : "study") | translate }}</th>
                 <th v-if="bucketStartsWithDce" v-show="!studyTypeSelection.harmonization">{{ "population" | translate }}</th>
                 <th v-if="bucketStartsWithDce" v-show="!studyTypeSelection.harmonization">{{ "data-collection-event" | translate }}</th>
 
@@ -1114,7 +1115,7 @@ const CoverageResult = {
                 </th>
               </tr>
               <tr>
-                <th v-bind:colspan="table.cols.colSpan"></th>
+                <th v-bind:colspan="studyTypeSelection && studyTypeSelection.harmonization ? 3 : table.cols.colSpan"></th>
                 <th v-for="(header, index) in table.termHeaders" v-bind:key="index" v-bind:title="header.entity.descriptions | localize-string">
                   <a href v-on:click="updateQuery($event, null, header, 'variables')">
                     <span>{{header.hits.toLocaleString()}}</span>

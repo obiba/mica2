@@ -1154,13 +1154,14 @@ class TableFixedHeaderUtility {
         return Mica.maxNumberOfSets - (this.variableSets || []).length;
       },
       isVariablesToolsVisible() {
-        return this.downloadUrlObject.type === 'variables' || this.downloadUrlObject.type === 'datasets';
+        let downloadUrlObject = this.downloadUrlObject || {};
+        return downloadUrlObject.type === 'variables' || downloadUrlObject.type === 'datasets';
       },
       isStudiesToolsVisible() {
-        return this.downloadUrlObject.type === 'studies';
+        return (this.downloadUrlObject || {}).type === 'studies';
       },
       isNetworksToolsVisible() {
-        return this.downloadUrlObject.type === 'networks';
+        return (this.downloadUrlObject || {}).type === 'networks';
       }
     },
     beforeMount() {
