@@ -1101,8 +1101,8 @@ const CoverageResult = {
                 </th>
               </tr>
               <tr>
-                <th v-if="bucketStartsWithDce">{{ "study" | translate }}</th>
-                <th v-if="bucketStartsWithDce" v-bind:colspan="studyTypeSelection.harmonization ? 2 : 1" >{{ "population" | translate }}</th>
+                <th v-if="bucketStartsWithDce" v-bind:colspan="studyTypeSelection.harmonization ? 3 : 1">{{ "study" | translate }}</th>
+                <th v-if="bucketStartsWithDce" v-show="!studyTypeSelection.harmonization">{{ "population" | translate }}</th>
                 <th v-if="bucketStartsWithDce" v-show="!studyTypeSelection.harmonization">{{ "data-collection-event" | translate }}</th>
 
                 <th v-for="(header, index) in table.termHeaders" v-bind:key="index">
@@ -1139,7 +1139,7 @@ const CoverageResult = {
 
                 <td v-for="(col, cindex) in table.cols.ids[row.value]"
                   v-bind:key="cindex"
-                  v-bind:colspan="cindex > 0 && studyTypeSelection.harmonization ? 2 : 1"
+                  v-bind:colspan="cindex === 0 && studyTypeSelection.harmonization ? 3 : 1"
                   v-show="!(col.id === '-' && (isSingleStudyEnabled || studyTypeSelection.harmonization))">
 
                   <span v-show="col.id === '-'">-</span>
@@ -1163,6 +1163,7 @@ const CoverageResult = {
                     </div>
                   </div>
                 </td>
+
                 <td v-for="(h, hindex) in table.termHeaders" v-bind:key="'h'+hindex">
                   <a href="" v-on:click="updateQuery($event, row.value, h, 'variables')">
                     <span class="badge badge-primary" v-show="row.hitsTitles[hindex]">{{row.hitsTitles[hindex]}}</span>

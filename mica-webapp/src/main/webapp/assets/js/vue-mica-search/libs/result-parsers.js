@@ -859,7 +859,7 @@ class IdSplitter {
 
         rowSpan = this.#appendRowSpan(id);
         cols.ids[row.value].push({
-          id: id,
+          id: isHarmo ? '-' : id,
           url: populationUrl,
           title: titles[1],
           description: descriptions[1],

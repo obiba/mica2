@@ -1348,7 +1348,7 @@
       "study" : "Study",
       "study-individual": "Individual Study",
       "study-harmonization": "Harmonization Initiative",
-      "dce" : "Population/Data Collection Event (DCE)",
+      "dce" : "Data Collection Event (DCE)",
       "dce-individual" : "Data Collection Event (DCE)",
       "dce-harmonization" : "Population",
       "network" : "Network",
