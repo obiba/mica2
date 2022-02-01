@@ -64,6 +64,8 @@
     "default": "Par défaut",
     "chronological": "Chronologique",
     "network": "Réseau",
+    "studies-initiatives": "Études/initiatives",
+    "study-initiative": "Étude/initiative",
     "individual-study": "Étude individuelle",
     "individual-studies": "Étude individuelles",
     "harmonization-study": "Initiative d'harmonisation",
@@ -571,6 +573,7 @@
     }
   },
   "studies": "Études",
+  "initiatives": "Initiatives",
   "numberOfParticipants": {
     "label": "Nombre de participants",
     "participants": "Nombre de participants",
@@ -813,6 +816,44 @@
       "message": "Etes-vous sûr de vouloir restaurer cette révision de '{{arg0}}'?"
     },
     "none": "Aucune étude."
+  },
+  "harmonization-initiative": {
+    "name": "Nom",
+    "name-help": "Nom officiel de l'initiative",
+    "acronym": "Acronyme",
+    "acronym-help": "Acronyme de l'initiative.",
+    "opal": "URL publique du serveur Opal primaire",
+    "opal-help": "URL du serveur opal pour cette initiative (si différente de celle par défaut).",
+    "objectives": "Objectives",
+    "objectives-help": "Principaux objectifs de l'initiative.",
+    "short-label": "Initiative",
+    "publish-protocols": "Publish Protocols",
+    "add-initiative": "Add Initiative",
+    "import": {
+      "button": "Import Initiatives"
+    }
+  },
+  "harmonization-protocol": {
+    "initiative-table": "Initiative Table",
+    "add": "Add Protocol",
+    "version": "Version",
+    "information-content": "Information Content",
+    "participants": "Number of Participants",
+    "procedures": "Procedures",
+    "qualitative-quantitative": {
+      "title": "Qualitative/Quantitative Effort",
+      "enum": {
+        "qualitative": "Qualitative",
+        "quantitative": "Quantitative"
+      }
+    },
+    "prospective-retrospective": {
+      "title": "Prospective/Retrospective Effort",
+      "enum": {
+        "prospective": "Prospective",
+        "retrospective": "Retrospective"
+      }
+    }
   },
   "contact": {
     "add": {

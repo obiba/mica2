@@ -819,6 +819,14 @@
     "none": "No studies."
   },
   "harmonization-initiative": {
+    "name": "Name",
+    "name-help": "Official initiative name.",
+    "acronym": "Acronym",
+    "acronym-help": "Acronym of the initiative.",
+    "opal": "Opal Server",
+    "opal-help": "URL of the opal server for this initiative (if different from the default one).",
+    "objectives": "Objectives",
+    "objectives-help": "Main objectives of the initiative.",
     "short-label": "Initiative",
     "publish-protocols": "Publish Protocols",
     "add-initiative": "Add Initiative",

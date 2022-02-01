@@ -45,7 +45,7 @@ public class HarmonizationStudyConfigService extends EntityConfigService<Harmoni
 
   @Override
   protected String getMandatorySchemaResourcePath() {
-    return "classpath:config/study-form/schema-mandatory.json";
+    return "classpath:config/study-form/harmonization-schema-mandatory.json";
   }
 
   @Override
@@ -55,6 +55,6 @@ public class HarmonizationStudyConfigService extends EntityConfigService<Harmoni
 
   @Override
   protected String getMandatoryDefinitionResourcePath() {
-    return "classpath:config/study-form/definition-mandatory.json";
+    return "classpath:config/study-form/harmonization-definition-mandatory.json";
   }
 }
