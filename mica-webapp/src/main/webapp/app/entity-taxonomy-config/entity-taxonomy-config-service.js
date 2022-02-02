@@ -196,7 +196,7 @@ mica.entityTaxonomyConfig
         if (!isStatic && content) {
           // If this vocabulary is common or belongs to another className, then it is static
           var forClassNameAttribute = getAttribute(content.attributes, 'forClassName', null);
-          isStatic = (forClassNameAttribute !== '' || forClassNameAttribute !== null) || forClassNameAttribute !== forClassName;
+          isStatic = forClassNameAttribute !== '' && forClassNameAttribute !== forClassName;
         }
 
         return isStatic;
