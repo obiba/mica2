@@ -6,6 +6,14 @@
 <#include "models/dce.ftl">
 <#include "models/files.ftl">
 
+<#if !type??>
+    <#assign searchPageQuery = "study(in(Mica_study.id,${study.id}))">
+<#elseif type == "Harmonization">
+    <#assign searchPageQuery = "study(and(in(Mica_study.className,HarmonizationStudy),in(Mica_study.id,${study.id})))">
+<#else>
+    <#assign searchPageQuery = "study(and(in(Mica_study.className,Study),in(Mica_study.id,${study.id})))">
+</#if>
+
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
@@ -60,7 +68,7 @@
                     <div class="col-md-3 col-sm-6 col-12">
                       <div class="info-box">
                         <span class="info-box-icon bg-info">
-                          <a href="${contextPath}/search#lists?type=networks&query=study(in(Mica_study.id,${study.id}))">
+                          <a href="${contextPath}/search#lists?type=networks&query=${searchPageQuery}">
                             <i class="${networkIcon}"></i>
                           </a>
                         </span>
@@ -77,7 +85,7 @@
                     <div class="col-md-3 col-sm-6 col-12">
                       <div class="info-box">
                         <span class="info-box-icon bg-warning">
-                          <a href="${contextPath}/search#lists?type=datasets&query=study(in(Mica_study.id,${study.id}))">
+                          <a href="${contextPath}/search#lists?type=datasets&query=${searchPageQuery}">
                             <i class="${datasetIcon}"></i>
                           </a>
                         </span>
@@ -94,7 +102,7 @@
                     <div class="col-md-3 col-sm-6 col-12">
                       <div class="info-box">
                         <span class="info-box-icon bg-danger">
-                          <a href="${contextPath}/search#lists?type=variables&query=study(in(Mica_study.id,${study.id}))">
+                          <a href="${contextPath}/search#lists?type=variables&query=${searchPageQuery}">
                             <i class="${variableIcon}"></i>
                           </a>
                         </span>

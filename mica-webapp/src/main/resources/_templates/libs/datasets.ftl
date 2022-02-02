@@ -136,13 +136,13 @@
                           v-bind:count="dataset['obiba.mica.CountStatsDto.datasetCountStats'].studies"
                           v-bind:singular="'study' | translate"
                           v-bind:plural="'studies' | translate"
-                          v-bind:url="studies(dataset.id)">
+                          v-bind:url="studies(dataset)">
                   </stat-item>
                   <stat-item
                           v-bind:count="dataset['obiba.mica.CountStatsDto.datasetCountStats'].variables"
                           v-bind:singular="'variable' | translate"
                           v-bind:plural="'variables' | translate"
-                          v-bind:url="variables(dataset.id)">
+                          v-bind:url="variables(dataset)">
                   </stat-item>
                 </template>
                 <template v-else>

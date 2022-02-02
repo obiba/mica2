@@ -639,6 +639,10 @@ const ObibaEntitiesApp = {
     });
   },
   methods: {
+    ensureStudyClassNameQuery: function(studyType, query) {
+      const classNameQuery = 'harmonization-study' === studyType ? 'in(Mica_study.className,HarmonizationStudy)' : 'in(Mica_study.className,Study)';
+      return query ? `and(${classNameQuery},${query})` : classNameQuery;
+    },
     onBeforeUnload: function() {
       window.removeEventListener('beforeunload', this.onBeforeUnload.bind(this));
       window.removeEventListener('popstate', this.onLocationChanged.bind(this));
@@ -757,11 +761,15 @@ class ObibaDatasetsApp {
         networks: function(id) {
           return MicaService.normalizeUrl(`/search#lists?type=networks&query=dataset(in(Mica_dataset.id,${id}))`);
         },
-        studies: function(id) {
-          return MicaService.normalizeUrl(`/search#lists?type=studies&query=dataset(in(Mica_dataset.id,${id}))`);
+        studies: function(dataset) {
+          const studyType = dataset.variableType === 'Dataschema' ? 'harmonization-study' : 'individual-study';
+          const studyQuery = this.ensureStudyClassNameQuery(studyType);
+          return MicaService.normalizeUrl(`/search#lists?type=studies&query=study(${studyQuery}),dataset(in(Mica_dataset.id,${dataset.id}))`);
         },
-        variables: function(id) {
-          return MicaService.normalizeUrl(`/search#lists?type=variables&query=dataset(in(Mica_dataset.id,${id}))`);
+        variables: function(dataset) {
+          const studyType = dataset.variableType === 'Dataschema' ? 'harmonization-study' : 'individual-study';
+          const studyQuery = this.ensureStudyClassNameQuery(studyType);
+          return MicaService.normalizeUrl(`/search#lists?type=variables&query=study(${studyQuery}),dataset(in(Mica_dataset.id,${dataset.id}))`);
         },
         hasStats: function(dataset) {
           const countStats = dataset['obiba.mica.CountStatsDto.datasetCountStats'];
@@ -813,8 +821,9 @@ class ObibaStudiesApp {
       },
       methods: {
         variablesUrl: function(study) {
+          const studyQuery = this.ensureStudyClassNameQuery(study.studyResourcePath, `in(Mica_study.id,${study.id})`)
           let variableType = study.studyResourcePath === 'individual-study' ? 'Collected' : 'Dataschema';
-          return MicaService.normalizeUrl(`/search#lists?type=variables&query=study(in(Mica_study.id,${study.id})),variable(in(Mica_variable.variableType,${variableType}))`)
+          return MicaService.normalizeUrl(`/search#lists?type=variables&query=study(${studyQuery}),variable(in(Mica_variable.variableType,${variableType}))`)
         },
         hasStats: function(study) {
           const countStats = study['obiba.mica.CountStatsDto.studyCountStats'];
