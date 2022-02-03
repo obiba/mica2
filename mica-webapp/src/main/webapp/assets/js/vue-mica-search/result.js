@@ -351,7 +351,7 @@ const GraphicResult = {
         layout.height = (2*1.42857)*12*(this.chartDataset.plotData.data[0] || {}).y.length;
       }
 
-      Plotly.newPlot(this.chartContainerId, this.chartDataset.plotData.data, layout, {responsive: true, displayModeBar: false});
+      Plotly.newPlot(this.chartContainerId, this.chartDataset.plotData.data, layout, {responsive: true, displaylogo: false, modeBarButtonsToRemove: ['select2d', 'lasso2d', 'pan', 'zoom', 'autoscale', 'zoomin', 'zoomout']});
     },
     onCountClick(event, vocabulary, term, queryOverride) {
       event.preventDefault();
