@@ -22,6 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.inject.Inject;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.Map;
 
 @Controller
@@ -80,7 +81,7 @@ public class StudyController extends BaseController {
     builder.setId(study.getId())
       .addAllName(localizedStringDtos.asDto(study.getName()));
     if (study.hasPopulations()) {
-      study.getPopulations().forEach(population -> builder.addPopulations(asDto(population)));
+      study.getPopulations().stream().sorted(Comparator.comparingInt(Population::getWeight)).forEach(population -> builder.addPopulations(asDto(population)));
     }
     return JsonFormat.printToString(builder.build());
   }
