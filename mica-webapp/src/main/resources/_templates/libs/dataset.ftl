@@ -37,3 +37,43 @@
     </div>
   </div>
 </#macro>
+
+<#macro harmonizationProtocolGeneralInfo dataset>
+  <dl class="row mt-3">
+      <#if dataset.model.version??>
+        <dt class="col-sm-3">
+            <@message "harmonization-protocol.version"/>
+        </dt>
+        <dd class="col-sm-9">
+            ${dataset.model.version?c}
+        </dd>
+      </#if>
+
+      <#if dataset.model.participants??>
+        <dt class="col-sm-3">
+            <@message "harmonization-protocol.participants"/>
+        </dt>
+        <dd class="col-sm-9">
+            ${dataset.model.participants?c}
+        </dd>
+      </#if>
+
+      <#if dataset.model.prospectiveRetrospective??>
+        <dt class="col-sm-3">
+            <@message "harmonization-protocol.prospective-retrospective.title"/>
+        </dt>
+        <dd class="col-sm-9">
+            <@message "harmonization-protocol.prospective-retrospective.enum." + dataset.model.prospectiveRetrospective/>
+        </dd>
+      </#if>
+
+      <#if dataset.model.qualitativeQuantitative??>
+        <dt class="col-sm-3">
+            <@message "harmonization-protocol.qualitative-quantitative.title"/>
+        </dt>
+        <dd class="col-sm-9">
+            <@message "harmonization-protocol.qualitative-quantitative.enum." + dataset.model.qualitativeQuantitative/>
+        </dd>
+      </#if>
+  </dl>
+</#macro>
