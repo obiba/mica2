@@ -552,6 +552,7 @@ message DatasetDto {
     optional string dceId = 8;
     optional StudySummaryDto studySummary = 9;
     optional int32 weight = 10;
+    repeated LocalizedStringDto additionalInformation = 11;
   }
 
   message HarmonizationTableDto {
@@ -563,6 +564,7 @@ message DatasetDto {
     required string studyId = 5;
     optional StudySummaryDto studySummary = 7;
     optional int32 weight = 8;
+    repeated LocalizedStringDto additionalInformation = 9;
   }
 }
 

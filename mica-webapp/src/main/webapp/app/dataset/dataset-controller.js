@@ -862,7 +862,8 @@ mica.dataset
       $scope.table = $.extend(true, {}, table);
       $scope.table.model = {
         name: LocalizedValues.arrayToObject(table.name),
-        description: LocalizedValues.arrayToObject(table.description)
+        description: LocalizedValues.arrayToObject(table.description),
+        additionalInformation: LocalizedValues.arrayToObject(table.additionalInformation)
       };
 
       MicaConfigResource.get(function (micaConfig) {
@@ -957,6 +958,7 @@ mica.dataset
 
           $scope.table.name = LocalizedValues.objectToArray($scope.table.model.name);
           $scope.table.description = LocalizedValues.objectToArray($scope.table.model.description);
+          $scope.table.additionalInformation = LocalizedValues.objectToArray($scope.table.model.additionalInformation);
           delete $scope.table.model;
 
           $uibModalInstance.close({table: $scope.table, type: $scope.type});

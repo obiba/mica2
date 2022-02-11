@@ -21,6 +21,11 @@ var OPAL_TABLE_SCHEMA = {
       title: 't(dataset.table-description)',
       type: 'object',
       format: 'localizedString'
+    },
+    additionalInformation: {
+      title: 't(dataset.table-additional-information)',
+      type: 'object',
+      format: 'obibaSimpleMde'
     }
   }
 };
@@ -37,6 +42,11 @@ var OPAL_TABLE_DEFINITION = [{
       key: 'description',
       type: 'localizedstring',
       rows: 5
+    },
+    {
+      "key": "additionalInformation",
+      "type": "obibaSimpleMde",
+      "rows": 2
     }
   ]
 }];

@@ -87,6 +87,17 @@
             <localized value="" lang="tab.lang"></localized>
           </td>
         </tr>
+        <tr>
+          <th translate>dataset.table-additional-information</th>
+          <td>
+            <ul class="list-unstyled">
+              <li ng-repeat="text in dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.additionalInformation">
+                <span class="badge">{{text.lang}}</span> {{text.value}}
+              </li>
+            </ul>
+            <localized value="" lang="tab.lang"></localized>
+          </td>
+        </tr>
         </tbody>
       </table>
 

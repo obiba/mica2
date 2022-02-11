@@ -421,6 +421,7 @@ class DatasetDtos {
 
     sbuilder.addAllName(localizedStringDtos.asDto(studyTable.getName()));
     sbuilder.addAllDescription(localizedStringDtos.asDto(studyTable.getDescription()));
+    sbuilder.addAllAdditionalInformation(localizedStringDtos.asDto(studyTable.getAdditionalInformation()));
 
     return sbuilder;
   }
@@ -441,6 +442,7 @@ class DatasetDtos {
 
     hBuilder.addAllName(localizedStringDtos.asDto(harmonizationTable.getName()));
     hBuilder.addAllDescription(localizedStringDtos.asDto(harmonizationTable.getDescription()));
+    hBuilder.addAllAdditionalInformation(localizedStringDtos.asDto(harmonizationTable.getAdditionalInformation()));
 
     return hBuilder;
   }
@@ -796,6 +798,7 @@ class DatasetDtos {
 
     table.setName(localizedStringDtos.fromDto(dto.getNameList()));
     table.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
+    table.setAdditionalInformation(localizedStringDtos.fromDto(dto.getAdditionalInformationList()));
 
     return table;
   }
@@ -809,6 +812,7 @@ class DatasetDtos {
 
     table.setName(localizedStringDtos.fromDto(dto.getNameList()));
     table.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
+    table.setAdditionalInformation(localizedStringDtos.fromDto(dto.getAdditionalInformationList()));
 
     return table;
   }

@@ -981,6 +981,7 @@
     "table-dataschema-help": "Project's table name from which variables will be extracted.",
     "table-name": "Name",
     "table-description": "Description",
+    "table-additional-information": "Additional Information",
     "data-schema": {
       "title": "Harmonization Protocol",
       "info": "The variables of the harmonization protocol are the reference variables. This is a simple data dictionary: no data summaries will be extracted from the Opal table."

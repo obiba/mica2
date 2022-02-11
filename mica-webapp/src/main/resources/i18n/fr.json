@@ -980,6 +980,7 @@
     "table-dataschema-help": "Le nom de la table de projet à partir de laquelle les variables seront extraits.",
     "table-name": "Nom",
     "table-description": "Description",
+    "table-additional-information": "Information additionnelle",
     "data-schema": {
       "title": "Ensemble de données harmonisées",
       "info": "Les variables de l'ensemble de données harmonisées sont les variables de référence. Ceci est un dictionnaire de données simple: aucune donnée sommaire ne sera extraite de la table Opal."
