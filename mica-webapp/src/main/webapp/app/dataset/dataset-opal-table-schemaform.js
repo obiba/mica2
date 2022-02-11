@@ -44,9 +44,9 @@ var OPAL_TABLE_DEFINITION = [{
       rows: 5
     },
     {
-      "key": "additionalInformation",
-      "type": "obibaSimpleMde",
-      "rows": 2
+      key: 'additionalInformation',
+      type: 'obibaSimpleMde',
+      rows: 2
     }
   ]
 }];
