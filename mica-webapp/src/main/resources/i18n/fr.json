@@ -74,6 +74,9 @@
     "participant-harmonization-study": "Initiative d'harmonisation incluse",
     "participant-harmonization-studies": "Initiatives d'harmonisation incluses",
     "individual": "Individuelle",
+    "initiatives": "Initiatives",
+    "study": "Étude",
+    "protocols": "Protocoles",
     "harmonization": "Harmonisation",
     "included-individual-studies": "Études individuelles incluses",
     "included-individual-study": "Étude individuelle incluse",
@@ -575,7 +578,6 @@
     }
   },
   "studies": "Études",
-  "initiatives": "Initiatives",
   "numberOfParticipants": {
     "label": "Nombre de participants",
     "participants": "Nombre de participants",
