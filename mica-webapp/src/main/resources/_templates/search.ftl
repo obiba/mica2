@@ -139,6 +139,10 @@
       </div>
       <!-- /.card -->
 
+      <div id="mode-tabs" class="mt-2">
+        <study-filter-shortcut :alternate="true"/>
+      </div>
+
       <!-- Results box -->
       <div class="row" id="results-tab-content">
         <div class="col-12">
@@ -270,10 +274,8 @@
                     </div>
                   </div>
 
-                  <div id="study-filter-shortcut-container" class="mt-2">
-                    <div id="study-filter-shortcut" class="row">
-                      <div class="col d-flex align-items-center"><study-filter-shortcut></study-filter-shortcut></div>
-
+                  <div id="paging-sorting-container" class="mt-2">
+                    <div class="row">
                       <div class="col d-flex align-items-center justify-content-end">
                         <div class="d-inline-flex">
                           <span class="ml-2 mr-1">
@@ -341,61 +343,54 @@
 
                     <div v-show="hasVariableQuery">
                       <div id="coverage">
+                        <div class="mt-4 mb-2 clearfix">
+                          <ul class="nav nav-pills float-left" role="tablist">
+                            <li class="nav-item">
+                              <a class="nav-link active"
+                                 data-toggle="pill"
+                                 id="bucket-study-tab"
+                                 href role="tab"
+                                 @click="onSelectBucket('study')"
+                                 aria-controls="study"
+                                 aria-selected="true">{{ bucketTitles.study }}</a>
+                            </li>
+                            <li class="nav-item">
+                              <a class="nav-link"
+                                 data-toggle="pill"
+                                 id="bucket-dataset-tab"
+                                 href role="tab"
+                                 @click="onSelectBucket('dataset')"
+                                 aria-controls="dataset"
+                                 aria-selected="true">{{ bucketTitles.dataset }}</a>
+                            </li>
+                          </ul>
 
-                        <div>
-                          <div class="mt-4 mb-2 clearfix">
-                            <ul class="nav nav-pills float-left" role="tablist">
-                              <li class="nav-item">
-                                <a class="nav-link active"
-                                   data-toggle="pill"
-                                   id="bucket-study-tab"
-                                   href role="tab"
-                                   @click="onSelectBucket('study')"
-                                   aria-controls="study"
-                                   aria-selected="true">{{ bucketTitles.study }}</a>
-                              </li>
-                              <li class="nav-item">
-                                <a class="nav-link"
-                                   data-toggle="pill"
-                                   id="bucket-dataset-tab"
-                                   href role="tab"
-                                   @click="onSelectBucket('dataset')"
-                                   aria-controls="dataset"
-                                   aria-selected="true">{{ bucketTitles.dataset }}</a>
-                              </li>
-                            </ul>
+                          <ul class="nav nav-pills float-right" role="tablist">
+                            <li v-if="selectedBucket !==' dataset'" class="mt-auto mb-auto">
+                              <div class="custom-control custom-switch">
+                                <input type="checkbox"
+                                       id="bucket-dce"
+                                       v-model="dceChecked"
+                                       @change="onSelectBucket(dceChecked ? 'dce' : 'study')"
+                                       class="custom-control-input">
+                                <label for="bucket-dce" class="custom-control-label">{{ bucketTitles.dce }}</label>
+                              </div>
+                            </li>
+                            <li class="ml-3">
+                              <div class="dropleft">
+                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><@message "search.filter"/></button>
 
-                            <ul class="nav nav-pills float-right" role="tablist">
-                              <li v-if="selectedBucket !==' dataset'" class="mt-auto mb-auto">
-                                <div class="custom-control custom-switch">
-                                  <input type="checkbox"
-                                         id="bucket-dce"
-                                         v-model="dceChecked"
-                                         @change="onSelectBucket(dceChecked ? 'dce' : 'study')"
-                                         class="custom-control-input">
-                                  <label for="bucket-dce" class="custom-control-label">{{ bucketTitles.dce }}</label>
-                                </div>
-                              </li>
-                              <li class="ml-3">
-                                <div class="dropleft">
-                                  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><@message "search.filter"/></button>
-
-                                  <div class="dropdown-menu">
-                                    <button type="button" @click="onFullCoverage()" class="dropdown-item" v-bind:class="{ disabled: !canDoFullCoverage }">
+                                <div class="dropdown-menu">
+                                  <button type="button" @click="onFullCoverage()" class="dropdown-item" v-bind:class="{ disabled: !canDoFullCoverage }">
                                       <@message "search.coverage-select.full"/>
-                                    </button>
-                                    <button type="button" @click="onZeroColumnsToggle()" class="dropdown-item" v-bind:class="{ disabled: !hasCoverageTermsWithZeroHits }">
+                                  </button>
+                                  <button type="button" @click="onZeroColumnsToggle()" class="dropdown-item" v-bind:class="{ disabled: !hasCoverageTermsWithZeroHits }">
                                       <@message "search.coverage-without-zeros"/>
-                                    </button>
-                                  </div>
+                                  </button>
                                 </div>
-                              </li>
-                            </ul>
-                          </div>
-
-                          <div class="row">
-                            <div class="col"><study-filter-shortcut></study-filter-shortcut></div>
-                          </div>
+                              </div>
+                            </li>
+                          </ul>
                         </div>
 
                         <div v-show="loading" class="spinner-border spinner-border-sm mt-3" role="status"></div>

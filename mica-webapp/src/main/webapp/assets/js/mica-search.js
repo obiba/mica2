@@ -149,14 +149,34 @@ Vue.component('search-criteria', {
 Vue.component('study-filter-shortcut', {
   name: 'StudyFilterShortcut',
   template: `
-  <div v-if="visible && showFilter">
-    <div class="btn-group" role="group" aria-label="Basic example">
-      <button type="button" v-bind:class="{active: selection.all}" class="btn btn-sm btn-info" v-on:click="onSelectionClicked('all')">{{tr('all')}}</button>
-      <button type="button" v-bind:class="{active: selection.study}" class="btn btn-sm btn-info" v-on:click="onSelectionClicked('study')">{{tr('individual')}}</button>
-      <button type="button" v-bind:class="{active: selection.harmonization}" class="btn btn-sm btn-info" v-on:click="onSelectionClicked('harmonization')">{{tr('harmonization')}}</button>
+  <div>
+    <template v-if="!alternate">
+    <div v-if="visible && showFilter" class="d-inline-block">
+      <div class="btn-group" role="group">
+        <button type="button" v-bind:class="{active: selection.all}" class="btn btn-sm btn-light" v-on:click="onSelectionClicked('all')">{{tr('all')}}</button>
+        <button type="button" v-bind:class="{active: selection.study}" class="btn btn-sm btn-light" v-on:click="onSelectionClicked('study')">{{tr('individual')}}</button>
+        <button type="button" v-bind:class="{active: selection.harmonization}" class="btn btn-sm btn-light" v-on:click="onSelectionClicked('harmonization')">{{tr('harmonization')}}</button>
+      </div>
     </div>
+    </template>
+    <template v-else>
+      <ul class="nav nav-tabs h5">
+      <li class="nav-item">
+          <a v-if="selection.all" href="#" v-bind:class="{active: selection.all}" class="nav-link" @click.stop.prevent="onSelectionClicked('all')">{{tr('all')}}</a>
+        </li>
+        <li class="nav-item">
+          <a href="#" v-bind:class="{active: selection.study}" class="nav-link" @click.stop.prevent="onSelectionClicked('study')">{{tr('individual')}}</a>
+        </li>
+        <li class="nav-item">
+          <a href="#" v-bind:class="{active: selection.harmonization}" class="nav-link" @click.stop.prevent="onSelectionClicked('harmonization')">{{tr('harmonization')}}</a>
+        </li>
+      </ul>
+    </template>
   </div>
   `,
+  props: {
+    alternate: Boolean
+  },
   data() {
     return {
       selection: {all: true, study: false, harmonization: false},
