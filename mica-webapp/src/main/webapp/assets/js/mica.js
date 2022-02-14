@@ -282,7 +282,9 @@ class OBiBaPagination {
     });
 
     const selected = this.pageButtons.indexOf(this.page);
-    this.__activateButton(anchors[selected].id);
+    if (selected > -1) {
+      this.__activateButton(anchors[selected].id);
+    }
   }
 
   __doPageChange(page) {
