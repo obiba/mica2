@@ -210,6 +210,12 @@ mica.entitySfConfig
           aliases: VocabularyAttributeService.getAliases(vocabularies, null)
         };
 
+        if ($scope.target.name === 'study') {
+          model.possibleClassNames = ['Study', 'HarmonizationStudy'];
+        } else if ($scope.target.name === 'dataset') {
+          model.possibleClassNames = ['CollectedDataset', 'HarmonizedDataset'];
+        }
+
         $uibModal.open({
           templateUrl: 'app/entity-taxonomy-config/views/entity-taxonomy-config-properties-modal.html',
           controller: 'entityTaxonomyConfigPropertiesModalController',

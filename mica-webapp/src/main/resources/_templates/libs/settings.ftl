@@ -80,9 +80,9 @@
 
 <!-- Search -->
 <#if config?? && config.singleStudyEnabled>
-  <#assign defaultSearchState = "#lists?type=variables"/>
+  <#assign defaultSearchState = "#lists?type=variables&query=study(and(in(Mica_study.className,Study)))"/>
 <#else>
-  <#assign defaultSearchState = "#lists?type=studies"/>
+  <#assign defaultSearchState = "#lists?type=studies&query=study(and(in(Mica_study.className,Study)))"/>
 </#if>
 <!-- Download the search results or full export -->
 <#assign downloadQueryEnabled = true />
