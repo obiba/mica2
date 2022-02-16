@@ -95,7 +95,7 @@ public class DatasetVariableDtosCsvReportGenerator extends CsvReportGenerator {
         line.add(datasetVariableDto.getCategoriesList().stream().map(cat -> {
           String rval = cat.getName();
           Optional<Mica.AttributeDto> lblAttrOpt = cat.getAttributesList().stream().filter(attr -> attr.getName().equals("label")).findFirst();
-          if (lblAttrOpt.isPresent()) {
+          if (lblAttrOpt.isPresent() && !lblAttrOpt.get().getValuesList().isEmpty()) {
             rval = rval + ": " + lblAttrOpt.get().getValuesList().get(0).getValue();
           }
           return rval;
