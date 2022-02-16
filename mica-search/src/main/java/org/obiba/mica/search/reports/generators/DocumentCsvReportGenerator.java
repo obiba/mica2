@@ -92,15 +92,19 @@ public abstract class DocumentCsvReportGenerator extends CsvReportGenerator {
       Object value = entry.getValue();
       if (value instanceof List) {
         List list = (List) value;
-        Object firstValue = list.get(0);
-        if (firstValue instanceof String || firstValue instanceof Number || firstValue instanceof Boolean) {
-          map.put(entry.getKey(), Joiner.on("|").join(list));
-        } else if (firstValue instanceof LocalizedString || (firstValue instanceof Map && ((Map<?, ?>) firstValue).containsKey(locale))) {
-          List<String> trList = (List<String>) list.stream().map(ls -> translate(ls)).collect(Collectors.toList());
-          map.put(entry.getKey(), Joiner.on("|").join(trList));
+        if (list.isEmpty()) {
+          map.put(entry.getKey(), "");
         } else {
-          for (int i = 0; i < list.size(); i++) {
-            map.put(String.format("%s[%s]", entry.getKey(), i), list.get(i) == null ? "" : list.get(i).toString());
+          Object firstValue = list.get(0);
+          if (firstValue instanceof String || firstValue instanceof Number || firstValue instanceof Boolean) {
+            map.put(entry.getKey(), Joiner.on("|").join(list));
+          } else if (firstValue instanceof LocalizedString || (firstValue instanceof Map && ((Map<?, ?>) firstValue).containsKey(locale))) {
+            List<String> trList = (List<String>) list.stream().map(ls -> translate(ls)).collect(Collectors.toList());
+            map.put(entry.getKey(), Joiner.on("|").join(trList));
+          } else {
+            for (int i = 0; i < list.size(); i++) {
+              map.put(String.format("%s[%s]", entry.getKey(), i), list.get(i) == null ? "" : list.get(i).toString());
+            }
           }
         }
       } else if (value instanceof LocalizedString) {
