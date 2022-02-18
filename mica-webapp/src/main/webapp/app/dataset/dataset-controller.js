@@ -950,7 +950,7 @@ mica.dataset
         if (form.$valid) {
           angular.extend($scope.table, {
             studyId: $scope.selected.study.id,
-            populationId: $scope.selected.study.population.id,
+            populationId: $scope.selected.isHarmonizationTable ? null : $scope.selected.study.population.id,
             dataCollectionEventId: $scope.selected.isHarmonizationTable ? null : $scope.selected.study.population.dataCollectionEvent.id,
             project: $scope.selected.project.name,
             table: $scope.selected.project.table
