@@ -878,19 +878,23 @@ class ObibaNetworksApp {
       },
       methods: {
         individualStudies: function(id) {
-          return MicaService.normalizeUrl(`/search#lists?type=studies&query=network(in(Mica_network.id,${id})),study(in(Mica_study.className,Study))`);
+          const studyQuery = this.ensureStudyClassNameQuery('individual-study', 'in(Mica_study.className,Study)');
+          return MicaService.normalizeUrl(`/search#lists?type=studies&query=network(in(Mica_network.id,${id})),study(${studyQuery})`);
         },
         individualStudiesWithVariables: function(id) {
-          return MicaService.normalizeUrl(`/search#lists?type=studies&query=network(in(Mica_network.id,${id})),variable(in(Mica_variable.variableType,Collected))`);
+          const studyQuery = this.ensureStudyClassNameQuery('individual-study');
+          return MicaService.normalizeUrl(`/search#lists?type=studies&query=network(in(Mica_network.id,${id})),variable(in(Mica_variable.variableType,Collected)),study(${studyQuery})`);
         },
         individualStudyVariables: function(id) {
-          return MicaService.normalizeUrl(`/search#lists?type=variables&query=network(in(Mica_network.id,${id})),variable(in(Mica_variable.variableType,Collected))`);
+          const studyQuery = this.ensureStudyClassNameQuery('individual-study');
+          return MicaService.normalizeUrl(`/search#lists?type=variables&query=network(in(Mica_network.id,${id})),variable(in(Mica_variable.variableType,Collected)),study(${studyQuery})`);
         },
         harmonizationStudies: function(id) {
           return MicaService.normalizeUrl(`/search#lists?type=studies&query=network(in(Mica_network.id,${id})),study(in(Mica_study.className,HarmonizationStudy))`);
         },
         harmonizationStudyVariables: function(id) {
-          return MicaService.normalizeUrl(`/search#lists?type=variables&query=network(in(Mica_network.id,${id})),variable(in(Mica_variable.variableType,Dataschema))`);
+          const studyQuery = this.ensureStudyClassNameQuery('harmonization-study');
+          return MicaService.normalizeUrl(`/search#lists?type=variables&query=network(in(Mica_network.id,${id})),variable(in(Mica_variable.variableType,Dataschema)),study(${studyQuery})`);
         },
         hasStats: function(stats) {
           return stats.individualStudies + stats.studiesWithVariables + stats.studyVariables + stats.dataschemaVariables + stats.harmonizationStudies > 0;

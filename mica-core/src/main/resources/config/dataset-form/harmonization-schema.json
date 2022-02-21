@@ -2,7 +2,7 @@
   "type": "object",
   "properties": {
     "version": {
-      "type": "integer",
+      "type": "string",
       "title": "t(harmonization-protocol.version)"
     },
     "participants": {
