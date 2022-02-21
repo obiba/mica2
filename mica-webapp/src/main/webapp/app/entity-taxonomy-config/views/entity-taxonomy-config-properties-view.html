@@ -115,6 +115,12 @@
           {{'global.'+getFacetExpanded(model.content) | translate}}
         </td>
       </tr>
+      <tr ng-if="getForClassName(model.content)">
+        <th translate>taxonomy-config.criterion-dialog.for-classname-attribute</th>
+        <td>
+          {{getForClassName(model.content)}}
+        </td>
+      </tr>
       </tbody>
     </table>
   </div>

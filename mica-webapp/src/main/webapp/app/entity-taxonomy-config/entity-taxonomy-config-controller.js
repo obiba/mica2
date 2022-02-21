@@ -182,6 +182,7 @@ mica.entitySfConfig
       $scope.getFacet = VocabularyAttributeService.getFacet;
       $scope.getFacetPosition = VocabularyAttributeService.getFacetPosition;
       $scope.getFacetExpanded = VocabularyAttributeService.getFacetExpanded;
+      $scope.getForClassName = VocabularyAttributeService.getForClassName;
       $scope.isStatic = VocabularyAttributeService.isStatic;
       $scope.deleteCriterion = deleteCriterion;
       $scope.edit = edit;
