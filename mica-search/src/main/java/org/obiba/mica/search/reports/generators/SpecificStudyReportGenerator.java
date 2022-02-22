@@ -11,6 +11,7 @@
 package org.obiba.mica.search.reports.generators;
 
 import au.com.bytecode.opencsv.CSVWriter;
+import com.google.common.base.Strings;
 import org.obiba.core.translator.JsonTranslator;
 import org.obiba.core.translator.Translator;
 import org.obiba.mica.core.domain.LocalizedString;
@@ -21,6 +22,7 @@ import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.spi.search.support.JoinQuery;
 import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
@@ -70,19 +72,21 @@ public class SpecificStudyReportGenerator extends CsvReportGenerator {
   private Translator translator;
   private List<String> studyIds;
   private String locale;
+  private String className;
 
-  public void report(Translator translator, List<String> studyIds, String locale, OutputStream outputStream) {
+  public void report(Translator translator, List<String> studyIds, String locale, OutputStream outputStream, String className) {
     this.translator = translator;
+    this.className = className;
     this.studyIds = studyIds.stream().sorted().collect(toList());
     this.locale = locale;
     this.write(outputStream);
   }
 
-  public void report(String networkId, String locale, OutputStream outputStream) throws IOException {
+  public void report(String networkId, String locale, OutputStream outputStream, String className) throws IOException {
     List<String> studyIds = networkService.findById(networkId).getStudyIds();
     Translator translator = JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(locale, false));
 
-    report(translator, studyIds, locale, outputStream);
+    report(translator, studyIds, locale, outputStream, className);
   }
 
   public void report(String rqlQuery, OutputStream outputStream) throws IOException {
@@ -98,62 +102,104 @@ public class SpecificStudyReportGenerator extends CsvReportGenerator {
         .collect(toList());
     Translator translator = JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(joinQuery.getLocale(), false));
 
-    report(translator, studyIds, joinQuery.getLocale(), outputStream);
+    report(translator, studyIds, joinQuery.getLocale(), outputStream, null);
   }
 
   @Override
   protected void writeHeader(CSVWriter writer) {
+    if (!Strings.isNullOrEmpty(this.className) && HarmonizationStudy.class.getSimpleName().equals(this.className)) {
+      writeHeaderForHarmonization(writer);
+    } else {
 
+      List<String> line = new ArrayList<>();
+
+      line.add(tr("report-group.study.name"));
+      line.add(tr("report-group.study.acronym"));
+      line.add(tr("report-group.study.type"));
+      line.add(tr("report-group.study.status"));
+      line.add(tr("report-group.study.country"));
+      line.add(tr("report-group.study.start-year"));
+      line.add(tr("report-group.study.years-of-follow-up"));
+      line.add(tr("report-group.study.study-design"));
+      line.add(tr("report-group.study.recruitment-target"));
+      line.add(tr("report-group.study.number-of-participants"));
+      line.add(tr("report-group.study.number-of-bio-samples"));
+      line.add(tr("report-group.study.population.name"));
+      line.add(tr("report-group.study.population.source-of-recruitment"));
+      line.add(tr("report-group.study.population.minimum-age"));
+      line.add(tr("report-group.study.population.maximum-age"));
+      line.add(tr("report-group.study.population.number-of-participants"));
+      line.add(tr("report-group.study.population.number-of-bio-samples"));
+      line.add(tr("report-group.study.population.number-of-data-collection-events"));
+
+      writer.writeNext(line.toArray(new String[line.size()]));
+    }
+  }
+
+  private void writeHeaderForHarmonization(CSVWriter writer) {
     List<String> line = new ArrayList<>();
 
     line.add(tr("report-group.study.name"));
     line.add(tr("report-group.study.acronym"));
-    line.add(tr("report-group.study.type"));
     line.add(tr("report-group.study.status"));
-    line.add(tr("report-group.study.country"));
     line.add(tr("report-group.study.start-year"));
     line.add(tr("report-group.study.years-of-follow-up"));
-    line.add(tr("report-group.study.study-design"));
-    line.add(tr("report-group.study.recruitment-target"));
-    line.add(tr("report-group.study.number-of-participants"));
-    line.add(tr("report-group.study.number-of-bio-samples"));
-    line.add(tr("report-group.study.population.name"));
-    line.add(tr("report-group.study.population.source-of-recruitment"));
-    line.add(tr("report-group.study.population.minimum-age"));
-    line.add(tr("report-group.study.population.maximum-age"));
-    line.add(tr("report-group.study.population.number-of-participants"));
-    line.add(tr("report-group.study.population.number-of-bio-samples"));
-    line.add(tr("report-group.study.population.number-of-data-collection-events"));
 
     writer.writeNext(line.toArray(new String[line.size()]));
   }
 
   @Override
   protected void writeEachLine(CSVWriter writer) {
+    if (!Strings.isNullOrEmpty(this.className) && HarmonizationStudy.class.getSimpleName().equals(this.className)) {
+      writeEachLineForHarmonization(writer);
+    } else {
+      for (String studyId : studyIds) {
+        BaseStudy publishedStudy = publishedStudyService.findById(studyId);
 
+        if (publishedStudy != null
+          && (Strings.isNullOrEmpty(this.className) || publishedStudy.getClassName().equals(this.className))) {
+
+          List<String> publishedStudyDetails = generatePublishedStudyDetails(publishedStudy);
+
+          Iterator<Population> populationIterator = publishedStudy.getPopulations().iterator();
+
+          if (!populationIterator.hasNext()) {
+            writer.writeNext(publishedStudyDetails.toArray(new String[publishedStudyDetails.size()]));
+          }
+
+          while (populationIterator.hasNext()) {
+            List<String> buildingCompleteLine = new ArrayList<>(publishedStudyDetails);
+            Population next = populationIterator.next();
+            buildingCompleteLine.addAll(generatePopulationDetails(next));
+            writer.writeNext(buildingCompleteLine.toArray(new String[buildingCompleteLine.size()]));
+          }
+        } else {
+
+          BaseStudy draftStudy = studyService.findStudy(studyId);
+          if (draftStudy != null
+              && (Strings.isNullOrEmpty(this.className) || draftStudy.getClassName().equals(this.className))) {
+
+            List<String> lineOfDratStudy = generateDraftStudyDetails(draftStudy);
+            writer.writeNext(lineOfDratStudy.toArray(new String[lineOfDratStudy.size()]));
+          }
+        }
+      }
+    }
+  }
+
+  private void writeEachLineForHarmonization(CSVWriter writer) {
     for (String studyId : studyIds) {
       BaseStudy publishedStudy = publishedStudyService.findById(studyId);
 
-      if (publishedStudy != null) {
+      if (publishedStudy != null && publishedStudy.getClassName().equals(this.className)) {
 
-        List<String> publishedStudyDetails = generatePublishedStudyDetails(publishedStudy);
+        List<String> publishedStudyDetails = generatePublishedHarmonizationStudyDetails(publishedStudy);
+        writer.writeNext(publishedStudyDetails.toArray(new String[publishedStudyDetails.size()]));
 
-        Iterator<Population> populationIterator = publishedStudy.getPopulations().iterator();
-
-        if (!populationIterator.hasNext()) {
-          writer.writeNext(publishedStudyDetails.toArray(new String[publishedStudyDetails.size()]));
-        }
-
-        while (populationIterator.hasNext()) {
-          List<String> buildingCompleteLine = new ArrayList<>(publishedStudyDetails);
-          Population next = populationIterator.next();
-          buildingCompleteLine.addAll(generatePopulationDetails(next));
-          writer.writeNext(buildingCompleteLine.toArray(new String[buildingCompleteLine.size()]));
-        }
       } else {
 
         BaseStudy draftStudy = studyService.findStudy(studyId);
-        if (draftStudy != null) {
+        if (draftStudy != null && draftStudy.getClassName().equals(this.className)) {
           List<String> lineOfDratStudy = generateDraftStudyDetails(draftStudy);
           writer.writeNext(lineOfDratStudy.toArray(new String[lineOfDratStudy.size()]));
         }
@@ -187,6 +233,18 @@ public class SpecificStudyReportGenerator extends CsvReportGenerator {
     line.add(localizedField(study::getAcronym));
     line.add(field(() -> tr("global." + study.getResourcePath())));
     line.add(field(() -> tr("draft")));
+
+    return line;
+  }
+
+  private List<String> generatePublishedHarmonizationStudyDetails(BaseStudy study) {
+    List<String> line = new ArrayList<>();
+
+    line.add(localizedField(study::getName));
+    line.add(localizedField(study::getAcronym));
+    line.add(field(() -> tr("published")));
+    line.add(field(() -> study.getModel().get("startYear").toString()));
+    line.add(field(() -> calculateYearsOfFollowUp(study)));
 
     return line;
   }

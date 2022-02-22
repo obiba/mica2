@@ -19,20 +19,20 @@
   </div>
 
   <div class="col-xs-12">
-    <h3 translate>global.studies-initiatives</h3>
+    <h3 translate>studies</h3>
 
     <div class="hidden-print">
-      <a ng-click="addStudyEvent(network)" class="btn btn-responsive btn-info"
+      <a ng-click="addStudyEvent('individual-study')" class="btn btn-responsive btn-info"
         ng-if="inViewMode() && permissions.canEdit()">
-        <i class="fa fa-plus"></i> <span translate>global.add-study-initiative</span>
+        <i class="fa fa-plus"></i> <span translate>network.add-study</span>
       </a>
 
-      <a class="btn btn-responsive btn-danger" ng-click="deleteSelectedStudiesEvent()"
+      <a class="btn btn-responsive btn-danger" ng-click="deleteSelectedStudiesEvent(studySummaries)"
         ng-if="inViewMode() && permissions.canEdit() && studySummaries && studySummaries.length">
         <i class="fa fa-trash-o"></i> <span translate>global.delete-selected</span>
       </a>
 
-      <a obiba-file-download url="getStudyReportByNetworkUrl()" href class="btn btn-responsive btn-info"
+      <a obiba-file-download url="getStudyReportByNetworkUrl('individual-study')" href class="btn btn-responsive btn-info"
         ng-if="inViewMode() && permissions.canEdit()">
         <i class="fa fa-download"></i> <span translate>report-group.study.button-name</span>
       </a>
@@ -55,7 +55,6 @@
             <th translate>study.acronym</th>
             <th translate>study.name</th>
             <th translate>published</th>
-            <th translate>type</th>
             <th ng-if="inViewMode() && permissions.canEdit()" class="hidden-print" translate>actions</th>
           </tr>
           </thead>
@@ -83,7 +82,81 @@
               </ul>
             </td>
             <td><i class="fa" ng-class="{'fa-star-o': !studySummary.published, 'fa-star': studySummary.published}"></i></td>
-            <td>{{'global.' + studySummary.studyResourcePath | translate}}</td>
+            <td ng-if="inViewMode() && permissions.canEdit()" class="hidden-print">
+              <a ng-click="deleteStudyEvent(network, studySummary)" class="hand action"><i
+                class="fa fa-trash-o"></i></a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xs-12">
+    <h3 translate>global.initiatives</h3>
+
+    <div class="hidden-print">
+      <a ng-click="addStudyEvent('harmonization-study')" class="btn btn-responsive btn-info"
+         ng-if="inViewMode() && permissions.canEdit()">
+        <i class="fa fa-plus"></i> <span translate>harmonization-initiative.add-initiative</span>
+      </a>
+
+      <a class="btn btn-responsive btn-danger" ng-click="deleteSelectedStudiesEvent(initiativeSummaries)"
+         ng-if="inViewMode() && permissions.canEdit() && studySummaries && studySummaries.length">
+        <i class="fa fa-trash-o"></i> <span translate>global.delete-selected</span>
+      </a>
+
+      <a obiba-file-download url="getStudyReportByNetworkUrl('harmonization-study')" href class="btn btn-responsive btn-info"
+         ng-if="inViewMode() && permissions.canEdit()">
+        <i class="fa fa-download"></i> <span translate>report-group.study.button-name</span>
+      </a>
+    </div>
+
+    <div class="hidden-print row">
+      <dir-pagination-controls class="pull-right " pagination-id="initiativeSummaryPagination"></dir-pagination-controls>
+
+      <p class="help-block col-xs-3" ng-if="!SummaryPagination || SummaryPagination.length === 0">
+        <span translate>harmonization-initiative.none</span>
+      </p>
+    </div>
+
+    <div class="row-fluid">
+      <div class="clearfix table-responsive">
+        <table class="table table-bordered table-striped" ng-show="initiativeSummaries.length">
+          <thead>
+          <tr>
+            <th ng-if="inViewMode() && permissions.canEdit()" class="hidden-print"></th>
+            <th translate>study.acronym</th>
+            <th translate>study.name</th>
+            <th translate>published</th>
+            <th ng-if="inViewMode() && permissions.canEdit()" class="hidden-print" translate>actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr pagination-id="initiativeSummaryPagination" dir-paginate="studySummary in initiativeSummaries | itemsPerPage: 10">
+            <td ng-if="inViewMode() && permissions.canEdit()" class="hidden-print">
+              <input type="checkbox" ng-model="studySummary.selected">
+            </td>
+            <td>
+              <ul class="list-unstyled">
+                <li ng-repeat="text in studySummary.acronym">
+                  <span class="badge">{{text.lang}}</span>
+                  <a ng-href="#/{{studySummary.studyResourcePath}}/{{studySummary.id}}"
+                     ng-if="studySummary.permissions.view">{{text.value}}</a>
+                  <span ng-if="!studySummary.permissions.view">{{text.value}}</span>
+                </li>
+              </ul>
+            </td>
+            <td>
+              <ul class="list-unstyled">
+                <li ng-repeat="text in studySummary.name">
+                  <span class="badge">{{text.lang}}</span>
+                  <span>{{text.value}}</span>
+                </li>
+              </ul>
+            </td>
+            <td><i class="fa" ng-class="{'fa-star-o': !studySummary.published, 'fa-star': studySummary.published}"></i></td>
             <td ng-if="inViewMode() && permissions.canEdit()" class="hidden-print">
               <a ng-click="deleteStudyEvent(network, studySummary)" class="hand action"><i
                 class="fa fa-trash-o"></i></a>

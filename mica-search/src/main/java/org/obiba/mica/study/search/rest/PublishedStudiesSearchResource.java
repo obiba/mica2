@@ -23,6 +23,8 @@ import org.obiba.mica.search.reports.generators.StudyCsvReportGenerator;
 import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.spi.search.support.JoinQuery;
+import org.obiba.mica.study.domain.HarmonizationStudy;
+import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
@@ -165,16 +167,28 @@ public class PublishedStudiesSearchResource {
   @Path("/_report_by_network")
   @Produces("text/csv")
   @Timed
-  public Response report(@QueryParam("networkId") String networkId, @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
-    StreamingOutput stream = os -> specificStudyReportGenerator.report(networkId, locale, os);
-    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Studies.csv\"").build();
+  public Response report(@QueryParam("networkId") String networkId, @QueryParam("locale") @DefaultValue("en") String locale, @QueryParam("studyType") String studyType) throws IOException {
+    String fileName = "StudiesInitiatives.csv";
+    String className = null;
+
+    if (Study.RESOURCE_PATH.equals(studyType)) {
+      fileName = "Studies.csv";
+      className = Study.class.getSimpleName();
+    } else if (HarmonizationStudy.RESOURCE_PATH.equals(studyType)) {
+      fileName = "Initiatives.csv";
+      className = HarmonizationStudy.class.getSimpleName();
+    }
+
+    String finalClassName = className;
+    StreamingOutput stream = os -> specificStudyReportGenerator.report(networkId, locale, os, finalClassName);
+    return Response.ok(stream).header("Content-Disposition", String.format("attachment; filename=\"%s\"", fileName)).build();
   }
 
   @POST
   @Path("/_report_by_network")
   @Produces("text/csv")
   @Timed
-  public Response reportLargeQuery(@FormParam("networkId") String networkId, @FormParam("locale") @DefaultValue("en") String locale) throws IOException {
-    return report(networkId, locale);
+  public Response reportLargeQuery(@FormParam("networkId") String networkId, @FormParam("locale") @DefaultValue("en") String locale, @FormParam("studyType") String studyType) throws IOException {
+    return report(networkId, locale, studyType);
   }
 }

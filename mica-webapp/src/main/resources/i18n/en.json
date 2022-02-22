@@ -823,6 +823,7 @@
     "none": "No studies."
   },
   "harmonization-initiative": {
+    "none": "No initiatives",
     "name": "Name",
     "name-help": "Official initiative name.",
     "acronym": "Acronym",

@@ -170,7 +170,7 @@ mica.network
       $scope.lang = lang;
       $scope.entities = [];
 
-      entityStatesResource.query({type: ''}).$promise.then(function(entities) {
+      entityStatesResource.query({type: $scope.type}).$promise.then(function(entities) {
         $scope.entities = entities.filter(function(s) {
           return currentLinks === undefined || currentLinks.indexOf(s.id) < 0;
         });
@@ -355,7 +355,17 @@ mica.network
         }
 
         $scope.permissions = DocumentPermissionsService.state(network['obiba.mica.EntityStateDto.state']);
-        $scope.studySummaries = network.studySummaries || [];
+        $scope.studySummaries = [];
+        $scope.initiativeSummaries = [];
+
+        network.studySummaries.forEach(summary => {
+          if (summary.studyResourcePath === 'individual-study') {
+            $scope.studySummaries.push(summary);
+          } else {
+            $scope.initiativeSummaries.push(summary);
+          }
+        });
+
         network.studyIds = network.studyIds || [];
         $scope.network.networkIds = $scope.network.networkIds || [];
         network.memberships = network.memberships || [];
@@ -644,7 +654,7 @@ mica.network
         }
       });
 
-      $scope.addStudyEvent = function () {
+      $scope.addStudyEvent = function (type) {
         $uibModal.open({
           templateUrl: 'app/network/views/network-modal-add-links.html',
           controller: 'NetworkLinksModalController',
@@ -653,7 +663,7 @@ mica.network
               return StudyStatesResource;
             },
             type: function() {
-              return 'study';
+              return type;
             },
             currentLinks: function() {
               return $scope.network.studyIds;
@@ -668,11 +678,12 @@ mica.network
           });
       };
 
-      $scope.getStudyReportByNetworkUrl = function () {
+      $scope.getStudyReportByNetworkUrl = function (studyType) {
         return (ngObibaMicaUrl.getUrl('BaseUrl') + ngObibaMicaUrl.getUrl('JoinQuerySearchCsvReportByNetworkResource'))
           .replace(':type', 'studies')
           .replace(':networkId', $scope.network.id)
-          .replace(':locale', $translate.use());
+          .replace(':locale', $translate.use())
+          .replace(':studyType', studyType);
       };
 
       $scope.deleteStudyEvent = function (network, summary) {
@@ -685,8 +696,8 @@ mica.network
         );
       };
 
-      $scope.deleteSelectedStudiesEvent = function () {
-        var selectedSummaries = $scope.studySummaries.filter(function (s) {
+      $scope.deleteSelectedStudiesEvent = function (summaries) {
+        var selectedSummaries = summaries.filter(function (s) {
           return s.selected;
         });
 
