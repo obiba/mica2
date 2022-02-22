@@ -69,7 +69,7 @@ const RqlQuery = {
 
       <template v-else-if="criterion.type === 'NUMERIC'">
 
-      <div class="container">
+      <div class="container" v-if="!termQueryIsReadOnly">
         <div class="form-group">
           <label v-bind:for="vocabulary.name + 'from'">{{ "search.from" | translate }}</label>
           <input type="number" class="form-control" v-bind:id="vocabulary.name + '-from'" v-model="criterion.value[0]" v-on:change="onInput()">
@@ -79,13 +79,25 @@ const RqlQuery = {
           <input type="number" class="form-control" v-bind:id="vocabulary.name + '-to'" v-model="criterion.value[1]" v-on:change="onInput()">
         </div>
       </div>
+      <div class="container" v-else>
+        <div>
+          <label v-bind:for="vocabulary.name + 'from'">{{ "search.from" | translate }}</label> {{criterion.value[0]}}
+        </div>
+
+        <div>
+          <label v-bind:for="vocabulary.name + 'to'">{{ "search.to" | translate }}</label> {{criterion.value[1]}}
+        </div>
+      </div>
 
       </template>
 
       <template v-else>
 
-      <div class="container">
+      <div class="container" v-if="!termQueryIsReadOnly">
         <input type="text" class="form-control" v-model="criterion.value" v-on:change="onInput()">
+      </div>
+      <div class="container" v-else>
+        {{criterion.value}}
       </div>
 
       </template>
