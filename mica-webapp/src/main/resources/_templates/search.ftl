@@ -43,11 +43,9 @@
       <!-- Sidebar Menu -->
       <nav class="mt-2">
 
-        <ul data-widget="treeview" role="menu" data-accordion="false" class="nav nav-pills nav-sidebar flex-column">
+        <ul data-widget="treeview" role="menu" data-accordion="false" class="nav nav-pills nav-sidebar flex-column"></ul>
 
-        </ul>
-
-        <search-criteria></search-criteria>
+        <search-criteria :study-type-selection="currentStudyTypeSelection"></search-criteria>
       </nav>
       <!-- /.sidebar-menu -->
     </div>
@@ -163,7 +161,7 @@
                   <li class="nav-item"><a id="coverage-tab" class="nav-link" href="#tab_coverage" data-toggle="tab" @click="onSelectCoverage()"><@message "coverage"/></a></li>
                 </#if>
                 <#if searchGraphicsDisplay>
-                  <li class="nav-item"><a id="graphics-tab" class="nav-link" href="#tab_graphics" data-toggle="tab" @click="onSelectGraphics()"><@message "graphics"/></a></li>
+                  <li v-if="currentStudyTypeSelection && !currentStudyTypeSelection.harmonization" class="nav-item"><a id="graphics-tab" class="nav-link" href="#tab_graphics" data-toggle="tab" @click="onSelectGraphics()"><@message "graphics"/></a></li>
                 </#if>
               </ul>
             </div><!-- /.card-header -->

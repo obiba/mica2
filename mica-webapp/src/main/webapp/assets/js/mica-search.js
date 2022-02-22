@@ -53,11 +53,11 @@ Vue.component('search-criteria', {
         <a href="#" class="nav-link">
           <i class="nav-icon" v-bind:class="criteriaMenu.items[name].icon"></i>
           <p>
-            {{criteriaMenu.items[name].title}}
+           {{studyTypeSelection && studyTypeSelection.harmonization ? criteriaMenu.items[name].harmoTitle : criteriaMenu.items[name].title}}
           </p>
         </a>
         <ul class="nav nav-treeview">
-          <li class="nav-item" :key="menu.name" v-for="menu in criteriaMenu.items[name].menus">
+          <li class="nav-item" :key="menu.name" v-for="menu in criteriaMenu.items[name].menus" v-if="!(studyTypeSelection && studyTypeSelection.harmonization) || !menu.hideHarmo">
             <a href="#" class="nav-link" data-toggle="modal" data-target="#taxonomy-modal"
               :title="menu.description | localize-string"
               @click.prevent="onTaxonomySelection(menu.name, name)"><i class="far fa-circle nav-icon"></i><p>{{ menu.title | localize-string }}</p>
@@ -68,6 +68,9 @@ Vue.component('search-criteria', {
     </ul>
   </div>
   `,
+  props: {
+    studyTypeSelection: Object
+  },
   data() {
     return {
       criteriaMenu: {
@@ -75,21 +78,25 @@ Vue.component('search-criteria', {
           variable: {
             icon: Mica.icons.variable,
             title: Mica.tr.variables,
+            harmoTitle: Mica.tr.variables,
             menus: []
           },
           dataset: {
             icon: Mica.icons.dataset,
             title: Mica.tr.datasets,
+            harmoTitle: Mica.tr.protocols,
             menus: []
           },
           study: {
             icon: Mica.icons.study,
             title: Mica.tr.studies,
+            harmoTitle: Mica.tr.initiatives,
             menus: []
           },
           network: {
             icon: Mica.icons.network,
             title: Mica.tr.networks,
+            harmoTitle: Mica.tr.networks,
             menus: []
           },
         },
@@ -121,6 +128,12 @@ Vue.component('search-criteria', {
             } else {
               this.criteriaMenu.items.variable.menus = level;
             }
+
+            this.criteriaMenu.items.variable.menus.forEach(m =>  {
+              if (m.name === 'Mlstr_additional') {
+                m.hideHarmo = true;
+              }
+            });
             break;
           case 'dataset':
           case 'study':
