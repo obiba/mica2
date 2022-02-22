@@ -12,7 +12,7 @@ const RqlQuery = {
 
       <template v-if="criterion.type === 'TERMS'">
 
-      <div class="container">
+      <div class="container" v-if="!termQueryIsReadOnly">
         <div class="form-check">
           <input class="form-check-input" type="radio" v-bind:id="'radio-' + vocabulary.name + '-all'" v-bind:name="vocabulary.name + '-terms-choice'" value="exists" v-model="criterion.operator" v-on:change="onInput()">
           <label class="form-check-label" v-bind:for="'radio-' + vocabulary.name + '-all'">{{ "search.any" | translate }}</label>
@@ -30,8 +30,13 @@ const RqlQuery = {
           <label class="form-check-label" v-bind:for="'radio-' + vocabulary.name + '-not-in'">{{ "search.out" | translate }}</label>
         </div>
       </div>
+      <div class="container" v-else>
+        {{ ( "search." + criterion.operator ) | translate }}
+      </div>
+
       <div class="dropdown-divider"></div>
-      <div class="container">
+
+      <div class="container" v-if="!termQueryIsReadOnly">
         <div class="input-group mb-2">
           <input type="text" class="form-control" v-model="termsFilter">
           <div class="input-group-append">
@@ -53,6 +58,11 @@ const RqlQuery = {
             </div>
           </li>
         </ul>
+      </div>
+      <div class="container" v-else>
+        <li v-for="term in checkedTerms" v-bind:key="term.name">
+          <label class="form-check-label" v-bind:for="vocabulary.name + '-' + term.name" v-bind:title="term.description | localize-string">{{ term.title | localize-string }}</label>
+        </li>
       </div>
 
       </template>
@@ -81,7 +91,7 @@ const RqlQuery = {
       </template>
     </div>
 
-    <button type="button" class="btn btn-secondary btn-sm" v-on:click="onRemove()"><span aria-hidden="true">&times;</span></button>
+    <button type="button" class="btn btn-secondary btn-sm" v-if="!termQueryIsReadOnly" v-on:click="onRemove()"><span aria-hidden="true">&times;</span></button>
   </div>
   `,
   name: "rql-query",
@@ -109,6 +119,10 @@ const RqlQuery = {
       }
 
       return output;
+    },
+    termQueryIsReadOnly() { // for Mica_study.className for example
+      let uiTermsReadOnlyVocabularyAttributes = (this.vocabulary || {attributes: [{"key": "uiTermsReadOnly", "value": "false"}]}).attributes.find(attr => attr.key === 'uiTermsReadOnly');
+      return uiTermsReadOnlyVocabularyAttributes && uiTermsReadOnlyVocabularyAttributes.value === "true";
     },
     terms() {
       const localizeStringFunction = Vue.filter("localize-string") || ((val) => val[0].text);

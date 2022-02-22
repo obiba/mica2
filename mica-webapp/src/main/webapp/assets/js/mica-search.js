@@ -1241,6 +1241,18 @@ class TableFixedHeaderUtility {
             responses.forEach((response) => {
               for (let taxo of response.data) {
                 TaxonomyHelper.newInstance().sortVocabulariesTerms(taxo);
+
+                if (taxo.name === 'Mica_study') {
+                  let studyClassNameVocabulary = taxo.vocabularies.find(vocabulary => vocabulary.name === "className");
+                  if (studyClassNameVocabulary) {
+                    if (!Array.isArray(studyClassNameVocabulary.attributes)) {
+                      studyClassNameVocabulary.attributes = [];
+                    }
+
+                    studyClassNameVocabulary.attributes.push({"key": "uiTermsReadOnly", "value": "true"});
+                  }
+                }
+
                 this.taxonomies[taxo.name] = taxo;
               }
             });
