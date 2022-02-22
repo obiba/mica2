@@ -185,13 +185,13 @@
                           <#if searchDatasetListDisplay>
                             <li class="nav-item">
                               <a class="nav-link" id="datasets-tab" data-toggle="pill" href="#datasets" role="tab" @click="onSelectResult('datasets', 'dataset')"
-                                 aria-controls="datasets" aria-selected="false"><@message "datasets"/> <span id="dataset-count" class="badge badge-light">{{counts.datasets}}</span></a>
+                                 aria-controls="datasets" aria-selected="false"><span>{{currentStudyTypeSelection && currentStudyTypeSelection.harmonization ? '<@message "protocols"/>' : '<@message "datasets"/>'}}</span><span id="dataset-count" class="badge badge-light">{{counts.datasets}}</span></a>
                             </li>
                           </#if>
                           <#if searchStudyListDisplay>
                             <li class="nav-item">
                               <a class="nav-link" id="studies-tab" data-toggle="pill" href="#studies" role="tab" @click="onSelectResult('studies', 'study')"
-                                 aria-controls="studies" aria-selected="false"><@message "studies"/> <span id="study-count" class="badge badge-light">{{counts.studies}}</span></a>
+                                 aria-controls="studies" aria-selected="false"><span>{{currentStudyTypeSelection && currentStudyTypeSelection.harmonization ? '<@message "initiatives"/>' : '<@message "studies"/>'}}</span> <span id="study-count" class="badge badge-light">{{counts.studies}}</span></a>
                             </li>
                           </#if>
                           <#if searchNetworkListDisplay>
