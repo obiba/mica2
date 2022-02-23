@@ -32,9 +32,11 @@
 <!-- Home page settings -->
 <#assign networksLink = "${contextPath}/networks"/>
 <!--#assign networksLink = "${contextPath}/search#lists?type=networks"/-->
-<#assign studiesLink = "${contextPath}/studies"/>
+<#assign studiesLink = "${contextPath}/individual-studies"/>
+<#assign initiativesLink = "${contextPath}/harmonization-studies"/>
 <!--#assign studiesLink = "${contextPath}/search#lists?type=studies"/-->
-<#assign datasetsLink = "${contextPath}/datasets"/>
+<#assign datasetsLink = "${contextPath}/collected-datasets"/>
+<#assign protocolsLink = "${contextPath}/harmonized-datasets"/>
 <!--#assign datasetsLink = "${contextPath}/search#lists?type=datasets"/-->
 <#assign portalLink = "${config.portalUrl!contextPath}" + "/"/>
 

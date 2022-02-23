@@ -3,12 +3,13 @@
 <#macro homeModel>
 
   <#if config.repositoryEnabled>
-    <div id="repository-metrics" class="row">
+    <div id="repository-metrics">
 
+      <div class="row d-flex align-items-stretch">
       <#if config.networkEnabled && !config.singleNetworkEnabled>
-        <div class="col-lg-3 col-sm-6">
+        <div class="col-sm col-xs-6 d-flex align-items-stretch">
           <!-- small box -->
-          <div class="small-box bg-info">
+          <div class="small-box bg-info w-100">
             <div class="inner">
               <h3 id="network-hits">-</h3>
               <p><@message "networks"/></p>
@@ -23,9 +24,9 @@
       </#if>
 
       <#if !config.singleStudyEnabled>
-        <div class="col-lg-3 col-sm-6">
+        <div class="col-sm col-xs-6 d-flex align-items-stretch">
           <!-- small box -->
-          <div class="small-box bg-success">
+          <div class="small-box bg-success w-100">
             <div class="inner">
               <h3 id="study-hits">-</h3>
               <p><@message "studies"/></p>
@@ -38,25 +39,59 @@
         </div>
         <!-- ./col -->
       </#if>
-
-      <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
-        <div class="col-lg-3 col-sm-6">
+      <#if config.harmonizationDatasetEnabled>
+        <div class="col-sm col-xs-6 d-flex align-items-stretch">
           <!-- small box -->
-          <div class="small-box bg-warning">
+          <div class="small-box bg-success w-100">
             <div class="inner">
-              <h3 id="dataset-hits">-</h3>
-              <p><@message "datasets"/></p>
+              <h3 id="initiative-hits">-</h3>
+              <p><@message "harmonization-studies"/></p>
             </div>
             <div class="icon">
               <i class="${datasetIcon}"></i>
             </div>
-            <a href="${datasetsLink}" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="${initiativesLink}" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
           </div>
         </div>
+      </#if>
+      </div>
+
+      <div class="row d-flex align-items-stretch">
+      <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
+        <#if config.studyDatasetEnabled>
+          <div class="col-sm col-xs-6 d-flex align-items-stretch">
+            <!-- small box -->
+            <div class="small-box bg-warning w-100">
+              <div class="inner">
+                <h3 id="dataset-hits">-</h3>
+                <p><@message "collected-datasets"/></p>
+              </div>
+              <div class="icon">
+                <i class="${datasetIcon}"></i>
+              </div>
+              <a href="${datasetsLink}" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+        </#if>
+        <#if config.harmonizationDatasetEnabled>
+          <div class="col-sm col-xs-6 d-flex align-items-stretch">
+            <!-- small box -->
+            <div class="small-box bg-warning w-100">
+              <div class="inner">
+                <h3 id="protocols-hits">-</h3>
+                <p><@message "harmonized-datasets"/></p>
+              </div>
+              <div class="icon">
+                <i class="${datasetIcon}"></i>
+              </div>
+              <a href="${protocolsLink}" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+        </#if>
         <!-- ./col -->
-        <div class="col-lg-3 col-sm-6">
+        <div class="col-sm col-xs-6 d-flex align-items-stretch">
           <!-- small box -->
-          <div class="small-box bg-danger">
+          <div class="small-box bg-danger w-100">
             <div class="inner">
               <h3 id="variable-hits">-</h3>
               <p><@message "variables"/></p>
@@ -68,6 +103,7 @@
           </div>
         </div>
         <!-- ./col -->
+      </div>
       </#if>
     </div>
 

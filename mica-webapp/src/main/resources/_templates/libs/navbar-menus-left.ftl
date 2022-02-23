@@ -15,16 +15,22 @@
                 <a href="${contextPath}/networks" class="dropdown-item"><@message "networks"/></a>
               </#if>
             </li>
+            <li><div class="dropdown-divider"></div></li>
           </#if>
           <li>
             <#if config.singleStudyEnabled>
               <a href="${contextPath}/study/_" class="dropdown-item"><@message "the-study"/></a>
             <#else>
-              <a href="${contextPath}/studies" class="dropdown-item"><@message "studies"/></a>
+              <a href="${contextPath}/individual-studies" class="dropdown-item"><@message "studies"/></a>
+            </#if>
+            <#if config.studyDatasetEnabled>
+              <li><a href="${contextPath}/collected-datasets" class="dropdown-item"><@message "collected-datasets"/></a></li>
             </#if>
           </li>
-          <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
-            <li><a href="${contextPath}/datasets" class="dropdown-item"><@message "datasets"/></a></li>
+          <#if config.harmonizationDatasetEnabled>
+            <li><div class="dropdown-divider"></div></li>
+            <li><a href="${contextPath}/harmonization-studies" class="dropdown-item"><@message "initiatives"/></a></li>
+            <li><a href="${contextPath}/harmonized-datasets" class="dropdown-item"><@message "protocols"/></a></li>
           </#if>
         </ul>
       </li>

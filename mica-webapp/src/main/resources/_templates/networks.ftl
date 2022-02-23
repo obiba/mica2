@@ -32,7 +32,7 @@
           <div id="networks-card" class="card card-info card-outline">
 
             <div class="card-header">
-              <h3 class="card-title <#if networkListDisplays?size gt 1>pt-2</#if>"><@message "networks"/></h3>
+              <h3 class="card-title <#if networkListDisplays?size gt 1>pt-2</#if>"><span>${networks?size} <@message "networks"/></span></h3>
               <#if networkListDisplays?size gt 1>
                 <ul class="nav nav-pills ml-auto float-right">
                   <#list networkListDisplays as display>

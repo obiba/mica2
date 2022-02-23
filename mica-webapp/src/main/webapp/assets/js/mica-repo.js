@@ -314,3 +314,26 @@ class DatasetService {
 
 }
 
+class MetricsService {
+  static getStats(onsuccess, onfailure) {
+    axios.get(MicaService.normalizeUrl(MicaService.normalizeUrl('/ws/config/metrics')))
+      .then(response => {
+        const result = (response.data.documents || []).reduce((acc, obj) => {
+          const total = obj.properties.filter(prop => ['total', 'published'].includes(prop.name)).pop();
+          acc[obj.type] =  total ? total.value : 0;
+          return acc;
+        }, {});
+
+        if (onsuccess) {
+          onsuccess(result);
+        }
+      })
+      .catch(response => {
+        console.dir(response);
+        if (onfailure) {
+          onfailure(response);
+        }
+      });
+  }
+}
+
