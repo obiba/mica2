@@ -86,7 +86,14 @@
       }
 
       if (this.person.studyMemberships) {
-        this.memberships.studies = this.EntityMembershipService.groupRolesByEntity('studies', this.person.studyMemberships);
+        this.memberships.studies =
+          this.EntityMembershipService.groupRolesByEntity(
+            'studies',
+            this.person.studyMemberships.filter(membership => membership['obiba.mica.PersonDto.StudyMembershipDto.meta'].type ==='individual-study'));
+
+        this.memberships.initiatives = this.EntityMembershipService.groupRolesByEntity(
+          'initiatives',
+          this.person.studyMemberships.filter(membership => membership['obiba.mica.PersonDto.StudyMembershipDto.meta'].type !=='individual-study'));
       }
     }
 
@@ -198,7 +205,7 @@
       this.__updatePerson();
     }
 
-    __openMembershipsModal(fullname, roles, memberships, entitySearchResource, entityType) {
+    __openMembershipsModal(fullname, roles, memberships, entitySearchResource, entityType, query) {
       const entitiesTitle = this.EntityTitleService.translate(entityType, true);
       this.$uibModal.open({
         templateUrl: 'app/persons/views/entity-list-modal.html',
@@ -214,6 +221,7 @@
             this.entitiesTitle = entitiesTitle;
             this.addDisabled = true;
             this.fullname = fullname;
+            this.query = query;
 
             const updateAddDisable =
               () => this.addDisabled = this.selectedRoles.length < 1 || this.selectedEntities.length < 1;
@@ -238,7 +246,7 @@
             this.onClose = () => $uibModalInstance.dismiss('close');
           }]
       }).result.then(selections => {
-        this.__addMemberships(selections.roles, selections.entities, entityType);
+        this.__addMemberships(selections.roles, selections.entities, entityType === 'initiative' ? 'study' : entityType);
       });
     }
 
@@ -429,7 +437,19 @@
         this.config.roles,
         this.memberships.studies,
         'StudyStatesSearchResource',
-        'study'
+        'study',
+        'className:Study'
+      );
+    }
+
+    addInitiatives() {
+      this.__openMembershipsModal(
+        this.__getFullname(),
+        this.config.roles,
+        this.memberships.initiatives,
+        'StudyStatesSearchResource',
+        'initiative',
+        'className:HarmonizationStudy'
       );
     }
   }

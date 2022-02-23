@@ -68,15 +68,31 @@
     </div>
 
     <div class="voffset5">
-      <h4 translate>global.studies-initiatives</h4>
+      <h4 translate>studies</h4>
       <p class="help-block" ><span translate>persons.study-roles-table-help</span></p>
 
-      <a href class="btn btn-primary" ng-click="$ctrl.addStudies()">
+      <a href class="btn btn-primary" ng-click="$ctrl.addStudies('individual-study')">
         <i class="fa fa-plus"></i> <span translate>persons.add-studies</span>
       </a>
       <person-memberships
         entity-type="study"
         memberships="$ctrl.memberships.studies"
+        roles="$ctrl.config.roles"
+        on-delete-entity="$ctrl.onDeleteEntity(entityType, entity)"
+        on-edit-entity="$ctrl.onEditEntity(entityType, entity)">
+      </person-memberships>
+    </div>
+
+    <div class="voffset5">
+      <h4 translate>global.initiatives</h4>
+      <p class="help-block" ><span translate>persons.initiative-roles-table-help</span></p>
+
+      <a href class="btn btn-primary" ng-click="$ctrl.addInitiatives()">
+        <i class="fa fa-plus"></i> <span translate>persons.add-initiatives</span>
+      </a>
+      <person-memberships
+        entity-type="study"
+        memberships="$ctrl.memberships.initiatives"
         roles="$ctrl.config.roles"
         on-delete-entity="$ctrl.onDeleteEntity(entityType, entity)"
         on-edit-entity="$ctrl.onEditEntity(entityType, entity)">

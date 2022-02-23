@@ -66,7 +66,6 @@
     "network": "Network",
     "studies-initiatives": "Studies/Initiatives",
     "study-initiative": "Study/Initiative",
-    "add-study-initiative": "Add Study/Initiative",
     "individual-study": "Individual Study",
     "individual-studies": "Individual Studies",
     "harmonization-study": "Harmonization Initiative",
@@ -665,13 +664,13 @@
       "success": "The selected studies were submitted for import: ",
       "status-ok": "Studies imported successfully.",
       "problems" : {
-	      "problem-204": "The logo image can't be retrieved.",
-	      "problem-400": "The http address to retrieve the content is invalid.",
-	      "problem-401": "The user and/or password are invalid.",
-	      "problem-404": "The remote host was not found.",
-	      "problem-408": "Network is unreachable.",
-	      "problem-500": "Unexpected server error. Please see the log for more details.",
-	      "problem-503": "The remote host can't be reached."
+        "problem-204": "The logo image can't be retrieved.",
+        "problem-400": "The http address to retrieve the content is invalid.",
+        "problem-401": "The user and/or password are invalid.",
+        "problem-404": "The remote host was not found.",
+        "problem-408": "Network is unreachable.",
+        "problem-500": "Unexpected server error. Please see the log for more details.",
+        "problem-503": "The remote host can't be reached."
       }
     },
     "export": "Export CSV",
@@ -2460,22 +2459,29 @@
     "title": "Persons",
     "none": "No persons.",
     "add-networks": "Add Networks",
-    "add-studies": "Add Studies/Initiatives",
+    "add-studies": "Add Studies",
+    "add-initiatives": "Add Initiatives",
     "no-entity-memberships": "No membership roles.",
     "add-person": "Add Person",
     "no-memberships": "{{fullname}} is not a member of any network, study or initiative.",
     "entity-roles-help": "At least one role must be selected.",
     "network-entities-roles-help": "To add a membership select at least one role and one network.",
-    "study-entities-roles-help": "To add a membership select at least one role and one study or initiative.",
+    "study-entities-roles-help": "To add a membership select at least one role and one study.",
+    "initiative-entities-roles-help": "To add a membership select at least one role and one initiative.",
     "network-roles-table-help": "List of membership roles for each network.",
-    "study-roles-table-help": "List of membership roles for each study or initiative.",
+    "study-roles-table-help": "List of membership roles for each study.",
+    "initiative-roles-table-help": "List of membership roles for each initiative.",
+    "network-member-of-all": "No networks found.",
+    "study-member-of-all": "No studies found.",
+    "initiative-member-of-all": "No initiatives found.",
     "update-roles-dialog": {
       "title": "Update Roles",
       "message": "Select one or more roles to assign to {{member}}."
     },
     "entity-list-dialog": {
       "network-title": "Add Member to Networks",
-      "study-title": "Add Member to Studies/Initiatives"
+      "study-title": "Add Member to Studies",
+      "initiative-title": "Add Member to Initiatives"
     },
     "delete-dialog":{
       "title": "Delete Person",

@@ -24,7 +24,11 @@
     __getEntities(query, from, limit) {
       const excludes = (this.memberships.entities || []).map(entity => entity.id);
       this.loading = true;
-      this.searchResource.query({query: query, from:from , limit: limit || DEFAULT_LIMIT, exclude: excludes  }, (entities, headers) => {
+      let searchQuery = query ? `${query}*` : query;
+      if (this.filterQuery) {
+        searchQuery = searchQuery ? `${searchQuery} AND ${this.filterQuery}` : this.filterQuery;
+      }
+      this.searchResource.query({query: searchQuery, from:from , limit: limit || DEFAULT_LIMIT, exclude: excludes  }, (entities, headers) => {
         this.entities = entities;
         this.total = parseInt(headers('X-Total-Count'), 10) || entities.length;
         this.loading = false;
@@ -98,6 +102,7 @@
         entitySearchResource: '<',
         entityType: '<',
         fullname: '<',
+        filterQuery: '<',
         onRolesSelected: '&',
         onEntitiesSelected: '&'
       },

@@ -68,7 +68,17 @@
             }
 
             if (person.studyMemberships) {
-              person.studies = this.EntityMembershipService.groupRolesByEntity('studies', person.studyMemberships);
+              person.studies =
+                this.EntityMembershipService.groupRolesByEntity(
+                  'studies',
+                  person.studyMemberships.filter(membership => membership['obiba.mica.PersonDto.StudyMembershipDto.meta'].type ==='individual-study'));
+            }
+
+            if (person.studyMemberships) {
+              person.initiatives =
+                this.EntityMembershipService.groupRolesByEntity(
+                  'initiatives',
+                  person.studyMemberships.filter(membership => membership['obiba.mica.PersonDto.StudyMembershipDto.meta'].type !=='individual-study'));
             }
 
             return person;

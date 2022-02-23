@@ -13,8 +13,10 @@ package org.obiba.mica.person.search.rest;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.web.model.Mica;
 
 import com.google.common.base.Joiner;
@@ -27,7 +29,7 @@ public class CsvPersonsWriter {
   private final List<String> headers = Lists
     .newArrayList("Title", "FirstName", "LastName", "AcademicLevel", "Email", "Phone", "InstitutionName",
       "InstitutionDepartment", "InstitutionStreet", "InstitutionCity", "InstitutionPostalCode", "InstitutionState",
-      "InstitutionCountry", "StudyMemberships", "NetworkMemberships");
+      "InstitutionCountry", "StudyMemberships", "InitiativeMemberships", "NetworkMemberships");
 
   public ByteArrayOutputStream write(Mica.PersonsDto persons) throws IOException {
 
@@ -58,7 +60,20 @@ public class CsvPersonsWriter {
     row.add(person.hasEmail() ? person.getEmail() : "");
     row.add(person.hasPhone() ? person.getPhone() : "");
     addInstitution(row, person);
-    addMemberships(row, person.getStudyMembershipsList());
+    List<Mica.PersonDto.MembershipDto> studyMembershipsList = person.getStudyMembershipsList();
+    List<Mica.PersonDto.MembershipDto> studiesMemberships = new ArrayList<>();
+    List<Mica.PersonDto.MembershipDto> initiativesMemberships = new ArrayList<>();
+      studyMembershipsList.stream()
+      .forEach(m -> {
+        if (Study.RESOURCE_PATH.equals(m.getExtension(Mica.PersonDto.StudyMembershipDto.meta).getType())) {
+          studiesMemberships.add(m);
+        } else {
+          initiativesMemberships.add(m);
+        }
+      });
+
+    addMemberships(row, studiesMemberships);
+    addMemberships(row, initiativesMemberships);
     addMemberships(row, person.getNetworkMembershipsList());
 
     writer.writeNext(row.toArray(new String[row.size()]));
