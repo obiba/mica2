@@ -137,7 +137,7 @@
       </div>
       <!-- /.card -->
 
-      <div id="mode-tabs" class="mt-2">
+      <div id="mode-tabs" class="mt-2" v-if="showStudyShortcut">
         <study-filter-shortcut :alternate="true"/>
       </div>
 

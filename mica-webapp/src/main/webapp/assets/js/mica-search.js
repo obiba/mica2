@@ -40,6 +40,21 @@ class StringLocalizer {
   }
 }
 
+const MINIMUM_STUDY_TAXONOMY = {
+  name: "Mica_study",
+  vocabularies: [
+    {
+      name: "className",
+      attributes: [{key: "forClassName", value: ""}],
+      title: [ {locale: "en", text: "Type of Study"}, {locale: "fr", text: "Type d'étude"} ],
+      terms: [
+        { name: "Study", title: [ {locale: "en", text: "Individual"}, {locale: "fr", text: "Individuelle"} ] },
+        { name: "HarmonizationStudy", title: [ {locale: "en", text: "Harmonization"}, {locale: "fr", text: "Harmonisation"} ] }
+      ]
+    }
+  ]
+};
+
 /**
  * Taxonomy sidebar menu component
 */
@@ -535,7 +550,7 @@ class TableFixedHeaderUtility {
   function processTaxonomyForStudyTypeSelection(studyTypeSelection, taxonomy) {
     if (studyTypeSelection.study || studyTypeSelection.harmonization) {
       let clone = JSON.parse(JSON.stringify(taxonomy));
-      let clonedVocabularies = clone.vocabularies.filter(voc => { let foundAttr = voc.attributes.find(attr => attr.key === 'forClassName'); return foundAttributeIsOk(studyTypeSelection, foundAttr); });
+      let clonedVocabularies = clone.vocabularies.filter(voc => { let foundAttr = (voc.attributes || []).find(attr => attr.key === 'forClassName'); return foundAttributeIsOk(studyTypeSelection, foundAttr); });
 
       clonedVocabularies.forEach(voc => {
         if (Array.isArray(voc.terms)) {
@@ -601,7 +616,8 @@ class TableFixedHeaderUtility {
         coverageFixedHeaderHandler: null,
         currentStudyTypeSelection: null,
         pagination: null,
-        pageSizeSelector: null
+        pageSizeSelector: null,
+        showStudyShortcut: (Mica.isHarmonizedDatasetEnabled && !Mica.isSingleStudyEnabled) || !this.currentStudyTypeSelection || this.currentStudyTypeSelection.all
       };
     },
     methods: {
@@ -662,7 +678,7 @@ class TableFixedHeaderUtility {
           result[0].forEach(res => { finalResult.push(processTaxonomyForStudyTypeSelection(studyTypeSelection, res)); });
           return finalResult;
         } else {
-          return processTaxonomyForStudyTypeSelection(studyTypeSelection, result[0]);
+          return processTaxonomyForStudyTypeSelection(studyTypeSelection, target === 'study' && !result[0] ? MINIMUM_STUDY_TAXONOMY : result[0]);
         }
       },
       // show a modal with all the vocabularies/terms of the selected taxonomy
@@ -1256,6 +1272,10 @@ class TableFixedHeaderUtility {
                 this.taxonomies[taxo.name] = taxo;
               }
             });
+
+            if (!this.taxonomies['Mica_study']) {
+              this.taxonomies['Mica_study'] = MINIMUM_STUDY_TAXONOMY;
+            }
 
             this.refreshQueries();
 
