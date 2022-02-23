@@ -91,6 +91,8 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
 
   private int httpsPort;
 
+  private String serverAddress;
+
   private String contextPath;
 
   @Inject
@@ -106,6 +108,7 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
     this.environment = environment;
     RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(environment, "https.");
     httpsPort = propertyResolver.getProperty("port", Integer.class, DEFAULT_HTTPS_PORT);
+    serverAddress = environment.getProperty("server.address", "localhost");
     contextPath = environment.getProperty("server.context-path", "");
     if (Strings.isNullOrEmpty(contextPath))
       contextPath = environment.getProperty("server.servlet.context-path", "");
@@ -146,6 +149,7 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
     jettySsl.addExcludeProtocols("SSLv2", "SSLv3");
 
     ServerConnector sslConnector = new ServerConnector(server, jettySsl);
+    sslConnector.setHost(serverAddress);
     sslConnector.setPort(httpsPort);
     sslConnector.setIdleTimeout(MAX_IDLE_TIME);
 
