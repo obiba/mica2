@@ -137,7 +137,7 @@
         </div>
 
         <#if type == "Harmonized">
-          <#if localizedStringNotEmpty(dataset.model.informationContent) || localizedStringNotEmpty(dataset.model.procedures)>
+          <#if localizedStringNotEmpty(dataset.model.informationContent) || localizedStringNotEmpty(dataset.model.additionalInformation)>
             <div class="row d-flex align-items-stretch">
                 <#if localizedStringNotEmpty(dataset.model.informationContent)>
                   <div class="col-sm-12 col-md d-flex align-items-stretch">
@@ -151,33 +151,18 @@
                     </div>
                   </div>
                 </#if>
-                <#if localizedStringNotEmpty(dataset.model.procedures)>
+                <#if localizedStringNotEmpty(dataset.model.additionalInformation)>
                   <div class="col-sm-12 col-md d-flex align-items-stretch">
                     <div class="card card-info card-outline w-100">
                       <div class="card-header">
-                        <h3 class="card-title"><@message "harmonization-protocol.procedures"/></h3>
+                        <h3 class="card-title"><@message "global.additional-information"/></h3>
                       </div>
                       <div class="card-body">
-                        <div class="marked"><template>${localize(dataset.model.procedures)}</template></div>
+                        <div class="marked"><template>${localize(dataset.model.informationContent)}</template></div>
                       </div>
                     </div>
                   </div>
                 </#if>
-            </div>
-          </#if>
-
-          <#if localizedStringNotEmpty(dataset.model.additionalInformation)>
-            <div class="row">
-              <div class="col-lg-12">
-                <div class="card card-info card-outline">
-                  <div class="card-header">
-                    <h3 class="card-title"><@message "global.additional-information"/></h3>
-                  </div>
-                  <div class="card-body">
-                    <div class="marked"><template>${localize(dataset.model.additionalInformation)}</template></div>
-                  </div>
-                </div>
-              </div>
             </div>
           </#if>
         </#if>

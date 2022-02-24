@@ -75,5 +75,41 @@
             <@message "harmonization-protocol.qualitative-quantitative.enum." + dataset.model.qualitativeQuantitative/>
         </dd>
       </#if>
+
+      <#if localizedStringNotEmpty(dataset.model.procedures)>
+        <dt class="col-sm-3">
+            <@message "harmonization-protocol.procedures"/>
+        </dt>
+        <dd class="col-sm-9">
+          <span>${localize(dataset.model.procedures)}</span>
+        </dd>
+      </#if>
+
+      <#if localizedStringNotEmpty(dataset.model.procedures)>
+        <dt class="col-sm-3">
+            <@message "harmonization-protocol.procedures"/>
+        </dt>
+        <dd class="col-sm-9">
+          <span>${localize(dataset.model.procedures)}</span>
+        </dd>
+      </#if>
+
+      <#if localizedStringNotEmpty(dataset.model.participantsInclusion)>
+        <dt class="col-sm-3">
+            <@message "harmonization-protocol.participants-inclusion"/>
+        </dt>
+        <dd class="col-sm-9">
+          <span>${localize(dataset.model.participantsInclusion)}</span>
+        </dd>
+      </#if>
+
+      <#if localizedStringNotEmpty(dataset.model.infrastructure)>
+        <dt class="col-sm-3">
+            <@message "harmonization-protocol.infrastructure"/>
+        </dt>
+        <dd class="col-sm-9">
+          <span>${localize(dataset.model.infrastructure)}</span>
+        </dd>
+      </#if>
   </dl>
 </#macro>

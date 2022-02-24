@@ -82,10 +82,9 @@
         "key": "informationContent",
         "type": "obibaSimpleMde"
       },
-      {
-        "key": "procedures",
-        "type": "obibaSimpleMde"
-      },
+      "procedures",
+      "participantsInclusion",
+      "infrastructure",
       {
         "key": "additionalInformation",
         "type": "obibaSimpleMde"

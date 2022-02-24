@@ -845,6 +845,8 @@
     "information-content": "Information Content",
     "participants": "Number of Participants",
     "procedures": "Procedures",
+    "participants-inclusion": "Participants Inclusion",
+    "infrastructure": "Infrastructure",
     "qualitative-quantitative": {
       "title": "Qualitative/Quantitative Effort",
       "enum": {

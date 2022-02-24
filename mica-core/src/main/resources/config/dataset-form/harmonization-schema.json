@@ -33,7 +33,17 @@
     "procedures": {
       "type": "object",
       "title": "t(harmonization-protocol.procedures)",
-      "format": "obibaSimpleMde"
+      "format": "localizedString"
+    },
+    "participantsInclusion": {
+      "type": "object",
+      "title": "t(harmonization-protocol.participants-inclusion)",
+      "format": "localizedString"
+    },
+    "infrastructure": {
+      "type": "object",
+      "title": "t(harmonization-protocol.infrastructure)",
+      "format": "localizedString"
     },
     "additionalInformation": {
       "type": "object",
