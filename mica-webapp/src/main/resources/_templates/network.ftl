@@ -53,52 +53,110 @@
                     </#if>
                   </div>
 
-                  <#if !config.singleStudyEnabled>
-                    <div class="col-md-3 col-sm-6 col-12">
-                      <div class="info-box">
-                        <span class="info-box-icon bg-success">
-                          <a href="${contextPath}/search#lists?type=studies&query=network(in(Mica_network.id,${network.id}))">
-                            <i class="${studyIcon}"></i>
-                          </a></span>
-                        <div class="info-box-content">
-                          <span class="info-box-text"><@message "studies"/></span>
-                          <span class="info-box-number" id="study-hits">${individualStudies?size + harmonizationStudies?size}</span>
-                        </div>
-                        <!-- /.info-box-content -->
-                      </div>
-                    </div>
-                  </#if>
+                  <div class="col">
+                    <div class="row">
+                        <#if !config.singleStudyEnabled>
+                          <div class="col-md-6 col-12">
+                            <div class="info-box">
+                              <span class="info-box-icon bg-success">
+                                <a href="${contextPath}/search#lists?type=studies&query=study(in(Mica_study.className,Study)),network(in(Mica_network.id,${network.id}))">
+                                  <i class="${studyIcon}"></i>
+                                </a>
+                              </span>
+                              <div class="info-box-content">
+                                <span class="info-box-text"><@message "studies"/></span>
+                                <span class="info-box-number" id="study-hits">${individualStudies?size}</span>
+                              </div>
+                              <!-- /.info-box-content -->
+                            </div>
+                          </div>
 
-                  <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
-                    <div class="col-md-3 col-sm-6 col-12">
-                      <div class="info-box">
-                        <span class="info-box-icon bg-warning">
-                          <a href="${contextPath}/search#lists?type=datasets&query=network(in(Mica_network.id,${network.id}))">
-                            <i class="${datasetIcon}"></i>
-                          </a>
-                        </span>
-                        <div class="info-box-content">
-                          <span class="info-box-text"><@message "datasets"/></span>
-                          <span class="info-box-number" id="dataset-hits">-</span>
-                        </div>
-                        <!-- /.info-box-content -->
-                      </div>
+                            <#if config.harmonizationDatasetEnabled>
+                              <div class="col-md-6 col-12">
+                                <div class="info-box">
+                                 <span class="info-box-icon bg-success">
+                                    <a href="${contextPath}/search#lists?type=studies&query=study(in(Mica_study.className,HarmonizationStudy)),network(in(Mica_network.id,${network.id}))">
+                                      <i class="${studyIcon}"></i>
+                                    </a>
+                                  </span>
+                                  <div class="info-box-content">
+                                    <span class="info-box-text"><@message "initiatives"/></span>
+                                    <span class="info-box-number" id="initiative-hits">${harmonizationStudies?size}</span>
+                                  </div>
+                                  <!-- /.info-box-content -->
+                                </div>
+                              </div>
+                            </#if>
+                        </#if>
                     </div>
-                    <div class="col-md-3 col-sm-6 col-12">
-                      <div class="info-box">
-                        <span class="info-box-icon bg-danger">
-                          <a href="${contextPath}/search#lists?type=variables&query=network(in(Mica_network.id,${network.id}))">
-                            <i class="${variableIcon}"></i>
-                          </a>
-                        </span>
-                        <div class="info-box-content">
-                          <span class="info-box-text"><@message "variables"/></span>
-                          <span class="info-box-number" id="variable-hits">-</span>
-                        </div>
-                        <!-- /.info-box-content -->
-                      </div>
+                    <div class="row">
+                        <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
+                          <div class="col-md-6 col-12">
+                            <div class="info-box">
+                              <span class="info-box-icon bg-warning">
+                                <a href="${contextPath}/search#lists?type=datasets&query=study(in(Mica_study.className,Study)),network(in(Mica_network.id,${network.id}))">
+                                  <i class="${datasetIcon}"></i>
+                                </a>
+                              </span>
+                              <div class="info-box-content">
+                                <span class="info-box-text"><@message "datasets"/></span>
+                                <span class="info-box-number" id="dataset-hits">-</span>
+                              </div>
+                              <!-- /.info-box-content -->
+                            </div>
+                          </div>
+
+                          <#if config.harmonizationDatasetEnabled>
+                            <div class="col-md-6 col-12">
+                              <div class="info-box">
+                              <span class="info-box-icon bg-warning">
+                                <a href="${contextPath}/search#lists?type=datasets&query=study(in(Mica_study.className,HarmonizationStudy)),network(in(Mica_network.id,${network.id}))">
+                                  <i class="${datasetIcon}"></i>
+                                </a>
+                              </span>
+                                <div class="info-box-content">
+                                  <span class="info-box-text"><@message "protocols"/></span>
+                                  <span class="info-box-number" id="protocol-hits">-</span>
+                                </div>
+                                <!-- /.info-box-content -->
+                              </div>
+                            </div>
+                          </#if>
+
+                          <div class="col-md-6 col-12">
+                            <div class="info-box">
+                              <span class="info-box-icon bg-danger">
+                                <a href="${contextPath}/search#lists?type=variables&query=study(in(Mica_study.className,Study)),network(in(Mica_network.id,${network.id}))">
+                                  <i class="${variableIcon}"></i>
+                                </a>
+                              </span>
+                              <div class="info-box-content">
+                                <span class="info-box-text"><@message "variables"/></span>
+                                <span class="info-box-number" id="variable-hits">-</span>
+                              </div>
+                              <!-- /.info-box-content -->
+                            </div>
+                          </div>
+
+                            <#if config.harmonizationDatasetEnabled>
+                              <div class="col-md-6 col-12">
+                                <div class="info-box">
+                                <span class="info-box-icon bg-danger">
+                                  <a href="${contextPath}/search#lists?type=variables&query=study(in(Mica_study.className,HarmonizationStudy)),network(in(Mica_network.id,${network.id}))">
+                                    <i class="${variableIcon}"></i>
+                                  </a>
+                                </span>
+                                  <div class="info-box-content">
+                                    <span class="info-box-text"><@message "dataschemas"/></span>
+                                    <span class="info-box-number" id="dataschema-hits">-</span>
+                                  </div>
+                                  <!-- /.info-box-content -->
+                                </div>
+                              </div>
+                            </#if>
+                        </#if>
                     </div>
-                  </#if>
+                  </div>
 
                 </div>
 

@@ -90,7 +90,7 @@
                           </a>
                         </span>
                         <div class="info-box-content">
-                          <span class="info-box-text"><@message "datasets"/></span>
+                          <span class="info-box-text"><#if type == "Harmonization"><@message "protocols"/><#else><@message "datasets"/></#if></span>
                           <span class="info-box-number" id="dataset-hits">-</span>
                         </div>
                         <div>
