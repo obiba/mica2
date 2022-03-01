@@ -226,6 +226,15 @@
                   </dd>
                 </#if>
 
+                <#if localizedStringNotEmpty((population.model.recruitment.info))>
+                  <dt class="col-sm-6" title="<@message "study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.description"/>">
+                      <@message "suppl-info"/>
+                  </dt>
+                  <dd class="col-sm-6">
+                    <div class="marked"><template>${localize(population.model.recruitment.info)}</template></div>
+                  </dd>
+                </#if>
+
                 <#if population.model.recruitment.studies?? && population.model.recruitment.studies?size != 0>
                   <dt class="col-sm-6">
                     <@message "study.recruitment-sources.studies"/>
