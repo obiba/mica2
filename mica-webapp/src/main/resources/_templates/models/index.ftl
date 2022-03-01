@@ -126,22 +126,24 @@
       </div>
     </#if>
 
-    <div id="search-portal-callout" class="callout callout-info">
-      <div class="row">
-        <div class="col-sm-10">
-          <p class="text-justify">
-            <@message "search-portal-callout"/>
-          </p>
-        </div><!-- /.col -->
-        <div class="col-sm-2">
-          <div class="text-right">
-            <button type="button"  onclick="location.href='<#if !config.openAccess && !user??>${contextPath}/signin?redirect=${contextPath}/search${defaultSearchState?url('UTF-8')}<#else>${contextPath}/search${defaultSearchState}</#if>';" class="btn btn-success btn-lg">
-              <i class="fas fa-search"></i> <@message "search"/>
-            </button>
-          </div>
-        </div><!-- /.col -->
-      </div><!-- /.row -->
-    </div>
+      <#if !config.singleStudyEnabled || (config.networkEnabled && !config.singleNetworkEnabled) || config.studyDatasetEnabled || config.harmonizationDatasetEnabled >
+        <div id="search-portal-callout" class="callout callout-info">
+        <div class="row">
+          <div class="col-sm-10">
+            <p class="text-justify">
+              <@message "search-portal-callout"/>
+            </p>
+          </div><!-- /.col -->
+          <div class="col-sm-2">
+            <div class="text-right">
+              <button type="button"  onclick="location.href='<#if !config.openAccess && !user??>${contextPath}/signin?redirect=${contextPath}/search${defaultSearchState?url('UTF-8')}<#else>${contextPath}/search${defaultSearchState}</#if>';" class="btn btn-success btn-lg">
+                <i class="fas fa-search"></i> <@message "search"/>
+              </button>
+            </div>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div>
+    </#if>
   </#if>
 
   <#if config.dataAccessEnabled>

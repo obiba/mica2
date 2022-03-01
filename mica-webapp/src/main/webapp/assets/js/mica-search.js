@@ -195,7 +195,7 @@ Vue.component('study-filter-shortcut', {
         <li class="nav-item">
           <a href="#" v-bind:class="{active: selection.study}" class="nav-link" @click.stop.prevent="onSelectionClicked('study')">{{tr('individual')}}</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" v-if="showHarmonization">
           <a href="#" v-bind:class="{active: selection.harmonization}" class="nav-link" @click.stop.prevent="onSelectionClicked('harmonization')">{{tr('harmonization')}}</a>
         </li>
       </ul>
@@ -212,6 +212,7 @@ Vue.component('study-filter-shortcut', {
     }
   },
   computed: {
+    showHarmonization: () => Mica.config.isHarmonizedDatasetEnabled,
     showFilter: () => Mica.config.isCollectedDatasetEnabled
       && Mica.config.isHarmonizedDatasetEnabled
       && !Mica.config.isSingleStudyEnabled
@@ -548,19 +549,27 @@ class TableFixedHeaderUtility {
   }
 
   function processTaxonomyForStudyTypeSelection(studyTypeSelection, taxonomy) {
-    if (studyTypeSelection.study || studyTypeSelection.harmonization) {
-      let clone = JSON.parse(JSON.stringify(taxonomy));
-      let clonedVocabularies = clone.vocabularies.filter(voc => { let foundAttr = (voc.attributes || []).find(attr => attr.key === 'forClassName'); return foundAttributeIsOk(studyTypeSelection, foundAttr); });
+    if (taxonomy) {
+      if (studyTypeSelection.study || studyTypeSelection.harmonization) {
+        let clone = JSON.parse(JSON.stringify(taxonomy));
+        let clonedVocabularies = clone.vocabularies.filter(voc => {
+          let foundAttr = (voc.attributes || []).find(attr => attr.key === 'forClassName');
+          return foundAttributeIsOk(studyTypeSelection, foundAttr);
+        });
 
-      clonedVocabularies.forEach(voc => {
-        if (Array.isArray(voc.terms)) {
-          voc.terms = voc.terms.filter(term => { let foundAttr = (term.attributes || []).find(attr => attr.key === 'className'); return foundAttributeIsOk(studyTypeSelection, foundAttr); });
-        }
-      });
+        clonedVocabularies.forEach(voc => {
+          if (Array.isArray(voc.terms)) {
+            voc.terms = voc.terms.filter(term => {
+              let foundAttr = (term.attributes || []).find(attr => attr.key === 'className');
+              return foundAttributeIsOk(studyTypeSelection, foundAttr);
+            });
+          }
+        });
 
-      clone.vocabularies = clonedVocabularies;
+        clone.vocabularies = clonedVocabularies;
 
-      return clone;
+        return clone;
+      }
     }
 
     return taxonomy;
@@ -670,12 +679,19 @@ class TableFixedHeaderUtility {
           result.push(taxonomies);
         } else {
           let taxonomy = this.taxonomies[`Mica_${target}`];
-          result.push(taxonomy);
+          if (taxonomy) {
+            result.push(taxonomy);
+          }
         }
 
         if (Array.isArray(result[0])) {
           let finalResult = [];
-          result[0].forEach(res => { finalResult.push(processTaxonomyForStudyTypeSelection(studyTypeSelection, res)); });
+          result[0].forEach(res => {
+            const processed = processTaxonomyForStudyTypeSelection(studyTypeSelection, res)
+            if (processed ) {
+              finalResult.push();
+            }
+          });
           return finalResult;
         } else {
           return processTaxonomyForStudyTypeSelection(studyTypeSelection, target === 'study' && !result[0] ? MINIMUM_STUDY_TAXONOMY : result[0]);
@@ -734,12 +750,24 @@ class TableFixedHeaderUtility {
         console.debug('Executing ' + this.queryType + ' query ...');
         EventBus.$emit(this.queryType, 'I am the result of a ' + this.queryType + ' query');
       },
+      findProperType() {
+
+        if (Mica.config.isSingleStudyEnabled) {
+          if (Mica.config.isCollectedDatasetEnabled || Mica.config.isHarmonizedDatasetEnabled) {
+            return TYPES.VARIABLES;
+          } else if (!Mica.config.isCollectedDatasetEnabled) {
+            return TYPES.NETWORKS;
+          }
+        } else {
+          return TYPES.STUDIES;
+        }
+      },
       setLocation(searchQuery) {
         const urlParts = MicaTreeQueryUrl.parseUrl();
         const searchParams = urlParts.searchParams || {};
 
         const display = urlParts.hash || 'list';
-        const type = searchParams.type || TYPES.VARIABLES;
+        const type = searchParams.type || this.findProperType();
 
         let params = [`type=${type}`];
         if (searchQuery) {

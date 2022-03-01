@@ -81,11 +81,8 @@
 <#assign datasetListDefaultDisplay = "cards"/>
 
 <!-- Search -->
-<#if config?? && config.singleStudyEnabled>
-  <#assign defaultSearchState = "#lists?type=variables&query=study(and(in(Mica_study.className,Study)))"/>
-<#else>
-  <#assign defaultSearchState = "#lists?type=studies&query=study(and(in(Mica_study.className,Study)))"/>
-</#if>
+<#assign defaultSearchState = "#lists?query=study(and(in(Mica_study.className,Study)))"/>
+
 <!-- Download the search results or full export -->
 <#assign downloadQueryEnabled = true />
 <#assign exportStudiesQueryEnabled = config.studiesExportEnabled />

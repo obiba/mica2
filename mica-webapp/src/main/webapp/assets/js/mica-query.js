@@ -651,7 +651,19 @@ class MicaQueryExecutor {
    * Ensure a valid type either supplied by the payload or url
    */
   __ensureValidType(urlSearchParams, type) {
-    return TYPES[(type || urlSearchParams.type || "").toUpperCase()] || TYPES.VARIABLES;
+    let theType = TYPES[(type || urlSearchParams.type || "").toUpperCase()];
+    if (!theType) {
+      if (Mica.config.isSingleStudyEnabled) {
+        if (Mica.config.isCollectedDatasetEnabled || Mica.config.isHarmonizedDatasetEnabled) {
+          theType = TYPES.VARIABLES;
+        } else if (!Mica.config.isSingleNetworkEnabled && Mica.config.isNetworkEnabled) {
+          theType = TYPES.NETWORKS;
+        }
+      } else {
+        theType = TYPES.STUDIES;
+      }
+    }
+    return theType;
   }
 
   /**
