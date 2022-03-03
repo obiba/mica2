@@ -936,6 +936,51 @@ class TableFixedHeaderUtility {
           }
         }
       },
+      hideDownloadColumns(type, form) {
+        const studyTypeSelection = MicaTreeQueryUrl.getStudyTypeSelection(MicaTreeQueryUrl.getTree());
+        let columnsToHide = [];
+
+        switch (type) {
+          case TYPES.NETWORKS:
+            if (studyTypeSelection.harmonization) {
+              columnsToHide = ['showNetworksStudyDatasetsColumn', 'showNetworksStudyVariablesColumn']
+            } else if (studyTypeSelection.study) {
+              columnsToHide = ['showNetworksHarmonizationDatasetsColumn', 'showNetworksDataschemaVariablesColumn']
+            }
+            break;
+
+          case TYPES.STUDIES:
+            if (studyTypeSelection.harmonization) {
+              columnsToHide = ['showStudiesStudyDatasetsColumn',
+                'showStudiesStudyVariablesColumn',
+                'showStudiesParticipantsColumn',
+                'showStudiesDesignColumn',
+                'showStudiesQuestionnaireColumn',
+                'showStudiesPmColumn',
+                'showStudiesBioColumn',
+                'showStudiesOtherColumn'];
+            } else if (studyTypeSelection.study) {
+              columnsToHide = ['showStudiesHarmonizationDatasetsColumn', 'showStudiesDataschemaVariablesColumn'];
+            }
+            break;
+
+          case TYPES.VARIABLES:
+            if (studyTypeSelection.harmonization) {
+              columnsToHide = ['showVariablesPopulationsColumn', 'showVariablesDataCollectionEventsColumn'];
+            }
+            break;
+        }
+
+        columnsToHide.forEach(column => {
+          let checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.name = 'columnsToHide';
+          checkbox.value = column;
+          checkbox.checked = true;
+
+          form.appendChild(checkbox);
+        });
+      },
       onDownloadQueryResult() {
         if (this.downloadUrlObject) {
           const form = document.createElement('form');
@@ -959,6 +1004,7 @@ class TableFixedHeaderUtility {
           }
 
           form.appendChild(input);
+          this.hideDownloadColumns(this.downloadUrlObject.type, form);
 
           document.body.appendChild(form);
           form.submit();

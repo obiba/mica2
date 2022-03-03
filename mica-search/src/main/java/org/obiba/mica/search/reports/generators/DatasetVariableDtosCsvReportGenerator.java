@@ -54,9 +54,14 @@ public class DatasetVariableDtosCsvReportGenerator extends CsvReportGenerator {
       line.add("type");
     if (mustShow("showVariablesStudiesColumn")) {
       line.add("search.study.label");
+    }
+    if (mustShow("showVariablesPopulationsColumn")) {
       line.add("search.study.population-name");
+    }
+    if (mustShow("showVariablesDataCollectionEventsColumn")) {
       line.add("search.study.dce-name");
     }
+
     if (mustShow("showVariablesDatasetsColumn"))
       line.add("search.dataset.label");
 
@@ -108,10 +113,12 @@ public class DatasetVariableDtosCsvReportGenerator extends CsvReportGenerator {
 
     if (mustShow("showVariablesStudiesColumn")) {
       line.add(getStudyOrNetworkName(datasetVariableDto));
-
+    }
+    if (mustShow("showVariablesPopulationsColumn")) {
       if (datasetVariableDto.getPopulationNameCount() > 0) line.add(datasetVariableDto.getPopulationName(0).getValue());
       else line.add(datasetVariableDto.getPopulationId());
-
+    }
+    if (mustShow("showVariablesDataCollectionEventsColumn")) {
       if (datasetVariableDto.getDceNameCount() > 0) line.add(datasetVariableDto.getDceName(0).getValue());
       else line.add("");
     }

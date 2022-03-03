@@ -45,16 +45,16 @@ public class NetworkDtosCsvReportGenerator extends CsvReportGenerator {
       line.add("studies");
 
     String datasetsLabel = translator.translate("datasets");
-    if (mustShow("showStudiesStudyDatasetsColumn"))
+    if (mustShow("showNetworksStudyDatasetsColumn"))
       line.add(String.format("%s:%s", datasetsLabel, translator.translate("search.dataset.collected")));
-    if (mustShow("showStudiesHarmonizationDatasetsColumn"))
+    if (mustShow("showNetworksHarmonizationDatasetsColumn"))
       line.add(String.format("%s:%s", datasetsLabel, translator.translate("search.dataset.harmonized")));
 
-    if (mustShow("showStudiesVariablesColumn")) {
+    if (mustShow("showNetworksVariablesColumn")) {
       String variablesLabel = translator.translate("variables");
-      if (mustShow("showStudiesStudyVariablesColumn"))
+      if (mustShow("showNetworksStudyVariablesColumn"))
         line.add(String.format("%s:%s", variablesLabel, translator.translate("search.variable.collected")));
-      if (mustShow("showStudiesDataschemaVariablesColumn")) {
+      if (mustShow("showNetworksDataschemaVariablesColumn")) {
         line.add(String.format("%s:%s", variablesLabel, translator.translate("search.variable.dataschema")));
       }
     }
@@ -85,9 +85,9 @@ public class NetworkDtosCsvReportGenerator extends CsvReportGenerator {
     if (mustShow("showNetworksStudiesColumn"))
       line.add(getNot0ValueOrDefault(networkCountStats.getStudies()));
 
-    if (mustShow("showNetworksStudyDatasetColumn"))
+    if (mustShow("showNetworksStudyDatasetsColumn"))
       line.add(getNot0ValueOrDefault(networkCountStats.getStudyDatasets()));
-    if (mustShow("showNetworksHarmonizationDatasetColumn"))
+    if (mustShow("showNetworksHarmonizationDatasetsColumn"))
       line.add(getNot0ValueOrDefault(networkCountStats.getHarmonizationDatasets()));
 
     if (mustShow("showNetworksVariablesColumn")) {
