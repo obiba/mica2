@@ -30,19 +30,18 @@ public class DtosCsvReportGeneratorFactory {
   @Inject
   private MicaConfigService micaConfigService;
 
-  public ReportGenerator get(QueryType type, MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, String locale) {
-
+  public ReportGenerator get(QueryType type, boolean forHarmonization, MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, String locale) {
     Translator translator = JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(locale, false));
 
     switch (type) {
       case STUDY:
         return new StudySummaryDtosCsvReportGenerator(queryResult, columnsToHide, translator);
       case NETWORK:
-        return new NetworkDtosCsvReportGenerator(queryResult, columnsToHide, translator);
+        return new NetworkDtosCsvReportGenerator(forHarmonization, queryResult, columnsToHide, translator);
       case DATASET:
-        return new DatasetDtosCsvReportGenerator(queryResult, columnsToHide, translator);
+        return new DatasetDtosCsvReportGenerator(forHarmonization, queryResult, columnsToHide, translator);
       case VARIABLE:
-        return new DatasetVariableDtosCsvReportGenerator(queryResult, columnsToHide, translator);
+        return new DatasetVariableDtosCsvReportGenerator(forHarmonization, queryResult, columnsToHide, translator);
       default:
         throw new IllegalStateException("No CsvReportGenerator available for type " + type);
     }

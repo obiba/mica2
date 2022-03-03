@@ -26,8 +26,10 @@ public class NetworkDtosCsvReportGenerator extends CsvReportGenerator {
   private List<String> columnsToHide;
   private List<Mica.NetworkDto> networkDtos;
   private Translator translator;
+  private final boolean forHarmonization;
 
-  public NetworkDtosCsvReportGenerator(MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, Translator translator) {
+  public NetworkDtosCsvReportGenerator(boolean forHarmonization, MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, Translator translator) {
+    this.forHarmonization = forHarmonization;
     this.columnsToHide = columnsToHide;
     this.networkDtos = queryResult.getNetworkResultDto().getExtension(MicaSearch.NetworkResultDto.result).getNetworksList();
     this.translator = translator;
@@ -42,13 +44,12 @@ public class NetworkDtosCsvReportGenerator extends CsvReportGenerator {
     line.add("name");
 
     if (mustShow("showNetworksStudiesColumn"))
-      line.add("studies");
+      line.add(forHarmonization ? "global.initiatives" : "studies");
 
-    String datasetsLabel = translator.translate("datasets");
     if (mustShow("showNetworksStudyDatasetsColumn"))
-      line.add(String.format("%s:%s", datasetsLabel, translator.translate("search.dataset.collected")));
+      line.add(String.format("%s:%s", translator.translate("datasets"), translator.translate("search.dataset.collected")));
     if (mustShow("showNetworksHarmonizationDatasetsColumn"))
-      line.add(String.format("%s:%s", datasetsLabel, translator.translate("search.dataset.harmonized")));
+      line.add(String.format("%s:%s", translator.translate("global.protocols"), translator.translate("search.dataset.harmonized")));
 
     if (mustShow("showNetworksVariablesColumn")) {
       String variablesLabel = translator.translate("variables");

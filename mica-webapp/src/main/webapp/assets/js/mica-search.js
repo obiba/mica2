@@ -936,8 +936,14 @@ class TableFixedHeaderUtility {
           }
         }
       },
-      hideDownloadColumns(type, form) {
+      updateFormForDownload(type, form) {
         const studyTypeSelection = MicaTreeQueryUrl.getStudyTypeSelection(MicaTreeQueryUrl.getTree());
+        const studyType = studyTypeSelection.study ? 'individual-study' : studyTypeSelection.harmonization ? 'harmonization-study' : null;
+        const inputStudyType = document.createElement('input');
+        inputStudyType.name = 'studyType';
+        inputStudyType.value = studyType;
+        form.appendChild(inputStudyType);
+
         let columnsToHide = [];
 
         switch (type) {
@@ -1004,7 +1010,7 @@ class TableFixedHeaderUtility {
           }
 
           form.appendChild(input);
-          this.hideDownloadColumns(this.downloadUrlObject.type, form);
+          this.updateFormForDownload(this.downloadUrlObject.type, form);
 
           document.body.appendChild(form);
           form.submit();

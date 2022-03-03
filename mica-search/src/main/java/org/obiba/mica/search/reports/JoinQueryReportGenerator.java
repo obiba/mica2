@@ -40,7 +40,7 @@ public class JoinQueryReportGenerator {
   @Inject
   private DtosCsvReportGeneratorFactory dtosCsvReportGeneratorFactory;
 
-  public void generateCsv(QueryType exportType, String rqlQuery, List<String> columnsToHide, OutputStream outputStream) throws IOException {
+  public void generateCsv(QueryType exportType, boolean forHarmonization, String rqlQuery, List<String> columnsToHide, OutputStream outputStream) throws IOException {
     final String limitRegex = "limit\\((\\d+),(\\d+)\\)";
     Pattern pattern = Pattern.compile(limitRegex);
     Matcher matcher = pattern.matcher(rqlQuery);
@@ -53,13 +53,13 @@ public class JoinQueryReportGenerator {
       for (int i = 0; i < numberOfSteps; i++) {
         JoinQuery joinQuery = searcher.makeJoinQuery(rqlQuery.replace(matcher.group(), "limit(" + (MAX_DOWNLOAD_STEP * i) + "," + MAX_DOWNLOAD_STEP + ")"));
         MicaSearch.JoinQueryResultDto queryResult = joinQueryExecutor.query(exportType, joinQuery);
-        ReportGenerator reportGenerator = dtosCsvReportGeneratorFactory.get(exportType, queryResult, columnsToHide, joinQuery.getLocale());
+        ReportGenerator reportGenerator = dtosCsvReportGeneratorFactory.get(exportType, forHarmonization, queryResult, columnsToHide, joinQuery.getLocale());
         reportGenerator.write(outputStream, i > 0);
       }
     } else {
       JoinQuery joinQuery = searcher.makeJoinQuery(rqlQuery);
       MicaSearch.JoinQueryResultDto queryResult = joinQueryExecutor.query(exportType, joinQuery);
-      ReportGenerator reportGenerator = dtosCsvReportGeneratorFactory.get(exportType, queryResult, columnsToHide, joinQuery.getLocale());
+      ReportGenerator reportGenerator = dtosCsvReportGeneratorFactory.get(exportType, forHarmonization, queryResult, columnsToHide, joinQuery.getLocale());
       reportGenerator.write(outputStream);
     }
   }

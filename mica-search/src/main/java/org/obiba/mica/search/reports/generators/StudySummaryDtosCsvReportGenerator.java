@@ -64,13 +64,13 @@ public class StudySummaryDtosCsvReportGenerator extends CsvReportGenerator {
     String individualLabel = translator.translate("search.study.individual");
     if (mustShow("showStudiesStudyDatasetsColumn"))
       line.add(String.format("%s:%s", individualLabel, translator.translate("datasets")));
-    if (mustShow("showStudiesHarmonizationDatasetsColumn"))
+    if (mustShow("showStudiesStudyVariablesColumn"))
       line.add(String.format("%s:%s", individualLabel, translator.translate("variables")));
 
     if (mustShow("showStudiesVariablesColumn")) {
       String harmonizationLabel = translator.translate("search.study.harmonization");
-      if (mustShow("showStudiesStudyVariablesColumn"))
-        line.add(String.format("%s:%s", harmonizationLabel, translator.translate("datasets")));
+      if (mustShow("showStudiesHarmonizationDatasetsColumn"))
+        line.add(String.format("%s:%s", harmonizationLabel, translator.translate("global.protocols")));
       if (mustShow("showStudiesDataschemaVariablesColumn")) {
         line.add(String.format("%s:%s", harmonizationLabel, translator.translate("variables")));
       }
