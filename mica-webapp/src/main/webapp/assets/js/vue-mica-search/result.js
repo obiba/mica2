@@ -1142,7 +1142,7 @@ const CoverageResult = {
                   v-show="!(col.id === '-' && (isSingleStudyEnabled || studyTypeSelection.harmonization))">
 
                   <span v-show="col.id === '-'">-</span>
-                  <a v-show="col.rowSpan !== 0  && col.id !== '-'" v-bind:href="col.url">{{col.title}}</a>
+                  <a v-show="col.rowSpan !== 0  && col.id !== '-'" v-bind:title="col.description" v-bind:href="col.url">{{col.title}}</a>
                   <div style="text-align: center" v-show="col.start && bucketStartsWithDce">
                     <div>
                       <small class="help-block no-margin" v-show="col.end">
