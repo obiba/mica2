@@ -310,7 +310,22 @@
                       <th><@message "variable"/></th>
                       <#list allTables as table>
                         <th>
-                          <a href="${contextPath}/study/${table.studyId}">${localize(allStudies[table.studyId].acronym)}</a>
+                          <#if localizedStringNotEmpty(table.additionalInformation)>
+                          <a href=""
+                             id="popover-${table?counter}"
+                             data-html="true"
+                             data-toggle="popover"
+                             data-trigger="hover"
+                             data-delay="750"
+                             data-placement="top"
+                             data-boundary="viewport"
+                             data-content="${localize(table.additionalInformation)}"
+                             title="Study Specific Dataset">
+                              <span class="d-inline-block marked"><template>${localize(allStudies[table.studyId].acronym)}</template></span>
+                          </a>
+                          <#else>
+                              ${localize(allStudies[table.studyId].acronym)}
+                          </#if>
                           <#if table.name??>${localize(table.name)}</#if>
                           <#if table.description??><i class="fas fa-info-circle" title="${localize(table.description)}"></i></#if>
                         </th>
@@ -345,6 +360,12 @@
 
 <#include "libs/scripts.ftl">
 <#include "libs/dataset-scripts.ftl">
+<script>
+  $('#harmonizedTable tr [data-toggle="popover"]').popover({html: true});
+  document.querySelectorAll("[id^='popover-']").forEach(element => {
+    element.dataset.content=marked(element.dataset.content).replaceAll('"', "'");
+  })
 
+</script>
 </body>
 </html>
