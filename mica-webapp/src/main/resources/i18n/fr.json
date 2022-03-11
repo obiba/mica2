@@ -971,6 +971,7 @@
       "title": "Tables d'étude",
       "info": "Les tables d'étude définissent les implémentations des variables de l'ensemble de données harmonisées. Les sommaires de données seront extraites des tables Opal correspondantes."
     },
+    "harmonized-table": "Table harmonisée",
     "harmonized-tables": {
       "title": "Tables harmonisées",
       "info": "Les tables d'étude définissent les implémentations des variables de l'ensemble de données harmonisées par une étude individuelle dans le cadre de l'événement de collecte de données d'une population ou par une étude harmonisée basée sur des données précédement harmonisées. Les résumés de données seront extraites des tables Opal correspondantes."

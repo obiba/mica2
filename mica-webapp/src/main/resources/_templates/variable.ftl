@@ -325,6 +325,7 @@
                         <tr>
                           <th><@message "variable"/></th>
                           <th><@message "study"/></th>
+                          <th><@message "dataset.harmonized-table"/></th>
                           <th><@message "data-collection-event"/></th>
                           <th><@message "status"/></th>
                           <th><@message "status-detail"/></th>

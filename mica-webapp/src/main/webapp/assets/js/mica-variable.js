@@ -182,6 +182,27 @@ const makeHarmonizedVariablesTable = function() {
     $('#loadingHarmonizedVariables').hide();
     const harmonizedVariablesTableBody = $('#harmonizedVariables > tbody');
     if (data.datasetVariableSummaries) {
+
+      const getTableInformation = (study, studyTableName) => {
+        const title = localizedString(study.studySummary.acronym) + ' ' + studyTableName;
+        let colName = title;
+
+        if (study.description) {
+          const description = marked(localizedString(study.description));
+          colName =
+            '<a href="javascript:void(0)" ' +
+            'data-html="true" ' +
+            'data-toggle="popover" ' +
+            'data-trigger="hover" ' +
+            'data-placement="top" ' +
+            'data-boundary="viewport" ' +
+            'title="'+ Mica.tr['dataset.harmonized-table'] + '"' +
+            'data-content="' + description.replaceAll('"', "'") + '">' + title + '</a>';
+        }
+
+        return colName;
+      };
+
       for (const harmonizedVariable of data.datasetVariableSummaries) {
         const status = localizedString(VariableService.getHarmoStatus(harmonizedVariable));
         const statusDetail = VariableService.getHarmoStatusDetail(harmonizedVariable);
@@ -193,14 +214,14 @@ const makeHarmonizedVariablesTable = function() {
           ? '<a href="' + Mica.contextPath + '/study/' + baseStudyTable.studyId + '">' + localizedString(baseStudyTable.studySummary.acronym) + '</a></td>'
           : localizedString(baseStudyTable.studySummary.acronym);
         let dceName = population ? localizedString(population.name) : "";
+        const studyTableName =  baseStudyTable.name ? ' (' + localizedString(baseStudyTable.name) + ')' : '';
         if (dce) {
           dceName = dceName + ' -- ' + localizedString(dce.name);
         }
         harmonizedVariablesTableBody.append('<tr>' +
-          '<td title=""><a href="' + Mica.contextPath + '/variable/' + harmonizedVariable.resolver.id + '">' + harmonizedVariable.resolver.name + '</a> ' + localizedString(baseStudyTable.name) + '' +
-          '<div class="text-muted">' + localizedString(baseStudyTable.description) + '</div>' +
-          '</td>' +
+          '<td title=""><a href="' + Mica.contextPath + '/variable/' + harmonizedVariable.resolver.id + '">' + harmonizedVariable.resolver.name + '</a> ' + localizedString(baseStudyTable.name) + '</td>' +
           '<td>' + studyAnchor(baseStudyTable.studySummary) + '</td>' +
+          '<td>' + getTableInformation(baseStudyTable, studyTableName) + '</td>' +
           '<td>' + dceName + '</td>' +
           '<td><i class=" ' + VariableService.getHarmoStatusClass(status) + '"></i></td>' +
           '<td>' + localizedString(statusDetail) + '</td>' +
@@ -208,6 +229,7 @@ const makeHarmonizedVariablesTable = function() {
           '</tr>')
       }
       $('#harmonizedVariables').show();
+      $('[data-toggle="popover"]').popover({delay: { show: 250, hide: 750 }});
     } else {
       $('#noHarmonizedVariables').show();
     }
