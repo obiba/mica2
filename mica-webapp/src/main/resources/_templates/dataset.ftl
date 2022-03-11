@@ -311,7 +311,7 @@
                       <#list allTables as table>
                         <th>
                           <#if localizedStringNotEmpty(table.additionalInformation)>
-                          <a href=""
+                          <a href="javascript:void(0)"
                              id="popover-${table?counter}"
                              data-html="true"
                              data-toggle="popover"
