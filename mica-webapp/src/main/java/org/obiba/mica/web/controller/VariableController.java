@@ -170,6 +170,17 @@ public class VariableController extends BaseController {
     return harmonizedDatasetVariable;
   }
 
+  private Map<String, Object> getInitiativeDigest(String studyId) {
+    boolean published = studyService.isPublished(studyId);
+    BaseStudy study = getStudy(studyId, published);
+    Map<String, Object> params = newParameters();
+    params.put("id", studyId);
+    params.put("acronym", study.getAcronym());
+    params.put("name", study.getName());
+    params.put("published", published);
+    return params;
+  }
+
   private void addStudyTableParameters(Map<String, Object> params, DatasetVariable variable) {
     try {
       String studyId = variable.getStudyId();
@@ -185,6 +196,9 @@ public class VariableController extends BaseController {
       }
       if (DatasetVariable.Type.Harmonized.equals(variable.getVariableType())) {
         HarmonizationDataset dataset = getHarmonizationDataset(variable.getDatasetId());
+        Map<String, Object> initiativeDigest = getInitiativeDigest(dataset.getHarmonizationTable().getStudyId());
+        params.put("initiative", initiativeDigest);
+
         if (DatasetVariable.OpalTableType.Study.equals(variable.getOpalTableType())) {
           Optional<StudyTable> studyTable = dataset.getStudyTables().stream().filter(st ->
             variable.getStudyId().equals(st.getStudyId()) && variable.getProject().equals(st.getProject()) && variable.getTable().equals(st.getTable()))

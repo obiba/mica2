@@ -971,9 +971,9 @@
       "title": "Study Tables",
       "info": "The study tables define implementations of the harmonized variables. The data summaries will be extracted from the corresponding Opal tables."
     },
-    "harmonized-table": "Harmonized Table",
+    "harmonized-table": "Study Specific Table",
     "harmonized-tables": {
-      "title": "Harmonized Tables",
+      "title": "Study Specific Tables",
       "info": "The study tables define implementations of the harmonized variables by an individual study in the context of a population's data collection event or a harmonization initiative based on previously harmonized data. The data summaries will be extracted from the corresponding Opal tables."
     },
     "restore-dialog": {
