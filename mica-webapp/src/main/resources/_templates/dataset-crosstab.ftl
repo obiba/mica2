@@ -51,7 +51,7 @@
             </div>
           </div>
           <div class="card-footer">
-            <@message "associated-dataset"/>
+              <#if type == "Harmonized"><@message "associated-protocol"/><#else><@message "associated-dataset"/></#if>
             <a class="btn btn-success ml-2" href="${contextPath}/dataset/${dataset.id}">
               <#if type == "Collected">
                 <i class="${datasetIcon}"></i>

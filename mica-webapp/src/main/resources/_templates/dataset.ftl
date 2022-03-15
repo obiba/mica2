@@ -108,7 +108,7 @@
               </div>
                 <#if study??>
                   <div class="card-footer">
-                    <@message "associated-study"/>
+                    <#if type == "Harmonized"><@message "associated-initiative"/><#else><@message "associated-study"/></#if>
                     <a class="btn btn-success ml-2" href="${contextPath}/study/${study.id}">
                       <i class="${studyIcon}"></i> ${localize(study.acronym)}
                     </a>
@@ -215,7 +215,6 @@
                 </div>
                 <div class="card-body">
                   <#if studyTables?? && studyTables?size != 0>
-                    <h5><@message "individual-studies"/></h5>
                     <div class="table-responsive">
                       <table class="table table-striped mb-3">
                         <thead>
@@ -253,31 +252,40 @@
                       </table>
                     </div>
                   </#if>
-                    <#if harmonizationTables?? && harmonizationTables?size != 0>
-                      <h5><@message "harmonization-studies"/></h5>
-                      <div class="table-responsive">
-                        <table class="table table-striped">
-                          <thead>
-                          <tr>
-                            <th><@message "study"/></th>
-                          </tr>
-                          </thead>
-                          <tbody>
-                          <#list harmonizationTables as table>
-                            <tr>
-                              <td>
-                                <a href="${contextPath}/study/${table.study.id}">
-                                  ${localize(table.study.acronym)}
-                                </a>
-                              </td>
-                            </tr>
-                          </#list>
-                          </tbody>
-                        </table>
-                      </div>
-                    </#if>
                 </div>
               </div>
+              <div class="card card-info card-outline">
+                <div class="card-header">
+                  <h3 class="card-title"><@message "initiatives-included"/></h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
+                      <i class="fas fa-minus"></i></button>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <#if harmonizationTables?? && harmonizationTables?size != 0>
+                    <div class="table-responsive">
+                      <table class="table table-striped">
+                        <thead>
+                        <tr>
+                          <th><@message "initiative"/></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <#list harmonizationTables as table>
+                          <tr>
+                            <td>
+                              <a href="${contextPath}/study/${table.study.id}">
+                                  ${localize(table.study.acronym)}
+                              </a>
+                            </td>
+                          </tr>
+                        </#list>
+                        </tbody>
+                      </table>
+                    </div>
+                  </#if>
+                </div>
             </div>
           </#if>
         </div>

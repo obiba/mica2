@@ -131,7 +131,6 @@
               </#if>
             </div>
           </div>
-
           <div class="col-xs-12 col-lg-6">
             <div class="card card-info card-outline">
               <div class="card-header">
@@ -139,7 +138,7 @@
               </div>
               <div class="card-body">
                 <dl class="row">
-                  <dt class="col-sm-4"><@message "dataset"/></dt>
+                  <dt class="col-sm-4"><#if type == "Harmonized"><@message "protocol"/><#else><@message "dataset"/></#if></dt>
                   <dd class="col-sm-8">
                     <a class="btn btn-success" href="${contextPath}/dataset/${variable.datasetId}">
                       <#if type == "Collected">
@@ -150,6 +149,15 @@
                       ${localize(variable.datasetAcronym, variable.datasetId)}
                     </a>
                   </dd>
+
+                  <#if initiative??>
+                    <dt class="col-sm-4"><@message "initiative"/></dt>
+                      <#if initiative.published>
+                        <dd class="col-sm-8"><a href="${contextPath}/study/${initiative.id}">${localize(initiative.acronym)}</a></dd>
+                      <#else>
+                        <dd class="col-sm-8">${localize(initiative.acronym)}</dd>
+                      </#if>
+                  </#if>
 
                   <dt class="col-sm-4"><@message "study"/></dt>
                   <#if studyPublished>
