@@ -124,23 +124,21 @@
               <div class="row pt-1 row-cols-3">
                 <template v-if="hasStats(dataset)">
                   <stat-item
-                          v-bind:count="dataset['obiba.mica.CountStatsDto.datasetCountStats'].networks"
-                          v-bind:singular="'network' | translate"
-                          v-bind:plural="'networks' | translate"
-                          v-bind:url="networks(dataset.id)">
+                    v-bind:count="dataset['obiba.mica.CountStatsDto.datasetCountStats'].networks"
+                    v-bind:singular="'network' | translate"
+                    v-bind:plural="'networks' | translate"
+                    v-bind:url="networks(dataset.id)">
                   </stat-item>
-                  <stat-item
-                          v-bind:count="dataset['obiba.mica.CountStatsDto.datasetCountStats'].studies"
-                          v-bind:singular="'study' | translate"
-                          v-bind:plural="'studies' | translate"
-                          v-bind:url="studies(dataset)">
-                  </stat-item>
-                  <stat-item
-                          v-bind:count="dataset['obiba.mica.CountStatsDto.datasetCountStats'].variables"
-                          v-bind:singular="'variable' | translate"
-                          v-bind:plural="'variables' | translate"
-                          v-bind:url="variables(dataset)">
-                  </stat-item>
+                  <study-stat-item
+                    v-bind:url="studies(dataset)"
+                    v-bind:type="dataset.variableType"
+                    v-bind:stats="dataset['obiba.mica.CountStatsDto.datasetCountStats']">
+                  </study-stat-item>
+                  <variable-stat-item
+                    v-bind:url="variablesUrl(dataset)"
+                    v-bind:type="dataset.variableType"
+                    v-bind:stats="dataset['obiba.mica.CountStatsDto.datasetCountStats']">
+                  </variable-stat-item>
                 </template>
                 <template v-else>
                   <!-- HACK used 'datasetsWithVariables' with opacity ZERO to have the same height as the longest stat item -->

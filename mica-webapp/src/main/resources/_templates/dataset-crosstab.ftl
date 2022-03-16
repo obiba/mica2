@@ -25,7 +25,7 @@
       <div class="container">
         <div class="callout callout-info">
           <p>
-            <@message "dataset-crosstab-callout"/>
+            <#if type == "Harmonized"><@message "protocol-crosstab-callout"/><#else><@message "dataset-crosstab-callout"/></#if>
           </p>
         </div>
 

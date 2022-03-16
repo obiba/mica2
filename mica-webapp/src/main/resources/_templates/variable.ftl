@@ -138,7 +138,7 @@
               </div>
               <div class="card-body">
                 <dl class="row">
-                  <dt class="col-sm-4"><#if type == "Harmonized"><@message "protocol"/><#else><@message "dataset"/></#if></dt>
+                  <dt class="col-sm-4"><#if type != "Collected"><@message "protocol"/><#else><@message "dataset"/></#if></dt>
                   <dd class="col-sm-8">
                     <a class="btn btn-success" href="${contextPath}/dataset/${variable.datasetId}">
                       <#if type == "Collected">
@@ -159,7 +159,7 @@
                       </#if>
                   </#if>
 
-                  <dt class="col-sm-4"><@message "study"/></dt>
+                  <dt class="col-sm-4"><#if type == "Dataschema"><@message "initiative"/><#else><@message "study"/></#if></dt>
                   <#if studyPublished>
                     <dd class="col-sm-8"><a href="${contextPath}/study/${study.id}">${localize(study.acronym, study.id)}</a></dd>
                   <#else>
@@ -332,7 +332,7 @@
                       <thead>
                         <tr>
                           <th><@message "variable"/></th>
-                          <th><@message "study"/></th>
+                          <th><@message "global.study-initiative"/></th>
                           <th><@message "dataset.harmonized-table"/></th>
                           <th><@message "data-collection-event"/></th>
                           <th><@message "status"/></th>

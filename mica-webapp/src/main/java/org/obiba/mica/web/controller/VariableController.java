@@ -35,10 +35,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -104,8 +101,16 @@ public class VariableController extends BaseController {
       .filter(annot -> annot.getTaxonomyName().equals("Mlstr_harmo"))
       .collect(Collectors.toList());
 
+    List<Annotation> dataschemaAnnotations = annotations.stream()
+      .filter(annot -> annot.getTaxonomyName().equals("Mlstr_dataschema"))
+      .collect(Collectors.toList());
+
+    List<String> exclusions = new ArrayList<String>() {{
+      add("Mlstr_harmo");
+      add("Mlstr_dataschema");
+    }};
     annotations = annotations.stream()
-      .filter(annot -> !annot.getTaxonomyName().equals("Mlstr_harmo"))
+      .filter(annot -> !exclusions.contains(annot.getTaxonomyName()))
       .collect(Collectors.toList());
 
     StringBuilder query = new StringBuilder();
@@ -117,6 +122,7 @@ public class VariableController extends BaseController {
         query = new StringBuilder("and(" + query + "," + expr + ")");
     }
 
+    annotations.addAll(dataschemaAnnotations);
     params.put("annotations", annotations);
     params.put("harmoAnnotations", new HarmonizationAnnotations(harmoAnnotations));
     params.put("query", "variable(" + query.toString() + ")");

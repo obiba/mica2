@@ -400,9 +400,17 @@ const VariableStatItemComponent =  {
     </a>
   `,
   mounted: function() {
-    let prefix = this.type === 'individual-study' ? 'collected' : 'harmonized';
+    let prefix;
+    if (['individual-study', 'harmonization-study'].indexOf(this.type) > -1) {
+      prefix = `${this.type === 'individual-study' ? '' : 'harmonized-'}`;
+    } else if (['Collected', 'Dataschema', 'Harmonized'].indexOf(this.type) > -1){
+      prefix = `${this.type === 'Collected' ? '' : 'harmonized-'}`;
+    } else {
+      throw new Error(`Invalid Datset variableType ${this.type}`);
+    }
+
     this.count = this.stats.variables;
-    this.countLabel = this.count < 2 ? Mica.tr[`${prefix}-variable`] : Mica.tr[`${prefix}-variables`];
+    this.countLabel = this.count < 2 ? Mica.tr[`${prefix}variable`] : Mica.tr[`${prefix}variables`];
   }
 };
 
@@ -432,6 +440,44 @@ const DatasetStatItemComponent =  {
 
     this.count = this.stats[key];
     this.countLabel = this.count < 2 ? Mica.tr[`${prefix}-dataset`] : Mica.tr[`${prefix}-datasets`];
+  }
+};
+
+/**
+ * Component for rendering study stat count
+ */
+const StudyStatItemComponent =  {
+  props: {
+    type: String,
+    stats: Object
+  },
+  data() {
+    return {
+      count: 0,
+      countLabel: null
+    }
+  },
+  template: `
+    <a v-if="count" href="javascript:void(0)" style="cursor: initial;" class="btn btn-sm col text-left">
+      <span class="h6 pb-0 mb-0 d-block">{{count | localize-number}}</span>
+      <span class="text-muted"><small>{{this.countLabel}}</small></span>
+    </a>
+  `,
+  mounted: function() {
+    let singular = '', plural = '';
+
+    if (['individual-study', 'harmonization-study'].indexOf(this.type) > -1) {
+      singular = `${this.type === 'individual-study' ? 'study' : 'harmonization-study'}`;
+      plural = `${this.type === 'individual-study' ? 'studies' : 'harmonization-studies'}`;
+    } else if (['Collected', 'Dataschema', 'Harmonized'].indexOf(this.type) > -1){
+      singular = `${this.type === 'Collected' ? 'study' : 'harmonization-study'}`;
+      plural = `${this.type === 'Collected' ? 'studies' : 'harmonization-studies'}`;
+    } else {
+      throw new Error(`Invalid Dataset variableType ${this.type}`);
+    }
+
+    this.count = this.count = this.stats.studies;
+    this.countLabel = this.count < 2 ? Mica.tr[`${singular}`] : Mica.tr[`${plural}`];
   }
 };
 
@@ -745,6 +791,8 @@ class ObibaDatasetsApp {
         };
       },
       components: {
+        'variable-stat-item' : VariableStatItemComponent,
+        'study-stat-item' : StudyStatItemComponent,
         'stat-item' : StatItemComponent,
         'typeahead': TypeaheadComponent,
         'sorting': EntitiesSortingComponent
@@ -758,6 +806,11 @@ class ObibaDatasetsApp {
         this.initialFilter = this.service.getFilterQueryValue(this.service.prepareQuery(locale));
       },
       methods: {
+        variablesUrl: function(dataset) {
+          const studyResourcePath = dataset.variableType === "Collected" ? "individual-study" : "harmonization-study";
+          const studyQuery = this.ensureStudyClassNameQuery(studyResourcePath);
+          return MicaService.normalizeUrl(`/search#lists?type=variables&query=study(${studyQuery}),variable(in(Mica_variable.variableType,${dataset.variableType})),dataset(in(Mica_dataset.id,${dataset.id}))`)
+        },
         networks: function(id) {
           return MicaService.normalizeUrl(`/search#lists?type=networks&query=dataset(in(Mica_dataset.id,${id}))`);
         },

@@ -158,7 +158,7 @@
                         <h3 class="card-title"><@message "global.additional-information"/></h3>
                       </div>
                       <div class="card-body">
-                        <div class="marked"><template>${localize(dataset.model.informationContent)}</template></div>
+                        <div class="marked"><template>${localize(dataset.model.additionalInformation)}</template></div>
                       </div>
                     </div>
                   </div>
@@ -286,6 +286,7 @@
                     </div>
                   </#if>
                 </div>
+              </div>
             </div>
           </#if>
         </div>
