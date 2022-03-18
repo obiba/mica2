@@ -7,10 +7,13 @@
 <#include "models/files.ftl">
 
 <#if !type??>
+    <#assign title = "datasets">
     <#assign searchPageQuery = "study(in(Mica_study.id,${study.id}))">
 <#elseif type == "Harmonized">
+    <#assign title = "harmonized-datasets">
     <#assign searchPageQuery = "study(in(Mica_study.className,HarmonizationStudy)),dataset(in(Mica_dataset.id,${dataset.id}))">
 <#else>
+    <#assign title = "collected-datasets">
     <#assign searchPageQuery = "study(in(Mica_study.className,Study)),dataset(in(Mica_dataset.id,${dataset.id}))">
 </#if>
 
@@ -30,7 +33,7 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <@header titlePrefix=(type?lower_case + "-dataset") title=localize(dataset.acronym) subtitle=localize(dataset.name) breadcrumb=[["${contextPath}/", "home"], ["${contextPath}/datasets", "datasets"], [localize(dataset.acronym)]]/>
+    <@header titlePrefix=(type?lower_case + "-dataset") title=localize(dataset.acronym) subtitle=localize(dataset.name) breadcrumb=[["${contextPath}/", "home"], ["${contextPath}/${title}", "${title}"], [localize(dataset.acronym)]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->

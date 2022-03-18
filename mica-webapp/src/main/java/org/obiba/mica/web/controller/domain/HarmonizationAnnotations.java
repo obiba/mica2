@@ -10,7 +10,7 @@ public class HarmonizationAnnotations {
 
   private Annotation statusDetail;
 
-  private Annotation algorithm;
+  private Annotation rule;
 
   private Annotation comment;
 
@@ -22,8 +22,8 @@ public class HarmonizationAnnotations {
         statusDetail = annotation;
       else if (annotation.getVocabularyName().equals("comment"))
         comment = annotation;
-      else if (annotation.getVocabularyName().equals("algorithm"))
-        algorithm = annotation;
+      else if (annotation.getVocabularyName().equals("rule"))
+        rule = annotation;
     }
   }
 
@@ -90,20 +90,20 @@ public class HarmonizationAnnotations {
     return statusDetail.getTermDescription();
   }
 
-  public boolean hasAlgorithm() {
-    return algorithm != null;
+  public boolean hasRule() {
+    return rule != null;
   }
 
-  public LocalizedString getAlgorithmTitle() {
-    return algorithm.getVocabularyTitle();
+  public LocalizedString getRuleTitle() {
+    return rule.getVocabularyTitle();
   }
 
-  public LocalizedString getAlgorithmDescription() {
-    return algorithm.getVocabularyDescription();
+  public LocalizedString getRuleDescription() {
+    return rule.getVocabularyDescription();
   }
 
-  public LocalizedString getAlgorithmValue() {
-    return algorithm.getTermValues();
+  public LocalizedString getRuleValue() {
+    return rule.getTermValues();
   }
 
   public boolean hasComment() {

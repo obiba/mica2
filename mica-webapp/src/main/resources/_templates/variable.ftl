@@ -263,12 +263,12 @@
                         </dd>
                       </#if>
 
-                      <#if harmoAnnotations.hasAlgorithm()>
-                        <dt title="${localize(harmoAnnotations.algorithmDescription)}">
-                          ${localize(harmoAnnotations.algorithmTitle, "Algorithm")}
+                      <#if harmoAnnotations.hasRule()>
+                        <dt title="${localize(harmoAnnotations.ruleDescription)}">
+                          ${localize(harmoAnnotations.ruleTitle, "Rule")}
                         </dt>
                         <dd>
-                          <span class="marked mt-3"><template>${localize(harmoAnnotations.algorithmValue!"")}</template></span>
+                          <span class="marked mt-3"><template>${localize(harmoAnnotations.ruleValue!"")}</template></span>
                         </dd>
                       </#if>
 

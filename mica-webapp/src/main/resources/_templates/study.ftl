@@ -7,10 +7,13 @@
 <#include "models/files.ftl">
 
 <#if !type??>
+    <#assign title = "studies">
     <#assign searchPageQuery = "study(in(Mica_study.id,${study.id}))">
 <#elseif type == "Harmonization">
+    <#assign title = "harmonization-studies">
     <#assign searchPageQuery = "study(and(in(Mica_study.className,HarmonizationStudy),in(Mica_study.id,${study.id})))">
 <#else>
+    <#assign title = "individual-studies">
     <#assign searchPageQuery = "study(and(in(Mica_study.className,Study),in(Mica_study.id,${study.id})))">
 </#if>
 
@@ -31,7 +34,7 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <@header titlePrefix=(type?lower_case + "-study") title=localize(study.acronym) subtitle=localize(study.name) breadcrumb=[["..", "home"], ["${contextPath}/studies", "studies"], [localize(study.acronym)]]/>
+    <@header titlePrefix=(type?lower_case + "-study") title=localize(study.acronym) subtitle=localize(study.name) breadcrumb=[["..", "home"], ["${contextPath}/${title}", "${title}"], [localize(study.acronym)]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->
