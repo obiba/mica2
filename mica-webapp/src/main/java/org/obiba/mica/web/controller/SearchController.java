@@ -38,6 +38,18 @@ public class SearchController extends BaseController {
     }
   }
 
+  @GetMapping("/individual-search")
+  public ModelAndView individualSearch(@CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
+    @RequestParam(value = "language", required = false) String language) {
+    return search(locale, language);
+  }
+
+  @GetMapping("/harmonization-search")
+  public ModelAndView harmonizationSearch(@CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
+    @RequestParam(value = "language", required = false) String language) {
+    return search(locale, language);
+  }
+
   private String getMicaConfigAsJson(MicaConfig config, String language) {
     try {
       Mica.MicaConfigDto dto = dtos.asDto(config, language);

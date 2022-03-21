@@ -82,6 +82,7 @@
 
 <!-- Search -->
 <#assign defaultSearchState = "#lists?query=study(and(in(Mica_study.className,Study)))"/>
+<#assign defaultSearchMode = "Study"/>
 
 <!-- Download the search results or full export -->
 <#assign downloadQueryEnabled = true />

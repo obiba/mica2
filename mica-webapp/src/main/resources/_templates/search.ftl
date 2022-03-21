@@ -137,10 +137,6 @@
       </div>
       <!-- /.card -->
 
-      <div id="mode-tabs" class="mt-2" v-if="showStudyShortcut">
-        <study-filter-shortcut :alternate="true"/>
-      </div>
-
       <!-- Results box -->
       <div class="row" id="results-tab-content">
         <div class="col-12">

@@ -178,7 +178,7 @@ const RqlNode = {
     </template>
 
     <template v-else>
-    <rql-query v-bind:vocabulary="firstArg.vocabulary" v-bind:query="firstArg.associatedQuery" v-on:update-query="updateQuery($event, firstArg.taxonomyName)" v-on:remove-query="removeQuery($event, firstArg.taxonomyName)"></rql-query>
+    <rql-query v-if="firstArg && firstArg.vocabulary" v-bind:vocabulary="firstArg.vocabulary" v-bind:query="firstArg.associatedQuery" v-on:update-query="updateQuery($event, firstArg.taxonomyName)" v-on:remove-query="removeQuery($event, firstArg.taxonomyName)"></rql-query>
     </template>
 
     <span v-if="advancedMode && otherArgs.length > 0" class="d-flex my-auto">
@@ -198,7 +198,7 @@ const RqlNode = {
       </template>
 
       <template v-else>
-      <rql-query v-bind:vocabulary="arg.vocabulary" v-bind:query="arg.associatedQuery" v-on:update-query="updateQuery($event, arg.taxonomyName)" v-on:remove-query="removeQuery($event, arg.taxonomyName)"></rql-query>
+      <rql-query v-if="arg && arg.vocabulary" v-bind:vocabulary="arg.vocabulary" v-bind:query="arg.associatedQuery" v-on:update-query="updateQuery($event, arg.taxonomyName)" v-on:remove-query="removeQuery($event, arg.taxonomyName)"></rql-query>
       </template>
     </span>
   </div>
@@ -215,21 +215,25 @@ const RqlNode = {
   },
   computed: {
     firstArg() {
+      let result = null;
+
       if (this.isNode()) {
         const arg = this.args.slice(0, 1)[0];
-        return this.isNode(arg) ? arg : this.asInput(arg);
+        result = this.isNode(arg) ? arg : this.asInput(arg);
       } else {
         const query = new RQL.Query(this.name);
         query.args = this.args;
-        return this.asInput(query);
+        result = this.asInput(query);
       }
+
+      return result;
     },
     otherArgs() {
       if (this.isNode()) {
         const others = this.args.slice(1);
         return others.map(other => {
           if (this.isNode(other)) {
-            return other;
+            return this.other;
           } else {
             return this.asInput(other);
           }

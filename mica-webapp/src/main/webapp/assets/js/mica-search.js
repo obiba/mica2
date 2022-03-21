@@ -626,7 +626,7 @@ class TableFixedHeaderUtility {
         currentStudyTypeSelection: null,
         pagination: null,
         pageSizeSelector: null,
-        showStudyShortcut: (Mica.isHarmonizedDatasetEnabled && !Mica.isSingleStudyEnabled) || !this.currentStudyTypeSelection || this.currentStudyTypeSelection.all
+        showStudyShortcut: (Mica.isHarmonizedDatasetEnabled && !Mica.isSingleStudyEnabled) || !this.currentStudyTypeSelection || this.currentStudyTypeSelection.all,
       };
     },
     methods: {
@@ -747,8 +747,7 @@ class TableFixedHeaderUtility {
         return found;
       },
       onExecuteQuery() {
-        console.debug('Executing ' + this.queryType + ' query ...');
-        EventBus.$emit(this.queryType, 'I am the result of a ' + this.queryType + ' query');
+        setTimeout(this.checkCurrentModeAndRectify, 250);
       },
       findProperType() {
 
@@ -794,11 +793,13 @@ class TableFixedHeaderUtility {
         this.currentStudyTypeSelection = studyTypeSelection;
 
         if (studyTypeSelectionWasDifferent) {
-          let studyClassName = 'Study';
-          if (studyTypeSelection.all) {
-            studyClassName = ['Study', 'HarmonizationStudy'];
-          } else if (studyTypeSelection.harmonization) {
+          let currentPathName = window.location.pathname;
+          let studyClassName = Mica.defaultSearchMode;
+
+          if (currentPathName.startsWith("/harmonization")) {
             studyClassName = 'HarmonizationStudy';
+          } else if (currentPathName.startsWith("/individual")) {
+            studyClassName = 'Study';
           }
 
           this.setLocation(new RQL.Query('study', [new RQL.Query('', [new RQL.Query('in', ['Mica_study.className', studyClassName])])]).toString());
@@ -852,6 +853,25 @@ class TableFixedHeaderUtility {
 
         const targetQueries = MicaTreeQueryUrl.getTreeQueries();
         this.hasVariableQuery = TARGETS.VARIABLE in targetQueries && targetQueries[TARGETS.VARIABLE].args.length > 0;
+      },
+      checkCurrentModeAndRectify() {
+        let tree = MicaTreeQueryUrl.getTree();
+        let foundStudyClassName = tree.search((name, args, parent) => 'in' === name && args[0] === 'Mica_study.className' && parent.name === TARGETS.STUDY);
+
+        let currentPathName = window.location.pathname;
+        let studyClassName = Mica.defaultSearchMode;
+
+        if (currentPathName.startsWith("/harmonization")) {
+          studyClassName = 'HarmonizationStudy';
+        } else if (currentPathName.startsWith("/individual")) {
+          studyClassName = 'Study';
+        }
+
+        if (!foundStudyClassName ||
+          (Array.is(foundStudyClassName.args[1]) && foundStudyClassName.args[1] === 1 && foundStudyClassName.args[1][0] !== studyClassName) ||
+          (!Array.isArray(foundStudyClassName.args[1])) && foundStudyClassName.args[1] !== studyClassName) {
+          this.setLocation(new RQL.Query('study', [new RQL.Query('', [new RQL.Query('in', ['Mica_study.className', studyClassName])])]).toString());
+        }
       },
       onQueryUpdate(payload) {
         console.debug('query-builder update', payload);

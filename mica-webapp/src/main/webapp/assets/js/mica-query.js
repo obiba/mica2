@@ -922,43 +922,43 @@ class MicaQueryExecutor {
    * @private
    */
   __onBeforeUnload(event) {
-    console.debug(`On before unload ${event}`);
+    console.debug('On before unload', event);
     window.removeEventListener('hashchange', this.__onHashChanged);
     window.removeEventListener('beforeunload', this.__onBeforeUnload);
   }
 
   __onQueryTypeSelection(payload) {
-    console.debug(`__onQueryTypeSelection ${payload}`);
+    console.debug('__onQueryTypeSelection', payload);
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_SELECTION, payload);
   }
 
   __onQueryTypeUpdate(payload) {
-    console.debug(`__onQueryTypeSelection ${payload}`);
+    console.debug('__onQueryTypeSelection', payload);
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_UPDATE, payload);
   }
 
   __onQueryTypeUpdatesSelection(payload) {
-    console.debug(`__onQueryTypeUpdatesSelection ${payload}`);
+    console.debug('__onQueryTypeUpdatesSelection', payload);
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_UPDATES_SELECTION, payload);
   }
 
   __onQueryTypeDelete(payload) {
-    console.debug(`__onQueryTypeSelection ${payload}`);
+    console.debug('__onQueryTypeSelection', payload);
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_DELETE, payload);
   }
 
   __onQueryTypePaginate(payload) {
-    console.debug(`__onQueryTypeSelection ${payload}`);
+    console.debug('__onQueryTypeSelection', payload);
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_PAGINATE, payload);
   }
 
   __onQueryTypeCoverage(payload) {
-    console.debug(`__onQueryTypeSelection ${payload}`);
+    console.debug('__onQueryTypeSelection', payload);
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_COVERAGE, payload);
   }
 
   __onQueryTypeGraphics(payload) {
-    console.debug(`__onQueryTypeGraphics ${payload}`);
+    console.debug('__onQueryTypeGraphics', payload);
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_GRAPHICS, payload);
   }
 

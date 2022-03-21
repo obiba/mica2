@@ -121,6 +121,12 @@
 
   Mica.maxNumberOfSets = ${maxNumberOfSets};
 
+  <#if rc.requestUri?starts_with("harmonization")>
+    Mica.defaultSearchMode = "Harmonization"
+  <#else>
+    Mica.defaultSearchMode = "${defaultSearchMode}" || "Study";
+  </#if>
+
   Mica.querySettings = {
     variable: {
       fields: ['${searchVariableFields?join("', '")}'],
