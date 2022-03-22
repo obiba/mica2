@@ -747,7 +747,7 @@ class TableFixedHeaderUtility {
         return found;
       },
       onExecuteQuery() {
-        setTimeout(this.checkCurrentModeAndRectify, 250);
+        this.checkCurrentModeAndRectify();
       },
       findProperType() {
 
@@ -856,7 +856,7 @@ class TableFixedHeaderUtility {
       },
       checkCurrentModeAndRectify() {
         let tree = MicaTreeQueryUrl.getTree();
-        let foundStudyClassName = tree.search((name, args, parent) => 'in' === name && args[0] === 'Mica_study.className' && parent.name === TARGETS.STUDY);
+        let foundStudyClassName = tree ? tree.search((name, args, parent) => 'in' === name && args[0] === 'Mica_study.className' && parent.name === TARGETS.STUDY) : null;
 
         let currentPathName = window.location.pathname;
         let studyClassName = Mica.defaultSearchMode;
@@ -1366,6 +1366,7 @@ class TableFixedHeaderUtility {
                     }
 
                     studyClassNameVocabulary.attributes.push({"key": "uiTermsReadOnly", "value": "true"});
+                    studyClassNameVocabulary.attributes.push({"key": "uiHideInBuilder", "value": "true"});
                   }
                 }
 

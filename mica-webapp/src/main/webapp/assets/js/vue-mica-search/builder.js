@@ -259,6 +259,10 @@ const RqlNode = {
 
       return arg;
     },
+    inputIsShown(input) {
+      let uiHideInBuilderVocabularyAttributes = (input.vocabulary || {attributes: [{"key": "uiHideInBuilder", "value": "false"}]}).attributes.find(attr => attr.key === 'uiHideInBuilder');
+      return !uiHideInBuilderVocabularyAttributes || uiHideInBuilderVocabularyAttributes.value === "false";
+    },
     updateQuery(payload, taxonomyName) {
       this.$emit("update-query", { data: (payload.data || payload), taxonomyName: (payload.taxonomyName || taxonomyName) });
     },
