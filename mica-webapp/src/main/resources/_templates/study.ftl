@@ -9,12 +9,15 @@
 <#if !type??>
     <#assign title = "studies">
     <#assign searchPageQuery = "study(in(Mica_study.id,${study.id}))">
+    <#assign detailsPageSearchMode = "search">
 <#elseif type == "Harmonization">
     <#assign title = "harmonization-studies">
     <#assign searchPageQuery = "study(and(in(Mica_study.className,HarmonizationStudy),in(Mica_study.id,${study.id})))">
+    <#assign detailsPageSearchMode = "harmonization-search">
 <#else>
     <#assign title = "individual-studies">
     <#assign searchPageQuery = "study(and(in(Mica_study.className,Study),in(Mica_study.id,${study.id})))">
+    <#assign detailsPageSearchMode = "individual-search">
 </#if>
 
 <!DOCTYPE html>
@@ -71,7 +74,7 @@
                     <div class="col-md-3 col-sm-6 col-12">
                       <div class="info-box">
                         <span class="info-box-icon bg-info">
-                          <a href="${contextPath}/search#lists?type=networks&query=${searchPageQuery}">
+                          <a href="${contextPath}/${detailsPageSearchMode}#lists?type=networks&query=${searchPageQuery}">
                             <i class="${networkIcon}"></i>
                           </a>
                         </span>
@@ -88,7 +91,7 @@
                     <div class="col-md-3 col-sm-6 col-12">
                       <div class="info-box">
                         <span class="info-box-icon bg-warning">
-                          <a href="${contextPath}/search#lists?type=datasets&query=${searchPageQuery}">
+                          <a href="${contextPath}/${detailsPageSearchMode}#lists?type=datasets&query=${searchPageQuery}">
                             <i class="${datasetIcon}"></i>
                           </a>
                         </span>
@@ -105,7 +108,7 @@
                     <div class="col-md-3 col-sm-6 col-12">
                       <div class="info-box">
                         <span class="info-box-icon bg-danger">
-                          <a href="${contextPath}/search#lists?type=variables&query=${searchPageQuery}">
+                          <a href="${contextPath}/${detailsPageSearchMode}#lists?type=variables&query=${searchPageQuery}">
                             <i class="${variableIcon}"></i>
                           </a>
                         </span>

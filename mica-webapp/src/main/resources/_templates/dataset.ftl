@@ -9,12 +9,15 @@
 <#if !type??>
     <#assign title = "datasets">
     <#assign searchPageQuery = "study(in(Mica_study.id,${study.id}))">
+    <#assign detailsPageSearchMode = "search">
 <#elseif type == "Harmonized">
     <#assign title = "harmonized-datasets">
     <#assign searchPageQuery = "study(in(Mica_study.className,HarmonizationStudy)),dataset(in(Mica_dataset.id,${dataset.id}))">
+    <#assign detailsPageSearchMode = "harmonization-search">
 <#else>
     <#assign title = "collected-datasets">
     <#assign searchPageQuery = "study(in(Mica_study.className,Study)),dataset(in(Mica_dataset.id,${dataset.id}))">
+    <#assign detailsPageSearchMode = "individual-search">
 </#if>
 
 <!DOCTYPE html>
@@ -71,7 +74,7 @@
                     <div class="col-md-3 col-sm-6 col-12">
                       <div class="info-box">
                         <span class="info-box-icon bg-info">
-                          <a href="${contextPath}/search#lists?type=networks&query=${searchPageQuery}">
+                          <a href="${contextPath}/${detailsPageSearchMode}#lists?type=networks&query=${searchPageQuery}">
                             <i class="${networkIcon}"></i>
                           </a>
                         </span>
@@ -87,7 +90,7 @@
                   <div class="col-md-3 col-sm-6 col-12">
                     <div class="info-box">
                       <span class="info-box-icon bg-danger">
-                        <a href="${contextPath}/search#lists?type=variables&query=${searchPageQuery}">
+                        <a href="${contextPath}/${detailsPageSearchMode}#lists?type=variables&query=${searchPageQuery}">
                           <i class="${variableIcon}"></i>
                         </a>
                       </span>
