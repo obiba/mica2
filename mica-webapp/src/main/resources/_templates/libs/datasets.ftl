@@ -130,7 +130,7 @@
                     v-bind:count="dataset['obiba.mica.CountStatsDto.datasetCountStats'].networks"
                     v-bind:singular="'network' | translate"
                     v-bind:plural="'networks' | translate"
-                    v-bind:url="networks(dataset.id)">
+                    v-bind:url="networks(dataset)">
                   </stat-item>
                   <study-stat-item
                     v-bind:url="studies(dataset)"

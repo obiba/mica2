@@ -814,8 +814,10 @@ class ObibaDatasetsApp {
           const studyQuery = this.ensureStudyClassNameQuery(studyResourcePath);
           return MicaService.normalizeUrl(`/${this.searchModeFromStudyType(studyResourcePath)}#lists?type=variables&query=study(${studyQuery}),variable(in(Mica_variable.variableType,${dataset.variableType})),dataset(in(Mica_dataset.id,${dataset.id}))`)
         },
-        networks: function(id) {
-          return MicaService.normalizeUrl(`/search#lists?type=networks&query=dataset(in(Mica_dataset.id,${id}))`);
+        networks: function(dataset) {
+          const studyType = dataset.variableType === "Collected" ? "individual-study" : "harmonization-study";
+          const studyQuery = this.ensureStudyClassNameQuery(studyType);
+          return MicaService.normalizeUrl(`/${this.searchModeFromStudyType(studyType)}#lists?type=networks&query=study(${studyQuery}),dataset(in(Mica_dataset.id,${dataset.id}))`);
         },
         studies: function(dataset) {
           const studyType = dataset.variableType === 'Dataschema' ? 'harmonization-study' : 'individual-study';
