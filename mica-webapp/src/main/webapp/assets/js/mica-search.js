@@ -691,9 +691,9 @@ class TableFixedHeaderUtility {
         if (Array.isArray(result[0])) {
           let finalResult = [];
           result[0].forEach(res => {
-            const processed = processTaxonomyForStudyTypeSelection(studyTypeSelection, res)
+            const processed = processTaxonomyForStudyTypeSelection(studyTypeSelection, res);
             if (processed ) {
-              finalResult.push();
+              finalResult.push(processed);
             }
           });
           return finalResult;
@@ -754,7 +754,6 @@ class TableFixedHeaderUtility {
         this.checkCurrentModeAndRectify();
       },
       findProperType() {
-
         if (Mica.config.isSingleStudyEnabled) {
           if (Mica.config.isCollectedDatasetEnabled || Mica.config.isHarmonizedDatasetEnabled) {
             return TYPES.VARIABLES;
