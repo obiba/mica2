@@ -129,7 +129,7 @@
       "study-with-variables": "Étude individuelle avec des variables",
       "harmonization-studies": "Initiatives d'harmonisation",
       "collected-datasets": "Ensemble de données de collecte",
-      "harmonized-datasets": "Ensemble de données harmonisées",
+      "harmonized-datasets": "Protocoles d'harmonisation",
       "variables": "Variables",
       "study-variables": "Variables d'études individuelles",
       "study-variable": "Variable d'étude individuelle",
@@ -257,8 +257,8 @@
     "datasets-help": "Index permettant de chercher des ensembles de données de n'importe quel type ainsi que les variables associées.",
     "collected-datasets": "Ensemble de données de collecte",
     "collected-datasets-help": "Index permettant de chercher des ensembles de données de collecte ainsi que les variables associées.",
-    "harmonized-datasets": "Ensemble de données d'harmonisation",
-    "harmonized-datasets-help": "Index permettant de chercher des ensembles de données d'harmonisation ainsi que les variables associées.",
+    "harmonized-datasets": "Protocoles d'harmonisation",
+    "harmonized-datasets-help": "Index qui permet de rechercher les protocoles d'harmonisation et les variables associées.",
     "persons": "Personnes",
     "persons-help": "Index permettant de rechercher des personnes pouvant être associées à des études ou à des réseaux.",
     "files": "Fichiers",
@@ -317,8 +317,8 @@
     "anonymous-username-help": "L'utilisateur configuré pour le fonctionnement anonyme du Portail.",
     "cart-enabled": "Panier de variables",
     "cart-enabled-help": "La création et la gestion de panier de variables est activée",
-    "studies-cart-enabled": "Panier d'études",
-    "studies-cart-enabled-help": "La création et la gestion de panier d'études est activée",
+    "studies-cart-enabled": "Panier d'études et d'initiatives activées",
+    "studies-cart-enabled-help": "Le panier d'études et de création et de gestion d'initiatives est activé.",
     "networks-cart-enabled": "Panier de réseaux",
     "networks-cart-enabled-help": "La création et la gestion de panier de réseaux est activée",
     "comments-required": "Commentaires requis",
@@ -435,7 +435,7 @@
     "variableSummaryRequiresAuthentication-help": "L'utilistaeur doit être identifié afin d'avoir accès aux statistiques de variables (sommaire, table de contingence etc.).",
     "sections": "Sections",
     "repository-enabled": "Catalogue activé",
-    "repository-enabled-help": "Montrer les pages du catalogue de réseaux, études etc. ainsi que la page de recherche.",
+    "repository-enabled-help": "Montrer les pages du catalogue de réseaux, initiatives, études etc. ainsi que la page de recherche.",
     "project-enabled": "Projet activé",
     "project-enabled-help": "Montrer les pages de projets de recherche approuvés.",
     "data-access-enabled": "Demandes d'accès activées",
@@ -448,10 +448,10 @@
     "network-enabled-help": "Un ou plusieurs réseaux sont présents dans Mica.",
     "collected-dataset-enabled": "Section ensemble de données de collecte activée",
     "collected-dataset-enabled-help": "Des ensembles de données de collecte sont présents dans Mica.",
-    "harmonized-dataset-enabled": "Section ensemble de données d'harmonisation activée",
-    "harmonized-dataset-enabled-help": "Des ensembles de données d'harmonisation sont présents dans Mica.",
-    "import-studies-feature-enabled": "Please translate",
-    "import-studies-feature-enabled-help": "Please translate.",
+    "harmonized-dataset-enabled": "Section des protocoles d'harmonisation activée",
+    "harmonized-dataset-enabled-help": "La section des protocoles d'harmonisation est présente dans Mica.",
+    "import-studies-feature-enabled": "Fonction d'importation d'études et d'initiatives activée",
+    "import-studies-feature-enabled-help": "La fonctionnalité d'importation d'études et d'initiatives est présent dans Mica.",
     "signup-enabled": "Enregistrement activé",
     "signup-enabled-help": "Les nouveaux utilisateurs peuvent s'enregistrer.",
     "signup-with-password": "Formulaire d'enregistrement avec mot de passe",
@@ -460,7 +460,7 @@
     "signup-groups-help": "Groupes étant appliqués automatiquement aux nouveaux utilisateurs.",
     "signup-groups-form-help": "Noms des groupes étant appliqués automatiquement aux nouveaux utilisateurs, séparés par des espaces.",
     "roles": "Rôles des personnes membres",
-    "roles-help": "Une personne peut être membre d'une étude ou d'un réseau avec l'un des rôles énumérés. * Utiliser le préfixe <a href='#/admin/translations/edit?filter=contact.label.'>'contact.label.'</a> pour changer la traduction.",
+    "roles-help": "Une personne peut être membre d'une initiative, d'une étude ou d'un réseau avec l'un des rôles énumérés. * Utiliser le préfixe <a href='#/admin/translations/edit?filter=contact.label.'>'contact.label.'</a> pour changer la traduction.",
     "add-role": "Ajouter un rôle",
     "delete-role-title": "Supprimer le rôle",
     "delete-role-confirm": "Cette opération va supprimer les membres avec ce rôle de tous les documents, à savoir les études et les réseaux. Etes-vous sûr de vouloir supprimer le rôle \"{{role}}\"?",
@@ -488,11 +488,11 @@
       "collected-dataset-subject": "Sujet de la notification",
       "collected-dataset-help": "Envoie d'un courriel de notification quand le statut d'un ensemble de données de collecte change pour Supprimé, En révision ou Brouillon.",
       "collected-dataset-subject-help-long": "Le sujet du courriel peut contenir les termes réservés suivants: ${organization}, ${documentType}, ${documentId}, ${status}.",
-      "harmonized-dataset-title": "Mise à jour d'ensemble de données d'harmonisation",
-      "harmonized-dataset-info": "Les destinataires des notifications pour les mises à jour d'ensemble de données d'harmonisation ont au moins la permission <code>Editeur</code> (quand le statut est <i>Brouillon</i>) ou la permission <code>Réviseur</code> (quand le statut est <i>Supprimé</i> ou <i>En révision</i>).",
-      "harmonized-dataset": "Notification sur changement de statut d'un ensemble de données d'harmonisation",
-      "harmonized-dataset-subject": "Sujet de la notification",
-      "harmonized-dataset-help": "Envoie d'un courriel de notification quand le statut d'un ensemble de données d'harmonisation change pour Supprimé, En révision ou Brouillon.",
+      "harmonized-dataset-title": "Mises à jour du protocole d'harmonisation",
+      "harmonized-dataset-info": "Les destinataires des notifications de mise à jour du protocole d'harmonisation ont au moins l'autorisation <code>Éditeur</code> (lorsque le statut est Brouillon) ou l'autorisation <code>Réviseur</code> (lorsque le statut est Supprimé ou En cours de révision).",
+      "harmonized-dataset": "Notification de modification de l'état du protocole d'harmonisation",
+      "harmonized-dataset-subject": "Objet de la notification d'état du protocole d'harmonisation",
+      "harmonized-dataset-help": "Envoie d'un courriel de notification quand le statut du protocole d'harmonisation change pour Supprimé, En révision ou Brouillon.",
       "harmonized-dataset-subject-help-long": "Le sujet du courriel peut contenir les termes réservés suivants: ${organization}, ${documentType}, ${documentId}, ${status}.",
       "file-title": "Mise à jour de fichier",
       "file-info": "Les destinataires des notifications pour les mises à jour d'étude ont au moins la permission <code>Editeur</code> (quand le statut est <i>Brouillon</i>) ou la permission <code>Réviseur</code> (quand le statut est <i>Supprimé</i> ou <i>En révision</i>).",
@@ -524,7 +524,7 @@
     },
     "style": {
       "title": "Style",
-      "info": "Remplacer le style par défaut avec votre propre style. Les classes CSS sont celles de <a target='_blank' href='http://getbootstrap.com/'>Bootstrap</a> (thème de <a target='_blank' href='http://bootswatch.com/flatly/'>Bootswatch Flatly</a>)."
+      "info": "Remplacer le style par défaut avec votre propre style. Les classes CSS sont celles de <a target='_blank' href='melfhttp://getbootstrap.com/'>Bootstrap</a> (thème de <a target='_blank' href='http://bootswatch.com/flatly/'>Bootswatch Flatly</a>)."
     },
     "translations": {
       "title": "Traductions",
@@ -833,32 +833,32 @@
     "objectives-help": "Principaux objectifs de l'initiative.",
     "short-label": "Initiative",
     "publish-protocols": "Publish Protocols",
-    "add-initiative": "Add Initiative",
+    "add-initiative": "Ajouter une initiative",
     "import": {
-      "button": "Import Initiatives"
+      "button": "Importer des initiatives"
     }
   },
   "harmonization-protocol": {
-    "initiative-table": "Initiative Table",
-    "add": "Add Protocol",
+    "initiative-table": "Tableau des initiatives",
+    "add": "Ajouter un protocole",
     "version": "Version",
-    "information-content": "Information Content",
-    "participants": "Number of Participants",
-    "procedures": "Procedures",
+    "information-content": "Contenu de l'information",
+    "participants": "Nombre de participants",
+    "procedures": "Procédures",
     "participants-inclusion": "Inclusion des participants",
     "infrastructure": "Infrastructure",
     "qualitative-quantitative": {
-      "title": "Qualitative/Quantitative Effort",
+      "title": "Effort qualitatif/quantitatif",
       "enum": {
         "qualitative": "Qualitative",
         "quantitative": "Quantitative"
       }
     },
     "prospective-retrospective": {
-      "title": "Prospective/Retrospective Effort",
+      "title": "Effort prospectif/rétrospectif",
       "enum": {
         "prospective": "Prospective",
-        "retrospective": "Retrospective"
+        "retrospective": "Rétrospective"
       }
     }
   },
@@ -990,8 +990,8 @@
     "table-description": "Description",
     "table-additional-information": "Information additionnelle",
     "data-schema": {
-      "title": "Ensemble de données harmonisées",
-      "info": "Les variables de l'ensemble de données harmonisées sont les variables de référence. Ceci est un dictionnaire de données simple: aucune donnée sommaire ne sera extraite de la table Opal."
+      "title": "Protocole d'harmonisation",
+      "info": "Les variables du protocole d'harmonisation sont les variables de référence. Il s'agit d'un simple dictionnaire de données: aucun résumé de données ne sera extrait de la table Opal."
     },
     "index": "Index",
     "add-study-table": "Ajouter une table d'étude",
@@ -1009,7 +1009,7 @@
     },
     "harmonization":{
       "missing-attributes":"Dans une table d'harmonization, ces attributes sont obligatoires : project, table, studyId, populationId",
-      "study-not-published":"Pour publier un ensemble de données harmonisées, l'initiative d'harmonisation qui lui est liée doit aussi être publiée",
+      "study-not-published":"Pour publier un protocole d'harmonisation, l'initiative d'harmonisation qui lui est liée doit aussi être publiée",
       "population-not-published":"Pour publier un ensemble de données harmonisées, la population qui lui est liée doit aussi être publiée"
     },
     "collection":{
@@ -1079,8 +1079,8 @@
   },
   "collected-datasets": "Ensembles de données de collecte",
   "collected-dataset": "Ensemble de données de collecte",
-  "harmonized-datasets": "Ensembles de données harmonisées",
-  "harmonized-dataset": "Ensemble de données harmonisées",
+  "harmonized-datasets": "Protocoles d'harmonisation",
+  "harmonized-dataset": "Protocole d'harmonisation",
   "network": {
     "name": "Nom",
     "logo": "Logo",
@@ -1375,7 +1375,7 @@
       "dataset-harmonized": "Harmonisée",
       "collection": "Individuel",
       "individual": "Individuel",
-      "harmonization": "Harmonisation"
+      "harmonization": "Initiative"
     },
     "coverage-select": {
       "all": "Tous",
@@ -1548,7 +1548,7 @@
   "new-study": "Nouvelle étude",
   "new-initiative": "Nouvelle initiative",
   "new-collected-dataset": "Nouvel ensemble de données de collecte",
-  "new-harmonized-dataset": "Nouvel ensemble de données harmonisées",
+  "new-harmonized-dataset": "Nouveau protocole d'harmonisation",
   "new-data-access-request": "Nouvelle demande d'accès aux données",
   "new-project": "Nouveau projet de recherche",
   "title": "Titre",
@@ -1590,9 +1590,9 @@
       "indexing": "Gérer les index du serveur.",
       "network-config": "Configurer le formulaire, les permissions et la recherche de réseaux.",
       "individual-study-config": "Configurer le formulaire, les permissions et la recherche d'études.",
-      "harmonization-study-config": "Configurer le formulaire, les permissions et la recherche d'études harmonisées.",
+      "harmonization-study-config": "Configurez le formulaire, les autorisations et la recherche de l'Initiative d'harmonisation.",
       "collected-dataset-config": "Configurer le formulaire, les permissions et la recherche d'ensembles de données de collectes.",
-      "harmonized-dataset-config": "Configurer le formulaire, les permissions et la recherche d'ensembles de données harmonisées.",
+      "harmonized-dataset-config": "Configurez le formulaire, les autorisations et la recherche du protocole d'harmonisation.",
       "data-access-config": "Configurer le formulaire de demande d'accès aux données.",
       "project-config": "Configurer le formulaire de projet de recherche.",
       "file-system": "Gérer le système de fichiers.",
@@ -1940,10 +1940,10 @@
     }
   },
   "harmonization-study-config" : {
-    "title" : "Configuration des études harmonisée",
+    "title" : "Configuration de l'initiative d'harmonisation",
     "schema-form": {
       "title": "Formulaire",
-      "info": "Le formulaire d'étude harmonisée peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
+      "info": "Le formulaire d'initiative d'harmonisation peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
     },
     "harmonization-study-form-title": "Initiative d'harmonisation"
   },
@@ -1984,7 +1984,7 @@
       "range-aggregation": "A des intervalles de portées",
       "range-aggregation-help": "Critère numérique avec des termes comme intervalles de portées.",
       "for-classname-attribute": "Nome de la classe",
-      "for-classname-attribute-help": "Nom de la classe de l'object auquel cette configuration s’appliquera.",
+      "for-classname-attribute-help": "Nom de la classe de l'objet auquel cette configuration s’appliquera.",
       "error": {
         "duplicate-criterion-alias": "Ce champ est déjà associé à un critère. Seul un champ numérique peut comporter deux critères, un critère discret et un critère de portée."
       }
@@ -2009,10 +2009,10 @@
     }
   },
   "harmonized-dataset-config" : {
-    "title" : "Configuration des ensembles de données harmonisées",
+    "title" : "Configuration du protocole d'harmonisation",
     "schema-form": {
       "title": "Formulaire",
-      "info": "Le formulaire d'ensemble de données harmonisées peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
+      "info": "Le formulaire de protocole d'harmonisation peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
     }
   },
   "data-access-config": {
@@ -2425,7 +2425,7 @@
       "status": "Statut",
       "type": "Type",
       "type-individual": "Individuelle",
-      "type-harmonization": "Harmonisée",
+      "type-harmonization": "Initiative",
       "population": {
         "name": "Population",
         "source-of-recruitment": "Source de recrutement",
@@ -2466,7 +2466,7 @@
     "add-initiatives": "Ajouter des initiatives",
     "no-entity-memberships": "Aucun rôle d'adhésion.",
     "add-person": "Ajouter une personne",
-    "no-memberships": "{{fullname}} n'est membre d'aucun réseau ou étude.",
+    "no-memberships": "{{fullname}} n'est membre d'aucun réseau ou étude ou initiative.",
     "entity-roles-help": "Au moins un rôle doit être sélectionné.",
     "network-entities-roles-help": "Pour ajouter une adhésion sélectionner au moins un rôle et un réseau.",
     "study-entities-roles-help": "Pour ajouter une adhésion sélectionner au moins un rôle et une étude.",
@@ -2501,7 +2501,7 @@
     "Study": "Étude individuelles",
     "HarmonizationStudy": "Initiatives d'harmonisation",
     "StudyDataset": "Ensemble de données de collecte",
-    "HarmonizationDataset": "Ensemble de données harmonisées",
+    "HarmonizationDataset": "Protocoles d'harmonisation",
     "DataAccessRequest": "Demande d'accès aux données",
     "Network": "Réseaux",
     "Project": "Pro jects",
