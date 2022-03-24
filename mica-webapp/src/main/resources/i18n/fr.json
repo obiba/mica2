@@ -9,7 +9,7 @@
     "menu": {
       "home": "Accueil",
       "myProfile": "Mon Profile",
-      "logout": "Déconnection",
+      "logout": "Déconnexion",
       "admin": "Administration",
       "language": "Langue"
     },
@@ -41,7 +41,7 @@
     "to": "À",
     "print": "Imprimer",
     "modified": "Modifié",
-    "delete-selected": "Effacer les items selectionnés",
+    "delete-selected": "Effacer les items sélectionnés",
     "server-error": "Une erreur inconnue est survenue, veuillez contacter votre administrateur pour obtenir de l'aide.",
     "new": "Nouveau",
     "add": "Ajouter",
@@ -137,7 +137,7 @@
       "harmonization-study-variable": "Variable d'Initiatives d'harmonisation"
     },
     "title": "Métriques de l'application",
-    "refresh.button": "Rafraichir",
+    "refresh.button": "Rafraîchir",
     "health": {
       "title": "Diagnostics",
       "database": "Base de données: ",
@@ -322,7 +322,7 @@
     "networks-cart-enabled": "Panier de réseaux",
     "networks-cart-enabled-help": "La création et la gestion de panier de réseaux est activée",
     "comments-required": "Commentaires requis",
-    "comments-required-help": "Rendre l’ajout d’un commentaire obligatoire lors de l’enregistrement d’un document d’entité (p. ex. enregistrement d’un jeu de données)",
+    "comments-required-help": "Rendre l'ajout d'un commentaire obligatoire lors de l'enregistrement d'un document d'entité (p. ex. enregistrement d'un jeu de données)",
     "cart-time-to-live": "Durée de vie du panier",
     "cart-time-to-live-help": "Durée de vie du panier en jours.",
     "set-time-to-live": "Durée de vie de la liste",
@@ -331,12 +331,12 @@
     "anonymous-create-cart-help": "Un utilisateur anonyme peut créer et gérer un panier",
     "data-analyses": {
       "title": "Analyses des données",
-      "help": "Contrôle la disponibilité de certains services d'analyse de données. Notez qu'un service activé peut nécessiter des permissions pour être fonctionel."
+      "help": "Contrôle la disponibilité de certains services d'analyse de données. Notez qu'un service activé peut nécessiter des permissions pour être fonctionnel."
     },
     "contingency-enabled": "Analyses par table de contingence",
-    "contingency-enabled-help": "Activer l'éxécution de tables de contingence sur les ensembles de données accessibles. Voir également les permissions pouvant être appliquées à ce service.",
+    "contingency-enabled-help": "Activer l'exécution de tables de contingence sur les ensembles de données accessibles. Voir également les permissions pouvant être appliquées à ce service.",
     "sets-analysis-enabled": "Analyses sur les listes de variables",
-    "sets-analysis-enabled-help": "Activer les analyses sur les données associées à une liste de variables (compte des entitées par exemples).",
+    "sets-analysis-enabled-help": "Activer les analyses sur les données associées à une liste de variables (compte des entités par exemples).",
     "sets-search-enabled": "Recherche depuis une liste ou le panier",
     "sets-search-enabled-help": "Activer le lancement d'une recherche à partir des pages de liste ou de panier.",
     "max-number-sets": "Nombre maximum de listes",
@@ -359,8 +359,8 @@
     "crosstabs-permission-help": "Permissions d'effectuer des analyses par table de contingence sur les ensembles de données accessibles. Si aucune permission n'est définie, tous les utilisateurs identifiés pourront accéder aux tables de contingence.",
     "opal-sets-views-download-permission": "Autoriser la création de vues Opal à partir d'une liste de variables.",
     "opal-sets-views-download-permission-title": "Permissions sur les vues Opal",
-    "opal-sets-views-download-permission-help": "Permissions gérant le téléchargement de vues Opal à partir de listes de variables. Ces vues pouront être ensuite importer dans Opal",
-    "opal-views-grouping": "Goupement des vues Opal",
+    "opal-sets-views-download-permission-help": "Permissions gérant le téléchargement de vues Opal à partir de listes de variables. Ces vues pourront être ensuite importer dans Opal",
+    "opal-views-grouping": "Groupement des vues Opal",
     "opal-views-grouping-label": {
       "PROJECT_TABLE": "Table",
       "PROJECT_ENTITY_TYPE": "Projet et type d'entité",
@@ -420,9 +420,9 @@
       "titleImport": "Importer un certificat",
       "name": "Nom commun",
       "organization": "Organisation",
-      "organizationalUnit": "Unitée organisationnelle",
+      "organizationalUnit": "Unité organisationnelle",
       "locality": "Localité",
-      "state": "Etat",
+      "state": "État",
       "country": "Pays",
       "algo": "Algorithme",
       "size": "Taille",
@@ -432,7 +432,7 @@
     "openAccess": "Accès libre",
     "openAccess-help": "L'accès aux documents publiés est ouvert à tout le monde.",
     "variableSummaryRequiresAuthentication": "Accès restreint aux statistiques des variables",
-    "variableSummaryRequiresAuthentication-help": "L'utilistaeur doit être identifié afin d'avoir accès aux statistiques de variables (sommaire, table de contingence etc.).",
+    "variableSummaryRequiresAuthentication-help": "L'utilisateur doit être identifié afin d'avoir accès aux statistiques de variables (sommaire, table de contingence etc.).",
     "sections": "Sections",
     "repository-enabled": "Catalogue activé",
     "repository-enabled-help": "Montrer les pages du catalogue de réseaux, initiatives, études etc. ainsi que la page de recherche.",
@@ -463,27 +463,27 @@
     "roles-help": "Une personne peut être membre d'une initiative, d'une étude ou d'un réseau avec l'un des rôles énumérés. * Utiliser le préfixe <a href='#/admin/translations/edit?filter=contact.label.'>'contact.label.'</a> pour changer la traduction.",
     "add-role": "Ajouter un rôle",
     "delete-role-title": "Supprimer le rôle",
-    "delete-role-confirm": "Cette opération va supprimer les membres avec ce rôle de tous les documents, à savoir les études et les réseaux. Etes-vous sûr de vouloir supprimer le rôle \"{{role}}\"?",
+    "delete-role-confirm": "Cette opération va supprimer les membres avec ce rôle de tous les documents, à savoir les études et les réseaux. Êtes-vous sûr de vouloir supprimer le rôle \"{{role}}\"?",
     "role-help": "Identifiant unique du rôle.",
     "role-error": "L'identifiant du rôle existe déjà.",
-    "role-character-error": "L'identifiant du rôle contient des charactères spéciaux. Veuillez éviter les caractères tel que les majuscules, espaces, '~' et '!'.",
+    "role-character-error": "L'identifiant du rôle contient des caractères spéciaux. Veuillez éviter les caractères tel que les majuscules, espaces, '~' et '!'.",
     "notifications": {
       "title": "Notifications",
       "info": "Des courriels de notification peuvent être envoyés aux utilisateurs et aux groupes concernés.",
       "study-title": "Mise à jour d'étude",
-      "study-info": "Les destinataires des notifications pour les mises à jour d'étude ont au moins la permission <code>Editeur</code> (quand le statut est <i>Brouillon</i>) ou la permission <code>Réviseur</code> (quand le statut est <i>Supprimé</i> ou <i>En révision</i>).",
+      "study-info": "Les destinataires des notifications pour les mises à jour d'étude ont au moins la permission <code>Éditeur</code> (quand le statut est <i>Brouillon</i>) ou la permission <code>Réviseur</code> (quand le statut est <i>Supprimé</i> ou <i>En révision</i>).",
       "study": "Notification sur changement de statut d'une étude",
       "study-subject": "Sujet de la notification",
       "study-help": "Envoie d'un courriel de notification quand le statut d'une étude change pour Supprimé, En révision ou Brouillon.",
       "study-subject-help-long": "Le sujet du courriel peut contenir les termes réservés suivants: ${organization}, ${documentType}, ${documentId}, ${status}.",
       "network-title": "Mise à jour de réseau",
-      "network-info": "Les destinataires des notifications pour les mises à jour de réseau ont au moins la permission <code>Editeur</code> (quand le statut est <i>Brouillon</i>) ou la permission <code>Réviseur</code> (quand le statut est <i>Supprimé</i> ou <i>En révision</i>).",
+      "network-info": "Les destinataires des notifications pour les mises à jour de réseau ont au moins la permission <code>Éditeur</code> (quand le statut est <i>Brouillon</i>) ou la permission <code>Réviseur</code> (quand le statut est <i>Supprimé</i> ou <i>En révision</i>).",
       "network": "Notification sur changement de statut d'un réseau",
       "network-subject": "Sujet de la notification",
       "network-help": "Envoie d'un courriel de notification quand le statut d'un réseau change pour Supprimé, En révision ou Brouillon.",
       "network-subject-help-long": "Le sujet du courriel peut contenir les termes réservés suivants: ${organization}, ${documentType}, ${documentId}, ${status}.",
       "collected-dataset-title": "Mise à jour d'ensemble de données de collecte",
-      "collected-dataset-info": "Les destinataires des notifications pour les mises à jour d'ensemble de données de collecte ont au moins la permission <code>Editeur</code> (quand le statut est <i>Brouillon</i>) ou la permission <code>Réviseur</code> (quand le statut est <i>Supprimé</i> ou <i>En révision</i>).",
+      "collected-dataset-info": "Les destinataires des notifications pour les mises à jour d'ensemble de données de collecte ont au moins la permission <code>Éditeur</code> (quand le statut est <i>Brouillon</i>) ou la permission <code>Réviseur</code> (quand le statut est <i>Supprimé</i> ou <i>En révision</i>).",
       "collected-dataset": "Notification sur changement de statut d'un ensemble de données de collecte",
       "collected-dataset-subject": "Sujet de la notification",
       "collected-dataset-help": "Envoie d'un courriel de notification quand le statut d'un ensemble de données de collecte change pour Supprimé, En révision ou Brouillon.",
@@ -495,7 +495,7 @@
       "harmonized-dataset-help": "Envoie d'un courriel de notification quand le statut du protocole d'harmonisation change pour Supprimé, En révision ou Brouillon.",
       "harmonized-dataset-subject-help-long": "Le sujet du courriel peut contenir les termes réservés suivants: ${organization}, ${documentType}, ${documentId}, ${status}.",
       "file-title": "Mise à jour de fichier",
-      "file-info": "Les destinataires des notifications pour les mises à jour d'étude ont au moins la permission <code>Editeur</code> (quand le statut est <i>Brouillon</i>) ou la permission <code>Réviseur</code> (quand le statut est <i>Supprimé</i> ou <i>En révision</i>).",
+      "file-info": "Les destinataires des notifications pour les mises à jour d'étude ont au moins la permission <code>Éditeur</code> (quand le statut est <i>Brouillon</i>) ou la permission <code>Réviseur</code> (quand le statut est <i>Supprimé</i> ou <i>En révision</i>).",
       "file": "Notification sur changement de statut d'un fichier",
       "file-subject": "Sujet de la notification",
       "file-help": "Envoie d'un courriel de notification quand le statut d'un fichier change pour Supprimé, En révision ou Brouillon.",
@@ -507,7 +507,7 @@
       "comment-help": "Envoie d'un courriel de notification quand un commentaire est ajouté ou mis à jour.",
       "comment-subject-help-long": "Le sujet du courriel peut contenir les termes réservés suivants: ${organization}, ${documentType}, ${documentId} and ${status} where document refers to the study (or network etc.) that was commented.",
       "project-title": "Mise à jour de projet de recherche",
-      "project-info": "Les destinataires des notifications pour les mises à jour de projet de recherche ont au moins la permission <code>Editeur</code> (quand le statut est <i>Brouillon</i>) ou la permission <code>Réviseur</code> (quand le statut est <i>Supprimé</i> ou <i>En révision</i>).",
+      "project-info": "Les destinataires des notifications pour les mises à jour de projet de recherche ont au moins la permission <code>Éditeur</code> (quand le statut est <i>Brouillon</i>) ou la permission <code>Réviseur</code> (quand le statut est <i>Supprimé</i> ou <i>En révision</i>).",
       "project": "Notification sur changement de statut d'un projet de recherche",
       "project-subject": "Sujet de la notification",
       "project-help": "Envoie d'un courriel de notification quand le statut d'un projet de recherche change pour Supprimé, En révision ou Brouillon.",
@@ -519,12 +519,12 @@
       "contact-help": "Envoie d'un courriel de notification quand un utilisateur demande de l'aide.",
       "contact-subject-help-long": "Le sujet du courriel peut contenir les termes réservés suivants: ${organization}, ${contactName}, ${contactSubject}.",
       "contact-groups": "Groupes des destinataires des demandes de contact",
-      "contact-groups-help": "Les membres de ces groupes receveront un courriel de notification à chaque demande de contact.",
+      "contact-groups-help": "Les membres de ces groupes recevront un courriel de notification à chaque demande de contact.",
       "contact-groups-form-help": "Noms des groupes destinataires, séparés par des espaces."
     },
     "style": {
       "title": "Style",
-      "info": "Remplacer le style par défaut avec votre propre style. Les classes CSS sont celles de <a target='_blank' href='melfhttp://getbootstrap.com/'>Bootstrap</a> (thème de <a target='_blank' href='http://bootswatch.com/flatly/'>Bootswatch Flatly</a>)."
+      "info": "Remplacer le style par défaut avec votre propre style. Les classes CSS sont celles de <a target='_blank' href='http://getbootstrap.com/'>Bootstrap</a> (thème de <a target='_blank' href='http://bootswatch.com/flatly/'>Bootswatch Flatly</a>)."
     },
     "translations": {
       "title": "Traductions",
@@ -543,7 +543,7 @@
       },
       "export-json": {
         "label": "JSON (toutes langues)",
-        "help": "Les traductions aditionnelles seront exportées au format JSON."
+        "help": "Les traductions additionnelles seront exportées au format JSON."
       },
       "export-gettext": {
         "label": "Gettext",
@@ -686,23 +686,23 @@
         "title": "Disponibilité des données et échantillons biologiques"
       },
       "external_researchers_obtaining_study_data_bio_info": {
-        "title": "Disponibilité des ’informations d’accès",
+        "title": "Disponibilité des 'informations d'accès",
         "access_info_location": {
-          "study_website": "Sur le site web de l’étude",
-          "study_representative": "En contactant le représentant de l’étude"
+          "study_website": "Sur le site web de l'étude",
+          "study_representative": "En contactant le représentant de l'étude"
         }
       },
       "access_permission_data": {
         "public_sector": "Investigateurs du secteur public",
         "private_sector": "Investigateurs du secteur privé",
-        "not_for_profit_organization": "Investigateurs d’organisations à but non lucratif",
+        "not_for_profit_organization": "Investigateurs d'organisations à but non lucratif",
         "any-restrictions": "Toute restriction"
       },
       "access_permission_additional_info": {
         "label": "Informations complémentaires sur le secteur de la recherche"
       },
       "access_data_can_leave": {
-        "study_facility": "Peut quitter l’installation de l’étude",
+        "study_facility": "Peut quitter l'installation de l'étude",
         "country": "Peut quitter le pays"
       },
       "access_special_conditions_to_leave": {
@@ -736,7 +736,7 @@
         "title": "Frais",
         "any-fees": "Tout Frais"
       },
-      "suppl-info": "Information Supplementaire"
+      "suppl-info": "Information Supplémentaire"
     },
     "marker-paper": "Article de reference",
     "pubmed-id": "ID de Pubmed",
@@ -746,17 +746,17 @@
     "help-text-timeline": "Chaque couleur dans le schéma de la chronologie de l'étude ci-dessous représente une population de l'étude distincte, alors que chaque segment du schéma représente un événement de collecte de données distinct. En cliquant sur un segment, de l'information plus détaillée sur l'événement de collecte est obtenue.",
     "population": "Population",
     "populations": "Populations",
-    "maelstromAuthorization": "Authorisation Maelstrom",
-    "specificAuthorization": "Authorisation spécifique",
+    "maelstromAuthorization": "Autorisation Maelstrom",
+    "specificAuthorization": "Autorisation spécifique",
     "authorization": {
       "label": "Autorisation",
       "authorized": {
         "true": "Autorisé",
         "false": "Non autorisé"
       },
-      "maelstrom": "Authorisation du collaborateur aux catalogues Maelstrom",
-      "specific": "Authorisation du collaborateur aux catalogues de [réseau spécifique]",
-      "authorizer": "Authorisateur",
+      "maelstrom": "Autorisation du collaborateur aux catalogues Maelstrom",
+      "specific": "Autorisation du collaborateur aux catalogues de [réseau spécifique]",
+      "authorizer": "Autorisateur",
       "date": "Date"
     },
     "selection-criteria": {
@@ -803,7 +803,7 @@
     "opal-help": "URL du serveur Opal pour cette étude (si différent de celui définit par défaut).",
     "potential-conflicts": "Conflits potentiels",
     "potential-conflicts-message": "Des conflits potentiels peuvent subvenir.",
-    "unpublish-conflicts": "Unpublish Conflict",
+    "unpublish-conflicts": "Dépublier Conflict",
     "unpublish-conflicts-message": "L'étude est reliée à des ensembles de données publiées. Veuillez dépublier les dépendances et essayez à nouveau.",
     "delete-conflict": "Conflit à la suppression de l'étude",
     "delete-conflict-message": "Des conflits ont été trouvés lors de la tentative de suppression de l'étude. Supprimez les dépendances et essayez à nouveau.",
@@ -813,11 +813,11 @@
     "revisions":  "Révisions de l'étude",
     "delete-dialog":{
       "title": "Supprimer l'étude",
-      "message": "Etes-vous sûr de supprimer l'étude '{{arg0}}'?"
+      "message": "Êtes-vous sûr de supprimer l'étude '{{arg0}}'?"
     },
     "restore-dialog": {
       "title": "Restaurer une version",
-      "message": "Etes-vous sûr de vouloir restaurer cette révision de '{{arg0}}'?"
+      "message": "Êtes-vous sûr de vouloir restaurer cette révision de '{{arg0}}'?"
     },
     "none": "Aucune étude."
   },
@@ -883,7 +883,7 @@
     "delete": {
       "member": {
         "title": "Supprimer {{type}}",
-        "confirm": "Etes-vous sûr de vouloir supprimer {{type}} {{name}}?"
+        "confirm": "Êtes-vous sûr de vouloir supprimer {{type}} {{name}}?"
       }
     },
     "edit": {
@@ -944,7 +944,7 @@
     },
     "delete-dialog": {
       "title": "Supprimer l'ensemble de données",
-      "message": "Etes-vous sûr de vouloir supprimer l'ensemble de données '{{arg0}}'?"
+      "message": "Êtes-vous sûr de vouloir supprimer l'ensemble de données '{{arg0}}'?"
     },
     "options": "Options",
     "network": {
@@ -974,11 +974,11 @@
     "harmonized-table": "Tableau spécifique à l'étude",
     "harmonized-tables": {
       "title": "Tableaux spécifiques à l'étude",
-      "info": "Les tables d'étude définissent les implémentations des variables de l'ensemble de données harmonisées par une étude individuelle dans le cadre de l'événement de collecte de données d'une population ou par une étude harmonisée basée sur des données précédement harmonisées. Les résumés de données seront extraites des tables Opal correspondantes."
+      "info": "Les tables d'étude définissent les implémentations des variables de l'ensemble de données harmonisées par une étude individuelle dans le cadre de l'événement de collecte de données d'une population ou par une étude harmonisée basée sur des données précédemment harmonisées. Les résumés de données seront extraites des tables Opal correspondantes."
     },
     "restore-dialog": {
       "title": "Restaurer un ensemble de données à partir d'une révision",
-      "message": "Etes-vous sûr vouloir restaurer cette révision de '{{arg0}}'?"
+      "message": "Êtes-vous sûr vouloir restaurer cette révision de '{{arg0}}'?"
     },
     "project": "Projet",
     "project-help": "Nom du projet à partir du serveur Opal de l'étude (si celle-ci est définie, sinon le projet devrait être trouvé dans le serveur Opal primaire).",
@@ -1027,7 +1027,7 @@
     "label-edit": "Éditer une population",
     "id": "ID",
     "name": "Nom",
-    "info": "Informations supplementaires",
+    "info": "Informations supplémentaires",
     "description": "Description",
     "gender": "Genre",
     "ageMin": "Âge minimum",
@@ -1096,19 +1096,19 @@
     "associated-people": "Membres affiliés",
     "delete-dialog": {
       "title": "Supprimer un réseau",
-      "message": "Etes-vous sûr de vouloir supprimer le réseau '{{arg0}}'?"
+      "message": "Êtes-vous sûr de vouloir supprimer le réseau '{{arg0}}'?"
     },
     "study-delete-dialog": {
       "title": "Supprimer une étude",
-      "message": "Etes-vous sûr de vouloir supprimer l'étude '{{arg0}}'?"
+      "message": "Êtes-vous sûr de vouloir supprimer l'étude '{{arg0}}'?"
     },
     "network-delete-dialog": {
       "title": "Supprimer le réseau",
-      "message": "Etes-vous sûr de vouloir supprimer le réseau '{{arg0}}'?"
+      "message": "Êtes-vous sûr de vouloir supprimer le réseau '{{arg0}}'?"
     },
     "restore-dialog": {
       "title": "Restaurer un réseau à partir d'une révision",
-      "message": "Etes-vous sûr de vouloir restaurer cette révision de '{{arg0}}'?"
+      "message": "Êtes-vous sûr de vouloir restaurer cette révision de '{{arg0}}'?"
     },
     "none": "Aucun réseau.",
     "number-of-studies": "Nombre d'études"
@@ -1136,7 +1136,7 @@
   "submit": "Soumettre",
   "review": "Révision",
   "conditionallyApprove": "Approuver sous conditions",
-  "reopen": "Réouvrir",
+  "reopen": "Rouvrir",
   "approve": "Approuver",
   "reject": "Rejeter",
   "close": "Fermer",
@@ -1158,7 +1158,7 @@
   "notification": "Notification",
   "required": "Requis",
   "pattern": "Le modèle attendu est",
-  "suppl-info": "Informations supplementaires",
+  "suppl-info": "Informations supplémentaires",
   "fix-error": "Veuillez corriger les erreurs ci-dessous",
   "dnd-reorder": "Glisser-déposer pour réorganiser",
   "loading": "Chargement...",
@@ -1226,7 +1226,7 @@
     "date-title": "Date",
     "entities-count": {
       "title": "Nombre d'entités",
-      "help": "Etant donné une liste de variables, les entités satisfaisant tous les critères définis sur ces variables peuvent être comptés.",
+      "help": "Étant donné une liste de variables, les entités satisfaisant tous les critères définis sur ces variables peuvent être comptés.",
       "action": "Compter les entités",
       "no-query": "Afin de compter les entités vous devez d'abord sélectionner des variables puis appliquer des critères sur leurs valeurs."
     }
@@ -1235,7 +1235,7 @@
     "all-page-selected": "Tout les documents de cette page sont sélectionnés.",
     "all-selected": "Tout les documents sont sélectionnés.",
     "select-all": "Sélectionner tout les documents",
-    "unselect-all": "Déselectionner tout les documents"
+    "unselect-all": "Désélectionner tout les documents"
   },
   "sets": {
     "empty": "Aucune liste",
@@ -1490,7 +1490,7 @@
     "file-access": "Appliquer un accès en lecture à tous les fichiers associés",
     "delete-dialog": {
       "title": "Supprimer l'autorisation",
-      "message": "Etes-vous sûr de vouloir supprimer l'autorisation de {{arg0}} {{arg1}}"
+      "message": "Êtes-vous sûr de vouloir supprimer l'autorisation de {{arg0}} {{arg1}}"
     },
     "draft": "Permission sur le brouillon",
     "error": {
@@ -1505,7 +1505,7 @@
     "principal-help": "Nom unique d'utilisateur ou de groupe. Utiliser un astérisque * pour spécifier tout utilisateur ou groupe.",
     "delete-dialog": {
       "title": "Supprimer l'accès",
-      "message": "Etes-vous sûr de vouloir supprimer l'accès de {{arg0}} {{arg1}}"
+      "message": "Êtes-vous sûr de vouloir supprimer l'accès de {{arg0}} {{arg1}}"
     }
   },
   "draft": "Brouillon",
@@ -1658,7 +1658,7 @@
     "edit": "Modifier l'amendement",
     "delete-dialog": {
       "title": "Supprimer l'amendement",
-      "message": "Etes-vous sûr de vouloir supprimer l'amendement '{{arg0}}' demandé par '{{arg1}}'?"
+      "message": "Êtes-vous sûr de vouloir supprimer l'amendement '{{arg0}}' demandé par '{{arg1}}'?"
     },
     "submit": {
       "invalid": "L'amendement ne peut être soumise en raison d'un formulaire de demande incomplet."
@@ -1754,7 +1754,7 @@
         "inv-early": "Chercheur indépendant - Débutant (0 - 5 ans)",
         "inv-mid": "Chercheur indépendant - Intermédiaire (5 - 15 ans)",
         "inv-senior": "Chercheur indépendant - Senior (15+ ans)",
-        "student": "Etudiant diplomé",
+        "student": "Étudiant diplômé",
         "postdoc": "Postdoc",
         "other": "Autre",
         "other-career": "Autre carrière"
@@ -1832,7 +1832,7 @@
       "required": "Les deux entrées doivent être remplies avant la soumission",
       "action-placeholder": "Entrer le texte",
       "delete": {
-        "title": "Suprimmer une instance d'enregistrement d'action",
+        "title": "Supprimer une instance d'enregistrement d'action",
         "message": "Êtes-vous sûr de vouloir supprimer cette d'action '{{action}}' créée par '{{author}}' le '{{changedOn}}'?"
       },
       "edit": {
@@ -1841,7 +1841,7 @@
     },
     "delete-dialog": {
       "title": "Supprimer la demande d'accès aux données",
-      "message": "Etes-vous sûr de vouloir supprimer l'accès aux données '{{arg0}}' demandé par '{{arg1}}'?"
+      "message": "Êtes-vous sûr de vouloir supprimer l'accès aux données '{{arg0}}' demandé par '{{arg1}}'?"
     },
     "submit": {
       "invalid": "La demande ne peut être soumise en raison d'un formulaire de demande incomplet."
@@ -1984,7 +1984,7 @@
       "range-aggregation": "A des intervalles de portées",
       "range-aggregation-help": "Critère numérique avec des termes comme intervalles de portées.",
       "for-classname-attribute": "Nome de la classe",
-      "for-classname-attribute-help": "Nom de la classe de l'objet auquel cette configuration s’appliquera.",
+      "for-classname-attribute-help": "Nom de la classe de l'objet auquel cette configuration s'appliquera.",
       "error": {
         "duplicate-criterion-alias": "Ce champ est déjà associé à un critère. Seul un champ numérique peut comporter deux critères, un critère discret et un critère de portée."
       }
@@ -2017,7 +2017,7 @@
   },
   "data-access-config": {
     "dao-can-edit": "Autoriser l'agent d'accès aux données de modifier les demandes d'accès.",
-    "dao-can-edit-help": "Le responsable de l'accès aux données a la permission de modifier une demande / un amendement d'accès aux données ayant le statut statut <strong>SOUMISE</strong>, <strong>EN RÉVISION</strong>, <strong>APPROUVÉE</strong> ou <strong>REJETËE</strong>",
+    "dao-can-edit-help": "Le responsable de l'accès aux données a la permission de modifier une demande / un amendement d'accès aux données ayant le statut statut <strong>SOUMISE</strong>, <strong>EN RÉVISION</strong>, <strong>APPROUVÉE</strong> ou <strong>REJETÉE</strong>",
     "menu": "Accès aux données",
     "title": "Configuration de l'accès aux données",
     "title-edit": "Modifier la configuration d'accès aux données",
@@ -2134,10 +2134,10 @@
       "conditionallyApproved-help": "Le courriel est envoyé au demandeur lorsque sa demande d'accès aux données est approuvée conditionnellement.",
       "reports":  "Rapports",
       "finalReport": "Rappel de rapport final",
-      "finalReportSubject": "Objet du courriel rappelant de soummettre le rapport final",
+      "finalReportSubject": "Objet du courriel rappelant de soumettre le rapport final",
       "finalReport-help": "Le courriel est envoyé au demandeur pour lui rappeler que le rapport final doit être soumis. Ce courriel ne s'applique qu'aux demande d'accès aux données ayant été approuvées.",
       "intermediateReport": "Rappel de rapport intermédiaire",
-      "intermediateReportSubject": "Objet du courriel rappelant de soummettre un rapport intermédiaire",
+      "intermediateReportSubject": "Objet du courriel rappelant de soumettre un rapport intermédiaire",
       "intermediateReport-help": "Le courriel est envoyé au demandeur pour lui rappeler qu'un rapport intermédiaire (annuel) doit être soumis. Ce courriel ne s'applique qu'aux demande d'accès aux données ayant été approuvées.",
       "nbOfDaysBeforeReport": "Jours avant d'envoyer un courriel de rappel",
       "nbOfDaysBeforeReport-help": "Nombre de jours avant d'envoyer un courriel de rappel pour les rapports intermédiaires ou final."
@@ -2147,9 +2147,9 @@
       "info": "La demande d'accès aux données passe par plusieurs étapes. Certains paramètres minimaux peuvent être appliqués pour contrôler ce flux de travail.",
       "with-review": "Avec l'état intermédiaire 'En révision'",
       "with-review-help": "Entre la soumission et l'approbation/rejet de la demande d'accès aux données, un état intermédiaire peut être utilisé pour informer le requérant que sa demande est en cours de traitement.",
-      "approved-final": "Etat 'Approuvée' est final",
+      "approved-final": "État'Approuvée' est final",
       "approved-final-help": "Si non final, une demande d'accès approuvée peut être rétablie à son état précédent.",
-      "rejected-final": "Etat 'Rejetée' est final",
+      "rejected-final": "État'Rejetée' est final",
       "rejected-final-help": "Si non final, une demande d'accès rejetée peut être rétablie à son état précédent.",
       "with-conditional-approval": "Avec l'état intermédiaire 'Approuvée sous conditions'",
       "with-conditional-approval-help": "Entre la soumission et l'approbation/rejet de la demande d'accès aux données, un état intermédiaire peut être utilisé pour permettre au requérant d'éditer sa demande."
@@ -2290,7 +2290,7 @@
     "modified-by": "Dernière modification par",
     "delete-dialog": {
       "title": "Supprimer le commentaire",
-      "message": "Etes-vous sûr de vouloir supprimer ce commentaire par '{{arg0}}'?"
+      "message": "Êtes-vous sûr de vouloir supprimer ce commentaire par '{{arg0}}'?"
     }
   },
   "taxonomy": {
@@ -2336,7 +2336,7 @@
     "main-section": "<h3>Général</h3>",
     "restore-dialog": {
       "title": "Restauration du projet à partir d'une révision",
-      "message": "Etes-vous sûr de vouloir restaurer cette révision de '{{arg0}}'?"
+      "message": "Êtes-vous sûr de vouloir restaurer cette révision de '{{arg0}}'?"
     },
     "default": {
       "status": {
@@ -2404,7 +2404,7 @@
         "harmonized-variable": "Variable harmonisée",
         "harmonization-algo": "Algorithmes d'harmonisation",
         "show-harmo-algo": "Montrer les algorithmes d'harmonisation",
-        "cummulative-summary": "Sommaire cummulatif de toutes les études",
+        "cummulative-summary": "Sommaire cumulatif de toutes les études",
         "script": "Scripte",
         "status-detail": "Détail du statut"
       }
