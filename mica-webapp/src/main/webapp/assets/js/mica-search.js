@@ -874,7 +874,8 @@ class TableFixedHeaderUtility {
         if (!foundStudyClassName ||
           (Array.is(foundStudyClassName.args[1]) && foundStudyClassName.args[1] === 1 && foundStudyClassName.args[1][0] !== studyClassName) ||
           (!Array.isArray(foundStudyClassName.args[1])) && foundStudyClassName.args[1] !== studyClassName) {
-          this.setLocation(new RQL.Query('study', [new RQL.Query('', [new RQL.Query('in', ['Mica_study.className', studyClassName])])]).toString());
+          tree.findAndUpdateQuery((name, args) => args[0] === 'Mica_study.className', ['Mica_study.className', studyClassName]);
+          this.setLocation(tree.serialize());
         }
       },
       onQueryUpdate(payload) {

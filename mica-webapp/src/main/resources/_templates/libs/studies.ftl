@@ -71,10 +71,13 @@
   <!-- Macro variables -->
   <#if !type??>
     <#assign className = "Study,HarmonizationStudy">
+    <#assign listPageSearchMode = "search">
   <#elseif type == "Harmonization">
     <#assign className = "HarmonizationStudy">
+    <#assign listPageSearchMode = "harmonization-search">
   <#else>
     <#assign className = "Study">
+    <#assign listPageSearchMode = "individual-search">
   </#if>
 
 <div v-show="loading" class="spinner-border spinner-border-sm" role="status"></div>
@@ -86,7 +89,7 @@
       <typeahead @typing="onType" @select="onSelect" :items="suggestions" :external-text="initialFilter"></typeahead>
     </div>
     <div class="col-3 ml-auto">
-      <a href="${contextPath}/search#lists?type=studies&query=study(in(Mica_study.className,(${className})))" class="btn btn-sm btn-primary float-right">
+      <a href="${contextPath}/${listPageSearchMode}#lists?type=studies&query=study(in(Mica_study.className,(${className})))" class="btn btn-sm btn-primary float-right">
         <@message "global.search"/> <i class="fas fa-search"></i>
       </a>
     </div>

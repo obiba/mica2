@@ -689,6 +689,9 @@ const ObibaEntitiesApp = {
       const classNameQuery = 'harmonization-study' === studyType ? 'in(Mica_study.className,HarmonizationStudy)' : 'in(Mica_study.className,Study)';
       return query ? `and(${classNameQuery},${query})` : classNameQuery;
     },
+    searchModeFromStudyType(studyType) {
+      return 'harmonization-study' === studyType ? 'harmonization-search' : 'individual-search';
+    },
     onBeforeUnload: function() {
       window.removeEventListener('beforeunload', this.onBeforeUnload.bind(this));
       window.removeEventListener('popstate', this.onLocationChanged.bind(this));
@@ -809,7 +812,7 @@ class ObibaDatasetsApp {
         variablesUrl: function(dataset) {
           const studyResourcePath = dataset.variableType === "Collected" ? "individual-study" : "harmonization-study";
           const studyQuery = this.ensureStudyClassNameQuery(studyResourcePath);
-          return MicaService.normalizeUrl(`/search#lists?type=variables&query=study(${studyQuery}),variable(in(Mica_variable.variableType,${dataset.variableType})),dataset(in(Mica_dataset.id,${dataset.id}))`)
+          return MicaService.normalizeUrl(`/${this.searchModeFromStudyType(studyResourcePath)}#lists?type=variables&query=study(${studyQuery}),variable(in(Mica_variable.variableType,${dataset.variableType})),dataset(in(Mica_dataset.id,${dataset.id}))`)
         },
         networks: function(id) {
           return MicaService.normalizeUrl(`/search#lists?type=networks&query=dataset(in(Mica_dataset.id,${id}))`);
@@ -817,12 +820,12 @@ class ObibaDatasetsApp {
         studies: function(dataset) {
           const studyType = dataset.variableType === 'Dataschema' ? 'harmonization-study' : 'individual-study';
           const studyQuery = this.ensureStudyClassNameQuery(studyType);
-          return MicaService.normalizeUrl(`/search#lists?type=studies&query=study(${studyQuery}),dataset(in(Mica_dataset.id,${dataset.id}))`);
+          return MicaService.normalizeUrl(`/${this.searchModeFromStudyType(studyType)}#lists?type=studies&query=study(${studyQuery}),dataset(in(Mica_dataset.id,${dataset.id}))`);
         },
         variables: function(dataset) {
           const studyType = dataset.variableType === 'Dataschema' ? 'harmonization-study' : 'individual-study';
           const studyQuery = this.ensureStudyClassNameQuery(studyType);
-          return MicaService.normalizeUrl(`/search#lists?type=variables&query=study(${studyQuery}),dataset(in(Mica_dataset.id,${dataset.id}))`);
+          return MicaService.normalizeUrl(`/${this.searchModeFromStudyType(studyType)}#lists?type=variables&query=study(${studyQuery}),dataset(in(Mica_dataset.id,${dataset.id}))`);
         },
         hasStats: function(dataset) {
           const countStats = dataset['obiba.mica.CountStatsDto.datasetCountStats'];
@@ -876,7 +879,7 @@ class ObibaStudiesApp {
         variablesUrl: function(study) {
           const studyQuery = this.ensureStudyClassNameQuery(study.studyResourcePath, `in(Mica_study.id,${study.id})`)
           let variableType = study.studyResourcePath === 'individual-study' ? 'Collected' : 'Dataschema';
-          return MicaService.normalizeUrl(`/search#lists?type=variables&query=study(${studyQuery}),variable(in(Mica_variable.variableType,${variableType}))`)
+          return MicaService.normalizeUrl(`/${this.searchModeFromStudyType(study.studyResourcePath)}#lists?type=variables&query=study(${studyQuery}),variable(in(Mica_variable.variableType,${variableType}))`)
         },
         hasStats: function(study) {
           const countStats = study['obiba.mica.CountStatsDto.studyCountStats'];
@@ -932,22 +935,22 @@ class ObibaNetworksApp {
       methods: {
         individualStudies: function(id) {
           const studyQuery = this.ensureStudyClassNameQuery('individual-study', 'in(Mica_study.className,Study)');
-          return MicaService.normalizeUrl(`/search#lists?type=studies&query=network(in(Mica_network.id,${id})),study(${studyQuery})`);
+          return MicaService.normalizeUrl(`/individual-search#lists?type=studies&query=network(in(Mica_network.id,${id})),study(${studyQuery})`);
         },
         individualStudiesWithVariables: function(id) {
           const studyQuery = this.ensureStudyClassNameQuery('individual-study');
-          return MicaService.normalizeUrl(`/search#lists?type=studies&query=network(in(Mica_network.id,${id})),variable(in(Mica_variable.variableType,Collected)),study(${studyQuery})`);
+          return MicaService.normalizeUrl(`/individual-search#lists?type=studies&query=network(in(Mica_network.id,${id})),variable(in(Mica_variable.variableType,Collected)),study(${studyQuery})`);
         },
         individualStudyVariables: function(id) {
           const studyQuery = this.ensureStudyClassNameQuery('individual-study');
-          return MicaService.normalizeUrl(`/search#lists?type=variables&query=network(in(Mica_network.id,${id})),variable(in(Mica_variable.variableType,Collected)),study(${studyQuery})`);
+          return MicaService.normalizeUrl(`/individual-search#lists?type=variables&query=network(in(Mica_network.id,${id})),variable(in(Mica_variable.variableType,Collected)),study(${studyQuery})`);
         },
         harmonizationStudies: function(id) {
-          return MicaService.normalizeUrl(`/search#lists?type=studies&query=network(in(Mica_network.id,${id})),study(in(Mica_study.className,HarmonizationStudy))`);
+          return MicaService.normalizeUrl(`/harmonization-search#lists?type=studies&query=network(in(Mica_network.id,${id})),study(in(Mica_study.className,HarmonizationStudy))`);
         },
         harmonizationStudyVariables: function(id) {
           const studyQuery = this.ensureStudyClassNameQuery('harmonization-study');
-          return MicaService.normalizeUrl(`/search#lists?type=variables&query=network(in(Mica_network.id,${id})),variable(in(Mica_variable.variableType,Dataschema)),study(${studyQuery})`);
+          return MicaService.normalizeUrl(`/harmonization-search#lists?type=variables&query=network(in(Mica_network.id,${id})),variable(in(Mica_variable.variableType,Dataschema)),study(${studyQuery})`);
         },
         hasStats: function(stats) {
           return stats.individualStudies + stats.studiesWithVariables + stats.studyVariables + stats.dataschemaVariables + stats.harmonizationStudies > 0;
