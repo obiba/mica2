@@ -82,6 +82,8 @@
 
 <!-- Search -->
 <#assign defaultSearchState = "#lists?query=study(and(in(Mica_study.className,Study)))"/>
+<#assign defaultIndividualSearchState = "#lists?query=study(and(in(Mica_study.className,Study)))"/>
+<#assign defaultHarmonizationSearchState = "#lists?query=study(and(in(Mica_study.className,HarmonizationStudy)))"/>
 <#assign defaultSearchMode = "Study"/>
 
 <!-- Download the search results or full export -->
