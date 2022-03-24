@@ -656,8 +656,12 @@ class TableFixedHeaderUtility {
           for (let key of [TARGETS.VARIABLE, TARGETS.DATASET, TARGETS.STUDY, TARGETS.NETWORK]) {
             let target = this.queries[key];
             if (target && target.args && target.args.length > 0) {
-              this.noQueries = false;
-              break;
+              let splitQuery = Criterion.splitQuery(target);
+              let isLoneStudyClassNameQuery = key === TARGETS.STUDY && splitQuery.length === 1 && Criterion.splitQuery(target)[0].args[0] === 'Mica_study.className';
+              if (!isLoneStudyClassNameQuery) {
+                this.noQueries = false;
+                break;
+              }
             }
           }
         }

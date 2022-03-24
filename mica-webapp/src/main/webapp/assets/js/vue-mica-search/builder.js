@@ -178,10 +178,10 @@ const RqlNode = {
     </template>
 
     <template v-else>
-    <rql-query v-if="firstArg && firstArg.vocabulary" v-bind:vocabulary="firstArg.vocabulary" v-bind:query="firstArg.associatedQuery" v-on:update-query="updateQuery($event, firstArg.taxonomyName)" v-on:remove-query="removeQuery($event, firstArg.taxonomyName)"></rql-query>
+    <rql-query v-if="firstArg && firstArg.vocabulary && firstArgIsShown" v-bind:vocabulary="firstArg.vocabulary" v-bind:query="firstArg.associatedQuery" v-on:update-query="updateQuery($event, firstArg.taxonomyName)" v-on:remove-query="removeQuery($event, firstArg.taxonomyName)"></rql-query>
     </template>
 
-    <span v-if="advancedMode && otherArgs.length > 0" class="d-flex my-auto">
+    <span v-if="advancedMode && otherArgs.length > 0 && firstArgIsShown" class="d-flex my-auto">
       <div class="dropdown">
         <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">{{ "search." + name | translate }}</button>
 
@@ -215,18 +215,22 @@ const RqlNode = {
   },
   computed: {
     firstArg() {
-      let result = null;
-
-      if (this.isNode()) {
-        const arg = this.args.slice(0, 1)[0];
-        result = this.isNode(arg) ? arg : this.asInput(arg);
+      return this.getFirstArg();
+    },
+    firstArgIsShown() {
+      let firstArg = this.getFirstArg();
+      if (!this.isNode(firstArg)) {
+        let uiHideInBuilderVocabularyAttributes = (firstArg.vocabulary || {attributes: [{"key": "uiHideInBuilder", "value": "false"}]}).attributes.find(attr => attr.key === 'uiHideInBuilder');
+        return !uiHideInBuilderVocabularyAttributes || uiHideInBuilderVocabularyAttributes.value === "false";
       } else {
-        const query = new RQL.Query(this.name);
-        query.args = this.args;
-        result = this.asInput(query);
+        let splitFirstArgToQueries = Criterion.splitQuery(firstArg);
+        if (splitFirstArgToQueries.length === 1) {
+          let loneQuery = this.asInput(splitFirstArgToQueries[0]);
+          let uiHideInBuilderVocabularyAttributes = (loneQuery.vocabulary || {attributes: [{"key": "uiHideInBuilder", "value": "false"}]}).attributes.find(attr => attr.key === 'uiHideInBuilder');
+          return !uiHideInBuilderVocabularyAttributes || uiHideInBuilderVocabularyAttributes.value === "false";
+        }
+        return true;
       }
-
-      return result;
     },
     otherArgs() {
       if (this.isNode()) {
@@ -247,6 +251,20 @@ const RqlNode = {
     RqlQuery
   },
   methods: {
+    getFirstArg() {
+      let result = null;
+
+      if (this.isNode()) {
+        const arg = this.args.slice(0, 1)[0];
+        result = this.isNode(arg) ? arg : this.asInput(arg);
+      } else {
+        const query = new RQL.Query(this.name);
+        query.args = this.args;
+        result = this.asInput(query);
+      }
+
+      return result;
+    },
     isNode(arg) {
       return Criterion.NODE_NAMES.indexOf((arg || this).name) > -1;
     },
@@ -284,11 +302,11 @@ const RqlNode = {
 const RqlQueryBuilder = {
   template: `
   <div v-bind:class="target" class="d-flex">
-    <span class="my-auto text-muted" v-show="items.length > 0">
+    <span v-if="showTarget" class="my-auto text-muted" v-show="items.length > 0">
       <h4 class="mb-0"><i class="align-middle io" v-bind:class="targetIcon"></i></h4>
     </span>
 
-    <rql-node v-for="(arg, index) in query.args" v-bind:key="index" v-bind:name="arg.name" v-bind:args="arg.args" v-bind:taxonomy="taxonomy" v-bind:advanced-mode="advancedMode" v-on:update-node="updateNode($event)" v-on:update-query="updateNodeQuery($event)" v-on:remove-query="removeNodeQuery($event)"></rql-node>
+    <rql-node v-if="showTarget" v-for="(arg, index) in query.args" v-bind:key="index" v-bind:name="arg.name" v-bind:args="arg.args" v-bind:taxonomy="taxonomy" v-bind:advanced-mode="advancedMode" v-on:update-node="updateNode($event)" v-on:update-query="updateNodeQuery($event)" v-on:remove-query="removeNodeQuery($event)"></rql-node>
   </div>
   `,
   name: "rql-query-builder",
@@ -305,6 +323,13 @@ const RqlQueryBuilder = {
     taxonomy: [Object, Array]
   },
   computed: {
+    showTarget() {
+      let itemsThatCanBeShown = this.items.filter(item => {
+        let uiHideInBuilderVocabularyAttributes = (item.vocabulary || {attributes: [{"key": "uiHideInBuilder", "value": "false"}]}).attributes.find(attr => attr.key === 'uiHideInBuilder');
+        return !uiHideInBuilderVocabularyAttributes || uiHideInBuilderVocabularyAttributes.value === "false";
+      });
+      return itemsThatCanBeShown.length > 0;
+    },
     inputs() {
       return Criterion.splitQuery(this.query);
     },
