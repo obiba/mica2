@@ -783,31 +783,24 @@ class TableFixedHeaderUtility {
       },
 
       onClearQuery() {
-        this.setLocation();
-      },
-      onLocationChanged(payload) {
-        let studyTypeSelection = payload.studyTypeSelection || MicaTreeQueryUrl.getStudyTypeSelection(MicaTreeQueryUrl.getTree());
-        let studyTypeSelectionWasDifferent = this.currentStudyTypeSelection &&
-          (this.currentStudyTypeSelection.all !== studyTypeSelection.all ||
-            this.currentStudyTypeSelection.study !== studyTypeSelection.study ||
-            this.currentStudyTypeSelection.harmonization !== studyTypeSelection.harmonization
-          );
+        let currentPathName = window.location.pathname;
+        let studyClassName = Mica.defaultSearchMode;
 
-        this.currentStudyTypeSelection = studyTypeSelection;
-
-        if (studyTypeSelectionWasDifferent) {
-          let currentPathName = window.location.pathname;
-          let studyClassName = Mica.defaultSearchMode;
-
-          if (currentPathName.startsWith("/harmonization")) {
-            studyClassName = 'HarmonizationStudy';
-          } else if (currentPathName.startsWith("/individual")) {
-            studyClassName = 'Study';
-          }
-
-          this.setLocation(new RQL.Query('study', [new RQL.Query('', [new RQL.Query('in', ['Mica_study.className', studyClassName])])]).toString());
+        if (currentPathName.startsWith("/harmonization")) {
+          studyClassName = 'HarmonizationStudy';
+        } else if (currentPathName.startsWith("/individual")) {
+          studyClassName = 'Study';
         }
 
+        let tree = new RQL.QueryTree();
+        // create target and add query as child, done!
+        let targetQuery = new RQL.Query(TARGETS.STUDY);
+        tree.addQuery(null, targetQuery);
+        tree.addQuery(targetQuery, new RQL.Query('in', ['Mica_study.className', studyClassName]));
+
+        this.setLocation(tree.serialize());
+      },
+      onLocationChanged(payload) {
         this.downloadUrlObject = MicaTreeQueryUrl.getDownloadUrl(payload);
 
         let tree = MicaTreeQueryUrl.getTree();
@@ -871,7 +864,7 @@ class TableFixedHeaderUtility {
         }
 
         if (foundStudyClassName &&
-          ((Array.is(foundStudyClassName.args[1]) && foundStudyClassName.args[1] === 1 && foundStudyClassName.args[1][0] !== studyClassName) ||
+          ((Array.isArray(foundStudyClassName.args[1]) && foundStudyClassName.args[1].length === 1 && foundStudyClassName.args[1][0] !== studyClassName) ||
           (!Array.isArray(foundStudyClassName.args[1]))) && foundStudyClassName.args[1] !== studyClassName) {
           tree.findAndUpdateQuery((name, args) => args[0] === 'Mica_study.className', ['Mica_study.className', studyClassName]);
           this.setLocation(tree.serialize());
@@ -881,10 +874,11 @@ class TableFixedHeaderUtility {
             // create target and add query as child, done!
             targetQuery = new RQL.Query(TARGETS.STUDY);
             tree.addQuery(null, targetQuery);
-            tree.addQuery(targetQuery, new RQL.Query('in', ['Mica_study.className', studyClassName]));
 
-            this.setLocation(tree.serialize())
           }
+
+          tree.addQuery(targetQuery, new RQL.Query('in', ['Mica_study.className', studyClassName]));
+          this.setLocation(tree.serialize());
         }
       },
       onQueryUpdate(payload) {
