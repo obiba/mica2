@@ -804,6 +804,7 @@ class TableFixedHeaderUtility {
         this.downloadUrlObject = MicaTreeQueryUrl.getDownloadUrl(payload);
 
         let tree = MicaTreeQueryUrl.getTree();
+        this.currentStudyTypeSelection = MicaTreeQueryUrl.getStudyTypeSelection(tree);
 
         // query string to copy
         tree.findAndDeleteQuery((name) => 'limit' === name);
