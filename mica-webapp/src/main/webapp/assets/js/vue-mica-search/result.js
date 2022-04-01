@@ -198,7 +198,7 @@ const EntityResult = {
       const tableSelector = `#vosr-${this.type}-result`;
       this.setHeaderSelectionClickEvent(tableSelector);
 
-      let headerSelectionIcon = document.querySelector(`${tableSelector} thead i`);
+      let headerSelectionIcon = document.querySelector(`${tableSelector} thead i.far`);
 
       if (headerSelectionIcon) {
         headerSelectionIcon.classList.remove(checkedIconClassName);
