@@ -663,11 +663,11 @@ class NetworksResultParser {
             break;
           }
           case 'studies': {
-            row.push(stats.studies ? anchor('studies', stats.studies, "") : '-');
+            row.push(stats.studies ? anchor('studies', stats.studies, "Study") : '-');
             break;
           }
           case 'initiatives': {
-            row.push(stats.studies ? anchor('studies', stats.studies, "") : '-');
+            row.push(stats.studies ? anchor('studies', stats.studies, "HarmonizationStudy") : '-');
             break;
           }
           case 'datasets': {
@@ -690,7 +690,7 @@ class NetworksResultParser {
           }
           case 'individual': {
             if (micaConfig.isCollectedDatasetEnabled) {
-              row.push(stats.studies ? anchor('studies', stats.studies, "") : '-');
+              row.push(stats.studies ? anchor('studies', stats.studies, "Study") : '-');
               row.push(stats.studyDatasets
                 ? anchor("datasets", stats.studyDatasets, "Study")
                 : "-");
@@ -702,7 +702,7 @@ class NetworksResultParser {
           }
           case 'harmonization': {
             if (micaConfig.isHarmonizedDatasetEnabled) {
-              row.push(stats.studies ? anchor('studies', stats.studies, "") : '-');
+              row.push(stats.studies ? anchor('studies', stats.studies, "HarmonizationStudy") : '-');
               row.push(stats.harmonizationDatasets
                 ? anchor("datasets", stats.harmonizationDatasets, "HarmonizationStudy")
                 : "-");

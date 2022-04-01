@@ -827,7 +827,7 @@ const NetworksResult = {
         })
         .forEach((col, id) => {
           if (['individual', 'harmonization'].includes(col)) {
-            items2.push({id: id, name: (this.studyTypeSelection.harmonization ? 'initiatives' : 'protocols'), title: ''});
+            items2.push({id: id, name: (this.studyTypeSelection.harmonization ? 'initiatives' : 'studies'), title: ''});
             items2.push({id: id, name: (this.studyTypeSelection.harmonization ? 'protocols' : 'datasets'), title: ''});
             items2.push({id: id, name: 'variables', title: ''});
           } else if (col === 'datasets') {
