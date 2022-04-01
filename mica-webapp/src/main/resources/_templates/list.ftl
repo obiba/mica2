@@ -218,9 +218,19 @@
                 </button>
               </#if>
               <#if config.setsSearchEnabled>
-                <a class="btn btn-info ml-2" href="${contextPath}/search#lists?type=variables&query=variable(in(Mica_variable.sets,${set.id}))">
-                  <i class="fas fa-search"></i>
-                </a>
+                <div class="btn-group dropleft">
+                  <button type="button" class="btn btn-info ml-2 dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-search"></i>
+                  </button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" href="${contextPath}/individual-search#lists?type=variables&query=variable(in(Mica_variable.sets,${set.id}))">
+                        <@message "collected"/>
+                    </a>
+                    <a class="dropdown-item" href="${contextPath}/harmonization-search#lists?type=variables&query=variable(in(Mica_variable.sets,${set.id}))">
+                        <@message "harmonization"/>
+                    </a>
+                  </div>
+                </div>
               </#if>
             </div>
           </div>
