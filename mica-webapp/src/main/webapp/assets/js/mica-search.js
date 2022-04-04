@@ -852,7 +852,7 @@ class TableFixedHeaderUtility {
         this.hasVariableQuery = TARGETS.VARIABLE in targetQueries && targetQueries[TARGETS.VARIABLE].args.length > 0;
       },
       checkCurrentModeAndRectify() {
-        let tree = MicaTreeQueryUrl.getTree();
+        let tree = MicaTreeQueryUrl.getTree() || new RQL.QueryTree();
         let foundStudyClassName = tree ? tree.search((name, args, parent) => 'in' === name && args[0] === 'Mica_study.className' && parent.name === TARGETS.STUDY) : null;
 
         let currentPathName = window.location.pathname;
