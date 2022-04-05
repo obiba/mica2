@@ -22,14 +22,15 @@ const RqlPanelVocabulary = {
     </template>
 
     <template v-else-if="criterion.type === 'NUMERIC'">
-
-      <div class="form-group col-6 d-inline-block">
-        <label v-bind:for="vocabulary.name + 'from'">{{ "search.from" | translate }}</label>
-        <input type="number" class="form-control" v-bind:id="vocabulary.name + '-from'" v-model="criterion.value[0]" v-on:change="onInput()">
-      </div>
-      <div class="form-group col-6 d-inline-block">
-        <label v-bind:for="vocabulary.name + 'to'">{{ "search.to" | translate }}</label>
-        <input type="number" class="form-control" v-bind:id="vocabulary.name + '-to'" v-model="criterion.value[1]" v-on:change="onInput()">
+      <div class="row">
+        <div class="form-group col-6 d-inline-block">
+          <label v-bind:for="vocabulary.name + 'from'">{{ "search.from" | translate }}</label>
+          <input type="number" class="form-control" v-bind:id="vocabulary.name + '-from'" v-model="criterion.value[0]" v-on:change="onInput()">
+        </div>
+        <div class="form-group col-6 d-inline-block">
+          <label v-bind:for="vocabulary.name + 'to'">{{ "search.to" | translate }}</label>
+          <input type="number" class="form-control" v-bind:id="vocabulary.name + '-to'" v-model="criterion.value[1]" v-on:change="onInput()">
+        </div>
       </div>
 
     </template>
