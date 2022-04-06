@@ -122,7 +122,7 @@
   Mica.maxNumberOfSets = ${maxNumberOfSets};
 
   <#if rc.requestUri?starts_with("harmonization")>
-    Mica.defaultSearchMode = "Harmonization"
+    Mica.defaultSearchMode = "HarmonizationStudy"
   <#else>
     Mica.defaultSearchMode = "${defaultSearchMode}" || "Study";
   </#if>
