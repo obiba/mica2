@@ -61,8 +61,7 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
 
     if (amendment.isNew()) {
       setAndLogStatus(saved, DataAccessEntityStatus.OPENED);
-      int count = findByParentId(saved.getParentId()).size();
-      saved.setId(saved.getParentId() + "-A" + (count + 1));
+      saved.setId(ensureUniqueId(saved.getParentId()));
     } else {
       saved = dataAmendmentRequestRepository.findOne(amendment.getId());
       if (saved != null) {
@@ -90,6 +89,18 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
     eventBus.post(new DataAccessAmendmentUpdatedEvent(saved));
     sendNotificationEmails(saved, from);
     return saved;
+  }
+
+  private String ensureUniqueId(String parentId) {
+    int count = findByParentId(parentId).size();
+    String newId;
+
+    do {
+      count++;
+      newId = String.format("%s-A%d", parentId, count);
+    } while (null != dataAmendmentRequestRepository.findOne(newId));
+
+    return newId;
   }
 
   /**
