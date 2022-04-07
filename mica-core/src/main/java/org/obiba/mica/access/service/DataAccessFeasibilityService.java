@@ -56,8 +56,7 @@ public class DataAccessFeasibilityService extends DataAccessEntityService<DataAc
 
     if (feasibility.isNew()) {
       setAndLogStatus(saved, DataAccessEntityStatus.OPENED);
-      int count = findByParentId(saved.getParentId()).size();
-      saved.setId(saved.getParentId() + "-F" + (count + 1));
+      saved.setId(ensureUniqueId(saved.getParentId()));
     } else {
       saved = dataFeasibilityRequestRepository.findOne(feasibility.getId());
       if (saved != null) {
@@ -84,6 +83,18 @@ public class DataAccessFeasibilityService extends DataAccessEntityService<DataAc
     eventBus.post(new DataAccessFeasibilityUpdatedEvent(saved));
     sendNotificationEmails(saved, from);
     return saved;
+  }
+
+  private String ensureUniqueId(String parentId) {
+    int count = findByParentId(parentId).size();
+    String newId;
+
+    do {
+      count++;
+      newId = String.format("%s-F%d", parentId, count);
+    } while (null != dataFeasibilityRequestRepository.findOne(newId));
+
+    return newId;
   }
 
   @Override
