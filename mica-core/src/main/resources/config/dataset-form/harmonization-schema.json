@@ -12,6 +12,7 @@
     "qualitativeQuantitative": {
       "type": "string",
       "title": "t(harmonization-protocol.qualitative-quantitative.title)",
+      "description": "t(harmonization-protocol.qualitative-quantitative.help)",
       "enum": [
         "qualitative",
         "quantitative"
@@ -20,6 +21,7 @@
     "prospectiveRetrospective": {
       "type": "string",
       "title": "t(harmonization-protocol.prospective-retrospective.title)",
+      "description": "t(harmonization-protocol.prospective-retrospective.help)",
       "enum": [
         "prospective",
         "retrospective"
@@ -33,6 +35,7 @@
     "procedures": {
       "type": "object",
       "title": "t(harmonization-protocol.procedures)",
+      "description": "t(harmonization-protocol.procedures-help",
       "format": "localizedString"
     },
     "participantsInclusion": {
@@ -43,6 +46,7 @@
     "infrastructure": {
       "type": "object",
       "title": "t(harmonization-protocol.infrastructure)",
+      "description": "t(harmonization-protocol.infrastructure-help)",
       "format": "localizedString"
     },
     "additionalInformation": {

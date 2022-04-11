@@ -29,7 +29,7 @@
           <div class="small-box bg-success w-100">
             <div class="inner">
               <h3 id="study-hits">-</h3>
-              <p><@message "studies"/></p>
+              <p><@message "global.individual-studies"/></p>
             </div>
             <div class="icon">
               <i class="${studyIcon}"></i>

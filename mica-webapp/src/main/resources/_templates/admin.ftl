@@ -77,7 +77,7 @@
             <span>{{ 'global.individual' | translate }}</span>
             <i class="fa fa-caret-down"></i></a>
           <ul class="dropdown-menu pull-left">
-            <li><a href="#/individual-study">{{micaConfig.isSingleStudyEnabled ? 'global.study' : 'studies' | translate}}</a></li>
+            <li><a href="#/individual-study">{{micaConfig.isSingleStudyEnabled ? 'global.study' : 'global.individual-studies' | translate}}</a></li>
             <li ng-if="micaConfig.isCollectedDatasetEnabled"><a href="#/collected-dataset"><span translate>collected-datasets</span></a></li>
           </ul>
         </li>
@@ -90,8 +90,8 @@
             <span>{{'global.harmonization' | translate }}</span>
             <i class="fa fa-caret-down"></i></a>
           <ul class="dropdown-menu pull-left">
-            <li><a href="#/harmonization-study">{{'global.initiatives' | translate}}</a></li>
-            <li><a href="#/harmonized-dataset"><span>{{'global.protocols' | translate}}</span></a></li>
+            <li><a href="#/harmonization-study">{{'global.harmonization-studies' | translate}}</a></li>
+            <li><a href="#/harmonized-dataset"><span>{{'harmonized-datasets' | translate}}</span></a></li>
           </ul>
         </li>
 

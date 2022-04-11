@@ -21,7 +21,7 @@
                   <#if config.singleStudyEnabled>
                     <a href="${contextPath}/study/_" class="dropdown-item"><@message "the-study"/></a>
                   <#else>
-                    <a href="${contextPath}/individual-studies" class="dropdown-item"><@message "studies"/></a>
+                    <a href="${contextPath}/individual-studies" class="dropdown-item"><@message "global.individual-studies"/></a>
                   </#if>
                   <#if config.studyDatasetEnabled>
               <li><a href="${contextPath}/collected-datasets" class="dropdown-item"><@message "collected-datasets"/></a></li>
@@ -29,8 +29,8 @@
               </li>
                 <#if config.harmonizationDatasetEnabled>
                   <li><div class="dropdown-divider"></div></li>
-                  <li><a href="${contextPath}/harmonization-studies" class="dropdown-item"><@message "initiatives"/></a></li>
-                  <li><a href="${contextPath}/harmonized-datasets" class="dropdown-item"><@message "protocols"/></a></li>
+                  <li><a href="${contextPath}/harmonization-studies" class="dropdown-item"><@message "global.harmonization-studies"/></a></li>
+                  <li><a href="${contextPath}/harmonized-datasets" class="dropdown-item"><@message "harmonized-datasets"/></a></li>
                 </#if>
             </ul>
           </li>
