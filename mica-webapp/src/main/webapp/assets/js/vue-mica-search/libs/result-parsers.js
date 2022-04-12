@@ -260,7 +260,13 @@ class VariablesResultParser {
     summaries.forEach(summary => {
 
       let path = this.normalizePath(`/variable/${summary.id}`);
-      let row = [`<i data-item-id="${summary.id}" class="far fa-square"></i>`, `<a href="${path}">${summary.name}</a>`,];
+      let row = [];
+
+      if (displayOptions.showCheckboxes) {
+        row.push(`<i data-item-id="${summary.id}" class="far fa-square"></i>`);
+      }
+
+      row.push(`<a href="${path}">${summary.name}</a>`);
 
       (displayOptions[columnKey] || displayOptions.variableColumns).forEach(column => {
         switch (column) {

@@ -52,6 +52,12 @@ const DataTableDefaults = {
 };
 
 const EntityResult = {
+  props: {
+    showCheckboxes: {
+      type: Boolean,
+      default: true
+    }
+  },
   data() {
     return {
       dataTable: null,
@@ -83,8 +89,11 @@ const EntityResult = {
      * Callback invoked when request response arrives
      */
     onResults(payload) {
+      let displayOptions = this.getDisplayOptions();
+      displayOptions.showCheckboxes = this.showCheckboxes;
+
       this.studyTypeSelection = payload.studyTypeSelection || this.studyTypeSelection;
-      this.parsed = this.parser.parse(payload.response, this.getMicaConfig(), this.localize, this.getDisplayOptions(), this.studyTypeSelection);
+      this.parsed = this.parser.parse(payload.response, this.getMicaConfig(), this.localize, displayOptions, this.studyTypeSelection);
       this.showResult = this.parsed.totalHits > 0;
       if (!this.showResult) this.parsed = [];
     },
@@ -494,7 +503,7 @@ const VariablesResult = {
         <table id="vosr-variables-result" class="table table-striped" width="100%">
           <thead>
             <tr>
-              <th><i class="far fa-square"></i></th>
+              <th v-if="showCheckboxes"><i class="far fa-square"></i></th>
               <th class="column-name">{{ "name" | translate }}</th>
               <th v-for="(column, index) in variableColumnNames" :key="index" :class="'column-'+ column" >{{ column | translate }}</th>
             </tr>

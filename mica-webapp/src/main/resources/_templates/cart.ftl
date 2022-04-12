@@ -15,7 +15,7 @@
   <!-- /.navbar -->
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
+  <div class="content-wrapper" id="query-vue-container">
     <!-- Content Header (Page header) -->
     <div class="content-header bg-info mb-4">
       <div class="container">
@@ -163,6 +163,23 @@
                 <#if user.variablesCart?? && user.variablesCart.count gt 0>
                   <div class="float-right">
 
+                    <div class="d-inline-block">
+                      <select v-model="studyClassName" @change="onStudyClassNameChange" class="custom-select my-1 mr-sm-2">
+                        <option value="Study"><@message "collected-variables"/></option>
+                        <option value="HarmonizationStudy"><@message "harmonized-variables"/></option>
+                      </select>
+                    </div>
+                    <div class="d-inline-block">
+                      <div class="d-inline-flex">
+                        <span class="ml-2 mr-1">
+                          <select class="custom-select" id="obiba-page-size-selector-top"></select>
+                        </span>
+                        <nav id="obiba-pagination-top" aria-label="Top pagination" class="mt-0">
+                          <ul class="pagination mb-0"></ul>
+                        </nav>
+                      </div>
+                    </div>
+
                     <#if canCreateDAR>
                       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-add">
                         <i class="fas fa-plus"></i> <@message "new-data-access-request"/>
@@ -228,7 +245,10 @@
                       <i class="fas fa-trash"></i> <@message "delete"/> <span class="badge badge-light selection-count"></span>
                     </button>
                       <#if config.setsSearchEnabled>
-                        <a class="btn btn-info ml-2" href="${contextPath}/search#lists?type=variables&query=variable(in(Mica_variable.sets,${user.variablesCart.id}))">
+                        <a class="btn btn-success ml-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=variables&query=variable(in(Mica_variable.sets,${user.variablesCart.id})),study(in(Mica_study.className,Study))">
+                          <i class="fas fa-search"></i>
+                        </a>
+                        <a class="btn btn-success ml-2" v-else href="${contextPath}/harmonization-search#lists?type=variables&query=variable(in(Mica_variable.sets,${user.variablesCart.id})),study(in(Mica_study.className,HarmonizationStudy))">
                           <i class="fas fa-search"></i>
                         </a>
                       </#if>
@@ -239,24 +259,8 @@
               <#if user.variablesCart?? && user.variablesCart.count gt 0>
                 <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
                 <div class="table-responsive">
-                  <table id="setTable" class="table table-striped">
-                    <thead>
-                    <tr>
-                      <th><i class="far fa-square"></i></th>
-                      <th></th>
-                      <th><@message "name"/></th>
-                      <th><@message "label"/></th>
-                        <#if config.studyDatasetEnabled && config.harmonizationDatasetEnabled>
-                          <th><@message "type"/></th>
-                        </#if>
-                        <#if !config.singleStudyEnabled>
-                          <th><@message "study"/></th>
-                        </#if>
-                      <th><@message "dataset"/></th>
-                    </tr>
-                    </thead>
-                    <tbody></tbody>
-                  </table>
+                  <div class="mt-3 text-muted" v-show="!hasResult"><@message "empty-list"/></div>
+                  <variables-result v-show="hasResult" :show-checkboxes="hasCheckboxes"></variables-result>
                 </div>
               <#else>
                 <div class="text-muted"><@message "sets.cart.no-variables"/></div>

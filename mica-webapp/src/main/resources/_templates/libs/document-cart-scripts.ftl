@@ -5,15 +5,6 @@
 <#include "document-set-scripts.ftl">
 
 <script>
-  const Mica = {
-    locale: "${.lang}",
-    tr: {
-      "no-variable-added-set": "<@message "sets.set.no-variable-added"/>",
-      "variables-added-to-set": "<@message "variables-added-to-set"/>",
-      "data-access-request": "<@message "data-access-request"/>"
-    }
-  };
-
   function onCompareStudies() {
     const selections = studiesCartStorage.getSelections();
     window.location = '${contextPath}/compare?type=studies' + (selections.length === 0 ? '' : '&ids=' + selections.join(','));
