@@ -1341,6 +1341,8 @@ class TableFixedHeaderUtility {
       this.pagination = new OBiBaPagination('obiba-pagination-top', true, this.onPagination),
       this.pageSizeSelector = new OBiBaPageSizeSelector('obiba-page-size-selector-top', DEFAULT_PAGE_SIZES, DEFAULT_PAGE_SIZE, this.onPageSizeChanged);
 
+      let currentPathNameIsSearch = window.location.pathname.startsWith("/search")
+
       EventBus.register('taxonomy-selection', this.onTaxonomySelection);
       EventBus.register(EVENTS.LOCATION_CHANGED, this.onLocationChanged.bind(this));
 
@@ -1376,8 +1378,8 @@ class TableFixedHeaderUtility {
                       studyClassNameVocabulary.attributes = [];
                     }
 
-                    studyClassNameVocabulary.attributes.push({"key": "uiTermsReadOnly", "value": "true"});
-                    studyClassNameVocabulary.attributes.push({"key": "uiHideInBuilder", "value": "true"});
+                    studyClassNameVocabulary.attributes.push({"key": "uiTermsReadOnly", "value": currentPathNameIsSearch ? "false" : "true"});
+                    studyClassNameVocabulary.attributes.push({"key": "uiHideInBuilder", "value": currentPathNameIsSearch ? "false" : "true"}); 
                   }
                 }
 
