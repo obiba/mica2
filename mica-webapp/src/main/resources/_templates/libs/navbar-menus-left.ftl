@@ -36,7 +36,7 @@
           </li>
             <#if !config.singleStudyEnabled || (config.networkEnabled && !config.singleNetworkEnabled) || config.studyDatasetEnabled || config.harmonizationDatasetEnabled >
               <li id="searchMenu" class="nav-item dropdown">
-                <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle btn btn-success"><@message "search"/> <i class="fas fa-search"></i></a>
+                <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle btn btn-success text-white"><@message "search"/> <i class="fas fa-search"></i></a>
                 <ul aria-labelledby="searchMenu" class="dropdown-menu border-0 shadow">
                   <li>
                     <a href="<#if !config.openAccess && !user??>${contextPath}/signin?redirect=${contextPath}/individual-search${defaultIndividualSearchState?url('UTF-8')}<#else>${contextPath}/individual-search${defaultIndividualSearchState}</#if>" class="dropdown-item">
