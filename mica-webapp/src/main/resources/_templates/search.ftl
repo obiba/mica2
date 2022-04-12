@@ -311,7 +311,7 @@
                           <p class="text-muted"><@message "results-list-of-studies-text"/></p>
                           <div id="list-studies">
                             <div class="mt-3 text-muted" v-show="!loading && !hasListResult">{{ "no-study-found" | translate }}</div>
-                            <studies-result v-show="!loading && hasListResult"></studies-result>
+                            <studies-result v-show="!loading && hasListResult" :show-checkboxes="studyHasCheckboxes"></studies-result>
                           </div>
                         </div>
                       </#if>
@@ -320,7 +320,7 @@
                           <p class="text-muted"><@message "results-list-of-networks-text"/></p>
                           <div id="list-networks">
                             <div class="mt-3 text-muted" v-show="!loading && !hasListResult">{{ "no-network-found" | translate }}</div>
-                            <networks-result v-show="!loading && hasListResult"></networks-result>
+                            <networks-result v-show="!loading && hasListResult" :show-checkboxes="networkHasCheckboxes"></networks-result>
                           </div>
                         </div>
                       </#if>

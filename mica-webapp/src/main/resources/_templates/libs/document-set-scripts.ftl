@@ -245,6 +245,8 @@
           from: 0,
           size: DEFAULT_PAGE_SIZE,
           variableSelections: [],
+          studySelections: [],
+          networkSelections: [],
           hasResult: false,
           pagination: null,
           pageSizeSelector: null,
@@ -258,6 +260,18 @@
 
           if (data) {
             let dto = 'variableResultDto';
+            
+            switch (payload.type) {
+              case TYPES.VARIABLES:
+                dto = 'variableResultDto';
+                break;
+              case TYPES.STUDIES:
+                dto = 'studyResultDto';
+                break;
+              case TYPES.NETWORKS:
+                dto = 'networkResultDto';
+                break;
+            }
 
             this.pagination.update((data[dto] || {totalHits: 0}).totalHits, this.size, (this.from/this.size)+1);
             this.hasResult = (data[dto] || {totalHits: 0}).totalHits > 0;
@@ -265,21 +279,50 @@
           }
         },
         onSelectionChanged(payload) {
-          variablesCartStorage.deselectAll();
-          this.variableSelections = payload.selections || [];
+          let count = 0;
 
-          variablesCartStorage.selectAll(this.variableSelections);
+          let type = this.currentWindowLocationSearch()['type'];
+          let selectionCountClassName = '.selection-count';
 
-          const count = variablesCartStorage.getSelections().length;
+          switch (type) {
+            case TYPES.VARIABLES:
+              variablesCartStorage.deselectAll();
+              this.variableSelections = payload.selections || [];
+              variablesCartStorage.selectAll(this.variableSelections);
+              count = variablesCartStorage.getSelections().length;
+              break;
+            case TYPES.STUDIES:
+              studiesCartStorage.deselectAll();
+              this.studySelections = payload.selections || [];
+              studiesCartStorage.selectAll(this.studySelections);
+              count = studiesCartStorage.getSelections().length;
+
+              selectionCountClassName = '.studies-selection-count';
+              break;
+            case TYPES.NETWORKS:
+              networksCartStorage.deselectAll();
+              this.networkSelections = payload.selections || [];
+              networksCartStorage.selectAll(this.networkSelections);
+              count = networksCartStorage.getSelections().length;
+
+              selectionCountClassName = '.networks-selection-count';
+              break;
+          }
+
           if (count === 0) {
-            $('.selection-count').hide();
+            $(selectionCountClassName).hide();
             $('#delete-all-message').show();
             $('#delete-selected-message').hide();
           } else {
-            $('.selection-count').text(count.toLocaleString('${.lang}')).show();
+            $(selectionCountClassName).text(count.toLocaleString('${.lang}')).show();
             $('#delete-all-message').hide();
             $('#delete-selected-message').show();
-          }       
+          }   
+        },
+        onTabChanged(tab) {
+          this.size = DEFAULT_PAGE_SIZE;
+          this.from = 0;
+          this.doQuery(tab);
         },
         onPagination(data) {
           this.from = data.from;
@@ -295,37 +338,93 @@
           $('#loadingSet').show();
           this.doQuery();
         },
-        doQuery() {
+        currentWindowLocationSearch() {
+          const search = window.location.search;
+          let urlParts = {}
+
+          if (search) {
+            const index = search.indexOf('?')
+            if (index > -1) {
+              const params = search.substring(index + 1).split('&');
+              params.forEach(param => {
+                const parts = param.split('=');
+                urlParts[parts[0]] = parts[1] || "";
+              });
+            }
+          }
+
+          return urlParts;
+        },
+        doQuery(tab) {
+          tab = tab ? tab : this.currentWindowLocationSearch()['type'];
+          let studyTypeSelection = {all: false, study: this.studyClassName === 'Study', harmonization: this.studyClassName === 'HarmonizationStudy'}
+
           this.hasResult = false;
 
           let setId = '${set.id}';
+          let studySetId = '${studiesSet.id}';
+          let networkSetId = '${networksSet.id}';
+
+          let resultEventName = 'variables-results';
+          let resultType = 'variables';
+
           let tree = new RQL.QueryTree();
 
-          let targetQuery = new RQL.Query(TARGETS.VARIABLE);
-          tree.addQuery(null, targetQuery);
+          if (!tab || tab === 'variables') {
+            let targetQuery = new RQL.Query(TARGETS.VARIABLE);
+            tree.addQuery(null, targetQuery);
 
-          tree.addQuery(targetQuery, new RQL.Query('in', ['Mica_variable.sets', setId]));
+            tree.addQuery(targetQuery, new RQL.Query('in', ['Mica_variable.sets', setId]));
 
-          tree.addQuery(targetQuery, new RQL.Query('limit', [this.from, this.size]));
-          tree.addQuery(targetQuery, new RQL.Query('fields', ['${searchVariableFields?join("', '")}']));
-          tree.addQuery(targetQuery, new RQL.Query('sort', ['${searchVariableSortFields?join("', '")}']));
+            tree.addQuery(targetQuery, new RQL.Query('limit', [this.from, this.size]));
+            tree.addQuery(targetQuery, new RQL.Query('fields', ['${searchVariableFields?join("', '")}']));
+            tree.addQuery(targetQuery, new RQL.Query('sort', ['${searchVariableSortFields?join("', '")}']));
 
-          let studyTargetQuery = new RQL.Query(TARGETS.STUDY);
-          tree.addQuery(null, studyTargetQuery);
-          tree.addQuery(studyTargetQuery, new RQL.Query('in', ['Mica_study.className', this.studyClassName]));
+            let studyTargetQuery = new RQL.Query(TARGETS.STUDY);
+            tree.addQuery(null, studyTargetQuery);
+            tree.addQuery(studyTargetQuery, new RQL.Query('in', ['Mica_study.className', this.studyClassName]));
+          } else if (tab && tab === 'studies') {
+            resultEventName = 'studies-results';
+            resultType = 'studies';
+
+            let studyTargetQuery = new RQL.Query(TARGETS.STUDY);
+            tree.addQuery(null, studyTargetQuery);
+
+            tree.addQuery(studyTargetQuery, new RQL.Query('and', [new RQL.Query('in', ['Mica_study.className', this.studyClassName]), new RQL.Query('in', ['Mica_study.sets', studySetId])]));
+
+            tree.addQuery(studyTargetQuery, new RQL.Query('limit', [this.from, this.size]));
+            tree.addQuery(studyTargetQuery, new RQL.Query('fields', ['${searchStudyFields?join("', '")}']));
+            tree.addQuery(studyTargetQuery, new RQL.Query('sort', ['${searchStudySortFields?join("', '")}']));
+          } else if (tab && tab === 'networks') {
+            resultEventName = 'networks-results';
+            resultType = 'networks';
+
+            let networkTargetQuery = new RQL.Query(TARGETS.NETWORK);
+            tree.addQuery(null, networkTargetQuery);
+
+            tree.addQuery(networkTargetQuery, new RQL.Query('in', ['Mica_network.sets', networkSetId]));
+
+            tree.addQuery(networkTargetQuery, new RQL.Query('limit', [this.from, this.size]));
+            tree.addQuery(networkTargetQuery, new RQL.Query('fields', ['${searchNetworkFields?join("', '")}']));
+            tree.addQuery(networkTargetQuery, new RQL.Query('sort', ['${searchNetworkSortFields?join("', '")}']));
+
+            let studyTargetQuery = new RQL.Query(TARGETS.STUDY);
+            tree.addQuery(null, studyTargetQuery);
+            tree.addQuery(studyTargetQuery, new RQL.Query('in', ['Mica_study.className', this.studyClassName]));
+          }
 
           tree.addQuery(null, new RQL.Query('locale', ['${.lang}']));
 
-          let url = '/ws/variables/_rql?query=' + tree.serialize();
+          let url = '/ws/' + resultType + '/_rql?query=' + tree.serialize();
 
           axios
             .get(MicaService.normalizeUrl(url))
-            .then(response => {
+            .then(function(response) {
               $('#loadingSet').hide();
 
-              EventBus.$emit('variables-results', {
-                studyTypeSelection: {all: false, study: this.studyClassName === 'Study', harmonization: this.studyClassName === 'HarmonizationStudy'},
-                type: 'variables',
+              EventBus.$emit(resultEventName, {
+                studyTypeSelection,
+                type: resultType,
                 response: response.data,
                 from: this.from,
                 size: this.size
@@ -335,167 +434,46 @@
       },
       beforeMount() {
         EventBus.register("variables-results", this.onResult.bind(this));
+        EventBus.register("studies-results", this.onResult.bind(this));
+        EventBus.register("networks-results", this.onResult.bind(this));
       },
       mounted() {
         this.pagination = new OBiBaPagination('obiba-pagination-top', true, this.onPagination),
         this.pageSizeSelector = new OBiBaPageSizeSelector('obiba-page-size-selector-top', DEFAULT_PAGE_SIZES, DEFAULT_PAGE_SIZE, this.onPageSizeChanged);
 
         EventBus.register('variables-selections-updated', this.onSelectionChanged.bind(this));
+        EventBus.register('studies-selections-updated', this.onSelectionChanged.bind(this));
+        EventBus.register('networks-selections-updated', this.onSelectionChanged.bind(this));
 
-        let url = '/ws/taxonomies/_filter?target' + TARGETS.VARIABLE;
+        let url = '/ws/taxonomies/_filter?target=' + TARGETS.VARIABLE;
+        let studyTaxonomyurl = '/ws/taxonomies/_filter?target=' + TARGETS.STUDY;
+        let networkTaxonomyUrl = '/ws/taxonomies/_filter?target=' + TARGETS.NETWORK;
 
-        axios.get(MicaService.normalizeUrl(url)).
-          then(response => {
+        axios.all([axios.get(MicaService.normalizeUrl(url)), axios.get(MicaService.normalizeUrl(studyTaxonomyurl)), axios.get(MicaService.normalizeUrl(networkTaxonomyUrl))]).
+          then(axios.spread((...responses) => {
             let taxonomies = [];
-            console.log('taxonomies', response.data)
 
-            if (Array.isArray(response.data)) {
+            responses.forEach((response) => {
               for (let taxo of response.data) {
                 taxonomies[taxo.name] = taxo;
               }
+            });
 
-              taxonomyTitleFinder.initialize(taxonomies);
+            taxonomyTitleFinder.initialize(taxonomies);
 
-              Vue.filter("taxonomy-title", (input) => {
-                const [taxonomy, vocabulary, term] = input.split(/\./);
-                return  taxonomyTitleFinder.title(taxonomy, vocabulary, term) || input;
-              });
-            }
-          });
+            Vue.filter("taxonomy-title", (input) => {
+              const [taxonomy, vocabulary, term] = input.split(/\./);
+              return  taxonomyTitleFinder.title(taxonomy, vocabulary, term) || input;
+            });
+          }));
 
-        this.doQuery();
+        this.doQuery(this.currentWindowLocationSearch()['type']);
       },
       beforeDestory() {
         EventBus.unregister("variables-results", this.onResult.bind(this));
+        EventBus.unregister("studies-results", this.onResult.bind(this));
+        EventBus.unregister("networks-results", this.onResult.bind(this));
       }
     });
-
-    <#if studiesSet??>
-    // studies set
-    const studyTypeLabels = {
-      'individual-study': "<@message "search.study.individual"/>",
-      'harmonization-study': "<@message "search.study.harmonization"/>"
-    }
-    const studiesDataTableOpts = {...dataTableOpts};
-    studiesDataTableOpts.ajax = function(data, callback) {
-      StudiesSetService.search('${studiesSet.id}', data.start, data.length, function(response) {
-        $('#loadingStudiesSet').hide();
-        $('#studiesSetTable').show();
-        let result = undefined;
-        let rows = [];
-        if (response.studyResultDto && response.studyResultDto['obiba.mica.StudyResultDto.result']) {
-          result = response.studyResultDto;
-          const summaries = result['obiba.mica.StudyResultDto.result'].summaries;
-          for (const i in summaries) {
-            let row = [];
-            const summary = summaries[i];
-            // checkbox
-            row.push('<i class="far fa-square"></i>');
-            // ID
-            row.push(summary.id);
-            row.push('<a href="${contextPath}/study/' + summary.id + '">' + LocalizedValues.forLang(summary.acronym, '${.lang}') + '</a>');
-            row.push(LocalizedValues.forLang(summary.name, '${.lang}'));
-            row.push(studyTypeLabels[summary.studyResourcePath]);
-            rows.push(row);
-          }
-        }
-        callback({
-          data: rows,
-          recordsTotal: result ? result.totalHits : 0,
-          recordsFiltered: result ? result.totalHits : 0
-        });
-      });
-    };
-    studiesDataTableOpts.columnDefs = [{ // the checkbox
-      orderable: false,
-      className: 'studies-select-checkbox',
-      targets: 0
-    }, { // the ID
-      visible: false,
-      searchable: false,
-      targets: 1
-    }];
-    initSelectDataTable($("#studiesSetTable").DataTable(studiesDataTableOpts), {
-      className: 'studies-select-checkbox',
-      isSelected: function(id) {
-        return studiesCartStorage.selected(id);
-      },
-      onSelectionChanged: function (ids, selected) {
-        if (selected) {
-          studiesCartStorage.selectAll(ids);
-        } else {
-          studiesCartStorage.deselectAll(ids);
-        }
-        const count = studiesCartStorage.getSelections().length;
-        if (count === 0) {
-          $('.studies-selection-count').hide();
-          $('#delete-all-studies-message').show();
-          $('#delete-selected-studies-message').hide();
-        } else {
-          $('.studies-selection-count').text(count.toLocaleString('${.lang}')).show();
-          $('#delete-all-studies-message').hide();
-          $('#delete-selected-studies-message').show();
-        }
-      }
-    });
-    $('#studiesSetTable').css('width', '100%').hide();
-    </#if>
-
-    <#if networksSet??>
-    // networks set
-    const networksDataTableOpts = {...dataTableOpts};
-    networksDataTableOpts.ajax = function(data, callback) {
-      NetworksSetService.search('${networksSet.id}', data.start, data.length, function(response) {
-        $('#loadingNetworksSet').hide();
-        $('#networksSetTable').show();
-        let result = undefined;
-        let rows = [];
-        if (response.networkResultDto && response.networkResultDto['obiba.mica.NetworkResultDto.result']) {
-          result = response.networkResultDto;
-          const summaries = result['obiba.mica.NetworkResultDto.result'].networks;
-          for (const i in summaries) {
-            let row = [];
-            const summary = summaries[i];
-            // checkbox
-            row.push('<i class="far fa-square"></i>');
-            // ID
-            row.push(summary.id);
-            row.push('<a href="${contextPath}/network/' + summary.id + '">' + LocalizedValues.forLang(summary.acronym, '${.lang}') + '</a>');
-            row.push(LocalizedValues.forLang(summary.name, '${.lang}'));
-            rows.push(row);
-          }
-        }
-        callback({
-          data: rows,
-          recordsTotal: result ? result.totalHits : 0,
-          recordsFiltered: result ? result.totalHits : 0
-        });
-      });
-    };
-    initSelectDataTable($("#networksSetTable").DataTable(networksDataTableOpts), {
-      isSelected: function(id) {
-        return networksCartStorage.selected(id);
-      },
-      onSelectionChanged: function (ids, selected) {
-        if (selected) {
-          networksCartStorage.selectAll(ids);
-        } else {
-          networksCartStorage.deselectAll(ids);
-        }
-        const count = networksCartStorage.getSelections().length;
-        if (count === 0) {
-          $('.networks-selection-count').hide();
-          $('#delete-all-networks-message').show();
-          $('#delete-selected-networks-message').hide();
-        } else {
-          $('.networks-selection-count').text(count.toLocaleString('${.lang}')).show();
-          $('#delete-all-networks-message').hide();
-          $('#delete-selected-networks-message').show();
-        }
-      }
-    });
-    $('#networksSetTable').css('width', '100%').hide();
-    </#if>
-
   });
 </script>

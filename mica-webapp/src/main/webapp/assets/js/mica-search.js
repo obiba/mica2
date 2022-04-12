@@ -588,6 +588,8 @@ class TableFixedHeaderUtility {
         selectedTaxonomy: null,
         selectedTaxonomyTitle: null,
         selectedTarget: null,
+        studyHasCheckboxes: false,
+        networkHasCheckboxes: false,
         queryType: 'variables-list',
         lastList: '',
         queryExecutor: new MicaQueryExecutor(EventBus, DataTableDefaults.pageLength, Mica.querySettings),

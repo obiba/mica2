@@ -189,7 +189,9 @@
 
         <div class="card card-info card-outline">
           <div class="card-header">
-            <h3 class="card-title"><@message "variables"/></h3>
+            <div class="float-left">
+              <h3 class="card-title"><@message "variables"/></h3>
+            </div>
             <div class="float-right">
               <div class="d-inline-block">
                 <select v-model="studyClassName" @change="onStudyClassNameChange" class="custom-select my-1 mr-sm-2">

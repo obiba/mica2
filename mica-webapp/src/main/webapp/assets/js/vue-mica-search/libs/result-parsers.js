@@ -424,7 +424,13 @@ class StudiesResultParser {
         `<a href="" class="query-anchor" data-study-type="${studyType}" data-target="study" data-target-id="${summary.id}" data-type="${type}">${value.toLocaleString(this.locale)}</a>`;
 
       let path = this.normalizePath(`/study/${summary.id}`);
-      let row = [`<a href="${path}">${localize(summary.acronym)}</a>`];
+      let row = [];
+      
+      if (displayOptions.showCheckboxes) {
+        row.push(`<i data-item-id="${summary.id}" class="far fa-square"></i>`);
+      }
+
+      row.push(`<a href="${path}">${localize(summary.acronym)}</a>`);
 
       (displayOptions[columnKey] || displayOptions.studyColumns).forEach(column => {
         switch (column) {
@@ -660,7 +666,13 @@ class NetworksResultParser {
       let anchor = (type, value, studyType) => `<a href="" class="query-anchor" data-study-type="${studyType}" data-target="network" data-target-id="${network.id}" data-type="${type}">${value.toLocaleString(this.locale)}</a>`;
 
       let path = this.normalizePath(`/network/${network.id}`);
-      let row = [`<a href="${path}">${localize(network.acronym)}</a>`];
+      let row = [];
+      
+      if (displayOptions.showCheckboxes) {
+        row.push(`<i data-item-id="${network.id}" class="far fa-square"></i>`);
+      }
+
+      row.push(`<a href="${path}">${localize(network.acronym)}</a>`);
 
       (displayOptions[columnKey] || displayOptions.networkColumns).forEach(column => {
         switch (column) {

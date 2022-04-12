@@ -121,7 +121,7 @@
             <ul id="cart-tabs" class="nav nav-pills mb-3">
               <#if variablesCartEnabled>
                 <li class="nav-item">
-                  <a id="variables-tab" class="nav-link <#if showCartType == "variables">active</#if>"
+                  <a id="variables-tab" @click="onTabChanged('variables')" class="nav-link <#if showCartType == "variables">active</#if>"
                      <#if showCartType == "variables">href="#tab_variables" data-toggle="tab"<#else>href="${contextPath}/cart?type=variables"</#if>>
                       <@message "variables"/>
                     <span class="badge badge-light">${user.variablesCart.count}</span>
@@ -130,7 +130,7 @@
               </#if>
               <#if studiesCartEnabled>
                 <li class="nav-item">
-                  <a id="studies-tab" class="nav-link <#if showCartType == "studies">active</#if>"
+                  <a id="studies-tab" @click="onTabChanged('studies')" class="nav-link <#if showCartType == "studies">active</#if>"
                      <#if showCartType == "studies">href="#tab_studies" data-toggle="tab"<#else>href="${contextPath}/cart?type=studies"</#if>>
                       <@message "studies"/>
                     <span class="badge badge-light">${user.studiesCart.count}</span>
@@ -139,7 +139,7 @@
               </#if>
               <#if networksCartEnabled>
                 <li class="nav-item">
-                  <a id="networks-tab" class="nav-link <#if showCartType == "networks">active</#if>"
+                  <a id="networks-tab" @click="onTabChanged('networks')" class="nav-link <#if showCartType == "networks">active</#if>"
                      <#if showCartType == "networks">href="#tab_networks" data-toggle="tab"<#else>href="${contextPath}/cart?type=networks"</#if>>
                       <@message "networks"/>
                     <span class="badge badge-light">${user.networksCart.count}</span>
@@ -159,14 +159,16 @@
 
             <div class="card card-info card-outline">
             <div class="card-header">
-              <h3 class="card-title"><@message "variables"/></h3>
+              <div class="float-left">
+                <h3 class="card-title"><@message "variables"/></h3>
+              </div>              
                 <#if user.variablesCart?? && user.variablesCart.count gt 0>
                   <div class="float-right">
 
                     <div class="d-inline-block">
                       <select v-model="studyClassName" @change="onStudyClassNameChange" class="custom-select my-1 mr-sm-2">
-                        <option value="Study"><@message "collected-variables"/></option>
-                        <option value="HarmonizationStudy"><@message "harmonized-variables"/></option>
+                        <option value="Study"><@message "individual-search"/></option>
+                        <option value="HarmonizationStudy"><@message "harmonization-search"/></option>
                       </select>
                     </div>
                     <div class="d-inline-block">
@@ -282,6 +284,23 @@
               <h3 class="card-title"><@message "studies"/></h3>
                 <#if user.studiesCart?? && user.studiesCart.count gt 0>
                   <div class="float-right">
+                    <div class="d-inline-block">
+                      <select v-model="studyClassName" @change="onStudyClassNameChange" class="custom-select my-1 mr-sm-2">
+                        <option value="Study"><@message "individual-search"/></option>
+                        <option value="HarmonizationStudy"><@message "harmonization-search"/></option>
+                      </select>
+                    </div>
+                    <div class="d-inline-block">
+                      <div class="d-inline-flex">
+                        <span class="ml-2 mr-1">
+                          <select class="custom-select" id="obiba-page-size-selector-top"></select>
+                        </span>
+                        <nav id="obiba-pagination-top" aria-label="Top pagination" class="mt-0">
+                          <ul class="pagination mb-0"></ul>
+                        </nav>
+                      </div>
+                    </div>
+
                     <#if studiesCompareEnabled>
                       <button type="button" class="btn btn-info ml-2" onclick="onCompareStudies()">
                         <i class="fas fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge badge-light studies-selection-count"></span>
@@ -296,7 +315,10 @@
                       <i class="fas fa-trash"></i> <@message "delete"/> <span class="badge badge-light studies-selection-count"></span>
                     </button>
                       <#if config.setsSearchEnabled>
-                        <a class="btn btn-info ml-2" href="${contextPath}/search#lists?type=studies&query=study(in(Mica_study.sets,${user.studiesCart.id}))">
+                        <a class="btn btn-success ml-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=studies&query=study(and(in(Mica_study.sets,${user.studiesCart.id}),in(Mica_study.className,Study)))">
+                          <i class="fas fa-search"></i>
+                        </a>
+                        <a class="btn btn-success ml-2" v-else href="${contextPath}/harmonization-search#lists?type=studies&query=study(and(in(Mica_study.sets,${user.studiesCart.id}),in(Mica_study.className,HarmonizationStudy)))">
                           <i class="fas fa-search"></i>
                         </a>
                       </#if>
@@ -305,22 +327,10 @@
             </div>
             <div class="card-body">
               <#if user.studiesCart?? && user.studiesCart.count gt 0>
-                <div id="loadingStudiesSet" class="spinner-border spinner-border-sm" role="status"></div>
+              <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
                 <div class="table-responsive">
-                  <table id="studiesSetTable" class="table table-striped">
-                    <thead>
-                    <tr>
-                      <th><i class="far fa-square"></i></th>
-                      <th></th>
-                      <th><@message "acronym"/></th>
-                      <th><@message "name"/></th>
-                      <#if config.studyDatasetEnabled && config.harmonizationDatasetEnabled>
-                        <th><@message "type"/></th>
-                      </#if>
-                    </tr>
-                    </thead>
-                    <tbody></tbody>
-                  </table>
+                  <div class="mt-3 text-muted" v-show="!hasResult"><@message "empty-list"/></div>
+                  <studies-result v-show="hasResult"></studies-result>
                 </div>
               <#else>
                 <div class="text-muted"><@message "sets.cart.no-studies"/></div>
@@ -342,6 +352,23 @@
               <h3 class="card-title"><@message "networks"/></h3>
                 <#if user.networksCart?? && user.networksCart.count gt 0>
                   <div class="float-right">
+                    <div class="d-inline-block">
+                      <select v-model="studyClassName" @change="onStudyClassNameChange" class="custom-select my-1 mr-sm-2">
+                        <option value="Study"><@message "individual-search"/></option>
+                        <option value="HarmonizationStudy"><@message "harmonization-search"/></option>
+                      </select>
+                    </div>
+                    <div class="d-inline-block">
+                      <div class="d-inline-flex">
+                        <span class="ml-2 mr-1">
+                          <select class="custom-select" id="obiba-page-size-selector-top"></select>
+                        </span>
+                        <nav id="obiba-pagination-top" aria-label="Top pagination" class="mt-0">
+                          <ul class="pagination mb-0"></ul>
+                        </nav>
+                      </div>
+                    </div>
+
                     <#if networksCompareEnabled>
                       <button type="button" class="btn btn-info ml-2" onclick="onCompareNetworks()">
                         <i class="fas fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge badge-light networks-selection-count"></span>
@@ -365,19 +392,10 @@
             </div>
             <div class="card-body">
                 <#if user.networksCart?? && user.networksCart.count gt 0>
-                  <div id="loadingNetworksSet" class="spinner-border spinner-border-sm" role="status"></div>
+                  <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
                   <div class="table-responsive">
-                    <table id="networksSetTable" class="table table-striped">
-                      <thead>
-                      <tr>
-                        <th><i class="far fa-square"></i></th>
-                        <th></th>
-                        <th><@message "acronym"/></th>
-                        <th><@message "name"/></th>
-                      </tr>
-                      </thead>
-                      <tbody></tbody>
-                    </table>
+                    <div class="mt-3 text-muted" v-show="!hasResult"><@message "empty-list"/></div>
+                    <networks-result v-show="hasResult"></networks-result>
                   </div>
                 <#else>
                   <div class="text-muted"><@message "sets.cart.no-networks"/></div>

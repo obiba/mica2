@@ -562,6 +562,7 @@ const StudiesResult = {
         <table id="vosr-studies-result" class="table table-striped" width="100%">
           <thead>
             <tr>
+              <th v-if="showCheckboxes" rowspan="2"><i class="far fa-square"></i></th>
               <th class="column-acronym" rowspan="2">{{ "acronym"  | translate }}</th>
               <th v-for="(item, index) in studyColumnItems" :key="index"
                 :class="'column-'+ item.name"
@@ -728,6 +729,7 @@ const NetworksResult = {
         <table id="vosr-networks-result" class="table table-striped" width="100%">
           <thead v-if="withCollectedDatasets && withHarmonizedDatasets">
             <tr>
+              <th v-if="showCheckboxes" rowspan="2"><i class="far fa-square"></i></th>
               <th class="column-acronym" rowspan="2">{{ "acronym" | translate }}</th>
               <th v-for="(item, index) in networkColumnItems" :key="index"
                 :class="'column-' + item.name"
