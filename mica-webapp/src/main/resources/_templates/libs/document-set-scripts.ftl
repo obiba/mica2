@@ -362,8 +362,19 @@
           this.hasResult = false;
 
           let setId = '${set.id}';
+          
+           <#if studiesSet??>
           let studySetId = '${studiesSet.id}';
+          <#else>
+          let studySetId = '';
+          </#if>
+
+
+           <#if networksSet??>
           let networkSetId = '${networksSet.id}';
+          <#else>
+          let networkSetId = '';
+          </#if>
 
           let resultEventName = 'variables-results';
           let resultType = 'variables';
@@ -383,7 +394,7 @@
             let studyTargetQuery = new RQL.Query(TARGETS.STUDY);
             tree.addQuery(null, studyTargetQuery);
             tree.addQuery(studyTargetQuery, new RQL.Query('in', ['Mica_study.className', this.studyClassName]));
-          } else if (tab && tab === 'studies') {
+          } else if (tab && tab === 'studies' && studySetId) {
             resultEventName = 'studies-results';
             resultType = 'studies';
 
@@ -395,7 +406,7 @@
             tree.addQuery(studyTargetQuery, new RQL.Query('limit', [this.from, this.size]));
             tree.addQuery(studyTargetQuery, new RQL.Query('fields', ['${searchStudyFields?join("', '")}']));
             tree.addQuery(studyTargetQuery, new RQL.Query('sort', ['${searchStudySortFields?join("', '")}']));
-          } else if (tab && tab === 'networks') {
+          } else if (tab && tab === 'networks' && networkSetId) {
             resultEventName = 'networks-results';
             resultType = 'networks';
 
