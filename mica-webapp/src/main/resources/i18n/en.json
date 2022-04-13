@@ -851,7 +851,7 @@
     "infrastructure-help": "Description of the data infrastructure (hardware and software) implemented to support data hosting, harmonization, and processing.",
     "qualitative-quantitative": {
       "title": "Type",
-      "help": "Outline if the harmonization effort is qualitative (achieved using metadata only, i.e., data dictionnaries and questionnaires) or quantitative (using study data to generate harmonized data)",
+      "help": "Outline if the harmonization effort is qualitative (achieved using metadata only, i.e., data dictionaries and questionnaires) or quantitative (using study data to generate harmonized data)",
       "enum": {
         "qualitative": "Qualitative",
         "quantitative": "Quantitative"
@@ -1983,7 +1983,7 @@
       "unique-name": "Criterion name must be unique.",
       "hidden": "Hidden",
       "hidden-help": "A hidden criterion is excluded from search.",
-      "term-sort-key-help": "The order by which terms of the citerion are listed.",
+      "term-sort-key-help": "The order by which terms of the criterion are listed.",
       "terms-sort-key": "Terms Listing Order",
       "range-aggregation": "Has Range Intervals",
       "range-aggregation-help": "Numerical criterion with terms as range intervals.",
