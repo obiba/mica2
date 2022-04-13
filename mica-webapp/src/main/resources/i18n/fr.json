@@ -850,7 +850,7 @@
     "infrastructure": "Infrastructure",
     "infrastructure-help": "Description de l'infrastructure de données (matériel et logiciel) mise en œuvre pour soutenir l'hébergement, l'harmonisation et le traitement des données.",
     "qualitative-quantitative": {
-      "title": "Effort qualitatif/quantitatif",
+      "title": "Type",
       "help": "Les grandes lignes de l'effort d'harmonisation sont qualitatives (réalisées à l'aide de métadonnées uniquement, c'est-à-dire des dictionnaires de données et des questionnaires) ou quantitatives (utilisation des données de l'étude pour générer des données harmonisées)",
       "enum": {
         "qualitative": "Qualitative",
@@ -858,7 +858,7 @@
       }
     },
     "prospective-retrospective": {
-      "title": "Effort prospectif/rétrospectif",
+      "title": "Approche",
       "help": "Indiquez si l'approche utilisée pour définir les variables du schéma de données est prospective (éléments de données de base définis avant le début de la collecte des données) ou rétrospective (éléments de données de base définis après la collecte des données)",
       "enum": {
         "prospective": "Prospective",
