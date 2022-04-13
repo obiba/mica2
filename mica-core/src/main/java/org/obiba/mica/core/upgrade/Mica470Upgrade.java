@@ -2,6 +2,7 @@ package org.obiba.mica.core.upgrade;
 
 import java.util.*;
 
+import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -75,32 +76,44 @@ public class Mica470Upgrade implements UpgradeStep {
     }
   }
 
-  private void updateHarmonizationInitiativeConfig() throws JSONException {
-    DBObject harmonizationStudyConfig = mongoTemplate.execute(db -> db.getCollection("harmonizationStudyConfig").find().next());
-    JSONObject schema = new JSONObject(harmonizationStudyConfig.get("schema").toString());
-    JSONArray definition = new JSONArray(harmonizationStudyConfig.get("definition").toString());
-
-    ensureHarmonizationInitiativeNewFieldsExist(schema, definition);
-    if (addPopulationsToHarmonizationInitiativeSchemaAndDefinition(schema, definition)) {
-      copyPopulationConfigurationToStudyConfiguration(schema, definition);
-      copyPopulationsToNewPopulationFields(schema, definition);
+  private DBObject getDBObjectSafely(String collectionName) {
+    DBCursor dbCursor = mongoTemplate.execute(db -> db.getCollection(collectionName).find());
+    if (dbCursor.hasNext()) {
+      return dbCursor.next();
     }
 
-    harmonizationStudyConfig.put("schema", schema.toString());
-    harmonizationStudyConfig.put("definition", definition.toString());
-    mongoTemplate.execute(db -> db.getCollection("harmonizationStudyConfig").save(harmonizationStudyConfig));
+    return null;
+  }
+
+  private void updateHarmonizationInitiativeConfig() throws JSONException {
+    DBObject harmonizationStudyConfig = getDBObjectSafely("harmonizationStudyConfig");
+    if (null != harmonizationStudyConfig) {
+      JSONObject schema = new JSONObject(harmonizationStudyConfig.get("schema").toString());
+      JSONArray definition = new JSONArray(harmonizationStudyConfig.get("definition").toString());
+
+      ensureHarmonizationInitiativeNewFieldsExist(schema, definition);
+      if (addPopulationsToHarmonizationInitiativeSchemaAndDefinition(schema, definition)) {
+        copyPopulationConfigurationToStudyConfiguration(schema, definition);
+        copyPopulationsToNewPopulationFields(schema, definition);
+      }
+
+      harmonizationStudyConfig.put("schema", schema.toString());
+      harmonizationStudyConfig.put("definition", definition.toString());
+      mongoTemplate.execute(db -> db.getCollection("harmonizationStudyConfig").save(harmonizationStudyConfig));
+    }
   }
 
   private void copyPopulationConfigurationToStudyConfiguration(JSONObject schema, JSONArray definition) throws JSONException {
-    DBObject harmonizationPopulationConfig = mongoTemplate.execute(db -> db.getCollection("harmonizationPopulationConfig").find().next());
-    JSONObject popSchema = new JSONObject(harmonizationPopulationConfig.get("schema").toString());
-    JSONArray popDefinition = new JSONArray(harmonizationPopulationConfig.get("definition").toString());
+    DBObject harmonizationPopulationConfig = getDBObjectSafely("harmonizationPopulationConfig");
+    if (null != harmonizationPopulationConfig) {
+      JSONObject popSchema = new JSONObject(harmonizationPopulationConfig.get("schema").toString());
 
-    if (popSchema.has("properties")) {
-      JSONObject populationModelSchema = new JSONObject("{\"type\": \"object\"}");
-      populationModelSchema.put("properties", popSchema.getJSONObject("properties"));
-      schema.getJSONObject("properties").put("populationModel", populationModelSchema);
-      definition.put("populationModel");
+      if (popSchema.has("properties")) {
+        JSONObject populationModelSchema = new JSONObject("{\"type\": \"object\"}");
+        populationModelSchema.put("properties", popSchema.getJSONObject("properties"));
+        schema.getJSONObject("properties").put("populationModel", populationModelSchema);
+        definition.put("populationModel");
+      }
     }
   }
 
@@ -266,157 +279,159 @@ public class Mica470Upgrade implements UpgradeStep {
   }
 
   private void updateHarmonizationProtocolConfig() throws JSONException {
-    DBObject harmonizationDatasetConfig = mongoTemplate.execute(db -> db.getCollection("harmonizationDatasetConfig").find().next());
-    JSONObject schema = new JSONObject(harmonizationDatasetConfig.get("schema").toString());
-    JSONArray definition = new JSONArray(harmonizationDatasetConfig.get("definition").toString());
-    JSONObject properties = schema.getJSONObject("properties");
+    DBObject harmonizationDatasetConfig = getDBObjectSafely("harmonizationDatasetConfig");
+    if (null != harmonizationDatasetConfig) {
+      JSONObject schema = new JSONObject(harmonizationDatasetConfig.get("schema").toString());
+      JSONArray definition = new JSONArray(harmonizationDatasetConfig.get("definition").toString());
+      JSONObject properties = schema.getJSONObject("properties");
 
-    // Ensure the new fields exists
-    if (properties.has("version")) {
-      logger.info("'Version' field already exists.");
-    } else {
-      logger.info("Adding 'Version' field");
-      schema.getJSONObject("properties").put("version", new JSONObject("{\n" +
-        "      \"type\": \"string\",\n" +
-        "      \"title\": \"t(harmonization-protocol.version)\"\n" +
-        "    }"));
-      definition.put("version");
+      // Ensure the new fields exists
+      if (properties.has("version")) {
+        logger.info("'Version' field already exists.");
+      } else {
+        logger.info("Adding 'Version' field");
+        properties.put("version", new JSONObject("{\n" +
+          "      \"type\": \"string\",\n" +
+          "      \"title\": \"t(harmonization-protocol.version)\"\n" +
+          "    }"));
+        definition.put("version");
+      }
+
+      if (properties.has("participants")) {
+        logger.info("'participants' field already exists.");
+      } else {
+        logger.info("Adding 'participants' field");
+        properties.put("participants", new JSONObject("{\n" +
+          "      \"type\": \"integer\",\n" +
+          "      \"title\": \"t(harmonization-protocol.participants)\"\n" +
+          "    }"));
+        definition.put("participants");
+      }
+
+      if (properties.has("qualitativeQuantitative")) {
+        logger.info("'qualitativeQuantitative' field already exists.");
+      } else {
+        logger.info("Adding 'qualitativeQuantitative' field");
+        properties.put("qualitativeQuantitative", new JSONObject("{\n" +
+          "      \"type\": \"string\",\n" +
+          "      \"title\": \"t(harmonization-protocol.qualitative-quantitative.title)\",\n" +
+          "      \"description\": \"t(harmonization-protocol.qualitative-quantitative.help)\",\n" +
+          "      \"enum\": [\n" +
+          "        \"qualitative\",\n" +
+          "        \"quantitative\"\n" +
+          "      ]\n" +
+          "    }"));
+        definition.put(new JSONObject("{\n" +
+          "      \"key\": \"qualitativeQuantitative\",\n" +
+          "      \"type\": \"radios\",\n" +
+          "      \"titleMap\": [\n" +
+          "        {\n" +
+          "          \"value\": \"qualitative\",\n" +
+          "          \"name\": \"t(harmonization-protocol.qualitative-quantitative.enum.qualitative)\"\n" +
+          "        },\n" +
+          "        {\n" +
+          "          \"value\": \"quantitative\",\n" +
+          "          \"name\": \"t(harmonization-protocol.qualitative-quantitative.enum.quantitative)\"\n" +
+          "        }\n" +
+          "      ]\n" +
+          "    }"));
+      }
+
+      if (properties.has("prospectiveRetrospective")) {
+        logger.info("'prospectiveRetrospective' field already exists.");
+      } else {
+        logger.info("Adding 'prospectiveRetrospective' field");
+        properties.put("prospectiveRetrospective", new JSONObject("{\n" +
+          "      \"type\": \"string\",\n" +
+          "      \"title\": \"t(harmonization-protocol.prospective-retrospective.title)\",\n" +
+          "      \"description\": \"t(harmonization-protocol.prospective-retrospective.help)\",\n" +
+          "      \"enum\": [\n" +
+          "        \"prospective\",\n" +
+          "        \"retrospective\"\n" +
+          "      ]\n" +
+          "    }"));
+        definition.put(new JSONObject("{\n" +
+          "        \"key\": \"prospectiveRetrospective\",\n" +
+          "        \"type\": \"radios\",\n" +
+          "        \"titleMap\": [\n" +
+          "          {\n" +
+          "            \"value\": \"prospective\",\n" +
+          "            \"name\": \"t(harmonization-protocol.prospective-retrospective.enum.prospective)\"\n" +
+          "          },\n" +
+          "          {\n" +
+          "            \"value\": \"retrospective\",\n" +
+          "            \"name\": \"t(harmonization-protocol.prospective-retrospective.enum.retrospective)\"\n" +
+          "          }\n" +
+          "        ]\n" +
+          "      }"));
+      }
+
+      if (properties.has("informationContent")) {
+        logger.info("'informationContent' field already exists.");
+      } else {
+        logger.info("Adding 'informationContent' field");
+        properties.put("informationContent", new JSONObject("{\n" +
+          "      \"type\": \"object\",\n" +
+          "      \"title\": \"t(harmonization-protocol.information-content)\",\n" +
+          "      \"format\": \"obibaSimpleMde\"\n" +
+          "    }"));
+        definition.put("informationContent");
+      }
+
+      if (properties.has("procedures")) {
+        logger.info("'procedures' field already exists.");
+      } else {
+        logger.info("Adding 'procedures' field");
+        properties.put("procedures", new JSONObject("{\n" +
+          "      \"type\": \"object\",\n" +
+          "      \"title\": \"t(harmonization-protocol.procedures)\",\n" +
+          "      \"description\": \"t(harmonization-protocol.procedures-help)\",\n" +
+          "      \"format\": \"localizedString\"\n" +
+          "    }"));
+        definition.put("procedures");
+      }
+
+      if (properties.has("participantsInclusion")) {
+        logger.info("'participantsInclusion' field already exists.");
+      } else {
+        logger.info("Adding 'participantsInclusion' field");
+        properties.put("participantsInclusion", new JSONObject("{\n" +
+          "      \"type\": \"object\",\n" +
+          "      \"title\": \"t(harmonization-protocol.participants-inclusion)\",\n" +
+          "      \"format\": \"localizedString\"\n" +
+          "    }"));
+        definition.put("participantsInclusion");
+      }
+
+      if (properties.has("infrastructure")) {
+        logger.info("'infrastructure' field already exists.");
+      } else {
+        logger.info("Adding 'infrastructure' field");
+        properties.put("infrastructure", new JSONObject("{\n" +
+          "      \"type\": \"object\",\n" +
+          "      \"title\": \"t(harmonization-protocol.infrastructure)\",\n" +
+          "      \"description\": \"t(harmonization-protocol.infrastructure-help)\",\n" +
+          "      \"format\": \"localizedString\"\n" +
+          "    }"));
+        definition.put("infrastructure");
+      }
+
+      if (properties.has("additionalInformation")) {
+        logger.info("'additionalInformation' field already exists.");
+      } else {
+        logger.info("Adding 'additionalInformation' field");
+        properties.put("additionalInformation", new JSONObject("{\n" +
+          "      \"type\": \"object\",\n" +
+          "      \"title\": \"t(global.additional-information)\",\n" +
+          "      \"format\": \"obibaSimpleMde\"\n" +
+          "    }"));
+        definition.put("additionalInformation");
+      }
+
+      harmonizationDatasetConfig.put("schema", schema.toString());
+      harmonizationDatasetConfig.put("definition", definition.toString());
+      mongoTemplate.execute(db -> db.getCollection("harmonizationDatasetConfig").save(harmonizationDatasetConfig));
     }
-
-    if (properties.has("participants")) {
-      logger.info("'participants' field already exists.");
-    } else {
-      logger.info("Adding 'participants' field");
-      schema.getJSONObject("properties").put("participants", new JSONObject("{\n" +
-        "      \"type\": \"integer\",\n" +
-        "      \"title\": \"t(harmonization-protocol.participants)\"\n" +
-        "    }"));
-      definition.put("participants");
-    }
-
-    if (properties.has("qualitativeQuantitative")) {
-      logger.info("'qualitativeQuantitative' field already exists.");
-    } else {
-      logger.info("Adding 'qualitativeQuantitative' field");
-      schema.getJSONObject("properties").put("qualitativeQuantitative", new JSONObject("{\n" +
-        "      \"type\": \"string\",\n" +
-        "      \"title\": \"t(harmonization-protocol.qualitative-quantitative.title)\",\n" +
-        "      \"description\": \"t(harmonization-protocol.qualitative-quantitative.help)\",\n" +
-        "      \"enum\": [\n" +
-        "        \"qualitative\",\n" +
-        "        \"quantitative\"\n" +
-        "      ]\n" +
-        "    }"));
-      definition.put(new JSONObject("{\n" +
-        "      \"key\": \"qualitativeQuantitative\",\n" +
-        "      \"type\": \"radios\",\n" +
-        "      \"titleMap\": [\n" +
-        "        {\n" +
-        "          \"value\": \"qualitative\",\n" +
-        "          \"name\": \"t(harmonization-protocol.qualitative-quantitative.enum.qualitative)\"\n" +
-        "        },\n" +
-        "        {\n" +
-        "          \"value\": \"quantitative\",\n" +
-        "          \"name\": \"t(harmonization-protocol.qualitative-quantitative.enum.quantitative)\"\n" +
-        "        }\n" +
-        "      ]\n" +
-        "    }"));
-    }
-
-    if (properties.has("prospectiveRetrospective")) {
-      logger.info("'prospectiveRetrospective' field already exists.");
-    } else {
-      logger.info("Adding 'prospectiveRetrospective' field");
-      schema.getJSONObject("properties").put("prospectiveRetrospective", new JSONObject("{\n" +
-        "      \"type\": \"string\",\n" +
-        "      \"title\": \"t(harmonization-protocol.prospective-retrospective.title)\",\n" +
-        "      \"description\": \"t(harmonization-protocol.prospective-retrospective.help)\",\n" +
-        "      \"enum\": [\n" +
-        "        \"prospective\",\n" +
-        "        \"retrospective\"\n" +
-        "      ]\n" +
-        "    }"));
-      definition.put(new JSONObject("{\n" +
-        "        \"key\": \"prospectiveRetrospective\",\n" +
-        "        \"type\": \"radios\",\n" +
-        "        \"titleMap\": [\n" +
-        "          {\n" +
-        "            \"value\": \"prospective\",\n" +
-        "            \"name\": \"t(harmonization-protocol.prospective-retrospective.enum.prospective)\"\n" +
-        "          },\n" +
-        "          {\n" +
-        "            \"value\": \"retrospective\",\n" +
-        "            \"name\": \"t(harmonization-protocol.prospective-retrospective.enum.retrospective)\"\n" +
-        "          }\n" +
-        "        ]\n" +
-        "      }"));
-    }
-
-    if (properties.has("informationContent")) {
-      logger.info("'informationContent' field already exists.");
-    } else {
-      logger.info("Adding 'informationContent' field");
-      schema.getJSONObject("properties").put("informationContent", new JSONObject("{\n" +
-        "      \"type\": \"object\",\n" +
-        "      \"title\": \"t(harmonization-protocol.information-content)\",\n" +
-        "      \"format\": \"obibaSimpleMde\"\n" +
-        "    }"));
-      definition.put("informationContent");
-    }
-
-    if (properties.has("procedures")) {
-      logger.info("'procedures' field already exists.");
-    } else {
-      logger.info("Adding 'procedures' field");
-      schema.getJSONObject("properties").put("procedures", new JSONObject("{\n" +
-        "      \"type\": \"object\",\n" +
-        "      \"title\": \"t(harmonization-protocol.procedures)\",\n" +
-        "      \"description\": \"t(harmonization-protocol.procedures-help)\",\n" +
-        "      \"format\": \"localizedString\"\n" +
-        "    }"));
-      definition.put("procedures");
-    }
-
-    if (properties.has("participantsInclusion")) {
-      logger.info("'participantsInclusion' field already exists.");
-    } else {
-      logger.info("Adding 'participantsInclusion' field");
-      schema.getJSONObject("properties").put("participantsInclusion", new JSONObject("{\n" +
-        "      \"type\": \"object\",\n" +
-        "      \"title\": \"t(harmonization-protocol.participants-inclusion)\",\n" +
-        "      \"format\": \"localizedString\"\n" +
-        "    }"));
-      definition.put("participantsInclusion");
-    }
-
-    if (properties.has("infrastructure")) {
-      logger.info("'infrastructure' field already exists.");
-    } else {
-      logger.info("Adding 'infrastructure' field");
-      schema.getJSONObject("properties").put("infrastructure", new JSONObject("{\n" +
-        "      \"type\": \"object\",\n" +
-        "      \"title\": \"t(harmonization-protocol.infrastructure)\",\n" +
-        "      \"description\": \"t(harmonization-protocol.infrastructure-help)\",\n" +
-        "      \"format\": \"localizedString\"\n" +
-        "    }"));
-      definition.put("infrastructure");
-    }
-
-    if (properties.has("additionalInformation")) {
-      logger.info("'additionalInformation' field already exists.");
-    } else {
-      logger.info("Adding 'additionalInformation' field");
-      schema.getJSONObject("properties").put("additionalInformation", new JSONObject("{\n" +
-        "      \"type\": \"object\",\n" +
-        "      \"title\": \"t(global.additional-information)\",\n" +
-        "      \"format\": \"obibaSimpleMde\"\n" +
-        "    }"));
-      definition.put("additionalInformation");
-    }
-
-    harmonizationDatasetConfig.put("schema", schema.toString());
-    harmonizationDatasetConfig.put("definition", definition.toString());
-    mongoTemplate.execute(db -> db.getCollection("harmonizationDatasetConfig").save(harmonizationDatasetConfig));
   }
 
   private void updateStudyTaxonomies() {

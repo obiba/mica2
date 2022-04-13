@@ -86,15 +86,6 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
 
     log.info("Saving harmonization study: {}", study.getId());
 
-    // checks if population and dce are still the same
-    String studyId = study.getId();
-    if (studyId != null) {
-      List<String> list = populationsAffected(study, harmonizationStudyRepository.findOne(study.getId()));
-      if (list != null && list.size() > 0) {
-        checkPopulationMissingConstraints(studyId, list);
-      }
-    }
-
     if (study.getLogo() != null && study.getLogo().isJustUploaded()) {
       fileStoreService.save(study.getLogo().getId());
       study.getLogo().setJustUploaded(false);
@@ -158,37 +149,20 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
     if (study.getId() != null) {
       HarmonizationStudy oldStudy = publishing ? study : harmonizationStudyRepository.findOne(study.getId());
       if (oldStudy != null) {
-        List<String> populationUIDs = publishing ? toListOfPopulationUids(study) : populationsAffected(study, oldStudy);
+        List<String> networkIds = networkRepository.findByStudyIds(study.getId()).stream()
+            .map(AbstractGitPersistable::getId).collect(toList());
+        List<String> harmonizedDataset = findHarmonizedDatasetDependencies(study.getId());
 
-        if (populationUIDs != null) {
-          List<String> networkIds = networkRepository.findByStudyIds(study.getId()).stream()
-              .map(AbstractGitPersistable::getId).collect(toList());
-          List<String> harmoDatasetIds = findHarmonizedDatasetDependencies(study.getId(), populationUIDs);
-
-          if (!harmoDatasetIds.isEmpty() || !networkIds.isEmpty()) {
-            return new HashMap<String, List<String>>() {{
-              put("harmonizationDataset", harmoDatasetIds);
-              put("network", networkIds);
-            }};
-          }
+        if (!harmonizedDataset.isEmpty() || !networkIds.isEmpty()) {
+          return new HashMap<String, List<String>>() {{
+            put("harmonizedDataset", harmonizedDataset);
+            put("network", networkIds);
+          }};
         }
       }
     }
 
     return null;
-  }
-
-  private List<String> populationsAffected(HarmonizationStudy study, HarmonizationStudy oldStudy) {
-    if (oldStudy != null) {
-      List<String> newPopIDs = study.getPopulations().stream().map(Population::getId).collect(toList());
-      List<String> oldPopIDs = oldStudy.getPopulations().stream().map(Population::getId).collect(toList());
-
-      boolean isChangeSignificant = newPopIDs.size() <= oldPopIDs.size() && !newPopIDs.containsAll(oldPopIDs);
-      if (isChangeSignificant) {
-        oldPopIDs.removeAll(newPopIDs);
-        return oldPopIDs;
-      } else return null;
-    } else return null;
   }
 
   @Override
@@ -212,46 +186,32 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
   }
 
 
-  private List<String> findHarmonizedDatasetDependencies(String studyId, List<String> concatenatedIds) {
-    return concatenatedIds.stream()
-        .map(populationId ->
-            harmonizationDatasetRepository.findByHarmonizationTableStudyIdAndHarmonizationTablePopulationId(
-                studyId, populationId)
-        )
-        .reduce(Lists.newArrayList(), StudyService::listAddAll).stream()
-        .map(AbstractGitPersistable::getId).distinct().collect(toList());
-  }
+  private List<String> findHarmonizedDatasetDependencies(String studyId) {
+    List<String> harmonizedDatasetsIds = harmonizationDatasetRepository.findByHarmonizationTableStudyId(studyId)
+      .stream()
+      .map(AbstractGitPersistable::getId).distinct().collect(toList());
+    harmonizedDatasetsIds.addAll(harmonizationDatasetRepository.findByStudyTablesStudyId(studyId)
+      .stream().map(h -> h.getId()).collect(toList()));
 
-  private void checkPopulationMissingConstraints(String studyId, List<String> popIDs) {
-    List<String> harmoDatasetIds = findHarmonizedDatasetDependencies(studyId, popIDs);
-
-    if (!harmoDatasetIds.isEmpty()) {
-      Map<String, List<String>> conflicts = new HashMap<String, List<String>>() {{
-        put("harmonizationDataset", harmoDatasetIds);
-      }};
-
-      throw new ConstraintException(conflicts);
-    }
+    return harmonizedDatasetsIds;
   }
 
   /**
    * @param study
    */
   protected void checkStudyConstraints(HarmonizationStudy study) {
+    List<String> harmonizedDatasetsIds = findHarmonizedDatasetDependencies(study.getId());
     List<String> networkIds = networkRepository.findByStudyIds(study.getId()).stream().map(n -> n.getId())
         .collect(toList());
 
-    if (!networkIds.isEmpty()) {
+    if (!networkIds.isEmpty() || !harmonizedDatasetsIds.isEmpty()) {
       Map<String, List<String>> conflicts = new HashMap<String, List<String>>() {{
+        put("harmonizedDataset", harmonizedDatasetsIds);
         put("network", networkIds);
       }};
 
       throw new ConstraintException(conflicts);
     }
-  }
-
-  private List<String> toListOfPopulationUids(HarmonizationStudy study) {
-    return study.getPopulations().stream().map(Population::getId).collect(toList());
   }
 
 }
