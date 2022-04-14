@@ -23,13 +23,15 @@ public class StudyCsvReportGenerator extends DocumentCsvReportGenerator {
   private final List<BaseStudy> studies;
 
   private final PersonService personService;
+  private final boolean forHarmonization;
 
   private List<String> headers = Lists.newArrayList();
 
-  public StudyCsvReportGenerator(List<BaseStudy> studies, String locale, PersonService personService) {
+  public StudyCsvReportGenerator(List<BaseStudy> studies, String locale, PersonService personService, boolean forHarmonization) {
     super(locale);
     this.studies = studies;
     this.personService = personService;
+    this.forHarmonization = forHarmonization;
     initialize();
   }
 
@@ -46,15 +48,21 @@ public class StudyCsvReportGenerator extends DocumentCsvReportGenerator {
   @Override
   public void write(OutputStream outputStream) {
     try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream)) {
-      zipOutputStream.putNextEntry(new ZipEntry("studies.csv"));
+      String filename = forHarmonization ? "initiatives.csv" : "studies.csv";
+      zipOutputStream.putNextEntry(new ZipEntry(filename));
       super.write(zipOutputStream);
-      zipOutputStream.putNextEntry(new ZipEntry("populations.csv"));
       ReportGenerator reporter = new StudyPopulationCsvReportGenerator(studies, getLocale());
-      reporter.write(zipOutputStream);
-      zipOutputStream.putNextEntry(new ZipEntry("data-collection-events.csv"));
-      reporter = new StudyPopulationDCECsvReportGenerator(studies, getLocale());
-      reporter.write(zipOutputStream);
+
+      if (!forHarmonization) {
+        zipOutputStream.putNextEntry(new ZipEntry("populations.csv"));
+        reporter.write(zipOutputStream);
+        zipOutputStream.putNextEntry(new ZipEntry("data-collection-events.csv"));
+        reporter = new StudyPopulationDCECsvReportGenerator(studies, getLocale());
+        reporter.write(zipOutputStream);
+      }
+
       zipOutputStream.putNextEntry(new ZipEntry("persons.csv"));
+
       for (int i = 0; i< studies.size(); i++) {
         BaseStudy study = studies.get(i);
         reporter = new PersonCsvReportGenerator(study.getId(), personService.getStudyMemberships(study.getId()), getLocale()) {

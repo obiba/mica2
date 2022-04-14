@@ -130,9 +130,11 @@ public class PublishedStudiesSearchResource {
   @POST
   @Path("/_export")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
-  public Response export(@FormParam("query") String query, @FormParam("locale") @DefaultValue("en") String locale) {
+  public Response export(@FormParam("query") String query, @FormParam("locale") @DefaultValue("en") String locale, @FormParam("studyType") String studyType) {
     if (!micaConfigService.getConfig().isStudiesExportEnabled())
       throw new BadRequestException("Studies export not enabled");
+    boolean forHarmonization = !Strings.isNullOrEmpty(studyType) && HarmonizationStudy.RESOURCE_PATH.equals(studyType);
+    String fileName = forHarmonization ? "Initiatives" : "Studies";
     JoinQuery joinQuery = searcher.makeJoinQuery(query);
     List<String> studyIds = joinQueryExecutor.query(QueryType.STUDY, joinQuery)
       .getStudyResultDto()
@@ -143,9 +145,9 @@ public class PublishedStudiesSearchResource {
       .collect(toList());
 
     ReportGenerator reporter = new StudyCsvReportGenerator(publishedStudyService.findByIds(studyIds, true),
-      Strings.isNullOrEmpty(locale) ? joinQuery.getLocale() : locale, personService);
+      Strings.isNullOrEmpty(locale) ? joinQuery.getLocale() : locale, personService, forHarmonization);
     StreamingOutput stream = reporter::write;
-    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Studies.zip\"").build();
+    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\""+ fileName + ".zip\"").build();
   }
 
   @GET

@@ -967,13 +967,17 @@ class TableFixedHeaderUtility {
           }
         }
       },
-      updateFormForDownload(type, form) {
-        const studyTypeSelection = MicaTreeQueryUrl.getStudyTypeSelection(MicaTreeQueryUrl.getTree());
-        const studyType = studyTypeSelection.study ? 'individual-study' : studyTypeSelection.harmonization ? 'harmonization-study' : null;
+      createStudyTypeFormField(studyTypeSelection) {
+        const theStudyTypeSelection = studyTypeSelection ? studyTypeSelection : MicaTreeQueryUrl.getStudyTypeSelection(MicaTreeQueryUrl.getTree());
+        const studyType = theStudyTypeSelection.study ? 'individual-study' : theStudyTypeSelection.harmonization ? 'harmonization-study' : null;
         const inputStudyType = document.createElement('input');
         inputStudyType.name = 'studyType';
         inputStudyType.value = studyType;
-        form.appendChild(inputStudyType);
+        return inputStudyType;
+      },
+      updateFormForDownload(type, form) {
+        const studyTypeSelection = MicaTreeQueryUrl.getStudyTypeSelection(MicaTreeQueryUrl.getTree());
+        form.appendChild(this.createStudyTypeFormField(studyTypeSelection));
 
         let columnsToHide = [];
 
@@ -1063,7 +1067,6 @@ class TableFixedHeaderUtility {
           input.name = 'query';
 
           if (Array.isArray(this.variableSelections) && this.variableSelections.length > 0) {
-            const queryAsTree = new RQL.QueryTree(RQL.Parser.parseQuery(this.downloadUrlObject.query));
             let variableQuery = queryAsTree.search((name) => name === "variable");
             queryAsTree.addQuery(variableQuery, new RQL.Query('in', ['id', this.variableSelections]));
 
@@ -1073,6 +1076,7 @@ class TableFixedHeaderUtility {
           }
 
           form.appendChild(input);
+          form.appendChild(this.createStudyTypeFormField());
 
           document.body.appendChild(form);
           form.submit();
@@ -1379,7 +1383,7 @@ class TableFixedHeaderUtility {
                     }
 
                     studyClassNameVocabulary.attributes.push({"key": "uiTermsReadOnly", "value": currentPathNameIsSearch ? "false" : "true"});
-                    studyClassNameVocabulary.attributes.push({"key": "uiHideInBuilder", "value": currentPathNameIsSearch ? "false" : "true"}); 
+                    studyClassNameVocabulary.attributes.push({"key": "uiHideInBuilder", "value": currentPathNameIsSearch ? "false" : "true"});
                   }
                 }
 
