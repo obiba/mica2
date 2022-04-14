@@ -137,23 +137,23 @@ class OBiBaPagination {
 
     const button = document.querySelector(`#${this.elementId} #${id}`);
 
-    if (data) {
+    if (data && button) {
       button.dataset.page = data;
     }
 
-    if (clickHandler) {
+    if (clickHandler && button) {
       button.addEventListener('click', clickHandler);
     }
   }
 
   __addClass(id, clazz) {
     const button = document.querySelector(`#${this.elementId} #${id}`);
-    button.closest('li').classList.add(clazz);
+    if (button) button.closest('li').classList.add(clazz);
   }
 
   __removeClass(id, clazz) {
     const button = document.querySelector(`#${this.elementId} #${id}`);
-    button.closest('li').classList.remove(clazz);
+    if (button) button.closest('li').classList.remove(clazz);
   }
 
   __enableButton(id, enable) {
