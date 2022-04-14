@@ -221,56 +221,65 @@ class OBiBaPagination {
 
   __createFixedFirstLastButtons() {
     let button = document.querySelector(`#${this.elementId} #${BUTTON_PREVIOUS}`);
-    button.closest('li').insertAdjacentHTML(
-      'beforebegin',
-      `<li class="page-item"><a id="${BUTTON_FIRST}" class="page-link" href="javascript:void(0)">&laquo;</a></li>`
-    );
 
-    button = document.querySelector(`#${this.elementId} #${BUTTON_FIRST}`);
-    button.dataset.page = 1;
-    this.__visible(BUTTON_FIRST, true);
-    button.addEventListener('click', this.__onFirstClick.bind(this));
+    if (button) {
+      button.closest('li').insertAdjacentHTML(
+        'beforebegin',
+        `<li class="page-item"><a id="${BUTTON_FIRST}" class="page-link" href="javascript:void(0)">&laquo;</a></li>`
+      );
 
-    button = document.querySelector(`#${this.elementId} #${BUTTON_NEXT}`);
-    button.closest('li').insertAdjacentHTML(
-      'afterend',
-      `<li class="page-item"><a id="${BUTTON_LAST}" class="page-link" href="javascript:void(0)">&raquo;</a></li>`
-    );
-    button = document.querySelector(`#${this.elementId} #${BUTTON_LAST}`);
-    button.dataset.page = this.numberOfPages;
-    this.__visible(BUTTON_LAST, true);
-    button.addEventListener('click', this.__onLastClick.bind(this));
+      button = document.querySelector(`#${this.elementId} #${BUTTON_FIRST}`);
+      button.dataset.page = 1;
+      this.__visible(BUTTON_FIRST, true);
+      button.addEventListener('click', this.__onFirstClick.bind(this));
+
+      button = document.querySelector(`#${this.elementId} #${BUTTON_NEXT}`);
+      button.closest('li').insertAdjacentHTML(
+        'afterend',
+        `<li class="page-item"><a id="${BUTTON_LAST}" class="page-link" href="javascript:void(0)">&raquo;</a></li>`
+      );
+      button = document.querySelector(`#${this.elementId} #${BUTTON_LAST}`);
+      button.dataset.page = this.numberOfPages;
+      this.__visible(BUTTON_LAST, true);
+      button.addEventListener('click', this.__onLastClick.bind(this));
+    }
   }
 
   __createFirstLastButtons() {
     let button = document.querySelector(`#${this.elementId} #${BUTTON_PREVIOUS}`);
-    button.closest('li').insertAdjacentHTML(
-      'afterend',
-      `<li class="page-item"><a id="${BUTTON_FIRST}" class="page-link" href="javascript:void(0)">1</a></li>`
-    );
 
-    button = document.querySelector(`#${this.elementId} #${BUTTON_FIRST}`);
-    button.dataset.page = 1;
-    this.__visible(BUTTON_FIRST, false);
-    button.addEventListener('click', this.__onFirstClick.bind(this));
+    if (button) {
+      button.closest('li').insertAdjacentHTML(
+        'afterend',
+        `<li class="page-item"><a id="${BUTTON_FIRST}" class="page-link" href="javascript:void(0)">1</a></li>`
+      );
 
-    button = document.querySelector(`#${this.elementId} #${BUTTON_NEXT}`);
-    button.closest('li').insertAdjacentHTML(
-      'beforebegin',
-      `<li class="page-item"><a id="${BUTTON_LAST}" class="page-link" href="javascript:void(0)">${this.numberOfPages}</a></li>`
-    );
-    button = document.querySelector(`#${this.elementId} #${BUTTON_LAST}`);
-    button.dataset.page = this.numberOfPages;
-    this.__visible(BUTTON_LAST, false);
-    button.addEventListener('click', this.__onLastClick.bind(this));
+      button = document.querySelector(`#${this.elementId} #${BUTTON_FIRST}`);
+      button.dataset.page = 1;
+      this.__visible(BUTTON_FIRST, false);
+      button.addEventListener('click', this.__onFirstClick.bind(this));
+
+      button = document.querySelector(`#${this.elementId} #${BUTTON_NEXT}`);
+      button.closest('li').insertAdjacentHTML(
+        'beforebegin',
+        `<li class="page-item"><a id="${BUTTON_LAST}" class="page-link" href="javascript:void(0)">${this.numberOfPages}</a></li>`
+      );
+      button = document.querySelector(`#${this.elementId} #${BUTTON_LAST}`);
+      button.dataset.page = this.numberOfPages;
+      this.__visible(BUTTON_LAST, false);
+      button.addEventListener('click', this.__onLastClick.bind(this));
+    }
   }
 
   __updateVisibility() {
     const pagination = document.querySelector(`#${this.elementId}`);
-    if (this.numberOfPages === 1) {
-      pagination.classList.add('d-none');
-    } else {
-      pagination.classList.remove('d-none');
+
+    if (pagination) {
+      if (this.numberOfPages === 1) {
+        pagination.classList.add('d-none');
+      } else {
+        pagination.classList.remove('d-none');
+      }
     }
   }
 
