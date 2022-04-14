@@ -183,37 +183,39 @@ class OBiBaPagination {
   __createButtons() {
     let parent = document.querySelector(`#${this.elementId} ul`);
 
-    // Previous button
-    this.__createButton(parent, BUTTON_PREVIOUS, null, this.useFixedFirstLast ? '&lsaquo;' : 'Previous', this.__onPreviousClick.bind(this));
-    this.__enableButton(BUTTON_PREVIOUS, false);
+    if (parent) {
+      // Previous button
+      this.__createButton(parent, BUTTON_PREVIOUS, null, this.useFixedFirstLast ? '&lsaquo;' : 'Previous', this.__onPreviousClick.bind(this));
+      this.__enableButton(BUTTON_PREVIOUS, false);
 
-    // create first Ellipsis button
-    this.__createButton(parent, BUTTON_ELLIPSIS_FIRST, null, '...');
-    this.__enableButton(BUTTON_ELLIPSIS_FIRST, false);
-    this.__visible(BUTTON_ELLIPSIS_FIRST, false);
+      // create first Ellipsis button
+      this.__createButton(parent, BUTTON_ELLIPSIS_FIRST, null, '...');
+      this.__enableButton(BUTTON_ELLIPSIS_FIRST, false);
+      this.__visible(BUTTON_ELLIPSIS_FIRST, false);
 
-    // Page buttons
-    this.pageButtons.forEach((p, index) => {
-      this.__createButton(parent,  `${BUTTON_PAGE}-${p}`, p, `${p}`, this.__onPageClick.bind(this));
-      if (index === 0) {
-        this.__activateButton(`${BUTTON_PAGE}-${p}`);
+      // Page buttons
+      this.pageButtons.forEach((p, index) => {
+        this.__createButton(parent,  `${BUTTON_PAGE}-${p}`, p, `${p}`, this.__onPageClick.bind(this));
+        if (index === 0) {
+          this.__activateButton(`${BUTTON_PAGE}-${p}`);
+        }
+      });
+
+      // create last Ellipsis button
+      this.__createButton(parent, BUTTON_ELLIPSIS_LAST, null, '...');
+      this.__enableButton(BUTTON_ELLIPSIS_LAST, false);
+      this.__visible(BUTTON_ELLIPSIS_LAST, this.numberOfPages > this.numberOfButtons);
+
+      // Next button
+      this.__createButton(parent, BUTTON_NEXT, null, this.useFixedFirstLast ? '&rsaquo;' : 'Next', this.__onNextClick.bind(this));
+
+      // First/Last
+      if (this.useFixedFirstLast) {
+        this.__createFixedFirstLastButtons();
+
+      } else {
+        this.__createFirstLastButtons();
       }
-    });
-
-    // create last Ellipsis button
-    this.__createButton(parent, BUTTON_ELLIPSIS_LAST, null, '...');
-    this.__enableButton(BUTTON_ELLIPSIS_LAST, false);
-    this.__visible(BUTTON_ELLIPSIS_LAST, this.numberOfPages > this.numberOfButtons);
-
-    // Next button
-    this.__createButton(parent, BUTTON_NEXT, null, this.useFixedFirstLast ? '&rsaquo;' : 'Next', this.__onNextClick.bind(this));
-
-    // First/Last
-    if (this.useFixedFirstLast) {
-      this.__createFixedFirstLastButtons();
-
-    } else {
-      this.__createFirstLastButtons();
     }
   }
 
@@ -435,13 +437,16 @@ class OBiBaPageSizeSelector {
 
   __createOptions() {
     const parent = document.querySelector(`select#${this.elementId}`);
-    parent.addEventListener('change', this.__onPageSizeChanged.bind(this));
 
-    this.pageSizes.forEach(pageSize => {
-      parent.insertAdjacentHTML('beforeend', `<option id="PAGE-SIZE-${pageSize}" value="${pageSize}">${pageSize}</option>`);
-    });
+    if (parent) {
+      parent.addEventListener('change', this.__onPageSizeChanged.bind(this));
 
-    parent.value = this.pageSize;
+      this.pageSizes.forEach(pageSize => {
+        parent.insertAdjacentHTML('beforeend', `<option id="PAGE-SIZE-${pageSize}" value="${pageSize}">${pageSize}</option>`);
+      });
+
+      parent.value = this.pageSize;
+    }
   }
 
   __onPageSizeChanged(event) {
@@ -456,8 +461,10 @@ class OBiBaPageSizeSelector {
     }
 
     const parent = document.querySelector(`select#${this.elementId}`);
-    this.pageSize = pageSize;
-    parent.value = this.pageSize;
+    if (parent) {
+      this.pageSize = pageSize;
+      parent.value = this.pageSize;
+    }
   }
 }
 
