@@ -376,7 +376,7 @@ const RqlQueryBuilder = {
     updateQuery(payload, taxonomyName) {
       const query = payload.asQuery(taxonomyName);
 
-      if ((["missing", "exists"].indexOf(payload.operator) === -1 && payload.value.length === 0) || (payload.type === "NUMERIC" && query.args[1].length === 0)) {
+      if ((payload.type === "NUMERIC" && query.args[1].length === 0) || (payload.type === "TERMS" && payload.value.length === 0)) {
         this.$emit("remove-query", {target: this.target, query});
       } else {
         this.$emit("update-query", {target: this.target, query});
