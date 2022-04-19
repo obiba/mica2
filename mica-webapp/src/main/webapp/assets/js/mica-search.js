@@ -539,7 +539,7 @@ class TableFixedHeaderUtility {
 
     if (studyTypeSelection.study) {
       isOk = isOk || foundAttr.value === 'Study' || foundAttr.value === 'StudyDataset';
-    } else if (studyTypeSelection.harmonization) {mica-webapp/src/main/webapp/assets/js/mica-search.js
+    } else if (studyTypeSelection.harmonization) {
       isOk = isOk || foundAttr.value === 'HarmonizationStudy' || foundAttr.value === 'HarmonizationDataset';
     } else {
       isOk = true;
