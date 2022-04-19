@@ -535,11 +535,11 @@ class TableFixedHeaderUtility {
   const queryAlertListener  = new MicaQueryAlertListener();
 
   function foundAttributeIsOk(studyTypeSelection, foundAttr) {
-    let isOk = !foundAttr || foundAttr.value.length === 0 || foundAttr.value === 'Network';
+    let isOk = !foundAttr || foundAttr.value.length === 0 || foundAttr.value === 'Network' || foundAttr.value === 'Variable';
 
     if (studyTypeSelection.study) {
       isOk = isOk || foundAttr.value === 'Study' || foundAttr.value === 'StudyDataset';
-    } else if (studyTypeSelection.harmonization) {
+    } else if (studyTypeSelection.harmonization) {mica-webapp/src/main/webapp/assets/js/mica-search.js
       isOk = isOk || foundAttr.value === 'HarmonizationStudy' || foundAttr.value === 'HarmonizationDataset';
     } else {
       isOk = true;
