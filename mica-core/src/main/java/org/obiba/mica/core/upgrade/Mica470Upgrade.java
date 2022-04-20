@@ -236,7 +236,7 @@ public class Mica470Upgrade implements UpgradeStep {
   }
 
   private void copyPopulationsToNewPopulationFields(JSONObject schema, JSONArray definition) throws JSONException {
-    logger.info("Coping population data to 'Harmonization Protocol'.");
+    logger.info("Coping population data to 'Harmonization Initiative'.");
 
     for (HarmonizationStudy study : harmonizationStudyService.findAllDraftStudies()) {
       Map<String, Object> studyModel = study.getModel();
@@ -292,8 +292,8 @@ public class Mica470Upgrade implements UpgradeStep {
         logger.info("Adding 'Version' field");
         properties.put("version", new JSONObject("{\n" +
           "      \"type\": \"string\",\n" +
-          "      \"title\": \"t(harmonization-protocol.version)\"\n" +
-          "      \"description\": \"t(harmonization-protocol.version-help)\",\n" +
+          "      \"title\": \"t(harmonization-protocol.version)\",\n" +
+          "      \"description\": \"t(harmonization-protocol.version-help)\"\n" +
           "    }"));
         definition.put("version");
       }
