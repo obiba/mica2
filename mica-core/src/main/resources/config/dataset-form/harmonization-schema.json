@@ -3,7 +3,8 @@
   "properties": {
     "version": {
       "type": "string",
-      "title": "t(harmonization-protocol.version)"
+      "title": "t(harmonization-protocol.version)",
+      "description": "t(harmonization-protocol.version-help)"
     },
     "participants": {
       "type": "integer",
@@ -30,17 +31,19 @@
     "informationContent": {
       "type": "object",
       "title": "t(harmonization-protocol.information-content)",
+      "description": "t(harmonization-protocol.information-content-help)",
       "format": "obibaSimpleMde"
     },
     "procedures": {
       "type": "object",
       "title": "t(harmonization-protocol.procedures)",
-      "description": "t(harmonization-protocol.procedures-help",
+      "description": "t(harmonization-protocol.procedures-help)",
       "format": "localizedString"
     },
     "participantsInclusion": {
       "type": "object",
       "title": "t(harmonization-protocol.participants-inclusion)",
+      "description": "t(harmonization-protocol.participants-inclusion-help)",
       "format": "localizedString"
     },
     "infrastructure": {

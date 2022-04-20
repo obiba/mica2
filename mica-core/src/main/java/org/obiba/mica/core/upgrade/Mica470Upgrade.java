@@ -293,6 +293,7 @@ public class Mica470Upgrade implements UpgradeStep {
         properties.put("version", new JSONObject("{\n" +
           "      \"type\": \"string\",\n" +
           "      \"title\": \"t(harmonization-protocol.version)\"\n" +
+          "      \"description\": \"t(harmonization-protocol.version-help)\",\n" +
           "    }"));
         definition.put("version");
       }
@@ -373,6 +374,7 @@ public class Mica470Upgrade implements UpgradeStep {
         properties.put("informationContent", new JSONObject("{\n" +
           "      \"type\": \"object\",\n" +
           "      \"title\": \"t(harmonization-protocol.information-content)\",\n" +
+          "      \"description\": \"t(harmonization-protocol.information-content-help)\",\n" +
           "      \"format\": \"obibaSimpleMde\"\n" +
           "    }"));
         definition.put("informationContent");
@@ -398,6 +400,7 @@ public class Mica470Upgrade implements UpgradeStep {
         properties.put("participantsInclusion", new JSONObject("{\n" +
           "      \"type\": \"object\",\n" +
           "      \"title\": \"t(harmonization-protocol.participants-inclusion)\",\n" +
+          "      \"description\": \"t(harmonization-protocol.participants-inclusion-help)\",\n" +
           "      \"format\": \"localizedString\"\n" +
           "    }"));
         definition.put("participantsInclusion");
