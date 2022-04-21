@@ -140,31 +140,6 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
         .collect(Collectors.toList());
   }
 
-  /**
-   * @param study
-   * @param publishing
-   * @return
-   */
-  public Map<String, List<String>> getPotentialConflicts(HarmonizationStudy study, boolean publishing) {
-    if (study.getId() != null) {
-      HarmonizationStudy oldStudy = publishing ? study : harmonizationStudyRepository.findOne(study.getId());
-      if (oldStudy != null) {
-        List<String> networkIds = networkRepository.findByStudyIds(study.getId()).stream()
-            .map(AbstractGitPersistable::getId).collect(toList());
-        List<String> harmonizedDataset = findHarmonizedDatasetDependencies(study.getId());
-
-        if (!harmonizedDataset.isEmpty() || !networkIds.isEmpty()) {
-          return new HashMap<String, List<String>>() {{
-            put("harmonizedDataset", harmonizedDataset);
-            put("network", networkIds);
-          }};
-        }
-      }
-    }
-
-    return null;
-  }
-
   @Override
   public List<String> findAllIds() {
     return harmonizationStudyRepository.findAllExistingIds().stream().map(Study::getId).collect(toList());
