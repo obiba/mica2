@@ -249,8 +249,6 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
 
   protected abstract void checkStudyConstraints(T study);
 
-  public abstract Map<String, List<String>> getPotentialConflicts(T study, boolean publishing);
-
   protected void removeRoles(@NotNull T study, Iterable<String> roles) {
     saveInternal(study, String.format("Removed roles: %s", Joiner.on(", ").join(roles)), false);
     S state = findStateById(study.getId());
