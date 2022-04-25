@@ -2,45 +2,34 @@ package org.obiba.mica.web.controller.domain;
 
 import org.obiba.mica.core.domain.LocalizedString;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class HarmonizationAnnotations {
 
-  private Annotation status;
-
-  private Annotation statusDetail;
-
-  private Annotation algorithm;
-
-  private Annotation comment;
+  final private Map<String, Annotation> annotationMap = new HashMap<>();
 
   public HarmonizationAnnotations(List<Annotation> harmoAnnotations) {
     for (Annotation annotation : harmoAnnotations) {
-      if (annotation.getVocabularyName().equals("status"))
-        status = annotation;
-      else if (annotation.getVocabularyName().equals("status_detail"))
-        statusDetail = annotation;
-      else if (annotation.getVocabularyName().equals("comment"))
-        comment = annotation;
-      else if (annotation.getVocabularyName().equals("algorithm"))
-        algorithm = annotation;
+      annotationMap.put(annotation.getVocabularyName(), annotation);
     }
   }
 
   public boolean hasStatus() {
-    return status != null;
+    return hasAnnotation("status");
   }
 
   public LocalizedString getStatusTitle() {
-    return status.getVocabularyTitle();
+    return getAnnotationTitle("status");
   }
 
   public LocalizedString getStatusDescription() {
-    return status.getVocabularyDescription();
+    return getAnnotationDescription("status");
   }
 
   public String getStatusValue() {
-    return status.getTermName();
+    return getAnnotationValue("status");
   }
 
   public String getStatusClass() {
@@ -59,66 +48,95 @@ public class HarmonizationAnnotations {
   }
 
   public LocalizedString getStatusValueTitle() {
-    return status.getTermTitle();
+    return getAnnotationValueTitle("status");
   }
 
   public LocalizedString getStatusValueDescription() {
-    return status.getTermDescription();
+    return getAnnotationValueDescription("status");
   }
 
   public boolean hasStatusDetail() {
-    return statusDetail != null;
+    return annotationMap.containsKey("status_detail");
   }
 
   public LocalizedString getStatusDetailTitle() {
-    return statusDetail.getVocabularyTitle();
+    return getAnnotationTitle("status_detail");
   }
 
   public LocalizedString getStatusDetailDescription() {
-    return statusDetail.getVocabularyDescription();
+    return getAnnotationDescription("status_detail");
   }
 
   public String getStatusDetailValue() {
-    return statusDetail.getTermName();
+    return getAnnotationValue("status_detail");
   }
 
   public LocalizedString getStatusDetailValueTitle() {
-    return statusDetail.getTermTitle();
+    return getAnnotationValueTitle("status_detail");
   }
 
   public LocalizedString getStatusDetailValueDescription() {
-    return statusDetail.getTermDescription();
+    return getAnnotationValueDescription("status_detail");
   }
 
   public boolean hasAlgorithm() {
-    return algorithm != null;
+    return annotationMap.containsKey("algorithm");
   }
 
   public LocalizedString getAlgorithmTitle() {
-    return algorithm.getVocabularyTitle();
+    return getAnnotationTitle("algorithm");
   }
 
   public LocalizedString getAlgorithmDescription() {
-    return algorithm.getVocabularyDescription();
+    return getAnnotationDescription("algorithm");
   }
 
   public LocalizedString getAlgorithmValue() {
-    return algorithm.getTermValues();
+    return getAnnotationValues("algorithm");
   }
 
   public boolean hasComment() {
-    return comment != null;
+    return annotationMap.containsKey("comment");
   }
 
   public LocalizedString getCommentTitle() {
-    return comment.getVocabularyTitle();
+    return getAnnotationTitle("comment");
   }
 
   public LocalizedString getCommentDescription() {
-    return comment.getVocabularyDescription();
+    return getAnnotationDescription("comment");
   }
 
   public LocalizedString getCommentValue() {
-    return comment.getTermValues();
+    return getAnnotationValues("comment");
   }
+
+  public boolean hasAnnotation(String name) {
+    return annotationMap.containsKey(name);
+  }
+
+  public LocalizedString getAnnotationTitle(String name) {
+    return annotationMap.get(name).getVocabularyTitle();
+  }
+
+  public LocalizedString getAnnotationDescription(String name) {
+    return annotationMap.get(name).getVocabularyDescription();
+  }
+
+  public String getAnnotationValue(String name) {
+    return annotationMap.get(name).getTermName();
+  }
+
+  public LocalizedString getAnnotationValues(String name) {
+    return annotationMap.get(name).getTermValues();
+  }
+
+  public LocalizedString getAnnotationValueTitle(String name) {
+    return annotationMap.get(name).getTermTitle();
+  }
+
+  public LocalizedString getAnnotationValueDescription(String name) {
+    return annotationMap.get(name).getTermDescription();
+  }
+
 }
