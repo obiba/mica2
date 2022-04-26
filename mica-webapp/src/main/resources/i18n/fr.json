@@ -847,11 +847,11 @@
     "information-content-help": "Aperçu du type de variables harmonisées ou à harmoniser (par exemple, tabagisme, revenu), des intervalles de temps ciblés (par exemple, toutes les grossesses ou premier trimestre) et de la répétition des informations requises (par exemple, deux mesures).",
     "participants": "Nombre de participants",
     "procedures": "Procédures",
-    "procedures-help": "Description de l'approche générale de l'harmonisation (par exemple, équipe centrale ou études responsables du traitement des données)",
+    "procedures-help": "Approche générale de l'harmonisation (équipe centrale ou études responsables de l'harmonisation des données, ou autre approche).",
     "participants-inclusion": "Inclusion des participants",
     "participants-inclusion-help": "Critères à remplir pour que les participants soient inclus dans l'effort d'harmonisation (par exemple, âge (min/max), sexe/genre, état de santé).",
     "infrastructure": "Infrastructure",
-    "infrastructure-help": "Description de l'infrastructure de données (matériel et logiciel) mise en œuvre pour soutenir l'hébergement, l'harmonisation et le traitement des données.",
+    "infrastructure-help": "Infrastructure de données (matériel et logiciel) mise en oeuvre pour prendre en charge l'hébergement, l'harmonisation et le traitement des données (données harmonisées stockées de manière centralisée, locale ou autre).",
     "qualitative-quantitative": {
       "title": "Type",
       "help": "Les grandes lignes de l'effort d'harmonisation sont qualitatives (réalisées à l'aide de métadonnées uniquement, c'est-à-dire des dictionnaires de données et des questionnaires) ou quantitatives (utilisation des données de l'étude pour générer des données harmonisées)",

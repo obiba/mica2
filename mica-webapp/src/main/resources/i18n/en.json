@@ -847,11 +847,11 @@
     "information-content-help": "Overview of the type of variables harmonized or to be harmonized (e.g. smoking, income), targeted time intervals (e.g. all pregnancy or first trimester) and required information repetition (e.g. two measures).",
     "participants": "Number of Participants",
     "procedures": "Procedures",
-    "procedures-help": "Description of the general approach to harmonization (e.g.  central team or studies responsible for data processing)",
+    "procedures-help": "General approach to harmonization (central team or studies responsible for data harmonization, or other approach).",
     "participants-inclusion": "Participants Inclusion",
     "participants-inclusion-help": "Criteria to be met for participants to be included in the harmonization effort (e.g. age (min/max), sex/gender, health status).",
     "infrastructure": "Infrastructure",
-    "infrastructure-help": "Description of the data infrastructure (hardware and software) implemented to support data hosting, harmonization, and processing.",
+    "infrastructure-help": "Data infrastructure (hardware and software) implemented to support data hosting, harmonization, and processing (harmonized data stored centrally, locally, or other structure).",
     "qualitative-quantitative": {
       "title": "Type",
       "help": "Qualitative (achieved using metadata only, i.e., data dictionaries and questionnaires) or quantitative (using study data to generate harmonized data)",
