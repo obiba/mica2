@@ -659,10 +659,12 @@ class TableFixedHeaderUtility {
             let target = this.queries[key];
             if (target && target.args && target.args.length > 0) {
               let splitQuery = Criterion.splitQuery(target);
-              let isLoneStudyClassNameQuery = key === TARGETS.STUDY && splitQuery.length === 1 && Criterion.splitQuery(target)[0].args[0] === 'Mica_study.className';
-              if (!isLoneStudyClassNameQuery) {
-                this.noQueries = false;
-                break;
+              if (key === TARGETS.STUDY) {
+                let isLoneStudyClassNameQuery = splitQuery.length === 1 && Criterion.splitQuery(target)[0].args[0] === 'Mica_study.className';
+                if (!isLoneStudyClassNameQuery || (splitQuery.length === 1 && '/search' === window.location.pathname)) {
+                  this.noQueries = false;
+                  break;
+                }
               }
             }
           }
@@ -751,9 +753,6 @@ class TableFixedHeaderUtility {
         }
 
         return found;
-      },
-      onExecuteQuery() {
-        this.checkCurrentModeAndRectify();
       },
       findProperType() {
         if (Mica.config.isSingleStudyEnabled) {
@@ -852,37 +851,6 @@ class TableFixedHeaderUtility {
 
         const targetQueries = MicaTreeQueryUrl.getTreeQueries();
         this.hasVariableQuery = TARGETS.VARIABLE in targetQueries && targetQueries[TARGETS.VARIABLE].args.length > 0;
-      },
-      checkCurrentModeAndRectify() {
-        let tree = MicaTreeQueryUrl.getTree() || new RQL.QueryTree();
-        let foundStudyClassName = tree ? tree.search((name, args, parent) => 'in' === name && args[0] === 'Mica_study.className' && parent.name === TARGETS.STUDY) : null;
-
-        let currentPathName = window.location.pathname;
-        let studyClassName = Mica.defaultSearchMode;
-
-        if (currentPathName.startsWith("/harmonization")) {
-          studyClassName = 'HarmonizationStudy';
-        } else if (currentPathName.startsWith("/individual")) {
-          studyClassName = 'Study';
-        }
-
-        if (foundStudyClassName &&
-          ((Array.isArray(foundStudyClassName.args[1]) && foundStudyClassName.args[1].length === 1 && foundStudyClassName.args[1][0] !== studyClassName) ||
-          (!Array.isArray(foundStudyClassName.args[1]))) && foundStudyClassName.args[1] !== studyClassName) {
-          tree.findAndUpdateQuery((name, args) => args[0] === 'Mica_study.className', ['Mica_study.className', studyClassName]);
-          this.setLocation(tree.serialize());
-        } else if (!foundStudyClassName) {
-          let targetQuery = tree.search((name) => name === TARGETS.STUDY);
-          if (!targetQuery) {
-            // create target and add query as child, done!
-            targetQuery = new RQL.Query(TARGETS.STUDY);
-            tree.addQuery(null, targetQuery);
-
-          }
-
-          tree.addQuery(targetQuery, new RQL.Query('in', ['Mica_study.className', studyClassName]));
-          this.setLocation(tree.serialize());
-        }
       },
       onQueryUpdate(payload) {
         console.debug('query-builder update', payload);
@@ -1437,7 +1405,6 @@ class TableFixedHeaderUtility {
         if (Array.isArray(data)) {
           this.variableSets = data.filter(set => set.name && !set.locked);
         }});
-      this.onExecuteQuery();
     },
     updated() {
       let coverageResultTableElement = document.querySelector('#vosr-coverage-result');

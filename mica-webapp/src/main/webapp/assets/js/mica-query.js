@@ -877,8 +877,22 @@ class MicaQueryExecutor {
   }
 
   __updateLocation(type, display, tree, replace, bucket) {
-    const query = tree.serialize();
     let studyTypeSelection = MicaTreeQueryUrl.getStudyTypeSelection(tree);
+    const currentPathname = window.location.pathname;
+
+    if ('/search' !== currentPathname && ('/harmonization-search' === currentPathname && !studyTypeSelection.harmonization || '/individual-search' === currentPathname && !studyTypeSelection.study)) {
+      let foundStudyClassName = tree ? tree.search((name, args, parent) => 'in' === name && args[0] === 'Mica_study.className' && parent.name === TARGETS.STUDY) : null;
+
+      let correctStudyClassName = '/harmonization-search' === currentPathname ? 'HarmonizationStudy' : 'Study';
+
+      if (!foundStudyClassName) {
+        tree.addQuery(targetQuery, new RQL.Query('in', ['Mica_study.className', correctStudyClassName]));
+      } else {
+        tree.findAndUpdateQuery((name, args) => args[0] === 'Mica_study.className', ['Mica_study.className', correctStudyClassName]);
+      }
+    }
+
+    const query = tree.serialize();
 
     console.debug(`__updateLocation ${type} ${display} ${query} - history states ${history.length}`);
     let params = [`type=${type}`, `query=${query}`];
