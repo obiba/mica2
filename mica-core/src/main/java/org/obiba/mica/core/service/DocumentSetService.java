@@ -253,7 +253,8 @@ public abstract class DocumentSetService {
   @Scheduled(cron = "${sets.cleanup.cron:0 0 * * * ?}")
   public void cleanupOldSets() {
     MicaConfig config = micaConfigService.getConfig();
-    documentSetRepository.findAll()
+    documentSetRepository.findAll().stream()
+      .filter(set -> getType().equals(set.getType()))
       .forEach(set -> {
         int timeToLive = set.hasName() ? config.getSetTimeToLive() : config.getCartTimeToLive();
         DateTime deadline = DateTime.now().minusDays(timeToLive);
