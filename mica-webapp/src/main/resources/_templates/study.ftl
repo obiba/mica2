@@ -65,7 +65,7 @@
                       <img class="img-fluid" style="max-height: 200px" alt="${localize(study.acronym)} logo" src="${contextPath}/ws/study/${study.id}/file/${study.logo.id}/_download"/>
                     <#else >
                       <p class="text-light text-center">
-                        <i class="${studyIcon} fa-4x"></i>
+                        <i class="${initiativeIcon} fa-4x"></i>
                       </p>
                     </#if>
                   </div>
@@ -92,7 +92,7 @@
                       <div class="info-box">
                         <span class="info-box-icon bg-warning">
                           <a href="${contextPath}/${detailsPageSearchMode}#lists?type=datasets&query=${searchPageQuery}">
-                            <i class="${datasetIcon}"></i>
+                            <i class="${harmoDatasetIcon}"></i>
                           </a>
                         </span>
                         <div class="info-box-content">
@@ -109,7 +109,7 @@
                       <div class="info-box">
                         <span class="info-box-icon bg-danger">
                           <a href="${contextPath}/${detailsPageSearchMode}#lists?type=variables&query=${searchPageQuery}">
-                            <i class="${variableIcon}"></i>
+                            <i class="${dataschemaIcon}"></i>
                           </a>
                         </span>
                         <div class="info-box-content">

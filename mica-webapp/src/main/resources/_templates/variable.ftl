@@ -190,7 +190,7 @@
                   </#if>
                   <#if type == "Harmonized">
                     <dt class="col-sm-4"><@message "dataschema-variable"/></dt>
-                    <dd class="col-sm-8"><a href="${contextPath}/variable/${variable.datasetId}:${variable.name}:Dataschema" class="btn btn-primary"><i class="${variableIcon}"></i> ${variable.name}</a></dd>
+                    <dd class="col-sm-8"><a href="${contextPath}/variable/${variable.datasetId}:${variable.name}:Dataschema" class="btn btn-primary"><i class="${dataschemaIcon}"></i> ${variable.name}</a></dd>
                   </#if>
                   <#if opalTable?? && (opalTable.name?? || opalTable.description??)>
                     <dt class="col-sm-4"><@message "datasource-info"/></dt>

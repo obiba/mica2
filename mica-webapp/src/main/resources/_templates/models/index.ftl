@@ -48,7 +48,7 @@
               <p><@message "harmonization-studies"/></p>
             </div>
             <div class="icon">
-              <i class="${datasetIcon}"></i>
+              <i class="${initiativeIcon}"></i>
             </div>
             <a href="${initiativesLink}" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
           </div>

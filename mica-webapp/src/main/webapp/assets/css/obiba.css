@@ -54,6 +54,12 @@
 .io-project:before {
   content: "\e607";
 }
+.io-initiative:before {
+  content: "\e608";
+}
+.io-dataschema:before {
+  content: "\e609";
+}
 .small-box .icon > i.io {
   font-size: 70px;
 }

@@ -91,7 +91,7 @@
                     <div class="info-box">
                       <span class="info-box-icon bg-danger">
                         <a href="${contextPath}/${detailsPageSearchMode}#lists?type=variables&query=${searchPageQuery}">
-                          <i class="${variableIcon}"></i>
+                          <i class="${dataschemaIcon}"></i>
                         </a>
                       </span>
                       <div class="info-box-content">

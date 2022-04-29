@@ -16,6 +16,8 @@
 <#assign variableIcon = "io io-variable"/>
 <#assign projectIcon = "io io-project"/>
 <#assign taxonomyIcon = "io io-taxonomy"/>
+<#assign dataschemaIcon = "io io-dataschema"/>
+<#assign initiativeIcon = "io io-initiative"/>
 
 <!-- Assets location -->
 <#assign assetsPath = "${contextPath}/assets"/>

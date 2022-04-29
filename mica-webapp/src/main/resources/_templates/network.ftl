@@ -76,7 +76,7 @@
                                 <div class="info-box">
                                  <span class="info-box-icon bg-success">
                                     <a href="${contextPath}/harmonization-search#lists?type=studies&query=study(in(Mica_study.className,HarmonizationStudy)),network(in(Mica_network.id,${network.id}))">
-                                      <i class="${studyIcon}"></i>
+                                      <i class="${initiativeIcon}"></i>
                                     </a>
                                   </span>
                                   <div class="info-box-content">
@@ -143,7 +143,7 @@
                                 <div class="info-box">
                                 <span class="info-box-icon bg-danger">
                                   <a href="${contextPath}/harmonization-search#lists?type=variables&query=study(in(Mica_study.className,HarmonizationStudy)),network(in(Mica_network.id,${network.id}))">
-                                    <i class="${variableIcon}"></i>
+                                    <i class="${dataschemaIcon}"></i>
                                   </a>
                                 </span>
                                   <div class="info-box-content">
