@@ -35,9 +35,6 @@
             </ul>
           </li>
             <#if !config.singleStudyEnabled || (config.networkEnabled && !config.singleNetworkEnabled) || config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
-              <#if config.harmonizationDatasetEnabled>
-                <a href="<#if !config.openAccess && !user??>${contextPath}/signin?redirect=${contextPath}/individual-search${defaultIndividualSearchState?url('UTF-8')}<#else>${contextPath}/individual-search${defaultIndividualSearchState}</#if>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle btn btn-success text-white"><@message "search"/> <i class="fas fa-search"></i></a>
-              <#else>
 
               <li id="searchMenu" class="nav-item dropdown">
                 <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle btn btn-success text-white"><@message "search"/> <i class="fas fa-search"></i></a>
@@ -48,16 +45,15 @@
                     </a>
                   </li>
 
+                  <#if config.harmonizationDatasetEnabled>
                   <li>
                     <a href="<#if !config.openAccess && !user??>${contextPath}/signin?redirect=${contextPath}/harmonization-search${defaultHarmonizationSearchState?url('UTF-8')}<#else>${contextPath}/harmonization-search${defaultHarmonizationSearchState}</#if>" class="dropdown-item">
                         <@message "harmonization-search"/>
                     </a>
                   </li>
-
+                  </#if>
                 </ul>
               </li>
-
-              </#if>
             </#if>
         </#if>
 
