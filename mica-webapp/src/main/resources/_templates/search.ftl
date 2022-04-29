@@ -181,7 +181,7 @@
                           <#if searchDatasetListDisplay>
                             <li class="nav-item">
                               <a class="nav-link" id="datasets-tab" data-toggle="pill" href="#datasets" role="tab" @click="onSelectResult('datasets', 'dataset')"
-                                 aria-controls="datasets" aria-selected="false"><span>{{currentStudyTypeSelection && currentStudyTypeSelection.harmonization ? '<@message "protocols"/>' : '<@message "datasets"/>'}}</span><span id="dataset-count" class="badge badge-light">{{counts.datasets}}</span></a>
+                                 aria-controls="datasets" aria-selected="false"><span>{{currentStudyTypeSelection && currentStudyTypeSelection.harmonization ? '<@message "protocols"/>' : '<@message "datasets"/>'}}</span> <span id="dataset-count" class="badge badge-light">{{counts.datasets}}</span></a>
                             </li>
                           </#if>
                           <#if searchStudyListDisplay>
