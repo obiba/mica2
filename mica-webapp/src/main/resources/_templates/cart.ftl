@@ -159,18 +159,21 @@
 
             <div class="card card-info card-outline">
             <div class="card-header">
-              <div class="float-left">
-                <h3 class="card-title"><@message "variables"/></h3>
-              </div>              
                 <#if user.variablesCart?? && user.variablesCart.count gt 0>
+
+                  <div class="mb-2">
+                    <ul class="nav nav-tabs" id="studyClassNameChoice" role="tablist">
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="individual-tab" @click="onStudyClassNameChange('Study')" href="" data-toggle="tab" role="tab" aria-controls="home" aria-selected="true"><@message "individual-search"/></a>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="harmonization-tab" @click="onStudyClassNameChange('HarmonizationStudy')" href="" data-toggle="tab" role="tab" aria-controls="profile" aria-selected="false"><@message "harmonization-search"/></a>
+                      </li>
+                    </ul>
+                  </div>
+
                   <div class="float-right">
 
-                    <div class="d-inline-block">
-                      <select v-model="studyClassName" @change="onStudyClassNameChange" class="custom-select my-1 mr-sm-2">
-                        <option value="Study"><@message "individual-search"/></option>
-                        <option value="HarmonizationStudy"><@message "harmonization-search"/></option>
-                      </select>
-                    </div>
                     <div class="d-inline-block">
                       <div class="d-inline-flex">
                         <span class="ml-2 mr-1">
@@ -281,15 +284,20 @@
 
             <div class="card card-info card-outline">
             <div class="card-header">
-              <h3 class="card-title"><@message "studies"/></h3>
                 <#if user.studiesCart?? && user.studiesCart.count gt 0>
+
+                  <div class="mb-2">
+                    <ul class="nav nav-tabs" id="studyClassNameChoice" role="tablist">
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="individual-tab" @click="onStudyClassNameChange('Study')" href="" data-toggle="tab" role="tab" aria-controls="home" aria-selected="true"><@message "individual-search"/></a>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="harmonization-tab" @click="onStudyClassNameChange('HarmonizationStudy')" href="" data-toggle="tab" role="tab" aria-controls="profile" aria-selected="false"><@message "harmonization-search"/></a>
+                      </li>
+                    </ul>
+                  </div>
+
                   <div class="float-right">
-                    <div class="d-inline-block">
-                      <select v-model="studyClassName" @change="onStudyClassNameChange" class="custom-select my-1 mr-sm-2">
-                        <option value="Study"><@message "individual-search"/></option>
-                        <option value="HarmonizationStudy"><@message "harmonization-search"/></option>
-                      </select>
-                    </div>
                     <div class="d-inline-block">
                       <div class="d-inline-flex">
                         <span class="ml-2 mr-1">

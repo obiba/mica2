@@ -260,7 +260,7 @@
 
           if (data) {
             let dto = 'variableResultDto';
-            
+
             switch (payload.type) {
               case TYPES.VARIABLES:
                 dto = 'variableResultDto';
@@ -317,7 +317,7 @@
             $(selectionCountClassName).text(count.toLocaleString('${.lang}')).show();
             $('#delete-all-message').hide();
             $('#delete-selected-message').show();
-          }   
+          }
         },
         onTabChanged(tab) {
           this.size = DEFAULT_PAGE_SIZE;
@@ -334,7 +334,9 @@
           $('#loadingSet').show();
           this.doQuery();
         },
-        onStudyClassNameChange() {
+        onStudyClassNameChange(newClassName) {
+          this.studyClassName = newClassName;
+          
           $('#loadingSet').show();
           this.doQuery();
         },
@@ -362,7 +364,7 @@
           this.hasResult = false;
 
           let setId = '${set.id}';
-          
+
            <#if studiesSet??>
           let studySetId = '${studiesSet.id}';
           <#else>
