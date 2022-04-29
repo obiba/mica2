@@ -82,7 +82,7 @@
                 <p><@message "harmonized-datasets"/></p>
               </div>
               <div class="icon">
-                <i class="${datasetIcon}"></i>
+                <i class="${harmoDatasetIcon}"></i>
               </div>
               <a href="${protocolsLink}" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
             </div>

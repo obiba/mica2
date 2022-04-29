@@ -111,7 +111,7 @@
                               <div class="info-box">
                               <span class="info-box-icon bg-warning">
                                 <a href="${contextPath}/harmonization-search#lists?type=datasets&query=study(in(Mica_study.className,HarmonizationStudy)),network(in(Mica_network.id,${network.id}))">
-                                  <i class="${datasetIcon}"></i>
+                                  <i class="${harmoDatasetIcon}"></i>
                                 </a>
                               </span>
                                 <div class="info-box-content">
