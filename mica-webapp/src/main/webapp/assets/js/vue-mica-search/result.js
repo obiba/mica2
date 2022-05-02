@@ -746,6 +746,7 @@ const NetworksResult = {
           </thead>
           <thead v-else>
             <tr>
+              <th v-if="showCheckboxes"><i class="far fa-square"></i></th>
               <th>{{ "acronym" | translate }}</th>
               <th v-for="(item, index) in networkColumnItems" :key="index" :class="'column-' + item.name">
                 {{ item.name | translate }}
