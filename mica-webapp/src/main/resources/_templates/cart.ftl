@@ -161,8 +161,8 @@
             <div class="card-header">
                 <#if user.variablesCart?? && user.variablesCart.count gt 0>
 
-                  <div class="mb-2">
-                    <ul class="nav nav-tabs" id="studyClassNameChoice" role="tablist">
+                  <div class="float-left">
+                    <ul class="nav nav-pills" id="studyClassNameChoice" role="tablist">
                       <li class="nav-item" role="presentation">
                         <a class="nav-link active" id="individual-tab" @click="onStudyClassNameChange('Study')" href="" data-toggle="tab" role="tab" aria-controls="home" aria-selected="true"><@message "individual-search"/></a>
                       </li>
@@ -263,10 +263,8 @@
             <div class="card-body">
               <#if user.variablesCart?? && user.variablesCart.count gt 0>
                 <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
-                <div class="table-responsive">
-                  <div class="mt-3 text-muted" v-show="!hasResult"><@message "empty-list"/></div>
-                  <variables-result v-show="hasResult" :show-checkboxes="hasCheckboxes"></variables-result>
-                </div>
+                <div class="mt-3 text-muted" v-show="!hasResult"><@message "empty-list"/></div>
+                <variables-result v-show="hasResult" :show-checkboxes="hasCheckboxes"></variables-result>
               <#else>
                 <div class="text-muted"><@message "sets.cart.no-variables"/></div>
               </#if>
@@ -286,8 +284,8 @@
             <div class="card-header">
                 <#if user.studiesCart?? && user.studiesCart.count gt 0>
 
-                  <div class="mb-2">
-                    <ul class="nav nav-tabs" id="studyClassNameChoice" role="tablist">
+                  <div class="float-left">
+                    <ul class="nav nav-pills" id="studyClassNameChoice" role="tablist">
                       <li class="nav-item" role="presentation">
                         <a class="nav-link active" id="individual-tab" @click="onStudyClassNameChange('Study')" href="" data-toggle="tab" role="tab" aria-controls="home" aria-selected="true"><@message "individual-search"/></a>
                       </li>
@@ -335,11 +333,9 @@
             </div>
             <div class="card-body">
               <#if user.studiesCart?? && user.studiesCart.count gt 0>
-              <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
-                <div class="table-responsive">
-                  <div class="mt-3 text-muted" v-show="!hasResult"><@message "empty-list"/></div>
-                  <studies-result v-show="hasResult"></studies-result>
-                </div>
+                <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
+                <div class="mt-3 text-muted" v-show="!hasResult"><@message "empty-list"/></div>
+                <studies-result v-show="hasResult"></studies-result>
               <#else>
                 <div class="text-muted"><@message "sets.cart.no-studies"/></div>
               </#if>
@@ -399,15 +395,13 @@
                 </#if>
             </div>
             <div class="card-body">
-                <#if user.networksCart?? && user.networksCart.count gt 0>
-                  <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
-                  <div class="table-responsive">
-                    <div class="mt-3 text-muted" v-show="!hasResult"><@message "empty-list"/></div>
-                    <networks-result v-show="hasResult"></networks-result>
-                  </div>
-                <#else>
-                  <div class="text-muted"><@message "sets.cart.no-networks"/></div>
-                </#if>
+              <#if user.networksCart?? && user.networksCart.count gt 0>
+                <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
+                <div class="mt-3 text-muted" v-show="!hasResult"><@message "empty-list"/></div>
+                <networks-result v-show="hasResult"></networks-result>
+              <#else>
+                <div class="text-muted"><@message "sets.cart.no-networks"/></div>
+              </#if>
             </div>
           </div>
 

@@ -189,8 +189,8 @@
 
         <div class="card card-info card-outline">
           <div class="card-header">
-            <div class="mb-2">
-              <ul class="nav nav-tabs" id="studyClassNameChoice" role="tablist">
+            <div class="float-left">
+              <ul class="nav nav-pills" id="studyClassNameChoice" role="tablist">
                 <li class="nav-item" role="presentation">
                   <a class="nav-link active" id="individual-tab" @click="onStudyClassNameChange('Study')" href="" data-toggle="tab" role="tab" aria-controls="home" aria-selected="true"><@message "individual-search"/></a>
                 </li>
