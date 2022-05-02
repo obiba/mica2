@@ -7,31 +7,31 @@
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
-  <#include "libs/head.ftl">
+    <#include "libs/head.ftl">
   <title>${config.name!""} | ${localize(network.acronym)}</title>
 </head>
 <body id="network-page" class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
 
   <!-- Navbar -->
-  <#include "libs/top-navbar.ftl">
+    <#include "libs/top-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <@header titlePrefix="network" title=localize(network.acronym) subtitle=localize(network.name) breadcrumb=[["${contextPath}/", "home"], ["${contextPath}/networks", "networks"], [localize(network.acronym)]]/>
+      <@header titlePrefix="network" title=localize(network.acronym) subtitle=localize(network.name) breadcrumb=[["${contextPath}/", "home"], ["${contextPath}/networks", "networks"], [localize(network.acronym)]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->
     <div class="content">
       <div class="container">
 
-        <#if draft>
-          <div class="alert alert-warning" role="alert">
-            <i class="icon fas fa-exclamation-triangle"></i> <@messageArgs code="viewing-draft-version" args=["/network/${network.id}"]/>
-          </div>
-        </#if>
+          <#if draft>
+            <div class="alert alert-warning" role="alert">
+              <i class="icon fas fa-exclamation-triangle"></i> <@messageArgs code="viewing-draft-version" args=["/network/${network.id}"]/>
+            </div>
+          </#if>
 
         <div class="row">
           <div class="col-lg-12">
@@ -44,19 +44,18 @@
                 </div>
                 <div class="row">
                   <div class="col-md-3 col-sm-6 col-12">
-                    <#if network.logo??>
-                      <img class="img-fluid" style="max-height: 200px" alt="${localize(network.acronym)} logo" src="${contextPath}/ws/network/${network.id}/file/${network.logo.id}/_download"/>
-                    <#else >
-                      <p class="text-light text-center">
-                        <i class="${networkIcon} fa-4x"></i>
-                      </p>
-                    </#if>
+                      <#if network.logo??>
+                        <img class="img-fluid" style="max-height: 200px" alt="${localize(network.acronym)} logo" src="${contextPath}/ws/network/${network.id}/file/${network.logo.id}/_download"/>
+                      <#else >
+                        <p class="text-light text-center">
+                          <i class="${networkIcon} fa-4x"></i>
+                        </p>
+                      </#if>
                   </div>
-
                   <div class="col">
                     <div class="row">
                         <#if !config.singleStudyEnabled>
-                          <div class="col-md-6 col-12">
+                          <div class="col-md-4 col-12">
                             <div class="info-box">
                               <span class="info-box-icon bg-success">
                                 <a href="${contextPath}/individual-search#lists?type=studies&query=study(in(Mica_study.className,Study)),network(in(Mica_network.id,${network.id}))">
@@ -70,28 +69,10 @@
                               <!-- /.info-box-content -->
                             </div>
                           </div>
-
-                            <#if config.harmonizationDatasetEnabled>
-                              <div class="col-md-6 col-12">
-                                <div class="info-box">
-                                 <span class="info-box-icon bg-success">
-                                    <a href="${contextPath}/harmonization-search#lists?type=studies&query=study(in(Mica_study.className,HarmonizationStudy)),network(in(Mica_network.id,${network.id}))">
-                                      <i class="${initiativeIcon}"></i>
-                                    </a>
-                                  </span>
-                                  <div class="info-box-content">
-                                    <span class="info-box-text"><@message "initiatives"/></span>
-                                    <span class="info-box-number" id="initiative-hits">${harmonizationStudies?size}</span>
-                                  </div>
-                                  <!-- /.info-box-content -->
-                                </div>
-                              </div>
-                            </#if>
                         </#if>
-                    </div>
-                    <div class="row">
-                        <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
-                          <div class="col-md-6 col-12">
+
+                        <#if config.studyDatasetEnabled>
+                          <div class="col-md-4 col-12">
                             <div class="info-box">
                               <span class="info-box-icon bg-warning">
                                 <a href="${contextPath}/individual-search#lists?type=datasets&query=study(in(Mica_study.className,Study)),network(in(Mica_network.id,${network.id}))">
@@ -105,25 +86,7 @@
                               <!-- /.info-box-content -->
                             </div>
                           </div>
-
-                          <#if config.harmonizationDatasetEnabled>
-                            <div class="col-md-6 col-12">
-                              <div class="info-box">
-                              <span class="info-box-icon bg-warning">
-                                <a href="${contextPath}/harmonization-search#lists?type=datasets&query=study(in(Mica_study.className,HarmonizationStudy)),network(in(Mica_network.id,${network.id}))">
-                                  <i class="${harmoDatasetIcon}"></i>
-                                </a>
-                              </span>
-                                <div class="info-box-content">
-                                  <span class="info-box-text"><@message "protocols"/></span>
-                                  <span class="info-box-number" id="protocol-hits">-</span>
-                                </div>
-                                <!-- /.info-box-content -->
-                              </div>
-                            </div>
-                          </#if>
-
-                          <div class="col-md-6 col-12">
+                          <div class="col-md-4 col-12">
                             <div class="info-box">
                               <span class="info-box-icon bg-danger">
                                 <a href="${contextPath}/individual-search#lists?type=variables&query=study(in(Mica_study.className,Study)),network(in(Mica_network.id,${network.id}))">
@@ -137,23 +100,54 @@
                               <!-- /.info-box-content -->
                             </div>
                           </div>
-
-                            <#if config.harmonizationDatasetEnabled>
-                              <div class="col-md-6 col-12">
-                                <div class="info-box">
-                                <span class="info-box-icon bg-danger">
-                                  <a href="${contextPath}/harmonization-search#lists?type=variables&query=study(in(Mica_study.className,HarmonizationStudy)),network(in(Mica_network.id,${network.id}))">
-                                    <i class="${dataschemaIcon}"></i>
-                                  </a>
-                                </span>
-                                  <div class="info-box-content">
-                                    <span class="info-box-text"><@message "dataschemas"/></span>
-                                    <span class="info-box-number" id="dataschema-hits">-</span>
-                                  </div>
-                                  <!-- /.info-box-content -->
-                                </div>
+                        </#if>
+                    </div>
+                    <div class="row">
+                        <#if config.harmonizationDatasetEnabled>
+                          <div class="col-md-4 col-12">
+                            <div class="info-box">
+                            <span class="info-box-icon bg-success">
+                              <a href="${contextPath}/harmonization-search#lists?type=studies&query=study(in(Mica_study.className,HarmonizationStudy)),network(in(Mica_network.id,${network.id}))">
+                                <i class="${initiativeIcon}"></i>
+                              </a>
+                            </span>
+                              <div class="info-box-content">
+                                <span class="info-box-text"><@message "initiatives"/></span>
+                                <span class="info-box-number" id="initiative-hits">${harmonizationStudies?size}</span>
                               </div>
-                            </#if>
+                              <!-- /.info-box-content -->
+                            </div>
+                          </div>
+
+                          <div class="col-md-4 col-12">
+                            <div class="info-box">
+                          <span class="info-box-icon bg-warning">
+                            <a href="${contextPath}/harmonization-search#lists?type=datasets&query=study(in(Mica_study.className,HarmonizationStudy)),network(in(Mica_network.id,${network.id}))">
+                              <i class="${harmoDatasetIcon}"></i>
+                            </a>
+                          </span>
+                              <div class="info-box-content">
+                                <span class="info-box-text"><@message "protocols"/></span>
+                                <span class="info-box-number" id="protocol-hits">-</span>
+                              </div>
+                              <!-- /.info-box-content -->
+                            </div>
+                          </div>
+
+                          <div class="col-md-4 col-12">
+                            <div class="info-box">
+                          <span class="info-box-icon bg-danger">
+                            <a href="${contextPath}/harmonization-search#lists?type=variables&query=study(in(Mica_study.className,HarmonizationStudy)),network(in(Mica_network.id,${network.id}))">
+                              <i class="${dataschemaIcon}"></i>
+                            </a>
+                          </span>
+                              <div class="info-box-content">
+                                <span class="info-box-text"><@message "dataschemas"/></span>
+                                <span class="info-box-number" id="dataschema-hits">-</span>
+                              </div>
+                              <!-- /.info-box-content -->
+                            </div>
+                          </div>
                         </#if>
                     </div>
                   </div>
@@ -163,84 +157,84 @@
                 <div class="card-text marked mt-3">
                   <template>${localize(network.description)}</template>
                 </div>
-                <#if network.model.website??>
-                  <blockquote>
-                    <@message "visit"/> <a href="${network.model.website}" target="_blank" class="card-link">${localize(network.acronym)}</a>
-                  </blockquote>
-                </#if>
-              </div>
-              <#if cartEnabled && networksCartEnabled>
-                <div class="card-footer">
-                  <#if user??>
-                    <a id="cart-add" href="javascript:void(0)" onclick="onNetworksCartAdd('${network.id}')" style="display: none;">
-                        <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
-                    </a>
-                    <a id="cart-remove" href="javascript:void(0)" onclick="onNetworksCartRemove('${network.id}')" style="display: none;">
-                        <@message "sets.cart.remove-from-cart"/> <i class="fas fa-cart-arrow-down"></i>
-                    </a>
-                  <#else>
-                    <a href="${contextPath}/signin?redirect=${contextPath}/network/${network.id}">
-                        <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
-                    </a>
+                  <#if network.model.website??>
+                    <blockquote>
+                        <@message "visit"/> <a href="${network.model.website}" target="_blank" class="card-link">${localize(network.acronym)}</a>
+                    </blockquote>
                   </#if>
-                </div>
-              </#if>
+              </div>
+                <#if cartEnabled && networksCartEnabled>
+                  <div class="card-footer">
+                      <#if user??>
+                        <a id="cart-add" href="javascript:void(0)" onclick="onNetworksCartAdd('${network.id}')" style="display: none;">
+                            <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
+                        </a>
+                        <a id="cart-remove" href="javascript:void(0)" onclick="onNetworksCartRemove('${network.id}')" style="display: none;">
+                            <@message "sets.cart.remove-from-cart"/> <i class="fas fa-cart-arrow-down"></i>
+                        </a>
+                      <#else>
+                        <a href="${contextPath}/signin?redirect=${contextPath}/network/${network.id}">
+                            <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
+                        </a>
+                      </#if>
+                  </div>
+                </#if>
             </div>
           </div>
         </div>
 
         <!-- Member list -->
-        <#if network.memberships?? && network.memberships?keys?size!=0>
-          <div class="row">
-            <div class="col-12">
-              <div class="card card-primary card-outline">
-                <div class="card-header">
-                  <h3 class="card-title"><@message "members"/></h3>
-                  <div class="card-tools float-right">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
-                      <i class="fas fa-minus"></i></button>
-                  </div>
+          <#if network.memberships?? && network.memberships?keys?size!=0>
+            <div class="row">
+              <div class="col-12">
+                <div class="card card-primary card-outline">
+                  <div class="card-header">
+                    <h3 class="card-title"><@message "members"/></h3>
+                    <div class="card-tools float-right">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
+                        <i class="fas fa-minus"></i></button>
+                    </div>
 
-                  <#if affiliatedMembersQuery??>
-                    <button type="button" class="btn btn-primary float-right mr-2" data-toggle="modal" data-target="#affiliatedMembersModal">
-                      <@message "network.associated-people"/>
-                    </button>
-                  </#if>
-                </div>
-                <div class="card-body">
-                  <div class="table-responsive">
-                    <table class="table">
-                      <thead>
-                      <tr>
-                        <th><@message "investigators"/></th>
-                        <th><@message "contacts"/></th>
-                      </tr>
-                      </thead>
-                      <tbody>
-                      <tr>
-                        <td>
-                          <#if network.memberships.investigator??>
-                              <@memberList members=network.memberships.investigator role="investigator"/>
-                          </#if>
-                        </td>
-                        <td>
-                          <#if network.memberships.contact??>
-                              <@memberList members=network.memberships.contact role="contact"/>
-                          </#if>
-                        </td>
-                      </tr>
-                      </tbody>
-                    </table>
+                      <#if affiliatedMembersQuery??>
+                        <button type="button" class="btn btn-primary float-right mr-2" data-toggle="modal" data-target="#affiliatedMembersModal">
+                            <@message "network.associated-people"/>
+                        </button>
+                      </#if>
+                  </div>
+                  <div class="card-body">
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                        <tr>
+                          <th><@message "investigators"/></th>
+                          <th><@message "contacts"/></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                          <td>
+                              <#if network.memberships.investigator??>
+                                  <@memberList members=network.memberships.investigator role="investigator"/>
+                              </#if>
+                          </td>
+                          <td>
+                              <#if network.memberships.contact??>
+                                  <@memberList members=network.memberships.contact role="contact"/>
+                              </#if>
+                          </td>
+                        </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>
+              <!-- /.col-12 -->
             </div>
-            <!-- /.col-12 -->
-          </div>
-          <!-- /.row -->
-        </#if>
+            <!-- /.row -->
+          </#if>
 
-        <#--  Summary Statistics  -->
+          <#--  Summary Statistics  -->
         <div class="row" id="summary-statistics-container">
           <div class="col-12">
             <div class="card card-info card-outline">
@@ -265,134 +259,134 @@
         </div>
 
         <!-- Network model -->
-        <@networkModel network=network/>
+          <@networkModel network=network/>
 
         <!-- Network list -->
-        <#if networks?size != 0>
-          <div class="row">
-            <div class="col-lg-12">
-              <div class="card card-info card-outline">
-                <div class="card-header">
-                  <h3 class="card-title"><@message "networks"/></h3>
-                  <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
-                      <i class="fas fa-minus"></i></button>
+          <#if networks?size != 0>
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="card card-info card-outline">
+                  <div class="card-header">
+                    <h3 class="card-title"><@message "networks"/></h3>
+                    <div class="card-tools">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
+                        <i class="fas fa-minus"></i></button>
+                    </div>
                   </div>
-                </div>
-                <div class="card-body">
-                  <div class="table-responsive">
-                    <table id="networks" class="table table-bordered table-striped">
-                      <thead>
-                      <tr>
-                        <th><@message "acronym"/></th>
-                        <th><@message "name"/></th>
-                        <@networkTHs/>
-                      </tr>
-                      </thead>
-                      <tbody>
-                      <#list networks as netwk>
+                  <div class="card-body">
+                    <div class="table-responsive">
+                      <table id="networks" class="table table-bordered table-striped">
+                        <thead>
                         <tr>
-                          <td><a href="${contextPath}/network/${netwk.id}">${localize(netwk.acronym)}</a></td>
-                          <td><small>${localize(netwk.name)}</small></td>
-                          <@networkTDs network=netwk/>
+                          <th><@message "acronym"/></th>
+                          <th><@message "name"/></th>
+                            <@networkTHs/>
                         </tr>
-                      </#list>
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                        <#list networks as netwk>
+                          <tr>
+                            <td><a href="${contextPath}/network/${netwk.id}">${localize(netwk.acronym)}</a></td>
+                            <td><small>${localize(netwk.name)}</small></td>
+                              <@networkTDs network=netwk/>
+                          </tr>
+                        </#list>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </#if>
+          </#if>
 
         <!-- Individual study list -->
-        <#if individualStudies?size != 0>
-          <div class="row">
-            <div class="col-lg-12">
-              <div class="card card-info card-outline">
-                <div class="card-header">
-                  <h3 class="card-title"><@message "individual-studies"/></h3>
-                  <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
-                      <i class="fas fa-minus"></i></button>
+          <#if individualStudies?size != 0>
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="card card-info card-outline">
+                  <div class="card-header">
+                    <h3 class="card-title"><@message "individual-studies"/></h3>
+                    <div class="card-tools">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
+                        <i class="fas fa-minus"></i></button>
+                    </div>
                   </div>
-                </div>
-                <div class="card-body">
-                  <div class="table-responsive">
-                    <table id="individual-studies" class="table table-bordered table-striped">
-                      <thead>
-                      <tr>
-                        <th><@message "acronym"/></th>
-                        <th><@message "name"/></th>
-                        <@individualStudyTHs/>
-                      </tr>
-                      </thead>
-                      <tbody>
-                      <#list individualStudies as study>
+                  <div class="card-body">
+                    <div class="table-responsive">
+                      <table id="individual-studies" class="table table-bordered table-striped">
+                        <thead>
                         <tr>
-                          <td><a href="${contextPath}/study/${study.id}">${localize(study.acronym)}</a></td>
-                          <td><small>${localize(study.name)}</small></td>
-                          <@individualStudyTDs study=study/>
+                          <th><@message "acronym"/></th>
+                          <th><@message "name"/></th>
+                            <@individualStudyTHs/>
                         </tr>
-                      </#list>
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                        <#list individualStudies as study>
+                          <tr>
+                            <td><a href="${contextPath}/study/${study.id}">${localize(study.acronym)}</a></td>
+                            <td><small>${localize(study.name)}</small></td>
+                              <@individualStudyTDs study=study/>
+                          </tr>
+                        </#list>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </#if>
+          </#if>
 
         <!-- Harmonization study list -->
-        <#if harmonizationStudies?size != 0>
-          <div class="row">
-            <div class="col-lg-12">
-              <div class="card card-info card-outline">
-                <div class="card-header">
-                  <h3 class="card-title"><@message "harmonization-studies"/></h3>
-                  <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
-                      <i class="fas fa-minus"></i></button>
+          <#if harmonizationStudies?size != 0>
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="card card-info card-outline">
+                  <div class="card-header">
+                    <h3 class="card-title"><@message "harmonization-studies"/></h3>
+                    <div class="card-tools">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
+                        <i class="fas fa-minus"></i></button>
+                    </div>
                   </div>
-                </div>
-                <div class="card-body">
-                  <div class="table-responsive">
-                    <table id="harmonization-studies" class="table table-bordered table-striped">
-                      <thead>
-                      <tr>
-                        <th><@message "acronym"/></th>
-                        <th><@message "name"/></th>
-                        <@harmonizationStudyTHs/>
-                      </tr>
-                      </thead>
-                      <tbody>
-                      <#list harmonizationStudies as study>
+                  <div class="card-body">
+                    <div class="table-responsive">
+                      <table id="harmonization-studies" class="table table-bordered table-striped">
+                        <thead>
                         <tr>
-                          <td><a href="${contextPath}/study/${study.id}">${localize(study.acronym)}</a></td>
-                          <td><small>${localize(study.name)}</small></td>
-                          <@harmonizationStudyTDs study=study/>
+                          <th><@message "acronym"/></th>
+                          <th><@message "name"/></th>
+                            <@harmonizationStudyTHs/>
                         </tr>
-                      </#list>
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                        <#list harmonizationStudies as study>
+                          <tr>
+                            <td><a href="${contextPath}/study/${study.id}">${localize(study.acronym)}</a></td>
+                            <td><small>${localize(study.name)}</small></td>
+                              <@harmonizationStudyTDs study=study/>
+                          </tr>
+                        </#list>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </#if>
+          </#if>
 
         <!-- Files -->
-        <#if showNetworkFiles>
-          <@networkFilesBrowser network=network/>
-        </#if>
+          <#if showNetworkFiles>
+              <@networkFilesBrowser network=network/>
+          </#if>
 
         <!-- Variables classifications -->
-        <#if networkVariablesClassificationsTaxonomies?? && (networkVariablesClassificationsTaxonomies?size gt 0) && studyAcronyms?? && (studyAcronyms?size gt 0)>
-          <@variablesClassifications network=network studyAcronyms=studyAcronyms/>
-        </#if>
+          <#if networkVariablesClassificationsTaxonomies?? && (networkVariablesClassificationsTaxonomies?size gt 0) && studyAcronyms?? && (studyAcronyms?size gt 0)>
+              <@variablesClassifications network=network studyAcronyms=studyAcronyms/>
+          </#if>
 
         <!-- Affiliated Members Modal -->
         <div class="modal fade" id="affiliatedMembersModal" data-keyboard="false" tabindex="-1">
@@ -430,7 +424,7 @@
   </div>
   <!-- /.content-wrapper -->
 
-  <#include "libs/footer.ftl">
+    <#include "libs/footer.ftl">
 </div>
 <!-- ./wrapper -->
 
@@ -439,3 +433,4 @@
 
 </body>
 </html>
+
