@@ -336,7 +336,8 @@
         },
         onStudyClassNameChange(newClassName) {
           this.studyClassName = newClassName;
-          
+          this.from = 0;
+
           $('#loadingSet').show();
           this.doQuery();
         },

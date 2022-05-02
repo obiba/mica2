@@ -357,12 +357,6 @@
                 <#if user.networksCart?? && user.networksCart.count gt 0>
                   <div class="float-right">
                     <div class="d-inline-block">
-                      <select v-model="studyClassName" @change="onStudyClassNameChange" class="custom-select my-1 mr-sm-2">
-                        <option value="Study"><@message "individual-search"/></option>
-                        <option value="HarmonizationStudy"><@message "harmonization-search"/></option>
-                      </select>
-                    </div>
-                    <div class="d-inline-block">
                       <div class="d-inline-flex">
                         <span class="ml-2 mr-1">
                           <select class="custom-select" id="obiba-page-size-selector-top"></select>
