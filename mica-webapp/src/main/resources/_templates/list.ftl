@@ -189,6 +189,8 @@
 
         <div class="card card-info card-outline">
           <div class="card-header">
+
+            <#if config.harmonizationDatasetEnabled>
             <div class="float-left">
               <ul class="nav nav-pills" id="studyClassNameChoice" role="tablist">
                 <li class="nav-item" role="presentation">
@@ -199,6 +201,7 @@
                 </li>
               </ul>
             </div>
+            </#if>
 
             <div class="float-right">
               <div class="d-inline-block">
