@@ -307,6 +307,12 @@
 
               selectionCountClassName = '.networks-selection-count';
               break;
+            default:
+              variablesCartStorage.deselectAll();
+              this.variableSelections = payload.selections || [];
+              variablesCartStorage.selectAll(this.variableSelections);
+              count = variablesCartStorage.getSelections().length;
+              break;
           }
 
           if (count === 0) {
