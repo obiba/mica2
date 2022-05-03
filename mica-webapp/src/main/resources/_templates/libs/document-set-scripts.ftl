@@ -168,6 +168,25 @@
   const studiesCartStorage = new MicaSetStorage('scart');
   const networksCartStorage = new MicaSetStorage('ncart');
 
+  const totalCounts = {
+    <#if variablesCartEnabled>
+    variablesCount: ${user.variablesCart.count},
+    </#if>
+
+    <#if studiesCartEnabled>
+    studiesCount: ${user.studiesCart.count},
+    </#if>
+
+    <#if networksCartEnabled>
+    networksCount: ${user.networksCart.count},
+    </#if>
+
+    <#if rc.requestUri?starts_with("/list/")> 
+    currentSetIdentifiersCount: ${set.identifiers?size},
+    </#if>
+  };
+  
+
   // cart
   <#if variablesCartEnabled>
   const onVariablesCartAdd = function(id) {
@@ -245,7 +264,9 @@
           pagination: null,
           pageSizeSelector: null,
           studyClassName: 'Study',
-          hasCheckboxes: !Mica.setIsLocked || Mica.isAdministrator
+          hasCheckboxes: !Mica.setIsLocked || Mica.isAdministrator,
+          individualSubCount: 0,
+          harmonizationSubCount: 0
         };
       },
       methods: {
@@ -254,21 +275,35 @@
 
           if (data) {
             let dto = 'variableResultDto';
+            let totalCount = 0;
 
             switch (payload.type) {
               case TYPES.VARIABLES:
                 dto = 'variableResultDto';
+                totalCount = window.location.pathname === '/cart' ? totalCounts.variablesCount : totalCounts.currentSetIdentifiersCount;
                 break;
               case TYPES.STUDIES:
                 dto = 'studyResultDto';
+                totalCount = totalCounts.studiesCount;
                 break;
               case TYPES.NETWORKS:
                 dto = 'networkResultDto';
+                totalCount = totalCounts.networksCount;
                 break;
             }
 
-            this.pagination.update((data[dto] || {totalHits: 0}).totalHits, this.size, (this.from/this.size)+1);
-            this.hasResult = (data[dto] || {totalHits: 0}).totalHits > 0;
+            let result = (data[dto] || {totalHits: 0});
+
+            if (this.studyClassName === 'Study') {
+              this.individualSubCount = result.totalHits;
+              this.harmonizationSubCount = totalCount - result.totalHits;
+            } else {
+              this.harmonizationSubCount = result.totalHits;
+              this.individualSubCount = totalCount - result.totalHits;
+            }
+
+            this.pagination.update(result.totalHits, this.size, (this.from/this.size)+1);
+            this.hasResult = result.totalHits > 0;
             this.pageSizeSelector.update(this.size);
           }
         },
