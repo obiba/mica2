@@ -50,13 +50,18 @@ public class CartController extends BaseController {
       // note: the cart will be populated by the SessionInterceptor
       Map<String, Object> params = newParameters();
       params.put("accessConfig", dataAccessConfigService.getOrCreateConfig());
+
+      boolean variableEnabledInConfig = config.isCartEnabled() && (config.isStudyDatasetEnabled() || config.isHarmonizationDatasetEnabled());
+      boolean studyEnabledInConfig = config.isStudiesCartEnabled() && !config.isSingleStudyEnabled();
+      boolean networkEnabledInConfig = config.isNetworksCartEnabled() && !config.isSingleNetworkEnabled();
+
       if (!Strings.isNullOrEmpty(type) &&
-        ((type.equalsIgnoreCase("variables") && config.isCartEnabled()) ||
-          (type.equalsIgnoreCase("studies") && config.isStudiesCartEnabled()) ||
-          (type.equalsIgnoreCase("networks") && config.isNetworksCartEnabled()))) {
+        ((type.equalsIgnoreCase("variables") && variableEnabledInConfig) ||
+          (type.equalsIgnoreCase("studies") && studyEnabledInConfig) ||
+          (type.equalsIgnoreCase("networks") && networkEnabledInConfig))) {
         params.put("showCartType", type.toLowerCase());
       } else {
-        params.put("showCartType", config.isCartEnabled() ? "variables" : (config.isStudiesCartEnabled() ? "studies" : "networks"));
+        params.put("showCartType", variableEnabledInConfig ? "variables" : (studyEnabledInConfig ? "studies" : "networks"));
       }
 
       params.put("configJson", getMicaConfigAsJson(config, getLang(locale, null)));

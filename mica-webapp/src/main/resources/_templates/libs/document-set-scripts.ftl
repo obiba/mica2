@@ -311,11 +311,11 @@
           let count = 0;
 
           let defaultType;
-          if (Mica.config.isCartEnabled) {
+          if (Mica.config.isCartEnabled && (Mica.config.isCollectedDatasetEnabled || Mica.config.isHarmonizedDatasetEnabled)) {
             defaultType = TYPES.VARIABLES
-          } else if (Mica.config.isStudiesCartEnabled) {
+          } else if (Mica.config.isStudiesCartEnabled && !Mica.config.isSingleStudyEnabled) {
             defaultType = TYPES.STUDIES;
-          } else if (Mica.config.isNetworksCartEnabled) {
+          } else if (Mica.config.isNetworksCartEnabled && Mica.config.isNetworkEnabled && !Mica.config.isSingleNetworkEnabled) {
             defaultType = TYPES.NETWORKS;
           }
 
@@ -400,11 +400,11 @@
           tab = tab ? tab : this.currentWindowLocationSearch()['type'];
 
           if (!tab) {
-            if (Mica.config.isCartEnabled) {
+            if (Mica.config.isCartEnabled && (Mica.config.isCollectedDatasetEnabled || Mica.config.isHarmonizedDatasetEnabled)) {
               tab = TYPES.VARIABLES
-            } else if (Mica.config.isStudiesCartEnabled) {
+            } else if (Mica.config.isStudiesCartEnabled && !Mica.config.isSingleStudyEnabled) {
               tab = TYPES.STUDIES;
-            } else if (Mica.config.isNetworksCartEnabled) {
+            } else if (Mica.config.isNetworksCartEnabled && Mica.config.isNetworkEnabled && !Mica.config.isSingleNetworkEnabled) {
               tab = TYPES.NETWORKS;
             }
           }          
