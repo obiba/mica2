@@ -280,15 +280,15 @@
             switch (payload.type) {
               case TYPES.VARIABLES:
                 dto = 'variableResultDto';
-                totalCount = window.location.pathname === '/cart' ? totalCounts.variablesCount : totalCounts.currentSetIdentifiersCount;
+                totalCount = (window.location.pathname === '/cart' ? totalCounts.variablesCount : totalCounts.currentSetIdentifiersCount) || 0;
                 break;
               case TYPES.STUDIES:
                 dto = 'studyResultDto';
-                totalCount = totalCounts.studiesCount;
+                totalCount = totalCounts.studiesCount || 0;
                 break;
               case TYPES.NETWORKS:
                 dto = 'networkResultDto';
-                totalCount = totalCounts.networksCount;
+                totalCount = totalCounts.networksCount || 0;
                 break;
             }
 
