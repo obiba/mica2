@@ -91,7 +91,7 @@
                     <div class="info-box">
                       <span class="info-box-icon bg-danger">
                         <a href="${contextPath}/${detailsPageSearchMode}#lists?type=variables&query=${searchPageQuery}">
-                          <i class="${dataschemaIcon}"></i>
+                          <i class="<#if type == "Harmonized">${dataschemaIcon}<#else>${variableIcon}</#if>"></i>
                         </a>
                       </span>
                       <div class="info-box-content">
@@ -116,7 +116,7 @@
                   <div class="card-footer">
                     <#if type == "Harmonized"><@message "associated-initiative"/><#else><@message "associated-study"/></#if>
                     <a class="btn btn-success ml-2" href="${contextPath}/study/${study.id}">
-                      <i class="${studyIcon}"></i> ${localize(study.acronym)}
+                      <i class="<#if type == "Harmonized">${initiativeIcon}<#else>${studyIcon}</#if>"></i> ${localize(study.acronym)}
                     </a>
                     <#if showDatasetContingencyLink>
                       <a class="btn btn-primary float-right ml-2" href="${contextPath}/dataset-crosstab/${dataset.id}">

@@ -36,7 +36,7 @@
       <img class="img-fluid" style="max-height: 150px" alt="${localize(study.acronym)} logo" src="${contextPath}/ws/study/${study.id}/file/${study.logo.id}/_download"/>
     <#else >
       <div class="text-black-50 text-center mt-5">
-        <i class="${studyIcon} fa-3x"></i>
+        <i class="<#if type == "Harmonization">${initiativeIcon}<#else>${studyIcon}</#if> fa-3x"></i>
       </div>
     </#if>
   </div>

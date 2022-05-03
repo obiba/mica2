@@ -148,8 +148,11 @@
 
   Mica.icons = {
     variable: '${variableIcon}',
+    dataschema: '${dataschemaIcon}',
     dataset: '${datasetIcon}',
+    harmoDataset: '${harmoDatasetIcon}',
     study: '${studyIcon}',
+    initiative: '${initiativeIcon}',
     network: '${networkIcon}'
   };
 
