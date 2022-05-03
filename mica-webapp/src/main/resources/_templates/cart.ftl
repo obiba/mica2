@@ -161,7 +161,7 @@
             <div class="card-header">
                 <#if user.variablesCart?? && user.variablesCart.count gt 0>
 
-                  <#if config.harmonizationDatasetEnabled>
+                  <#if config.harmonizationDatasetEnabled && config.studyDatasetEnabled>
                   <div class="float-left">
                     <ul class="nav nav-pills" id="studyClassNameChoice" role="tablist">
                       <li class="nav-item" role="presentation">

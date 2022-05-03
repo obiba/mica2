@@ -190,7 +190,7 @@
         <div class="card card-info card-outline">
           <div class="card-header">
 
-            <#if config.harmonizationDatasetEnabled>
+            <#if config.harmonizationDatasetEnabled && config.studyDatasetEnabled>
             <div class="float-left">
               <ul class="nav nav-pills" id="studyClassNameChoice" role="tablist">
                 <li class="nav-item" role="presentation">

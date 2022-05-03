@@ -263,7 +263,7 @@
           hasResult: false,
           pagination: null,
           pageSizeSelector: null,
-          studyClassName: 'Study',
+          studyClassName: Mica.defaultSearchMode,
           hasCheckboxes: !Mica.setIsLocked || Mica.isAdministrator,
           individualSubCount: 0,
           harmonizationSubCount: 0
@@ -310,7 +310,16 @@
         onSelectionChanged(payload) {
           let count = 0;
 
-          let type = this.currentWindowLocationSearch()['type'];
+          let defaultType;
+          if (Mica.config.isCartEnabled) {
+            defaultType = TYPES.VARIABLES
+          } else if (Mica.config.isStudiesCartEnabled) {
+            defaultType = TYPES.STUDIES;
+          } else if (Mica.config.isNetworksCartEnabled) {
+            defaultType = TYPES.NETWORKS;
+          }
+
+          let type = this.currentWindowLocationSearch()['type'] || defaultType;
           let selectionCountClassName = '.selection-count';
 
           switch (type) {
@@ -335,12 +344,6 @@
               count = networksCartStorage.getSelections().length;
 
               selectionCountClassName = '.networks-selection-count';
-              break;
-            default:
-              variablesCartStorage.deselectAll();
-              this.variableSelections = payload.selections || [];
-              variablesCartStorage.selectAll(this.variableSelections);
-              count = variablesCartStorage.getSelections().length;
               break;
           }
 
@@ -395,7 +398,18 @@
         },
         doQuery(tab) {
           tab = tab ? tab : this.currentWindowLocationSearch()['type'];
-          let studyTypeSelection = {all: false, study: this.studyClassName === 'Study', harmonization: this.studyClassName === 'HarmonizationStudy'}
+
+          if (!tab) {
+            if (Mica.config.isCartEnabled) {
+              tab = TYPES.VARIABLES
+            } else if (Mica.config.isStudiesCartEnabled) {
+              tab = TYPES.STUDIES;
+            } else if (Mica.config.isNetworksCartEnabled) {
+              tab = TYPES.NETWORKS;
+            }
+          }          
+
+          let studyTypeSelection = {all: false, study: this.studyClassName === 'Study', harmonization: this.studyClassName === 'HarmonizationStudy'};
 
           this.hasResult = false;
 
@@ -406,7 +420,6 @@
           <#else>
           let studySetId = '';
           </#if>
-
 
            <#if networksSet??>
           let networkSetId = '${networksSet.id}';
@@ -420,6 +433,11 @@
           let tree = new RQL.QueryTree();
 
           if (!tab || tab === 'variables') {
+            if (!Mica.config.isCollectedDatasetEnabled) {
+              this.studyClassName = 'HarmonizationStudy';
+              studyTypeSelection = {all: false, study: this.studyClassName === 'Study', harmonization: this.studyClassName === 'HarmonizationStudy'};
+            }
+
             let targetQuery = new RQL.Query(TARGETS.VARIABLE);
             tree.addQuery(null, targetQuery);
 
