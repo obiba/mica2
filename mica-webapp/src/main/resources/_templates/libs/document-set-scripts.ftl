@@ -93,23 +93,17 @@
   };
 
   Mica.display = {
-    variableColumns: ['${searchVariableColumns?join("', '")}'],
-    variableColumnsHarmonization: ['${searchVariableColumnsHarmonization?join("', '")}'],
-    variableColumnsIndividual: ['${searchVariableColumnsIndividual?join("', '")}'],
+    variableColumns: ["label+description", "valueType", "annotations", "type", "study", "population", "data-collection-event", "dataset"],
+    variableColumnsHarmonization: ["label+description", "valueType", "annotations", "initiative", "protocol"],
+    variableColumnsIndividual: ["label+description", "valueType", "annotations", "study", "population", "data-collection-event", "dataset"],
 
-    datasetColumns: ['${searchDatasetColumns?join("', '")}'],
-    datasetColumnsHarmonization: ['${searchDatasetColumnsHarmonization?join("', '")}'],
-    datasetColumnsIndividual: ['${searchDatasetColumnsIndividual?join("', '")}'],
+    studyColumns: ["name", "type", "study-design", "data-sources-available", "participants"],
+    studyColumnsHarmonization: ["name"],
+    studyColumnsIndividual: ["name", "study-design", "data-sources-available", "participants"],
 
-    studyColumns: ['${searchStudyColumns?join("', '")}'],
-    studyColumnsHarmonization: ['${searchStudyColumnsHarmonization?join("', '")}'],
-    studyColumnsIndividual: ['${searchStudyColumnsIndividual?join("', '")}'],
-
-    networkColumns: ['${searchNetworkColumns?join("', '")}'],
-    networkColumnsHarmonization: ['${searchNetworkColumnsHarmonization?join("', '")}'],
-    networkColumnsIndividual: ['${searchNetworkColumnsIndividual?join("', '")}'],
-
-    searchCriteriaMenus: ['${searchCriteriaMenus?join("', '")}']
+    networkColumns: ["name"],
+    networkColumnsHarmonization: ["name"],
+    networkColumnsIndividual: ["name"]
   };
 
   Mica.defaultSearchMode = "${defaultSearchMode}";
