@@ -9,7 +9,7 @@
 </head>
 <body id="search-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
 <!-- Site wrapper -->
-<div id="search-application" class="wrapper" v-cloak>
+<div id="search-application" class="wrapper" :class="{'harmoMode': currentStudyTypeSelection && currentStudyTypeSelection.harmonization}" v-cloak>
 
   <!-- Navbar -->
   <#include "libs/aside-navbar.ftl">

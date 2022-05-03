@@ -39,7 +39,7 @@
 .io-dataset:before {
   content: "\e601";
 }
-.io-harmo-dataset:before {
+.io-harmo-dataset:before, .harmoMode .io-dataset:before {
   content: "\e602";
 }
 .io-study:before {
@@ -54,10 +54,10 @@
 .io-project:before {
   content: "\e607";
 }
-.io-initiative:before {
+.io-initiative:before, .harmoMode .io-study:before {
   content: "\e608";
 }
-.io-dataschema:before {
+.io-dataschema:before, .harmoMode .io-variable:before {
   content: "\e609";
 }
 .small-box .icon > i.io {
