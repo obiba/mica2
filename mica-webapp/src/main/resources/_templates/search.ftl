@@ -173,13 +173,13 @@
                     <div class="mt-3 col clearfix" v-cloak>
                       <ul class="nav nav-pills float-left" id="results-tab" role="tablist">
                           <#if searchVariableListDisplay>
-                            <li class="nav-item">
+                            <li class="nav-item" v-if="showVariableAndDatasetTabsInIndividualMode">
                               <a class="nav-link active" id="variables-tab" data-toggle="pill" href="#variables" role="tab" @click="onSelectResult('variables', 'variable')"
                                  aria-controls="variables" aria-selected="true"><@message "variables"/> <span id="variable-count" class="badge badge-light">{{counts.variables}}</span></a>
                             </li>
                           </#if>
                           <#if searchDatasetListDisplay>
-                            <li class="nav-item">
+                            <li class="nav-item" v-if="showVariableAndDatasetTabsInIndividualMode">
                               <a class="nav-link" id="datasets-tab" data-toggle="pill" href="#datasets" role="tab" @click="onSelectResult('datasets', 'dataset')"
                                  aria-controls="datasets" aria-selected="false"><span>{{currentStudyTypeSelection && currentStudyTypeSelection.harmonization ? '<@message "protocols"/>' : '<@message "datasets"/>'}}</span> <span id="dataset-count" class="badge badge-light">{{counts.datasets}}</span></a>
                             </li>
@@ -289,7 +289,7 @@
                       <div v-show="loading" class="spinner-border spinner-border-sm" role="status"></div>
 
                       <#if searchVariableListDisplay>
-                        <div class="tab-pane fade show active" id="variables" role="tabpanel" aria-labelledby="variables-tab">
+                        <div class="tab-pane fade show active" v-if="showVariableAndDatasetTabsInIndividualMode" id="variables" role="tabpanel" aria-labelledby="variables-tab">
                           <p class="text-muted"><@message "results-list-of-variables-text"/></p>
                           <div id="list-variables">
                             <div class="mt-3 text-muted" v-show="!loading && !hasListResult">{{ "no-variable-found" | translate }}</div>
@@ -298,7 +298,7 @@
                         </div>
                       </#if>
                       <#if searchDatasetListDisplay>
-                        <div class="tab-pane fade" id="datasets" role="tabpanel" aria-labelledby="datasets-tab">
+                        <div class="tab-pane fade" v-if="showVariableAndDatasetTabsInIndividualMode" id="datasets" role="tabpanel" aria-labelledby="datasets-tab">
                           <p class="text-muted"><@message "results-list-of-datasets-text"/></p>
                           <div id="list-datasets">
                             <div class="mt-3 text-muted" v-show="!loading && !hasListResult">{{ "no-dataset-found" | translate }}</div>

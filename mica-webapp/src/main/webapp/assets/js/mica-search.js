@@ -629,6 +629,7 @@ class TableFixedHeaderUtility {
         pagination: null,
         pageSizeSelector: null,
         showStudyShortcut: (Mica.isHarmonizedDatasetEnabled && !Mica.isSingleStudyEnabled) || !this.currentStudyTypeSelection || this.currentStudyTypeSelection.all,
+        showVariableAndDatasetTabsInIndividualMode: '/individual-search' !== window.location.pathname || ('/individual-search' === window.location.pathname && Mica.config.isCollectedDatasetEnabled),
       };
     },
     methods: {
@@ -1328,7 +1329,20 @@ class TableFixedHeaderUtility {
       axios
         .get(contextPath + '/ws/taxonomy/Mica_taxonomy/_filter?target=taxonomy')
         .then(response => {
-          this.targets = response.data.vocabularies;
+          let responseVocabularies = response.data.vocabularies;
+          
+          this.targets = (Array.isArray(responseVocabularies) ? responseVocabularies : []).filter(v => {
+            if ('/individual-search' === window.location.pathname) {
+              if (Mica.config.isCollectedDatasetEnabled) {
+                return true;
+              } else {
+                return ['variable', 'dataset'].indexOf(v.name) === -1;
+              }
+            } else {
+              return true;
+            }
+          });
+
           EventBus.$emit('mica-taxonomy', this.targets);
 
           const targetQueries = [];
