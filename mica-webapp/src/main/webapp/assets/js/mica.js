@@ -275,7 +275,7 @@ class OBiBaPagination {
     const pagination = document.querySelector(`#${this.elementId}`);
 
     if (pagination) {
-      if (this.numberOfPages === 1) {
+      if (this.numberOfPages <= 1) {
         pagination.classList.add('d-none');
       } else {
         pagination.classList.remove('d-none');
