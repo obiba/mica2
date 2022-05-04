@@ -47,6 +47,8 @@ class Criterion {
   static associatedQuery(vocabulary, inputs) {
     let type = Criterion.typeOfVocabulary(vocabulary);
 
+    console.log('Criterion associatedQuery', vocabulary, inputs, type);
+
     return (inputs || []).filter(input => {
       let found = false;
 

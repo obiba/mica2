@@ -560,7 +560,7 @@ class TableFixedHeaderUtility {
         clonedVocabularies.forEach(voc => {
           if (Array.isArray(voc.terms)) {
             voc.terms = voc.terms.filter(term => {
-              let foundAttr = (term.attributes || []).find(attr => attr.key === 'className');
+              let foundAttr = (term.attributes || []).find(attr => voc.name !== 'sets' && attr.key === 'className');
               return foundAttributeIsOk(studyTypeSelection, foundAttr);
             });
           }
@@ -663,6 +663,12 @@ class TableFixedHeaderUtility {
               if (key === TARGETS.STUDY) {
                 let isLoneStudyClassNameQuery = splitQuery.length === 1 && Criterion.splitQuery(target)[0].args[0] === 'Mica_study.className';
                 if (!isLoneStudyClassNameQuery || (splitQuery.length === 1 && '/search' === window.location.pathname)) {
+                  this.noQueries = false;
+                  break;
+                }
+              } else {
+                let splitQuery = Criterion.splitQuery(target);
+                if (splitQuery.length > 0) {
                   this.noQueries = false;
                   break;
                 }
