@@ -59,7 +59,13 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-sm-6">
-            <h1><@message "search"/></h1>
+            <#if searchContext == "individual">
+              <h1><@message "search"/> [<@message "individual-search"/>]</h1>
+            <#elseif searchContext == "harmonization">
+              <h1><@message "search"/> [<@message "harmonization-search"/>]</h1>
+            <#else>
+              <h1><@message "search"/></h1>
+            </#if>
           </div>
           <div class="col-sm-6">
 
