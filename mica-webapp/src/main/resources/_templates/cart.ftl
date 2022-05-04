@@ -159,9 +159,9 @@
 
             <div class="card card-info card-outline">
             <div class="card-header">
-                <#if user.variablesCart?? && user.variablesCart.count gt 0>
+              <#if user.variablesCart?? && user.variablesCart.count gt 0>
 
-                  <#if config.harmonizationDatasetEnabled && config.studyDatasetEnabled>
+                <#if config.harmonizationDatasetEnabled && config.studyDatasetEnabled>
                   <div class="float-left">
                     <ul class="nav nav-pills" id="studyClassNameChoice" role="tablist">
                       <li class="nav-item" role="presentation">
@@ -172,13 +172,87 @@
                       </li>
                     </ul>
                   </div>
+                <#else>
+                  <h3 class="card-title mt-2"><@message "variables"/></h3>
+                </#if>
+
+                <div class="float-right">
+                  <#if canCreateDAR>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-add">
+                      <i class="fas fa-plus"></i> <@message "new-data-access-request"/>
+                    </button>
                   </#if>
 
-                  <div class="float-right">
+                  <#if user.variablesLists?size lt maxNumberOfSets>
+                    <div class="btn-group ml-2" role="group">
+                      <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+                          <@message "sets.add.button.set-label"/>
+                        <span class="badge badge-light selection-count"></span>
+                      </button>
+                      <div id="listsDropdownMenu" class="dropdown-menu" style="min-width: 24em;">
+                        <div class="px-3 py-3">
 
+                          <div class="form-group mb-0">
+                            <div class="input-group">
+                              <input id="newVariableSetName" type="text" class="form-control" placeholder="<@message "sets.add.modal.create-new"/>">
+                              <div class="input-group-append">
+                                <button id="addToNewSetButton" class="btn btn-success disabled" type="button" onclick="onClickAddToNewSet()">
+                                  <i class="fa fa-plus"></i> <@message "global.add"/>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+
+                        </div>
+                        <div id="add-set-divider" class="dropdown-divider" <#if !user.variablesLists?has_content>style="display: none"</#if>></div>
+                        <div id="add-set-choices">
+                          <#if user.variablesLists?has_content>
+                            <#list user.variablesLists as variableList>
+                              <#if !variableList.locked>
+                                <button type="button" class="dropdown-item"
+                                        onclick="onClickAddToSet('${variableList.id}', '${variableList.name}')">
+                                    ${listName(variableList)} <#if variableList.name?starts_with("dar:")>[<@message "data-access-request"/>]</#if> <span class="badge badge-light float-right">${variableList.identifiers?size}</span>
+                                </button>
+                              </#if>
+                            </#list>
+                          </#if>
+                        </div>
+                      </div>
+                    </div>
+                  </#if>
+
+                  <#if showCartDownload>
+                    <#if showCartViewDownload>
+                      <div class="btn-group ml-2" role="group">
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <i class="fas fa-download"></i> <@message "download"/>
+                        </button>
+                        <div class="dropdown-menu">
+                          <a class="dropdown-item" href="${contextPath}/ws/variables/set/${user.variablesCart.id}/documents/_report?locale=${.locale}" download><@message "download-cart-export"/></a>
+                          <a class="dropdown-item" href="${contextPath}/ws/variables/set/${user.variablesCart.id}/documents/_opal" download><@message "download-cart-views"/></a>
+                        </div>
+                      </div>
+                    <#else>
+                      <a href="${contextPath}/ws/variables/set/${user.variablesCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
+                        <i class="fas fa-download"></i> <@message "download-cart-export"/>
+                      </a>
+                    </#if>
+                  </#if>
+                  <button id="delete-all" type="button" class="btn btn-danger ml-2" data-toggle="modal" data-target="#modal-delete">
+                    <i class="fas fa-trash"></i> <@message "delete"/> <span class="badge badge-light selection-count"></span>
+                  </button>
+                </div>
+              </#if>
+            </div>
+            <div class="card-body">
+              <#if user.variablesCart?? && user.variablesCart.count gt 0>
+                <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
+                <div class="mt-3 text-muted" v-show="!hasResult"><@message "empty-list"/></div>
+                <div v-show="hasResult" class="clearfix mb-3">
+                  <div class="float-left">
                     <div class="d-inline-block">
                       <div class="d-inline-flex">
-                        <span class="ml-2 mr-1">
+                        <span class="mr-2">
                           <select class="custom-select" id="obiba-page-size-selector-top"></select>
                         </span>
                         <nav id="obiba-pagination-top" aria-label="Top pagination" class="mt-0">
@@ -186,86 +260,18 @@
                         </nav>
                       </div>
                     </div>
-
-                    <#if canCreateDAR>
-                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-add">
-                        <i class="fas fa-plus"></i> <@message "new-data-access-request"/>
-                      </button>
-                    </#if>
-
-                    <#if user.variablesLists?size lt maxNumberOfSets>
-                      <div class="btn-group ml-2" role="group">
-                        <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
-                            <@message "sets.add.button.set-label"/>
-                          <span class="badge badge-light selection-count"></span>
-                        </button>
-                        <div id="listsDropdownMenu" class="dropdown-menu" style="min-width: 24em;">
-                          <div class="px-3 py-3">
-
-                            <div class="form-group mb-0">
-                              <div class="input-group">
-                                <input id="newVariableSetName" type="text" class="form-control" placeholder="<@message "sets.add.modal.create-new"/>">
-                                <div class="input-group-append">
-                                  <button id="addToNewSetButton" class="btn btn-success disabled" type="button" onclick="onClickAddToNewSet()">
-                                    <i class="fa fa-plus"></i> <@message "global.add"/>
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-
-                          </div>
-                          <div id="add-set-divider" class="dropdown-divider" <#if !user.variablesLists?has_content>style="display: none"</#if>></div>
-                          <div id="add-set-choices">
-                              <#if user.variablesLists?has_content>
-                                  <#list user.variablesLists as variableList>
-                                      <#if !variableList.locked>
-                                        <button type="button" class="dropdown-item"
-                                                onclick="onClickAddToSet('${variableList.id}', '${variableList.name}')">
-                                            ${listName(variableList)} <#if variableList.name?starts_with("dar:")>[<@message "data-access-request"/>]</#if> <span class="badge badge-light float-right">${variableList.identifiers?size}</span>
-                                        </button>
-                                      </#if>
-                                  </#list>
-                              </#if>
-                          </div>
-                        </div>
-                      </div>
-                    </#if>
-
-                    <#if showCartDownload>
-                      <#if showCartViewDownload>
-                        <div class="btn-group ml-2" role="group">
-                          <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-download"></i> <@message "download"/>
-                          </button>
-                          <div class="dropdown-menu">
-                            <a class="dropdown-item" href="${contextPath}/ws/variables/set/${user.variablesCart.id}/documents/_report?locale=${.locale}" download><@message "download-cart-export"/></a>
-                            <a class="dropdown-item" href="${contextPath}/ws/variables/set/${user.variablesCart.id}/documents/_opal" download><@message "download-cart-views"/></a>
-                          </div>
-                        </div>
-                      <#else>
-                        <a href="${contextPath}/ws/variables/set/${user.variablesCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
-                          <i class="fas fa-download"></i> <@message "download-cart-export"/>
-                        </a>
-                      </#if>
-                    </#if>
-                    <button id="delete-all" type="button" class="btn btn-danger ml-2" data-toggle="modal" data-target="#modal-delete">
-                      <i class="fas fa-trash"></i> <@message "delete"/> <span class="badge badge-light selection-count"></span>
-                    </button>
-                      <#if config.setsSearchEnabled>
-                        <a class="btn btn-success ml-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=variables&query=variable(in(Mica_variable.sets,${user.variablesCart.id})),study(in(Mica_study.className,Study))">
-                          <i class="fas fa-search"></i>
-                        </a>
-                        <a class="btn btn-success ml-2" v-else href="${contextPath}/harmonization-search#lists?type=variables&query=variable(in(Mica_variable.sets,${user.variablesCart.id})),study(in(Mica_study.className,HarmonizationStudy))">
-                          <i class="fas fa-search"></i>
-                        </a>
-                      </#if>
                   </div>
-                </#if>
-            </div>
-            <div class="card-body">
-              <#if user.variablesCart?? && user.variablesCart.count gt 0>
-                <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
-                <div class="mt-3 text-muted" v-show="!hasResult"><@message "empty-list"/></div>
+                  <#if config.setsSearchEnabled>
+                    <div class="float-right">
+                      <a class="btn btn-info ml-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=variables&query=variable(in(Mica_variable.sets,${user.variablesCart.id})),study(in(Mica_study.className,Study))">
+                        <i class="fas fa-search"></i>
+                      </a>
+                      <a class="btn btn-info ml-2" v-else href="${contextPath}/harmonization-search#lists?type=variables&query=variable(in(Mica_variable.sets,${user.variablesCart.id})),study(in(Mica_study.className,HarmonizationStudy))">
+                        <i class="fas fa-search"></i>
+                      </a>
+                    </div>
+                  </#if>
+                </div>
                 <variables-result v-show="hasResult" :show-checkboxes="hasCheckboxes"></variables-result>
               <#else>
                 <div class="text-muted"><@message "sets.cart.no-variables"/></div>
@@ -284,9 +290,8 @@
 
             <div class="card card-info card-outline">
             <div class="card-header">
-                <#if user.studiesCart?? && user.studiesCart.count gt 0>
-
-                  <#if config.harmonizationDatasetEnabled>
+              <#if user.studiesCart?? && user.studiesCart.count gt 0>
+                <#if config.harmonizationDatasetEnabled>
                   <div class="float-left">
                     <ul class="nav nav-pills" id="studyClassNameChoice" role="tablist">
                       <li class="nav-item" role="presentation">
@@ -297,12 +302,35 @@
                       </li>
                     </ul>
                   </div>
+                <#else>
+                  <h3 class="card-title mt-2"><@message "studies"/></h3>
+                </#if>
+                <div class="float-right">
+                  <#if studiesCompareEnabled>
+                    <button type="button" class="btn btn-info ml-2" onclick="onCompareStudies()">
+                      <i class="fas fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge badge-light studies-selection-count"></span>
+                    </button>
                   </#if>
-
-                  <div class="float-right">
+                  <#if showCartDownload>
+                    <a href="${contextPath}/ws/studies/set/${user.studiesCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
+                      <i class="fas fa-download"></i> <@message "download-cart-export"/>
+                    </a>
+                  </#if>
+                  <button id="delete-all" type="button" class="btn btn-danger ml-2" data-toggle="modal" data-target="#modal-delete-studies">
+                    <i class="fas fa-trash"></i> <@message "delete"/> <span class="badge badge-light studies-selection-count"></span>
+                  </button>
+                </div>
+              </#if>
+            </div>
+            <div class="card-body">
+              <#if user.studiesCart?? && user.studiesCart.count gt 0>
+                <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
+                <div class="mt-3 text-muted" v-show="!hasResult"><@message "empty-list"/></div>
+                <div v-show="hasResult" class="clearfix mb-3">
+                  <div class="float-left">
                     <div class="d-inline-block">
                       <div class="d-inline-flex">
-                        <span class="ml-2 mr-1">
+                        <span class="mr-2">
                           <select class="custom-select" id="obiba-page-size-selector-top"></select>
                         </span>
                         <nav id="obiba-pagination-top" aria-label="Top pagination" class="mt-0">
@@ -310,35 +338,18 @@
                         </nav>
                       </div>
                     </div>
-
-                    <#if studiesCompareEnabled>
-                      <button type="button" class="btn btn-info ml-2" onclick="onCompareStudies()">
-                        <i class="fas fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge badge-light studies-selection-count"></span>
-                      </button>
-                    </#if>
-                    <#if showCartDownload>
-                      <a href="${contextPath}/ws/studies/set/${user.studiesCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
-                        <i class="fas fa-download"></i> <@message "download-cart-export"/>
-                      </a>
-                    </#if>
-                    <button id="delete-all" type="button" class="btn btn-danger ml-2" data-toggle="modal" data-target="#modal-delete-studies">
-                      <i class="fas fa-trash"></i> <@message "delete"/> <span class="badge badge-light studies-selection-count"></span>
-                    </button>
-                      <#if config.setsSearchEnabled>
-                        <a class="btn btn-success ml-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=studies&query=study(and(in(Mica_study.sets,${user.studiesCart.id}),in(Mica_study.className,Study)))">
-                          <i class="fas fa-search"></i>
-                        </a>
-                        <a class="btn btn-success ml-2" v-else href="${contextPath}/harmonization-search#lists?type=studies&query=study(and(in(Mica_study.sets,${user.studiesCart.id}),in(Mica_study.className,HarmonizationStudy)))">
-                          <i class="fas fa-search"></i>
-                        </a>
-                      </#if>
                   </div>
-                </#if>
-            </div>
-            <div class="card-body">
-              <#if user.studiesCart?? && user.studiesCart.count gt 0>
-                <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
-                <div class="mt-3 text-muted" v-show="!hasResult"><@message "empty-list"/></div>
+                  <#if config.setsSearchEnabled>
+                    <div class="float-right">
+                      <a class="btn btn-info ml-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=studies&query=study(and(in(Mica_study.sets,${user.studiesCart.id}),in(Mica_study.className,Study)))">
+                        <i class="fas fa-search"></i>
+                      </a>
+                      <a class="btn btn-info ml-2" v-else href="${contextPath}/harmonization-search#lists?type=studies&query=study(and(in(Mica_study.sets,${user.studiesCart.id}),in(Mica_study.className,HarmonizationStudy)))">
+                        <i class="fas fa-search"></i>
+                      </a>
+                    </div>
+                  </#if>
+                </div>
                 <studies-result v-show="hasResult"></studies-result>
               <#else>
                 <div class="text-muted"><@message "sets.cart.no-studies"/></div>
@@ -357,12 +368,34 @@
 
             <div class="card card-info card-outline">
             <div class="card-header">
-              <h3 class="card-title"><@message "networks"/></h3>
-                <#if user.networksCart?? && user.networksCart.count gt 0>
-                  <div class="float-right">
+              <h3 class="card-title mt-2"><@message "networks"/></h3>
+              <#if user.networksCart?? && user.networksCart.count gt 0>
+                <div class="float-right">
+                  <#if networksCompareEnabled>
+                    <button type="button" class="btn btn-info ml-2" onclick="onCompareNetworks()">
+                      <i class="fas fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge badge-light networks-selection-count"></span>
+                    </button>
+                  </#if>
+                  <#if showCartDownload>
+                    <a href="${contextPath}/ws/networks/set/${user.networksCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
+                      <i class="fas fa-download"></i> <@message "download-cart-export"/>
+                    </a>
+                  </#if>
+                  <button id="delete-all" type="button" class="btn btn-danger ml-2" data-toggle="modal" data-target="#modal-delete-networks">
+                    <i class="fas fa-trash"></i> <@message "delete"/> <span class="badge badge-light networks-selection-count"></span>
+                  </button>
+                </div>
+              </#if>
+            </div>
+            <div class="card-body">
+              <#if user.networksCart?? && user.networksCart.count gt 0>
+                <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
+                <div class="mt-3 text-muted" v-show="!hasResult"><@message "empty-list"/></div>
+                <div v-show="hasResult" class="clearfix mb-3">
+                  <div class="float-left">
                     <div class="d-inline-block">
                       <div class="d-inline-flex">
-                        <span class="ml-2 mr-1">
+                        <span class="mr-2">
                           <select class="custom-select" id="obiba-page-size-selector-top"></select>
                         </span>
                         <nav id="obiba-pagination-top" aria-label="Top pagination" class="mt-0">
@@ -370,32 +403,15 @@
                         </nav>
                       </div>
                     </div>
-
-                    <#if networksCompareEnabled>
-                      <button type="button" class="btn btn-info ml-2" onclick="onCompareNetworks()">
-                        <i class="fas fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge badge-light networks-selection-count"></span>
-                      </button>
-                    </#if>
-                    <#if showCartDownload>
-                      <a href="${contextPath}/ws/networks/set/${user.networksCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
-                        <i class="fas fa-download"></i> <@message "download-cart-export"/>
-                      </a>
-                    </#if>
-                    <button id="delete-all" type="button" class="btn btn-danger ml-2" data-toggle="modal" data-target="#modal-delete-networks">
-                      <i class="fas fa-trash"></i> <@message "delete"/> <span class="badge badge-light networks-selection-count"></span>
-                    </button>
-                      <#if config.setsSearchEnabled>
-                        <a class="btn btn-info ml-2" href="${contextPath}/search#lists?type=networks&query=network(in(Mica_network.sets,${user.networksCart.id}))">
-                          <i class="fas fa-search"></i>
-                        </a>
-                      </#if>
                   </div>
-                </#if>
-            </div>
-            <div class="card-body">
-              <#if user.networksCart?? && user.networksCart.count gt 0>
-                <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
-                <div class="mt-3 text-muted" v-show="!hasResult"><@message "empty-list"/></div>
+                  <#if config.setsSearchEnabled>
+                    <div class="float-right">
+                      <a class="btn btn-info ml-2" href="${contextPath}/search#lists?type=networks&query=network(in(Mica_network.sets,${user.networksCart.id}))">
+                        <i class="fas fa-search"></i>
+                      </a>
+                    </div>
+                  </#if>
+                </div>
                 <networks-result v-show="hasResult"></networks-result>
               <#else>
                 <div class="text-muted"><@message "sets.cart.no-networks"/></div>

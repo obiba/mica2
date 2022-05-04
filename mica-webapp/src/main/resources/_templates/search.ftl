@@ -272,7 +272,7 @@
                     <div class="row">
                       <div class="col d-flex align-items-center justify-content-end">
                         <div class="d-inline-flex">
-                          <span class="ml-2 mr-1">
+                          <span class="ml-2 mr-2">
                             <select class="custom-select" id="obiba-page-size-selector-top"></select>
                           </span>
                           <nav id="obiba-pagination-top" aria-label="Top pagination" class="mt-0">

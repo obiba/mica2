@@ -204,22 +204,12 @@
             </#if>
 
             <div class="float-right">
-              <div class="d-inline-block">
-                <div class="d-inline-flex">
-                  <span class="ml-2 mr-1">
-                    <select class="custom-select" id="obiba-page-size-selector-top"></select>
-                  </span>
-                  <nav id="obiba-pagination-top" aria-label="Top pagination" class="mt-0">
-                    <ul class="pagination mb-0"></ul>
-                  </nav>
-                </div>
-              </div>
               <button class="btn btn-success ml-2" onclick="onVariablesCartAdd('${set.id}')">
                 <i class="fas fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/>
               </button>
               <#if showCartDownload>
                 <#if showCartViewDownload>
-                  <div class="btn-group" role="group">
+                  <div class="btn-group ml-2" role="group">
                     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       <i class="fas fa-download"></i> <@message "download"/>
                     </button>
@@ -240,20 +230,36 @@
                   <i class="fas fa-trash"></i> <@message "delete"/> <span class="badge badge-light selection-count"></span>
                 </button>
               </#if>
-              <#if config.setsSearchEnabled>
-                <a class="btn btn-success ml-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=variables&query=variable(in(Mica_variable.sets,${set.id})),study(in(Mica_study.className,Study))">
-                  <i class="fas fa-search"></i>
-                </a>
-                <a class="btn btn-success ml-2" v-else href="${contextPath}/harmonization-search#lists?type=variables&query=variable(in(Mica_variable.sets,${set.id})),study(in(Mica_study.className,HarmonizationStudy))">
-                  <i class="fas fa-search"></i>
-                </a>
-              </#if>
             </div>
           </div>
           <div class="card-body">
             <#if set?? && set.identifiers?size gt 0>
               <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
               <div class="mt-3 text-muted" v-show="!hasResult"><@message "empty-list"/></div>
+              <div v-show="hasResult" class="clearfix mb-3">
+                <div class="float-left">
+                  <div class="d-inline-block">
+                    <div class="d-inline-flex">
+                      <span class="mr-2">
+                        <select class="custom-select" id="obiba-page-size-selector-top"></select>
+                      </span>
+                      <nav id="obiba-pagination-top" aria-label="Top pagination" class="mt-0">
+                        <ul class="pagination mb-0"></ul>
+                      </nav>
+                    </div>
+                  </div>
+                </div>
+                <#if config.setsSearchEnabled>
+                  <div class="float-right">
+                    <a class="btn btn-info ml-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=variables&query=variable(in(Mica_variable.sets,${set.id})),study(in(Mica_study.className,Study))">
+                      <i class="fas fa-search"></i>
+                    </a>
+                    <a class="btn btn-info ml-2" v-else href="${contextPath}/harmonization-search#lists?type=variables&query=variable(in(Mica_variable.sets,${set.id})),study(in(Mica_study.className,HarmonizationStudy))">
+                      <i class="fas fa-search"></i>
+                    </a>
+                  </div>
+                </#if>
+              </div>
               <variables-result v-show="hasResult" :show-checkboxes="hasCheckboxes"></variables-result>
             <#else>
               <div class="text-muted"><@message "empty-list"/></div>
