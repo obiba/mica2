@@ -807,7 +807,7 @@ const NetworksResult = {
           return {
             name: col,
             rowspan: (['name', 'studies', 'initiatives'].includes(col) ? 2 : 1),
-            colspan: (['name', 'studies', 'initiatives'].includes(col) ? 1 : 3)
+            colspan: (['name', 'studies', 'initiatives'].includes(col) ? 1 : 2)
           }
         });
     },
