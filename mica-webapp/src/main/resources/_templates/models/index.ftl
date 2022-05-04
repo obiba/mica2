@@ -1,4 +1,6 @@
 <!-- Home page macros -->
+<!-- Default model macros -->
+<#include "../libs/index.ftl">
 
 <#macro homeModel>
 
@@ -8,50 +10,20 @@
       <div class="row d-flex align-items-stretch">
       <#if config.networkEnabled && !config.singleNetworkEnabled>
         <div class="col-sm col-xs-6 d-flex align-items-stretch">
-          <!-- small box -->
-          <div class="small-box bg-info w-100">
-            <div class="inner">
-              <h3 id="network-hits">-</h3>
-              <p><@message "networks"/></p>
-            </div>
-            <div class="icon">
-              <i class="${networkIcon}"></i>
-            </div>
-            <a href="${networksLink}" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
-          </div>
+          <@networksBoxModel/>
         </div>
         <!-- ./col -->
       </#if>
 
       <#if !config.singleStudyEnabled>
         <div class="col-sm col-xs-6 d-flex align-items-stretch">
-          <!-- small box -->
-          <div class="small-box bg-success w-100">
-            <div class="inner">
-              <h3 id="study-hits">-</h3>
-              <p><@message "global.individual-studies"/></p>
-            </div>
-            <div class="icon">
-              <i class="${studyIcon}"></i>
-            </div>
-            <a href="${studiesLink}" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
-          </div>
+          <@individualStudiesBoxModel/>
         </div>
         <!-- ./col -->
       </#if>
       <#if config.harmonizationDatasetEnabled>
         <div class="col-sm col-xs-6 d-flex align-items-stretch">
-          <!-- small box -->
-          <div class="small-box bg-success w-100">
-            <div class="inner">
-              <h3 id="initiative-hits">-</h3>
-              <p><@message "harmonization-studies"/></p>
-            </div>
-            <div class="icon">
-              <i class="${initiativeIcon}"></i>
-            </div>
-            <a href="${initiativesLink}" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
-          </div>
+          <@harmonizationStudiesBoxModel/>
         </div>
       </#if>
       </div>
@@ -60,47 +32,17 @@
       <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
         <#if config.studyDatasetEnabled>
           <div class="col-sm col-xs-6 d-flex align-items-stretch">
-            <!-- small box -->
-            <div class="small-box bg-warning w-100">
-              <div class="inner">
-                <h3 id="dataset-hits">-</h3>
-                <p><@message "collected-datasets"/></p>
-              </div>
-              <div class="icon">
-                <i class="${datasetIcon}"></i>
-              </div>
-              <a href="${datasetsLink}" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
+            <@collectedDatasetsBoxModel/>
           </div>
         </#if>
         <#if config.harmonizationDatasetEnabled>
           <div class="col-sm col-xs-6 d-flex align-items-stretch">
-            <!-- small box -->
-            <div class="small-box bg-warning w-100">
-              <div class="inner">
-                <h3 id="protocols-hits">-</h3>
-                <p><@message "harmonized-datasets"/></p>
-              </div>
-              <div class="icon">
-                <i class="${harmoDatasetIcon}"></i>
-              </div>
-              <a href="${protocolsLink}" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
+            <@harmonizedDatasetsBoxModel/>
           </div>
         </#if>
         <!-- ./col -->
         <div class="col-sm col-xs-6 d-flex align-items-stretch">
-          <!-- small box -->
-          <div class="small-box bg-danger w-100">
-            <div class="inner">
-              <h3 id="variable-hits">-</h3>
-              <p><@message "variables"/></p>
-            </div>
-            <div class="icon">
-              <i class="${variableIcon}"></i>
-            </div>
-            <a href="${contextPath}/search#lists?type=variables" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
-          </div>
+          <@variablesBoxModel/>
         </div>
         <!-- ./col -->
       </div>
