@@ -37,3 +37,70 @@
     </div>
   </div>
 </#macro>
+
+<#macro harmonizationProtocolGeneralInfo dataset>
+  <dl class="row mt-3">
+      <#if dataset.model.version??>
+        <dt class="col-sm-3">
+            <@message "harmonization-protocol.version"/>
+        </dt>
+        <dd class="col-sm-9">
+            ${dataset.model.version}
+        </dd>
+      </#if>
+
+      <#if dataset.model.participants??>
+        <dt class="col-sm-3">
+            <@message "harmonization-protocol.participants"/>
+        </dt>
+        <dd class="col-sm-9">
+            ${dataset.model.participants}
+        </dd>
+      </#if>
+
+      <#if dataset.model.prospectiveRetrospective??>
+        <dt class="col-sm-3">
+            <@message "harmonization-protocol.prospective-retrospective.title"/> <i class="fas fa-info-circle" title="Add text"></i>
+        </dt>
+        <dd class="col-sm-9">
+            <@message "harmonization-protocol.prospective-retrospective.enum." + dataset.model.prospectiveRetrospective/>
+        </dd>
+      </#if>
+
+      <#if dataset.model.qualitativeQuantitative??>
+        <dt class="col-sm-3">
+            <@message "harmonization-protocol.qualitative-quantitative.title"/> <i class="fas fa-info-circle" title="Add text"></i>
+        </dt>
+        <dd class="col-sm-9">
+            <@message "harmonization-protocol.qualitative-quantitative.enum." + dataset.model.qualitativeQuantitative/>
+        </dd>
+      </#if>
+
+      <#if localizedStringNotEmpty(dataset.model.procedures)>
+        <dt class="col-sm-3">
+            <@message "harmonization-protocol.procedures"/>
+        </dt>
+        <dd class="col-sm-9">
+          <span>${localize(dataset.model.procedures)}</span>
+        </dd>
+      </#if>
+
+      <#if localizedStringNotEmpty(dataset.model.participantsInclusion)>
+        <dt class="col-sm-3">
+            <@message "harmonization-protocol.participants-inclusion"/>
+        </dt>
+        <dd class="col-sm-9">
+          <span>${localize(dataset.model.participantsInclusion)}</span>
+        </dd>
+      </#if>
+
+      <#if localizedStringNotEmpty(dataset.model.infrastructure)>
+        <dt class="col-sm-3">
+            <@message "harmonization-protocol.infrastructure"/>
+        </dt>
+        <dd class="col-sm-9">
+          <span>${localize(dataset.model.infrastructure)}</span>
+        </dd>
+      </#if>
+  </dl>
+</#macro>

@@ -23,6 +23,7 @@ import org.obiba.mica.search.reports.JoinQueryReportGenerator;
 import org.obiba.mica.search.queries.rql.RQLQueryBuilder;
 import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
+import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -83,17 +84,19 @@ public class PublishedDatasetSearchResource {
   @Path("/_rql_csv")
   @Produces("text/csv")
   @Timed
-  public Response rqlQueryAsCsv(@QueryParam("query") String query, @QueryParam("columnsToHide") List<String> columnsToHide) throws IOException {
-    StreamingOutput stream = os -> joinQueryReportGenerator.generateCsv(QueryType.DATASET, query, columnsToHide, os);
-    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Datasets.csv\"").build();
+  public Response rqlQueryAsCsv(@QueryParam("query") String query, @QueryParam("studyType") String studyType, @QueryParam("columnsToHide") List<String> columnsToHide) throws IOException {
+    boolean forHarmonization = !Strings.isNullOrEmpty(studyType) && HarmonizationStudy.RESOURCE_PATH.equals(studyType);
+    String fileName = forHarmonization ? "Protocols" : "Datasets";
+    StreamingOutput stream = os -> joinQueryReportGenerator.generateCsv(QueryType.DATASET, forHarmonization, query, columnsToHide, os);
+    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"" + fileName + ".csv\"").build();
   }
 
   @POST
   @Path("/_rql_csv")
   @Produces("text/csv")
   @Timed
-  public Response rqlLargeQueryAsCsv(@FormParam("query") String query, @FormParam("columnsToHide") List<String> columnsToHide) throws IOException {
-    return rqlQueryAsCsv(query, columnsToHide);
+  public Response rqlLargeQueryAsCsv(@FormParam("query") String query, @FormParam("studyType") String studyType, @FormParam("columnsToHide") List<String> columnsToHide) throws IOException {
+    return rqlQueryAsCsv(query, studyType, columnsToHide);
   }
 
 }

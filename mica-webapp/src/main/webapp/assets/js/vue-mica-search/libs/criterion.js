@@ -5,24 +5,24 @@ class Criterion {
   value = undefined;
   _operator = undefined;
 
-  static #isTermsQuery(vocabulary) {
+  static __isTermsQuery(vocabulary) {
     return Array.isArray(vocabulary.terms) && vocabulary.terms.length > 0;
   }
 
-  static #isNumericQuery(vocabulary) {
+  static __isNumericQuery(vocabulary) {
     return !Array.isArray(vocabulary.terms) && (vocabulary.attributes || []).filter(attribute => attribute.key === "type" && ["integer", "decimal"].indexOf(attribute.value) > -1).length === 1;
   }
 
-  static #isMatchQuery(vocabulary) {
+  static __isMatchQuery(vocabulary) {
     return !Array.isArray(vocabulary.terms) && (vocabulary.attributes || []).filter(attribute => (attribute.key === "localized" && "true" === attribute.value) || (attribute.key === "type" && attribute.value === "string")).length > 0;
   }
 
-  #findTerm(vocabulary, termName) {
+  __findTerm(vocabulary, termName) {
     const found = (vocabulary.terms || []).filter(term => term.name === termName);
     return found.length > 0 ? found[0] : undefined;
   }
 
-  #stringIsNullOrEmpty(str) {
+  __stringIsNullOrEmpty(str) {
     if (str === null || str === undefined) return true;
     if (typeof str === "string") return str.trim().length === 0;
     else return false;
@@ -33,11 +33,11 @@ class Criterion {
   static typeOfVocabulary(vocabulary) {
     let type = undefined;
 
-    if (Criterion.#isTermsQuery(vocabulary)) {
+    if (Criterion.__isTermsQuery(vocabulary)) {
       type = "TERMS";
-    } else if (Criterion.#isNumericQuery(vocabulary)) {
+    } else if (Criterion.__isNumericQuery(vocabulary)) {
       type = "NUMERIC";
-    } else if(Criterion.#isMatchQuery(vocabulary)) {
+    } else if(Criterion.__isMatchQuery(vocabulary)) {
       type = "MATCH";
     }
 
@@ -112,10 +112,10 @@ class Criterion {
   constructor(vocabulary) {
     this.vocabulary = vocabulary;
 
-    if (Criterion.#isTermsQuery(this.vocabulary)) {
+    if (Criterion.__isTermsQuery(this.vocabulary)) {
       this._operator = "in";
       this.value = [];
-    } else if (Criterion.#isNumericQuery(this.vocabulary)) {
+    } else if (Criterion.__isNumericQuery(this.vocabulary)) {
       this._operator = "between";
       this.value = [];
     } else {
@@ -217,15 +217,15 @@ class Criterion {
         if (["missing", "exists"].indexOf(this.operator) > -1) {
           this.value = [];
         } else {
-          if (this.#stringIsNullOrEmpty(this.value[0]) && this.#stringIsNullOrEmpty(this.value[1])) {
+          if (this.__stringIsNullOrEmpty(this.value[0]) && this.__stringIsNullOrEmpty(this.value[1])) {
             this.value = [];
-          } else if (!this.#stringIsNullOrEmpty(this.value[0]) && this.#stringIsNullOrEmpty(this.value[1])) {
+          } else if (!this.__stringIsNullOrEmpty(this.value[0]) && this.__stringIsNullOrEmpty(this.value[1])) {
             query.name = "ge";
             this.value = parseInt(this.value[0]);
-          } else if (this.#stringIsNullOrEmpty(this.value[0]) && !this.#stringIsNullOrEmpty(this.value[1])) {
+          } else if (this.__stringIsNullOrEmpty(this.value[0]) && !this.__stringIsNullOrEmpty(this.value[1])) {
             query.name = "le";
             this.value = parseInt(this.value[1]);
-          } else if (!this.#stringIsNullOrEmpty(this.value[0]) && !this.#stringIsNullOrEmpty(this.value[1])) {
+          } else if (!this.__stringIsNullOrEmpty(this.value[0]) && !this.__stringIsNullOrEmpty(this.value[1])) {
             query.name = "between";
             this.value = this.value.map(val => parseInt(val));
           }
@@ -235,7 +235,7 @@ class Criterion {
 
         break;
       default:
-        if (!this.#stringIsNullOrEmpty(this.value)) {
+        if (!this.__stringIsNullOrEmpty(this.value)) {
           query.push(this.value);
         } else {
           query.push("");
@@ -259,7 +259,7 @@ class Criterion {
       if ((this.value || []).length > 5) return `${localizeStringFunction(this.vocabulary.title)}:...`;
 
       const text = (this.value || []).map(val => {
-        const term = this.#findTerm(this.vocabulary, val);
+        const term = this.__findTerm(this.vocabulary, val);
         return term ? localizeStringFunction(term.title) : val;
       }).join(" | ");
 
@@ -267,18 +267,18 @@ class Criterion {
     } else if (this.type === "NUMERIC") {
       let text = ""
 
-      if (!this.#stringIsNullOrEmpty(this.value[0]) && this.#stringIsNullOrEmpty(this.value[1])) {
+      if (!this.__stringIsNullOrEmpty(this.value[0]) && this.__stringIsNullOrEmpty(this.value[1])) {
         text = `:>${this.value[0]}`;
-      } else if (this.#stringIsNullOrEmpty(this.value[0]) && !this.#stringIsNullOrEmpty(this.value[1])) {
+      } else if (this.__stringIsNullOrEmpty(this.value[0]) && !this.__stringIsNullOrEmpty(this.value[1])) {
         text = `:<${this.value[1]}`;
-      } else if (!this.#stringIsNullOrEmpty(this.value[0]) && !this.#stringIsNullOrEmpty(this.value[1])) {
+      } else if (!this.__stringIsNullOrEmpty(this.value[0]) && !this.__stringIsNullOrEmpty(this.value[1])) {
         text = `:[${this.value[0]},${this.value[1]}]`;
       }
 
       return `${localizeStringFunction(this.vocabulary.title)}${text}`;
     } else {
       let text = "";
-      if (!this.#stringIsNullOrEmpty(this.value)) {
+      if (!this.__stringIsNullOrEmpty(this.value)) {
         text = `:match(${this.value})`;
       }
       return `${localizeStringFunction(this.vocabulary.title)}${text}`;

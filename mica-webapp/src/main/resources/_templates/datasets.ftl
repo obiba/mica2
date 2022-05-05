@@ -39,11 +39,10 @@
         <div id="${title}-callout" class="callout callout-info">
           <p><@message (title + "-callout")/></p>
         </div>
-
         <#if datasets?? && datasets?size != 0>
           <div id="${title}-card" class="card card-info card-outline">
             <div class="card-header">
-              <h3 class="card-title <#if datasetListDisplays?size gt 1>pt-2</#if>"><@message title/></h3>
+              <h3 class="card-title <#if datasetListDisplays?size gt 1>pt-2</#if>"><span>${datasets?size} <@message title/></span></h3>
               <#if datasetListDisplays?size gt 1>
                 <ul class="nav nav-pills ml-auto float-right">
                   <#list datasetListDisplays as display>
@@ -69,7 +68,7 @@
 
             <div class="card-body">
               <#if config.studyDatasetEnabled && config.harmonizationDatasetEnabled>
-                <div class="mb-4">
+                <div id="studyFilter" class="mb-4 d-none">
                   <div role="group" class="btn-group">
                     <button onclick="window.location.href='${contextPath}/datasets';" type="button" class="btn btn-sm btn-info <#if !type??>active</#if>"><@message "all"/></button>
                     <button onclick="window.location.href='${contextPath}/collected-datasets';" type="button" class="btn btn-sm btn-info <#if type?? && type == "Collected">active</#if>"><@message "collected"/></button>
@@ -146,6 +145,11 @@
 
 <#include "libs/scripts.ftl">
 <#include "libs/datasets-scripts.ftl">
+<script>
+  if (!window.location.href.match('(collected|harmonized)-')) {
+    document.querySelector('#studyFilter').classList.remove('d-none');
+  }
+</script>
 
 </body>
 </html>

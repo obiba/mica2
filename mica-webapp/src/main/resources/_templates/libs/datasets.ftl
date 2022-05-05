@@ -62,10 +62,13 @@
   <!-- Macro variables -->
   <#if !type??>
     <#assign className = "Study,HarmonizationStudy">
+    <#assign listPageSearchMode = "search">
   <#elseif type == "Harmonized">
     <#assign className = "HarmonizationStudy">
+    <#assign listPageSearchMode = "harmonization-search">
   <#else>
     <#assign className = "Study">
+    <#assign listPageSearchMode = "individual-search">
   </#if>
 
 <div v-show="loading" class="spinner-border spinner-border-sm" role="status"></div>
@@ -73,15 +76,12 @@
 <div id="datasets-card">
 
   <div class="row">
-    <div class="col-3">
-      <h3 class="card-title pt-1">{{total | localize-number}} <@message "datasets"/></h3>
-    </div>
     <div class="col-6">
       <typeahead @typing="onType" @select="onSelect" :items="suggestions" :external-text="initialFilter"></typeahead>
     </div>
     <#if searchDatasetListDisplay>
-      <div class="col-3">
-        <a href="${contextPath}/search#lists?type=datasets&query=study(in(Mica_study.className,(${className})))" class="btn btn-sm btn-primary float-right">
+      <div class="col-3 ml-auto">
+        <a href="${contextPath}/${listPageSearchMode}#lists?type=datasets&query=study(in(Mica_study.className,(${className})))" class="btn btn-sm btn-primary float-right">
           <@message "global.search"/> <i class="fas fa-search"></i>
         </a>
       </div>
@@ -127,23 +127,21 @@
               <div class="row pt-1 row-cols-3">
                 <template v-if="hasStats(dataset)">
                   <stat-item
-                          v-bind:count="dataset['obiba.mica.CountStatsDto.datasetCountStats'].networks"
-                          v-bind:singular="'network' | translate"
-                          v-bind:plural="'networks' | translate"
-                          v-bind:url="networks(dataset.id)">
+                    v-bind:count="dataset['obiba.mica.CountStatsDto.datasetCountStats'].networks"
+                    v-bind:singular="'network' | translate"
+                    v-bind:plural="'networks' | translate"
+                    v-bind:url="networks(dataset)">
                   </stat-item>
-                  <stat-item
-                          v-bind:count="dataset['obiba.mica.CountStatsDto.datasetCountStats'].studies"
-                          v-bind:singular="'study' | translate"
-                          v-bind:plural="'studies' | translate"
-                          v-bind:url="studies(dataset.id)">
-                  </stat-item>
-                  <stat-item
-                          v-bind:count="dataset['obiba.mica.CountStatsDto.datasetCountStats'].variables"
-                          v-bind:singular="'variable' | translate"
-                          v-bind:plural="'variables' | translate"
-                          v-bind:url="variables(dataset.id)">
-                  </stat-item>
+                  <study-stat-item
+                    v-bind:url="studies(dataset)"
+                    v-bind:type="dataset.variableType"
+                    v-bind:stats="dataset['obiba.mica.CountStatsDto.datasetCountStats']">
+                  </study-stat-item>
+                  <variable-stat-item
+                    v-bind:url="variablesUrl(dataset)"
+                    v-bind:type="dataset.variableType"
+                    v-bind:stats="dataset['obiba.mica.CountStatsDto.datasetCountStats']">
+                  </variable-stat-item>
                 </template>
                 <template v-else>
                   <!-- HACK used 'datasetsWithVariables' with opacity ZERO to have the same height as the longest stat item -->

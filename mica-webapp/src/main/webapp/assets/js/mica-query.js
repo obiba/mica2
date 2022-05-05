@@ -651,7 +651,19 @@ class MicaQueryExecutor {
    * Ensure a valid type either supplied by the payload or url
    */
   __ensureValidType(urlSearchParams, type) {
-    return TYPES[(type || urlSearchParams.type || "").toUpperCase()] || TYPES.VARIABLES;
+    let theType = TYPES[(type || urlSearchParams.type || "").toUpperCase()];
+    if (!theType) {
+      if (Mica.config.isSingleStudyEnabled) {
+        if (Mica.config.isCollectedDatasetEnabled || Mica.config.isHarmonizedDatasetEnabled) {
+          theType = TYPES.VARIABLES;
+        } else if (!Mica.config.isSingleNetworkEnabled && Mica.config.isNetworkEnabled) {
+          theType = TYPES.NETWORKS;
+        }
+      } else {
+        theType = TYPES.STUDIES;
+      }
+    }
+    return theType;
   }
 
   /**
@@ -775,6 +787,8 @@ class MicaQueryExecutor {
   __executeQuery(tree, type ,display, noUrlUpdate) {
     console.debug(`__executeQuery`);
 
+    let studyTypeSelection = MicaTreeQueryUrl.getStudyTypeSelection(tree);
+
     axios
       .get(`${contextPath}/ws/${type}/_rql?query=${tree.serialize()}`)
       .then(response => {
@@ -788,7 +802,7 @@ class MicaQueryExecutor {
           tree.findAndDeleteQuery((name) => 'sort' === name);
           tree.findAndDeleteQuery((name) => 'locale' === name);
           this.__updateLocation(type, display, tree, noUrlUpdate);
-          EventBus.$emit(`${type}-results`, {type, response: response.data, from: limitQuery.args[0], size: limitQuery.args[1]});
+          EventBus.$emit(`${type}-results`, {studyTypeSelection, type, response: response.data, from: limitQuery.args[0], size: limitQuery.args[1]});
         }
       });
   }
@@ -863,7 +877,23 @@ class MicaQueryExecutor {
   }
 
   __updateLocation(type, display, tree, replace, bucket) {
+    let studyTypeSelection = MicaTreeQueryUrl.getStudyTypeSelection(tree);
+    const currentPathname = window.location.pathname;
+
+    if ('/search' !== currentPathname && ('/harmonization-search' === currentPathname && !studyTypeSelection.harmonization || '/individual-search' === currentPathname && !studyTypeSelection.study)) {
+      let foundStudyClassName = tree ? tree.search((name, args, parent) => 'in' === name && args[0] === 'Mica_study.className' && parent.name === TARGETS.STUDY) : null;
+
+      let correctStudyClassName = '/harmonization-search' === currentPathname ? 'HarmonizationStudy' : 'Study';
+
+      if (!foundStudyClassName) {
+        tree.addQuery(targetQuery, new RQL.Query('in', ['Mica_study.className', correctStudyClassName]));
+      } else {
+        tree.findAndUpdateQuery((name, args) => args[0] === 'Mica_study.className', ['Mica_study.className', correctStudyClassName]);
+      }
+    }
+
     const query = tree.serialize();
+
     console.debug(`__updateLocation ${type} ${display} ${query} - history states ${history.length}`);
     let params = [`type=${type}`, `query=${query}`];
     if (bucket) {
@@ -878,7 +908,7 @@ class MicaQueryExecutor {
       history.pushState(null, "", `#${hash}`);
     }
 
-    this._eventBus.$emit(EVENTS.LOCATION_CHANGED, {type, display, tree, bucket});
+    this._eventBus.$emit(EVENTS.LOCATION_CHANGED, {type, display, tree, bucket, studyTypeSelection});
   }
 
   /**
@@ -906,43 +936,43 @@ class MicaQueryExecutor {
    * @private
    */
   __onBeforeUnload(event) {
-    console.debug(`On before unload ${event}`);
+    console.debug('On before unload', event);
     window.removeEventListener('hashchange', this.__onHashChanged);
     window.removeEventListener('beforeunload', this.__onBeforeUnload);
   }
 
   __onQueryTypeSelection(payload) {
-    console.debug(`__onQueryTypeSelection ${payload}`);
+    console.debug('__onQueryTypeSelection', payload);
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_SELECTION, payload);
   }
 
   __onQueryTypeUpdate(payload) {
-    console.debug(`__onQueryTypeSelection ${payload}`);
+    console.debug('__onQueryTypeSelection', payload);
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_UPDATE, payload);
   }
 
   __onQueryTypeUpdatesSelection(payload) {
-    console.debug(`__onQueryTypeUpdatesSelection ${payload}`);
+    console.debug('__onQueryTypeUpdatesSelection', payload);
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_UPDATES_SELECTION, payload);
   }
 
   __onQueryTypeDelete(payload) {
-    console.debug(`__onQueryTypeSelection ${payload}`);
+    console.debug('__onQueryTypeSelection', payload);
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_DELETE, payload);
   }
 
   __onQueryTypePaginate(payload) {
-    console.debug(`__onQueryTypeSelection ${payload}`);
+    console.debug('__onQueryTypeSelection', payload);
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_PAGINATE, payload);
   }
 
   __onQueryTypeCoverage(payload) {
-    console.debug(`__onQueryTypeSelection ${payload}`);
+    console.debug('__onQueryTypeSelection', payload);
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_COVERAGE, payload);
   }
 
   __onQueryTypeGraphics(payload) {
-    console.debug(`__onQueryTypeGraphics ${payload}`);
+    console.debug('__onQueryTypeGraphics', payload);
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_GRAPHICS, payload);
   }
 

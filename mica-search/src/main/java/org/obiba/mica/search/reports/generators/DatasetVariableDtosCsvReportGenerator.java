@@ -28,8 +28,10 @@ public class DatasetVariableDtosCsvReportGenerator extends CsvReportGenerator {
   private List<String> columnsToHide;
   private List<Mica.DatasetVariableResolverDto> datasetVariableDtos;
   private Translator translator;
+  private final boolean forHarmonization;
 
-  public DatasetVariableDtosCsvReportGenerator(MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, Translator translator) {
+  public DatasetVariableDtosCsvReportGenerator(boolean forHarmonization, MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, Translator translator) {
+    this.forHarmonization = forHarmonization;
     this.columnsToHide = columnsToHide;
     this.datasetVariableDtos = queryResult.getVariableResultDto().getExtension(MicaSearch.DatasetVariableResultDto.result).getSummariesList();
     this.translator = translator;
@@ -53,12 +55,17 @@ public class DatasetVariableDtosCsvReportGenerator extends CsvReportGenerator {
     if (mustShow("showVariablesTypeColumn"))
       line.add("type");
     if (mustShow("showVariablesStudiesColumn")) {
-      line.add("search.study.label");
+      line.add(forHarmonization ? "global.initiatives" : "search.study.label");
+    }
+    if (mustShow("showVariablesPopulationsColumn")) {
       line.add("search.study.population-name");
+    }
+    if (mustShow("showVariablesDataCollectionEventsColumn")) {
       line.add("search.study.dce-name");
     }
+
     if (mustShow("showVariablesDatasetsColumn"))
-      line.add("search.dataset.label");
+      line.add(forHarmonization ? "global.protocols" : "search.dataset.label");
 
     String[] translatedLine = line.stream().map(key -> translator.translate(key)).toArray(String[]::new);
 
@@ -108,10 +115,12 @@ public class DatasetVariableDtosCsvReportGenerator extends CsvReportGenerator {
 
     if (mustShow("showVariablesStudiesColumn")) {
       line.add(getStudyOrNetworkName(datasetVariableDto));
-
+    }
+    if (mustShow("showVariablesPopulationsColumn")) {
       if (datasetVariableDto.getPopulationNameCount() > 0) line.add(datasetVariableDto.getPopulationName(0).getValue());
       else line.add(datasetVariableDto.getPopulationId());
-
+    }
+    if (mustShow("showVariablesDataCollectionEventsColumn")) {
       if (datasetVariableDto.getDceNameCount() > 0) line.add(datasetVariableDto.getDceName(0).getValue());
       else line.add("");
     }

@@ -1,6 +1,12 @@
 <span>
-
-  <button ng-if="$ctrl.canPublishAtLeastOneDataset" type="button" class="btn btn-primary" data-toggle="modal" data-target="#datasetsModal" data-backdrop="static" data-keyboard="false" translate>study.publish-datasets</button>
+  <button ng-if="$ctrl.canPublishAtLeastOneDataset" type="button" class="btn btn-primary" data-toggle="modal" data-target="#datasetsModal" data-backdrop="static" data-keyboard="false" translate>
+    <span ng-if="$ctrl.type!=='Harmonized'" translate>
+      study.publish-datasets
+    </span>
+    <span ng-if="$ctrl.type==='Harmonized'" translate>
+      harmonization-initiative.publish-protocols
+    </span>
+  </button>
 
   <div class="modal fade" id="datasetsModal">
     <div class="modal-dialog">

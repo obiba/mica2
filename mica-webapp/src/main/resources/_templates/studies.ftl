@@ -44,7 +44,7 @@
           <div id="${title}-card" class="card card-info card-outline">
 
             <div class="card-header">
-              <h3 class="card-title <#if studyListDisplays?size gt 1>pt-2</#if>"><@message "studies"/></h3>
+              <h3 class="card-title <#if studyListDisplays?size gt 1>pt-2</#if>"><span>${studies?size} <@message title/></span></h3>
               <#if studyListDisplays?size gt 1>
                 <ul class="nav nav-pills ml-auto float-right">
                   <#list studyListDisplays as display>
@@ -70,7 +70,7 @@
 
             <div class="card-body">
               <#if config.studyDatasetEnabled && config.harmonizationDatasetEnabled>
-                <div class="mb-4">
+                <div id="studyFilter"  class="mb-4 d-none">
                   <div role="group" class="btn-group">
                     <button onclick="window.location.href='${contextPath}/studies';" type="button" class="btn btn-sm btn-info <#if !type??>active</#if>"><@message "all"/></button>
                     <button onclick="window.location.href='${contextPath}/individual-studies';" type="button" class="btn btn-sm btn-info <#if type?? && type == "Individual">active</#if>"><@message "individual"/></button>
@@ -148,6 +148,10 @@
 
 <#include "libs/scripts.ftl">
 <#include "libs/studies-scripts.ftl">
-
+<script>
+  if (!window.location.href.match('(individual|harmonization)-')) {
+    document.querySelector('#studyFilter').classList.remove('d-none');
+  }
+</script>
 </body>
 </html>

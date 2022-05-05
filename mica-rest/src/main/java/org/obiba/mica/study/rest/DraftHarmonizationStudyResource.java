@@ -129,7 +129,6 @@ public class DraftHarmonizationStudyResource extends AbstractGitPersistableResou
 
     HashMap<Object, Object> response = Maps.newHashMap();
     response.put("study", study);
-    response.put("potentialConflicts", studyService.getPotentialConflicts(study, false));
 
     studyService.save(study, comment);
     return Response.ok(response, MediaType.APPLICATION_JSON_TYPE).build();

@@ -2,13 +2,18 @@ package org.obiba.mica.web.controller;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.googlecode.protobuf.format.JsonFormat;
+
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
+import org.obiba.mica.web.model.Dtos;
+import org.obiba.mica.web.model.Mica;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,8 +33,11 @@ public class CartController extends BaseController {
   @Inject
   private DataAccessConfigService dataAccessConfigService;
 
+  @Inject
+  private Dtos dtos;
+
   @GetMapping("/cart")
-  public ModelAndView get(@RequestParam(required = false) String type) {
+  public ModelAndView get(@RequestParam(required = false) String type, @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale) {
     MicaConfig config = micaConfigService.getConfig();
     if (!config.isCartEnabled() && !config.isStudiesCartEnabled() && !config.isNetworksCartEnabled()) {
       return new ModelAndView("redirect:/");
@@ -42,14 +50,21 @@ public class CartController extends BaseController {
       // note: the cart will be populated by the SessionInterceptor
       Map<String, Object> params = newParameters();
       params.put("accessConfig", dataAccessConfigService.getOrCreateConfig());
+
+      boolean variableEnabledInConfig = config.isCartEnabled() && (config.isStudyDatasetEnabled() || config.isHarmonizationDatasetEnabled());
+      boolean studyEnabledInConfig = config.isStudiesCartEnabled() && !config.isSingleStudyEnabled();
+      boolean networkEnabledInConfig = config.isNetworksCartEnabled() && !config.isSingleNetworkEnabled();
+
       if (!Strings.isNullOrEmpty(type) &&
-        ((type.equalsIgnoreCase("variables") && config.isCartEnabled()) ||
-          (type.equalsIgnoreCase("studies") && config.isStudiesCartEnabled()) ||
-          (type.equalsIgnoreCase("networks") && config.isNetworksCartEnabled()))) {
+        ((type.equalsIgnoreCase("variables") && variableEnabledInConfig) ||
+          (type.equalsIgnoreCase("studies") && studyEnabledInConfig) ||
+          (type.equalsIgnoreCase("networks") && networkEnabledInConfig))) {
         params.put("showCartType", type.toLowerCase());
       } else {
-        params.put("showCartType", config.isCartEnabled() ? "variables" : (config.isStudiesCartEnabled() ? "studies" : "networks"));
+        params.put("showCartType", variableEnabledInConfig ? "variables" : (studyEnabledInConfig ? "studies" : "networks"));
       }
+
+      params.put("configJson", getMicaConfigAsJson(config, getLang(locale, null)));
       return new ModelAndView("cart", params);
     } else {
       return new ModelAndView("redirect:signin?redirect=" + micaConfigService.getContextPath() + "/cart");
@@ -73,7 +88,7 @@ public class CartController extends BaseController {
   }
 
   @GetMapping("/list/{id:.+}")
-  public ModelAndView getNamed(@PathVariable String id) {
+  public ModelAndView getNamed(@PathVariable String id, @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale) {
     MicaConfig config = micaConfigService.getConfig();
     if (!config.isCartEnabled()) {
       return new ModelAndView("redirect:/");
@@ -86,10 +101,21 @@ public class CartController extends BaseController {
 
       Map<String, Object> params = newParameters();
       params.put("set", documentSet);
+      params.put("configJson", getMicaConfigAsJson(config, getLang(locale, null)));
       return new ModelAndView("list", params);
     } else {
       return new ModelAndView("redirect:/signin?redirect=" + micaConfigService.getContextPath() + "/list/" + id);
     }
+  }
+
+  private String getMicaConfigAsJson(MicaConfig config, String language) {
+    try {
+      Mica.MicaConfigDto dto = dtos.asDto(config, language);
+      dto = dto.toBuilder().clearTranslations().build();
+      return JsonFormat.printToString(dto);
+    } catch (Exception ignore) {
+    }
+    return "{}";
   }
 
 }

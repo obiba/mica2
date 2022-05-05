@@ -178,26 +178,6 @@ mica.study
     mica.study.PopulationEditController
   ])
 
-  .controller('HarmonizationStudyPopulationController', [
-    '$scope',
-    '$rootScope',
-    '$routeParams',
-    '$location',
-    '$filter',
-    '$translate',
-    '$q',
-    '$log',
-    'MicaConfigResource',
-    'SfOptionsService',
-    'EntityFormResource',
-    'DraftHarmonizationStudyResource',
-    'FormServerValidation',
-    'FormDirtyStateObserver',
-    'StudyUpdateWarningService',
-    'MicaUtil',
-    mica.study.HarmonizationPopulationEditController
-  ])
-
   .controller('StudyPopulationDceController', [
     '$scope',
     '$rootScope',

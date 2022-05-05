@@ -30,7 +30,6 @@
     <div class="alert alert-warning" role="alert" ng-if="!$ctrl.loading && $ctrl.entities.length < 1">
       <span>{{'persons.'+$ctrl.entityType + '-member-of-all' |translate:{fullname: $ctrl.fullname} }}</span>
     </div>
-
     <p ng-show="$ctrl.loading" class="voffset2 loading"></p>
 
     <div ng-show="!$ctrl.loading && $ctrl.entities.length > 0" class="table-responsive">
@@ -40,6 +39,7 @@
           <th></th>
           <th class="col-xs-4" translate>acronym</th>
           <th class="col-xs-8" translate>name</th>
+          <th ng-if="$ctrl.entityType !== 'network'" class="col-xs-8" translate>type</th>
         </tr>
         </thead>
         <tbody>
@@ -52,6 +52,9 @@
           </td>
           <td>
             <localized value="entity.name" lang="$ctrl.language"></localized>
+          </td>
+          <td ng-if="$ctrl.entityType !== 'network'" >
+            <span>{{'global.'+entity.studyResourcePath | translate }}</span>
           </td>
         </tr>
         </tbody>

@@ -421,6 +421,7 @@ class DatasetDtos {
 
     sbuilder.addAllName(localizedStringDtos.asDto(studyTable.getName()));
     sbuilder.addAllDescription(localizedStringDtos.asDto(studyTable.getDescription()));
+    sbuilder.addAllAdditionalInformation(localizedStringDtos.asDto(studyTable.getAdditionalInformation()));
 
     return sbuilder;
   }
@@ -435,13 +436,13 @@ class DatasetDtos {
       .setProject(harmonizationTable.getProject())
       .setTable(harmonizationTable.getTable())
       .setWeight(harmonizationTable.getWeight())
-      .setStudyId(harmonizationTable.getStudyId())
-      .setPopulationId(harmonizationTable.getPopulationId());
+      .setStudyId(harmonizationTable.getStudyId());
 
     if(includeSummary) hBuilder.setStudySummary(studySummaryDtos.asDto(harmonizationTable.getStudyId()));
 
     hBuilder.addAllName(localizedStringDtos.asDto(harmonizationTable.getName()));
     hBuilder.addAllDescription(localizedStringDtos.asDto(harmonizationTable.getDescription()));
+    hBuilder.addAllAdditionalInformation(localizedStringDtos.asDto(harmonizationTable.getAdditionalInformation()));
 
     return hBuilder;
   }
@@ -774,7 +775,6 @@ class DatasetDtos {
       harmonizationLink.setProject(dto.getHarmonizationTable().getProject());
       harmonizationLink.setTable(dto.getHarmonizationTable().getTable());
       harmonizationLink.setStudyId(dto.getHarmonizationTable().getStudyId());
-      harmonizationLink.setPopulationId(dto.getHarmonizationTable().getPopulationId());
       harmonizationDataset.setHarmonizationTable(harmonizationLink);
     }
     return harmonizationDataset;
@@ -798,6 +798,7 @@ class DatasetDtos {
 
     table.setName(localizedStringDtos.fromDto(dto.getNameList()));
     table.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
+    table.setAdditionalInformation(localizedStringDtos.fromDto(dto.getAdditionalInformationList()));
 
     return table;
   }
@@ -805,14 +806,13 @@ class DatasetDtos {
   private HarmonizationStudyTable fromDto(Mica.DatasetDto.HarmonizationTableDto dto) {
     HarmonizationStudyTable table = new HarmonizationStudyTable();
     table.setStudyId(dto.getStudyId());
-    table.setPopulationId(dto.getPopulationId());
-    table.setPopulationId(dto.getPopulationId());
     table.setProject(dto.getProject());
     table.setTable(dto.getTable());
     table.setWeight(dto.getWeight());
 
     table.setName(localizedStringDtos.fromDto(dto.getNameList()));
     table.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
+    table.setAdditionalInformation(localizedStringDtos.fromDto(dto.getAdditionalInformationList()));
 
     return table;
   }
@@ -832,13 +832,10 @@ class DatasetDtos {
 
     if(asDraft && studyId != null) {
       harmonizationLinkBuilder.setStudyId(harmonizationLink.getStudyId());
-      harmonizationLinkBuilder.setPopulationId(harmonizationLink.getPopulationId());
     } else if(!asDraft && studyId != null && publishedStudyService.findById(studyId) != null) {
       harmonizationLinkBuilder.setStudyId(harmonizationLink.getStudyId());
-      harmonizationLinkBuilder.setPopulationId(harmonizationLink.getPopulationId());
     } else {
       harmonizationLinkBuilder.setStudyId("-");
-      harmonizationLinkBuilder.setPopulationId("-");
     }
 
     if(studyId != null) harmonizationLinkBuilder.setStudySummary(studySummaryDtos.asHarmoStudyDto(studyId));

@@ -131,7 +131,6 @@
               </#if>
             </div>
           </div>
-
           <div class="col-xs-12 col-lg-6">
             <div class="card card-info card-outline">
               <div class="card-header">
@@ -139,7 +138,7 @@
               </div>
               <div class="card-body">
                 <dl class="row">
-                  <dt class="col-sm-4"><@message "dataset"/></dt>
+                  <dt class="col-sm-4"><#if type != "Collected"><@message "protocol"/><#else><@message "dataset"/></#if></dt>
                   <dd class="col-sm-8">
                     <a class="btn btn-success" href="${contextPath}/dataset/${variable.datasetId}">
                       <#if type == "Collected">
@@ -151,36 +150,47 @@
                     </a>
                   </dd>
 
-                  <dt class="col-sm-4"><@message "study"/></dt>
+                  <#if initiative??>
+                    <dt class="col-sm-4"><@message "initiative"/></dt>
+                      <#if initiative.published>
+                        <dd class="col-sm-8"><a href="${contextPath}/study/${initiative.id}">${localize(initiative.acronym)}</a></dd>
+                      <#else>
+                        <dd class="col-sm-8">${localize(initiative.acronym)}</dd>
+                      </#if>
+                  </#if>
+
+                  <dt class="col-sm-4"><#if type == "Dataschema"><@message "initiative"/><#else><@message "study"/></#if></dt>
                   <#if studyPublished>
                     <dd class="col-sm-8"><a href="${contextPath}/study/${study.id}">${localize(study.acronym, study.id)}</a></dd>
                   <#else>
                     <dd class="col-sm-8">${localize(study.acronym)}</dd>
                   </#if>
-                  <dt class="col-sm-4"><@message "population"/></dt>
-                  <dd class="col-sm-8">
-                    <#if studyPublished>
-                      <a href="#" data-toggle="modal" data-target="#modal-${population.id}">${localize(population.name, population.id)}</a>
-                      <@populationDialog id=population.id population=population></@populationDialog>
-                    <#else>
-                      ${localize(population.name, population.id)}
-                    </#if>
-                  </dd>
-                  <#if dce??>
-                    <dt class="col-sm-4"><@message "data-collection-event"/></dt>
+                  <#if type == "Collected">
+                    <dt class="col-sm-4"><@message "population"/></dt>
                     <dd class="col-sm-8">
                       <#if studyPublished>
-                      <#assign dceId="${population.id}-${dce.id}">
-                      <a href="#" data-toggle="modal" data-target="#modal-${dceId}">${localize(dce.name, dce.id)}</a>
-                      <@dceDialog id=dceId dce=dce></@dceDialog>
+                        <a href="#" data-toggle="modal" data-target="#modal-${population.id}">${localize(population.name, population.id)}</a>
+                        <@populationDialog id=population.id population=population></@populationDialog>
                       <#else>
-                        ${localize(dce.name, dce.id)}
+                        ${localize(population.name, population.id)}
                       </#if>
                     </dd>
+                    <#if dce??>
+                      <dt class="col-sm-4"><@message "data-collection-event"/></dt>
+                      <dd class="col-sm-8">
+                        <#if studyPublished>
+                        <#assign dceId="${population.id}-${dce.id}">
+                        <a href="#" data-toggle="modal" data-target="#modal-${dceId}">${localize(dce.name, dce.id)}</a>
+                        <@dceDialog id=dceId dce=dce></@dceDialog>
+                        <#else>
+                          ${localize(dce.name, dce.id)}
+                        </#if>
+                      </dd>
+                    </#if>
                   </#if>
                   <#if type == "Harmonized">
                     <dt class="col-sm-4"><@message "dataschema-variable"/></dt>
-                    <dd class="col-sm-8"><a href="${contextPath}/variable/${variable.datasetId}:${variable.name}:Dataschema" class="btn btn-primary"><i class="${variableIcon}"></i> ${variable.name}</a></dd>
+                    <dd class="col-sm-8"><a href="${contextPath}/variable/${variable.datasetId}:${variable.name}:Dataschema" class="btn btn-primary"><i class="${dataschemaIcon}"></i> ${variable.name}</a></dd>
                   </#if>
                   <#if opalTable?? && (opalTable.name?? || opalTable.description??)>
                     <dt class="col-sm-4"><@message "datasource-info"/></dt>
@@ -220,7 +230,7 @@
                   </dl>
                 </div>
                 <div class="card-footer">
-                  <a href="${contextPath}/search#lists?type=variables&query=${query}">
+                  <a href="${contextPath}/<#if type != "Collected">harmonization-search<#else>individual-search</#if>#lists?type=variables&query=${query}">
                     <@message "find-similar-variables"/> <i class="fas fa-search"></i>
                   </a>
                 </div>
@@ -255,14 +265,15 @@
 
                       <#if harmoAnnotations.hasAlgorithm()>
                         <dt title="${localize(harmoAnnotations.algorithmDescription)}">
-                          ${localize(harmoAnnotations.algorithmTitle, "Algorithm")}
+                            ${localize(harmoAnnotations.algorithmTitle, "Algorithm")}
                         </dt>
                         <dd>
                           <span class="marked mt-3"><template>${localize(harmoAnnotations.algorithmValue!"")}</template></span>
                         </dd>
                       </#if>
 
-                      <#if harmoAnnotations.hasComment()>
+
+                        <#if harmoAnnotations.hasComment()>
                         <dt title="${localize(harmoAnnotations.commentDescription)}">
                           ${localize(harmoAnnotations.commentTitle, "Comment")}
                         </dt>
@@ -322,7 +333,8 @@
                       <thead>
                         <tr>
                           <th><@message "variable"/></th>
-                          <th><@message "study"/></th>
+                          <th><@message "global.study-initiative"/></th>
+                          <th><@message "dataset.harmonized-table"/></th>
                           <th><@message "data-collection-event"/></th>
                           <th><@message "status"/></th>
                           <th><@message "status-detail"/></th>

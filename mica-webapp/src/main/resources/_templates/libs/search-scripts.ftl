@@ -17,6 +17,10 @@
     "studies": "<@message "studies"/>",
     "networks": "<@message "networks"/>",
     "network": "<@message "network"/>",
+    "initiatives": "<@message "initiatives"/>",
+    "initiative": "<@message "initiative"/>",
+    "protocol": "<@message "protocol"/>",
+    "protocols": "<@message "protocols"/>",
     "data-access-request": "<@message "data-access-request"/>",
     "name": "<@message "name"/>",
     "label": "<@message "label"/>",
@@ -55,6 +59,7 @@
     "coverage-buckets-study": "<@message "coverage-buckets-study"/>",
     "coverage-buckets-dce": "<@message "coverage-buckets-dce"/>",
     "coverage-buckets-dataset": "<@message "coverage-buckets-dataset"/>",
+    "coverage-buckets-harmonization": "<@message "coverage-buckets-harmonization"/>",
     "no-coverage-available": "<@message "no-coverage-available"/>",
     "coverage-end-date-ongoing": "<@message "coverage-end-date-ongoing"/>",
     "missing-variable-query": "<@message "missing-variable-query"/>",
@@ -103,6 +108,7 @@
     "search.coverage-dce-cols.study": "<@message "search.coverage-dce-cols.study"/>",
     "search.coverage-dce-cols.population": "<@message "search.coverage-dce-cols.population"/>",
     "search.coverage-dce-cols.dce": "<@message "search.coverage-dce-cols.dce"/>",
+    "search.coverage-dce-cols.harmonization": "<@message "search.coverage-dce-cols.harmonization"/>",
     "search.coverage-buckets.dataset": "<@message "search.coverage-buckets.dataset"/>",
     "search.coverage-buckets.study": "<@message "search.coverage-buckets.study"/>"
   };
@@ -114,6 +120,12 @@
   };
 
   Mica.maxNumberOfSets = ${maxNumberOfSets};
+
+  <#if rc.requestUri?starts_with("harmonization")>
+    Mica.defaultSearchMode = "HarmonizationStudy"
+  <#else>
+    Mica.defaultSearchMode = "${defaultSearchMode}" || "Study";
+  </#if>
 
   Mica.querySettings = {
     variable: {
@@ -136,8 +148,11 @@
 
   Mica.icons = {
     variable: '${variableIcon}',
+    dataschema: '${dataschemaIcon}',
     dataset: '${datasetIcon}',
+    harmoDataset: '${harmoDatasetIcon}',
     study: '${studyIcon}',
+    initiative: '${initiativeIcon}',
     network: '${networkIcon}'
   };
 
@@ -150,9 +165,21 @@
 
   Mica.display = {
     variableColumns: ['${searchVariableColumns?join("', '")}'],
+    variableColumnsHarmonization: ['${searchVariableColumnsHarmonization?join("', '")}'],
+    variableColumnsIndividual: ['${searchVariableColumnsIndividual?join("', '")}'],
+
     datasetColumns: ['${searchDatasetColumns?join("', '")}'],
+    datasetColumnsHarmonization: ['${searchDatasetColumnsHarmonization?join("', '")}'],
+    datasetColumnsIndividual: ['${searchDatasetColumnsIndividual?join("', '")}'],
+
     studyColumns: ['${searchStudyColumns?join("', '")}'],
+    studyColumnsHarmonization: ['${searchStudyColumnsHarmonization?join("', '")}'],
+    studyColumnsIndividual: ['${searchStudyColumnsIndividual?join("', '")}'],
+
     networkColumns: ['${searchNetworkColumns?join("', '")}'],
+    networkColumnsHarmonization: ['${searchNetworkColumnsHarmonization?join("', '")}'],
+    networkColumnsIndividual: ['${searchNetworkColumnsIndividual?join("', '")}'],
+
     searchCriteriaMenus: ['${searchCriteriaMenus?join("', '")}']
   };
 

@@ -36,7 +36,7 @@
       <img class="img-fluid" style="max-height: 150px" alt="${localize(study.acronym)} logo" src="${contextPath}/ws/study/${study.id}/file/${study.logo.id}/_download"/>
     <#else >
       <div class="text-black-50 text-center mt-5">
-        <i class="${studyIcon} fa-3x"></i>
+        <i class="<#if type == "Harmonization">${initiativeIcon}<#else>${studyIcon}</#if> fa-3x"></i>
       </div>
     </#if>
   </div>
@@ -71,10 +71,13 @@
   <!-- Macro variables -->
   <#if !type??>
     <#assign className = "Study,HarmonizationStudy">
+    <#assign listPageSearchMode = "search">
   <#elseif type == "Harmonization">
     <#assign className = "HarmonizationStudy">
+    <#assign listPageSearchMode = "harmonization-search">
   <#else>
     <#assign className = "Study">
+    <#assign listPageSearchMode = "individual-search">
   </#if>
 
 <div v-show="loading" class="spinner-border spinner-border-sm" role="status"></div>
@@ -82,14 +85,11 @@
 <div id="studies-card">
 
   <div class="row">
-    <div class="col-3">
-      <h3 class="card-title pt-1">{{total | localize-number}} <@message "studies"/></h3>
-    </div>
     <div class="col-6">
       <typeahead @typing="onType" @select="onSelect" :items="suggestions" :external-text="initialFilter"></typeahead>
     </div>
-    <div class="col-3">
-      <a href="${contextPath}/search#lists?type=studies&query=study(in(Mica_study.className,(${className})))" class="btn btn-sm btn-primary float-right">
+    <div class="col-3 ml-auto">
+      <a href="${contextPath}/${listPageSearchMode}#lists?type=studies&query=study(in(Mica_study.className,(${className})))" class="btn btn-sm btn-primary float-right">
         <@message "global.search"/> <i class="fas fa-search"></i>
       </a>
     </div>

@@ -597,9 +597,6 @@ class MicaConfigDtos {
       case HarmonizationStudy:
         config = new HarmonizationStudyConfig();
         break;
-      case HarmonizationPopulation:
-        config = new HarmonizationPopulationConfig();
-        break;
     }
 
     config.setSchema(dto.getSchema());
@@ -631,11 +628,6 @@ class MicaConfigDtos {
   @NotNull
   Mica.EntityFormDto asDto(@NotNull PopulationConfig populationConfig) {
     return asDto(populationConfig, Mica.EntityFormDto.Type.Population);
-  }
-
-  @NotNull
-  Mica.EntityFormDto asDto(@NotNull HarmonizationPopulationConfig harmonizationPopulationConfig) {
-    return asDto(harmonizationPopulationConfig, Mica.EntityFormDto.Type.HarmonizationPopulation);
   }
 
   @NotNull

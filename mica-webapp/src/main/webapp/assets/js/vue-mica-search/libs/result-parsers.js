@@ -3,9 +3,9 @@ class GraphicsResultParser {
     this.normalizePath = normalizePath;
   }
 
-  static #VALID_CHOROPLETH_COLORSCALE_NAMES = ['Blackbody', 'Bluered', 'Blues', 'Cividis', 'Earth', 'Electric', 'Greens', 'Greys', 'Hot', 'Jet', 'Picnic', 'Portland', 'Rainbow', 'RdBu', 'Reds', 'Viridis', 'YlGnBu', 'YlOrRd'];
+  static VALID_CHOROPLETH_COLORSCALE_NAMES = ['Blackbody', 'Bluered', 'Blues', 'Cividis', 'Earth', 'Electric', 'Greens', 'Greys', 'Hot', 'Jet', 'Picnic', 'Portland', 'Rainbow', 'RdBu', 'Reds', 'Viridis', 'YlGnBu', 'YlOrRd'];
 
-  static #DEFAULT_GRAPH_PROCESSORS = {
+  static DEFAULT_GRAPH_PROCESSORS = {
     bar: {
       /**
        * @param input
@@ -109,7 +109,7 @@ class GraphicsResultParser {
 
         if (Array.isArray(colors)) {
           trace.colorscale = [[0, "#f3f3f3"]].concat(colors.map((color, index) => [((index + 1) / colors.length), color]));
-        } else if (GraphicsResultParser.#VALID_CHOROPLETH_COLORSCALE_NAMES.indexOf(colors) > -1) {
+        } else if (GraphicsResultParser.VALID_CHOROPLETH_COLORSCALE_NAMES.indexOf(colors) > -1) {
           trace.colorscale = colors;
           trace.reversescale = true;
         } else {
@@ -139,11 +139,11 @@ class GraphicsResultParser {
     }
   };
 
-  static #isCorrectVocabulary(vocabulary, name) {
+  static __isCorrectVocabulary(vocabulary, name) {
     return vocabulary && (vocabulary.name === name || vocabulary.attributes.filter(a => a.key === "alias" && a.value === name)[0]);
   }
 
-  static #getPlotlyType(type) {
+  static __getPlotlyType(type) {
     if (type === 'bar' || type === 'horizontalBar') {
       return 'bar';
     } else if (type === 'pie' || type === 'doughnut') {
@@ -153,8 +153,8 @@ class GraphicsResultParser {
     }
   }
 
-  static #parseForChart(chartData, options) {
-    const studyVocabulary = (options.taxonomy || {vocabularies: []}).vocabularies.filter(vocabulary => GraphicsResultParser.#isCorrectVocabulary(vocabulary, options.agg))[0];
+  static __parseForChart(chartData, options) {
+    const studyVocabulary = (options.taxonomy || {vocabularies: []}).vocabularies.filter(vocabulary => GraphicsResultParser.__isCorrectVocabulary(vocabulary, options.agg))[0];
 
     if (studyVocabulary) {
       const terms = studyVocabulary.terms.map(term => term.name);
@@ -163,11 +163,11 @@ class GraphicsResultParser {
       });
     }
 
-    const processor = GraphicsResultParser.#DEFAULT_GRAPH_PROCESSORS[GraphicsResultParser.#getPlotlyType(options.type || 'bar')];
+    const processor = GraphicsResultParser.DEFAULT_GRAPH_PROCESSORS[GraphicsResultParser.__getPlotlyType(options.type || 'bar')];
     return [processor.processData({key: options.agg, values: chartData, title: options.title}, options.colors || options.backgroundColor), processor.layoutObject];
   }
 
-  static #parseForTable(vocabulary, chartData, forSubAggData) {
+  static __parseForTable(vocabulary, chartData, forSubAggData) {
     return chartData.filter(term => term.count>0).map(term => {
       let row = {
         vocabulary: vocabulary.replace(/model-/, ""),
@@ -196,7 +196,7 @@ class GraphicsResultParser {
 
     let [data, layout] = typeof chartOptions.parseForChart === 'function'
       ? chartOptions.parseForChart(aggData, chartOptions, totalHits)
-      : GraphicsResultParser.#parseForChart(aggData, chartOptions, totalHits);
+      : GraphicsResultParser.__parseForChart(aggData, chartOptions, totalHits);
 
     const tableCols = [chartOptions.title, labelStudies];
 
@@ -206,7 +206,7 @@ class GraphicsResultParser {
 
     const tableRows = typeof chartOptions.parseForTable === 'function'
       ? chartOptions.parseForTable(chartOptions.vocabulary, aggData, chartOptions.subAgg, totalHits)
-      : GraphicsResultParser.#parseForTable(chartOptions.vocabulary, aggData, chartOptions.subAgg, totalHits);
+      : GraphicsResultParser.__parseForTable(chartOptions.vocabulary, aggData, chartOptions.subAgg, totalHits);
 
     const plotData = {
       data: data,
@@ -224,10 +224,19 @@ class VariablesResultParser {
     this.normalizePath = normalizePath;
   }
 
-  parse(data, micaConfig, localize, displayOptions) {
+  parse(data, micaConfig, localize, displayOptions, studyTypeSelection) {
     const variablesResult = data.variableResultDto;
     const tr = Vue.filter('translate') || (value => value);
     const taxonomyTitle = Vue.filter('taxonomy-title') || (value => value);
+
+    let columnKey = 'variableColumns';
+    if (studyTypeSelection) {
+      if (studyTypeSelection.study) {
+        columnKey = 'variableColumnsIndividual';
+      } else if(studyTypeSelection.harmonization) {
+        columnKey = 'variableColumnsHarmonization';
+      }
+    }
 
     if (!variablesResult) {
       throw new Error("No variable results available.");
@@ -251,9 +260,15 @@ class VariablesResultParser {
     summaries.forEach(summary => {
 
       let path = this.normalizePath(`/variable/${summary.id}`);
-      let row = ['<i class="far fa-square"></i>', summary.id, `<a href="${path}">${summary.name}</a>`,];
+      let row = [];
 
-      displayOptions.variableColumns.forEach(column => {
+      if (displayOptions.showCheckboxes) {
+        row.push(`<i data-item-id="${summary.id}" class="far fa-square"></i>`);
+      }
+
+      row.push(`<a href="${path}">${summary.name}</a>`);
+
+      (displayOptions[columnKey] || displayOptions.variableColumns).forEach(column => {
         switch (column) {
           case 'label':
           case 'label+description': {
@@ -291,9 +306,22 @@ class VariablesResultParser {
             }
             break;
           }
+
+          case 'initiative': {
+            if (!micaConfig.isSingleStudyEnabled) {
+              path = this.normalizePath(`/study/${summary.studyId}`);
+              row.push(`<a href="${path}">${localize(summary.studyAcronym)}</a>`);
+            }
+            break;
+          }
+
           case 'population': {
             path = this.normalizePath(`/study/${summary.studyId}`);
-            row.push(`<a href="${path}#population/${summary.populationId}">${localize(summary.populationName)}</a>`);
+            if (summary.populationName) {
+              row.push(`<a href="${path}#population/${summary.populationId}">${localize(summary.populationName)}</a>`);
+            } else {
+              row.push('-');
+            }
             break;
           }
           case 'dce':
@@ -307,6 +335,11 @@ class VariablesResultParser {
             break;
           }
           case 'dataset': {
+            path = this.normalizePath(`/dataset/${summary.datasetId}`);
+            row.push(`<a href="${path}">${localize(summary.datasetAcronym)}</a>`);
+            break;
+          }
+          case 'protocol': {
             path = this.normalizePath(`/dataset/${summary.datasetId}`);
             row.push(`<a href="${path}">${localize(summary.datasetAcronym)}</a>`);
             break;
@@ -331,7 +364,7 @@ class StudiesResultParser {
     this.locale = locale;
   }
 
-  static #getNumberOfParticipants(content) {
+  static __getNumberOfParticipants(content) {
      const numberOfParticipants = content['numberOfParticipants'];
      if (numberOfParticipants) {
       const participant = numberOfParticipants['participant'];
@@ -343,8 +376,17 @@ class StudiesResultParser {
      return '-';
   }
 
-  parse(data, micaConfig, localize, displayOptions) {
+  parse(data, micaConfig, localize, displayOptions, studyTypeSelection) {
     const studiesResult = data.studyResultDto;
+
+    let columnKey = 'studyColumns';
+    if (studyTypeSelection) {
+      if (studyTypeSelection.study) {
+        columnKey = 'studyColumnsIndividual';
+      } else if(studyTypeSelection.harmonization) {
+        columnKey = 'studyColumnsHarmonization';
+      }
+    }
 
     if (!studiesResult) {
       throw new Error("No network results available.");
@@ -382,9 +424,15 @@ class StudiesResultParser {
         `<a href="" class="query-anchor" data-study-type="${studyType}" data-target="study" data-target-id="${summary.id}" data-type="${type}">${value.toLocaleString(this.locale)}</a>`;
 
       let path = this.normalizePath(`/study/${summary.id}`);
-      let row = [`<a href="${path}">${localize(summary.acronym)}</a>`];
+      let row = [];
+      
+      if (displayOptions.showCheckboxes) {
+        row.push(`<i data-item-id="${summary.id}" class="far fa-square"></i>`);
+      }
 
-      displayOptions.studyColumns.forEach(column => {
+      row.push(`<a href="${path}">${localize(summary.acronym)}</a>`);
+
+      (displayOptions[columnKey] || displayOptions.studyColumns).forEach(column => {
         switch (column) {
           case 'name': {
             row.push(localize(summary.name));
@@ -408,7 +456,7 @@ class StudiesResultParser {
             break;
           }
           case 'participants': {
-            row.push(StudiesResultParser.#getNumberOfParticipants(content));
+            row.push(StudiesResultParser.__getNumberOfParticipants(content));
             break;
           }
           case 'networks': {
@@ -485,10 +533,19 @@ class DatasetsResultParser {
     this.locale = locale;
   }
 
-  parse(data, micaConfig, localize, displayOptions) {
+  parse(data, micaConfig, localize, displayOptions, studyTypeSelection) {
     const datasetsResult = data.datasetResultDto;
     const tr = Vue.filter('translate') || (value => value);
     const taxonomyFilter = Vue.filter('taxonomy-title') || (value => value);
+
+    let columnKey = 'datasetColumns';
+    if (studyTypeSelection) {
+      if (studyTypeSelection.study) {
+        columnKey = 'datasetColumnsIndividual';
+      } else if(studyTypeSelection.harmonization) {
+        columnKey = 'datasetColumnsHarmonization';
+      }
+    }
 
     if (!datasetsResult) {
       throw new Error("No dataset results available.");
@@ -519,7 +576,7 @@ class DatasetsResultParser {
       const stats = dataset['obiba.mica.CountStatsDto.datasetCountStats'] || {};
       let anchor = (type, value) => `<a href="" class="query-anchor" data-target="dataset" data-target-id="${dataset.id}" data-type="${type}">${value.toLocaleString(this.locale)}</a>`;
 
-      displayOptions.datasetColumns.forEach(column => {
+      (displayOptions[columnKey] || displayOptions.datasetColumns).forEach(column => {
         switch (column) {
           case 'name': {
             row.push(localize(dataset.name));
@@ -538,6 +595,12 @@ class DatasetsResultParser {
             break;
           }
           case 'studies': {
+            if (!micaConfig.isSingleStudyEnabled) {
+              row.push(stats.studies ? anchor('studies', stats.studies) : '-');
+            }
+            break;
+          }
+          case 'initiatives': {
             if (!micaConfig.isSingleStudyEnabled) {
               row.push(stats.studies ? anchor('studies', stats.studies) : '-');
             }
@@ -567,8 +630,17 @@ class NetworksResultParser {
     this.locale = locale;
   }
 
-  parse(data, micaConfig, localize, displayOptions) {
+  parse(data, micaConfig, localize, displayOptions, studyTypeSelection) {
     const networksResult = data.networkResultDto;
+
+    let columnKey = 'networkColumns';
+    if (studyTypeSelection) {
+      if (studyTypeSelection.study) {
+        columnKey = 'networkColumnsIndividual';
+      } else if(studyTypeSelection.harmonization) {
+        columnKey = 'networkColumnsHarmonization';
+      }
+    }
 
     if (!networksResult) {
       throw new Error("No network results available.");
@@ -594,16 +666,26 @@ class NetworksResultParser {
       let anchor = (type, value, studyType) => `<a href="" class="query-anchor" data-study-type="${studyType}" data-target="network" data-target-id="${network.id}" data-type="${type}">${value.toLocaleString(this.locale)}</a>`;
 
       let path = this.normalizePath(`/network/${network.id}`);
-      let row = [`<a href="${path}">${localize(network.acronym)}</a>`];
+      let row = [];
+      
+      if (displayOptions.showCheckboxes) {
+        row.push(`<i data-item-id="${network.id}" class="far fa-square"></i>`);
+      }
 
-      displayOptions.networkColumns.forEach(column => {
+      row.push(`<a href="${path}">${localize(network.acronym)}</a>`);
+
+      (displayOptions[columnKey] || displayOptions.networkColumns).forEach(column => {
         switch (column) {
           case 'name': {
             row.push(localize(network.name));
             break;
           }
           case 'studies': {
-            row.push(stats.studies ? anchor('studies', stats.studies, "") : '-');
+            row.push(stats.studies ? anchor('studies', stats.studies, "Study") : '-');
+            break;
+          }
+          case 'initiatives': {
+            row.push(stats.studies ? anchor('studies', stats.studies, "HarmonizationStudy") : '-');
             break;
           }
           case 'datasets': {
@@ -621,6 +703,30 @@ class NetworksResultParser {
             }
             if (micaConfig.isHarmonizedDatasetEnabled) {
               row.push(stats.dataschemaVariables ? anchor('variables', stats.dataschemaVariables, 'HarmonizationStudy') : '-');
+            }
+            break;
+          }
+          case 'individual': {
+            if (micaConfig.isCollectedDatasetEnabled) {
+              row.push(stats.studies ? anchor('studies', stats.studies, "Study") : '-');
+              row.push(stats.studyDatasets
+                ? anchor("datasets", stats.studyDatasets, "Study")
+                : "-");
+              row.push(stats.studyVariables
+                ? anchor("variables", stats.studyVariables, "Study")
+                : "-");
+            }
+            break;
+          }
+          case 'harmonization': {
+            if (micaConfig.isHarmonizedDatasetEnabled) {
+              row.push(stats.studies ? anchor('studies', stats.studies, "HarmonizationStudy") : '-');
+              row.push(stats.harmonizationDatasets
+                ? anchor("datasets", stats.harmonizationDatasets, "HarmonizationStudy")
+                : "-");
+              row.push(stats.dataschemaVariables
+                ? anchor("variables", stats.dataschemaVariables, "HarmonizationStudy")
+                : "-");
             }
             break;
           }
@@ -647,28 +753,28 @@ class IdSplitter {
     this.currentYear = new Date().getFullYear();
     this.currentMonth = new Date().getMonth() + 1;
     this.currentYearMonth = this.currentYear + '-' + this.currentMonth;
-    this.currentDate = this.#toTime(this.currentYearMonth, true);
+    this.currentDate = this.__toTime(this.currentYearMonth, true);
   }
 
-  static #BUCKET_TYPES = {
+  static BUCKET_TYPES = {
     STUDY: 'studyId',
     DCE: 'dceId',
     DATASET: 'datasetId',
   }
 
-  #getBucketUrl(bucket, id) {
+  __getBucketUrl(bucket, id) {
     switch (bucket) {
-      case IdSplitter.#BUCKET_TYPES.STUDY:
-      case IdSplitter.#BUCKET_TYPES.DCE:
+      case IdSplitter.BUCKET_TYPES.STUDY:
+      case IdSplitter.BUCKET_TYPES.DCE:
         return this.normalizePath(`/study/${id}`);
-      case IdSplitter.#BUCKET_TYPES.DATASET:
+      case IdSplitter.BUCKET_TYPES.DATASET:
         return this.normalizePath(`/dataset/${id}`)
     }
 
     return this.normalizePath('');
   }
 
-  #appendRowSpan(id) {
+  __appendRowSpan(id) {
     let rowSpan;
     if (!this.rowSpans[id]) {
       rowSpan = 1;
@@ -680,7 +786,7 @@ class IdSplitter {
     return rowSpan;
   }
 
-  #appendMinMax(id, start, end) {
+  __appendMinMax(id, start, end) {
     if (this.minMax[id]) {
       if (start < this.minMax[id][0]) {
         this.minMax[id][0] = start;
@@ -693,7 +799,7 @@ class IdSplitter {
     }
   }
 
-  #toTime(yearMonth, start) {
+  __toTime(yearMonth, start) {
     let res;
     if (yearMonth) {
       if (yearMonth.indexOf('-') > 0) {
@@ -716,9 +822,9 @@ class IdSplitter {
     return res;
   }
 
-  #getProgress(startYearMonth, endYearMonth) {
-    let start = this.#toTime(startYearMonth, true);
-    let end = endYearMonth ? this.#toTime(endYearMonth, false) : this.currentDate;
+  __getProgress(startYearMonth, endYearMonth) {
+    let start = this.__toTime(startYearMonth, true);
+    let end = endYearMonth ? this.__toTime(endYearMonth, false) : this.currentDate;
     let current = end < this.currentDate ? end : this.currentDate;
     if (end === start) {
       return 100;
@@ -758,9 +864,9 @@ class IdSplitter {
           odd = !odd;
           groupId = id;
         }
-        rowSpan = this.#appendRowSpan(id);
-        this.#appendMinMax(id, row.start || this.currentYearMonth, row.end || this.currentYearMonth);
-        const studyUrl = this.#getBucketUrl(this.bucket, id);
+        rowSpan = this.__appendRowSpan(id);
+        this.__appendMinMax(id, row.start || this.currentYearMonth, row.end || this.currentYearMonth);
+        const studyUrl = this.__getBucketUrl(this.bucket, id);
 
         cols.ids[row.value].push({
           id: id,
@@ -775,9 +881,9 @@ class IdSplitter {
         id = ids[0] + ':' + ids[1];
         const populationUrl = `${studyUrl}#/population/${id}`;
 
-        rowSpan = this.#appendRowSpan(id);
+        rowSpan = this.__appendRowSpan(id);
         cols.ids[row.value].push({
-          id: id,
+          id: isHarmo ? '-' : id,
           url: populationUrl,
           title: titles[1],
           description: descriptions[1],
@@ -801,7 +907,7 @@ class IdSplitter {
       } else {
         cols.ids[row.value].push({
           id: row.value,
-          url: this.#getBucketUrl(this.bucket, row.value),
+          url: this.__getBucketUrl(this.bucket, row.value),
           title: row.title,
           description: row.description,
           min: row.start,
@@ -810,7 +916,7 @@ class IdSplitter {
           end: row.end,
           max: row.end,
           progressStart: 0,
-          progress: this.#getProgress(row.start ? row.start + '-01' : this.currentYearMonth, row.end ? row.end + '-12' : this.currentYearMonth),
+          progress: this.__getProgress(row.start ? row.start + '-01' : this.currentYearMonth, row.end ? row.end + '-12' : this.currentYearMonth),
           progressClass: odd ? 'info' : 'warning',
           rowSpan: 1,
           index: i++
@@ -837,13 +943,13 @@ class IdSplitter {
           let max = this.minMax[ids[0]][1];
           let start = cols.ids[row.value][2].start || this.currentYearMonth;
           let end = cols.ids[row.value][2].end || this.currentYearMonth;
-          let diff = this.#toTime(max, false) - this.#toTime(min, true);
+          let diff = this.__toTime(max, false) - this.__toTime(min, true);
           // set the DCE min and max dates of the study
           cols.ids[row.value][2].min = min;
           cols.ids[row.value][2].max = max;
           // compute the progress
-          cols.ids[row.value][2].progressStart = 100 * (this.#toTime(start, true) - this.#toTime(min, true)) / diff;
-          cols.ids[row.value][2].progress = 100 * (this.#toTime(end, false) - this.#toTime(start, true)) / diff;
+          cols.ids[row.value][2].progressStart = 100 * (this.__toTime(start, true) - this.__toTime(min, true)) / diff;
+          cols.ids[row.value][2].progress = 100 * (this.__toTime(end, false) - this.__toTime(start, true)) / diff;
           cols.ids[row.value].index = i;
         }
       });

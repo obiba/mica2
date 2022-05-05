@@ -15,6 +15,8 @@ import com.google.common.collect.Lists;
 import org.obiba.mica.search.AbstractIdentifiedDocumentService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
+import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.DraftStudyService;
 import org.obiba.mica.study.service.HarmonizationStudyService;
@@ -29,7 +31,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class EsDraftStudyService extends AbstractIdentifiedDocumentService<Study> implements DraftStudyService {
+public class EsDraftStudyService extends AbstractIdentifiedDocumentService<BaseStudy> implements DraftStudyService {
 
   @Inject
   private ObjectMapper objectMapper;
@@ -46,8 +48,8 @@ public class EsDraftStudyService extends AbstractIdentifiedDocumentService<Study
   }
 
   @Override
-  protected Study processHit(Searcher.DocumentResult res) throws IOException {
-    return objectMapper.readValue(res.getSourceInputStream(), Study.class);
+  protected BaseStudy processHit(Searcher.DocumentResult res) throws IOException {
+    return (BaseStudy) objectMapper.readValue(res.getSourceInputStream(), getClass(res.getClassName()));
   }
 
   @Override
@@ -84,5 +86,9 @@ public class EsDraftStudyService extends AbstractIdentifiedDocumentService<Study
     return individualStudyService.findAllIds().stream()
       .filter(studyId -> subjectAclService.isPermitted("/draft/individual-study", "VIEW", studyId))
       .collect(Collectors.toList());
+  }
+
+  private Class getClass(String className) {
+    return Study.class.getSimpleName().equals(className) ? Study.class : HarmonizationStudy.class;
   }
 }

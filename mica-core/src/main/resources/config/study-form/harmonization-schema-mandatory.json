@@ -1,0 +1,30 @@
+{
+  "type": "object",
+  "properties": {
+    "_name": {
+      "title": "t(harmonization-initiative.name)",
+      "type": "object",
+      "format": "localizedString"
+    },
+    "_acronym": {
+      "title": "t(harmonization-initiative.acronym)",
+      "type": "object",
+      "format": "localizedString"
+    },
+    "_objectives": {
+      "title": "t(harmonization-initiative.objectives)",
+      "type": "object",
+      "format": "obibaSimpleMde"
+    },
+    "_opal": {
+      "title": "t(harmonization-initiative.opal)",
+      "type": "string",
+      "pattern": "^https?:\/\/[a-zA-Z0-9._\/?&=:%-]+$"
+    }
+  },
+  "required": [
+    "_name",
+    "_acronym",
+    "_objectives"
+  ]
+}

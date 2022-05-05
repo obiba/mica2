@@ -33,13 +33,13 @@
 
     <!-- Harmonization study -->
     <#if type == "Harmonization">
-      <#if study.model.harmonizationDesign??>
+      <#if study.model.additionalInformation??>
         <div class="row">
           <div class="col-12">
             <div class="card card-info card-outline">
               <div class="card-header">
                 <h3 class="card-title">
-                  <@message "study_taxonomy.vocabulary.harmonizationDesign.title"/>
+                    <@message "global.additional-information"/>
                 </h3>
                 <div class="card-tools">
                   <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
@@ -47,8 +47,8 @@
                 </div>
               </div>
               <!-- /.card-header -->
-              <div class="card-body">
-                ${localize(study.model.harmonizationDesign)}
+              <div class="card-body marked">
+                  <template>${localize(study.model.additionalInformation)}</template>
               </div>
             </div>
           </div>
@@ -669,13 +669,15 @@
       <h3 class="card-title"><@message "variables-classifications"/></h3>
     </div>
     <div class="card-body">
-      <div class="row">
-        <div class="col mb-4">
-          <select id="select-bucket" class="form-control select2">
-            <option value="_all" selected><#if type == "Individual"><@message "all-dces"/><#else><@message "all-populations"/></#if></option>
-          </select>
+      <#if type == "Individual">
+        <div class="row">
+          <div class="col mb-4">
+            <select id="select-bucket" class="form-control select2">
+              <option value="_all" selected><@message "all-dces"/></option>
+            </select>
+          </div>
         </div>
-      </div>
+      </#if>
       <div class="row">
         <div class="col" id="chartsContainer"></div>
       </div>

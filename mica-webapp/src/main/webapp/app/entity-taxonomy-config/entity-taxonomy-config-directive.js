@@ -19,7 +19,8 @@ mica.entityTaxonomyConfig
       scope: {
         targets: '=',
         schemas: '=',
-        state: '='
+        state: '=',
+        forClassName: '='
       },
       templateUrl: 'app/entity-taxonomy-config/views/entity-taxonomy-config.html'
     };
@@ -33,7 +34,8 @@ mica.entityTaxonomyConfig
       scope: {
         target: '=',
         schemas: '=',
-        state: '='
+        state: '=',
+        forClassName: '='
       },
       templateUrl: 'app/entity-taxonomy-config/views/entity-taxonomy-config-content.html'
     };

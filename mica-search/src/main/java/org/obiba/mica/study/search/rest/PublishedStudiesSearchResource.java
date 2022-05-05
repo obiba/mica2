@@ -23,6 +23,8 @@ import org.obiba.mica.search.reports.generators.StudyCsvReportGenerator;
 import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.spi.search.support.JoinQuery;
+import org.obiba.mica.study.domain.HarmonizationStudy;
+import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
@@ -110,25 +112,29 @@ public class PublishedStudiesSearchResource {
   @Path("/_rql_csv")
   @Produces("text/csv")
   @Timed
-  public Response rqlQueryAsCsv(@QueryParam("query") String query, @QueryParam("columnsToHide") List<String> columnsToHide) throws IOException {
-    StreamingOutput stream = os -> joinQueryReportGenerator.generateCsv(QueryType.STUDY, query, columnsToHide, os);
-    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Studies.csv\"").build();
+  public Response rqlQueryAsCsv(@QueryParam("query") String query,@QueryParam("studyType") String studyType, @QueryParam("columnsToHide") List<String> columnsToHide) throws IOException {
+    boolean forHarmonization = !Strings.isNullOrEmpty(studyType) && HarmonizationStudy.RESOURCE_PATH.equals(studyType);
+    String fileName = forHarmonization ? "Initiatives" : "Studies";
+    StreamingOutput stream = os -> joinQueryReportGenerator.generateCsv(QueryType.STUDY, forHarmonization, query, columnsToHide, os);
+    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\""+ fileName + ".csv\"").build();
   }
 
   @POST
   @Path("/_rql_csv")
   @Produces("text/csv")
   @Timed
-  public Response rqlLargeQueryAsCsv(@FormParam("query") String query, @FormParam("columnsToHide") List<String> columnsToHide) throws IOException {
-    return rqlQueryAsCsv(query, columnsToHide);
+  public Response rqlLargeQueryAsCsv(@FormParam("query") String query, @FormParam("studyType") String studyType, @FormParam("columnsToHide") List<String> columnsToHide) throws IOException {
+    return rqlQueryAsCsv(query, studyType, columnsToHide);
   }
 
   @POST
   @Path("/_export")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
-  public Response export(@FormParam("query") String query, @FormParam("locale") @DefaultValue("en") String locale) {
+  public Response export(@FormParam("query") String query, @FormParam("locale") @DefaultValue("en") String locale, @FormParam("studyType") String studyType) {
     if (!micaConfigService.getConfig().isStudiesExportEnabled())
       throw new BadRequestException("Studies export not enabled");
+    boolean forHarmonization = !Strings.isNullOrEmpty(studyType) && HarmonizationStudy.RESOURCE_PATH.equals(studyType);
+    String fileName = forHarmonization ? "Initiatives" : "Studies";
     JoinQuery joinQuery = searcher.makeJoinQuery(query);
     List<String> studyIds = joinQueryExecutor.query(QueryType.STUDY, joinQuery)
       .getStudyResultDto()
@@ -139,9 +145,9 @@ public class PublishedStudiesSearchResource {
       .collect(toList());
 
     ReportGenerator reporter = new StudyCsvReportGenerator(publishedStudyService.findByIds(studyIds, true),
-      Strings.isNullOrEmpty(locale) ? joinQuery.getLocale() : locale, personService);
+      Strings.isNullOrEmpty(locale) ? joinQuery.getLocale() : locale, personService, forHarmonization);
     StreamingOutput stream = reporter::write;
-    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Studies.zip\"").build();
+    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\""+ fileName + ".zip\"").build();
   }
 
   @GET
@@ -165,16 +171,28 @@ public class PublishedStudiesSearchResource {
   @Path("/_report_by_network")
   @Produces("text/csv")
   @Timed
-  public Response report(@QueryParam("networkId") String networkId, @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
-    StreamingOutput stream = os -> specificStudyReportGenerator.report(networkId, locale, os);
-    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Studies.csv\"").build();
+  public Response report(@QueryParam("networkId") String networkId, @QueryParam("locale") @DefaultValue("en") String locale, @QueryParam("studyType") String studyType) throws IOException {
+    String fileName = "StudiesInitiatives.csv";
+    String className = null;
+
+    if (Study.RESOURCE_PATH.equals(studyType)) {
+      fileName = "Studies.csv";
+      className = Study.class.getSimpleName();
+    } else if (HarmonizationStudy.RESOURCE_PATH.equals(studyType)) {
+      fileName = "Initiatives.csv";
+      className = HarmonizationStudy.class.getSimpleName();
+    }
+
+    String finalClassName = className;
+    StreamingOutput stream = os -> specificStudyReportGenerator.report(networkId, locale, os, finalClassName);
+    return Response.ok(stream).header("Content-Disposition", String.format("attachment; filename=\"%s\"", fileName)).build();
   }
 
   @POST
   @Path("/_report_by_network")
   @Produces("text/csv")
   @Timed
-  public Response reportLargeQuery(@FormParam("networkId") String networkId, @FormParam("locale") @DefaultValue("en") String locale) throws IOException {
-    return report(networkId, locale);
+  public Response reportLargeQuery(@FormParam("networkId") String networkId, @FormParam("locale") @DefaultValue("en") String locale, @FormParam("studyType") String studyType) throws IOException {
+    return report(networkId, locale, studyType);
   }
 }

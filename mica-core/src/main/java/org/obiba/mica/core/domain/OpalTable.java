@@ -27,6 +27,8 @@ public abstract class OpalTable {
 
   private LocalizedString description;
 
+  private LocalizedString additionalInformation;
+
   private int weight;
 
   public String getProject() {
@@ -61,6 +63,14 @@ public abstract class OpalTable {
     return description;
   }
 
+  public LocalizedString getAdditionalInformation() {
+    return additionalInformation;
+  }
+
+  public void setAdditionalInformation(LocalizedString additionalInformation) {
+    this.additionalInformation = additionalInformation;
+  }
+
   public int getWeight() {
     return weight;
   }
@@ -74,4 +84,5 @@ public abstract class OpalTable {
   }
 
   protected abstract String getEntityId();
+
 }

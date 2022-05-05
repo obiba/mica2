@@ -26,8 +26,10 @@ public class DatasetDtosCsvReportGenerator extends CsvReportGenerator {
   private List<String> columnsToHide;
   private List<Mica.DatasetDto> datasetDtos;
   private Translator translator;
+  private final boolean forHarmonization;
 
-  public DatasetDtosCsvReportGenerator(MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, Translator translator) {
+  public DatasetDtosCsvReportGenerator(boolean forHarmonization, MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, Translator translator) {
+    this.forHarmonization = forHarmonization;
     this.columnsToHide = columnsToHide;
     this.datasetDtos = queryResult.getDatasetResultDto().getExtension(MicaSearch.DatasetResultDto.result).getDatasetsList();
     this.translator = translator;
@@ -47,7 +49,7 @@ public class DatasetDtosCsvReportGenerator extends CsvReportGenerator {
     if (mustShow("showDatasetsNetworkColumn"))
       line.add("networks");
     if (mustShow("showDatasetsStudiesColumn"))
-      line.add("studies");
+      line.add(this.forHarmonization ? "global.initiatives" : "studies");
     if (mustShow("showDatasetsVariablesColumn"))
       line.add("variables");
 

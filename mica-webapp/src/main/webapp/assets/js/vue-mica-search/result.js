@@ -52,6 +52,12 @@ const DataTableDefaults = {
 };
 
 const EntityResult = {
+  props: {
+    showCheckboxes: {
+      type: Boolean,
+      default: true
+    }
+  },
   data() {
     return {
       dataTable: null,
@@ -59,7 +65,9 @@ const EntityResult = {
       type: null,
       target: null,
       showResult: false,
-      selections: []
+      selections: [],
+      studyTypeSelection: {all: true, study: false, harmonization: false},
+      parsed: []
     };
   },
   computed: {
@@ -81,62 +89,13 @@ const EntityResult = {
      * Callback invoked when request response arrives
      */
     onResults(payload) {
-      if (!this.dataTable) return;
-      const pageInfo = this.dataTable.page.info();
-      var parsed = this.parser.parse(payload.response, this.getMicaConfig(), this.localize, this.getDisplayOptions());
-      this.showResult = parsed.totalHits > 0;
-      if (!this.showResult) return;
+      let displayOptions = this.getDisplayOptions();
+      displayOptions.showCheckboxes = this.showCheckboxes;
 
-      this.ajaxCallback({
-        data: parsed.data,
-        recordsTotal: parsed.totalHits,
-        recordsFiltered: parsed.totalHits
-      });
-
-      const start = payload.hasOwnProperty("from") ? payload.from : null;
-      if (start !== null && pageInfo.start !== start) {
-        // The start has come from the query and not from pagination
-        this.manualPagination = true;
-        this.dataTable.page(start / pageInfo.length).draw(false);
-        this.ajaxCallback({
-          data: parsed.data,
-          recordsTotal: parsed.totalHits,
-          recordsFiltered: parsed.totalHits
-        });
-      }
-    },
-    /**
-     * DataTable AJAX callback used to send pagination events
-     */
-    onAjaxCallback(data, callback) {
-      if (this.ajaxCallback) {
-        // this is called when paginating or page size is changed
-        if (this.manualPagination) {
-          this.manualPagination = false;
-        } else {
-          this.getEventBus().$emit("query-type-paginate", {
-            display: "list",
-            type: `${this.type}`,
-            target: `${this.target}`,
-            from: data.start,
-            size: data.length
-          });
-        }
-      } else {
-        // first time table is registered
-        this.ajaxCallback = callback;
-      }
-    },
-    /**
-     * Registers the DataTable
-     */
-    registerTable() {
-      this.dataTable = this.registerDataTable(`vosr-${this.type}-result`, {
-        processing: true,
-        serverSide: true,
-        ajax: this.onAjaxCallback.bind(this),
-        fixedHeader: true
-      });
+      this.studyTypeSelection = payload.studyTypeSelection || this.studyTypeSelection;
+      this.parsed = this.parser.parse(payload.response, this.getMicaConfig(), this.localize, displayOptions, this.studyTypeSelection);
+      this.showResult = this.parsed.totalHits > 0;
+      if (!this.showResult) this.parsed = [];
     },
     clearSelections() {
       this.selections = [];
@@ -175,28 +134,110 @@ const EntityResult = {
     normalizePath: (path) => {
       return contextPath + path;
     },
-    localize: (entries) => StringLocalizer.localize(entries),
-    registerDataTable(tableId, options) {
-      const mergedOptions = Object.assign(options, DataTableDefaults);
-      mergedOptions.language = {
-        url: contextPath + '/assets/i18n/mlstr-datatables.' + Mica.locale + '.json'
-      };
-      const dTable = $('#' + tableId).DataTable(mergedOptions);
-      dTable.on('draw.dt', function() {
-        // bs tooltip
-        $('[data-toggle="tooltip"]').tooltip();
-      });
+    headerSelectionEventHandler(event) {
+      const tableSelector = `#vosr-${this.type}-result`;
+      // fa icons
+      const checkedIconClassName = 'fa-check-square';
+      const notCheckedIconClassName = 'fa-square';
 
-      // checkboxes only for variables
-      if ('vosr-variables-result' === tableId) {
-        initSelectDataTable(dTable, options);
+      let headerSelectionIcon = event.target;
+      let isHeaderChecked = headerSelectionIcon.classList.contains(checkedIconClassName);
+
+      if (isHeaderChecked) {
+        headerSelectionIcon.classList.remove(checkedIconClassName);
+        headerSelectionIcon.classList.add(notCheckedIconClassName);
+      } else {
+        headerSelectionIcon.classList.remove(notCheckedIconClassName);
+        headerSelectionIcon.classList.add(checkedIconClassName);
       }
 
-      return dTable;
-    }
+      let selectionIds = [];
+      document.querySelectorAll(`${tableSelector} tbody i[data-item-id]`).forEach((row) => {
+        if (isHeaderChecked) {
+          row.classList.remove(checkedIconClassName);
+          row.classList.add(notCheckedIconClassName);
+        } else {
+          row.classList.remove(notCheckedIconClassName);
+          row.classList.add(checkedIconClassName);
+        }
+        selectionIds.push(row.dataset.itemId);
+      });
+
+      if (selectionIds.length > 0) {
+        this.onSelectionChanged(selectionIds, !isHeaderChecked);
+      }
+    },
+    rowItemSelectionEventHandler(event) {
+      // fa icons
+      const checkedIconClassName = 'fa-check-square';
+      const notCheckedIconClassName = 'fa-square';
+
+      let element = event.target;
+      let isElementChecked = element.classList.contains(checkedIconClassName);
+
+      if (isElementChecked) {
+        element.classList.remove(checkedIconClassName);
+        element.classList.add(notCheckedIconClassName);
+      } else {
+        element.classList.remove(notCheckedIconClassName);
+        element.classList.add(checkedIconClassName);
+      }
+
+      this.onSelectionChanged([element.dataset.itemId], !isElementChecked);
+    },
+    setHeaderSelectionClickEvent(tableSelector) {
+      let headerSelectionIcon = document.querySelector(`${tableSelector} thead i`);
+
+      if (headerSelectionIcon) {
+        headerSelectionIcon.removeEventListener('click', this.headerSelectionEventHandler);
+        headerSelectionIcon.addEventListener('click', this.headerSelectionEventHandler);
+      }
+    },
+    setResultSelectionClickEvent(element) {
+      if (element) {
+        element.removeEventListener('click', this.rowItemSelectionEventHandler);
+        element.addEventListener('click', this.rowItemSelectionEventHandler);
+      }
+    },
+    setCheckBoxesCheckStatusAndEvents() {
+      // fa icons
+      const checkedIconClassName = 'fa-check-square';
+      const notCheckedIconClassName = 'fa-square';
+
+      const tableSelector = `#vosr-${this.type}-result`;
+      this.setHeaderSelectionClickEvent(tableSelector);
+
+      let headerSelectionIcon = document.querySelector(`${tableSelector} thead i.far`);
+
+      if (headerSelectionIcon) {
+        headerSelectionIcon.classList.remove(checkedIconClassName);
+        headerSelectionIcon.classList.add(notCheckedIconClassName);
+      }
+
+      let tableResultRows = [...document.querySelectorAll(`${tableSelector} tbody i[data-item-id]`)];
+
+      tableResultRows.forEach((row) => {
+        let itemId = row.dataset.itemId;
+
+        if (this.isSelected(itemId)) {
+          row.classList.remove(notCheckedIconClassName);
+          row.classList.add(checkedIconClassName);
+        } else {
+          row.classList.remove(checkedIconClassName);
+          row.classList.add(notCheckedIconClassName);
+        }
+
+        this.setResultSelectionClickEvent(row);
+      });
+    },
+    localize: (entries) => StringLocalizer.localize(entries)
+  },
+  updated() {
+    this.$nextTick(() => this.setCheckBoxesCheckStatusAndEvents());
   },
   mounted() {
     console.debug(`${this.type} result table mounted...`);
+
     this.getEventBus().register(`${this.type}-results`,this.onResults.bind(this));
     this.getEventBus().register("clear-results-selections", this.clearSelections.bind(this));
   },
@@ -276,19 +317,6 @@ const GraphicResult = {
   data: function() {
     const agg = this.chartDataset.options.agg;
 
-    let totals = this.chartDataset.options.withTotals ? {countTotal: 0, subAggTotal: 0} : null;
-
-    if (this.chartDataset.options.withTotals) {
-      this.chartDataset.tableData.rows.forEach(row => {
-        totals.countTotal += row.count;
-        if (row.subAgg !== undefined) {
-          totals.subAggTotal += row.subAgg;
-        } else {
-          totals.subAggTotal = undefined;
-        }
-      });
-    }
-
     return {
       chart: null,
       cardId: this.chartDataset.options.id,
@@ -332,7 +360,7 @@ const GraphicResult = {
         layout.height = (2*1.42857)*12*(this.chartDataset.plotData.data[0] || {}).y.length;
       }
 
-      Plotly.newPlot(this.chartContainerId, this.chartDataset.plotData.data, layout, {responsive: true, displayModeBar: false});
+      Plotly.newPlot(this.chartContainerId, this.chartDataset.plotData.data, layout, {responsive: true, displaylogo: false, modeBarButtonsToRemove: ['select2d', 'lasso2d', 'pan', 'zoom', 'autoscale', 'zoomin', 'zoomout']});
     },
     onCountClick(event, vocabulary, term, queryOverride) {
       event.preventDefault();
@@ -475,12 +503,16 @@ const VariablesResult = {
         <table id="vosr-variables-result" class="table table-striped" width="100%">
           <thead>
             <tr>
-              <th><i class="far fa-square"></i></th>
-              <th></th>
+              <th v-if="showCheckboxes"><i class="far fa-square"></i></th>
               <th class="column-name">{{ "name" | translate }}</th>
               <th v-for="(column, index) in variableColumnNames" :key="index" :class="'column-'+ column" >{{ column | translate }}</th>
             </tr>
           </thead>
+          <tbody>
+            <tr v-for="parsedItem in parsed.data">
+              <td v-for="cell in parsedItem" v-html="cell"></td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -495,49 +527,30 @@ const VariablesResult = {
       target: "variable"
     }
   },
-  methods: {
-    registerTable() { // override registerTable to add checkbox specific options
-      this.dataTable = this.registerDataTable(`vosr-${this.type}-result`, {
-        processing: true,
-        serverSide: true,
-        ajax: this.onAjaxCallback.bind(this),
-        fixedHeader: true,
-        isSelected: this.isSelected.bind(this),
-        onSelectionChanged: this.onSelectionChanged.bind(this),
-        columnDefs: [{ // the checkbox
-          orderable: false,
-          className: 'select-checkbox',
-          targets: 0
-        }, { // the ID
-            visible: false,
-            searchable: false,
-            targets: 1
-        }],
-        select: {
-          style: 'multi',
-          selector: 'td:first-child',
-          info: false
-        }
-      });
-    }
-  },
   computed: {
     // table headers
     variableColumnNames: function() {
-      return this.getDisplayOptions().variableColumns
+      let displayOptions = this.getDisplayOptions();
+      let columnKey = 'variableColumns';
+      if (this.studyTypeSelection) {
+        if (this.studyTypeSelection.study) {
+          columnKey = 'variableColumnsIndividual';
+        } else if(this.studyTypeSelection.harmonization) {
+          columnKey = 'variableColumnsHarmonization';
+        }
+      }
+
+      return (displayOptions[columnKey] || displayOptions.variableColumns)
         .filter(col => {
           if (col === 'type') {
             return this.withCollectedDatasets && this.withHarmonizedDatasets;
-          } else if (col === 'study') {
+          } else if (col === 'study' || col === 'initiative') {
             return this.withStudies;
           }
           return true;
         })
         .map(col => col === 'label+description' ? 'label' : col);
     }
-  },
-  mounted() {
-    this.registerTable();
   }
 }
 
@@ -549,6 +562,7 @@ const StudiesResult = {
         <table id="vosr-studies-result" class="table table-striped" width="100%">
           <thead>
             <tr>
+              <th v-if="showCheckboxes" rowspan="2"><i class="far fa-square"></i></th>
               <th class="column-acronym" rowspan="2">{{ "acronym"  | translate }}</th>
               <th v-for="(item, index) in studyColumnItems" :key="index"
                 :class="'column-'+ item.name"
@@ -566,6 +580,11 @@ const StudiesResult = {
               </th>
             </tr>
           </thead>
+          <tbody>
+            <tr v-for="parsedItem in parsed.data">
+              <td v-for="cell in parsedItem" v-html="cell"></td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -583,7 +602,17 @@ const StudiesResult = {
   computed:{
     // study headers, 1st row
     studyColumnItems: function() {
-      return this.getDisplayOptions().studyColumns
+      let displayOptions = this.getDisplayOptions();
+      let columnKey = 'studyColumns';
+      if (this.studyTypeSelection) {
+        if (this.studyTypeSelection.study) {
+          columnKey = 'studyColumnsIndividual';
+        } else if(this.studyTypeSelection.harmonization) {
+          columnKey = 'studyColumnsHarmonization';
+        }
+      }
+
+      return (displayOptions[columnKey] || displayOptions.studyColumns)
         .filter(col => {
           if (col === 'type') {
             return this.withCollectedDatasets && this.withHarmonizedDatasets;
@@ -608,8 +637,18 @@ const StudiesResult = {
     },
     // study headers, 2nd row
     studyColumnItems2: function() {
+      let displayOptions = this.getDisplayOptions();
+      let columnKey = 'studyColumns';
+      if (this.studyTypeSelection) {
+        if (this.studyTypeSelection.study) {
+          columnKey = 'studyColumnsIndividual';
+        } else if(this.studyTypeSelection.harmonization) {
+          columnKey = 'studyColumnsHarmonization';
+        }
+      }
+
       const items2 = [];
-      this.getDisplayOptions().studyColumns
+      (displayOptions[columnKey] || displayOptions.studyColumns)
         .filter(col => {
           if (col === 'individual') {
             return this.withCollectedDatasets;
@@ -622,7 +661,7 @@ const StudiesResult = {
         })
         .forEach((col, id) => {
           if (['individual', 'harmonization'].includes(col)) {
-            items2.push({id: id, name: 'datasets', title: ''});
+            items2.push({id: id, name: (this.studyTypeSelection.harmonization ? 'protocols' : 'datasets'), title: ''});
             items2.push({id: id, name: 'variables', title: ''});
           } else if (['datasets', 'variables'].includes(col)) {
             if (this.withCollectedDatasets) {
@@ -678,8 +717,6 @@ const StudiesResult = {
   },
   mounted() {
     console.debug('Studies Result Mounted...');
-    this.registerTable();
-
     $('#vosr-studies-result').on('click', 'a.query-anchor', this.onAnchorClicked);
   }
 };
@@ -692,6 +729,7 @@ const NetworksResult = {
         <table id="vosr-networks-result" class="table table-striped" width="100%">
           <thead v-if="withCollectedDatasets && withHarmonizedDatasets">
             <tr>
+              <th v-if="showCheckboxes" rowspan="2"><i class="far fa-square"></i></th>
               <th class="column-acronym" rowspan="2">{{ "acronym" | translate }}</th>
               <th v-for="(item, index) in networkColumnItems" :key="index"
                 :class="'column-' + item.name"
@@ -708,12 +746,18 @@ const NetworksResult = {
           </thead>
           <thead v-else>
             <tr>
+              <th v-if="showCheckboxes"><i class="far fa-square"></i></th>
               <th>{{ "acronym" | translate }}</th>
               <th v-for="(item, index) in networkColumnItems" :key="index" :class="'column-' + item.name">
                 {{ item.name | translate }}
               </th>
             </tr>
           </thead>
+          <tbody>
+            <tr v-for="parsedItem in parsed.data">
+              <td v-for="cell in parsedItem" v-html="cell"></td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -732,11 +776,25 @@ const NetworksResult = {
   computed: {
     // network headers, 1st row
     networkColumnItems: function() {
-      return this.getDisplayOptions().networkColumns
+      let displayOptions = this.getDisplayOptions();
+      let columnKey = 'networkColumns';
+      if (this.studyTypeSelection) {
+        if (this.studyTypeSelection.study) {
+          columnKey = 'networkColumnsIndividual';
+        } else if(this.studyTypeSelection.harmonization) {
+          columnKey = 'networkColumnsHarmonization';
+        }
+      }
+
+      return (displayOptions[columnKey] || displayOptions.networkColumns)
         .filter(col => {
           if (col === 'type') {
             return this.withCollectedDatasets && this.withHarmonizedDatasets;
-          } else if (col === 'studies') {
+          } else if (col === 'individual') {
+            return this.withCollectedDatasets;
+          } else if (col === 'harmonization') {
+            return this.withHarmonizedDatasets;
+          } else if (col === 'studies' || col === 'initiatives') {
             return this.withStudies;
           } else if (col === 'datasets') {
             return this.withCollectedDatasets || this.withHarmonizedDatasets;
@@ -748,25 +806,43 @@ const NetworksResult = {
         .map(col => {
           return {
             name: col,
-            rowspan: (['name', 'studies'].includes(col) ? 2 : 1),
-            colspan: (['name', 'studies'].includes(col) ? 1 : 2)
+            rowspan: (['name', 'studies', 'initiatives'].includes(col) ? 2 : 1),
+            colspan: (['name', 'studies', 'initiatives'].includes(col) ? 1 : 2)
           }
         });
     },
     // network headers, 2nd row
     networkColumnItems2: function() {
+      let displayOptions = this.getDisplayOptions();
+      let columnKey = 'networkColumns';
+      if (this.studyTypeSelection) {
+        if (this.studyTypeSelection.study) {
+          columnKey = 'networkColumnsIndividual';
+        } else if(this.studyTypeSelection.harmonization) {
+          columnKey = 'networkColumnsHarmonization';
+        }
+      }
+
       const items2 = [];
-      this.getDisplayOptions().networkColumns
+      (displayOptions[columnKey] || displayOptions.networkColumns)
         .filter(col => {
           if (col === 'datasets') {
             return this.withCollectedDatasets || this.withHarmonizedDatasets;
+          } else if (col === 'individual') {
+            return this.withCollectedDatasets;
+          } else if (col === 'harmonization') {
+            return this.withHarmonizedDatasets;
           } else if (col === 'variables') {
             return this.withCollectedDatasets || this.withHarmonizedDatasets;
           }
           return false;
         })
-        .forEach(col => {
-          if (col === 'datasets') {
+        .forEach((col, id) => {
+          if (['individual', 'harmonization'].includes(col)) {
+            items2.push({id: id, name: (this.studyTypeSelection.harmonization ? 'initiatives' : 'studies'), title: ''});
+            items2.push({id: id, name: (this.studyTypeSelection.harmonization ? 'protocols' : 'datasets'), title: ''});
+            items2.push({id: id, name: 'variables', title: ''});
+          } else if (col === 'datasets') {
             items2.push({ name: 'collected'});
             items2.push({ name: 'harmonized'});
           } else if (col === 'variables') {
@@ -798,7 +874,6 @@ const NetworksResult = {
   },
   mounted() {
     console.debug('Networks Result Mounted...');
-    this.registerTable();
     $('#vosr-networks-result').on('click', 'a.query-anchor', this.onAnchorClicked);
   }
 }
@@ -815,6 +890,11 @@ const DatasetsResult = {
               <th v-for="(column, index) in datasetColumnNames" :key="index" :class="'column-' + column">{{ column | translate }}</th>
             </tr>
           </thead>
+          <tbody>
+            <tr v-for="parsedItem in parsed.data">
+              <td v-for="cell in parsedItem" v-html="cell"></td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -835,13 +915,23 @@ const DatasetsResult = {
   computed: {
     // dataset headers
     datasetColumnNames: function() {
-      return this.getDisplayOptions().datasetColumns
+      let displayOptions = this.getDisplayOptions();
+      let columnKey = 'datasetColumns';
+      if (this.studyTypeSelection) {
+        if (this.studyTypeSelection.study) {
+          columnKey = 'datasetColumnsIndividual';
+        } else if(this.studyTypeSelection.harmonization) {
+          columnKey = 'datasetColumnsHarmonization';
+        }
+      }
+
+      return (displayOptions[columnKey] || displayOptions.datasetColumns)
         .filter(col => {
           if (col === 'type') {
             return this.withCollectedDatasets && this.withHarmonizedDatasets;
           } else if (col === 'networks') {
             return this.withNetworks;
-          } else if (col === 'studies') {
+          } else if (col === 'studies' || col === 'initiatives') {
             return this.withStudies;
           }
           return true;
@@ -866,7 +956,6 @@ const DatasetsResult = {
   },
   mounted() {
     console.debug('Datasets Result Mounted...');
-    this.registerTable();
     $('#vosr-datasets-result').on('click', 'a.query-anchor', this.onAnchorClicked);
   }
 };
@@ -915,7 +1004,8 @@ const RowPopup = {
   `,
   name: 'row-popup',
   props: {
-    state: RowPopupState
+    state: RowPopupState,
+    typeSelection: Object
   },
   data() {
     return {
@@ -945,20 +1035,17 @@ const RowPopup = {
         translate('search.coverage-dce-cols.dce')
       ],
       datasetId: [translate('search.coverage-buckets.dataset')],
-      studyId: [translate('search.coverage-buckets.study')]
+      studyId: [translate('search.coverage-buckets.study')],
+      harmonization: [translate('search.coverage-dce-cols.harmonization')]
     };
 
   },
   methods: {
     initContent() {
       const model = this.state.getModel();
-      this.content = model.title.trim().split(/:/);
-      this.headers = this.headersMap[model.field].slice(0);
-
-      // cleanup content when there are no DCE
-      if ("dceId" === model.field && this.content.length < 3) {
-        this.headers.pop();
-      }
+      let content = model.title.trim().split(/:/);
+      this.content = this.typeSelection && this.typeSelection.harmonization ? [content[0]] : content;
+      this.headers = this.typeSelection && this.typeSelection.harmonization ? this.headersMap['harmonization'] : this.headersMap[model.field].slice(0);
     },
     beforeDestroy() {
       clearTimeout(this.timeoutId);
@@ -1007,12 +1094,13 @@ const CoverageResult = {
     <div v-show="showResult">
       <div class="row">
         <div id="coverage-table-container" class="col table-responsive">
-          <row-popup :state="rowPopupState"></row-popup>
+          <row-popup :type-selection="studyTypeSelection" :state="rowPopupState"></row-popup>
           <table v-if="table" id="vosr-coverage-result" class="table table-striped" width="100%">
             <thead>
               <tr>
-                <th v-bind:rowspan="bucketStartsWithDce ? 1 : 2" v-bind:colspan="table.cols.colSpan">
-                  {{ ('coverage-buckets-' + bucketName) | translate}}
+                <th v-bind:rowspan="bucketStartsWithDce ? 1 : 2" v-bind:colspan="studyTypeSelection && studyTypeSelection.harmonization ? 3 : table.cols.colSpan">
+                  <span v-if="!studyTypeSelection || !studyTypeSelection.harmonization">{{ ('coverage-buckets-' + bucketName) | translate}}</span>
+                  <span v-else>{{ 'coverage-buckets-harmonization' | translate}}</span>
                 </th>
                 <th v-for="(header, index) in table.vocabularyHeaders" v-bind:key="index" v-bind:colspan="header.termsCount">
                   <!-- TODO popover -->
@@ -1025,8 +1113,8 @@ const CoverageResult = {
                 </th>
               </tr>
               <tr>
-                <th v-if="bucketStartsWithDce">{{ "study" | translate }}</th>
-                <th v-if="bucketStartsWithDce" v-bind:colspan="studyTypeSelection.harmonization ? 2 : 1" >{{ "population" | translate }}</th>
+                <th v-if="bucketStartsWithDce" v-bind:colspan="studyTypeSelection && studyTypeSelection.harmonization ? 3 : 1">{{ (studyTypeSelection && studyTypeSelection.harmonization ? "coverage-buckets-harmonization" : "study") | translate }}</th>
+                <th v-if="bucketStartsWithDce" v-show="!studyTypeSelection.harmonization">{{ "population" | translate }}</th>
                 <th v-if="bucketStartsWithDce" v-show="!studyTypeSelection.harmonization">{{ "data-collection-event" | translate }}</th>
 
                 <th v-for="(header, index) in table.termHeaders" v-bind:key="index">
@@ -1040,7 +1128,7 @@ const CoverageResult = {
                 </th>
               </tr>
               <tr>
-                <th v-bind:colspan="table.cols.colSpan"></th>
+                <th v-bind:colspan="studyTypeSelection && studyTypeSelection.harmonization ? 3 : table.cols.colSpan"></th>
                 <th v-for="(header, index) in table.termHeaders" v-bind:key="index" v-bind:title="header.entity.descriptions | localize-string">
                   <a href v-on:click="updateQuery($event, null, header, 'variables')">
                     <span>{{header.hits.toLocaleString()}}</span>
@@ -1063,11 +1151,11 @@ const CoverageResult = {
 
                 <td v-for="(col, cindex) in table.cols.ids[row.value]"
                   v-bind:key="cindex"
-                  v-bind:colspan="cindex > 0 && studyTypeSelection.harmonization ? 2 : 1"
+                  v-bind:colspan="cindex === 0 && studyTypeSelection.harmonization ? 3 : 1"
                   v-show="!(col.id === '-' && (isSingleStudyEnabled || studyTypeSelection.harmonization))">
 
                   <span v-show="col.id === '-'">-</span>
-                  <a v-show="col.rowSpan !== 0  && col.id !== '-'" v-bind:href="col.url">{{col.title}}</a>
+                  <a v-show="col.rowSpan !== 0  && col.id !== '-'" v-bind:title="col.description" v-bind:href="col.url">{{col.title}}</a>
                   <div style="text-align: center" v-show="col.start && bucketStartsWithDce">
                     <div>
                       <small class="help-block no-margin" v-show="col.end">
@@ -1087,6 +1175,7 @@ const CoverageResult = {
                     </div>
                   </div>
                 </td>
+
                 <td v-for="(h, hindex) in table.termHeaders" v-bind:key="'h'+hindex">
                   <a href="" v-on:click="updateQuery($event, row.value, h, 'variables')">
                     <span class="badge badge-primary" v-show="row.hitsTitles[hindex]">{{row.hitsTitles[hindex]}}</span>

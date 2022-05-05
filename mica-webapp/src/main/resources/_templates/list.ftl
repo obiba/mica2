@@ -86,7 +86,7 @@
   <!-- /.control-sidebar -->
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
+  <div class="content-wrapper" id="query-vue-container">
     <!-- Content Header (Page header) -->
     <div class="content-header bg-info mb-4">
       <div class="container-fluid">
@@ -170,7 +170,7 @@
         <#if set.name?starts_with("dar:")>
           <div id="dar-list-callout" class="callout callout-info">
             <p><@message "sets.set.dar-help"/></p>
-            <btn class="btn btn-info" onclick="location.href='${contextPath}/data-access-form/${set.name?replace("dar:", "")}'">
+            <button class="btn btn-info" onclick="location.href='${contextPath}/data-access-form/${set.name?replace("dar:", "")}'">
               <i class="fas fa-link"></i>
                 <#if set.name?matches(".+-F\\d+$")>
                   <@message "data-access-feasibility"/>
@@ -179,7 +179,7 @@
                 <#else>
                   <@message "data-access-request"/>
                 </#if>
-            </btn>
+            </button>
           </div>
         <#else>
           <div id="list-callout" class="callout callout-info">
@@ -189,14 +189,27 @@
 
         <div class="card card-info card-outline">
           <div class="card-header">
-            <h3 class="card-title"><@message "variables"/></h3>
+
+            <#if config.harmonizationDatasetEnabled && config.studyDatasetEnabled>
+            <div class="float-left">
+              <ul class="nav nav-pills" id="studyClassNameChoice" role="tablist" v-cloak>
+                <li class="nav-item" role="presentation">
+                  <a class="nav-link active" id="individual-tab" @click="onStudyClassNameChange('Study')" href="" data-toggle="tab" role="tab" aria-controls="home" aria-selected="true"><@message "individual-search"/> <span class="badge badge-light right">{{individualSubCount}}</span></a>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <a class="nav-link" id="harmonization-tab" @click="onStudyClassNameChange('HarmonizationStudy')" href="" data-toggle="tab" role="tab" aria-controls="profile" aria-selected="false"><@message "harmonization-search"/> <span class="badge badge-light right">{{harmonizationSubCount}}</span></a>
+                </li>
+              </ul>
+            </div>
+            </#if>
+
             <div class="float-right">
               <button class="btn btn-success ml-2" onclick="onVariablesCartAdd('${set.id}')">
                 <i class="fas fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/>
               </button>
               <#if showCartDownload>
                 <#if showCartViewDownload>
-                  <div class="btn-group" role="group">
+                  <div class="btn-group ml-2" role="group">
                     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       <i class="fas fa-download"></i> <@message "download"/>
                     </button>
@@ -217,40 +230,37 @@
                   <i class="fas fa-trash"></i> <@message "delete"/> <span class="badge badge-light selection-count"></span>
                 </button>
               </#if>
-              <#if config.setsSearchEnabled>
-                <a class="btn btn-info ml-2" href="${contextPath}/search#lists?type=variables&query=variable(in(Mica_variable.sets,${set.id}))">
-                  <i class="fas fa-search"></i>
-                </a>
-              </#if>
             </div>
           </div>
           <div class="card-body">
             <#if set?? && set.identifiers?size gt 0>
               <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
-              <div class="table-responsive">
-                <table id="setTable" class="table table-striped">
-                  <thead>
-                  <tr>
-                    <th>
-                    <#if !set.locked || isAdministrator>
-                      <i class="far fa-square"></i>
-                    </#if>
-                    </th>
-                    <th></th>
-                    <th><@message "name"/></th>
-                    <th><@message "label"/></th>
-                    <#if config.studyDatasetEnabled && config.harmonizationDatasetEnabled>
-                      <th><@message "type"/></th>
-                    </#if>
-                    <#if !config.singleStudyEnabled>
-                      <th><@message "study"/></th>
-                    </#if>
-                    <th><@message "dataset"/></th>
-                  </tr>
-                  </thead>
-                  <tbody></tbody>
-                </table>
+              <div class="mt-3 text-muted" v-show="!hasResult"><@message "empty-list"/></div>
+              <div v-show="hasResult" class="clearfix mb-3">
+                <div class="float-left">
+                  <div class="d-inline-block">
+                    <div class="d-inline-flex">
+                      <span class="mr-2">
+                        <select class="custom-select" id="obiba-page-size-selector-top"></select>
+                      </span>
+                      <nav id="obiba-pagination-top" aria-label="Top pagination" class="mt-0">
+                        <ul class="pagination mb-0"></ul>
+                      </nav>
+                    </div>
+                  </div>
+                </div>
+                <#if config.setsSearchEnabled>
+                  <div class="float-right">
+                    <a class="btn btn-info ml-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=variables&query=variable(in(Mica_variable.sets,${set.id})),study(in(Mica_study.className,Study))">
+                      <i class="fas fa-search"></i>
+                    </a>
+                    <a class="btn btn-info ml-2" v-else href="${contextPath}/harmonization-search#lists?type=variables&query=variable(in(Mica_variable.sets,${set.id})),study(in(Mica_study.className,HarmonizationStudy))">
+                      <i class="fas fa-search"></i>
+                    </a>
+                  </div>
+                </#if>
               </div>
+              <variables-result v-show="hasResult" :show-checkboxes="hasCheckboxes"></variables-result>
             <#else>
               <div class="text-muted"><@message "empty-list"/></div>
             </#if>

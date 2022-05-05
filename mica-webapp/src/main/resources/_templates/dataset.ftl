@@ -6,6 +6,20 @@
 <#include "models/harmonization.ftl">
 <#include "models/files.ftl">
 
+<#if !type??>
+    <#assign title = "datasets">
+    <#assign searchPageQuery = "study(in(Mica_study.id,${study.id}))">
+    <#assign detailsPageSearchMode = "search">
+<#elseif type == "Harmonized">
+    <#assign title = "harmonized-datasets">
+    <#assign searchPageQuery = "study(in(Mica_study.className,HarmonizationStudy)),dataset(in(Mica_dataset.id,${dataset.id}))">
+    <#assign detailsPageSearchMode = "harmonization-search">
+<#else>
+    <#assign title = "collected-datasets">
+    <#assign searchPageQuery = "study(in(Mica_study.className,Study)),dataset(in(Mica_dataset.id,${dataset.id}))">
+    <#assign detailsPageSearchMode = "individual-search">
+</#if>
+
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
@@ -22,7 +36,7 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <@header titlePrefix=(type?lower_case + "-dataset") title=localize(dataset.acronym) subtitle=localize(dataset.name) breadcrumb=[["${contextPath}/", "home"], ["${contextPath}/datasets", "datasets"], [localize(dataset.acronym)]]/>
+    <@header titlePrefix=(type?lower_case + "-dataset") title=localize(dataset.acronym) subtitle=localize(dataset.name) breadcrumb=[["${contextPath}/", "home"], ["${contextPath}/${title}", "${title}"], [localize(dataset.acronym)]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->
@@ -60,7 +74,7 @@
                     <div class="col-md-3 col-sm-6 col-12">
                       <div class="info-box">
                         <span class="info-box-icon bg-info">
-                          <a href="${contextPath}/search#lists?type=networks&query=dataset(in(Mica_dataset.id,${dataset.id}))">
+                          <a href="${contextPath}/${detailsPageSearchMode}#lists?type=networks&query=${searchPageQuery}">
                             <i class="${networkIcon}"></i>
                           </a>
                         </span>
@@ -76,8 +90,8 @@
                   <div class="col-md-3 col-sm-6 col-12">
                     <div class="info-box">
                       <span class="info-box-icon bg-danger">
-                        <a href="${contextPath}/search#lists?type=variables&query=dataset(in(Mica_dataset.id,${dataset.id}))">
-                          <i class="${variableIcon}"></i>
+                        <a href="${contextPath}/${detailsPageSearchMode}#lists?type=variables&query=${searchPageQuery}">
+                          <i class="<#if type == "Harmonized">${dataschemaIcon}<#else>${variableIcon}</#if>"></i>
                         </a>
                       </span>
                       <div class="info-box-content">
@@ -92,12 +106,17 @@
                 <div class="card-text marked mt-3">
                   <template>${localize(dataset.description)}</template>
                 </div>
+
+              <#if type == "Harmonized">
+                <@harmonizationProtocolGeneralInfo dataset=dataset />
+              </#if>
+
               </div>
                 <#if study??>
                   <div class="card-footer">
-                    <@message "associated-study"/>
+                    <#if type == "Harmonized"><@message "associated-initiative"/><#else><@message "associated-study"/></#if>
                     <a class="btn btn-success ml-2" href="${contextPath}/study/${study.id}">
-                      <i class="${studyIcon}"></i> ${localize(study.acronym)}
+                      <i class="<#if type == "Harmonized">${initiativeIcon}<#else>${studyIcon}</#if>"></i> ${localize(study.acronym)}
                     </a>
                     <#if showDatasetContingencyLink>
                       <a class="btn btn-primary float-right ml-2" href="${contextPath}/dataset-crosstab/${dataset.id}">
@@ -122,6 +141,37 @@
             </div>
           </div>
         </div>
+
+        <#if type == "Harmonized">
+          <#if localizedStringNotEmpty(dataset.model.informationContent) || localizedStringNotEmpty(dataset.model.additionalInformation)>
+            <div class="row d-flex align-items-stretch">
+                <#if localizedStringNotEmpty(dataset.model.informationContent)>
+                  <div class="col-sm-12 col-md d-flex align-items-stretch">
+                    <div class="card card-info card-outline w-100">
+                      <div class="card-header">
+                        <h3 class="card-title"><@message "harmonization-protocol.information-content"/></h3>
+                      </div>
+                      <div class="card-body">
+                        <div class="marked"><template>${localize(dataset.model.informationContent)}</template></div>
+                      </div>
+                    </div>
+                  </div>
+                </#if>
+                <#if localizedStringNotEmpty(dataset.model.additionalInformation)>
+                  <div class="col-sm-12 col-md d-flex align-items-stretch">
+                    <div class="card card-info card-outline w-100">
+                      <div class="card-header">
+                        <h3 class="card-title"><@message "global.additional-information"/></h3>
+                      </div>
+                      <div class="card-body">
+                        <div class="marked"><template>${localize(dataset.model.additionalInformation)}</template></div>
+                      </div>
+                    </div>
+                  </div>
+                </#if>
+            </div>
+          </#if>
+        </#if>
 
         <!-- Population and DCE content -->
         <div class="row">
@@ -160,7 +210,7 @@
               </div>
             </div>
           <#elseif (studyTables?? && studyTables?size != 0) || (harmonizationTables?? && harmonizationTables?size != 0)>
-            <div class="col-lg-6">
+            <div class="col">
               <div class="card card-info card-outline">
                 <div class="card-header">
                   <h3 class="card-title"><@message "studies-included"/></h3>
@@ -171,7 +221,6 @@
                 </div>
                 <div class="card-body">
                   <#if studyTables?? && studyTables?size != 0>
-                    <h5><@message "individual-studies"/></h5>
                     <div class="table-responsive">
                       <table class="table table-striped mb-3">
                         <thead>
@@ -209,37 +258,39 @@
                       </table>
                     </div>
                   </#if>
-                    <#if harmonizationTables?? && harmonizationTables?size != 0>
-                      <h5><@message "harmonization-studies"/></h5>
-                      <div class="table-responsive">
-                        <table class="table table-striped">
-                          <thead>
+                </div>
+              </div>
+              <div class="card card-info card-outline">
+                <div class="card-header">
+                  <h3 class="card-title"><@message "initiatives-included"/></h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
+                      <i class="fas fa-minus"></i></button>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <#if harmonizationTables?? && harmonizationTables?size != 0>
+                    <div class="table-responsive">
+                      <table class="table table-striped">
+                        <thead>
+                        <tr>
+                          <th><@message "initiative"/></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <#list harmonizationTables as table>
                           <tr>
-                            <th><@message "study"/></th>
-                            <th><@message "population"/></th>
-                          </tr>
-                          </thead>
-                          <tbody>
-                          <#list harmonizationTables as table>
-                            <tr>
-                              <td>
-                                <a href="${contextPath}/study/${table.study.id}">
+                            <td>
+                              <a href="${contextPath}/study/${table.study.id}">
                                   ${localize(table.study.acronym)}
-                                </a>
-                              </td>
-                              <td>
-                                <#assign popId="${table.study.id}-${table.population.id}">
-                                <@populationDialog id=popId population=table.population></@populationDialog>
-                                <a href="#" data-toggle="modal" data-target="#modal-${popId}">
-                                  ${localize(table.population.name)}
-                                </a>
-                              </td>
-                            </tr>
-                          </#list>
-                          </tbody>
-                        </table>
-                      </div>
-                    </#if>
+                              </a>
+                            </td>
+                          </tr>
+                        </#list>
+                        </tbody>
+                      </table>
+                    </div>
+                  </#if>
                 </div>
               </div>
             </div>
@@ -274,9 +325,22 @@
                       <th><@message "variable"/></th>
                       <#list allTables as table>
                         <th>
-                          <a href="${contextPath}/study/${table.studyId}">${localize(allStudies[table.studyId].acronym)}</a>
+                          <#if localizedStringNotEmpty(table.description)>
+                          <a href="javascript:void(0)"
+                             id="popover-${table?counter}"
+                             data-html="true"
+                             data-toggle="popover"
+                             data-trigger="hover"
+                             data-placement="top"
+                             data-boundary="viewport"
+                             data-content="${localize(table.description)}"
+                             title="<@message "dataset.harmonized-table" />">
+                              <span class="d-inline-block marked"><template>${localize(allStudies[table.studyId].acronym)}</template></span>
+                          </a>
+                          <#else>
+                              ${localize(allStudies[table.studyId].acronym)}
+                          </#if>
                           <#if table.name??>${localize(table.name)}</#if>
-                          <#if table.description??><i class="fas fa-info-circle" title="${localize(table.description)}"></i></#if>
                         </th>
                       </#list>
                     </tr>
@@ -309,6 +373,12 @@
 
 <#include "libs/scripts.ftl">
 <#include "libs/dataset-scripts.ftl">
+<script>
+  $('#harmonizedTable tr [data-toggle="popover"]').popover({html: true, delay: { show: 250, hide: 750 }});
+  document.querySelectorAll("[id^='popover-']").forEach(element => {
+    element.dataset.content=marked(element.dataset.content).replaceAll('"', "'");
+  })
 
+</script>
 </body>
 </html>

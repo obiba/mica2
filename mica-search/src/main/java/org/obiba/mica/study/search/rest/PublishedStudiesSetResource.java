@@ -13,6 +13,7 @@ import org.obiba.mica.search.reports.generators.StudyCsvReportGenerator;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
+import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.service.StudySetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -104,9 +105,10 @@ public class PublishedStudiesSetResource extends AbstractPublishedDocumentsSetRe
   @GET
   @Path("/documents/_report")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
-  public Response reportStudies(@PathParam("id") String id, @QueryParam("locale") @DefaultValue("en") String locale) {
+  public Response reportStudies(@PathParam("id") String id, @QueryParam("locale") @DefaultValue("en") String locale, @QueryParam("studyType") String studyType) {
     DocumentSet documentSet = getSecuredDocumentSet(id);
-    ReportGenerator reporter = new StudyCsvReportGenerator(studySetService.getPublishedStudies(documentSet, true), locale, personService);
+    boolean forHarmonization = !Strings.isNullOrEmpty(studyType) && HarmonizationStudy.RESOURCE_PATH.equals(studyType);
+    ReportGenerator reporter = new StudyCsvReportGenerator(studySetService.getPublishedStudies(documentSet, true), locale, personService, forHarmonization);
     StreamingOutput stream = reporter::write;
     return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Studies.zip\"").build();
   }

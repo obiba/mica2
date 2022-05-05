@@ -35,10 +35,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -104,8 +101,16 @@ public class VariableController extends BaseController {
       .filter(annot -> annot.getTaxonomyName().equals("Mlstr_harmo"))
       .collect(Collectors.toList());
 
+    List<Annotation> dataschemaAnnotations = annotations.stream()
+      .filter(annot -> annot.getTaxonomyName().equals("Mlstr_dataschema"))
+      .collect(Collectors.toList());
+
+    List<String> exclusions = new ArrayList<String>() {{
+      add("Mlstr_harmo");
+      add("Mlstr_dataschema");
+    }};
     annotations = annotations.stream()
-      .filter(annot -> !annot.getTaxonomyName().equals("Mlstr_harmo"))
+      .filter(annot -> !exclusions.contains(annot.getTaxonomyName()))
       .collect(Collectors.toList());
 
     StringBuilder query = new StringBuilder();
@@ -117,6 +122,7 @@ public class VariableController extends BaseController {
         query = new StringBuilder("and(" + query + "," + expr + ")");
     }
 
+    annotations.addAll(dataschemaAnnotations);
     params.put("annotations", annotations);
     params.put("harmoAnnotations", new HarmonizationAnnotations(harmoAnnotations));
     params.put("query", "variable(" + query.toString() + ")");
@@ -170,6 +176,17 @@ public class VariableController extends BaseController {
     return harmonizedDatasetVariable;
   }
 
+  private Map<String, Object> getInitiativeDigest(String studyId) {
+    boolean published = studyService.isPublished(studyId);
+    BaseStudy study = getStudy(studyId, published);
+    Map<String, Object> params = newParameters();
+    params.put("id", studyId);
+    params.put("acronym", study.getAcronym());
+    params.put("name", study.getName());
+    params.put("published", published);
+    return params;
+  }
+
   private void addStudyTableParameters(Map<String, Object> params, DatasetVariable variable) {
     try {
       String studyId = variable.getStudyId();
@@ -178,11 +195,16 @@ public class VariableController extends BaseController {
       params.put("studyPublished", published);
       params.put("study", study);
       Population population = study.findPopulation(variable.getPopulationId().replace(variable.getStudyId() + ":", ""));
-      params.put("population", population);
-      DataCollectionEvent dce = population.findDataCollectionEvent(variable.getDceId().replace(variable.getPopulationId() + ":", ""));
-      params.put("dce", dce);
+      if (population != null) {
+        params.put("population", population);
+        DataCollectionEvent dce = population.findDataCollectionEvent(variable.getDceId().replace(variable.getPopulationId() + ":", ""));
+        params.put("dce", dce);
+      }
       if (DatasetVariable.Type.Harmonized.equals(variable.getVariableType())) {
         HarmonizationDataset dataset = getHarmonizationDataset(variable.getDatasetId());
+        Map<String, Object> initiativeDigest = getInitiativeDigest(dataset.getHarmonizationTable().getStudyId());
+        params.put("initiative", initiativeDigest);
+
         if (DatasetVariable.OpalTableType.Study.equals(variable.getOpalTableType())) {
           Optional<StudyTable> studyTable = dataset.getStudyTables().stream().filter(st ->
             variable.getStudyId().equals(st.getStudyId()) && variable.getProject().equals(st.getProject()) && variable.getTable().equals(st.getTable()))

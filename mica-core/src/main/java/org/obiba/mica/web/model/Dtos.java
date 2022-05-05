@@ -594,11 +594,6 @@ public class Dtos {
   }
 
   @NotNull
-  public Mica.EntityFormDto asDto(@NotNull HarmonizationPopulationConfig harmonizationPopulationConfig) {
-    return micaConfigDtos.asDto(harmonizationPopulationConfig);
-  }
-
-  @NotNull
   public Mica.EntityFormDto asDto(@NotNull DataCollectionEventConfig dataCollectionEventConfig) {
     return micaConfigDtos.asDto(dataCollectionEventConfig);
   }

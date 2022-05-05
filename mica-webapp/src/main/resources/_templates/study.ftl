@@ -6,6 +6,20 @@
 <#include "models/dce.ftl">
 <#include "models/files.ftl">
 
+<#if !type??>
+    <#assign title = "studies">
+    <#assign searchPageQuery = "study(in(Mica_study.id,${study.id}))">
+    <#assign detailsPageSearchMode = "search">
+<#elseif type == "Harmonization">
+    <#assign title = "harmonization-studies">
+    <#assign searchPageQuery = "study(and(in(Mica_study.className,HarmonizationStudy),in(Mica_study.id,${study.id})))">
+    <#assign detailsPageSearchMode = "harmonization-search">
+<#else>
+    <#assign title = "individual-studies">
+    <#assign searchPageQuery = "study(and(in(Mica_study.className,Study),in(Mica_study.id,${study.id})))">
+    <#assign detailsPageSearchMode = "individual-search">
+</#if>
+
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
@@ -23,7 +37,7 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <@header titlePrefix=(type?lower_case + "-study") title=localize(study.acronym) subtitle=localize(study.name) breadcrumb=[["..", "home"], ["${contextPath}/studies", "studies"], [localize(study.acronym)]]/>
+    <@header titlePrefix=(type?lower_case + "-study") title=localize(study.acronym) subtitle=localize(study.name) breadcrumb=[["..", "home"], ["${contextPath}/${title}", "${title}"], [localize(study.acronym)]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->
@@ -51,7 +65,7 @@
                       <img class="img-fluid" style="max-height: 200px" alt="${localize(study.acronym)} logo" src="${contextPath}/ws/study/${study.id}/file/${study.logo.id}/_download"/>
                     <#else >
                       <p class="text-light text-center">
-                        <i class="${studyIcon} fa-4x"></i>
+                        <i class="<#if type == "Harmonization">${initiativeIcon}<#else>${studyIcon}</#if> fa-4x"></i>
                       </p>
                     </#if>
                   </div>
@@ -60,7 +74,7 @@
                     <div class="col-md-3 col-sm-6 col-12">
                       <div class="info-box">
                         <span class="info-box-icon bg-info">
-                          <a href="${contextPath}/search#lists?type=networks&query=study(in(Mica_study.id,${study.id}))">
+                          <a href="${contextPath}/${detailsPageSearchMode}#lists?type=networks&query=${searchPageQuery}">
                             <i class="${networkIcon}"></i>
                           </a>
                         </span>
@@ -77,12 +91,12 @@
                     <div class="col-md-3 col-sm-6 col-12">
                       <div class="info-box">
                         <span class="info-box-icon bg-warning">
-                          <a href="${contextPath}/search#lists?type=datasets&query=study(in(Mica_study.id,${study.id}))">
-                            <i class="${datasetIcon}"></i>
+                          <a href="${contextPath}/${detailsPageSearchMode}#lists?type=datasets&query=${searchPageQuery}">
+                            <i class="<#if type == "Harmonization">${dataschemaIcon}<#else>${variableIcon}</#if>"></i>
                           </a>
                         </span>
                         <div class="info-box-content">
-                          <span class="info-box-text"><@message "datasets"/></span>
+                          <span class="info-box-text"><#if type == "Harmonization"><@message "protocols"/><#else><@message "datasets"/></#if></span>
                           <span class="info-box-number" id="dataset-hits">-</span>
                         </div>
                         <div>
@@ -94,8 +108,8 @@
                     <div class="col-md-3 col-sm-6 col-12">
                       <div class="info-box">
                         <span class="info-box-icon bg-danger">
-                          <a href="${contextPath}/search#lists?type=variables&query=study(in(Mica_study.id,${study.id}))">
-                            <i class="${variableIcon}"></i>
+                          <a href="${contextPath}/${detailsPageSearchMode}#lists?type=variables&query=${searchPageQuery}">
+                            <i class="<#if type == "Harmonization">${dataschemaIcon}<#else>${variableIcon}</#if>"></i>
                           </a>
                         </span>
                         <div class="info-box-content">
@@ -188,9 +202,9 @@
         <!-- Study model -->
         <@studyModel study=study type=type/>
 
-        <#if study.populations?? && study.populations?size != 0>
+        <#if type == "Individual">
+          <#if study.populations?? && study.populations?size != 0>
           <!-- Timeline -->
-          <#if type == "Individual">
             <div class="row">
               <div class="col-lg-12">
                 <div class="card card-info card-outline">
@@ -203,47 +217,47 @@
                 </div>
               </div>
             </div>
-          </#if>
 
-          <!-- Populations -->
-          <div class="row">
-            <div class="col-lg-12">
-              <div id="populations" class="card card-info card-outline">
-                <div class="card-header">
-                  <h3 class="card-title">
+            <!-- Populations -->
+            <div class="row">
+              <div class="col-lg-12">
+                <div id="populations" class="card card-info card-outline">
+                  <div class="card-header">
+                    <h3 class="card-title">
+                      <#if study.populations?size == 1>
+                        ${localize(study.populations[0].name)}
+                      <#else>
+                        <@message "populations"/>
+                      </#if>
+                    </h3>
+                  </div>
+                  <div class="card-body">
                     <#if study.populations?size == 1>
-                      ${localize(study.populations[0].name)}
                     <#else>
-                      <@message "populations"/>
+                      <ul class="nav nav-pills mb-3">
+                        <#list study.populationsSorted as pop>
+                          <li class="nav-item"><a class="nav-link <#if pop?index == 0>active</#if>" href="#population-${pop.id}" data-toggle="tab">
+                            ${localize(pop.name)}</a>
+                          </li>
+                        </#list>
+                      </ul>
                     </#if>
-                  </h3>
-                </div>
-                <div class="card-body">
-                  <#if study.populations?size == 1>
-                  <#else>
-                    <ul class="nav nav-pills mb-3">
+                    <div class="tab-content">
                       <#list study.populationsSorted as pop>
-                        <li class="nav-item"><a class="nav-link <#if pop?index == 0>active</#if>" href="#population-${pop.id}" data-toggle="tab">
-                          ${localize(pop.name)}</a>
-                        </li>
-                      </#list>
-                    </ul>
-                  </#if>
-                  <div class="tab-content">
-                    <#list study.populationsSorted as pop>
-                      <div class="tab-pane <#if pop?index == 0>active</#if>" id="population-${pop.id}">
-                        <div class="mb-3 marked">
-                          <template>${localize(pop.description)}</template>
+                        <div class="tab-pane <#if pop?index == 0>active</#if>" id="population-${pop.id}">
+                          <div class="mb-3 marked">
+                            <template>${localize(pop.description)}</template>
+                          </div>
+                          <@populationModel population=pop/>
+                          <@dceList population=pop/>
                         </div>
-                        <@populationModel population=pop/>
-                        <@dceList population=pop/>
-                      </div>
-                    </#list>
+                      </#list>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          </#if>
         </#if>
 
         <!-- Files -->

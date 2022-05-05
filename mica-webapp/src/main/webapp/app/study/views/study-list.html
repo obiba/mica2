@@ -12,14 +12,18 @@
   <div ng-include="'app/study/views/import/study-view-import.html'"></div>
 
   <h2>
-    <span>{{path.indexOf('harmonization') > -1 ? 'global.harmonization-studies' : 'global.individual-studies' | translate}}</span>
+    <span>{{type === 'harmonization' ? 'global.harmonization-studies' : 'global.individual-studies' | translate}}</span>
   </h2>
 
   <a ng-href="{{path}}/new" class="btn btn-info" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
-    <i class="fa fa-plus"></i> <span translate>study.add</span>
+    <i class="fa fa-plus"></i>
+      <span ng-if="type !== 'harmonization'" translate>study.add</span>
+      <span ng-if="type === 'harmonization'" translate>harmonization-initiative.add-initiative</span>
   </a>
   <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" ng-show="micaConfig.isImportStudiesFeatureEnabled" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
-    <i class="fa fa-upload"></i> <span translate>study.import.button</span>
+    <i class="fa fa-upload"></i>
+    <span ng-if="type !== 'harmonization'" translate>study.import.button</span>
+    <span ng-if="type === 'harmonization'" translate>harmonization-initiative.import.button</span>
   </button>
 
   <p class="help-block" ng-if="!searching && !hasDocuments() && !loading">

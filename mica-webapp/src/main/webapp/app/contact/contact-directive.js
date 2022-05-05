@@ -228,7 +228,7 @@ angular.module('mica.contact')
             ctrl.isOrdering = true;
           },
           stop: function (event, ui) {
-            if (ui.item.sortable.dropindex && ui.item.sortable.index !== ui.item.sortable.dropindex) {
+            if ('dropindex' in ui.item.sortable  && ui.item.sortable.index !== ui.item.sortable.dropindex) {
               orderUpdated();
               $timeout(function () {
                 ctrl.isOrdering = false;

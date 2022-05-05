@@ -310,11 +310,6 @@ mica.dataset
                 s.id === dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.studyId;
             })[0];
 
-            if ($scope.selected.study) {
-              $scope.selected.study.selectedPopulation = $scope.selected.study.populationSummaries.filter(function (p) {
-                return p.id === dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.populationId;
-              })[0];
-            }
           });
 
           getOpalProjects().then(function() {
@@ -351,7 +346,6 @@ mica.dataset
         $scope.dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.project = $scope.selected.project.name;
         $scope.dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.table = $scope.selected.project.table;
         $scope.dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.studyId = $scope.selected.study ? $scope.selected.study.id : null;
-        $scope.dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.populationId = $scope.selected.study.selectedPopulation ? $scope.selected.study.selectedPopulation.id : null;
 
         if ($scope.dataset.id) {
           updateDataset();
@@ -868,7 +862,8 @@ mica.dataset
       $scope.table = $.extend(true, {}, table);
       $scope.table.model = {
         name: LocalizedValues.arrayToObject(table.name),
-        description: LocalizedValues.arrayToObject(table.description)
+        description: LocalizedValues.arrayToObject(table.description),
+        additionalInformation: LocalizedValues.arrayToObject(table.additionalInformation)
       };
 
       MicaConfigResource.get(function (micaConfig) {
@@ -955,7 +950,7 @@ mica.dataset
         if (form.$valid) {
           angular.extend($scope.table, {
             studyId: $scope.selected.study.id,
-            populationId: $scope.selected.study.population.id,
+            populationId: $scope.selected.isHarmonizationTable ? null : $scope.selected.study.population.id,
             dataCollectionEventId: $scope.selected.isHarmonizationTable ? null : $scope.selected.study.population.dataCollectionEvent.id,
             project: $scope.selected.project.name,
             table: $scope.selected.project.table
@@ -963,6 +958,7 @@ mica.dataset
 
           $scope.table.name = LocalizedValues.objectToArray($scope.table.model.name);
           $scope.table.description = LocalizedValues.objectToArray($scope.table.model.description);
+          $scope.table.additionalInformation = LocalizedValues.objectToArray($scope.table.model.additionalInformation);
           delete $scope.table.model;
 
           $uibModalInstance.close({table: $scope.table, type: $scope.type});

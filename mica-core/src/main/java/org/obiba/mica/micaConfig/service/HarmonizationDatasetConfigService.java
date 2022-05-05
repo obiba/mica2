@@ -40,7 +40,7 @@ public class HarmonizationDatasetConfigService extends EntityConfigService<Harmo
 
   @Override
   protected String getDefaultDefinitionResourcePath() {
-    return "classpath:config/dataset-form/definition.json";
+    return "classpath:config/dataset-form/harmonization-definition.json";
   }
 
   @Override
@@ -50,7 +50,7 @@ public class HarmonizationDatasetConfigService extends EntityConfigService<Harmo
 
   @Override
   protected String getDefaultSchemaResourcePath() {
-    return "classpath:config/dataset-form/schema.json";
+    return "classpath:config/dataset-form/harmonization-schema.json";
   }
 
   @Override

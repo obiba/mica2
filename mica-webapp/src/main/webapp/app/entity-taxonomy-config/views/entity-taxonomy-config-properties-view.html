@@ -13,7 +13,7 @@
         <li class="active">{{model.content.name}}</li>
       </ol>
     </div>
-    <div ng-if="target.editable && !isStatic(model.content)" class="col-xs-3" >
+    <div ng-if="target.editable && !isStatic(model.content, model.forClassName)" class="col-xs-3" >
       <a class="btn btn-danger pull-right" href ng-click="deleteCriterion()"><i class="fa fa-trash"></i> <span translate>delete</span></a>
     </div>
   </div>
@@ -113,6 +113,12 @@
         <th translate>taxonomy-config.criterion-dialog.facet-expanded</th>
         <td translate>
           {{'global.'+getFacetExpanded(model.content) | translate}}
+        </td>
+      </tr>
+      <tr ng-if="getForClassName(model.content)">
+        <th translate>taxonomy-config.criterion-dialog.for-classname-attribute</th>
+        <td>
+          {{getForClassName(model.content)}}
         </td>
       </tr>
       </tbody>

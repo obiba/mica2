@@ -49,13 +49,10 @@
 <div id="networks-card">
 
   <div class="row">
-    <div class="col-3">
-      <h3 class="card-title pt-1">{{total | localize-number}} <@message "networks"/></h3>
-    </div>
     <div class="col-6">
       <typeahead @typing="onType" @select="onSelect" :items="suggestions" :external-text="initialFilter"></typeahead>
     </div>
-    <div class="col-3">
+    <div class="col-3 ml-auto">
       <a href="${contextPath}/search#lists?type=networks" class="btn btn-sm btn-primary float-right">
         <@message "global.search"/> <i class="fas fa-search"></i>
       </a>

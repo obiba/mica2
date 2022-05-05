@@ -16,6 +16,8 @@
 <#assign variableIcon = "io io-variable"/>
 <#assign projectIcon = "io io-project"/>
 <#assign taxonomyIcon = "io io-taxonomy"/>
+<#assign dataschemaIcon = "io io-dataschema"/>
+<#assign initiativeIcon = "io io-initiative"/>
 
 <!-- Assets location -->
 <#assign assetsPath = "${contextPath}/assets"/>
@@ -32,9 +34,11 @@
 <!-- Home page settings -->
 <#assign networksLink = "${contextPath}/networks"/>
 <!--#assign networksLink = "${contextPath}/search#lists?type=networks"/-->
-<#assign studiesLink = "${contextPath}/studies"/>
+<#assign studiesLink = "${contextPath}/individual-studies"/>
+<#assign initiativesLink = "${contextPath}/harmonization-studies"/>
 <!--#assign studiesLink = "${contextPath}/search#lists?type=studies"/-->
-<#assign datasetsLink = "${contextPath}/datasets"/>
+<#assign datasetsLink = "${contextPath}/collected-datasets"/>
+<#assign protocolsLink = "${contextPath}/harmonized-datasets"/>
 <!--#assign datasetsLink = "${contextPath}/search#lists?type=datasets"/-->
 <#assign portalLink = "${config.portalUrl!contextPath}" + "/"/>
 
@@ -79,11 +83,11 @@
 <#assign datasetListDefaultDisplay = "cards"/>
 
 <!-- Search -->
-<#if config?? && config.singleStudyEnabled>
-  <#assign defaultSearchState = "#lists?type=variables"/>
-<#else>
-  <#assign defaultSearchState = "#lists?type=studies"/>
-</#if>
+<#assign defaultSearchState = "#lists?query=study(in(Mica_study.className,Study))"/>
+<#assign defaultIndividualSearchState = "#lists?query=study(in(Mica_study.className,Study))"/>
+<#assign defaultHarmonizationSearchState = "#lists?query=study(in(Mica_study.className,HarmonizationStudy))"/>
+<#assign defaultSearchMode = "Study"/>
+
 <!-- Download the search results or full export -->
 <#assign downloadQueryEnabled = true />
 <#assign exportStudiesQueryEnabled = config.studiesExportEnabled />
@@ -101,9 +105,20 @@
 <#assign searchNetworkListDisplay = (config.networkEnabled && !config.singleNetworkEnabled)/>
 <!-- List tables by type (ID column ('name' or 'acronym') is always first) -->
 <#assign searchVariableColumns = ["label+description", "valueType", "annotations", "type", "study", "population", "data-collection-event", "dataset"]/>
+<#assign searchVariableColumnsHarmonization = ["label+description", "valueType", "annotations", "initiative", "protocol"]/>
+<#assign searchVariableColumnsIndividual = ["label+description", "valueType", "annotations", "study", "population", "data-collection-event", "dataset"]/>
+
 <#assign searchDatasetColumns = ["name", "type", "networks", "studies", "variables"]/>
+<#assign searchDatasetColumnsHarmonization = ["name", "networks", "initiatives", "variables"]/>
+<#assign searchDatasetColumnsIndividual = ["name", "networks", "studies", "variables"]/>
+
 <#assign searchStudyColumns = ["name", "type", "study-design", "data-sources-available", "participants", "networks", "individual", "harmonization"]/>
+<#assign searchStudyColumnsHarmonization = ["name", "networks", "harmonization"]/>
+<#assign searchStudyColumnsIndividual = ["name", "study-design", "data-sources-available", "participants", "networks", "individual"]/>
+
 <#assign searchNetworkColumns = ["name", "studies", "datasets", "variables"]/>
+<#assign searchNetworkColumnsHarmonization = ["name", "harmonization"]/>
+<#assign searchNetworkColumnsIndividual = ["name", "individual"]/>
 <!-- Extracted fields on search by type -->
 <#assign searchVariableFields = ["attributes.label.*", "attributes.description.*", "variableType", "valueType", "categories.*", "unit", "populationId", "dceId", "datasetId", "datasetAcronym", "attributes.Mlstr_area*"]/>
 <#assign searchDatasetFields = ["acronym.*","name.*","variableType","studyTable.studyId","studyTable.project","studyTable.table","studyTable.populationId","studyTable.dataCollectionEventId","harmonizationTable.studyId","harmonizationTable.project","harmonizationTable.table","harmonizationTable.populationId"]/>

@@ -305,8 +305,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
       || dataset.getHarmonizationTable() == null
       || dataset.getHarmonizationTable().getProject() == null
       || dataset.getHarmonizationTable().getTable() == null
-      || dataset.getHarmonizationTable().getStudyId() == null
-      || dataset.getHarmonizationTable().getPopulationId() == null) {
+      || dataset.getHarmonizationTable().getStudyId() == null) {
       throw new IllegalArgumentException("dataset.harmonization.missing-attributes");
     }
 
@@ -319,15 +318,6 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
 
     if (!(study instanceof HarmonizationStudy))
       throw new IllegalArgumentException("Wrong study type found");
-
-    if (!isPublishedPopulation(study, dataset.getHarmonizationTable().getPopulationId()))
-      throw new IllegalArgumentException("dataset.harmonization.population-not-published");
-  }
-
-  private boolean isPublishedPopulation(BaseStudy study, String populationId) {
-    return study.getPopulations()
-      .stream()
-      .anyMatch(population -> population.getId().equals(populationId));
   }
 
   /**

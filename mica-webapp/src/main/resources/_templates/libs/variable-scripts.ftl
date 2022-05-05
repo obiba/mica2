@@ -47,7 +47,8 @@
       "not-empty-values": "<@message "not-empty-values"/>",
       "not-empty-values-description": "<@message "not-empty-values-description"/>",
       "empty-values": "<@message "empty-values"/>",
-      "empty-values-description": "<@message "empty-values-description"/>"
+      "empty-values-description": "<@message "empty-values-description"/>",
+      "dataset.harmonized-table": "<@message "dataset.harmonized-table"/>"
     }
   };
 

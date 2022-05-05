@@ -43,9 +43,16 @@ mica.entitySfConfig
       };
 
       var navigateToVocabulary = function(content) {
+        if ($scope.target.name === 'study') {
+          $scope.model.possibleClassNames = ['Study', 'HarmonizationStudy'];
+        } else if ($scope.target.name === 'dataset') {
+          $scope.model.possibleClassNames = ['CollectedDataset', 'HarmonizedDataset'];
+        }
+
         $scope.model.content = content;
         $scope.model.children = content.terms ? content.terms : [];
         $scope.model.type = 'criterion';
+        $scope.model.forClassName = $scope.forClassName;
         $scope.model.aliases = VocabularyAttributeService.getAliases($scope.taxonomy.vocabularies, content);
       };
 
@@ -175,6 +182,7 @@ mica.entitySfConfig
       $scope.getFacet = VocabularyAttributeService.getFacet;
       $scope.getFacetPosition = VocabularyAttributeService.getFacetPosition;
       $scope.getFacetExpanded = VocabularyAttributeService.getFacetExpanded;
+      $scope.getForClassName = VocabularyAttributeService.getForClassName;
       $scope.isStatic = VocabularyAttributeService.isStatic;
       $scope.deleteCriterion = deleteCriterion;
       $scope.edit = edit;
@@ -198,9 +206,16 @@ mica.entitySfConfig
           content: null,
           children: null,
           siblings: vocabularies,
+          forClassName: $scope.forClassName,
           type: 'criterion',
           aliases: VocabularyAttributeService.getAliases(vocabularies, null)
         };
+
+        if ($scope.target.name === 'study') {
+          model.possibleClassNames = ['Study', 'HarmonizationStudy'];
+        } else if ($scope.target.name === 'dataset') {
+          model.possibleClassNames = ['CollectedDataset', 'HarmonizedDataset'];
+        }
 
         $uibModal.open({
           templateUrl: 'app/entity-taxonomy-config/views/entity-taxonomy-config-properties-modal.html',
@@ -319,7 +334,7 @@ mica.entitySfConfig
               EntitySchemaFormFieldsService,
               model) {
 
-      $scope.model = model;
+      $scope.model = model; //
       var apply = function () {
         $scope.$broadcast('schemaFormValidate');
 

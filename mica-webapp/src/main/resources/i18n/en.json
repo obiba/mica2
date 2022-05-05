@@ -64,19 +64,27 @@
     "default": "Default",
     "chronological": "Chronological",
     "network": "Network",
+    "studies-initiatives": "Studies/Initiatives",
+    "study-initiative": "Study/Initiative",
     "individual-study": "Individual Study",
     "individual-studies": "Individual Studies",
-    "harmonization-study": "Harmonization Study",
-    "harmonization-studies": "Harmonization Studies",
+    "harmonization-study": "Harmonization Initiative",
+    "harmonization-studies": "Harmonization Initiatives",
     "harmonization-study-population": "Population",
-    "participant-harmonization-study": "Harmonization Study Included",
-    "participant-harmonization-studies": "Harmonization Studies Included",
+    "individual": "Individual",
+    "harmonization": "Harmonization",
+    "initiatives": "Initiatives",
+    "study": "Study",
+    "protocols": "Protocols",
+    "participant-harmonization-study": "Harmonization Initiative Included",
+    "participant-harmonization-studies": "Harmonization Initiatives Included",
     "included-individual-studies": "Individual Studies Included",
     "included-individual-study": "Individual Study Included",
     "definition": "Definition",
     "display": "Display",
     "key": "Key",
     "refresh": "Refresh",
+    "additional-information": "Additional Information",
     "messages": {
       "error": {
         "unique-id": "ID must be unique.",
@@ -119,14 +127,14 @@
       "studies": "Individual Studies",
       "studies-with-variables": "Individual Studies with Variables",
       "study-with-variables": "Individual Study with Variables",
-      "harmonization-studies": "Harmonization Studies",
+      "harmonization-studies": "Harmonization Initiatives",
       "collected-datasets": "Collected Datasets",
-      "harmonized-datasets": "Harmonized Datasets",
+      "harmonized-datasets": "Harmonization Protocols",
       "variables": "Variables",
       "study-variables": "Individual Study Variables",
       "study-variable": "Individual Study Variable",
-      "harmonization-study-variables": "Harmonization Study Variables",
-      "harmonization-study-variable": "Harmonization Study Variable"
+      "harmonization-study-variables": "Harmonization Initiative Variables",
+      "harmonization-study-variable": "Harmonization Initiative Variable"
     },
     "title": "Application Metrics",
     "refresh.button": "Refresh",
@@ -249,8 +257,8 @@
     "datasets-help": "Index that allows to search for datasets of any type and associated variables.",
     "collected-datasets": "Collected datasets",
     "collected-datasets-help": "Index that allows to search for collected datasets and associated variables.",
-    "harmonized-datasets": "Harmonized datasets",
-    "harmonized-datasets-help": "Index that allows to search for harmonized datasets and associated variables.",
+    "harmonized-datasets": "Harmonization Protocols",
+    "harmonized-datasets-help": "Index that allows to search for Harmonization Protocols and associated variables.",
     "persons": "Persons",
     "persons-help": "Index that allows to search persons who can be associated to studies or networks.",
     "files": "Files",
@@ -309,8 +317,8 @@
     "anonymous-username-help": "User that is configured for unauthenticated Portal usage.",
     "cart-enabled": "Cart of variables enabled",
     "cart-enabled-help": "Cart of variables creation and management is enabled.",
-    "studies-cart-enabled": "Cart of studies enabled",
-    "studies-cart-enabled-help": "Cart of studies creation and management is enabled.",
+    "studies-cart-enabled": "Cart of studies and initiatives enabled",
+    "studies-cart-enabled-help": "Cart of studies and initiatives creation and management is enabled.",
     "networks-cart-enabled": "Cart of networks enabled",
     "networks-cart-enabled-help": "Cart of networks creation and management is enabled.",
     "comments-required": "Comments Required",
@@ -427,7 +435,7 @@
     "variableSummaryRequiresAuthentication-help": "The user needs to be identified when accessing to the variable summary statistics (and related operations like contingency table).",
     "sections": "Sections",
     "repository-enabled": "Repository enabled",
-    "repository-enabled-help": "Show network, study, dataset, variable pages with the search interface.",
+    "repository-enabled-help": "Show network, initiative, study, protocol, dataset, variable pages with the search interface.",
     "project-enabled": "Project section enabled",
     "project-enabled-help": "Show approved research projects pages.",
     "data-access-enabled": "Data access enabled",
@@ -440,10 +448,10 @@
     "network-enabled-help": "Network section is accessible.",
     "collected-dataset-enabled": "Collected datasets section enabled",
     "collected-dataset-enabled-help": "Collected datasets section is accessible.",
-    "harmonized-dataset-enabled": "Harmonized datasets section enabled",
-    "harmonized-dataset-enabled-help": "Harmonized datasets section is accessible.",
-    "import-studies-feature-enabled": "Import studies feature enabled",
-    "import-studies-feature-enabled-help": "Import studies feature is accessible.",
+    "harmonized-dataset-enabled": "Harmonization protocols section enabled",
+    "harmonized-dataset-enabled-help": "Harmonization protocols section is accessible.",
+    "import-studies-feature-enabled": "Import studies and initiatives feature enabled",
+    "import-studies-feature-enabled-help": "Import studies and initiatives feature is accessible.",
     "signup-enabled": "Sign-up enabled",
     "signup-enabled-help": "New users can sign-up.",
     "signup-with-password": "Sign-up with password",
@@ -452,7 +460,7 @@
     "signup-groups-help": "Sign-up groups to automatically apply to new users.",
     "signup-groups-form-help": "Space separated group names that will be to automatically apply to new users.",
     "roles": "Membership Roles",
-    "roles-help": "A person can be member of a study or of a network with one of the listed roles. * Use the prefix <a href='#/admin/translations/edit?filter=contact.label.'>'contact.label.'</a> to change the translation.",
+    "roles-help": "A person can be member of an initiative, a study or of a network with one of the listed roles. * Use the prefix <a href='#/admin/translations/edit?filter=contact.label.'>'contact.label.'</a> to change the translation.",
     "add-role": "Add Role",
     "delete-role-title": "Delete Role",
     "delete-role-confirm": "This operation will remove members with this role from all documents, i.e. studies, networks. Are you sure you want to delete role \"{{role}}\"?",
@@ -480,11 +488,11 @@
       "collected-dataset-subject": "Subject of collected dataset status notification",
       "collected-dataset-help": "Send email notifications when collected dataset status changes to Deleted, to Under review or to Draft.",
       "collected-dataset-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId}, ${status}.",
-      "harmonized-dataset-title": "Harmonized Dataset Updates",
-      "harmonized-dataset-info": "Recipients of harmonized dataset updates notifications have at least <code>Editor</code> permission (when status is Draft) or <code>Reviewer</code> permission (when status is Deleted or Under Review).",
-      "harmonized-dataset": "On harmonized dataset status changed notification",
-      "harmonized-dataset-subject": "Subject of harmonized dataset status notification",
-      "harmonized-dataset-help": "Send email notifications when harmonized dataset status changes to Deleted, to Under review or to Draft.",
+      "harmonized-dataset-title": "Harmonization Protocol Updates",
+      "harmonized-dataset-info": "Recipients of harmonization protocol updates notifications have at least <code>Editor</code> permission (when status is Draft) or <code>Reviewer</code> permission (when status is Deleted or Under Review).",
+      "harmonized-dataset": "On harmonization protocol status changed notification",
+      "harmonized-dataset-subject": "Subject of harmonization protocol status notification",
+      "harmonized-dataset-help": "Send email notifications when harmonization protocol status changes to Deleted, to Under review or to Draft.",
       "harmonized-dataset-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId}, ${status}.",
       "file-title": "File Updates",
       "file-info": "Recipients of file updates notifications have at least <code>Editor</code> permission (when status is Draft) or <code>Reviewer</code> permission (when status is Deleted or Under Review).",
@@ -610,7 +618,7 @@
       "button": "Import Studies",
       "label": "Import",
       "individual-study-title": "Import Individual Studies",
-      "harmonization-study-title": "Import Harmonization Studies",
+      "harmonization-study-title": "Import Harmonization Initiatives",
       "sub-title": "Import studies from a remote Mica server.",
       "sub-title-summary": "Select studies to import.",
       "address": "Mica URL",
@@ -622,7 +630,7 @@
       "conflicts": "Conflicts (these studies will not be imported):",
       "conflict": "Conflict",
       "conflict-individual-study": "There is already an individual study with the same ID locally.",
-      "conflict-harmonization-study": "There is already a harmonization study with the same ID locally.",
+      "conflict-harmonization-study": "There is already a harmonization initiative with the same ID locally.",
       "create-operations": "Studies to create:",
       "update-operations": "Studies to replace:",
       "operation": "Operation",
@@ -656,13 +664,13 @@
       "success": "The selected studies were submitted for import: ",
       "status-ok": "Studies imported successfully.",
       "problems" : {
-	      "problem-204": "The logo image can't be retrieved.",
-	      "problem-400": "The http address to retrieve the content is invalid.",
-	      "problem-401": "The user and/or password are invalid.",
-	      "problem-404": "The remote host was not found.",
-	      "problem-408": "Network is unreachable.",
-	      "problem-500": "Unexpected server error. Please see the log for more details.",
-	      "problem-503": "The remote host can't be reached."
+        "problem-204": "The logo image can't be retrieved.",
+        "problem-400": "The http address to retrieve the content is invalid.",
+        "problem-401": "The user and/or password are invalid.",
+        "problem-404": "The remote host was not found.",
+        "problem-408": "Network is unreachable.",
+        "problem-500": "Unexpected server error. Please see the log for more details.",
+        "problem-503": "The remote host can't be reached."
       }
     },
     "export": "Export CSV",
@@ -813,6 +821,54 @@
     },
     "none": "No studies."
   },
+  "harmonization-initiative": {
+    "none": "No initiatives",
+    "name": "Name",
+    "name-help": "Official initiative name.",
+    "acronym": "Acronym",
+    "acronym-help": "Acronym of the initiative.",
+    "opal": "Opal Server",
+    "opal-help": "URL of the opal server for this initiative (if different from the default one).",
+    "objectives": "Objectives",
+    "objectives-help": "Main objectives of the initiative.",
+    "short-label": "Initiative",
+    "publish-protocols": "Publish Protocols",
+    "add-initiative": "Add Initiative",
+    "import": {
+      "button": "Import Initiatives"
+    }
+  },
+  "harmonization-protocol": {
+    "initiative-table": "Initiative Table",
+    "add": "Add Protocol",
+    "version": "Version",
+    "version-help": "Version of the harmonized dataset (combined and study-specific harmonized data).",
+    "information-content": "Information Content",
+    "information-content-help": "Overview of the type of variables harmonized or to be harmonized (e.g. smoking, income), targeted time intervals (e.g. all pregnancy or first trimester) and required information repetition (e.g. two measures).",
+    "participants": "Number of Participants",
+    "procedures": "Procedures",
+    "procedures-help": "General approach to harmonization (central team or studies responsible for data harmonization, or other approach).",
+    "participants-inclusion": "Participants Inclusion",
+    "participants-inclusion-help": "Criteria to be met for participants to be included in the harmonization effort (e.g. age (min/max), sex/gender, health status).",
+    "infrastructure": "Infrastructure",
+    "infrastructure-help": "Data infrastructure (hardware and software) implemented to support data hosting, harmonization, and processing (harmonized data stored centrally, locally, or other structure).",
+    "qualitative-quantitative": {
+      "title": "Type",
+      "help": "Qualitative (achieved using metadata only, i.e., data dictionaries and questionnaires) or quantitative (using study data to generate harmonized data)",
+      "enum": {
+        "qualitative": "Qualitative",
+        "quantitative": "Quantitative"
+      }
+    },
+    "prospective-retrospective": {
+      "title": "Approach",
+      "help": "Prospective (core data items defined before initiating data collection) or retrospective (core data items defined after data collection)",
+      "enum": {
+        "prospective": "Prospective",
+        "retrospective": "Retrospective"
+      }
+    }
+  },
   "contact": {
     "add": {
       "member": "Add {{type}}",
@@ -903,8 +959,8 @@
       "info": "A network linked to this dataset."
     },
     "harmonization-study": {
-      "title": "Harmonization Study",
-      "info": "A harmonization study linked to this dataset."
+      "title": "Harmonization Initiative",
+      "info": "A harmonization initiative linked to this protocol."
     },
     "harmonization-study-population": {
       "title": "Harmonization Study Population",
@@ -915,16 +971,17 @@
       "info": "A study table defines which study data collection event it applies to and which Opal table the variables and data summaries are to be extracted from."
     },
     "harmonization-study-table": {
-      "title": "Harmonization Study Table",
-      "info": "A harmonization study table defines which harmonization study population it applies to and which Opal table the variables and data summaries are to be extracted from."
+      "title": "Harmonization Initiative Table",
+      "info": "A harmonization initiative table defines which harmonization study population it applies to and which Opal table the variables and data summaries are to be extracted from."
     },
     "study-tables": {
       "title": "Study Tables",
       "info": "The study tables define implementations of the harmonized variables. The data summaries will be extracted from the corresponding Opal tables."
     },
+    "harmonized-table": "Study-Specific Table",
     "harmonized-tables": {
-      "title": "Harmonized Tables",
-      "info": "The study tables define implementations of the harmonized variables by an individual study in the context of a population's data collection event or a harmonization study based on previously harmonized data. The data summaries will be extracted from the corresponding Opal tables."
+      "title": "Study-Specific Tables",
+      "info": "The study tables define implementations of the harmonized variables by an individual study in the context of a population's data collection event or a harmonization initiative based on previously harmonized data. The data summaries will be extracted from the corresponding Opal tables."
     },
     "restore-dialog": {
       "title": "Restoring Dataset from Revision",
@@ -938,12 +995,13 @@
     "table-dataschema-help": "Project's table name from which variables will be extracted.",
     "table-name": "Name",
     "table-description": "Description",
+    "table-additional-information": "Additional Information",
     "data-schema": {
-      "title": "Harmonized Dataset",
-      "info": "The variables of the harmonized dataset are the reference variables. This is a simple data dictionary: no data summaries will be extracted from the Opal table."
+      "title": "Harmonization Protocol",
+      "info": "The variables of the harmonization protocol are the reference variables. This is a simple data dictionary: no data summaries will be extracted from the Opal table."
     },
     "index": "Index",
-    "add-study-table": "Add Study Table",
+    "add-study-table": "Add Table",
     "none": "No datasets.",
     "crosstab": {
       "title": "Contingency Table",
@@ -958,8 +1016,8 @@
     },
     "harmonization":{
       "missing-attributes":"In harmonization table, these attributes are mandatory : project, table, studyId, populationId",
-      "study-not-published":"Before publishing a harmonized dataset, its linked harmonization study must already be published",
-      "population-not-published":"Before publishing a harmonized dataset, its linked population must already be published"
+      "study-not-published":"Before publishing a harmonization protocol, its linked harmonization initiative must already be published",
+      "population-not-published":"Before publishing a harmonization protocol, its linked population must already be published"
     },
     "collection":{
       "study-not-published":"Before publishing a collected dataset, its linked individual study must already be published",
@@ -1028,8 +1086,8 @@
   },
   "collected-datasets": "Collected Datasets",
   "collected-dataset": "Collected Dataset",
-  "harmonized-datasets": "Harmonized Datasets",
-  "harmonized-dataset": "Harmonized Dataset",
+  "harmonized-datasets": "Harmonization Protocols",
+  "harmonized-dataset": "Harmonization Protocol",
   "network": {
     "name": "Name",
     "logo": "Logo",
@@ -1303,7 +1361,8 @@
     "coverage-dce-cols": {
       "study": "Study",
       "population": "Population",
-      "dce": "DCE"
+      "dce": "DCE",
+      "harmonization": "Initiative"
     },
     "coverage-hide-missing": "Hide missing",
     "coverage-show-missing": "Show missing",
@@ -1312,18 +1371,18 @@
       "datasetNav": "Dataset",
       "study" : "Study",
       "study-individual": "Individual Study",
-      "study-harmonization": "Harmonization Study",
-      "dce" : "Population/Data Collection Event (DCE)",
+      "study-harmonization": "Harmonization Initiative",
+      "dce" : "Data Collection Event (DCE)",
       "dce-individual" : "Data Collection Event (DCE)",
       "dce-harmonization" : "Population",
       "network" : "Network",
-      "dataschema": "Harmonized Dataset",
+      "dataschema": "Harmonization Protocol",
       "dataset": "Dataset",
       "dataset-collected": "Collected ",
       "dataset-harmonized": "Harmonized",
       "collection": "Individual",
       "individual": "Individual",
-      "harmonization": "Harmonization"
+      "harmonization": "Initiative"
     },
     "coverage-select": {
       "all": "All",
@@ -1345,7 +1404,7 @@
       "participants": "Participants",
       "other-design": "Other design",
       "individual": "Individual",
-      "harmonization": "Harmonization"
+      "harmonization": "Initiative"
     },
     "dataset": {
       "facet-label": "Dataset",
@@ -1494,8 +1553,9 @@
   "new-folder": "New Folder",
   "new-network": "New Network",
   "new-study": "New Study",
+  "new-initiative": "New Initiative",
   "new-collected-dataset": "New Collected Dataset",
-  "new-harmonized-dataset": "New Harmonized Dataset",
+  "new-harmonized-dataset": "New Harmonization Protocol",
   "new-data-access-request": "New Data Access Request",
   "new-project": "New Research Project",
   "title": "Title",
@@ -1537,9 +1597,9 @@
       "indexing": "Manage server indices.",
       "network-config": "Configure Network form, permissions and search.",
       "individual-study-config": "Configure Study form, permissions and search.",
-      "harmonization-study-config": "Configure Harmonization Study form, permissions and search.",
+      "harmonization-study-config": "Configure Harmonization Initiative form, permissions and search.",
       "collected-dataset-config": "Configure Collected Dataset form, permissions and search.",
-      "harmonized-dataset-config": "Configure Harmonized Dataset form, permissions and search.",
+      "harmonized-dataset-config": "Configure Harmonization Protocol form, permissions and search.",
       "data-access-config": "Configure Data Access Request form.",
       "project-config": "Configure Research Project form.",
       "file-system": "Manage file system.",
@@ -1887,13 +1947,12 @@
     }
   },
   "harmonization-study-config" : {
-    "title" : "Harmonization Study Configuration",
+    "title" : "Harmonization Initiative Configuration",
     "schema-form": {
       "title": "Form",
-      "info": "The custom harmonization study form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+      "info": "The custom harmonization initiative form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
     },
-    "harmonization-study-form-title": "Harmonization Study",
-    "harmonization-population-form-title": "Harmonization Population"
+    "harmonization-study-form-title": "Harmonization Initiative"
   },
   "individual-study-config" : {
     "title" : "Individual Study Configuration",
@@ -1927,10 +1986,12 @@
       "unique-name": "Criterion name must be unique.",
       "hidden": "Hidden",
       "hidden-help": "A hidden criterion is excluded from search.",
-      "term-sort-key-help": "The order by which terms of the citerion are listed.",
+      "term-sort-key-help": "The order by which terms of the criterion are listed.",
       "terms-sort-key": "Terms Listing Order",
       "range-aggregation": "Has Range Intervals",
       "range-aggregation-help": "Numerical criterion with terms as range intervals.",
+      "for-classname-attribute": "Class Name",
+      "for-classname-attribute-help": "The class name of the object for which this configuration will apply to.",
       "error": {
         "duplicate-criterion-alias": "This field is already associated with a criterion. Only a numerical field can have two criteria, a discrete and a range criterion."
       }
@@ -1955,10 +2016,10 @@
     }
   },
   "harmonized-dataset-config" : {
-    "title" : "Harmonized Dataset Configuration",
+    "title" : "Harmonization Protocol Configuration",
     "schema-form": {
       "title": "Form",
-      "info": "The custom harmonized dataset form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+      "info": "The custom harmonization protocol form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
     }
   },
   "data-access-config": {
@@ -2371,7 +2432,7 @@
       "status": "Status",
       "type": "Type",
       "type-individual":"Individual",
-      "type-harmonization":"Harmonization",
+      "type-harmonization":"Initiative",
       "population": {
         "name": "Population",
         "source-of-recruitment": "Sources of Recruitment",
@@ -2408,24 +2469,29 @@
     "title": "Persons",
     "none": "No persons.",
     "add-networks": "Add Networks",
-    "add-studies": "Add Studies",
+    "add-studies": "Add Individual Studies",
+    "add-initiatives": "Add Harmonization Initiatives",
     "no-entity-memberships": "No membership roles.",
     "add-person": "Add Person",
-    "no-memberships": "{{fullname}} is not a member of any network or study.",
+    "no-memberships": "{{fullname}} is not a member of any network, study or initiative.",
     "entity-roles-help": "At least one role must be selected.",
     "network-entities-roles-help": "To add a membership select at least one role and one network.",
     "study-entities-roles-help": "To add a membership select at least one role and one study.",
+    "initiative-entities-roles-help": "To add a membership select at least one role and one initiative.",
     "network-roles-table-help": "List of membership roles for each network.",
     "study-roles-table-help": "List of membership roles for each study.",
-    "network-member-of-all": "{{fullname}} is member of all networks.",
-    "study-member-of-all": "{{fullname}} is member of all studies.",
+    "initiative-roles-table-help": "List of membership roles for each initiative.",
+    "network-member-of-all": "No networks found.",
+    "study-member-of-all": "No studies found.",
+    "initiative-member-of-all": "No initiatives found.",
     "update-roles-dialog": {
       "title": "Update Roles",
       "message": "Select one or more roles to assign to {{member}}."
     },
     "entity-list-dialog": {
       "network-title": "Add Member to Networks",
-      "study-title": "Add Member to Studies"
+      "study-title": "Add Member to Individual Studies",
+      "initiative-title": "Add Member to Harmonization Initiatives"
     },
     "delete-dialog":{
       "title": "Delete Person",
@@ -2440,9 +2506,9 @@
     "title": "Statistics Summary",
     "full-title": "Content Statistics Summary",
     "Study": "Individual Studies",
-    "HarmonizationStudy": "Harmonization Studies",
+    "HarmonizationStudy": "Harmonization Initiatives",
     "StudyDataset": "Collected Datasets",
-    "HarmonizationDataset": "Harmonized Datasets",
+    "HarmonizationDataset": "Harmonization Protocols",
     "DataAccessRequest": "Data Access Requests",
     "Network": "Networks",
     "Project": "Projects",

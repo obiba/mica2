@@ -1,0 +1,62 @@
+{
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "title": "t(harmonization-protocol.version)",
+      "description": "t(harmonization-protocol.version-help)"
+    },
+    "participants": {
+      "type": "integer",
+      "title": "t(harmonization-protocol.participants)"
+    },
+    "qualitativeQuantitative": {
+      "type": "string",
+      "title": "t(harmonization-protocol.qualitative-quantitative.title)",
+      "description": "t(harmonization-protocol.qualitative-quantitative.help)",
+      "enum": [
+        "qualitative",
+        "quantitative"
+      ]
+    },
+    "prospectiveRetrospective": {
+      "type": "string",
+      "title": "t(harmonization-protocol.prospective-retrospective.title)",
+      "description": "t(harmonization-protocol.prospective-retrospective.help)",
+      "enum": [
+        "prospective",
+        "retrospective"
+      ]
+    },
+    "informationContent": {
+      "type": "object",
+      "title": "t(harmonization-protocol.information-content)",
+      "description": "t(harmonization-protocol.information-content-help)",
+      "format": "obibaSimpleMde"
+    },
+    "procedures": {
+      "type": "object",
+      "title": "t(harmonization-protocol.procedures)",
+      "description": "t(harmonization-protocol.procedures-help)",
+      "format": "localizedString"
+    },
+    "participantsInclusion": {
+      "type": "object",
+      "title": "t(harmonization-protocol.participants-inclusion)",
+      "description": "t(harmonization-protocol.participants-inclusion-help)",
+      "format": "localizedString"
+    },
+    "infrastructure": {
+      "type": "object",
+      "title": "t(harmonization-protocol.infrastructure)",
+      "description": "t(harmonization-protocol.infrastructure-help)",
+      "format": "localizedString"
+    },
+    "additionalInformation": {
+      "type": "object",
+      "title": "t(global.additional-information)",
+      "format": "obibaSimpleMde"
+    }
+  },
+  "required": []
+}

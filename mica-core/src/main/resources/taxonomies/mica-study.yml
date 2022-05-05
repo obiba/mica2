@@ -46,6 +46,7 @@
     "alias": "objectives"
     "static": "true"
     "localized": "true"
+    "forClassName": "Study"
 - "name": "opal"
   "title":
     "en": "Opal Server"
@@ -74,6 +75,7 @@
     "type": "keyword"
     "facetPosition": "0"
     "facetExpanded": "false"
+    "forClassName": "Study"
   "terms":
   - "name": "cohort_study"
     "title":
@@ -279,6 +281,7 @@
     "type": "keyword"
     "facetPosition": "0"
     "facetExpanded": "false"
+    "forClassName": "Study"
   "repeatable": "true"
   "terms":
   - "name": "AND"
@@ -1539,6 +1542,7 @@
     "static": "true"
     "hidden": "true"
     "type": "keyword"
+    "forClassName": "Study"
 - "name": "populations-name"
   "title":
     "en": "Population Name"
@@ -1552,6 +1556,7 @@
     "alias": "populations-name"
     "static": "true"
     "localized": "true"
+    "forClassName": "Study"
 - "name": "populations-description"
   "title":
     "en": "Population Description"
@@ -1565,6 +1570,7 @@
     "alias": "populations-description"
     "static": "true"
     "localized": "true"
+    "forClassName": "Study"
 - "name": "populations-selectionCriteria-ageMin"
   "title":
     "en": "Selection criteria - Minimum age"
@@ -1579,6 +1585,7 @@
     "facet": "true"
     "facetPosition": "0"
     "facetExpanded": "false"
+    "forClassName": "Study"
 - "name": "populations-selectionCriteria-ageMax"
   "title":
     "en": "Selection criteria - Maximum age"
@@ -1593,6 +1600,7 @@
     "facet": "true"
     "facetPosition": "0"
     "facetExpanded": "false"
+    "forClassName": "Study"
 - "name": "populations-selectionCriteria-gender"
   "title":
     "en": "Selection criteria - Sex"
@@ -1606,6 +1614,7 @@
     "type": "keyword"
     "facetPosition": "0"
     "facetExpanded": "false"
+    "forClassName": "Study"
   "terms":
   - "name": "men"
     "title":
@@ -1633,6 +1642,7 @@
     "type": "keyword"
     "facetPosition": "0"
     "facetExpanded": "false"
+    "forClassName": "Study"
   "terms":
   - "name": "first_trimester"
     "title":
@@ -1669,6 +1679,7 @@
     "type": "keyword"
     "facetPosition": "0"
     "facetExpanded": "false"
+    "forClassName": "Study"
   "terms":
   - "name": "true"
     "title":
@@ -1698,6 +1709,7 @@
     "type": "keyword"
     "facetPosition": "0"
     "facetExpanded": "false"
+    "forClassName": "Study"
   "terms":
   - "name": "true"
     "title":
@@ -1727,6 +1739,7 @@
     "facet": "true"
     "facetPosition": "0"
     "facetExpanded": "false"
+    "forClassName": "Study"
   "terms": []
 - "name": "numberOfParticipants-participant-range"
   "title":
@@ -1740,6 +1753,7 @@
     "field": "model.numberOfParticipants.participant.number"
     "alias": "model-numberOfParticipants-participant-number-range"
     "range": "true"
+    "forClassName": "Study"
   "terms":
     - "name": "*:1000"
       "title":
@@ -1797,6 +1811,7 @@
     "facet": "true"
     "facetPosition": "0"
     "facetExpanded": "false"
+    "forClassName": "Study"
   "terms": []
 - "name": "numberOfParticipants-sample-range"
   "title":
@@ -1810,6 +1825,7 @@
     "field": "model.numberOfParticipants.sample.number"
     "alias": "model-numberOfParticipants-sample-number-range"
     "range": "true"
+    "forClassName": "Study"
   "terms":
     - "name": "*:1000"
       "title":
@@ -1868,6 +1884,7 @@
     "type": "keyword"
     "facetPosition": "0"
     "facetExpanded": "false"
+    "forClassName": "Study"
   "terms":
   - "name": "individuals"
     "title":
@@ -1905,6 +1922,7 @@
     "facetExpanded": "false"
     "type": "keyword"
     "repeatable": "true"
+    "forClassName": "Study"
   "terms":
   - "name": "general_population"
     "title":
@@ -1948,6 +1966,7 @@
     "type": "keyword"
     "facetPosition": "0"
     "facetExpanded": "false"
+    "forClassName": "Study"
   "repeatable": "true"
   "terms":
   - "name": "questionnaires"
@@ -2002,6 +2021,7 @@
     "field": "populations.model.recruitment.generalPopulationSources"
     "alias": "populations-model-recruitment-generalPopulationSources"
     "type": "keyword"
+    "forClassName": "Study"
   "repeatable": "true"
   "terms":
   - "name": "volunteer"
@@ -2032,6 +2052,7 @@
     "field": "populations.model.recruitment.specificPopulationSources"
     "alias": "populations-model-recruitment-specificPopulationSources"
     "type": "keyword"
+    "forClassName": "Study"
   "repeatable": "true"
   "terms":
   - "name": "clinic_patients"
@@ -2065,6 +2086,7 @@
     "type": "keyword"
     "facetPosition": "0"
     "facetExpanded": "false"
+    "forClassName": "Study"
   "repeatable": "true"
   "terms":
   - "name": "blood"
@@ -2122,6 +2144,7 @@
     "field": "populations.dataCollectionEvents.model.administrativeDatabases"
     "alias": "populations-dataCollectionEvents-model-administrativeDatabases"
     "type": "keyword"
+    "forClassName": "Study"
   "repeatable": "true"
   "terms":
   - "name": "health_databases"
@@ -2162,6 +2185,7 @@
     "type": "keyword"
     "facetPosition": "0"
     "facetExpanded": "false"
+    "forClassName": "Study"
   "repeatable": "true"
   "terms":
     - "name": "yes"
@@ -2199,6 +2223,7 @@
     "type": "keyword"
     "facetPosition": "0"
     "facetExpanded": "false"
+    "forClassName": "Study"
   "repeatable": "true"
   "terms":
     - "name": "yes"
@@ -2236,6 +2261,7 @@
     "type": "keyword"
     "facetPosition": "0"
     "facetExpanded": "false"
+    "forClassName": "Study"
   "repeatable": "true"
   "terms":
     - "name": "yes"
@@ -2272,6 +2298,7 @@
     "alias": "populations-dataCollectionEvents-id"
     "type": "keyword"
     "static": "true"
+    "forClassName": "Study"
 - "name": "populations-dataCollectionEvents-name"
   "title":
     "en": "Data Collection Event Name"
@@ -2286,6 +2313,7 @@
     "type": "string"
     "hidden": "true"
     "localized": "true"
+    "forClassName": "Study"
 - "name": "populations-dataCollectionEvents-start"
   "title":
     "en": "Data Collection Event Start Date"
@@ -2299,6 +2327,7 @@
     "alias": "populations-dataCollectionEvents-start-yearMonth"
     "static": "true"
     "type": "keyword"
+    "forClassName": "Study"
 - "name": "populations-dataCollectionEvents-end"
   "title":
     "en": "Data Collection Event End Date"
@@ -2312,6 +2341,7 @@
     "alias": "populations-dataCollectionEvents-end-yearMonth"
     "static": "true"
     "type": "keyword"
+    "forClassName": "Study"
 - "name": "populations-dataCollectionEvents-description"
   "title":
     "en": "Data Collection Event Description"
@@ -2325,6 +2355,7 @@
     "alias": "populations-dataCollectionEvents-description"
     "static": "true"
     "localized": "true"
+    "forClassName": "Study"
 - "name": "className"
   "title":
     "en": "Type of Study"
@@ -2350,17 +2381,6 @@
   "attributes":
     "static": "true"
     "type": "keyword"
-- "name": "harmonizationDesign"
-  "title":
-    "en": "Harmonization Study Design"
-    "fr": "Conception de l'étude d'harmonisation"
-  "description":
-    "en": "Harmonization Study Design."
-    "fr": "Conception de l'étude d'harmonisation."
-  "attributes":
-    "field": "model.harmonizationDesign"
-    "alias": "model-harmonizationDesign"
-    "localized": "true"
 - "name": "sets"
   "title":
     "en": "Sets"

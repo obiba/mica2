@@ -42,8 +42,7 @@ mica.study.StudiesImportController = function (
 	'individual-study' : 'individual-study-config.individual-study-form-title',
     'study-population' : 'individual-study-config.population-form-title',
     'data-collection-event' : 'individual-study-config.data-collection-event-form-title',
-    'harmonization-study' : 'harmonization-study-config.harmonization-study-form-title',
-    'harmonization-study-population' : 'harmonization-study-config.harmonization-population-form-title'
+    'harmonization-study' : 'harmonization-study-config.harmonization-study-form-title'
    };
 
   $scope.modalIndex = CONNECTIONS_PARAMS_0;

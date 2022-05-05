@@ -30,6 +30,41 @@
   <#return default/>
 </#function>
 
+
+<#function arrayNotEmpty array=[]>
+    <#assign notEmpty = true>
+    <#if array?? && array?size gt 0>
+        <#list array as element>
+            <#assign notEmpty = notEmpty && element?? && element?has_content>
+        </#list>
+    <#else>
+        <#return false>
+    </#if>
+    <#return notEmpty>
+</#function>
+
+<#function localizedStringNotEmpty txt={}>
+    <#assign notEmpty = true>
+    <#if txt?? && txt?keys??>
+        <#assign notEmpty = txt[.lang]?? && txt[.lang]?has_content && txt[.lang]?trim?has_content>
+    <#else>
+        <#return false>
+    </#if>
+    <#return notEmpty>
+</#function>
+
+<#function arrayLocalizedStringNotEmpty array=[]>
+    <#assign notEmpty = true>
+    <#if array?? && array?size gt 0>
+        <#list array as element>
+            <#assign notEmpty = notEmpty && localizedStringNotEmpty(element)>
+        </#list>
+    <#else>
+        <#return false>
+    </#if>
+    <#return notEmpty>
+</#function>
+
 <!-- Current user built-in roles -->
 <#assign isAdministrator = (user?? && user.roles?? && user.roles?seq_contains("mica-administrator"))/>
 <#assign isReviewer = (user?? && user.roles?? && user.roles?seq_contains("mica-reviewer"))/>

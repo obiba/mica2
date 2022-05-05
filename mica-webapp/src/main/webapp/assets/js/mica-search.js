@@ -40,6 +40,21 @@ class StringLocalizer {
   }
 }
 
+const MINIMUM_STUDY_TAXONOMY = {
+  name: "Mica_study",
+  vocabularies: [
+    {
+      name: "className",
+      attributes: [{key: "forClassName", value: ""}],
+      title: [ {locale: "en", text: "Type of Study"}, {locale: "fr", text: "Type d'étude"} ],
+      terms: [
+        { name: "Study", title: [ {locale: "en", text: "Individual"}, {locale: "fr", text: "Individuelle"} ] },
+        { name: "HarmonizationStudy", title: [ {locale: "en", text: "Harmonization"}, {locale: "fr", text: "Harmonisation"} ] }
+      ]
+    }
+  ]
+};
+
 /**
  * Taxonomy sidebar menu component
 */
@@ -53,11 +68,11 @@ Vue.component('search-criteria', {
         <a href="#" class="nav-link">
           <i class="nav-icon" v-bind:class="criteriaMenu.items[name].icon"></i>
           <p>
-            {{criteriaMenu.items[name].title}}
+           {{studyTypeSelection && studyTypeSelection.harmonization ? criteriaMenu.items[name].harmoTitle : criteriaMenu.items[name].title}}
           </p>
         </a>
         <ul class="nav nav-treeview">
-          <li class="nav-item" :key="menu.name" v-for="menu in criteriaMenu.items[name].menus">
+          <li class="nav-item" :key="menu.name" v-for="menu in criteriaMenu.items[name].menus" v-if="!(studyTypeSelection && studyTypeSelection.harmonization) || !menu.hideHarmo">
             <a href="#" class="nav-link" data-toggle="modal" data-target="#taxonomy-modal"
               :title="menu.description | localize-string"
               @click.prevent="onTaxonomySelection(menu.name, name)"><i class="far fa-circle nav-icon"></i><p>{{ menu.title | localize-string }}</p>
@@ -68,6 +83,9 @@ Vue.component('search-criteria', {
     </ul>
   </div>
   `,
+  props: {
+    studyTypeSelection: Object
+  },
   data() {
     return {
       criteriaMenu: {
@@ -75,21 +93,25 @@ Vue.component('search-criteria', {
           variable: {
             icon: Mica.icons.variable,
             title: Mica.tr.variables,
+            harmoTitle: Mica.tr.variables,
             menus: []
           },
           dataset: {
             icon: Mica.icons.dataset,
             title: Mica.tr.datasets,
+            harmoTitle: Mica.tr.protocols,
             menus: []
           },
           study: {
             icon: Mica.icons.study,
             title: Mica.tr.studies,
+            harmoTitle: Mica.tr.initiatives,
             menus: []
           },
           network: {
             icon: Mica.icons.network,
             title: Mica.tr.networks,
+            harmoTitle: Mica.tr.networks,
             menus: []
           },
         },
@@ -121,6 +143,12 @@ Vue.component('search-criteria', {
             } else {
               this.criteriaMenu.items.variable.menus = level;
             }
+
+            this.criteriaMenu.items.variable.menus.forEach(m =>  {
+              if (m.name === 'Mlstr_additional') {
+                m.hideHarmo = true;
+              }
+            });
             break;
           case 'dataset':
           case 'study':
@@ -149,14 +177,34 @@ Vue.component('search-criteria', {
 Vue.component('study-filter-shortcut', {
   name: 'StudyFilterShortcut',
   template: `
-  <div v-if="visible && showFilter">
-    <div class="btn-group" role="group" aria-label="Basic example">
-      <button type="button" v-bind:class="{active: selection.all}" class="btn btn-sm btn-info" v-on:click="onSelectionClicked('all')">{{tr('all')}}</button>
-      <button type="button" v-bind:class="{active: selection.study}" class="btn btn-sm btn-info" v-on:click="onSelectionClicked('study')">{{tr('individual')}}</button>
-      <button type="button" v-bind:class="{active: selection.harmonization}" class="btn btn-sm btn-info" v-on:click="onSelectionClicked('harmonization')">{{tr('harmonization')}}</button>
+  <div>
+    <template v-if="!alternate">
+    <div v-if="visible && showFilter" class="d-inline-block">
+      <div class="btn-group" role="group">
+        <button type="button" v-bind:class="{active: selection.all}" class="btn btn-sm btn-light" v-on:click="onSelectionClicked('all')">{{tr('all')}}</button>
+        <button type="button" v-bind:class="{active: selection.study}" class="btn btn-sm btn-light" v-on:click="onSelectionClicked('study')">{{tr('individual')}}</button>
+        <button type="button" v-bind:class="{active: selection.harmonization}" class="btn btn-sm btn-light" v-on:click="onSelectionClicked('harmonization')">{{tr('harmonization')}}</button>
+      </div>
     </div>
+    </template>
+    <template v-else>
+      <ul class="nav nav-tabs h5">
+      <li class="nav-item">
+          <a v-if="selection.all" href="#" v-bind:class="{active: selection.all}" class="nav-link" @click.stop.prevent="onSelectionClicked('all')">{{tr('all')}}</a>
+        </li>
+        <li class="nav-item">
+          <a href="#" v-bind:class="{active: selection.study}" class="nav-link" @click.stop.prevent="onSelectionClicked('study')">{{tr('individual')}}</a>
+        </li>
+        <li class="nav-item" v-if="showHarmonization">
+          <a href="#" v-bind:class="{active: selection.harmonization}" class="nav-link" @click.stop.prevent="onSelectionClicked('harmonization')">{{tr('harmonization')}}</a>
+        </li>
+      </ul>
+    </template>
   </div>
   `,
+  props: {
+    alternate: Boolean
+  },
   data() {
     return {
       selection: {all: true, study: false, harmonization: false},
@@ -164,6 +212,7 @@ Vue.component('study-filter-shortcut', {
     }
   },
   computed: {
+    showHarmonization: () => Mica.config.isHarmonizedDatasetEnabled,
     showFilter: () => Mica.config.isCollectedDatasetEnabled
       && Mica.config.isHarmonizedDatasetEnabled
       && !Mica.config.isSingleStudyEnabled
@@ -485,6 +534,47 @@ class TableFixedHeaderUtility {
 
   const queryAlertListener  = new MicaQueryAlertListener();
 
+  function foundAttributeIsOk(studyTypeSelection, foundAttr) {
+    let isOk = !foundAttr || foundAttr.value.length === 0 || foundAttr.value === 'Network' || foundAttr.value === 'Variable';
+
+    if (studyTypeSelection.study) {
+      isOk = isOk || foundAttr.value === 'Study' || foundAttr.value === 'StudyDataset';
+    } else if (studyTypeSelection.harmonization) {
+      isOk = isOk || foundAttr.value === 'HarmonizationStudy' || foundAttr.value === 'HarmonizationDataset';
+    } else {
+      isOk = true;
+    }
+
+    return isOk
+  }
+
+  function processTaxonomyForStudyTypeSelection(studyTypeSelection, taxonomy) {
+    if (taxonomy) {
+      if (studyTypeSelection.study || studyTypeSelection.harmonization) {
+        let clone = JSON.parse(JSON.stringify(taxonomy));
+        let clonedVocabularies = clone.vocabularies.filter(voc => {
+          let foundAttr = (voc.attributes || []).find(attr => attr.key === 'forClassName');
+          return foundAttributeIsOk(studyTypeSelection, foundAttr);
+        });
+
+        clonedVocabularies.forEach(voc => {
+          if (Array.isArray(voc.terms)) {
+            voc.terms = voc.terms.filter(term => {
+              let foundAttr = (term.attributes || []).find(attr => voc.name !== 'sets' && attr.key === 'className');
+              return foundAttributeIsOk(studyTypeSelection, foundAttr);
+            });
+          }
+        });
+
+        clone.vocabularies = clonedVocabularies;
+
+        return clone;
+      }
+    }
+
+    return taxonomy;
+  }
+
   new Vue({
     el: '#search-application',
     data() {
@@ -493,10 +583,13 @@ class TableFixedHeaderUtility {
         taxonomies: {},
         targets: [],
         display: DISPLAYS.LISTS,
+        currentListType: null,
         message: '',
         selectedTaxonomy: null,
         selectedTaxonomyTitle: null,
         selectedTarget: null,
+        studyHasCheckboxes: false,
+        networkHasCheckboxes: false,
         queryType: 'variables-list',
         lastList: '',
         queryExecutor: new MicaQueryExecutor(EventBus, DataTableDefaults.pageLength, Mica.querySettings),
@@ -531,7 +624,12 @@ class TableFixedHeaderUtility {
         hasCoverageTermsWithZeroHits: false,
         queryForFullCoverage: null,
         queriesWithZeroHitsToUpdate: [],
-        coverageFixedHeaderHandler: null
+        coverageFixedHeaderHandler: null,
+        currentStudyTypeSelection: null,
+        pagination: null,
+        pageSizeSelector: null,
+        showStudyShortcut: (Mica.isHarmonizedDatasetEnabled && !Mica.isSingleStudyEnabled) || !this.currentStudyTypeSelection || this.currentStudyTypeSelection.all,
+        showVariableAndDatasetTabsInIndividualMode: '/individual-search' !== window.location.pathname || ('/individual-search' === window.location.pathname && Mica.config.isCollectedDatasetEnabled),
       };
     },
     methods: {
@@ -539,16 +637,19 @@ class TableFixedHeaderUtility {
         setTimeout(() => {
           const filter = document.querySelector('#study-filter-shortcut');
           const tabPane = document.querySelector(".tab-pane .show");
-          if (tabPane) {
-            const toolbar = tabPane.querySelector('div.toolbar')
-            if (toolbar) {
+          if (filter && filter.parentNode) {
+            if (tabPane) {
+              const toolbar = tabPane.querySelector('div.toolbar')
+              if (toolbar) {
+                filter.parentNode.removeChild(filter);
+                toolbar.prepend(filter);
+              }
+            } else {
               filter.parentNode.removeChild(filter);
-              toolbar.prepend(filter);
+              document.querySelector('#study-filter-shortcut-container').prepend(filter);
             }
-          } else {
-            filter.parentNode.removeChild(filter);
-            document.querySelector('#study-filter-shortcut-container').prepend(filter);
           }
+
         }, 150);
       },
       refreshQueries() {
@@ -558,13 +659,27 @@ class TableFixedHeaderUtility {
           for (let key of [TARGETS.VARIABLE, TARGETS.DATASET, TARGETS.STUDY, TARGETS.NETWORK]) {
             let target = this.queries[key];
             if (target && target.args && target.args.length > 0) {
-              this.noQueries = false;
-              break;
+              let splitQuery = Criterion.splitQuery(target);
+              if (key === TARGETS.STUDY) {
+                let isLoneStudyClassNameQuery = splitQuery.length === 1 && Criterion.splitQuery(target)[0].args[0] === 'Mica_study.className';
+                if (!isLoneStudyClassNameQuery || (splitQuery.length === 1 && '/search' === window.location.pathname)) {
+                  this.noQueries = false;
+                  break;
+                }
+              } else {
+                let splitQuery = Criterion.splitQuery(target);
+                if (splitQuery.length > 0) {
+                  this.noQueries = false;
+                  break;
+                }
+              }
             }
           }
         }
       },
       getTaxonomyForTarget(target) {
+        let studyTypeSelection = MicaTreeQueryUrl.getStudyTypeSelection(MicaTreeQueryUrl.getTree());
+
         let result = [];
 
         if (TARGETS.VARIABLE === target) {
@@ -579,26 +694,48 @@ class TableFixedHeaderUtility {
           result.push(taxonomies);
         } else {
           let taxonomy = this.taxonomies[`Mica_${target}`];
-          result.push(taxonomy);
+          if (taxonomy) {
+            result.push(taxonomy);
+          }
         }
 
-        return result[0];
+        if (Array.isArray(result[0])) {
+          let finalResult = [];
+          result[0].forEach(res => {
+            const processed = processTaxonomyForStudyTypeSelection(studyTypeSelection, res);
+            if (processed ) {
+              finalResult.push(processed);
+            }
+          });
+          return finalResult;
+        } else {
+          return processTaxonomyForStudyTypeSelection(studyTypeSelection, target === 'study' && !result[0] ? MINIMUM_STUDY_TAXONOMY : result[0]);
+        }
       },
       // show a modal with all the vocabularies/terms of the selected taxonomy
       // initialized by the query terms and update/trigger the query on close
       onTaxonomySelection(payload) {
-        this.selectedTaxonomy = this.taxonomies[payload.taxonomyName];
+        let studyTypeSelection = MicaTreeQueryUrl.getStudyTypeSelection(MicaTreeQueryUrl.getTree());
+
+        let selectedTaxonomy = this.taxonomies[payload.taxonomyName];
         this.selectedTarget = payload.target;
 
         let selectedTaxonomyVocabulariesTitle = '';
-        if (this.selectedTaxonomy) {
-          this.selectedTaxonomyTitle = this.selectedTaxonomy.title;
-          selectedTaxonomyVocabulariesTitle = this.selectedTaxonomy.vocabularies.map(voc => voc.title[0].text).join(', ');
+        if (selectedTaxonomy) {
+          this.selectedTaxonomyTitle = selectedTaxonomy.title;
+
+          if (selectedTaxonomy.name.startsWith('Mica_')) {
+            selectedTaxonomy = processTaxonomyForStudyTypeSelection(studyTypeSelection, selectedTaxonomy);
+          }
+
+          selectedTaxonomyVocabulariesTitle = selectedTaxonomy.vocabularies.map(voc => voc.title[0].text).join(', ');
         } else {
           const foundTaxonomyGroup = this.findTaxonomyGroup(payload.taxonomyName, payload.target);
-          this.selectedTaxonomy = foundTaxonomyGroup.taxonomies;
+          selectedTaxonomy = foundTaxonomyGroup.taxonomies;
           this.selectedTaxonomyTitle = foundTaxonomyGroup.title;
         }
+
+        this.selectedTaxonomy = selectedTaxonomy;
 
         this.message = '[' + payload.taxonomyName + '] ' + this.selectedTaxonomyTitle[0].text + ': ';
         this.message = this.message + selectedTaxonomyVocabulariesTitle;
@@ -624,40 +761,58 @@ class TableFixedHeaderUtility {
 
         return found;
       },
-      onExecuteQuery() {
-        console.debug('Executing ' + this.queryType + ' query ...');
-        EventBus.$emit(this.queryType, 'I am the result of a ' + this.queryType + ' query');
+      findProperType() {
+        if (Mica.config.isSingleStudyEnabled) {
+          if (Mica.config.isCollectedDatasetEnabled || Mica.config.isHarmonizedDatasetEnabled) {
+            return TYPES.VARIABLES;
+          } else if (!Mica.config.isCollectedDatasetEnabled) {
+            return TYPES.NETWORKS;
+          }
+        } else {
+          return TYPES.STUDIES;
+        }
       },
-      onClearQuery() {
+      setLocation(searchQuery) {
         const urlParts = MicaTreeQueryUrl.parseUrl();
         const searchParams = urlParts.searchParams || {};
 
         const display = urlParts.hash || 'list';
-        const type = searchParams.type || TYPES.VARIABLES;
+        const type = searchParams.type || this.findProperType();
 
         let params = [`type=${type}`];
+        if (searchQuery) {
+          params.push(`query=${searchQuery}`);
+        }
 
         const urlSearch = params.join("&");
         const hash = `${display}?${urlSearch}`;
 
         window.location.hash = `#${hash}`;
       },
+
+      onClearQuery() {
+        let currentPathName = window.location.pathname;
+        let studyClassName = Mica.defaultSearchMode;
+
+        if (currentPathName.startsWith("/harmonization")) {
+          studyClassName = 'HarmonizationStudy';
+        } else if (currentPathName.startsWith("/individual")) {
+          studyClassName = 'Study';
+        }
+
+        let tree = new RQL.QueryTree();
+        // create target and add query as child, done!
+        let targetQuery = new RQL.Query(TARGETS.STUDY);
+        tree.addQuery(null, targetQuery);
+        tree.addQuery(targetQuery, new RQL.Query('in', ['Mica_study.className', studyClassName]));
+
+        this.setLocation(tree.serialize());
+      },
       onLocationChanged(payload) {
         this.downloadUrlObject = MicaTreeQueryUrl.getDownloadUrl(payload);
 
         let tree = MicaTreeQueryUrl.getTree();
-
-        const target = TYPES_TARGETS_MAP[payload.type];
-        if (target) {
-          const limitQuery = tree.search((name, args, parent) => 'limit' === name && parent.name === target);
-          if (limitQuery) {
-            const size = limitQuery.args[1];
-            const table = $(`table[id=vosr-${payload.type}-result]`).DataTable();
-            if (table) {
-              table.page.len(size); // do not use draw() otherwise the query gets executed forever!
-            }
-          }
-        }
+        this.currentStudyTypeSelection = MicaTreeQueryUrl.getStudyTypeSelection(tree);
 
         // query string to copy
         tree.findAndDeleteQuery((name) => 'limit' === name);
@@ -787,6 +942,61 @@ class TableFixedHeaderUtility {
           }
         }
       },
+      createStudyTypeFormField(studyTypeSelection) {
+        const theStudyTypeSelection = studyTypeSelection ? studyTypeSelection : MicaTreeQueryUrl.getStudyTypeSelection(MicaTreeQueryUrl.getTree());
+        const studyType = theStudyTypeSelection.study ? 'individual-study' : theStudyTypeSelection.harmonization ? 'harmonization-study' : null;
+        const inputStudyType = document.createElement('input');
+        inputStudyType.name = 'studyType';
+        inputStudyType.value = studyType;
+        return inputStudyType;
+      },
+      updateFormForDownload(type, form) {
+        const studyTypeSelection = MicaTreeQueryUrl.getStudyTypeSelection(MicaTreeQueryUrl.getTree());
+        form.appendChild(this.createStudyTypeFormField(studyTypeSelection));
+
+        let columnsToHide = [];
+
+        switch (type) {
+          case TYPES.NETWORKS:
+            if (studyTypeSelection.harmonization) {
+              columnsToHide = ['showNetworksStudyDatasetsColumn', 'showNetworksStudyVariablesColumn']
+            } else if (studyTypeSelection.study) {
+              columnsToHide = ['showNetworksHarmonizationDatasetsColumn', 'showNetworksDataschemaVariablesColumn']
+            }
+            break;
+
+          case TYPES.STUDIES:
+            if (studyTypeSelection.harmonization) {
+              columnsToHide = ['showStudiesStudyDatasetsColumn',
+                'showStudiesStudyVariablesColumn',
+                'showStudiesParticipantsColumn',
+                'showStudiesDesignColumn',
+                'showStudiesQuestionnaireColumn',
+                'showStudiesPmColumn',
+                'showStudiesBioColumn',
+                'showStudiesOtherColumn'];
+            } else if (studyTypeSelection.study) {
+              columnsToHide = ['showStudiesHarmonizationDatasetsColumn', 'showStudiesDataschemaVariablesColumn'];
+            }
+            break;
+
+          case TYPES.VARIABLES:
+            if (studyTypeSelection.harmonization) {
+              columnsToHide = ['showVariablesPopulationsColumn', 'showVariablesDataCollectionEventsColumn'];
+            }
+            break;
+        }
+
+        columnsToHide.forEach(column => {
+          let checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.name = 'columnsToHide';
+          checkbox.value = column;
+          checkbox.checked = true;
+
+          form.appendChild(checkbox);
+        });
+      },
       onDownloadQueryResult() {
         if (this.downloadUrlObject) {
           const form = document.createElement('form');
@@ -810,6 +1020,7 @@ class TableFixedHeaderUtility {
           }
 
           form.appendChild(input);
+          this.updateFormForDownload(this.downloadUrlObject.type, form);
 
           document.body.appendChild(form);
           form.submit();
@@ -831,7 +1042,6 @@ class TableFixedHeaderUtility {
           input.name = 'query';
 
           if (Array.isArray(this.variableSelections) && this.variableSelections.length > 0) {
-            const queryAsTree = new RQL.QueryTree(RQL.Parser.parseQuery(this.downloadUrlObject.query));
             let variableQuery = queryAsTree.search((name) => name === "variable");
             queryAsTree.addQuery(variableQuery, new RQL.Query('in', ['id', this.variableSelections]));
 
@@ -841,6 +1051,7 @@ class TableFixedHeaderUtility {
           }
 
           form.appendChild(input);
+          form.appendChild(this.createStudyTypeFormField());
 
           document.body.appendChild(form);
           form.submit();
@@ -872,15 +1083,19 @@ class TableFixedHeaderUtility {
           switch (payload.type) {
             case TYPES.VARIABLES:
               dto = 'variableResultDto';
+              this.currentListType = TYPES.VARIABLES;
               break;
             case TYPES.DATASETS:
               dto = 'datasetResultDto';
+              this.currentListType = TYPES.DATASETS;
               break;
             case TYPES.STUDIES:
               dto = 'studyResultDto';
+              this.currentListType = TYPES.STUDIES;
               break;
             case TYPES.NETWORKS:
               dto = 'networkResultDto';
+              this.currentListType = TYPES.NETWORKS;
               break;
           }
 
@@ -888,7 +1103,7 @@ class TableFixedHeaderUtility {
             throw new Error(`Payload has invalid type ${payload.type}`);
           }
 
-          this.hasListResult = data[dto].totalHits > 0;
+          this.hasListResult = (data[dto] || {totalHits: 0}).totalHits > 0;
 
           if (data.variableResultDto && data.variableResultDto.totalHits) {
             this.counts.variables = data.variableResultDto.totalHits.toLocaleString();
@@ -907,7 +1122,6 @@ class TableFixedHeaderUtility {
           }
 
           let tree = MicaTreeQueryUrl.getTree();
-
           const target = TYPES_TARGETS_MAP[payload.type];
           if (target) {
             const limitQuery = tree.search((name, args, parent) => 'limit' === name && parent.name === target);
@@ -926,7 +1140,18 @@ class TableFixedHeaderUtility {
                 const urlSearch = params.join("&");
                 const hash = `${display}?${urlSearch}`;
 
+                // for pagination and size selector
+                let from = limitQuery.args[0];
+                let size = limitQuery.args[1];
+                this.pagination.update((data[dto] || {totalHits: 0}).totalHits, size, (from/size)+1);
+                this.pageSizeSelector.update(size);
+
                 window.location.hash = `#${hash}`;
+              } else {
+                let from = limitQuery.args[0];
+                let size = limitQuery.args[1];
+                this.pagination.update((data[dto] || {totalHits: 0}).totalHits, size, (from/size)+1);
+                this.pageSizeSelector.update(size);
               }
             }
           }
@@ -1033,6 +1258,24 @@ class TableFixedHeaderUtility {
       },
       onFullCoverage() {
         EventBus.$emit(EVENTS.QUERY_TYPE_UPDATES_SELECTION, {updates: [{target: fromBucketToTarget(this.selectedBucket), query: this.queryForFullCoverage, display: DISPLAYS.COVERAGE}]});
+      },
+      onPagination(data) {
+        EventBus.$emit(EVENTS.QUERY_TYPE_PAGINATE, {
+          display: DISPLAYS.LISTS,
+          type: this.currentListType,
+          target: TYPES_TARGETS_MAP[this.currentListType],
+          from: data.from,
+          size: data.size
+        });
+      },
+      onPageSizeChanged(data) {
+        EventBus.$emit(EVENTS.QUERY_TYPE_PAGINATE, {
+          display: DISPLAYS.LISTS,
+          type: this.currentListType,
+          target: TYPES_TARGETS_MAP[this.currentListType],
+          from: 0,
+          size: data.size
+        });
       }
     },
     computed: {
@@ -1050,13 +1293,14 @@ class TableFixedHeaderUtility {
         return Mica.maxNumberOfSets - (this.variableSets || []).length;
       },
       isVariablesToolsVisible() {
-        return this.downloadUrlObject.type === 'variables' || this.downloadUrlObject.type === 'datasets';
+        let downloadUrlObject = this.downloadUrlObject || {};
+        return downloadUrlObject.type === 'variables' || downloadUrlObject.type === 'datasets';
       },
       isStudiesToolsVisible() {
-        return this.downloadUrlObject.type === 'studies';
+        return (this.downloadUrlObject || {}).type === 'studies';
       },
       isNetworksToolsVisible() {
-        return this.downloadUrlObject.type === 'networks';
+        return (this.downloadUrlObject || {}).type === 'networks';
       }
     },
     beforeMount() {
@@ -1072,6 +1316,12 @@ class TableFixedHeaderUtility {
     },
     mounted() {
       console.debug('Mounted QueryBuilder');
+
+      this.pagination = new OBiBaPagination('obiba-pagination-top', true, this.onPagination),
+      this.pageSizeSelector = new OBiBaPageSizeSelector('obiba-page-size-selector-top', DEFAULT_PAGE_SIZES, DEFAULT_PAGE_SIZE, this.onPageSizeChanged);
+
+      let currentPathNameIsSearch = window.location.pathname.startsWith("/search")
+
       EventBus.register('taxonomy-selection', this.onTaxonomySelection);
       EventBus.register(EVENTS.LOCATION_CHANGED, this.onLocationChanged.bind(this));
 
@@ -1085,7 +1335,20 @@ class TableFixedHeaderUtility {
       axios
         .get(contextPath + '/ws/taxonomy/Mica_taxonomy/_filter?target=taxonomy')
         .then(response => {
-          this.targets = response.data.vocabularies;
+          let responseVocabularies = response.data.vocabularies;
+          
+          this.targets = (Array.isArray(responseVocabularies) ? responseVocabularies : []).filter(v => {
+            if ('/individual-search' === window.location.pathname) {
+              if (Mica.config.isCollectedDatasetEnabled) {
+                return true;
+              } else {
+                return ['variable', 'dataset'].indexOf(v.name) === -1;
+              }
+            } else {
+              return true;
+            }
+          });
+
           EventBus.$emit('mica-taxonomy', this.targets);
 
           const targetQueries = [];
@@ -1099,9 +1362,26 @@ class TableFixedHeaderUtility {
             responses.forEach((response) => {
               for (let taxo of response.data) {
                 TaxonomyHelper.newInstance().sortVocabulariesTerms(taxo);
+
+                if (taxo.name === 'Mica_study') {
+                  let studyClassNameVocabulary = taxo.vocabularies.find(vocabulary => vocabulary.name === "className");
+                  if (studyClassNameVocabulary) {
+                    if (!Array.isArray(studyClassNameVocabulary.attributes)) {
+                      studyClassNameVocabulary.attributes = [];
+                    }
+
+                    studyClassNameVocabulary.attributes.push({"key": "uiTermsReadOnly", "value": currentPathNameIsSearch ? "false" : "true"});
+                    studyClassNameVocabulary.attributes.push({"key": "uiHideInBuilder", "value": currentPathNameIsSearch ? "false" : "true"});
+                  }
+                }
+
                 this.taxonomies[taxo.name] = taxo;
               }
             });
+
+            if (!this.taxonomies['Mica_study']) {
+              this.taxonomies['Mica_study'] = MINIMUM_STUDY_TAXONOMY;
+            }
 
             this.refreshQueries();
 
@@ -1145,7 +1425,6 @@ class TableFixedHeaderUtility {
         if (Array.isArray(data)) {
           this.variableSets = data.filter(set => set.name && !set.locked);
         }});
-      this.onExecuteQuery();
     },
     updated() {
       let coverageResultTableElement = document.querySelector('#vosr-coverage-result');

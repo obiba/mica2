@@ -53,7 +53,6 @@ import org.obiba.mica.file.service.TempFileService;
 import org.obiba.mica.micaConfig.domain.EntityConfig;
 import org.obiba.mica.micaConfig.service.DataCollectionEventConfigService;
 import org.obiba.mica.micaConfig.service.EntityConfigService;
-import org.obiba.mica.micaConfig.service.HarmonizationPopulationConfigService;
 import org.obiba.mica.micaConfig.service.HarmonizationStudyConfigService;
 import org.obiba.mica.micaConfig.service.IndividualStudyConfigService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
@@ -148,9 +147,6 @@ public class StudiesImportResource {
 	private HarmonizationStudyConfigService harmonizationStudyConfigService;
 
 	@Inject
-	private HarmonizationPopulationConfigService harmonizationPopulationConfigService;
-
-	@Inject
 	private TempFileService tempFileService;
 
 	@Inject
@@ -194,9 +190,6 @@ public class StudiesImportResource {
 
 				result.putAll( this.compareSchemaDefinition(url, username, password, WS_CONFIG_HARMONIZATION_STUDY_FORM_CUSTOM,
 						(EntityConfigService)harmonizationStudyConfigService, HARMONIZATION_STUDY_FORM_SECTION, NONE) );
-
-				result.putAll( this.compareSchemaDefinition(url, username, password, WS_CONFIG_HARMONIZATION_POPULATION_FORM_CUSTOM,
-						(EntityConfigService)harmonizationPopulationConfigService, HARMONIZATION_POPULATION_FORM_SECTION, HARMONIZATION_STUDY_FORM_SECTION) );
 			}
 
 			return Response.ok( result ).build();

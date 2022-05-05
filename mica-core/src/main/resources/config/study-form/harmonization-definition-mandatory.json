@@ -1,0 +1,46 @@
+[
+  {
+    "type": "help",
+    "helpvalue": "<h3>t(study.general-info)</h3>"
+  },
+  {
+    "type": "section",
+    "htmlClass": "row",
+    "items": [
+      {
+        "type": "section",
+        "htmlClass": "col-xs-6",
+        "items": [
+          {
+            "key": "_name",
+            "type": "localizedstring",
+            "description": "t(harmonization-initiative.name-help)"
+          },
+          {
+            "key": "_acronym",
+            "type": "localizedstring",
+            "description": "t(harmonization-initiative.acronym-help)"
+          },
+          {
+            "key": "_opal",
+            "type": "string",
+            "description": "t(harmonization-initiative.opal-help)"
+          }
+        ]
+      },
+      {
+        "type": "section",
+        "htmlClass": "col-xs-6",
+        "items": [
+          {
+            "key": "_objectives",
+            "type": "obibaSimpleMde",
+            "rows": 3,
+            "marked": true,
+            "description": "t(harmonization-initiative.objectives-help)"
+          }
+        ]
+      }
+    ]
+  }
+]

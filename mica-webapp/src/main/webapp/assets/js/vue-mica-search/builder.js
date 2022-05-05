@@ -12,7 +12,7 @@ const RqlQuery = {
 
       <template v-if="criterion.type === 'TERMS'">
 
-      <div class="container">
+      <div class="container" v-if="!termQueryIsReadOnly">
         <div class="form-check">
           <input class="form-check-input" type="radio" v-bind:id="'radio-' + vocabulary.name + '-all'" v-bind:name="vocabulary.name + '-terms-choice'" value="exists" v-model="criterion.operator" v-on:change="onInput()">
           <label class="form-check-label" v-bind:for="'radio-' + vocabulary.name + '-all'">{{ "search.any" | translate }}</label>
@@ -30,8 +30,13 @@ const RqlQuery = {
           <label class="form-check-label" v-bind:for="'radio-' + vocabulary.name + '-not-in'">{{ "search.out" | translate }}</label>
         </div>
       </div>
+      <div class="container" v-else>
+        {{ ( "search." + criterion.operator ) | translate }}
+      </div>
+
       <div class="dropdown-divider"></div>
-      <div class="container">
+
+      <div class="container" v-if="!termQueryIsReadOnly">
         <div class="input-group mb-2">
           <input type="text" class="form-control" v-model="termsFilter">
           <div class="input-group-append">
@@ -54,12 +59,17 @@ const RqlQuery = {
           </li>
         </ul>
       </div>
+      <div class="container" v-else>
+        <li v-for="term in checkedTerms" v-bind:key="term.name">
+          <label class="form-check-label" v-bind:for="vocabulary.name + '-' + term.name" v-bind:title="term.description | localize-string">{{ term.title | localize-string }}</label>
+        </li>
+      </div>
 
       </template>
 
       <template v-else-if="criterion.type === 'NUMERIC'">
 
-      <div class="container">
+      <div class="container" v-if="!termQueryIsReadOnly">
         <div class="form-group">
           <label v-bind:for="vocabulary.name + 'from'">{{ "search.from" | translate }}</label>
           <input type="number" class="form-control" v-bind:id="vocabulary.name + '-from'" v-model="criterion.value[0]" v-on:change="onInput()">
@@ -69,19 +79,31 @@ const RqlQuery = {
           <input type="number" class="form-control" v-bind:id="vocabulary.name + '-to'" v-model="criterion.value[1]" v-on:change="onInput()">
         </div>
       </div>
+      <div class="container" v-else>
+        <div>
+          <label v-bind:for="vocabulary.name + 'from'">{{ "search.from" | translate }}</label> {{criterion.value[0]}}
+        </div>
+
+        <div>
+          <label v-bind:for="vocabulary.name + 'to'">{{ "search.to" | translate }}</label> {{criterion.value[1]}}
+        </div>
+      </div>
 
       </template>
 
       <template v-else>
 
-      <div class="container">
+      <div class="container" v-if="!termQueryIsReadOnly">
         <input type="text" class="form-control" v-model="criterion.value" v-on:change="onInput()">
+      </div>
+      <div class="container" v-else>
+        {{criterion.value}}
       </div>
 
       </template>
     </div>
 
-    <button type="button" class="btn btn-secondary btn-sm" v-on:click="onRemove()"><span aria-hidden="true">&times;</span></button>
+    <button type="button" class="btn btn-secondary btn-sm" v-if="!termQueryIsReadOnly" v-on:click="onRemove()"><span aria-hidden="true">&times;</span></button>
   </div>
   `,
   name: "rql-query",
@@ -109,6 +131,10 @@ const RqlQuery = {
       }
 
       return output;
+    },
+    termQueryIsReadOnly() { // for Mica_study.className for example
+      let uiTermsReadOnlyVocabularyAttributes = (this.vocabulary || {attributes: [{"key": "uiTermsReadOnly", "value": "false"}]}).attributes.find(attr => attr.key === 'uiTermsReadOnly');
+      return uiTermsReadOnlyVocabularyAttributes && uiTermsReadOnlyVocabularyAttributes.value === "true";
     },
     terms() {
       const localizeStringFunction = Vue.filter("localize-string") || ((val) => val[0].text);
@@ -152,10 +178,10 @@ const RqlNode = {
     </template>
 
     <template v-else>
-    <rql-query v-bind:vocabulary="firstArg.vocabulary" v-bind:query="firstArg.associatedQuery" v-on:update-query="updateQuery($event, firstArg.taxonomyName)" v-on:remove-query="removeQuery($event, firstArg.taxonomyName)"></rql-query>
+    <rql-query v-if="firstArg && firstArg.vocabulary && firstArgIsShown" v-bind:vocabulary="firstArg.vocabulary" v-bind:query="firstArg.associatedQuery" v-on:update-query="updateQuery($event, firstArg.taxonomyName)" v-on:remove-query="removeQuery($event, firstArg.taxonomyName)"></rql-query>
     </template>
 
-    <span v-if="advancedMode && otherArgs.length > 0" class="d-flex my-auto">
+    <span v-if="advancedMode && firstArgIsShown && otherArgsAreShown" class="d-flex my-auto">
       <div class="dropdown">
         <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">{{ "search." + name | translate }}</button>
 
@@ -166,13 +192,13 @@ const RqlNode = {
       </div>
     </span>
 
-    <span v-for="(arg, index) in otherArgs" v-bind:key="index" class="d-flex">
+    <span v-for="(arg, index) in otherArgs" v-bind:key="index" v-if="otherArgsAreShown" class="d-flex">
       <template v-if="isNode(arg)">
       <rql-node v-bind:name="arg.name" v-bind:args="arg.args" v-bind:taxonomy="taxonomy" v-on:update-node="onUpdateNode($event)" v-bind:advanced-mode="advancedMode" v-on:update-query="updateQuery($event, arg.taxonomyName)" v-on:remove-query="removeQuery($event, arg.taxonomyName)"></rql-node>
       </template>
 
       <template v-else>
-      <rql-query v-bind:vocabulary="arg.vocabulary" v-bind:query="arg.associatedQuery" v-on:update-query="updateQuery($event, arg.taxonomyName)" v-on:remove-query="removeQuery($event, arg.taxonomyName)"></rql-query>
+      <rql-query v-if="arg && arg.vocabulary" v-bind:vocabulary="arg.vocabulary" v-bind:query="arg.associatedQuery" v-on:update-query="updateQuery($event, arg.taxonomyName)" v-on:remove-query="removeQuery($event, arg.taxonomyName)"></rql-query>
       </template>
     </span>
   </div>
@@ -189,13 +215,19 @@ const RqlNode = {
   },
   computed: {
     firstArg() {
-      if (this.isNode()) {
-        const arg = this.args.slice(0, 1)[0];
-        return this.isNode(arg) ? arg : this.asInput(arg);
+      return this.getFirstArg();
+    },
+    firstArgIsShown() {
+      let firstArg = this.getFirstArg();
+      if (!this.isNode(firstArg)) {
+        return this.inputIsShown(firstArg);
       } else {
-        const query = new RQL.Query(this.name);
-        query.args = this.args;
-        return this.asInput(query);
+        let splitFirstArgToQueries = Criterion.splitQuery(firstArg);
+        if (splitFirstArgToQueries.length === 1) {
+          let loneQuery = this.asInput(splitFirstArgToQueries[0]);
+          return this.inputIsShown(loneQuery);
+        }
+        return true;
       }
     },
     otherArgs() {
@@ -203,7 +235,7 @@ const RqlNode = {
         const others = this.args.slice(1);
         return others.map(other => {
           if (this.isNode(other)) {
-            return other;
+            return this.other;
           } else {
             return this.asInput(other);
           }
@@ -211,12 +243,29 @@ const RqlNode = {
       } else {
         return [];
       }
+    },
+    otherArgsAreShown() {
+      return this.otherArgs.length > 1 || (this.otherArgs.length === 1 && this.inputIsShown(this.otherArgs[0]));
     }
   },
   components: {
     RqlQuery
   },
   methods: {
+    getFirstArg() {
+      let result = null;
+
+      if (this.isNode()) {
+        const arg = this.args.slice(0, 1)[0];
+        result = this.isNode(arg) ? arg : this.asInput(arg);
+      } else {
+        const query = new RQL.Query(this.name);
+        query.args = this.args;
+        result = this.asInput(query);
+      }
+
+      return result;
+    },
     isNode(arg) {
       return Criterion.NODE_NAMES.indexOf((arg || this).name) > -1;
     },
@@ -228,6 +277,10 @@ const RqlNode = {
       }
 
       return arg;
+    },
+    inputIsShown(input) {
+      let uiHideInBuilderVocabularyAttributes = (input.vocabulary || {attributes: [{"key": "uiHideInBuilder", "value": "false"}]}).attributes.find(attr => attr.key === 'uiHideInBuilder');
+      return !uiHideInBuilderVocabularyAttributes || uiHideInBuilderVocabularyAttributes.value === "false";
     },
     updateQuery(payload, taxonomyName) {
       this.$emit("update-query", { data: (payload.data || payload), taxonomyName: (payload.taxonomyName || taxonomyName) });
@@ -250,11 +303,11 @@ const RqlNode = {
 const RqlQueryBuilder = {
   template: `
   <div v-bind:class="target" class="d-flex">
-    <span class="my-auto text-muted" v-show="items.length > 0">
+    <span v-if="showTarget" class="my-auto text-muted" v-show="items.length > 0">
       <h4 class="mb-0"><i class="align-middle io" v-bind:class="targetIcon"></i></h4>
     </span>
 
-    <rql-node v-for="(arg, index) in query.args" v-bind:key="index" v-bind:name="arg.name" v-bind:args="arg.args" v-bind:taxonomy="taxonomy" v-bind:advanced-mode="advancedMode" v-on:update-node="updateNode($event)" v-on:update-query="updateNodeQuery($event)" v-on:remove-query="removeNodeQuery($event)"></rql-node>
+    <rql-node v-if="showTarget" v-for="(arg, index) in query.args" v-bind:key="index" v-bind:name="arg.name" v-bind:args="arg.args" v-bind:taxonomy="taxonomy" v-bind:advanced-mode="advancedMode" v-on:update-node="updateNode($event)" v-on:update-query="updateNodeQuery($event)" v-on:remove-query="removeNodeQuery($event)"></rql-node>
   </div>
   `,
   name: "rql-query-builder",
@@ -271,6 +324,13 @@ const RqlQueryBuilder = {
     taxonomy: [Object, Array]
   },
   computed: {
+    showTarget() {
+      let itemsThatCanBeShown = this.items.filter(item => {
+        let uiHideInBuilderVocabularyAttributes = (item.vocabulary || {attributes: [{"key": "uiHideInBuilder", "value": "false"}]}).attributes.find(attr => attr.key === 'uiHideInBuilder');
+        return !uiHideInBuilderVocabularyAttributes || uiHideInBuilderVocabularyAttributes.value === "false";
+      });
+      return itemsThatCanBeShown.length > 0;
+    },
     inputs() {
       return Criterion.splitQuery(this.query);
     },
@@ -317,7 +377,7 @@ const RqlQueryBuilder = {
     updateQuery(payload, taxonomyName) {
       const query = payload.asQuery(taxonomyName);
 
-      if ((["missing", "exists"].indexOf(payload.operator) === -1 && payload.value.length === 0) || (payload.type === "NUMERIC" && query.args[1].length === 0)) {
+      if ((payload.type === "NUMERIC" && query.args[1].length === 0) || (payload.type === "TERMS" && payload.value.length === 0)) {
         this.$emit("remove-query", {target: this.target, query});
       } else {
         this.$emit("update-query", {target: this.target, query});
