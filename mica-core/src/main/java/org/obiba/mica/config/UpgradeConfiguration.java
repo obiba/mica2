@@ -71,7 +71,7 @@ public class UpgradeConfiguration {
       applicationContext.getBean(Mica380Upgrade.class),
       applicationContext.getBean(ElasticsearchMigrationUpgrade.class),
       applicationContext.getBean(Mica460Upgrade.class),
-      applicationContext.getBean(Mica470Upgrade.class)
+      applicationContext.getBean(Mica500Upgrade.class)
     );
   }
 }

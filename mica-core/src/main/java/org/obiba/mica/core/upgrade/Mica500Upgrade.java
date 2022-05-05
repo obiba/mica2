@@ -27,9 +27,9 @@ import com.mongodb.client.model.DBCollectionUpdateOptions;
 import javax.inject.Inject;
 
 @Component
-public class Mica470Upgrade implements UpgradeStep {
+public class Mica500Upgrade implements UpgradeStep {
 
-  private static final Logger logger = LoggerFactory.getLogger(Mica470Upgrade.class);
+  private static final Logger logger = LoggerFactory.getLogger(Mica500Upgrade.class);
 
   private final MongoTemplate mongoTemplate;
 
@@ -38,7 +38,7 @@ public class Mica470Upgrade implements UpgradeStep {
   private final HarmonizationStudyService harmonizationStudyService;
 
   @Inject
-  public Mica470Upgrade(MongoTemplate mongoTemplate, EventBus eventBus, HarmonizationStudyService harmonizationStudyService) {
+  public Mica500Upgrade(MongoTemplate mongoTemplate, EventBus eventBus, HarmonizationStudyService harmonizationStudyService) {
     this.mongoTemplate = mongoTemplate;
     this.eventBus = eventBus;
     this.harmonizationStudyService = harmonizationStudyService;
