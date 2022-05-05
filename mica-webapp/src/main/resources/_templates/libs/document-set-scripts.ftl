@@ -170,22 +170,22 @@
 
   const totalCounts = {
     <#if variablesCartEnabled>
-    variablesCount: ${user.variablesCart.count},
+    variablesCount: parseInt("${user.variablesCart.count}".replace(',', '')),
     </#if>
 
     <#if studiesCartEnabled>
-    studiesCount: ${user.studiesCart.count},
+    studiesCount: parseInt("${user.studiesCart.count}".replace(',', '')),
     </#if>
 
     <#if networksCartEnabled>
-    networksCount: ${user.networksCart.count},
+    networksCount: parseInt("${user.networksCart.count}".replace(',', '')),
     </#if>
 
-    <#if rc.requestUri?starts_with("/list/")> 
+    <#if rc.requestUri?starts_with("/list/")>
     currentSetIdentifiersCount: ${set.identifiers?size},
     </#if>
   };
-  
+
 
   // cart
   <#if variablesCartEnabled>
@@ -407,7 +407,7 @@
             } else if (Mica.config.isNetworksCartEnabled && Mica.config.isNetworkEnabled && !Mica.config.isSingleNetworkEnabled) {
               tab = TYPES.NETWORKS;
             }
-          }          
+          }
 
           let studyTypeSelection = {all: false, study: this.studyClassName === 'Study', harmonization: this.studyClassName === 'HarmonizationStudy'};
 

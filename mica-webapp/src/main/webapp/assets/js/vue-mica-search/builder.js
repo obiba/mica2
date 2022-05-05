@@ -181,7 +181,7 @@ const RqlNode = {
     <rql-query v-if="firstArg && firstArg.vocabulary && firstArgIsShown" v-bind:vocabulary="firstArg.vocabulary" v-bind:query="firstArg.associatedQuery" v-on:update-query="updateQuery($event, firstArg.taxonomyName)" v-on:remove-query="removeQuery($event, firstArg.taxonomyName)"></rql-query>
     </template>
 
-    <span v-if="advancedMode && otherArgs.length > 0 && firstArgIsShown" class="d-flex my-auto">
+    <span v-if="advancedMode && firstArgIsShown && otherArgsAreShown" class="d-flex my-auto">
       <div class="dropdown">
         <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">{{ "search." + name | translate }}</button>
 
@@ -192,7 +192,7 @@ const RqlNode = {
       </div>
     </span>
 
-    <span v-for="(arg, index) in otherArgs" v-bind:key="index" class="d-flex">
+    <span v-for="(arg, index) in otherArgs" v-bind:key="index" v-if="otherArgsAreShown" class="d-flex">
       <template v-if="isNode(arg)">
       <rql-node v-bind:name="arg.name" v-bind:args="arg.args" v-bind:taxonomy="taxonomy" v-on:update-node="onUpdateNode($event)" v-bind:advanced-mode="advancedMode" v-on:update-query="updateQuery($event, arg.taxonomyName)" v-on:remove-query="removeQuery($event, arg.taxonomyName)"></rql-node>
       </template>
@@ -220,14 +220,12 @@ const RqlNode = {
     firstArgIsShown() {
       let firstArg = this.getFirstArg();
       if (!this.isNode(firstArg)) {
-        let uiHideInBuilderVocabularyAttributes = (firstArg.vocabulary || {attributes: [{"key": "uiHideInBuilder", "value": "false"}]}).attributes.find(attr => attr.key === 'uiHideInBuilder');
-        return !uiHideInBuilderVocabularyAttributes || uiHideInBuilderVocabularyAttributes.value === "false";
+        return this.inputIsShown(firstArg);
       } else {
         let splitFirstArgToQueries = Criterion.splitQuery(firstArg);
         if (splitFirstArgToQueries.length === 1) {
           let loneQuery = this.asInput(splitFirstArgToQueries[0]);
-          let uiHideInBuilderVocabularyAttributes = (loneQuery.vocabulary || {attributes: [{"key": "uiHideInBuilder", "value": "false"}]}).attributes.find(attr => attr.key === 'uiHideInBuilder');
-          return !uiHideInBuilderVocabularyAttributes || uiHideInBuilderVocabularyAttributes.value === "false";
+          return this.inputIsShown(loneQuery);
         }
         return true;
       }
@@ -245,6 +243,9 @@ const RqlNode = {
       } else {
         return [];
       }
+    },
+    otherArgsAreShown() {
+      return this.otherArgs.length > 1 || (this.otherArgs.length === 1 && this.inputIsShown(this.otherArgs[0]));
     }
   },
   components: {
