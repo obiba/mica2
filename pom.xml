@@ -57,7 +57,7 @@
     <jhipsterloaded.version>0.7</jhipsterloaded.version>
     <json-path.version>2.2.0</json-path.version>
     <jsr305.version>3.0.0</jsr305.version>
-    <logback.version>1.2.3</logback.version>
+    <logback.version>1.2.9</logback.version>
     <logstash-logback.version>6.6</logstash-logback.version>
     <metrics-spring.version>3.0.0</metrics-spring.version>
     <mongodb-driver.version>3.12.8</mongodb-driver.version>
