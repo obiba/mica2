@@ -31,7 +31,7 @@
             label="config.notifications.network" help="config.notifications.network-help"></div>
         <div form-input name="networkNotificationsSubject" model="micaConfig.networkNotificationsSubject"
             label="config.notifications.network-subject" help="config.notifications.network-subject-help-long"
-            placeholder="[${organization}] ${documentId}: Network status has changed" required="false"
+            placeholder="{{'config.notifications.network-placeholder' | translate}}" required="false"
             disable="!micaConfig.isNetworkNotificationsEnabled"></div>
       </div>
       <div class="col-md-6">
@@ -43,7 +43,7 @@
             label="config.notifications.study" help="config.notifications.study-help"></div>
         <div form-input name="studyNotificationsSubject" model="micaConfig.studyNotificationsSubject"
             label="config.notifications.study-subject" help="config.notifications.study-subject-help-long"
-            placeholder="[${organization}] ${documentId}: Study status has changed" required="false"
+            placeholder="{{'config.notifications.study-placeholder' | translate}}" required="false"
             disable="!micaConfig.isStudyNotificationsEnabled"></div>
       </div>
     </div>
@@ -60,7 +60,7 @@
         <div form-input name="collectedDatasetNotificationsSubject" model="micaConfig.collectedDatasetNotificationsSubject"
             label="config.notifications.collected-dataset-subject"
             help="config.notifications.collected-dataset-subject-help-long"
-            placeholder="[${organization}] ${documentId}: Collected Dataset status has changed" required="false"
+            placeholder="{{'config.notifications.collected-dataset-placeholder' | translate}}" required="false"
             disable="!micaConfig.isCollectedDatasetNotificationsEnabled"></div>
       </div>
       <div class="col-md-6">
@@ -76,7 +76,7 @@
             model="micaConfig.harmonizedDatasetNotificationsSubject"
             label="config.notifications.harmonized-dataset-subject"
             help="config.notifications.harmonized-dataset-subject-help-long"
-            placeholder="[${organization}] ${documentId}: Harmonization Dataset status has changed" required="false"
+            placeholder="{{'config.notifications.harmonized-dataset-placeholder' | translate}}" required="false"
             disable="!micaConfig.isHarmonizedDatasetNotificationsEnabled"></div>
       </div>
     </div>
@@ -91,7 +91,7 @@
             label="config.notifications.file" help="config.notifications.file-help"></div>
         <div form-input name="fsNotificationsSubject" model="micaConfig.fsNotificationsSubject"
             label="config.notifications.file-subject" help="config.notifications.file-subject-help-long"
-            placeholder="[${organization}] ${documentId}: file status has changed" required="false"
+            placeholder="{{'config.notifications.file-placeholder' | translate}}" required="false"
             disable="!micaConfig.isFsNotificationsEnabled"></div>
       </div>
 
@@ -104,7 +104,7 @@
             label="config.notifications.comment" help="config.notifications.comment-help"></div>
         <div form-input name="commentNotificationsSubject" model="micaConfig.commentNotificationsSubject"
             label="config.notifications.comment-subject" help="config.notifications.comment-subject-help-long"
-            placeholder="[${organization}] ${documentId} was commented" required="false"
+            placeholder="{{'config.notifications.comment-placeholder' | translate}}" required="false"
             disable="!micaConfig.isCommentNotificationsEnabled"></div>
 
       </div>
@@ -120,7 +120,7 @@
           label="config.notifications.project" help="config.notifications.project-help"></div>
         <div form-input name="projectNotificationsSubject" model="micaConfig.projectNotificationsSubject"
           label="config.notifications.project-subject" help="config.notifications.project-subject-help-long"
-          placeholder="[${organization}] ${documentId}: Project status has changed" required="false"
+          placeholder="{{'config.notifications.project-placeholder' | translate}}" required="false"
           disable="!micaConfig.isProjectNotificationsEnabled"></div>
       </div>
 
@@ -133,7 +133,7 @@
              label="config.notifications.contact" help="config.notifications.contact-help"></div>
         <div form-input name="contactNotificationsSubject" model="micaConfig.contactNotificationsSubject"
              label="config.notifications.contact-subject" help="config.notifications.contact-subject-help-long"
-             placeholder="[${organization}] Contact" required="false"
+             placeholder="{{'config.notifications.contact-placeholder' | translate}}" required="false"
              disable="!micaConfig.isContactNotificationsEnabled"></div>
         <div form-input name="contactGroups" model="contactGroups" label="config.notifications.contact-groups" help="config.notifications.contact-groups-form-help"
              required="false" ng-keyup="contactGroupsUpdated()"></div>
