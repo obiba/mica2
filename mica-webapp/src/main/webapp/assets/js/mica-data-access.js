@@ -254,7 +254,7 @@ class DataAccessService {
     }
     axios({
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'text/plain' },
       url: MicaService.normalizeUrl(url),
       data: message
     })

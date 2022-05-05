@@ -26,6 +26,9 @@ public class Comment extends AbstractAuditableDocument {
   private boolean admin;
 
   public String getMessage() {
+    // clean messages that were saved as json string instead of plain text
+    if (message.startsWith("&quot;") && message.endsWith("&quot;"))
+      return message.substring(6, message.length() - 6).replaceAll("\\\\n", "\\n");
     return message;
   }
 
