@@ -71,6 +71,7 @@ mica.dataset
         let forIndex = [];
         let forPublish = [];
         let publishingResource = (this.type === 'Harmonized' ? this.HarmonizedDatasetPublicationResource : this.CollectedDatasetPublicationResource);
+        let indexingResource = (this.type === 'Harmonized' ? this.HarmonizedDatasetsResource : this.CollectedDatasetsResource);
 
         this.datasets.filter(dataset => this.selection.indexOf(dataset.id) > -1).forEach(dataset => {
           let state = dataset['obiba.mica.EntityStateDto.datasetState'];
@@ -82,7 +83,15 @@ mica.dataset
           }
         });
 
-        this.$q.all([(this.type === 'Harmonized' ? this.HarmonizedDatasetsResource : this.CollectedDatasetsResource).index({id: forIndex}).$promise, ...forPublish.map(item => publishingResource.publish({id: item}).$promise)]).then(() => {
+        let promises = [];
+
+        if (forIndex.length > 0) {
+          promises.push(indexingResource.index({id: forIndex}).$promise);
+        }
+
+        forPublish.forEach(item => promises.push(publishingResource.publish({id: item}).$promise));
+
+        this.$q.all(promises).then(() => {
           this.$timeout(() => {
             this.requestsSent = false;
           }, 3000);
