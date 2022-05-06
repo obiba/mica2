@@ -136,6 +136,15 @@
 
     <!-- Main content -->
     <section class="content">
+
+      <#if dar.archived>
+        <div class="ribbon-wrapper ribbon-xl">
+          <div class="ribbon bg-warning text-xl">
+            <@message "archived-title"/>
+          </div>
+        </div>
+      </#if>
+
       <div class="row">
         <div class="col-md-3 col-sm-6">
 
@@ -309,7 +318,14 @@
               <h3 class="card-title"><@message "notes-title"/></h3>
             </div>
             <div class="card-body">
-              <#if dar.status == "OPENED">
+              <#if dar.archived>
+                <h4><@message "archived-title"/></h4>
+                <#if user.username == dar.applicant>
+                  <p><@message "archived-applicant-text"/></p>
+                <#else>
+                  <p><@message "archived-dao-text"/></p>
+                </#if>
+              <#elseif dar.status == "OPENED">
 
                 <h4><@message "opened-title"/></h4>
                 <#if user.username == dar.applicant>

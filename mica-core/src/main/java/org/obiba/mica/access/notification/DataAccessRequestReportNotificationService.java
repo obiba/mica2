@@ -113,23 +113,25 @@ public class DataAccessRequestReportNotificationService {
     LocalDate dateNow = LocalDate.now().minusDays(nbOfDaysBeforeReport);
 
     for (DataAccessRequest dar : dataAccessRequestService.findByStatus(Lists.newArrayList(DataAccessEntityStatus.APPROVED.name()))) {
-      DataAccessRequestTimeline timeline = getReportsTimeline(dar);
+      if (!dar.isArchived()) {
+        DataAccessRequestTimeline timeline = getReportsTimeline(dar);
 
-      if (timeline.hasEndDate()) {
-        LocalDate localEndDate = toLocalDate(timeline.getEndDate());
-        if (dataAccessConfig.isNotifyFinalReport() && dateNow.plusDays(nbOfDaysBeforeReport).equals(localEndDate)) {
-          // today is the day to notify final report
-          remindDataAccessFinalReport(dataAccessConfig, dar, timeline.getEndDate(), nbOfDaysBeforeReport);
-        } else if (dataAccessConfig.isNotifyIntermediateReport() && timeline.hasIntermediateDates()) {
-          for (Date interDate : timeline.getIntermediateDates()) {
-            if (dateNow.plusDays(nbOfDaysBeforeReport).equals(toLocalDate(interDate))) {
-              remindDataAccessIntermediateReport(dataAccessConfig, dar, interDate, nbOfDaysBeforeReport);
-              break;
+        if (timeline.hasEndDate()) {
+          LocalDate localEndDate = toLocalDate(timeline.getEndDate());
+          if (dataAccessConfig.isNotifyFinalReport() && dateNow.plusDays(nbOfDaysBeforeReport).equals(localEndDate)) {
+            // today is the day to notify final report
+            remindDataAccessFinalReport(dataAccessConfig, dar, timeline.getEndDate(), nbOfDaysBeforeReport);
+          } else if (dataAccessConfig.isNotifyIntermediateReport() && timeline.hasIntermediateDates()) {
+            for (Date interDate : timeline.getIntermediateDates()) {
+              if (dateNow.plusDays(nbOfDaysBeforeReport).equals(toLocalDate(interDate))) {
+                remindDataAccessIntermediateReport(dataAccessConfig, dar, interDate, nbOfDaysBeforeReport);
+                break;
+              }
             }
           }
+        } else {
+          log.warn("No end date found for data access request {}", dar.getId());
         }
-      } else {
-        log.warn("No end date found for data access request {}", dar.getId());
       }
     }
   }

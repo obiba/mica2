@@ -20,6 +20,7 @@ import org.joda.time.DateTime;
 import org.obiba.mica.access.DataAccessEntityRepository;
 import org.obiba.mica.access.DataAccessRequestRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
+import org.obiba.mica.access.domain.ActionLog;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.event.*;
@@ -96,6 +97,9 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
 
   public DataAccessRequest archive(@NotNull DataAccessRequest request, boolean archived) {
     request.setArchived(archived);
+    request.getActionLogHistory().add(ActionLog.newBuilder().action(archived ? "Archived" : "Unarchived")
+      .changedOn(DateTime.now())
+      .author(SecurityUtils.getSubject().getPrincipal().toString()).build());
     return save(request, null);
   }
 

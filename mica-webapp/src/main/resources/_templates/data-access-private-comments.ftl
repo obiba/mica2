@@ -41,6 +41,14 @@
     <!-- Main content -->
     <section class="content">
 
+      <#if dar.archived>
+        <div class="ribbon-wrapper ribbon-xl">
+          <div class="ribbon bg-warning text-xl">
+              <@message "archived-title"/>
+          </div>
+        </div>
+      </#if>
+
       <#if dataAccessCalloutsEnabled>
         <div class="row">
           <div class="col-12">

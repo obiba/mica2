@@ -250,7 +250,8 @@ public class DataAccessController extends BaseController {
     params.put("applicant", userProfileService.getProfileMap(dar.getApplicant(), true));
 
     List<String> permissions = Lists.newArrayList("VIEW", "EDIT", "DELETE").stream()
-      .filter(action -> ("VIEW".equals(action) || !dar.isArchived()) && isPermitted(action, id)).collect(Collectors.toList());
+      .filter(action -> ("VIEW".equals(action) || !dar.isArchived()) && isPermitted(action, id))
+      .collect(Collectors.toList());
     if (!dar.isArchived() && isPermitted("/data-access-request/" + id, "EDIT", "_status"))
       permissions.add("EDIT_STATUS");
     params.put("permissions", permissions);
@@ -308,11 +309,12 @@ public class DataAccessController extends BaseController {
   }
 
   private boolean isArchivePermitted(DataAccessRequest dar, DataAccessRequestTimeline timeline) {
-    if (dar.isArchived()
-      || !DataAccessEntityStatus.APPROVED.equals(dar.getStatus())
-      || (!SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) && !SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN))
-      || !timeline.hasEndDate()) return false;
-    return new Date().after(timeline.getEndDate());
+    return !dar.isArchived() && (SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) || SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN));
+//    if (dar.isArchived()
+//      || !DataAccessEntityStatus.APPROVED.equals(dar.getStatus())
+//      || (!SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) && !SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN))
+//      || !timeline.hasEndDate()) return false;
+//    return new Date().after(timeline.getEndDate());
   }
 
   private boolean isUnArchivePermitted(DataAccessRequest dar) {
