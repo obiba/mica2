@@ -72,7 +72,7 @@ mica.contact
       var validate = function() {
         console.log('Validate');
         new mica.commons.PersonsDuplicateFinder($q, ContactsSearchResource)
-          .searchPerson(contact)
+          .searchPerson($scope.selected.contact || {})
           .then(result => {
             if (result.status !== mica.commons.PERSON_DUPLICATE_STATUS.OK) {
               AlertService.alert({
