@@ -166,6 +166,6 @@ const makeFilesVue = function(el, data, childrenFilter) {
       $(el + '-container').show();
     }
   }, function(response) {
-    console.log(response);
+    console.error(response);
   });
 };
