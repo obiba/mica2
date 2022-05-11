@@ -146,7 +146,7 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
     };
     jettySsl.setWantClientAuth(true);
     jettySsl.setNeedClientAuth(false);
-    jettySsl.addExcludeProtocols("SSLv2", "SSLv3");
+    jettySsl.addExcludeProtocols("SSL", "SSLv2", "SSLv2Hello", "SSLv3", "TLSv1", "TLSv1.1");
 
     ServerConnector sslConnector = new ServerConnector(server, jettySsl);
     sslConnector.setHost(serverAddress);
