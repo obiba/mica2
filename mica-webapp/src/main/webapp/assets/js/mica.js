@@ -877,9 +877,10 @@ class UserService {
    * Check and submit signin form.
    *
    * @param formId
+   * @param otpId
    * @param onFailure
    */
-  static signin(formId, onFailure) {
+  static signin(formId, otpId, onFailure) {
     const toggleSubmitButton = function(enable)  {
       const submitSelect = '#' + formId + ' button[type="submit"]';
       if (enable) {
@@ -897,7 +898,14 @@ class UserService {
       let data = form.serialize(); // serializes the form's elements.
 
       toggleSubmitButton(false);
-      axios.post(MicaService.normalizeUrl(url), data)
+      const config = {}
+      const otp = $('#' + otpId).val();
+      if (otp) {
+        config.headers = {
+          'X-Obiba-TOTP': otp
+        }
+      }
+      axios.post(MicaService.normalizeUrl(url), data, config)
         .then(() => {
           //console.dir(response);
           let redirect = MicaService.normalizeUrl('/');
@@ -909,10 +917,10 @@ class UserService {
         })
         .catch(handle => {
           toggleSubmitButton(true);
-          console.dir(handle);
+          //console.dir(handle);
           if (onFailure) {
             let banned = handle.response.data && handle.response.data.message === 'User is banned';
-            onFailure(banned, handle.response.data);
+            onFailure(handle.response, banned);
           }
         });
     });

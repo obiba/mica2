@@ -27,6 +27,8 @@ import org.apache.shiro.subject.Subject;
 import org.obiba.mica.config.JerseyConfiguration;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.user.UserProfileService;
+import org.obiba.shiro.NoSuchOtpException;
+import org.obiba.shiro.authc.UsernamePasswordOtpToken;
 import org.obiba.shiro.realm.ObibaRealm;
 import org.obiba.shiro.web.filter.AuthenticationExecutor;
 import org.obiba.shiro.web.filter.UserBannedException;
@@ -63,7 +65,7 @@ public class SessionsResource {
     try {
       ObibaRealm.Subject profile = userProfileService.getProfile(username);
       String realUsername = profile == null ? username : profile.getUsername();
-      authenticationExecutor.login(new UsernamePasswordToken(realUsername, password));
+      authenticationExecutor.login(makeUsernamePasswordToken(realUsername, password, servletRequest));
 
       Subject subject = SecurityUtils.getSubject();
       String sessionId = subject.getSession().getId().toString();
@@ -79,6 +81,8 @@ public class SessionsResource {
       return builder.build();
     } catch(UserBannedException e) {
       throw e;
+    } catch (NoSuchOtpException e) {
+      return Response.status(Response.Status.UNAUTHORIZED).header("WWW-Authenticate", e.getOtpHeader()).build();
     } catch(AuthenticationException e) {
       log.info("Authentication failure of user '{}' at ip: '{}': {}", username, servletRequest.getRemoteAddr(),
           e.getMessage());
@@ -97,6 +101,13 @@ public class SessionsResource {
       return locale.orElse("");
     }
     return "";
+  }
+
+  private UsernamePasswordToken makeUsernamePasswordToken(String username, String password, HttpServletRequest request) {
+    String otp = request.getHeader("X-Obiba-TOTP");
+    if (!Strings.isNullOrEmpty(otp))
+      return new UsernamePasswordOtpToken(username, password, otp);
+    return new UsernamePasswordToken(username, password);
   }
 }
 

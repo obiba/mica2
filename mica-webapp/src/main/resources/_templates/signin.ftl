@@ -15,7 +15,7 @@
   </div>
   <!-- /.login-logo -->
   <div class="card">
-    <div class="card-body login-card-body">
+    <div id="signInCard" class="card-body login-card-body">
       <p class="login-box-msg"><@message "sign-in-caption"/></p>
 
       <div id="alertFailure" class="alert alert-danger d-none">
@@ -79,21 +79,41 @@
       </#if>
     </div>
     <!-- /.login-card-body -->
+    <div id="2faCard" class="card-body 2fa-card-body" style="display: none;">
+      <p class="login-box-msg"><@message "2fa-caption"/></p>
+
+      <div>
+        <div class="input-group mb-3">
+          <input id="otp" name="otp" type="number" class="form-control"/>
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-mobile"></span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6">
+            <button class="btn btn-primary btn-block" onclick="validateOtp()">
+              <i class="spinner-border spinner-border-sm" style="display: none;"></i> <@message "validate"/>
+            </button>
+          </div>
+          <!-- /.col -->
+          <div class="col-6">
+            <button class="btn btn-default btn-block" onclick="cancelOtp()">
+                <@message "cancel"/>
+            </button>
+          </div>
+          <!-- /.col -->
+        </div>
+      </div>
+    </div>
+    <!-- /.2fa-card-body -->
   </div>
 </div>
 <!-- /.login-box -->
 
 <#include "libs/scripts.ftl">
-
-<script>
-  UserService.signin("form", function (banned) {
-    var alertId = banned ? "#alertBanned" : "#alertFailure";
-    $(alertId).removeClass("d-none");
-    setTimeout(function() {
-        $(alertId).addClass("d-none");
-    }, 5000);
-  });
-</script>
+<#include "libs/signin-scripts.ftl">
 
 </body>
 </html>

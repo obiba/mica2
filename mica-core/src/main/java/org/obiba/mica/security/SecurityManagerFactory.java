@@ -16,6 +16,9 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import net.sf.ehcache.CacheManager;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationInfo;
+import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.credential.PasswordMatcher;
 import org.apache.shiro.authc.pam.FirstSuccessfulStrategy;
 import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
@@ -33,6 +36,7 @@ import org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO;
 import org.apache.shiro.util.LifecycleUtils;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
+import org.obiba.shiro.NoSuchOtpException;
 import org.obiba.shiro.SessionStorageEvaluator;
 import org.obiba.shiro.realm.ObibaRealm;
 import org.slf4j.Logger;
@@ -185,7 +189,15 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
 
   private void initializeAuthenticator(DefaultWebSecurityManager dsm) {
     if(dsm.getAuthenticator() instanceof ModularRealmAuthenticator) {
-      ((ModularRealmAuthenticator) dsm.getAuthenticator()).setAuthenticationStrategy(new FirstSuccessfulStrategy());
+      ((ModularRealmAuthenticator) dsm.getAuthenticator()).setAuthenticationStrategy(new OtpSuccessfulStrategy());
+    }
+  }
+
+  private class OtpSuccessfulStrategy extends FirstSuccessfulStrategy {
+    @Override
+    public AuthenticationInfo afterAttempt(Realm realm, AuthenticationToken token, AuthenticationInfo singleRealmInfo, AuthenticationInfo aggregateInfo, Throwable t) throws AuthenticationException {
+      if (t instanceof NoSuchOtpException) throw (NoSuchOtpException)t;
+      return super.afterAttempt(realm, token, singleRealmInfo, aggregateInfo, t);
     }
   }
 }
