@@ -5,6 +5,7 @@
       $("#signInCard").hide();
       $("#2faCard").show();
     } else {
+      $("#otp").val("");
       $("#signInCard").show();
       $("#2faCard").hide();
       var alertId = banned ? "#alertBanned" : "#alertFailure";
@@ -20,7 +21,14 @@
   };
 
   const cancelOtp = () => {
+    $("#otp").val("");
     $("#signInCard").show();
     $("#2faCard").hide();
   };
+
+  $('#otp').keypress((e) => {
+    if (e.which === 13) {
+      validateOtp();
+    }
+  });
 </script>
