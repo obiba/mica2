@@ -61,7 +61,7 @@
                         <#if oidc.name == user.attributes["realm"]>
                           <#assign isOidc = true/>
                           <@message "user-account-at"/>
-                          <a href="${oidc.providerUrl}" class="btn btn-primary" target="_blank"><i class="fas fa-user"></i> ${oidc.title}</a>
+                          <a href="${oidc.providerUrl}" class="btn btn-primary ml-2" target="_blank"><i class="fas fa-user"></i> ${oidc.title}</a>
                         </#if>
                       </#list>
                     </#if>
