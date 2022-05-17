@@ -10,6 +10,7 @@ import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.service.StudySetService;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.interceptor.SessionInterceptor;
+import org.owasp.esapi.ESAPI;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.UriUtils;
@@ -62,7 +63,7 @@ public class BaseController {
   protected ModelAndView makeErrorModelAndView(String status, String message) {
     ModelAndView mv = new ModelAndView("error");
     mv.getModel().put("status", status);
-    mv.getModel().put("msg", message);
+    mv.getModel().put("msg", ESAPI.encoder().encodeForHTML(message));
     mv.getModel().put("contextPath", micaConfigService.getContextPath());
     mv.getModel().put("config", micaConfigService.getConfig());
     SessionInterceptor.populateUserEntries(mv, userProfileService, variableSetService, studySetService, networkSetService, subjectAclService);
