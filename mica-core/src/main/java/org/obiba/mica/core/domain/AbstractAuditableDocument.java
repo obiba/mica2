@@ -10,6 +10,7 @@
 
 package org.obiba.mica.core.domain;
 
+import java.io.IOException;
 import java.util.Objects;
 
 import org.joda.time.DateTime;
@@ -21,6 +22,15 @@ import org.springframework.data.annotation.Version;
 import org.springframework.data.domain.Auditable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 
@@ -37,11 +47,15 @@ public abstract class AbstractAuditableDocument implements Auditable<String, Str
   private String createdBy;
 
   @CreatedDate
+  @JsonSerialize(using = AuditableDateTimeSerializer.class)
+  @JsonDeserialize(using = AuditableDateTimeDeSerializer.class)
   private DateTime createdDate = DateTime.now();
 
   private String lastModifiedBy;
 
   @LastModifiedDate
+  @JsonSerialize(using = AuditableDateTimeSerializer.class)
+  @JsonDeserialize(using = AuditableDateTimeDeSerializer.class)
   private DateTime lastModifiedDate;
 
   @Override
@@ -131,6 +145,31 @@ public abstract class AbstractAuditableDocument implements Auditable<String, Str
   @Override
   public String toString() {
     return toStringHelper().toString();
+  }
+
+  private class AuditableDateTimeSerializer extends StdSerializer<DateTime> {
+
+    public AuditableDateTimeSerializer() {
+      super(DateTime.class);
+    }
+
+    @Override
+    public void serialize(DateTime value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+      gen.writeString(value.toString());
+    }
+  }
+
+  private class AuditableDateTimeDeSerializer extends StdDeserializer<DateTime> {
+
+    public AuditableDateTimeDeSerializer() {
+      super(DateTime.class);
+    }
+
+    @Override
+    public DateTime deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {      
+      return DateTime.parse(p.readValueAs(String.class));
+    }
+
   }
 
 }
