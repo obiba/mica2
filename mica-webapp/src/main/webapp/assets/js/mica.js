@@ -189,7 +189,7 @@ class OBiBaPagination {
       this.__enableButton(BUTTON_PREVIOUS, false);
 
       // create first Ellipsis button
-      this.__createButton(parent, BUTTON_ELLIPSIS_FIRST, null, '...');
+      this.__createButton(parent, BUTTON_ELLIPSIS_FIRST, null, '...', this.__onFirstEllipsisClick.bind(this));
       this.__enableButton(BUTTON_ELLIPSIS_FIRST, false);
       this.__visible(BUTTON_ELLIPSIS_FIRST, false);
 
@@ -202,8 +202,8 @@ class OBiBaPagination {
       });
 
       // create last Ellipsis button
-      this.__createButton(parent, BUTTON_ELLIPSIS_LAST, null, '...');
-      this.__enableButton(BUTTON_ELLIPSIS_LAST, false);
+      this.__createButton(parent, BUTTON_ELLIPSIS_LAST, null, '...', this.__onLastEllipsisClick.bind(this));
+      // this.__enableButton(BUTTON_ELLIPSIS_LAST, false);
       this.__visible(BUTTON_ELLIPSIS_LAST, this.numberOfPages > this.numberOfButtons);
 
       // Next button
@@ -319,8 +319,10 @@ class OBiBaPagination {
     }
 
     if (this.numberOfPages > this.numberOfButtons) {
-      this.__visible(BUTTON_ELLIPSIS_FIRST, page > 2)
+      this.__visible(BUTTON_ELLIPSIS_FIRST, page > 2);
+      this.__enableButton(BUTTON_ELLIPSIS_FIRST, page > 2);
       this.__visible(BUTTON_ELLIPSIS_LAST, this.numberOfPages - page > 1)
+      this.__enableButton(BUTTON_ELLIPSIS_LAST, this.numberOfPages - page > 1);
     }
 
     this.__updateFirstLastButtons(page);
@@ -360,6 +362,14 @@ class OBiBaPagination {
 
   __onPreviousClick(event) {
     this.__doPageChangeAndCallback(this.page-1);
+  }
+
+  __onFirstEllipsisClick(event) {
+    this.__doPageChangeAndCallback(this.pageButtons[0]-1);
+  }
+
+  __onLastEllipsisClick(event) {
+    this.__doPageChangeAndCallback(this.pageButtons[this.numberOfButtons-1]+1);
   }
 
   __onFirstClick(event) {
