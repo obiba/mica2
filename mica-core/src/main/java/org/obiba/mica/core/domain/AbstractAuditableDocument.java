@@ -10,6 +10,7 @@
 
 package org.obiba.mica.core.domain;
 
+import java.io.IOException;
 import java.util.Objects;
 
 import org.joda.time.DateTime;
@@ -21,6 +22,14 @@ import org.springframework.data.annotation.Version;
 import org.springframework.data.domain.Auditable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 
@@ -37,11 +46,15 @@ public abstract class AbstractAuditableDocument implements Auditable<String, Str
   private String createdBy;
 
   @CreatedDate
+  @JsonDeserialize(using = DateTimeDeserializer.class)
+  @JsonSerialize(using = DateTimeSerializer.class)
   private DateTime createdDate = DateTime.now();
 
   private String lastModifiedBy;
 
   @LastModifiedDate
+  @JsonDeserialize(using = DateTimeDeserializer.class)
+  @JsonSerialize(using = DateTimeSerializer.class)
   private DateTime lastModifiedDate;
 
   @Override
@@ -131,6 +144,30 @@ public abstract class AbstractAuditableDocument implements Auditable<String, Str
   @Override
   public String toString() {
     return toStringHelper().toString();
+  }
+
+  private static class DateTimeDeserializer extends StdDeserializer<DateTime> {
+
+    protected DateTimeDeserializer() {
+      super(DateTime.class);
+    }
+
+    @Override
+    public DateTime deserialize(JsonParser parser, DeserializationContext context) throws IOException {
+      return DateTime.parse(parser.readValueAs(String.class));
+    }
+  }
+
+  private static class DateTimeSerializer extends StdSerializer<DateTime> {
+
+    public DateTimeSerializer() {
+      super(DateTime.class);
+    }
+
+    @Override
+    public void serialize(DateTime value, JsonGenerator generator, SerializerProvider provider) throws IOException {
+      generator.writeString(value.toString());
+    }
   }
 
 }
