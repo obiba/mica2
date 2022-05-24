@@ -46,7 +46,6 @@
     "alias": "objectives"
     "static": "true"
     "localized": "true"
-    "forClassName": "Study"
 - "name": "opal"
   "title":
     "en": "Opal Server"
