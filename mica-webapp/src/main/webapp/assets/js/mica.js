@@ -203,7 +203,6 @@ class OBiBaPagination {
 
       // create last Ellipsis button
       this.__createButton(parent, BUTTON_ELLIPSIS_LAST, null, '...', this.__onLastEllipsisClick.bind(this));
-      // this.__enableButton(BUTTON_ELLIPSIS_LAST, false);
       this.__visible(BUTTON_ELLIPSIS_LAST, this.numberOfPages > this.numberOfButtons);
 
       // Next button
