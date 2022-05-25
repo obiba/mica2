@@ -84,12 +84,14 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
             Map<String, String> attrs = (Map<String, String>) params.get("attributes");
             if (attrs.containsKey("otpEnabled")) {
               params.put("otpEnabled", Boolean.parseBoolean(attrs.get("otpEnabled")));
+              attrs.remove("otpEnabled");
             }
           } catch (Exception e) {
             // ignore (probably cast error)
           }
         }
 
+        params.put("realm", subject.getPrincipals().getRealmNames().iterator().next());
         params.put("roles", roles);
         params.put("hasPermissionOnAnyDraftDocument", subjectAclService.findBySubject(subject.getPrincipal().toString(), SubjectAcl.Type.USER).stream().anyMatch(acl -> Arrays.stream(ALL_DRAFT_RESOURCES).anyMatch(res -> res.equals(acl.getResource()))));
         params.put("variablesCart", new Cart(variableSetService.getCartCurrentUser()));

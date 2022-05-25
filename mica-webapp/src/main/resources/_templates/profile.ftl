@@ -43,6 +43,13 @@
               <div class="card-body">
                 <@userProfile profile=user/>
               </div>
+              <#if user?? && user.realm == "obiba-realm">
+                <div class="card-footer">
+                  <div class="float-right">
+                    <a href="${authConfig.userAccountUrl}" class="btn btn-primary" target="_blank"><i class="fas fa-pen"></i> <@message "personal-information"/></a>
+                  </div>
+                </div>
+              </#if>
             </div>
           </div>
           <div class="col-sm-12 col-lg-6">
