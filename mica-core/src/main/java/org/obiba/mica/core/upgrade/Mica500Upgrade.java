@@ -441,7 +441,7 @@ public class Mica500Upgrade implements UpgradeStep {
     if (mongoTemplate.collectionExists("taxonomyEntityWrapper")) {
       BasicDBObject dbObject = BasicDBObject.parse("{_id: \"study\"}");
 
-      List<String> exclusiveStudyVocabularyNames = Arrays.asList("objectives", "methods-design", "populations-selectionCriteria-countriesIso",
+      List<String> exclusiveStudyVocabularyNames = Arrays.asList("methods-design", "populations-selectionCriteria-countriesIso",
         "populations-id", "populations-name", "populations-description", "populations-selectionCriteria-ageMin",
         "populations-selectionCriteria-ageMax", "populations-selectionCriteria-gender",
         "populations-selectionCriteria-pregnantWomen", "populations-selectionCriteria-newborn",
