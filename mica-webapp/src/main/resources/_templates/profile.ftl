@@ -53,13 +53,21 @@
               <div class="card-body">
                 <#if user.attributes?? && user.attributes["realm"]??>
                   <#if user.attributes["realm"] == "agate-user-realm">
-                    <a href="${authConfig.userAccountUrl}" class="btn btn-primary" target="_blank"><i class="fas fa-user"></i> <@message "user-account"/></a>
+                    <p><@message "credentials-info"/></p>
+                    <#if user.otpEnabled?? && !user.otpEnabled>
+                      <div class="alert alert-info">
+                        <h6><i class="icon fas fa-lock"></i> <@message "security-info"/></h6>
+                        <@message "2fa-info"/>
+                      </div>
+                    </#if>
+                    <a href="${authConfig.userAccountUrl}" class="btn btn-primary" target="_blank"><i class="fas fa-pen"></i> <@message "user-account"/></a>
                   <#else>
                     <#assign isOidc = false/>
                     <#if oidcProviders??>
                       <#list oidcProviders as oidc>
                         <#if oidc.name == user.attributes["realm"]>
                           <#assign isOidc = true/>
+                          <p><@message "credentials-info"/></p>
                           <@message "user-account-at"/>
                           <a href="${oidc.providerUrl}" class="btn btn-primary ml-2" target="_blank"><i class="fas fa-user"></i> ${oidc.title}</a>
                         </#if>
