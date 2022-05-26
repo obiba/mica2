@@ -1336,7 +1336,7 @@ class TableFixedHeaderUtility {
         .get(contextPath + '/ws/taxonomy/Mica_taxonomy/_filter?target=taxonomy')
         .then(response => {
           let responseVocabularies = response.data.vocabularies;
-          
+
           this.targets = (Array.isArray(responseVocabularies) ? responseVocabularies : []).filter(v => {
             if ('/individual-search' === window.location.pathname) {
               if (Mica.config.isCollectedDatasetEnabled) {
