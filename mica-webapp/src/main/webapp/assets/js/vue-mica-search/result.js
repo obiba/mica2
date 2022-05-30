@@ -931,7 +931,7 @@ const DatasetsResult = {
             return this.withCollectedDatasets && this.withHarmonizedDatasets;
           } else if (col === 'networks') {
             return this.withNetworks;
-          } else if (col === 'studies' || col === 'initiatives') {
+          } else if (col === 'studies' || col === 'initiatives' || col === 'study' || col === 'initiative') { // studies and initiatives should be deprecated
             return this.withStudies;
           }
           return true;
