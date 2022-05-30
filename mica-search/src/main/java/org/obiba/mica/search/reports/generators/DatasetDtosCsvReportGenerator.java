@@ -49,7 +49,7 @@ public class DatasetDtosCsvReportGenerator extends CsvReportGenerator {
     if (mustShow("showDatasetsNetworkColumn"))
       line.add("networks");
     if (mustShow("showDatasetsStudiesColumn"))
-      line.add(this.forHarmonization ? "global.initiatives" : "studies");
+      line.add(this.forHarmonization ? "search.study.harmonization" : "search.study.label");
     if (mustShow("showDatasetsVariablesColumn"))
       line.add("variables");
 
@@ -82,7 +82,7 @@ public class DatasetDtosCsvReportGenerator extends CsvReportGenerator {
     if (mustShow("showDatasetsNetworkColumn"))
       line.add(getNot0ValueOrDefault(stats.getNetworks()));
     if (mustShow("showDatasetsStudiesColumn"))
-      line.add(getNot0ValueOrDefault(stats.getStudies()));
+      line.add(findOpalTableStudyAcronym(datasetDto));
     if (mustShow("showDatasetsVariablesColumn"))
       line.add(getNot0ValueOrDefault(stats.getVariables()));
 
@@ -95,6 +95,15 @@ public class DatasetDtosCsvReportGenerator extends CsvReportGenerator {
     else if (datasetDto.hasExtension(Mica.CollectedDatasetDto.type))
       return translator.translate("dataset_taxonomy.vocabulary.className.term.StudyDataset.title");
     else
+      return NOT_EXISTS;
+  }
+
+  private String findOpalTableStudyAcronym(Mica.DatasetDto datasetDto) {
+    if (datasetDto.hasExtension(Mica.HarmonizedDatasetDto.type)) {
+      return datasetDto.getExtension(Mica.HarmonizedDatasetDto.type).getHarmonizationTable().getStudySummary().getAcronym(0).getValue();
+    } else if (datasetDto.hasExtension(Mica.CollectedDatasetDto.type)) {
+      return datasetDto.getExtension(Mica.CollectedDatasetDto.type).getStudyTable().getStudySummary().getAcronym(0).getValue();
+    } else
       return NOT_EXISTS;
   }
 
