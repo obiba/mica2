@@ -532,9 +532,9 @@
               const [taxonomy, vocabulary, term] = input.split(/\./);
               return  taxonomyTitleFinder.title(taxonomy, vocabulary, term) || input;
             });
-          }));
 
-        this.doQuery(this.currentWindowLocationSearch()['type']);
+            this.doQuery(this.currentWindowLocationSearch()['type']);
+          }));
       },
       beforeDestory() {
         EventBus.unregister("variables-results", this.onResult.bind(this));
