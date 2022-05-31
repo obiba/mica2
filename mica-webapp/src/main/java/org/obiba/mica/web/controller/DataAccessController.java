@@ -85,6 +85,10 @@ public class DataAccessController extends BaseController {
         permissions.add("ARCHIVE");
       else if (isUnArchivePermitted(getDataAccessRequest(params)))
         permissions.add("UNARCHIVE");
+
+      if (isPermitted("/data-access-request/private-comment", "VIEW", null)) 
+        permissions.add("VIEW_PRIVATE_COMMENTS");
+      
       params.put("permissions", permissions);
 
       return new ModelAndView("data-access", params);
@@ -107,6 +111,13 @@ public class DataAccessController extends BaseController {
     if (subject.isAuthenticated()) {
       Map<String, Object> params = newParameters(id);
       addDataAccessFormConfiguration(params, getDataAccessRequest(params), !edit, getLang(locale, language));
+
+      List<String> permissions = getPermissions(params);
+      if (isPermitted("/data-access-request/private-comment", "VIEW", null)) 
+        permissions.add("VIEW_PRIVATE_COMMENTS");
+
+      params.put("permissions", permissions);
+
       return new ModelAndView("data-access-form", params);
     } else {
       return new ModelAndView("redirect:../signin?redirect=" + micaConfigService.getContextPath() + "/data-access-form%2F" + id);
@@ -120,6 +131,12 @@ public class DataAccessController extends BaseController {
       Map<String, Object> params = newParameters(id);
       DataAccessRequest dar = (DataAccessRequest) params.get("dar");
       addDataAccessConfiguration(params);
+
+      List<String> permissions = getPermissions(params);
+      if (isPermitted("/data-access-request/private-comment", "VIEW", null)) 
+        permissions.add("VIEW_PRIVATE_COMMENTS");
+
+      params.put("permissions", permissions);
 
       // merge change history from main form, feasibility and amendment forms
       final List<FormStatusChangeEvent> events = Lists.newArrayList(
@@ -159,6 +176,12 @@ public class DataAccessController extends BaseController {
       DataAccessFeasibility feasibility = getDataAccessFeasibility(params);
       addDataAccessFeasibilityFormConfiguration(params, feasibility, !edit, getLang(locale, language));
 
+      List<String> permissions = getPermissions(params);
+      if (isPermitted("/data-access-request/private-comment", "VIEW", null)) 
+        permissions.add("VIEW_PRIVATE_COMMENTS");
+
+      params.put("permissions", permissions);
+
       return new ModelAndView("data-access-feasibility-form", params);
     } else {
       return new ModelAndView("redirect:../signin?redirect=" + micaConfigService.getContextPath() + "/data-access-feasibility-form%2F" + id);
@@ -176,6 +199,12 @@ public class DataAccessController extends BaseController {
       DataAccessAmendment amendment = getDataAccessAmendment(params);
       addDataAccessAmendmentFormConfiguration(params, amendment, !edit, getLang(locale, language));
 
+      List<String> permissions = getPermissions(params);
+      if (isPermitted("/data-access-request/private-comment", "VIEW", null)) 
+        permissions.add("VIEW_PRIVATE_COMMENTS");
+
+      params.put("permissions", permissions);
+
       return new ModelAndView("data-access-amendment-form", params);
     } else {
       return new ModelAndView("redirect:../signin?redirect=" + micaConfigService.getContextPath() + "/data-access-amendment-form%2F" + id);
@@ -188,6 +217,13 @@ public class DataAccessController extends BaseController {
     if (subject.isAuthenticated()) {
       Map<String, Object> params = newParameters(id);
       addDataAccessConfiguration(params);
+
+      List<String> permissions = getPermissions(params);
+      if (isPermitted("/data-access-request/private-comment", "VIEW", null)) 
+        permissions.add("VIEW_PRIVATE_COMMENTS");
+
+      params.put("permissions", permissions);
+
       return new ModelAndView("data-access-documents", params);
     } else {
       return new ModelAndView("redirect:../signin?redirect=" + micaConfigService.getContextPath() + "/data-access-documents%2F" + id);
@@ -201,10 +237,17 @@ public class DataAccessController extends BaseController {
       Map<String, Object> params = newParameters(id);
       addDataAccessConfiguration(params);
 
+      List<String> permissions = getPermissions(params);
+
+      if (isPermitted("/data-access-request/private-comment", "VIEW", null))
+        permissions.add("VIEW_PRIVATE_COMMENTS");
+
       List<Comment> comments = commentsService.findPublicComments("/data-access-request", id);
       params.put("comments", comments);
       params.put("authors", comments.stream().map(AbstractAuditableDocument::getCreatedBy).distinct()
         .collect(Collectors.toMap(u -> u, u -> userProfileService.getProfileMap(u, true))));
+
+      params.put("permissions", permissions);
 
       return new ModelAndView("data-access-comments", params);
     } else {
@@ -219,8 +262,14 @@ public class DataAccessController extends BaseController {
       Map<String, Object> params = newParameters(id);
       addDataAccessConfiguration(params);
 
-      if (!isPermitted("/data-access-request/private-comment", "VIEW"))
+      List<String> permissions = getPermissions(params);
+
+      if (!isPermitted("/data-access-request/private-comment", "VIEW", null))
         checkPermission("/private-comment/data-access-request", "VIEW", null);
+      else
+        permissions.add("VIEW_PRIVATE_COMMENTS");
+
+      params.put("permissions", permissions);
 
       List<Comment> comments = commentsService.findPrivateComments("/data-access-request", id);
       params.put("comments", comments);

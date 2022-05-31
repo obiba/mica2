@@ -136,7 +136,7 @@
             </#if>
           </a>
         </li>
-          <#if isAdministrator || isDAO>
+          <#if isAdministrator || isDAO || permissions?seq_contains("VIEW_PRIVATE_COMMENTS")>
             <li class="nav-item">
               <a id="private-comments-menu" href="${contextPath}/data-access-private-comments/${dar.id}" class="nav-link">
                 <i class="fas fa-lock nav-icon"></i>
