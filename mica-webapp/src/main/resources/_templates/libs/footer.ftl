@@ -3,7 +3,7 @@
   <!-- To the right -->
   <#if config??>
     <div class="float-right d-none d-sm-inline border-left pl-2 ml-2">
-      <strong><@message "copyright"/> &copy; 2021 <a href="${portalLink}">${config.name!""}</a>.</strong> <@message "all-rights-reserved"/>
+      <strong><@message "copyright"/> &copy; 2022 <a href="${portalLink}">${config.name!""}</a>.</strong> <@message "all-rights-reserved"/>
     </div>
   </#if>
   <a href="${contextPath}/admin" title="<@message "administration"/>" class="float-right"><i class="fas fa-lock"></i></a>
