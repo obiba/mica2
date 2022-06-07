@@ -538,7 +538,7 @@ class TableFixedHeaderUtility {
     let isOk = !foundAttr || foundAttr.value.length === 0 || foundAttr.value === 'Network' || foundAttr.value === 'Variable';
 
     if (studyTypeSelection.study) {
-      isOk = isOk || foundAttr.value === 'Study' || foundAttr.value === 'StudyDataset';
+      isOk = isOk || foundAttr.value === 'Study' || foundAttr.value === 'CollectedDataset';
     } else if (studyTypeSelection.harmonization) {
       isOk = isOk || foundAttr.value === 'HarmonizationStudy' || foundAttr.value === 'HarmonizedDataset';
     } else {
