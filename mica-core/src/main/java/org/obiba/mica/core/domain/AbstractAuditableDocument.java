@@ -10,7 +10,6 @@
 
 package org.obiba.mica.core.domain;
 
-import java.io.IOException;
 import java.util.Objects;
 
 import org.joda.time.DateTime;
