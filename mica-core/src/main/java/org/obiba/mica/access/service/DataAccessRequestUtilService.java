@@ -316,7 +316,7 @@ public class DataAccessRequestUtilService {
 
   private void checkRejectedStatusTransition(DataAccessEntity request, DataAccessEntityStatus to) {
     DataAccessConfig dataAccessConfig = dataAccessConfigService.getOrCreateConfig();
-    if (dataAccessConfig.isApprovedFinal())
+    if (dataAccessConfig.isRejectedFinal())
       throw new IllegalArgumentException("Rejected data access form cannot be modified");
 
     if (dataAccessConfig.isWithReview() && to != DataAccessEntityStatus.REVIEWED) {

@@ -10,25 +10,9 @@
 
 package org.obiba.mica.config;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
-
-import javax.inject.Inject;
-import javax.servlet.DispatcherType;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.FilterRegistration;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.servlet.InstrumentedFilter;
+import com.codahale.metrics.servlets.MetricsServlet;
 import com.google.common.base.Strings;
 import org.apache.shiro.web.env.EnvironmentLoaderListener;
 import org.eclipse.jetty.server.Server;
@@ -55,15 +39,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.servlet.InstrumentedFilter;
-import com.codahale.metrics.servlets.MetricsServlet;
+import javax.inject.Inject;
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
 
-import static javax.servlet.DispatcherType.ASYNC;
-import static javax.servlet.DispatcherType.ERROR;
-import static javax.servlet.DispatcherType.FORWARD;
-import static javax.servlet.DispatcherType.INCLUDE;
-import static javax.servlet.DispatcherType.REQUEST;
+import static javax.servlet.DispatcherType.*;
 import static org.obiba.mica.config.JerseyConfiguration.WS_ROOT;
 
 /**
@@ -166,16 +151,28 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
     // Note: authentication filter was already added by Spring
 
     EnumSet<DispatcherType> disps = EnumSet.of(REQUEST, FORWARD, ASYNC);
+    initForbiddenUrlsFilter(servletContext, disps);
     initMetrics(servletContext, disps);
 
     if(environment.acceptsProfiles(Profiles.PROD)) {
       initStaticResourcesProductionFilter(servletContext, disps);
       initCachingHttpHeadersFilter(servletContext, disps);
     }
+
     initClickjackingHttpHeadersFilter(servletContext, disps);
     initGzipFilter(servletContext, disps);
 
     log.info("Web application fully configured");
+  }
+
+  private void initForbiddenUrlsFilter(ServletContext servletContext, EnumSet<DispatcherType> disps) {
+    log.debug("Registering Forbidden URLs Filter");
+
+    FilterRegistration.Dynamic filterRegistration = servletContext.addFilter("forbiddenUrlsFilter", new ForbiddenUrlsFilter());
+
+    filterRegistration.addMappingForUrlPatterns(disps, true, "/.htaccess");
+    filterRegistration.addMappingForUrlPatterns(disps, true, "/.htaccess/");
+    filterRegistration.setAsyncSupported(true);
   }
 
   private void initAllowedMethods(ServletContext servletContext) {
@@ -305,6 +302,29 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
     @Override
     public void destroy() {
 
+    }
+  }
+
+  /**
+   * Filters all forbidden URLs registered above (/.htaccess, /.htacces/)
+   */
+  private static class ForbiddenUrlsFilter implements Filter {
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+    }
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+      throws IOException {
+      HttpServletRequest httpRequest = (HttpServletRequest) request;
+      HttpServletResponse httpResponse = (HttpServletResponse) response;
+      httpResponse.reset();
+      httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, String.format("%s not allowed", httpRequest.getRequestURI()));
+    }
+
+    @Override
+    public void destroy() {
     }
   }
 }

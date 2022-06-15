@@ -182,7 +182,7 @@
     </#if>
 
     <#if rc.requestUri?starts_with("/list/")>
-    currentSetIdentifiersCount: ${set.identifiers?size},
+    currentSetIdentifiersCount: parseInt("${set.identifiers?size}".replace(',', '')),
     </#if>
   };
 
@@ -265,8 +265,8 @@
           pageSizeSelector: null,
           studyClassName: Mica.defaultSearchMode,
           hasCheckboxes: !Mica.setIsLocked || Mica.isAdministrator,
-          individualSubCount: 0,
-          harmonizationSubCount: 0
+          individualSubCount: "0",
+          harmonizationSubCount: "0"
         };
       },
       methods: {
@@ -295,11 +295,11 @@
             let result = (data[dto] || {totalHits: 0});
 
             if (this.studyClassName === 'Study') {
-              this.individualSubCount = result.totalHits;
-              this.harmonizationSubCount = totalCount - result.totalHits;
+              this.individualSubCount = (result.totalHits).toLocaleString(Mica.locale);
+              this.harmonizationSubCount = (totalCount - result.totalHits).toLocaleString(Mica.locale);
             } else {
-              this.harmonizationSubCount = result.totalHits;
-              this.individualSubCount = totalCount - result.totalHits;
+              this.harmonizationSubCount = (result.totalHits).toLocaleString(Mica.locale);
+              this.individualSubCount = (totalCount - result.totalHits).toLocaleString(Mica.locale);
             }
 
             this.pagination.update(result.totalHits, this.size, (this.from/this.size)+1);
@@ -532,9 +532,9 @@
               const [taxonomy, vocabulary, term] = input.split(/\./);
               return  taxonomyTitleFinder.title(taxonomy, vocabulary, term) || input;
             });
-          }));
 
-        this.doQuery(this.currentWindowLocationSearch()['type']);
+            this.doQuery(this.currentWindowLocationSearch()['type']);
+          }));
       },
       beforeDestory() {
         EventBus.unregister("variables-results", this.onResult.bind(this));

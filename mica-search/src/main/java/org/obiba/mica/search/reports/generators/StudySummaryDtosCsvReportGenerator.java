@@ -43,7 +43,8 @@ public class StudySummaryDtosCsvReportGenerator extends CsvReportGenerator {
 
     line.add("acronym");
     line.add("name");
-    line.add("type");
+    if (mustShow("showStudiesTypeColumn"))
+      line.add("type");
     if (mustShow("showStudiesDesignColumn"))
       line.add("search.study.design");
 
@@ -101,7 +102,8 @@ public class StudySummaryDtosCsvReportGenerator extends CsvReportGenerator {
 
     line.add(studySummaryDto.getAcronym(0).getValue());
     line.add(studySummaryDto.getName(0).getValue());
-    line.add(translator.translate("search.study.harmonization"));
+    if (mustShow("showStudiesTypeColumn"))
+      line.add(translator.translate("search.study.harmonization"));
 
     if (mustShow("showStudiesDesignColumn")) {
       line.add(NOT_EXISTS);
@@ -140,7 +142,8 @@ public class StudySummaryDtosCsvReportGenerator extends CsvReportGenerator {
 
     line.add(studySummaryDto.getAcronym(0).getValue());
     line.add(studySummaryDto.getName(0).getValue());
-    line.add(translator.translate("search.study.individual"));
+    if (mustShow("showStudiesTypeColumn"))
+      line.add(translator.translate("search.study.individual"));
 
     if (mustShow("showStudiesDesignColumn")) {
       if (Strings.isNullOrEmpty(studySummaryDto.getDesign())) {

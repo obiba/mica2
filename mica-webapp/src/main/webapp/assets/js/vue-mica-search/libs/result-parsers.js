@@ -425,7 +425,7 @@ class StudiesResultParser {
 
       let path = this.normalizePath(`/study/${summary.id}`);
       let row = [];
-      
+
       if (displayOptions.showCheckboxes) {
         row.push(`<i data-item-id="${summary.id}" class="far fa-square"></i>`);
       }
@@ -573,6 +573,11 @@ class DatasetsResultParser {
       const type = dataset.variableType === 'Dataschema'
         ? taxonomyFilter.apply(null, ['Mica_dataset.className.HarmonizationDataset'])
         : taxonomyFilter.apply(null, ['Mica_dataset.className.StudyDataset']) ;
+
+      let opalTable = dataset.variableType === 'Dataschema'
+        ? (dataset['obiba.mica.HarmonizedDatasetDto.type'] || {}).harmonizationTable
+        : (dataset['obiba.mica.CollectedDatasetDto.type'] || {}).studyTable;
+
       const stats = dataset['obiba.mica.CountStatsDto.datasetCountStats'] || {};
       let anchor = (type, value) => `<a href="" class="query-anchor" data-target="dataset" data-target-id="${dataset.id}" data-type="${type}">${value.toLocaleString(this.locale)}</a>`;
 
@@ -594,15 +599,29 @@ class DatasetsResultParser {
             }
             break;
           }
-          case 'studies': {
+          case 'studies': { // deprecated
             if (!micaConfig.isSingleStudyEnabled) {
               row.push(stats.studies ? anchor('studies', stats.studies) : '-');
             }
             break;
           }
-          case 'initiatives': {
+          case 'initiatives': { // deprecated
             if (!micaConfig.isSingleStudyEnabled) {
               row.push(stats.studies ? anchor('studies', stats.studies) : '-');
+            }
+            break;
+          }
+          case 'study': {
+            if (!micaConfig.isSingleStudyEnabled) {
+              let opalTablePath = path = this.normalizePath(`/study/${opalTable.studySummary.id}`);
+              row.push(stats.studies ? `<a href="${opalTablePath}">${localize(opalTable.studySummary.acronym)}</a>` : '-');
+            }
+            break;
+          }
+          case 'initiative': {
+            if (!micaConfig.isSingleStudyEnabled) {
+              let opalTablePath = path = this.normalizePath(`/study/${opalTable.studySummary.id}`);
+              row.push(stats.studies ? `<a href="${opalTablePath}">${localize(opalTable.studySummary.acronym)}</a>` : '-');
             }
             break;
           }
@@ -667,7 +686,7 @@ class NetworksResultParser {
 
       let path = this.normalizePath(`/network/${network.id}`);
       let row = [];
-      
+
       if (displayOptions.showCheckboxes) {
         row.push(`<i data-item-id="${network.id}" class="far fa-square"></i>`);
       }

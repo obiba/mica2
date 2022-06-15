@@ -186,7 +186,7 @@ const EntityResult = {
       this.onSelectionChanged([element.dataset.itemId], !isElementChecked);
     },
     setHeaderSelectionClickEvent(tableSelector) {
-      let headerSelectionIcon = document.querySelector(`${tableSelector} thead i`);
+      let headerSelectionIcon = document.querySelector(`${tableSelector} thead i:not(.fa-plus-square)`);
 
       if (headerSelectionIcon) {
         headerSelectionIcon.removeEventListener('click', this.headerSelectionEventHandler);
@@ -207,7 +207,7 @@ const EntityResult = {
       const tableSelector = `#vosr-${this.type}-result`;
       this.setHeaderSelectionClickEvent(tableSelector);
 
-      let headerSelectionIcon = document.querySelector(`${tableSelector} thead i.far`);
+      let headerSelectionIcon = document.querySelector(`${tableSelector} thead i.far:not(.fa-plus-square)`);
 
       if (headerSelectionIcon) {
         headerSelectionIcon.classList.remove(checkedIconClassName);
@@ -931,7 +931,7 @@ const DatasetsResult = {
             return this.withCollectedDatasets && this.withHarmonizedDatasets;
           } else if (col === 'networks') {
             return this.withNetworks;
-          } else if (col === 'studies' || col === 'initiatives') {
+          } else if (col === 'studies' || col === 'initiatives' || col === 'study' || col === 'initiative') { // studies and initiatives should be deprecated
             return this.withStudies;
           }
           return true;

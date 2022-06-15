@@ -885,6 +885,12 @@ class MicaQueryExecutor {
 
       let correctStudyClassName = '/harmonization-search' === currentPathname ? 'HarmonizationStudy' : 'Study';
 
+      let targetQuery = tree.search((name) => name === TARGETS.STUDY);
+      if (!targetQuery) {
+        targetQuery = new RQL.Query(target);
+        tree.addQuery(null, targetQuery);
+      }
+
       if (!foundStudyClassName) {
         tree.addQuery(targetQuery, new RQL.Query('in', ['Mica_study.className', correctStudyClassName]));
       } else {

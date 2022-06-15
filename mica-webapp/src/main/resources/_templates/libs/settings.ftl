@@ -109,8 +109,8 @@
 <#assign searchVariableColumnsIndividual = ["label+description", "valueType", "annotations", "study", "population", "data-collection-event", "dataset"]/>
 
 <#assign searchDatasetColumns = ["name", "type", "networks", "studies", "variables"]/>
-<#assign searchDatasetColumnsHarmonization = ["name", "networks", "initiatives", "variables"]/>
-<#assign searchDatasetColumnsIndividual = ["name", "networks", "studies", "variables"]/>
+<#assign searchDatasetColumnsHarmonization = ["name", "networks", "initiative", "variables"]/>
+<#assign searchDatasetColumnsIndividual = ["name", "networks", "study", "variables"]/>
 
 <#assign searchStudyColumns = ["name", "type", "study-design", "data-sources-available", "participants", "networks", "individual", "harmonization"]/>
 <#assign searchStudyColumnsHarmonization = ["name", "networks", "harmonization"]/>

@@ -538,9 +538,9 @@ class TableFixedHeaderUtility {
     let isOk = !foundAttr || foundAttr.value.length === 0 || foundAttr.value === 'Network' || foundAttr.value === 'Variable';
 
     if (studyTypeSelection.study) {
-      isOk = isOk || foundAttr.value === 'Study' || foundAttr.value === 'StudyDataset';
+      isOk = isOk || foundAttr.value === 'Study' || foundAttr.value === 'CollectedDataset';
     } else if (studyTypeSelection.harmonization) {
-      isOk = isOk || foundAttr.value === 'HarmonizationStudy' || foundAttr.value === 'HarmonizationDataset';
+      isOk = isOk || foundAttr.value === 'HarmonizationStudy' || foundAttr.value === 'HarmonizedDataset';
     } else {
       isOk = true;
     }
@@ -1336,7 +1336,7 @@ class TableFixedHeaderUtility {
         .get(contextPath + '/ws/taxonomy/Mica_taxonomy/_filter?target=taxonomy')
         .then(response => {
           let responseVocabularies = response.data.vocabularies;
-          
+
           this.targets = (Array.isArray(responseVocabularies) ? responseVocabularies : []).filter(v => {
             if ('/individual-search' === window.location.pathname) {
               if (Mica.config.isCollectedDatasetEnabled) {

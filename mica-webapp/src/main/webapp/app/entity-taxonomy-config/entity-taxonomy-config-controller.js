@@ -259,6 +259,7 @@ mica.entitySfConfig
           content: term || null,
           children: null,
           vocabulary: vocabulary,
+          forClassName: VocabularyAttributeService.getForClassName(vocabulary),
           siblings: (vocabulary.terms || []).filter(function(t){
             return term ? term.name !== t.name : t;
           }),
