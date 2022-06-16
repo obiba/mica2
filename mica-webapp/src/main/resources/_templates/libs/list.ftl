@@ -11,4 +11,4 @@
 </#function>
 
 <!-- Data Access Request creation -->
-<#assign canCreateDAR = accessConfig?? && accessConfig.variablesEnabled/>
+<#assign canCreateDAR = config?? && config.dataAccessEnabled && accessConfig?? && accessConfig.variablesEnabled/>
