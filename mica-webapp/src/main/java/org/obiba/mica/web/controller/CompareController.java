@@ -12,6 +12,7 @@ import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.NetworkSetService;
 import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.search.JoinQueryExecutor;
+import org.obiba.mica.security.SubjectUtils;
 import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.study.domain.BaseStudy;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -56,7 +58,7 @@ public class CompareController extends BaseController {
   private PublishedNetworkService publishedNetworkService;
 
   @GetMapping("/compare")
-  public ModelAndView get(@RequestParam(required = false) String type, @RequestParam(required = false) String ids, @RequestParam(required = false) String query) {
+  public ModelAndView get(HttpServletRequest request, @RequestParam(required = false) String type, @RequestParam(required = false) String ids, @RequestParam(required = false) String query) {
     Subject subject = SecurityUtils.getSubject();
     MicaConfig config = micaConfigService.getConfig();
     String documentType = Strings.isNullOrEmpty(type) ? "studies" : type.toLowerCase();
@@ -78,11 +80,11 @@ public class CompareController extends BaseController {
       }
     }
 
-    if (documentIds.isEmpty() && subject.isAuthenticated()) {
+    if (documentIds.isEmpty() && (subject.isAuthenticated() || micaConfigService.getConfig().isAnonymousCanCreateCart())) {
       if ("studies".equals(documentType)) {
-        documentIds.addAll(studySetService.getCartCurrentUser().getIdentifiers());
+        documentIds.addAll(getStudiesCartIds(request));
       } else if ("networks".equals(documentType)) {
-        documentIds.addAll(networkSetService.getCartCurrentUser().getIdentifiers());
+        documentIds.addAll(getNetworksCartIds(request));
       }
     }
     params.put("type", documentType);
@@ -105,6 +107,18 @@ public class CompareController extends BaseController {
     params.put("query", searchQuery);
 
     return new ModelAndView("compare", params);
+  }
+
+  private Set<String> getStudiesCartIds(HttpServletRequest request) {
+    return SecurityUtils.getSubject().isAuthenticated() ?
+      studySetService.getCartCurrentUser().getIdentifiers() :
+      studySetService.getCartAnonymousUser(SubjectUtils.getAnonymousUserId(request)).getIdentifiers();
+  }
+
+  private Set<String> getNetworksCartIds(HttpServletRequest request) {
+    return SecurityUtils.getSubject().isAuthenticated() ?
+      networkSetService.getCartCurrentUser().getIdentifiers() :
+      networkSetService.getCartAnonymousUser(SubjectUtils.getAnonymousUserId(request)).getIdentifiers();
   }
 
   private List<String> queryStudyIds(String query) {

@@ -12,8 +12,10 @@ package org.obiba.mica.variable.search.rest;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.subject.Subject;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.domain.SetOperation;
 import org.obiba.mica.dataset.service.VariableSetOperationService;
@@ -28,6 +30,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -38,7 +41,6 @@ import java.util.List;
 @Component
 @Path("/variables/sets")
 @Scope("request")
-@RequiresAuthentication
 public class PublishedDatasetVariablesSetsResource extends AbstractPublishedDocumentsSetsResource<VariableSetService> {
 
   private final VariableSetService variableSetService;
@@ -68,11 +70,12 @@ public class PublishedDatasetVariablesSetsResource extends AbstractPublishedDocu
   }
 
   @GET
-  public List<Mica.DocumentSetDto> list(@QueryParam("id") List<String> ids) {
-    return listDocumentsSets(ids);
+  public List<Mica.DocumentSetDto> list(@Context HttpServletRequest request, @QueryParam("id") List<String> ids) {
+    return listDocumentsSets(ids, getAnonymousUserId(request));
   }
 
   @POST
+  @RequiresAuthentication
   public Response createEmpty(@Context UriInfo uriInfo, @QueryParam("name") String name) {
     Mica.DocumentSetDto created = createEmptyDocumentSet(name);
     return Response.created(uriInfo.getBaseUriBuilder().segment("variables", "set", created.getId()).build()).entity(created).build();
@@ -80,8 +83,8 @@ public class PublishedDatasetVariablesSetsResource extends AbstractPublishedDocu
 
   @GET
   @Path("_cart")
-  public Mica.DocumentSetDto getOrCreateCart() {
-    return getOrCreateDocumentSetCart();
+  public Mica.DocumentSetDto getOrCreateCart(@Context HttpServletRequest request) {
+    return getOrCreateDocumentSetCart(request);
   }
 
   @POST
@@ -95,6 +98,7 @@ public class PublishedDatasetVariablesSetsResource extends AbstractPublishedDocu
 
   @POST
   @Path("operations")
+  @RequiresAuthentication
   public Response compose(@Context UriInfo uriInfo, @QueryParam("s1") String set1, @QueryParam("s2") String set2, @QueryParam("s3") String set3) {
     if (!subjectAclService.hasMicaRole()) throw new AuthorizationException();
     List<DocumentSet> sets = Lists.newArrayList();
@@ -107,6 +111,7 @@ public class PublishedDatasetVariablesSetsResource extends AbstractPublishedDocu
 
   @GET
   @Path("operation/{id}")
+  @RequiresAuthentication
   public Mica.SetOperationDto compose(@Context UriInfo uriInfo, @PathParam("id") String operationId) {
     if (!subjectAclService.hasMicaRole()) throw new AuthorizationException();
     return dtos.asDto(variableSetOperationService.get(operationId));

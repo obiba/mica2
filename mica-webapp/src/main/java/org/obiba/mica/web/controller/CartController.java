@@ -1,9 +1,7 @@
 package org.obiba.mica.web.controller;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.googlecode.protobuf.format.JsonFormat;
-
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.obiba.mica.core.domain.DocumentSet;
@@ -37,39 +35,46 @@ public class CartController extends BaseController {
   private Dtos dtos;
 
   @GetMapping("/cart")
-  public ModelAndView get(@RequestParam(required = false) String type, @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale) {
+  public ModelAndView get(@RequestParam(required = false) String type,
+                          @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale) {
     MicaConfig config = micaConfigService.getConfig();
-    if (!config.isCartEnabled() && !config.isStudiesCartEnabled() && !config.isNetworksCartEnabled()) {
+    if (!config.isCartEnabled()) {
       return new ModelAndView("redirect:/");
     }
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
-      // make sure cart exists
-      variableSetService.getAllCurrentUser().stream().filter(set -> !set.hasName())
-        .findFirst().orElseGet(() -> variableSetService.create("", Lists.newArrayList()));
       // note: the cart will be populated by the SessionInterceptor
       Map<String, Object> params = newParameters();
       params.put("accessConfig", dataAccessConfigService.getOrCreateConfig());
 
-      boolean variableEnabledInConfig = config.isCartEnabled() && (config.isStudyDatasetEnabled() || config.isHarmonizationDatasetEnabled());
-      boolean studyEnabledInConfig = config.isStudiesCartEnabled() && !config.isSingleStudyEnabled();
-      boolean networkEnabledInConfig = config.isNetworksCartEnabled() && !config.isSingleNetworkEnabled();
-
-      if (!Strings.isNullOrEmpty(type) &&
-        ((type.equalsIgnoreCase("variables") && variableEnabledInConfig) ||
-          (type.equalsIgnoreCase("studies") && studyEnabledInConfig) ||
-          (type.equalsIgnoreCase("networks") && networkEnabledInConfig))) {
-        params.put("showCartType", type.toLowerCase());
-      } else {
-        params.put("showCartType", variableEnabledInConfig ? "variables" : (studyEnabledInConfig ? "studies" : "networks"));
-      }
+      addShowCartTypeParameter(params, type, config);
 
       params.put("configJson", getMicaConfigAsJson(config, getLang(locale, null)));
       return new ModelAndView("cart", params);
+    } else if (config.isAnonymousCanCreateCart()) {
+      Map<String, Object> params = newParameters();
+      addShowCartTypeParameter(params, type, config);
+      params.put("configJson", getMicaConfigAsJson(config, getLang(locale, null)));
+      return new ModelAndView("cart", params);
     } else {
+
       return new ModelAndView("redirect:signin?redirect=" + micaConfigService.getContextPath() + "/cart");
     }
+  }
 
+  private void addShowCartTypeParameter(Map<String, Object> params, String type, MicaConfig config) {
+    boolean variableEnabledInConfig = config.isCartEnabled() && (config.isStudyDatasetEnabled() || config.isHarmonizationDatasetEnabled());
+    boolean studyEnabledInConfig = config.isStudiesCartEnabled() && !config.isSingleStudyEnabled();
+    boolean networkEnabledInConfig = config.isNetworksCartEnabled() && !config.isSingleNetworkEnabled();
+
+    if (!Strings.isNullOrEmpty(type) &&
+      ((type.equalsIgnoreCase("variables") && variableEnabledInConfig) ||
+        (type.equalsIgnoreCase("studies") && studyEnabledInConfig) ||
+        (type.equalsIgnoreCase("networks") && networkEnabledInConfig))) {
+      params.put("showCartType", type.toLowerCase());
+    } else {
+      params.put("showCartType", variableEnabledInConfig ? "variables" : (studyEnabledInConfig ? "studies" : "networks"));
+    }
   }
 
   @GetMapping("/lists")

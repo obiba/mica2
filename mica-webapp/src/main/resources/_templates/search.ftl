@@ -225,7 +225,7 @@
                             </button>
                           </#if>
                           <#if cartEnabled>
-                              <#if user??>
+                              <#if user?? || cartAnonymousEnabled>
                                   <#if variablesCartEnabled>
                                       <#if listsEnabled>
                                         <div class="btn-group" v-if="isVariablesToolsVisible">

@@ -1,5 +1,6 @@
 package org.obiba.mica.web.interceptor;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.shiro.SecurityUtils;
@@ -9,6 +10,7 @@ import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.service.NetworkSetService;
 import org.obiba.mica.security.Roles;
+import org.obiba.mica.security.SubjectUtils;
 import org.obiba.mica.security.domain.SubjectAcl;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.service.StudySetService;
@@ -70,34 +72,24 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 
   @Override
   public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-    populateUserEntries(modelAndView, micaConfigService, userProfileService, variableSetService, studySetService, networkSetService, subjectAclService);
+    populateUserEntries(request, modelAndView, micaConfigService, userProfileService, variableSetService, studySetService, networkSetService, subjectAclService);
   }
 
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
     Subject subject = SecurityUtils.getSubject();
     if (!subject.isAuthenticated()) {
-      // assign an ID to the anonymous user
-      Cookie[] cookies = request.getCookies();
-      boolean found = false;
-      if (cookies != null) {
-        for (Cookie ck : cookies) {
-          if (ck.getName().equals("_uid")) {
-            found = true;
-            request.setAttribute("_uid", ck.getValue());
-          }
-        }
-      }
-      if (!found) {
+      String uid = SubjectUtils.getAnonymousUserId(request);
+      if (Strings.isNullOrEmpty(uid)) {
         String userId = UUID.randomUUID().toString();
-        response.addCookie(new Cookie("_uid", userId));
-        request.setAttribute("_uid", userId);
+        response.addCookie(new Cookie(SubjectUtils.ANONYMOUS_USER_KEY, userId));
+        request.setAttribute(SubjectUtils.ANONYMOUS_USER_KEY, userId);
       }
     }
     return true;
   }
 
-  public static void populateUserEntries(ModelAndView modelAndView, MicaConfigService micaConfigService, UserProfileService userProfileService,
+  public static void populateUserEntries(HttpServletRequest request, ModelAndView modelAndView, MicaConfigService micaConfigService, UserProfileService userProfileService,
                                          VariableSetService variableSetService, StudySetService studySetService, NetworkSetService networkSetService, SubjectAclService subjectAclService) {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
@@ -139,6 +131,11 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
       }
     } else if (micaConfigService.getConfig().isAnonymousCanCreateCart()) {
       Map<String, Object> params = Maps.newHashMap();
+      Object uid = SubjectUtils.getAnonymousUserId(request);
+      String userId = uid != null ? uid.toString() : "anonymous";
+      params.put("variablesCart", new Cart(variableSetService.getCartAnonymousUser(userId)));
+      params.put("studiesCart", new Cart(studySetService.getCartAnonymousUser(userId)));
+      params.put("networksCart", new Cart(networkSetService.getCartAnonymousUser(userId)));
 
       modelAndView.getModel().put("sets", params);
     }

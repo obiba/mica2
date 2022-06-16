@@ -16,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.UriUtils;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.ForbiddenException;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -41,32 +42,32 @@ public class BaseController {
   private NetworkSetService networkSetService;
 
   @ExceptionHandler(NoSuchElementException.class)
-  public ModelAndView notFoundError(Exception ex) {
-    return makeErrorModelAndView("404", ex.getMessage());
+  public ModelAndView notFoundError(HttpServletRequest request, Exception ex) {
+    return makeErrorModelAndView(request, "404", ex.getMessage());
   }
 
   @ExceptionHandler(UnauthorizedException.class)
-  public ModelAndView unauthorizedError(Exception ex) {
-    return makeErrorModelAndView("403", ex.getMessage());
+  public ModelAndView unauthorizedError(HttpServletRequest request, Exception ex) {
+    return makeErrorModelAndView(request,"403", ex.getMessage());
   }
 
   @ExceptionHandler(ForbiddenException.class)
-  public ModelAndView forbiddenError(Exception ex) {
-    return unauthorizedError(ex);
+  public ModelAndView forbiddenError(HttpServletRequest request, Exception ex) {
+    return unauthorizedError(request, ex);
   }
 
   @ExceptionHandler(Exception.class)
-  public ModelAndView anyError(Exception ex) {
-    return makeErrorModelAndView("500", ex.getMessage());
+  public ModelAndView anyError(HttpServletRequest request, Exception ex) {
+    return makeErrorModelAndView(request,"500", ex.getMessage());
   }
 
-  protected ModelAndView makeErrorModelAndView(String status, String message) {
+  protected ModelAndView makeErrorModelAndView(HttpServletRequest request, String status, String message) {
     ModelAndView mv = new ModelAndView("error");
     mv.getModel().put("status", status);
     mv.getModel().put("msg", ESAPI.encoder().encodeForHTML(message));
     mv.getModel().put("contextPath", micaConfigService.getContextPath());
     mv.getModel().put("config", micaConfigService.getConfig());
-    SessionInterceptor.populateUserEntries(mv, micaConfigService, userProfileService, variableSetService, studySetService, networkSetService, subjectAclService);
+    SessionInterceptor.populateUserEntries(request, mv, micaConfigService, userProfileService, variableSetService, studySetService, networkSetService, subjectAclService);
     return mv;
   }
 

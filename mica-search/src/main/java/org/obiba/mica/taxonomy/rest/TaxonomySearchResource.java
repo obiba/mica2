@@ -10,15 +10,9 @@
 
 package org.obiba.mica.taxonomy.rest;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-
+import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Strings;
+import org.obiba.mica.security.SubjectUtils;
 import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.opal.core.cfg.NoSuchVocabularyException;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
@@ -28,8 +22,11 @@ import org.obiba.opal.web.taxonomy.Dtos;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.codahale.metrics.annotation.Timed;
-import com.google.common.base.Strings;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import java.util.List;
+import java.util.Map;
 
 import static org.obiba.mica.taxonomy.TaxonomyResolver.asMap;
 
@@ -42,6 +39,7 @@ public class TaxonomySearchResource extends AbstractTaxonomySearchResource {
   @Path("/_filter")
   @Timed
   public Opal.TaxonomyDto filterTaxonomy(@PathParam("name") String name,
+    @Context HttpServletRequest request,
     @QueryParam("target") @DefaultValue("variable") String target, @QueryParam("query") String query,
     @QueryParam("locale") String locale) {
     TaxonomyTarget taxonomyTarget = getTaxonomyTarget(target);
@@ -55,7 +53,7 @@ public class TaxonomySearchResource extends AbstractTaxonomySearchResource {
     Opal.TaxonomyDto.Builder tBuilder = Dtos.asDto(taxonomy, false).toBuilder();
     if(taxoNamesMap.isEmpty() || !taxoNamesMap.containsKey(name) || taxoNamesMap.get(name).isEmpty())
       return tBuilder.build();
-    populate(tBuilder, taxonomy, taxoNamesMap);
+    populate(tBuilder, taxonomy, taxoNamesMap, SubjectUtils.getAnonymousUserId(request));
     return tBuilder.build();
   }
 

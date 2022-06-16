@@ -2,6 +2,7 @@ package org.obiba.mica.rest;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.service.DocumentSetService;
@@ -9,6 +10,7 @@ import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.search.JoinQueryExecutor;
+import org.obiba.mica.security.SubjectUtils;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
@@ -16,6 +18,7 @@ import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.util.Collection;
@@ -52,54 +55,60 @@ public abstract class AbstractPublishedDocumentsSetResource<T extends DocumentSe
 
   protected abstract boolean isCartEnabled(MicaConfig config);
 
-  protected Mica.DocumentSetDto getDocumentSet(String id) {
-    DocumentSet documentSet = getSecuredDocumentSet(id);
+  protected Mica.DocumentSetDto getDocumentSet(String id, String anonymousUserId) {
+    DocumentSet documentSet = getSecuredDocumentSet(id, anonymousUserId);
     getDocumentSetService().touch(documentSet);
     return dtos.asDto(documentSet);
   }
 
-  protected void deleteDocumentSet(String id) {
-    getDocumentSetService().delete(getSecuredDocumentSet(id));
+  protected void deleteDocumentSet(String id, String anonymousUserId) {
+    getDocumentSetService().delete(getSecuredDocumentSet(id, anonymousUserId));
   }
 
-  protected Mica.DocumentSetDto importDocuments(String id, String body) {
-    DocumentSet set = getSecuredDocumentSet(id);
+  protected Mica.DocumentSetDto importDocuments(String id, String body, String anonymousUserId) {
+    DocumentSet set = getSecuredDocumentSet(id, anonymousUserId);
     if (Strings.isNullOrEmpty(body)) return dtos.asDto(set);
     getDocumentSetService().addIdentifiers(id, getDocumentSetService().extractIdentifiers(body));
     return dtos.asDto(getDocumentSetService().get(id));
   }
 
-  protected StreamingOutput exportDocuments(String id) {
-    DocumentSet documentSet = getSecuredDocumentSet(id);
+  protected StreamingOutput exportDocuments(String id, String anonymousUserId) {
+    DocumentSet documentSet = getSecuredDocumentSet(id, anonymousUserId);
     getDocumentSetService().touch(documentSet);
     return toStream(documentSet.getIdentifiers());
   }
 
-  protected Mica.DocumentSetDto deleteDocuments(String id, String body) {
-    DocumentSet set = getSecuredDocumentSet(id);
+  protected Mica.DocumentSetDto deleteDocuments(String id, String body, String anonymousUserId) {
+    DocumentSet set = getSecuredDocumentSet(id, anonymousUserId);
     if (Strings.isNullOrEmpty(body)) return dtos.asDto(set);
     getDocumentSetService().removeIdentifiers(id, getDocumentSetService().extractIdentifiers(body));
     return dtos.asDto(getDocumentSetService().get(id));
   }
 
-  protected void deleteDocuments(String id) {
+  protected void deleteDocuments(String id, String anonymousUserId) {
+    getSecuredDocumentSet(id, anonymousUserId);
     getDocumentSetService().setIdentifiers(id, Lists.newArrayList());
   }
 
-  protected boolean hasDocument(String id, String documentId) {
-    DocumentSet set = getSecuredDocumentSet(id);
+  protected boolean hasDocument(String id, String documentId, String anonymousUserId) {
+    DocumentSet set = getSecuredDocumentSet(id, anonymousUserId);
     return set.getIdentifiers().contains(documentId);
   }
 
-  protected DocumentSet getSecuredDocumentSet(String id) {
+  protected DocumentSet getSecuredDocumentSet(String id, String anonymousUserId) {
     DocumentSet documentSet = getDocumentSetService().get(id);
-    if (!subjectAclService.isCurrentUser(documentSet.getUsername()) && !subjectAclService.isAdministrator() && !subjectAclService.isDataAccessOfficer())
-      throw new AuthorizationException();
-    boolean enabled = isCartEnabled(micaConfigService.getConfig());
-    if (!enabled && !documentSet.hasName()) throw new AuthorizationException(); // cart
-    if (enabled && !subjectAclService.hasMicaRole() && !documentSet.hasName())
-      throw new AuthorizationException(); // cart
-    if (documentSet.hasName() && !subjectAclService.hasMicaRole()) throw new AuthorizationException();
+    if (isAnonymousUser()) {
+      if (!isAnonymousCartAllowed() || !documentSet.hasUsername() || !documentSet.getUsername().equals(anonymousUserId))
+        throw new AuthorizationException();
+    } else {
+      if (!subjectAclService.isCurrentUser(documentSet.getUsername()) && !subjectAclService.isAdministrator() && !subjectAclService.isDataAccessOfficer())
+        throw new AuthorizationException();
+      boolean enabled = isCartEnabled(micaConfigService.getConfig());
+      if (!enabled && !documentSet.hasName()) throw new AuthorizationException(); // cart
+      if (enabled && !subjectAclService.hasMicaRole() && !documentSet.hasName())
+        throw new AuthorizationException(); // cart
+      if (documentSet.hasName() && !subjectAclService.hasMicaRole()) throw new AuthorizationException();
+    }
     getDocumentSetService().touch(documentSet);
     return documentSet;
   }
@@ -107,6 +116,22 @@ public abstract class AbstractPublishedDocumentsSetResource<T extends DocumentSe
   protected MicaSearch.JoinQueryResultDto makeQuery(QueryType type, String query) {
     return joinQueryExecutor.query(type, searcher.makeJoinQuery(query));
   }
+
+  protected boolean isAnonymousCartAllowed() {
+    return micaConfigService.getConfig().isAnonymousCanCreateCart();
+  }
+
+  protected boolean isAnonymousUser() {
+    return !SecurityUtils.getSubject().isAuthenticated();
+  }
+
+  protected String getAnonymousUserId(HttpServletRequest request) {
+    return SubjectUtils.getAnonymousUserId(request);
+  }
+
+  //
+  // Private
+  //
 
   private StreamingOutput toStream(Collection<String> items) {
     return os -> {

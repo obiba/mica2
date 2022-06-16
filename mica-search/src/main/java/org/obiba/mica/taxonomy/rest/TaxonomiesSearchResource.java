@@ -16,11 +16,14 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 
+import org.obiba.mica.security.SubjectUtils;
 import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.taxonomy.TaxonomyResolver;
@@ -47,8 +50,8 @@ public class TaxonomiesSearchResource extends AbstractTaxonomySearchResource {
   @GET
   @Path("/_filter")
   @Timed
-  public List<Opal.TaxonomyDto> filter(@QueryParam("target") @DefaultValue("variable") String target,
-    @QueryParam("query") String query, @QueryParam("locale") String locale) {
+  public List<Opal.TaxonomyDto> filter(@Context HttpServletRequest request, @QueryParam("target") @DefaultValue("variable") String target,
+                                       @QueryParam("query") String query, @QueryParam("locale") String locale) {
     TaxonomyTarget taxonomyTarget = getTaxonomyTarget(target);
 
     List<String> filteredVocabularies = filterVocabularies(taxonomyTarget, query, locale);
@@ -58,7 +61,7 @@ public class TaxonomiesSearchResource extends AbstractTaxonomySearchResource {
     List<Opal.TaxonomyDto> results = Lists.newArrayList();
     getTaxonomies(taxonomyTarget).stream().filter(t -> taxoNamesMap.containsKey(t.getName())).forEach(taxo -> {
       Opal.TaxonomyDto.Builder tBuilder = Dtos.asDto(taxo, false).toBuilder();
-      populate(tBuilder, taxo, taxoNamesMap);
+      populate(tBuilder, taxo, taxoNamesMap, SubjectUtils.getAnonymousUserId(request));
       results.add(tBuilder.build());
     });
 
@@ -68,7 +71,7 @@ public class TaxonomiesSearchResource extends AbstractTaxonomySearchResource {
   @GET
   @Path("/_search")
   @Timed
-  public List<Opal.TaxonomyBundleDto> search(@QueryParam("query") String query, @QueryParam("locale") String locale,
+  public List<Opal.TaxonomyBundleDto> search(@Context HttpServletRequest request, @QueryParam("query") String query, @QueryParam("locale") String locale,
     @Nullable @QueryParam("target") String target) {
 
     logger.debug("TaxonomiesSearchResource#search called with query [%s], locale [%s] and target [%s]", query, locale, target);
@@ -80,7 +83,7 @@ public class TaxonomiesSearchResource extends AbstractTaxonomySearchResource {
       .map(t -> TaxonomyTarget.valueOf(t.getName().toUpperCase())).collect(Collectors.toList())
       : Lists.newArrayList(TaxonomyTarget.valueOf(target.toUpperCase()));
 
-    targets.forEach(t -> filter(t.name(), query, locale).stream()
+    targets.forEach(t -> filter(request, t.name(), query, locale).stream()
       .map(taxo -> Opal.TaxonomyBundleDto.newBuilder().setTarget(t.name().toLowerCase()).setTaxonomy(taxo).build())
       .forEach(results::add));
     return results;

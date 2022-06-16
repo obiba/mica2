@@ -12,6 +12,7 @@ package org.obiba.mica.taxonomy.rest;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
@@ -59,7 +60,7 @@ public class AbstractTaxonomySearchResource {
   private VariableSetService variableSetService;
 
   protected void populate(Opal.TaxonomyDto.Builder tBuilder, Taxonomy taxonomy,
-                          Map<String, Map<String, List<String>>> taxoNamesMap) {
+                          Map<String, Map<String, List<String>>> taxoNamesMap, String anonymousUserId) {
 
     taxonomy.getVocabularies().stream().filter(v -> taxoNamesMap.get(taxonomy.getName()).containsKey(v.getName()))
         .forEach(voc -> {
@@ -70,7 +71,10 @@ public class AbstractTaxonomySearchResource {
 
             // for now, sets are available for variable documents only
             if (taxonomy.getName().equals("Mica_" + TaxonomyTarget.VARIABLE.asId()) && voc.getName().equals("sets")) {
-              List<String> allSetsCurrentUser = variableSetService.getAllCurrentUser().stream().map(DocumentSet::getId).collect(Collectors.toList());
+              List<DocumentSet> sets = SecurityUtils.getSubject().isAuthenticated() ?
+                variableSetService.getAllCurrentUser() :
+                variableSetService.getAllAnonymousUser(anonymousUserId);
+              List<String> allSetsCurrentUser = sets.stream().map(DocumentSet::getId).collect(Collectors.toList());
 
               if (allSetsCurrentUser.size() > 0) {
                 terms = voc.getTerms().stream().filter(term -> allSetsCurrentUser.contains(term.getName())).collect(Collectors.toList());

@@ -33,7 +33,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
@@ -45,7 +47,6 @@ import java.util.stream.Collectors;
 @Component
 @Path("/variables/set/{id}")
 @Scope("request")
-@RequiresAuthentication
 public class PublishedDatasetVariablesSetResource extends AbstractPublishedDocumentsSetResource<VariableSetService> {
 
   private final VariableSetService variableSetService;
@@ -74,20 +75,20 @@ public class PublishedDatasetVariablesSetResource extends AbstractPublishedDocum
   }
 
   @GET
-  public Mica.DocumentSetDto get(@PathParam("id") String id) {
-    return getDocumentSet(id);
+  public Mica.DocumentSetDto get(@PathParam("id") String id, @Context HttpServletRequest request) {
+    return getDocumentSet(id, getAnonymousUserId(request));
   }
 
   @DELETE
-  public Response delete(@PathParam("id") String id) {
-    deleteDocumentSet(id);
+  public Response delete(@PathParam("id") String id, @Context HttpServletRequest request) {
+    deleteDocumentSet(id, getAnonymousUserId(request));
     return Response.ok().build();
   }
 
   @GET
   @Path("/documents")
-  public Mica.DatasetVariablesDto getVariables(@PathParam("id") String id, @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit) {
-    DocumentSet documentSet = getSecuredDocumentSet(id);
+  public Mica.DatasetVariablesDto getVariables(@PathParam("id") String id, @Context HttpServletRequest request, @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit) {
+    DocumentSet documentSet = getSecuredDocumentSet(id, getAnonymousUserId(request));
     return Mica.DatasetVariablesDto.newBuilder()
       .setTotal(documentSet.getIdentifiers().size())
       .setFrom(from)
@@ -99,29 +100,29 @@ public class PublishedDatasetVariablesSetResource extends AbstractPublishedDocum
   @POST
   @Path("/documents/_import")
   @Consumes(MediaType.TEXT_PLAIN)
-  public Response importVariables(@PathParam("id") String id, String body) {
-    return Response.ok().entity(importDocuments(id, body)).build();
+  public Response importVariables(@PathParam("id") String id, @Context HttpServletRequest request, String body) {
+    return Response.ok().entity(importDocuments(id, body, getAnonymousUserId(request))).build();
   }
 
   @POST
   @Path("/documents/_rql")
-  public Response importQueryVariables(@PathParam("id") String id, @FormParam("query") String query) throws IOException {
-    return Response.ok().entity(importQueryDocuments(id, query)).build();
+  public Response importQueryVariables(@PathParam("id") String id, @Context HttpServletRequest request, @FormParam("query") String query) throws IOException {
+    return Response.ok().entity(importQueryDocuments(id, query, getAnonymousUserId(request))).build();
   }
 
   @GET
   @Path("/documents/_export")
   @Produces(MediaType.TEXT_PLAIN)
-  public Response exportVariables(@PathParam("id") String id) {
-    return Response.ok(exportDocuments(id))
+  public Response exportVariables(@PathParam("id") String id, @Context HttpServletRequest request) {
+    return Response.ok(exportDocuments(id, getAnonymousUserId(request)))
       .header("Content-Disposition", String.format("attachment; filename=\"%s-variables.txt\"", id)).build();
   }
 
   @GET
   @Path("/documents/_report")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
-  public Response reportVariables(@PathParam("id") String id, @QueryParam("locale") @DefaultValue("en") String locale) {
-    DocumentSet documentSet = getSecuredDocumentSet(id);
+  public Response reportVariables(@PathParam("id") String id, @Context HttpServletRequest request, @QueryParam("locale") @DefaultValue("en") String locale) {
+    DocumentSet documentSet = getSecuredDocumentSet(id, getAnonymousUserId(request));
     ReportGenerator reporter = new DatasetVariableCsvReportGenerator(variableSetService.getVariables(documentSet, false), locale);
     StreamingOutput stream = reporter::write;
     return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Variables.zip\"").build();
@@ -130,8 +131,9 @@ public class PublishedDatasetVariablesSetResource extends AbstractPublishedDocum
   @GET
   @Path("/documents/_opal")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  @RequiresAuthentication
   public Response createOpalViewsGet(@PathParam("id") String id, @QueryParam("ids") String identifiers) {
-    DocumentSet set = getSecuredDocumentSet(id);
+    DocumentSet set = getSecuredDocumentSet(id, null);
     if (!subjectAclService.isAdministrator() && !subjectAclService.isDataAccessOfficer())
       throw new AuthorizationException();
     StreamingOutput streamingOutput;
@@ -148,6 +150,7 @@ public class PublishedDatasetVariablesSetResource extends AbstractPublishedDocum
   @POST
   @Path("/documents/_opal")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  @RequiresAuthentication
   public Response createOpalViewsPost(@PathParam("id") String id, @FormParam("ids") String identifiers) {
     return createOpalViewsGet(id, identifiers);
   }
@@ -155,32 +158,32 @@ public class PublishedDatasetVariablesSetResource extends AbstractPublishedDocum
   @POST
   @Path("/documents/_delete")
   @Consumes(MediaType.TEXT_PLAIN)
-  public Response deleteVariables(@PathParam("id") String id, String body) {
-    return Response.ok().entity(deleteDocuments(id, body)).build();
+  public Response deleteVariables(@PathParam("id") String id, @Context HttpServletRequest request, String body) {
+    return Response.ok().entity(deleteDocuments(id, body, getAnonymousUserId(request))).build();
   }
 
   @DELETE
   @Path("/documents")
-  public Response deleteVariables(@PathParam("id") String id) {
-    deleteDocuments(id);
+  public Response deleteVariables(@PathParam("id") String id, @Context HttpServletRequest request) {
+    deleteDocuments(id, getAnonymousUserId(request));
     return Response.ok().build();
   }
 
   @GET
   @Path("/document/{documentId}/_exists")
-  public Response hasVariable(@PathParam("id") String id, @PathParam("documentId") String documentId) {
-    return hasDocument(id, documentId) ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();
+  public Response hasVariable(@PathParam("id") String id, @Context HttpServletRequest request, @PathParam("documentId") String documentId) {
+    return hasDocument(id, documentId, getAnonymousUserId(request)) ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();
   }
 
-  private Mica.DocumentSetDto importQueryDocuments(String id, String query) {
-    DocumentSet set = getSecuredDocumentSet(id);
+  private Mica.DocumentSetDto importQueryDocuments(String id, String query, String anonymousUserId) {
+    DocumentSet set = getSecuredDocumentSet(id, anonymousUserId);
     if (Strings.isNullOrEmpty(query)) return dtos.asDto(set);
     MicaSearch.JoinQueryResultDto result = makeQuery(QueryType.VARIABLE, query);
     if (result.hasVariableResultDto() && result.getVariableResultDto().getTotalHits() > 0) {
       List<String> ids = result.getVariableResultDto().getExtension(MicaSearch.DatasetVariableResultDto.result).getSummariesList().stream()
         .map(Mica.DatasetVariableResolverDto::getId).collect(Collectors.toList());
       getDocumentSetService().addIdentifiers(id, ids);
-      set = getSecuredDocumentSet(id);
+      set = getSecuredDocumentSet(id, anonymousUserId);
     }
     return dtos.asDto(set);
   }

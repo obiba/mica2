@@ -236,8 +236,6 @@ const EntityResult = {
     this.$nextTick(() => this.setCheckBoxesCheckStatusAndEvents());
   },
   mounted() {
-    console.debug(`${this.type} result table mounted...`);
-
     this.getEventBus().register(`${this.type}-results`,this.onResults.bind(this));
     this.getEventBus().register("clear-results-selections", this.clearSelections.bind(this));
   },
