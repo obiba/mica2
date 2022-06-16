@@ -170,15 +170,15 @@
 
   const totalCounts = {
     <#if variablesCartEnabled>
-    variablesCount: parseInt("${user.variablesCart.count}".replace(',', '')),
+    variablesCount: parseInt("${sets.variablesCart.count}".replace(',', '')),
     </#if>
 
     <#if studiesCartEnabled>
-    studiesCount: parseInt("${user.studiesCart.count}".replace(',', '')),
+    studiesCount: parseInt("${sets.studiesCart.count}".replace(',', '')),
     </#if>
 
     <#if networksCartEnabled>
-    networksCount: parseInt("${user.networksCart.count}".replace(',', '')),
+    networksCount: parseInt("${sets.networksCart.count}".replace(',', '')),
     </#if>
 
     <#if rc.requestUri?starts_with("/list/")>

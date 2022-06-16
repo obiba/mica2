@@ -41,9 +41,9 @@
 
       <!-- Sidebar Menu -->
       <nav class="mt-2">
-        <#if user?? && user.variablesLists?? && user.variablesLists?size gt 0>
+        <#if sets?? && sets.variablesLists?? && sets.variablesLists?size gt 0>
           <ul class="nav nav-pills nav-sidebar flex-column">
-            <#list user.variablesLists as variableList>
+            <#list sets.variablesLists as variableList>
               <#assign variableListActiveClass = (variableList.id == set.id)?then("active", "") />
               <li class="nav-item">
                 <a class="nav-link ${variableListActiveClass}" href="${contextPath}/list/${variableList.id}">
