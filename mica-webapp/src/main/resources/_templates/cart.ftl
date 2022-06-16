@@ -178,9 +178,15 @@
 
                 <div class="float-right">
                   <#if canCreateDAR>
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-add">
-                      <i class="fas fa-plus"></i> <@message "new-data-access-request"/>
-                    </button>
+                    <#if user??>
+                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-add">
+                        <i class="fas fa-plus"></i> <@message "new-data-access-request"/>
+                      </button>
+                    <#else>
+                      <button type="button" onclick="location.href='${contextPath}/signin?redirect=${contextPath}/cart';" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> <@message "sign-in-new-data-access-request"/>
+                      </button>
+                    </#if>
                   </#if>
 
                   <#if sets.variablesLists?? && sets.variablesLists?size lt maxNumberOfSets>

@@ -42,22 +42,14 @@ public class CartController extends BaseController {
       return new ModelAndView("redirect:/");
     }
     Subject subject = SecurityUtils.getSubject();
-    if (subject.isAuthenticated()) {
+    if (subject.isAuthenticated() || config.isAnonymousCanCreateCart()) {
       // note: the cart will be populated by the SessionInterceptor
       Map<String, Object> params = newParameters();
       params.put("accessConfig", dataAccessConfigService.getOrCreateConfig());
-
-      addShowCartTypeParameter(params, type, config);
-
-      params.put("configJson", getMicaConfigAsJson(config, getLang(locale, null)));
-      return new ModelAndView("cart", params);
-    } else if (config.isAnonymousCanCreateCart()) {
-      Map<String, Object> params = newParameters();
       addShowCartTypeParameter(params, type, config);
       params.put("configJson", getMicaConfigAsJson(config, getLang(locale, null)));
       return new ModelAndView("cart", params);
     } else {
-
       return new ModelAndView("redirect:signin?redirect=" + micaConfigService.getContextPath() + "/cart");
     }
   }
