@@ -200,7 +200,7 @@ class Criterion {
       case "TERMS":
         query.push(`${taxonomy}.${this.vocabulary.name}`);
 
-        if (this.terms.length === this.value.length) {
+        if (this.terms > 1 && this.terms.length === this.value.length) {
           query.name = ["missing", "exists"].indexOf(this.operator) > -1 ? this.operator : "exists";
         } else {
           query.name = ["in", "out"].indexOf(this.operator) > -1 ? this.operator : "in";
