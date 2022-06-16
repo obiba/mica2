@@ -615,6 +615,14 @@ public class MicaConfig extends AbstractAuditableDocument {
     this.networksCartEnabled = networksCartEnabled;
   }
 
+  public void setAnonymousCanCreateCart(boolean anonymousCanCreateCart) {
+    this.anonymousCanCreateCart = anonymousCanCreateCart;
+  }
+
+  public boolean isAnonymousCanCreateCart() {
+    return anonymousCanCreateCart;
+  }
+
   public int getCartTimeToLive() {
     return cartTimeToLive;
   }

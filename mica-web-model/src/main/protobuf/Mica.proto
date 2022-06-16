@@ -439,7 +439,7 @@ message MicaConfigDto {
   optional string searchLayout = 33;
   required int64 maxNumberOfSets = 34;
   required int64 maxItemsPerSet = 35;
-  optional bool anonymousCanCreateCart = 36; // legacy
+  required bool anonymousCanCreateCart = 36; // legacy
   required bool currentUserCanCreateCart = 37;
   required bool currentUserCanCreateSets = 38;
   required bool isCartEnabled = 39;

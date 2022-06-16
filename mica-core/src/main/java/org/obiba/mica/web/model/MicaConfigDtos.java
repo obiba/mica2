@@ -160,6 +160,7 @@ class MicaConfigDtos {
     builder.setMaxItemsPerSet(config.getMaxItemsPerSet());
     builder.setMaxNumberOfSets(config.getMaxNumberOfSets());
     builder.setIsCartEnabled(config.isCartEnabled());
+    builder.setAnonymousCanCreateCart(config.isAnonymousCanCreateCart());
     builder.setIsStudiesCartEnabled(config.isStudiesCartEnabled());
     builder.setIsNetworksCartEnabled(config.isNetworksCartEnabled());
     builder.setSetTimeToLive(config.getSetTimeToLive());
@@ -251,6 +252,7 @@ class MicaConfigDtos {
     config.setSignupGroups(dto.getSignupGroupsList());
 
     config.setCartEnabled(dto.getIsCartEnabled());
+    config.setAnonymousCanCreateCart(dto.getAnonymousCanCreateCart());
     config.setStudiesCartEnabled(dto.getIsStudiesCartEnabled());
     config.setNetworksCartEnabled(dto.getIsNetworksCartEnabled());
     config.setStudiesCompareEnabled(dto.getIsStudiesCompareEnabled());

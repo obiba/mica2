@@ -687,6 +687,7 @@ class MicaSetStorage extends MicaLocalStorage {
       //'variables': { type: Object },
       'selections': { type: Array }
     }, 'mica.' + ns);
+    this.deselectAll()
   }
 
   /**

@@ -48,7 +48,7 @@
           <div class="modal-footer justify-content-between">
             <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
             <button type="button" class="btn btn-primary" data-dismiss="modal"
-                    onclick="VariablesSetService.deleteVariables('${user.variablesCart.id}', variablesCartStorage.getSelections(), function() { window.location.replace('${contextPath}/cart?type=variables'); })"><@message "confirm"/>
+                    onclick="VariablesSetService.deleteVariables('${sets.variablesCart.id}', variablesCartStorage.getSelections(), function() { window.location.replace('${contextPath}/cart?type=variables'); })"><@message "confirm"/>
             </button>
           </div>
         </div>
@@ -75,7 +75,7 @@
           <div class="modal-footer justify-content-between">
             <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
             <button type="button" class="btn btn-primary" data-dismiss="modal"
-                    onclick="StudiesSetService.deleteStudies('${user.studiesCart.id}', studiesCartStorage.getSelections(), function() { window.location.replace('${contextPath}/cart?type=studies'); })"><@message "confirm"/>
+                    onclick="StudiesSetService.deleteStudies('${sets.studiesCart.id}', studiesCartStorage.getSelections(), function() { window.location.replace('${contextPath}/cart?type=studies'); })"><@message "confirm"/>
             </button>
           </div>
         </div>
@@ -102,7 +102,7 @@
           <div class="modal-footer justify-content-between">
             <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
             <button type="button" class="btn btn-primary" data-dismiss="modal"
-                    onclick="NetworksSetService.deleteNetworks('${user.networksCart.id}', networksCartStorage.getSelections(), function() { window.location.replace('${contextPath}/cart?type=networks'); })"><@message "confirm"/>
+                    onclick="NetworksSetService.deleteNetworks('${sets.networksCart.id}', networksCartStorage.getSelections(), function() { window.location.replace('${contextPath}/cart?type=networks'); })"><@message "confirm"/>
             </button>
           </div>
         </div>
@@ -124,7 +124,7 @@
                   <a id="variables-tab" @click="onTabChanged('variables')" class="nav-link <#if showCartType == "variables">active</#if>"
                      <#if showCartType == "variables">href="#tab_variables" data-toggle="tab"<#else>href="${contextPath}/cart?type=variables"</#if>>
                       <@message "variables"/>
-                    <span class="badge badge-light">${user.variablesCart.count}</span>
+                    <span class="badge badge-light">${sets.variablesCart.count}</span>
                   </a>
                 </li>
               </#if>
@@ -133,7 +133,7 @@
                   <a id="studies-tab" @click="onTabChanged('studies')" class="nav-link <#if showCartType == "studies">active</#if>"
                      <#if showCartType == "studies">href="#tab_studies" data-toggle="tab"<#else>href="${contextPath}/cart?type=studies"</#if>>
                       <@message "studies"/>
-                    <span class="badge badge-light">${user.studiesCart.count}</span>
+                    <span class="badge badge-light">${sets.studiesCart.count}</span>
                   </a>
                 </li>
               </#if>
@@ -142,7 +142,7 @@
                   <a id="networks-tab" @click="onTabChanged('networks')" class="nav-link <#if showCartType == "networks">active</#if>"
                      <#if showCartType == "networks">href="#tab_networks" data-toggle="tab"<#else>href="${contextPath}/cart?type=networks"</#if>>
                       <@message "networks"/>
-                    <span class="badge badge-light">${user.networksCart.count}</span>
+                    <span class="badge badge-light">${sets.networksCart.count}</span>
                   </a>
                 </li>
               </#if>
@@ -159,7 +159,7 @@
 
             <div class="card card-info card-outline">
             <div class="card-header">
-              <#if user.variablesCart?? && user.variablesCart.count gt 0>
+              <#if sets.variablesCart?? && sets.variablesCart.count gt 0>
 
                 <#if config.harmonizationDatasetEnabled && config.studyDatasetEnabled>
                   <div class="float-left">
@@ -183,7 +183,7 @@
                     </button>
                   </#if>
 
-                  <#if user.variablesLists?size lt maxNumberOfSets>
+                  <#if sets.variablesLists?size lt maxNumberOfSets>
                     <div class="btn-group ml-2" role="group">
                       <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
                           <@message "sets.add.button.set-label"/>
@@ -206,8 +206,8 @@
                         </div>
                         <div id="add-set-divider" class="dropdown-divider" <#if !user.variablesLists?has_content>style="display: none"</#if>></div>
                         <div id="add-set-choices">
-                          <#if user.variablesLists?has_content>
-                            <#list user.variablesLists as variableList>
+                          <#if sets.variablesLists?has_content>
+                            <#list sets.variablesLists as variableList>
                               <#if !variableList.locked>
                                 <button type="button" class="dropdown-item"
                                         onclick="onClickAddToSet('${variableList.id}', '${variableList.name}')">
@@ -228,12 +228,12 @@
                           <i class="fas fa-download"></i> <@message "download"/>
                         </button>
                         <div class="dropdown-menu">
-                          <a class="dropdown-item" href="${contextPath}/ws/variables/set/${user.variablesCart.id}/documents/_report?locale=${.locale}" download><@message "download-cart-export"/></a>
-                          <a class="dropdown-item" href="${contextPath}/ws/variables/set/${user.variablesCart.id}/documents/_opal" download><@message "download-cart-views"/></a>
+                          <a class="dropdown-item" href="${contextPath}/ws/variables/set/${sets.variablesCart.id}/documents/_report?locale=${.locale}" download><@message "download-cart-export"/></a>
+                          <a class="dropdown-item" href="${contextPath}/ws/variables/set/${sets.variablesCart.id}/documents/_opal" download><@message "download-cart-views"/></a>
                         </div>
                       </div>
                     <#else>
-                      <a href="${contextPath}/ws/variables/set/${user.variablesCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
+                      <a href="${contextPath}/ws/variables/set/${sets.variablesCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
                         <i class="fas fa-download"></i> <@message "download-cart-export"/>
                       </a>
                     </#if>
@@ -245,7 +245,7 @@
               </#if>
             </div>
             <div class="card-body">
-              <#if user.variablesCart?? && user.variablesCart.count gt 0>
+              <#if sets.variablesCart?? && sets.variablesCart.count gt 0>
                 <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
                 <div class="mt-3 text-muted" v-show="!hasResult"><@message "empty-list"/></div>
                 <div v-show="hasResult" class="clearfix mb-3">
@@ -263,10 +263,10 @@
                   </div>
                   <#if config.setsSearchEnabled>
                     <div class="float-right">
-                      <a class="btn btn-info ml-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=variables&query=variable(in(Mica_variable.sets,${user.variablesCart.id})),study(in(Mica_study.className,Study))">
+                      <a class="btn btn-info ml-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=variables&query=variable(in(Mica_variable.sets,${sets.variablesCart.id})),study(in(Mica_study.className,Study))">
                         <i class="fas fa-search"></i>
                       </a>
-                      <a class="btn btn-info ml-2" v-else href="${contextPath}/harmonization-search#lists?type=variables&query=variable(in(Mica_variable.sets,${user.variablesCart.id})),study(in(Mica_study.className,HarmonizationStudy))">
+                      <a class="btn btn-info ml-2" v-else href="${contextPath}/harmonization-search#lists?type=variables&query=variable(in(Mica_variable.sets,${sets.variablesCart.id})),study(in(Mica_study.className,HarmonizationStudy))">
                         <i class="fas fa-search"></i>
                       </a>
                     </div>
@@ -290,7 +290,7 @@
 
             <div class="card card-info card-outline">
             <div class="card-header">
-              <#if user.studiesCart?? && user.studiesCart.count gt 0>
+              <#if sets.studiesCart?? && sets.studiesCart.count gt 0>
                 <#if config.harmonizationDatasetEnabled>
                   <div class="float-left">
                     <ul class="nav nav-pills" id="studyClassNameChoice" role="tablist" v-cloak>
@@ -312,7 +312,7 @@
                     </button>
                   </#if>
                   <#if showCartDownload>
-                    <a href="${contextPath}/ws/studies/set/${user.studiesCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
+                    <a href="${contextPath}/ws/studies/set/${sets.studiesCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
                       <i class="fas fa-download"></i> <@message "download-cart-export"/>
                     </a>
                   </#if>
@@ -323,7 +323,7 @@
               </#if>
             </div>
             <div class="card-body">
-              <#if user.studiesCart?? && user.studiesCart.count gt 0>
+              <#if sets.studiesCart?? && sets.studiesCart.count gt 0>
                 <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
                 <div class="mt-3 text-muted" v-show="!hasResult"><@message "empty-list"/></div>
                 <div v-show="hasResult" class="clearfix mb-3">
@@ -341,10 +341,10 @@
                   </div>
                   <#if config.setsSearchEnabled>
                     <div class="float-right">
-                      <a class="btn btn-info ml-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=studies&query=study(and(in(Mica_study.sets,${user.studiesCart.id}),in(Mica_study.className,Study)))">
+                      <a class="btn btn-info ml-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=studies&query=study(and(in(Mica_study.sets,${sets.studiesCart.id}),in(Mica_study.className,Study)))">
                         <i class="fas fa-search"></i>
                       </a>
-                      <a class="btn btn-info ml-2" v-else href="${contextPath}/harmonization-search#lists?type=studies&query=study(and(in(Mica_study.sets,${user.studiesCart.id}),in(Mica_study.className,HarmonizationStudy)))">
+                      <a class="btn btn-info ml-2" v-else href="${contextPath}/harmonization-search#lists?type=studies&query=study(and(in(Mica_study.sets,${sets.studiesCart.id}),in(Mica_study.className,HarmonizationStudy)))">
                         <i class="fas fa-search"></i>
                       </a>
                     </div>
@@ -369,7 +369,7 @@
             <div class="card card-info card-outline">
             <div class="card-header">
               <h3 class="card-title mt-2"><@message "networks"/></h3>
-              <#if user.networksCart?? && user.networksCart.count gt 0>
+              <#if sets.networksCart?? && sets.networksCart.count gt 0>
                 <div class="float-right">
                   <#if networksCompareEnabled>
                     <button type="button" class="btn btn-info ml-2" onclick="onCompareNetworks()">
@@ -377,7 +377,7 @@
                     </button>
                   </#if>
                   <#if showCartDownload>
-                    <a href="${contextPath}/ws/networks/set/${user.networksCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
+                    <a href="${contextPath}/ws/networks/set/${sets.networksCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
                       <i class="fas fa-download"></i> <@message "download-cart-export"/>
                     </a>
                   </#if>
@@ -388,7 +388,7 @@
               </#if>
             </div>
             <div class="card-body">
-              <#if user.networksCart?? && user.networksCart.count gt 0>
+              <#if sets.networksCart?? && sets.networksCart.count gt 0>
                 <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
                 <div class="mt-3 text-muted" v-show="!hasResult"><@message "empty-list"/></div>
                 <div v-show="hasResult" class="clearfix mb-3">
@@ -406,7 +406,7 @@
                   </div>
                   <#if config.setsSearchEnabled>
                     <div class="float-right">
-                      <a class="btn btn-info ml-2" href="${contextPath}/search#lists?type=networks&query=network(in(Mica_network.sets,${user.networksCart.id}))">
+                      <a class="btn btn-info ml-2" href="${contextPath}/search#lists?type=networks&query=network(in(Mica_network.sets,${sets.networksCart.id}))">
                         <i class="fas fa-search"></i>
                       </a>
                     </div>

@@ -115,27 +115,27 @@
 <script>
   const Carts = [];
 
-  <#if variablesCartEnabled && user?? && user.variablesCart??>
+  <#if variablesCartEnabled && user?? && sets.variablesCart??>
   Carts.push({
-    id: '${user.variablesCart.id}',
+    id: '${sets.variablesCart.id}',
     type: 'variables',
-    count: ${user.variablesCart.count?c}
+    count: ${sets.variablesCart.count?c}
   });
   </#if>
 
   <#if studiesCartEnabled && user?? && user.studiesCart??>
   Carts.push({
-    id: '${user.studiesCart.id}',
+    id: '${sets.studiesCart.id}',
     type: 'studies',
-    count: ${user.studiesCart.count?c}
+    count: ${sets.studiesCart.count?c}
   });
   </#if>
 
   <#if networksCartEnabled && user?? && user.networksCart??>
   Carts.push({
-    id: '${user.networksCart.id}',
+    id: '${sets.networksCart.id}',
     type: 'networks',
-    count: ${user.networksCart.count?c}
+    count: ${sets.networksCart.count?c}
   });
   </#if>
 

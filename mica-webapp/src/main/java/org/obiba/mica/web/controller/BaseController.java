@@ -66,7 +66,7 @@ public class BaseController {
     mv.getModel().put("msg", ESAPI.encoder().encodeForHTML(message));
     mv.getModel().put("contextPath", micaConfigService.getContextPath());
     mv.getModel().put("config", micaConfigService.getConfig());
-    SessionInterceptor.populateUserEntries(mv, userProfileService, variableSetService, studySetService, networkSetService, subjectAclService);
+    SessionInterceptor.populateUserEntries(mv, micaConfigService, userProfileService, variableSetService, studySetService, networkSetService, subjectAclService);
     return mv;
   }
 

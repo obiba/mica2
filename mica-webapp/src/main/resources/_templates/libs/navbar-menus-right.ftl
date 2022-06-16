@@ -11,8 +11,8 @@
       <li class="nav-item">
         <a href="${contextPath}/lists" class="nav-link" title="<@message "sets.set.title"/>">
           <i class="far fa-list-alt"></i>
-          <span id="list-count" class="badge badge-danger navbar-badge" <#if !(user?? && user.variablesLists?has_content)>style="display: none"</#if>>
-            <#if user?? && user.variablesLists?has_content>${user.variablesLists?size}</#if>
+          <span id="list-count" class="badge badge-danger navbar-badge" <#if !(sets?? && sets.variablesLists?has_content)>style="display: none"</#if>>
+            <#if sets?? && sets.variablesLists?has_content>${sets.variablesLists?size}</#if>
           </span>
         </a>
       </li>

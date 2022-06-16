@@ -1,6 +1,6 @@
-<#assign set = user.variablesCart.set/>
-<#assign studiesSet = user.studiesCart.set/>
-<#assign networksSet = user.networksCart.set/>
+<#assign set = sets.variablesCart.set/>
+<#assign studiesSet = sets.studiesCart.set/>
+<#assign networksSet = sets.networksCart.set/>
 
 <#include "document-set-scripts.ftl">
 
