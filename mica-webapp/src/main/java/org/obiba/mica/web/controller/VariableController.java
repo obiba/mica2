@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -133,13 +134,13 @@ public class VariableController extends BaseController {
   }
 
   @ExceptionHandler(NoSuchDatasetException.class)
-  public ModelAndView datasetNotFoundError(NoSuchDatasetException ex) {
-    return makeErrorModelAndView("404", ex.getMessage());
+  public ModelAndView datasetNotFoundError(HttpServletRequest request, NoSuchDatasetException ex) {
+    return makeErrorModelAndView(request, "404", ex.getMessage());
   }
 
   @ExceptionHandler(NoSuchVariableException.class)
-  public ModelAndView variableNotFoundError(NoSuchVariableException ex) {
-    return makeErrorModelAndView("404", ex.getMessage());
+  public ModelAndView variableNotFoundError(HttpServletRequest request, NoSuchVariableException ex) {
+    return makeErrorModelAndView(request, "404", ex.getMessage());
   }
 
   //

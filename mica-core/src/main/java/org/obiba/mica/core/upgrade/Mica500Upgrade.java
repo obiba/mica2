@@ -46,7 +46,7 @@ public class Mica500Upgrade implements UpgradeStep {
 
   @Override
   public String getDescription() {
-    return "Upgrade taxonomies for 4.7.0";
+    return "Upgrade taxonomies for 5.0.0";
   }
 
   @Override
@@ -56,7 +56,14 @@ public class Mica500Upgrade implements UpgradeStep {
 
   @Override
   public void execute(Version version) {
-    logger.info("Executing Mica upgrade to version 4.7.0");
+    logger.info("Executing Mica upgrade to version 5.0.0");
+
+    try {
+      logger.info("Updating 'Mica Config'...");
+      updateMicaConfig();
+    } catch (JSONException e) {
+      logger.error("Error occurred while Updating 'Mica Config'");
+    }
 
     logger.info("Updating study taxonomies");
     updateStudyTaxonomies();
@@ -83,6 +90,15 @@ public class Mica500Upgrade implements UpgradeStep {
     }
 
     return null;
+  }
+
+  private void updateMicaConfig() throws JSONException {
+    DBObject micaConfig = getDBObjectSafely("micaConfig");
+    // delete field anonymousCanCreateCart to reset to default
+    if (null != micaConfig) {
+      micaConfig.removeField("anonymousCanCreateCart");
+      mongoTemplate.execute(db -> db.getCollection("micaConfig").save(micaConfig));
+    }
   }
 
   private void updateHarmonizationInitiativeConfig() throws JSONException {

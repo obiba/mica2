@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -22,7 +23,6 @@ import java.util.List;
 @Component
 @Path("/studies/sets")
 @Scope("request")
-@RequiresAuthentication
 public class PublishedStudiesSetsResource extends AbstractPublishedDocumentsSetsResource<StudySetService> {
 
   private final StudySetService studySetService;
@@ -47,11 +47,12 @@ public class PublishedStudiesSetsResource extends AbstractPublishedDocumentsSets
   }
 
   @GET
-  public List<Mica.DocumentSetDto> list(@QueryParam("id") List<String> ids) {
-    return listDocumentsSets(ids);
+  public List<Mica.DocumentSetDto> list(@Context HttpServletRequest request, @QueryParam("id") List<String> ids) {
+    return listDocumentsSets(ids, getAnonymousUserId(request));
   }
 
   @POST
+  @RequiresAuthentication
   public Response createEmpty(@Context UriInfo uriInfo, @QueryParam("name") String name) {
     Mica.DocumentSetDto created = createEmptyDocumentSet(name);
     return Response.created(uriInfo.getBaseUriBuilder().segment("studies", "set", created.getId()).build()).entity(created).build();
@@ -59,8 +60,8 @@ public class PublishedStudiesSetsResource extends AbstractPublishedDocumentsSets
 
   @GET
   @Path("_cart")
-  public Mica.DocumentSetDto getOrCreateCart() {
-    return getOrCreateDocumentSetCart();
+  public Mica.DocumentSetDto getOrCreateCart(@Context HttpServletRequest request) {
+    return getOrCreateDocumentSetCart(request);
   }
 
   @POST

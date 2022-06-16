@@ -53,7 +53,7 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public static final int DEFAULT_MAX_ITEMS_PER_COMPARE = 10;
 
-  public static final boolean ANONYMOUS_CAN_CREATE_CART = true;
+  public static final boolean ANONYMOUS_CAN_CREATE_CART = false;
 
   @NotBlank
   private String name = DEFAULT_NAME;

@@ -115,7 +115,7 @@
 <script>
   const Carts = [];
 
-  <#if variablesCartEnabled && user?? && sets.variablesCart??>
+  <#if variablesCartEnabled && sets?? && sets.variablesCart??>
   Carts.push({
     id: '${sets.variablesCart.id}',
     type: 'variables',
@@ -123,7 +123,7 @@
   });
   </#if>
 
-  <#if studiesCartEnabled && user?? && user.studiesCart??>
+  <#if studiesCartEnabled && sets?? && sets.studiesCart??>
   Carts.push({
     id: '${sets.studiesCart.id}',
     type: 'studies',
@@ -131,7 +131,7 @@
   });
   </#if>
 
-  <#if networksCartEnabled && user?? && user.networksCart??>
+  <#if networksCartEnabled && sets?? && sets.networksCart??>
   Carts.push({
     id: '${sets.networksCart.id}',
     type: 'networks',

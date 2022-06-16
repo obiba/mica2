@@ -47,6 +47,7 @@
 <#assign studiesCartEnabled = (config?? && config.studiesCartEnabled && !config.singleStudyEnabled)/>
 <#assign networksCartEnabled = (config?? && config.networksCartEnabled && config.networkEnabled && !config.singleNetworkEnabled)/>
 <#assign cartEnabled = variablesCartEnabled || studiesCartEnabled || networksCartEnabled/>
+<#assign cartAnonymousEnabled = cartEnabled && config.anonymousCanCreateCart />
 <!-- Cart feature is only visible to advanced users -->
 <!--#assign cartEnabled = cartEnabled && (isAdministrator || isReviewer || isEditor || isDAO)/-->
 <!-- Cart feature is only visible to any authenticated users -->
@@ -54,7 +55,7 @@
 <#assign listsEnabled = user?? && cartEnabled && variablesCartEnabled/>
 <#assign maxNumberOfSets = config.maxNumberOfSets/>
 <!-- To allow download of the cart reports etc. -->
-<#assign showCartDownload = (isAdministrator || isReviewer || isEditor || isDAO)/>
+<#assign showCartDownload = (isAdministrator || isReviewer || isEditor || isDAO || cartAnonymousEnabled)/>
 <!-- To allow download the cart of variables as views in Opal -->
 <#assign showCartViewDownload = (isAdministrator || isReviewer || isEditor || isDAO)/>
 

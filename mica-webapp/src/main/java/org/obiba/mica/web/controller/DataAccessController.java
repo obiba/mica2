@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -86,9 +87,9 @@ public class DataAccessController extends BaseController {
       else if (isUnArchivePermitted(getDataAccessRequest(params)))
         permissions.add("UNARCHIVE");
 
-      if (isPermitted("/data-access-request/private-comment", "VIEW", null)) 
+      if (isPermitted("/data-access-request/private-comment", "VIEW", null))
         permissions.add("VIEW_PRIVATE_COMMENTS");
-      
+
       params.put("permissions", permissions);
 
       return new ModelAndView("data-access", params);
@@ -113,7 +114,7 @@ public class DataAccessController extends BaseController {
       addDataAccessFormConfiguration(params, getDataAccessRequest(params), !edit, getLang(locale, language));
 
       List<String> permissions = getPermissions(params);
-      if (isPermitted("/data-access-request/private-comment", "VIEW", null)) 
+      if (isPermitted("/data-access-request/private-comment", "VIEW", null))
         permissions.add("VIEW_PRIVATE_COMMENTS");
 
       params.put("permissions", permissions);
@@ -133,7 +134,7 @@ public class DataAccessController extends BaseController {
       addDataAccessConfiguration(params);
 
       List<String> permissions = getPermissions(params);
-      if (isPermitted("/data-access-request/private-comment", "VIEW", null)) 
+      if (isPermitted("/data-access-request/private-comment", "VIEW", null))
         permissions.add("VIEW_PRIVATE_COMMENTS");
 
       params.put("permissions", permissions);
@@ -177,7 +178,7 @@ public class DataAccessController extends BaseController {
       addDataAccessFeasibilityFormConfiguration(params, feasibility, !edit, getLang(locale, language));
 
       List<String> permissions = getPermissions(params);
-      if (isPermitted("/data-access-request/private-comment", "VIEW", null)) 
+      if (isPermitted("/data-access-request/private-comment", "VIEW", null))
         permissions.add("VIEW_PRIVATE_COMMENTS");
 
       params.put("permissions", permissions);
@@ -200,7 +201,7 @@ public class DataAccessController extends BaseController {
       addDataAccessAmendmentFormConfiguration(params, amendment, !edit, getLang(locale, language));
 
       List<String> permissions = getPermissions(params);
-      if (isPermitted("/data-access-request/private-comment", "VIEW", null)) 
+      if (isPermitted("/data-access-request/private-comment", "VIEW", null))
         permissions.add("VIEW_PRIVATE_COMMENTS");
 
       params.put("permissions", permissions);
@@ -219,7 +220,7 @@ public class DataAccessController extends BaseController {
       addDataAccessConfiguration(params);
 
       List<String> permissions = getPermissions(params);
-      if (isPermitted("/data-access-request/private-comment", "VIEW", null)) 
+      if (isPermitted("/data-access-request/private-comment", "VIEW", null))
         permissions.add("VIEW_PRIVATE_COMMENTS");
 
       params.put("permissions", permissions);
@@ -283,8 +284,8 @@ public class DataAccessController extends BaseController {
   }
 
   @ExceptionHandler(NoSuchDataAccessRequestException.class)
-  public ModelAndView notFoundError(NoSuchDataAccessRequestException ex) {
-    return makeErrorModelAndView("404", ex.getMessage());
+  public ModelAndView notFoundError(HttpServletRequest request, NoSuchDataAccessRequestException ex) {
+    return makeErrorModelAndView(request, "404", ex.getMessage());
   }
 
   //

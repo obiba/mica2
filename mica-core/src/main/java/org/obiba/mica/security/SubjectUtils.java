@@ -16,7 +16,13 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.obiba.shiro.authc.SudoAuthToken;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
 public class SubjectUtils {
+
+  public static final String ANONYMOUS_USER_KEY = "_uid";
+
   private SubjectUtils() {
   }
 
@@ -26,5 +32,21 @@ public class SubjectUtils {
       .authenticated(true).buildSubject();
 
     return sudo.execute(callable);
+  }
+
+  public static String getAnonymousUserId(HttpServletRequest request) {
+    // get from attributes
+    Object uid = request.getAttribute(ANONYMOUS_USER_KEY);
+    if (uid == null) {
+      Cookie[] cookies = request.getCookies();
+      if (cookies != null) {
+        for (Cookie ck : cookies) {
+          if (ck.getName().equals(ANONYMOUS_USER_KEY)) {
+            uid = ck.getValue();
+          }
+        }
+      }
+    }
+    return uid == null ? null : uid.toString();
   }
 }

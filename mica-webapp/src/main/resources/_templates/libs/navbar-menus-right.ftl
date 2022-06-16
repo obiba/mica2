@@ -7,7 +7,7 @@
         <span id="cart-count" class="badge badge-danger navbar-badge"></span>
       </a>
     </li>
-    <#if listsEnabled>
+    <#if listsEnabled && user??>
       <li class="nav-item">
         <a href="${contextPath}/lists" class="nav-link" title="<@message "sets.set.title"/>">
           <i class="far fa-list-alt"></i>

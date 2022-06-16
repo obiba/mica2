@@ -183,7 +183,7 @@
                     </button>
                   </#if>
 
-                  <#if sets.variablesLists?size lt maxNumberOfSets>
+                  <#if sets.variablesLists?? && sets.variablesLists?size lt maxNumberOfSets>
                     <div class="btn-group ml-2" role="group">
                       <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
                           <@message "sets.add.button.set-label"/>

@@ -112,6 +112,15 @@ public abstract class DocumentSetService {
     return cartOpt.orElseGet(() -> create("", Lists.newArrayList()));
   }
 
+  public List<DocumentSet> getAllAnonymousUser(String userId) {
+    return documentSetRepository.findByTypeAndUsername(getType(), userId);
+  }
+
+  public DocumentSet getCartAnonymousUser(String userId) {
+    Optional<DocumentSet> cartOpt = getAllAnonymousUser(userId).stream().filter(set -> !set.hasName() && set.getType().equals(getType())).findFirst();
+    return cartOpt.orElseGet(() -> create("", Lists.newArrayList(), userId));
+  }
+
   /**
    * Get document type.
    *
@@ -132,6 +141,15 @@ public abstract class DocumentSetService {
     documentSet.setIdentifiers(identifiers);
     documentSet.setType(getType());
     return save(documentSet, null);
+  }
+
+  public DocumentSet create(@Nullable String name, List<String> identifiers, String userId) {
+    DocumentSet documentSet = create(name, identifiers);
+    if (Strings.isNullOrEmpty(documentSet.getUsername())) {
+      documentSet.setUsername(userId);
+      documentSet = save(documentSet, null);
+    }
+    return documentSet;
   }
 
   /**

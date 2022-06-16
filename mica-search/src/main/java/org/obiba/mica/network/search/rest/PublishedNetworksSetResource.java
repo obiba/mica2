@@ -21,7 +21,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
@@ -32,7 +34,6 @@ import java.util.stream.Collectors;
 @Component
 @Path("/networks/set/{id}")
 @Scope("request")
-@RequiresAuthentication
 public class PublishedNetworksSetResource extends AbstractPublishedDocumentsSetResource<NetworkSetService> {
 
   private final NetworkSetService networkSetService;
@@ -60,20 +61,20 @@ public class PublishedNetworksSetResource extends AbstractPublishedDocumentsSetR
   }
 
   @GET
-  public Mica.DocumentSetDto get(@PathParam("id") String id) {
-    return getDocumentSet(id);
+  public Mica.DocumentSetDto get(@PathParam("id") String id, @Context HttpServletRequest request) {
+    return getDocumentSet(id, getAnonymousUserId(request));
   }
 
   @DELETE
-  public Response delete(@PathParam("id") String id) {
-    deleteDocumentSet(id);
+  public Response delete(@PathParam("id") String id, @Context HttpServletRequest request) {
+    deleteDocumentSet(id, getAnonymousUserId(request));
     return Response.ok().build();
   }
 
   @GET
   @Path("/documents")
-  public Mica.NetworksDto getNetworks(@PathParam("id") String id, @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit) {
-    DocumentSet documentSet = getSecuredDocumentSet(id);
+  public Mica.NetworksDto getNetworks(@PathParam("id") String id, @Context HttpServletRequest request, @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit) {
+    DocumentSet documentSet = getSecuredDocumentSet(id, getAnonymousUserId(request));
     return Mica.NetworksDto.newBuilder()
       .setTotal(documentSet.getIdentifiers().size())
       .setFrom(from)
@@ -85,29 +86,29 @@ public class PublishedNetworksSetResource extends AbstractPublishedDocumentsSetR
   @POST
   @Path("/documents/_import")
   @Consumes(MediaType.TEXT_PLAIN)
-  public Response importNetworks(@PathParam("id") String id, String body) {
-    return Response.ok().entity(importDocuments(id, body)).build();
+  public Response importNetworks(@PathParam("id") String id, @Context HttpServletRequest request, String body) {
+    return Response.ok().entity(importDocuments(id, body, getAnonymousUserId(request))).build();
   }
 
   @POST
   @Path("/documents/_rql")
-  public Response importQueryNetworks(@PathParam("id") String id, @FormParam("query") String query) throws IOException {
-    return Response.ok().entity(importQueryDocuments(id, query)).build();
+  public Response importQueryNetworks(@PathParam("id") String id, @Context HttpServletRequest request, @FormParam("query") String query) throws IOException {
+    return Response.ok().entity(importQueryDocuments(id, query, getAnonymousUserId(request))).build();
   }
 
   @GET
   @Path("/documents/_export")
   @Produces(MediaType.TEXT_PLAIN)
-  public Response exportNetworks(@PathParam("id") String id) {
-    return Response.ok(exportDocuments(id))
+  public Response exportNetworks(@PathParam("id") String id, @Context HttpServletRequest request) {
+    return Response.ok(exportDocuments(id, getAnonymousUserId(request)))
       .header("Content-Disposition", String.format("attachment; filename=\"%s-networks.txt\"", id)).build();
   }
 
   @GET
   @Path("/documents/_report")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
-  public Response reportNetworks(@PathParam("id") String id, @QueryParam("locale") @DefaultValue("en") String locale) {
-    DocumentSet documentSet = getSecuredDocumentSet(id);
+  public Response reportNetworks(@PathParam("id") String id, @Context HttpServletRequest request, @QueryParam("locale") @DefaultValue("en") String locale) {
+    DocumentSet documentSet = getSecuredDocumentSet(id, getAnonymousUserId(request));
     ReportGenerator reporter = new NetworkCsvReportGenerator(networkSetService.getPublishedNetworks(documentSet, true), locale, personService);
     StreamingOutput stream = reporter::write;
     return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Networks.zip\"").build();
@@ -116,32 +117,32 @@ public class PublishedNetworksSetResource extends AbstractPublishedDocumentsSetR
   @POST
   @Path("/documents/_delete")
   @Consumes(MediaType.TEXT_PLAIN)
-  public Response deleteNetworks(@PathParam("id") String id, String body) {
-    return Response.ok().entity(deleteDocuments(id, body)).build();
+  public Response deleteNetworks(@PathParam("id") String id, @Context HttpServletRequest request, String body) {
+    return Response.ok().entity(deleteDocuments(id, body, getAnonymousUserId(request))).build();
   }
 
   @DELETE
   @Path("/documents")
-  public Response deleteNetworks(@PathParam("id") String id) {
-    deleteDocuments(id);
+  public Response deleteNetworks(@PathParam("id") String id, @Context HttpServletRequest request) {
+    deleteDocuments(id, getAnonymousUserId(request));
     return Response.ok().build();
   }
 
   @GET
   @Path("/document/{documentId}/_exists")
-  public Response hasNetwork(@PathParam("id") String id, @PathParam("documentId") String documentId) {
-    return hasDocument(id, documentId) ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();
+  public Response hasNetwork(@PathParam("id") String id, @Context HttpServletRequest request, @PathParam("documentId") String documentId) {
+    return hasDocument(id, documentId, getAnonymousUserId(request)) ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();
   }
 
-  private Mica.DocumentSetDto importQueryDocuments(String id, String query) {
-    DocumentSet set = getSecuredDocumentSet(id);
+  private Mica.DocumentSetDto importQueryDocuments(String id, String query, String anonymousUserId) {
+    DocumentSet set = getSecuredDocumentSet(id, anonymousUserId);
     if (Strings.isNullOrEmpty(query)) return dtos.asDto(set);
     MicaSearch.JoinQueryResultDto result = makeQuery(QueryType.NETWORK, query);
     if (result.hasNetworkResultDto() && result.getNetworkResultDto().getTotalHits() > 0) {
       List<String> ids = result.getNetworkResultDto().getExtension(MicaSearch.NetworkResultDto.result).getNetworksList().stream()
         .map(Mica.NetworkDto::getId).collect(Collectors.toList());
       getDocumentSetService().addIdentifiers(id, ids);
-      set = getSecuredDocumentSet(id);
+      set = getSecuredDocumentSet(id, anonymousUserId);
     }
     return dtos.asDto(set);
   }
