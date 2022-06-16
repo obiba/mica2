@@ -538,9 +538,9 @@ class TableFixedHeaderUtility {
     let isOk = !foundAttr || foundAttr.value.length === 0 || foundAttr.value === 'Network' || foundAttr.value === 'Variable';
 
     if (studyTypeSelection.study) {
-      isOk = isOk || foundAttr.value === 'Study' || foundAttr.value === 'CollectedDataset';
+      isOk = isOk || ['Study', 'StudyDataset', 'CollectedDataset'].indexOf(foundAttr.value) > -1;
     } else if (studyTypeSelection.harmonization) {
-      isOk = isOk || foundAttr.value === 'HarmonizationStudy' || foundAttr.value === 'HarmonizedDataset';
+      isOk = isOk || ['HarmonizationStudy', 'HarmonizedDataset', 'HarmonizationDataset'].indexOf(foundAttr.value) > -1 ;
     } else {
       isOk = true;
     }
