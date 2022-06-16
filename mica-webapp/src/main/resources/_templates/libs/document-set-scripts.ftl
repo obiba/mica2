@@ -295,11 +295,11 @@
             let result = (data[dto] || {totalHits: 0});
 
             if (this.studyClassName === 'Study') {
-              this.individualSubCount = (result.totalHits).toLocaleString(Mica.locale);
-              this.harmonizationSubCount = (totalCount - result.totalHits).toLocaleString(Mica.locale);
+              this.individualSubCount = totalCount === 0 ? totalCount : (result.totalHits).toLocaleString(Mica.locale);
+              this.harmonizationSubCount = totalCount === 0 ? totalCount : (totalCount - result.totalHits).toLocaleString(Mica.locale);
             } else {
-              this.harmonizationSubCount = (result.totalHits).toLocaleString(Mica.locale);
-              this.individualSubCount = (totalCount - result.totalHits).toLocaleString(Mica.locale);
+              this.harmonizationSubCount = totalCount === 0 ? totalCount : (result.totalHits).toLocaleString(Mica.locale);
+              this.individualSubCount = totalCount === 0 ? totalCount : (totalCount - result.totalHits).toLocaleString(Mica.locale);
             }
 
             this.pagination.update(result.totalHits, this.size, (this.from/this.size)+1);
@@ -533,7 +533,18 @@
               return  taxonomyTitleFinder.title(taxonomy, vocabulary, term) || input;
             });
 
-            this.doQuery(this.currentWindowLocationSearch()['type']);
+            let setType = this.currentWindowLocationSearch()['type'];
+            let totalCount = 0;
+
+            if (!setType || setType === 'variables') {
+              totalCount = totalCounts.variablesCount;
+            } else if (setType && setType === 'studies') {
+              totalCount = totalCounts.studiesCount;
+            } else if (setType && setType === 'networks') {
+              totalCount = totalCounts.networksCount;
+            }
+
+            if (totalCount > 0) this.doQuery(setType);
           }));
       },
       beforeDestory() {
