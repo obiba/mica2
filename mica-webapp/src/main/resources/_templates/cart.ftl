@@ -242,6 +242,8 @@
                     <i class="fas fa-trash"></i> <@message "delete"/> <span class="badge badge-light selection-count"></span>
                   </button>
                 </div>
+              <#else>
+                <h3 class="card-title mt-2"><@message "variables"/></h3>
               </#if>
             </div>
             <div class="card-body">
@@ -320,6 +322,8 @@
                     <i class="fas fa-trash"></i> <@message "delete"/> <span class="badge badge-light studies-selection-count"></span>
                   </button>
                 </div>
+              <#else>
+                <h3 class="card-title mt-2"><@message "studies"/></h3>
               </#if>
             </div>
             <div class="card-body">
