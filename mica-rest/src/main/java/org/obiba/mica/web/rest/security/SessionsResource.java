@@ -19,6 +19,7 @@ import org.obiba.mica.config.JerseyConfiguration;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.service.DocumentSetService;
 import org.obiba.mica.dataset.service.VariableSetService;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.service.NetworkSetService;
 import org.obiba.mica.security.SubjectUtils;
@@ -115,14 +116,18 @@ public class SessionsResource {
    * @param request
    */
   private void mergeAnonymousUserCarts(HttpServletRequest request) {
-    if (!micaConfigService.getConfig().isCartEnabled() || !micaConfigService.getConfig().isAnonymousCanCreateCart())
+    MicaConfig micaConfig = micaConfigService.getConfig();
+    if (!micaConfig.isCartEnabled() || !micaConfig.isAnonymousCanCreateCart())
       return;
 
     String uid = SubjectUtils.getAnonymousUserId(request);
     if (!Strings.isNullOrEmpty(uid)) {
-      mergeCart(uid, variableSetService);
-      mergeCart(uid, studySetService);
-      mergeCart(uid, networkSetService);
+      if (micaConfig.isStudyDatasetEnabled() || micaConfig.isHarmonizationDatasetEnabled())
+        mergeCart(uid, variableSetService);
+      if (!micaConfig.isSingleStudyEnabled() && micaConfig.isStudiesCartEnabled())
+        mergeCart(uid, studySetService);
+      if (micaConfig.isNetworkEnabled() && !micaConfig.isSingleNetworkEnabled() && micaConfig.isNetworksCartEnabled())
+        mergeCart(uid, networkSetService);
     }
   }
 
@@ -133,7 +138,7 @@ public class SessionsResource {
         // merge into subject's cart
         DocumentSet subjectCart = documentSetService.getCartCurrentUser();
         documentSetService.addIdentifiers(subjectCart.getId(), Lists.newArrayList(anonymousCart.getIdentifiers()));
-        //documentSetService.delete(anonymousCart);
+        // FIXME delete or empty the anonymous set breaks the merge (?)
       } catch (Exception e) {
         // ignore
       }

@@ -31,12 +31,16 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 @Component
 public class StudyIndexer {
 
   private static final Logger log = LoggerFactory.getLogger(StudyIndexer.class);
+
+  private final Lock lock = new ReentrantLock();
 
   private final Indexer indexer;
 
@@ -57,81 +61,116 @@ public class StudyIndexer {
   @Async
   @Subscribe
   public void studyUpdated(DraftStudyUpdatedEvent event) {
-    log.info("Study {} was updated", event.getPersistable());
-    indexer.index(Indexer.DRAFT_STUDY_INDEX, (Indexable) decorate(event.getPersistable()));
+    lock.lock();
+    try {
+      log.info("Study {} was updated", event.getPersistable());
+      indexer.index(Indexer.DRAFT_STUDY_INDEX, (Indexable) decorate(event.getPersistable()));
+    } finally {
+      lock.unlock();
+    }
   }
 
   @Async
   @Subscribe
   public void studyPublished(StudyPublishedEvent event) {
-    log.info("Study {} was published", event.getPersistable());
-    indexer.index(Indexer.PUBLISHED_STUDY_INDEX, (Indexable) decorate(event.getPersistable()));
+    lock.lock();
+    try {
+      log.info("Study {} was published", event.getPersistable());
+      indexer.index(Indexer.PUBLISHED_STUDY_INDEX, (Indexable) decorate(event.getPersistable()));
+    } finally {
+      lock.unlock();
+    }
   }
 
   @Async
   @Subscribe
   public void studyUnpublished(StudyUnpublishedEvent event) {
-    log.info("Study {} was unpublished", event.getPersistable());
-    indexer.delete(Indexer.PUBLISHED_STUDY_INDEX, (Indexable) event.getPersistable());
-    indexer.index(Indexer.DRAFT_STUDY_INDEX, (Indexable) event.getPersistable());
+    lock.lock();
+    try {
+      log.info("Study {} was unpublished", event.getPersistable());
+      indexer.delete(Indexer.PUBLISHED_STUDY_INDEX, (Indexable) event.getPersistable());
+      indexer.index(Indexer.DRAFT_STUDY_INDEX, (Indexable) event.getPersistable());
+    } finally {
+      lock.unlock();
+    }
   }
 
   @Async
   @Subscribe
   public void studyDeleted(StudyDeletedEvent event) {
-    log.info("Study {} was deleted", event.getPersistable());
-    indexer.delete(Indexer.DRAFT_STUDY_INDEX, (Indexable) event.getPersistable());
-    indexer.delete(Indexer.PUBLISHED_STUDY_INDEX, (Indexable) event.getPersistable());
+    lock.lock();
+    try {
+      log.info("Study {} was deleted", event.getPersistable());
+      indexer.delete(Indexer.DRAFT_STUDY_INDEX, (Indexable) event.getPersistable());
+      indexer.delete(Indexer.PUBLISHED_STUDY_INDEX, (Indexable) event.getPersistable());
+    } finally {
+      lock.unlock();
+    }
   }
 
   @Async
   @Subscribe
   public void reIndexStudies(IndexStudiesEvent event) {
-    List<String> studyIds = event.getIds();
+    lock.lock();
+    try {
+      List<String> studyIds = event.getIds();
 
-    if (studyIds.isEmpty()) {
-      reIndexAllPublished(decorate(studyService.findAllPublishedStudies()));
-      reIndexAllDraft(decorate(studyService.findAllDraftStudies()));
-    } else {
-      // indexAll does not deletes the index before
-      indexer.indexAllIndexables(Indexer.PUBLISHED_STUDY_INDEX, decorate(studyService.findAllPublishedStudies(studyIds)));
-      indexer.indexAllIndexables(Indexer.DRAFT_STUDY_INDEX, decorate(studyService.findAllDraftStudies(studyIds)));
+      if (studyIds.isEmpty()) {
+        reIndexAllPublished(decorate(studyService.findAllPublishedStudies()));
+        reIndexAllDraft(decorate(studyService.findAllDraftStudies()));
+      } else {
+        // indexAll does not deletes the index before
+        indexer.indexAllIndexables(Indexer.PUBLISHED_STUDY_INDEX, decorate(studyService.findAllPublishedStudies(studyIds)));
+        indexer.indexAllIndexables(Indexer.DRAFT_STUDY_INDEX, decorate(studyService.findAllDraftStudies(studyIds)));
+      }
+    } finally {
+      lock.unlock();
     }
   }
 
   @Async
   @Subscribe
-  public synchronized void documentSetUpdated(DocumentSetUpdatedEvent event) {
+  public void documentSetUpdated(DocumentSetUpdatedEvent event) {
     if (!studySetService.isForType(event.getPersistable())) return;
-    List<BaseStudy> toIndex = Lists.newArrayList();
-    String id = event.getPersistable().getId();
-    if (event.hasRemovedIdentifiers()) {
-      List<BaseStudy> toRemove = studySetService.getPublishedStudies(event.getRemovedIdentifiers(), false);
-      toRemove.forEach(std -> std.removeSet(id));
-      toIndex.addAll(toRemove);
+    lock.lock();
+    try {
+      List<BaseStudy> toIndex = Lists.newArrayList();
+      String id = event.getPersistable().getId();
+      if (event.hasRemovedIdentifiers()) {
+        List<BaseStudy> toRemove = studySetService.getPublishedStudies(event.getRemovedIdentifiers(), false);
+        toRemove.forEach(std -> std.removeSet(id));
+        toIndex.addAll(toRemove);
+      }
+      List<BaseStudy> studies = studySetService.getPublishedStudies(event.getPersistable(), false);
+      studies.stream()
+        .filter(std -> !std.containsSet(id))
+        .forEach(std -> {
+          std.addSet(id);
+          toIndex.add(std);
+        });
+      indexer.indexAllIndexables(Indexer.PUBLISHED_STUDY_INDEX, toIndex);
+    } finally {
+      lock.unlock();
     }
-    List<BaseStudy> studies = studySetService.getPublishedStudies(event.getPersistable(), false);
-    studies.stream()
-      .filter(std -> !std.containsSet(id))
-      .forEach(std -> {
-        std.addSet(id);
-        toIndex.add(std);
-      });
-    indexer.indexAllIndexables(Indexer.PUBLISHED_STUDY_INDEX, toIndex);
   }
 
   @Async
   @Subscribe
-  public synchronized void documentSetDeleted(DocumentSetDeletedEvent event) {
+  public void documentSetDeleted(DocumentSetDeletedEvent event) {
     if (!studySetService.isForType(event.getPersistable())) return;
-    DocumentSet documentSet = event.getPersistable();
-    List<BaseStudy> toIndex = Lists.newArrayList();
-    {
-      List<BaseStudy> toRemove = studySetService.getPublishedStudies(event.getPersistable(), false);
-      toRemove.forEach(std -> std.removeSet(documentSet.getId()));
-      toIndex.addAll(toRemove);
+    lock.lock();
+    try {
+      DocumentSet documentSet = event.getPersistable();
+      List<BaseStudy> toIndex = Lists.newArrayList();
+      {
+        List<BaseStudy> toRemove = studySetService.getPublishedStudies(event.getPersistable(), false);
+        toRemove.forEach(std -> std.removeSet(documentSet.getId()));
+        toIndex.addAll(toRemove);
+      }
+      indexer.indexAllIndexables(Indexer.PUBLISHED_STUDY_INDEX, toIndex);
+    } finally {
+      lock.unlock();
     }
-    indexer.indexAllIndexables(Indexer.PUBLISHED_STUDY_INDEX, toIndex);
   }
 
   //

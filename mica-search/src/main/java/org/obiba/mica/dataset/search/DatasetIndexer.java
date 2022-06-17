@@ -22,11 +22,15 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Component
 public class DatasetIndexer {
 
   private static final Logger log = LoggerFactory.getLogger(DatasetIndexer.class);
+
+  private final Lock lock = new ReentrantLock();
 
   @Inject
   private Indexer indexer;
@@ -40,45 +44,70 @@ public class DatasetIndexer {
   @Async
   @Subscribe
   public void datasetUpdated(DatasetUpdatedEvent event) {
-    log.debug("{} {} was updated", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
-    indexer.index(Indexer.DRAFT_DATASET_INDEX, (Indexable) event.getPersistable());
+    lock.lock();
+    try {
+      log.debug("{} {} was updated", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
+      indexer.index(Indexer.DRAFT_DATASET_INDEX, (Indexable) event.getPersistable());
+    } finally {
+      lock.unlock();
+    }
   }
 
   @Async
   @Subscribe
   public void datasetDeleted(DatasetDeletedEvent event) {
-    log.debug("{} {} was deleted", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
-    indexer.delete(Indexer.DRAFT_DATASET_INDEX, (Indexable) event.getPersistable());
-    indexer.delete(Indexer.PUBLISHED_DATASET_INDEX, (Indexable) event.getPersistable());
+    lock.lock();
+    try {
+      log.debug("{} {} was deleted", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
+      indexer.delete(Indexer.DRAFT_DATASET_INDEX, (Indexable) event.getPersistable());
+      indexer.delete(Indexer.PUBLISHED_DATASET_INDEX, (Indexable) event.getPersistable());
+    } finally {
+      lock.unlock();
+    }
   }
 
   @Async
   @Subscribe
   public void datasetPublished(DatasetPublishedEvent event) {
-    log.debug("{} {} was published", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
-    indexer.index(Indexer.PUBLISHED_DATASET_INDEX, (Indexable) event.getPersistable());
+    lock.lock();
+    try {
+      log.debug("{} {} was published", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
+      indexer.index(Indexer.PUBLISHED_DATASET_INDEX, (Indexable) event.getPersistable());
+    } finally {
+      lock.unlock();
+    }
   }
 
   @Async
   @Subscribe
   public void datasetUnpublished(DatasetUnpublishedEvent event) {
-    log.debug("{} {} was unpublished", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
-    indexer.delete(Indexer.PUBLISHED_DATASET_INDEX, (Indexable) event.getPersistable());
+    lock.lock();
+    try {
+      log.debug("{} {} was unpublished", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
+      indexer.delete(Indexer.PUBLISHED_DATASET_INDEX, (Indexable) event.getPersistable());
+    } finally {
+      lock.unlock();
+    }
   }
 
   @Async
   @Subscribe
   synchronized public void reIndexAll(IndexDatasetsEvent event) {
-    if (indexer.hasIndex(Indexer.PUBLISHED_DATASET_INDEX)) indexer.dropIndex(Indexer.PUBLISHED_DATASET_INDEX);
-    if (indexer.hasIndex(Indexer.DRAFT_DATASET_INDEX)) indexer.dropIndex(Indexer.DRAFT_DATASET_INDEX);
+    lock.lock();
+    try {
+      if (indexer.hasIndex(Indexer.PUBLISHED_DATASET_INDEX)) indexer.dropIndex(Indexer.PUBLISHED_DATASET_INDEX);
+      if (indexer.hasIndex(Indexer.DRAFT_DATASET_INDEX)) indexer.dropIndex(Indexer.DRAFT_DATASET_INDEX);
 
-    if (indexer.hasIndex(Indexer.DRAFT_VARIABLE_INDEX)) indexer.dropIndex(Indexer.DRAFT_VARIABLE_INDEX);
-    if (indexer.hasIndex(Indexer.PUBLISHED_VARIABLE_INDEX))
-      indexer.dropIndex(Indexer.PUBLISHED_VARIABLE_INDEX);
-    if (indexer.hasIndex(Indexer.PUBLISHED_HVARIABLE_INDEX))
-      indexer.dropIndex(Indexer.PUBLISHED_HVARIABLE_INDEX);
+      if (indexer.hasIndex(Indexer.DRAFT_VARIABLE_INDEX)) indexer.dropIndex(Indexer.DRAFT_VARIABLE_INDEX);
+      if (indexer.hasIndex(Indexer.PUBLISHED_VARIABLE_INDEX))
+        indexer.dropIndex(Indexer.PUBLISHED_VARIABLE_INDEX);
+      if (indexer.hasIndex(Indexer.PUBLISHED_HVARIABLE_INDEX))
+        indexer.dropIndex(Indexer.PUBLISHED_HVARIABLE_INDEX);
 
-    harmonizedDatasetService.indexAll();
-    collectedDatasetService.indexAll();
+      harmonizedDatasetService.indexAll();
+      collectedDatasetService.indexAll();
+    } finally {
+      lock.unlock();
+    }
   }
 }

@@ -30,12 +30,16 @@
   import javax.inject.Inject;
   import java.util.List;
   import java.util.Map;
+  import java.util.concurrent.locks.Lock;
+  import java.util.concurrent.locks.ReentrantLock;
   import java.util.stream.Collectors;
 
   @Component
   public class NetworkIndexer {
 
     private static final Logger log = LoggerFactory.getLogger(NetworkIndexer.class);
+
+    private final Lock lock = new ReentrantLock();
 
     private final NetworkService networkService;
 
@@ -56,81 +60,116 @@
     @Async
     @Subscribe
     public void networkUpdated(NetworkUpdatedEvent event) {
-      log.info("Network {} was updated", event.getPersistable());
-      indexer.index(Indexer.DRAFT_NETWORK_INDEX, decorate(event.getPersistable()));
+      lock.lock();
+      try {
+        log.info("Network {} was updated", event.getPersistable());
+        indexer.index(Indexer.DRAFT_NETWORK_INDEX, decorate(event.getPersistable()));
+      } finally {
+        lock.unlock();
+      }
     }
 
     @Async
     @Subscribe
     public void networkPublished(NetworkPublishedEvent event) {
-      log.info("Network {} was published", event.getPersistable());
-      indexer.index(Indexer.PUBLISHED_NETWORK_INDEX, decorate(event.getPersistable()));
+      lock.lock();
+      try {
+        log.info("Network {} was published", event.getPersistable());
+        indexer.index(Indexer.PUBLISHED_NETWORK_INDEX, decorate(event.getPersistable()));
+      } finally {
+        lock.unlock();
+      }
     }
 
     @Async
     @Subscribe
     public void networkPublished(NetworkUnpublishedEvent event) {
-      log.info("Network {} was unpublished", event.getPersistable());
-      indexer.delete(Indexer.PUBLISHED_NETWORK_INDEX, event.getPersistable());
+      lock.lock();
+      try {
+        log.info("Network {} was unpublished", event.getPersistable());
+        indexer.delete(Indexer.PUBLISHED_NETWORK_INDEX, event.getPersistable());
+      } finally {
+        lock.unlock();
+      }
     }
 
     @Async
     @Subscribe
     public void networkDeleted(NetworkDeletedEvent event) {
-      log.info("Network {} was deleted", event.getPersistable());
-      indexer.delete(Indexer.DRAFT_NETWORK_INDEX, event.getPersistable());
-      indexer.delete(Indexer.PUBLISHED_NETWORK_INDEX, event.getPersistable());
+      lock.lock();
+      try {
+        log.info("Network {} was deleted", event.getPersistable());
+        indexer.delete(Indexer.DRAFT_NETWORK_INDEX, event.getPersistable());
+        indexer.delete(Indexer.PUBLISHED_NETWORK_INDEX, event.getPersistable());
+      } finally {
+        lock.unlock();
+      }
     }
 
     @Async
     @Subscribe
     public void reIndexNetworks(IndexNetworksEvent event) {
-      log.info("Reindexing all networks");
-      List<String> networkIds = event.getIds();
+      lock.lock();
+      try {
+        log.info("Reindexing all networks");
+        List<String> networkIds = event.getIds();
 
-      if (networkIds.isEmpty()) {
-        reIndexAll(Indexer.PUBLISHED_NETWORK_INDEX, decorate(networkService.findAllPublishedNetworks()));
-        reIndexAll(Indexer.DRAFT_NETWORK_INDEX, decorate(networkService.findAllNetworks()));
-      } else {
-        // indexAll does not deletes the index before
-        indexer.indexAll(Indexer.PUBLISHED_NETWORK_INDEX, decorate(networkService.findAllPublishedNetworks(networkIds)));
-        indexer.indexAll(Indexer.DRAFT_NETWORK_INDEX, decorate(networkService.findAllNetworks(networkIds)));
+        if (networkIds.isEmpty()) {
+          reIndexAll(Indexer.PUBLISHED_NETWORK_INDEX, decorate(networkService.findAllPublishedNetworks()));
+          reIndexAll(Indexer.DRAFT_NETWORK_INDEX, decorate(networkService.findAllNetworks()));
+        } else {
+          // indexAll does not deletes the index before
+          indexer.indexAll(Indexer.PUBLISHED_NETWORK_INDEX, decorate(networkService.findAllPublishedNetworks(networkIds)));
+          indexer.indexAll(Indexer.DRAFT_NETWORK_INDEX, decorate(networkService.findAllNetworks(networkIds)));
+        }
+      } finally {
+        lock.unlock();
       }
     }
 
     @Async
     @Subscribe
-    public synchronized void documentSetUpdated(DocumentSetUpdatedEvent event) {
+    public void documentSetUpdated(DocumentSetUpdatedEvent event) {
       if (!networkSetService.isForType(event.getPersistable())) return;
-      List<Network> toIndex = Lists.newArrayList();
-      String id = event.getPersistable().getId();
-      if (event.hasRemovedIdentifiers()) {
-        List<Network> toRemove = networkSetService.getPublishedNetworks(event.getRemovedIdentifiers(), false);
-        toRemove.forEach(ntw -> ntw.removeSet(id));
-        toIndex.addAll(toRemove);
+      lock.lock();
+      try {
+        List<Network> toIndex = Lists.newArrayList();
+        String id = event.getPersistable().getId();
+        if (event.hasRemovedIdentifiers()) {
+          List<Network> toRemove = networkSetService.getPublishedNetworks(event.getRemovedIdentifiers(), false);
+          toRemove.forEach(ntw -> ntw.removeSet(id));
+          toIndex.addAll(toRemove);
+        }
+        List<Network> networks = networkSetService.getPublishedNetworks(event.getPersistable(), false);
+        networks.stream()
+          .filter(ntw -> !ntw.containsSet(id))
+          .forEach(ntw -> {
+            ntw.addSet(id);
+            toIndex.add(ntw);
+          });
+        indexer.indexAll(Indexer.PUBLISHED_NETWORK_INDEX, toIndex);
+      } finally {
+        lock.unlock();
       }
-      List<Network> networks = networkSetService.getPublishedNetworks(event.getPersistable(), false);
-      networks.stream()
-        .filter(ntw -> !ntw.containsSet(id))
-        .forEach(ntw -> {
-          ntw.addSet(id);
-          toIndex.add(ntw);
-        });
-      indexer.indexAll(Indexer.PUBLISHED_NETWORK_INDEX, toIndex);
     }
 
     @Async
     @Subscribe
-    public synchronized void documentSetDeleted(DocumentSetDeletedEvent event) {
+    public void documentSetDeleted(DocumentSetDeletedEvent event) {
       if (!networkSetService.isForType(event.getPersistable())) return;
-      DocumentSet documentSet = event.getPersistable();
-      List<Network> toIndex = Lists.newArrayList();
-      {
-        List<Network> toRemove = networkSetService.getPublishedNetworks(event.getPersistable(), false);
-        toRemove.forEach(ntw -> ntw.removeSet(documentSet.getId()));
-        toIndex.addAll(toRemove);
+      lock.lock();
+      try {
+        DocumentSet documentSet = event.getPersistable();
+        List<Network> toIndex = Lists.newArrayList();
+        {
+          List<Network> toRemove = networkSetService.getPublishedNetworks(event.getPersistable(), false);
+          toRemove.forEach(ntw -> ntw.removeSet(documentSet.getId()));
+          toIndex.addAll(toRemove);
+        }
+        indexer.indexAll(Indexer.PUBLISHED_NETWORK_INDEX, toIndex);
+      } finally {
+        lock.unlock();
       }
-      indexer.indexAll(Indexer.PUBLISHED_NETWORK_INDEX, toIndex);
     }
 
     //

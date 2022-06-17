@@ -33,6 +33,8 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Indexer of variables, that reacts on dataset events.
@@ -40,6 +42,8 @@ import java.util.Map;
 @Component
 public class VariableIndexer {
   private static final Logger log = LoggerFactory.getLogger(VariableIndexer.class);
+
+  private final Lock lock = new ReentrantLock();
 
   private final Indexer indexer;
 
@@ -57,76 +61,101 @@ public class VariableIndexer {
   @Async
   @Subscribe
   public void datasetPublished(DatasetPublishedEvent event) {
-    log.debug("{} {} was published", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
-    clearDraftVariablesIndex();
-    if (event.getVariables() != null) {
-      deleteDatasetVariables(Indexer.PUBLISHED_VARIABLE_INDEX, Indexer.VARIABLE_TYPE, event.getPersistable());
-      deleteDatasetVariables(Indexer.PUBLISHED_HVARIABLE_INDEX, Indexer.HARMONIZED_VARIABLE_TYPE, event.getPersistable());
+    lock.lock();
+    try {
+      log.debug("{} {} was published", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
+      clearDraftVariablesIndex();
+      if (event.getVariables() != null) {
+        deleteDatasetVariables(Indexer.PUBLISHED_VARIABLE_INDEX, Indexer.VARIABLE_TYPE, event.getPersistable());
+        deleteDatasetVariables(Indexer.PUBLISHED_HVARIABLE_INDEX, Indexer.HARMONIZED_VARIABLE_TYPE, event.getPersistable());
 
-      if (event.getPersistable() instanceof StudyDataset) {
-        indexDatasetVariables(Indexer.PUBLISHED_VARIABLE_INDEX, collectedDatasetService.processVariablesForStudyDataset(
-          (StudyDataset) event.getPersistable(), event.getVariables()));
-      } else {
-        indexDatasetVariables(Indexer.PUBLISHED_VARIABLE_INDEX, event.getVariables());
+        if (event.getPersistable() instanceof StudyDataset) {
+          indexDatasetVariables(Indexer.PUBLISHED_VARIABLE_INDEX, collectedDatasetService.processVariablesForStudyDataset(
+            (StudyDataset) event.getPersistable(), event.getVariables()));
+        } else {
+          indexDatasetVariables(Indexer.PUBLISHED_VARIABLE_INDEX, event.getVariables());
+        }
       }
-    }
 
-    if (event.hasHarmonizationVariables()) {
-      indexDatasetVariables(Indexer.PUBLISHED_HVARIABLE_INDEX, event.getHarmonizationVariables());
+      if (event.hasHarmonizationVariables()) {
+        indexDatasetVariables(Indexer.PUBLISHED_HVARIABLE_INDEX, event.getHarmonizationVariables());
+      }
+    } finally {
+      lock.unlock();
     }
   }
 
   @Async
   @Subscribe
   public void datasetUnpublished(DatasetUnpublishedEvent event) {
-    log.debug("{} {} was unpublished", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
-    clearDraftVariablesIndex();
-    deleteDatasetVariables(Indexer.PUBLISHED_VARIABLE_INDEX, Indexer.VARIABLE_TYPE, event.getPersistable());
-    deleteDatasetVariables(Indexer.PUBLISHED_HVARIABLE_INDEX, Indexer.HARMONIZED_VARIABLE_TYPE, event.getPersistable());
+    lock.lock();
+    try {
+      log.debug("{} {} was unpublished", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
+      clearDraftVariablesIndex();
+      deleteDatasetVariables(Indexer.PUBLISHED_VARIABLE_INDEX, Indexer.VARIABLE_TYPE, event.getPersistable());
+      deleteDatasetVariables(Indexer.PUBLISHED_HVARIABLE_INDEX, Indexer.HARMONIZED_VARIABLE_TYPE, event.getPersistable());
+    } finally {
+      lock.unlock();
+    }
   }
 
   @Async
   @Subscribe
   public void datasetDeleted(DatasetDeletedEvent event) {
-    log.debug("{} {} was deleted", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
-    clearDraftVariablesIndex();
-    deleteDatasetVariables(Indexer.PUBLISHED_VARIABLE_INDEX, Indexer.VARIABLE_TYPE, event.getPersistable());
-    deleteDatasetVariables(Indexer.PUBLISHED_HVARIABLE_INDEX, Indexer.HARMONIZED_VARIABLE_TYPE, event.getPersistable());
+    lock.lock();
+    try {
+      log.debug("{} {} was deleted", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
+      clearDraftVariablesIndex();
+      deleteDatasetVariables(Indexer.PUBLISHED_VARIABLE_INDEX, Indexer.VARIABLE_TYPE, event.getPersistable());
+      deleteDatasetVariables(Indexer.PUBLISHED_HVARIABLE_INDEX, Indexer.HARMONIZED_VARIABLE_TYPE, event.getPersistable());
+    } finally {
+      lock.unlock();
+    }
   }
 
   @Async
   @Subscribe
-  public synchronized void documentSetUpdated(DocumentSetUpdatedEvent event) {
+  public void documentSetUpdated(DocumentSetUpdatedEvent event) {
     if (!variableSetService.isForType(event.getPersistable())) return;
-    List<DatasetVariable> toIndex = Lists.newArrayList();
-    String id = event.getPersistable().getId();
-    if (event.hasRemovedIdentifiers()) {
-      List<DatasetVariable> toRemove = variableSetService.getVariables(event.getRemovedIdentifiers(), false);
-      toRemove.forEach(var -> var.removeSet(id));
-      toIndex.addAll(toRemove);
+    lock.lock();
+    try {
+      List<DatasetVariable> toIndex = Lists.newArrayList();
+      String id = event.getPersistable().getId();
+      if (event.hasRemovedIdentifiers()) {
+        List<DatasetVariable> toRemove = variableSetService.getVariables(event.getRemovedIdentifiers(), false);
+        toRemove.forEach(var -> var.removeSet(id));
+        toIndex.addAll(toRemove);
+      }
+      List<DatasetVariable> variables = variableSetService.getVariables(event.getPersistable(), false);
+      variables.stream()
+        .filter(var -> !var.containsSet(id))
+        .forEach(var -> {
+          var.addSet(id);
+          toIndex.add(var);
+        });
+      indexer.indexAllIndexables(Indexer.PUBLISHED_VARIABLE_INDEX, toIndex);
+    } finally {
+      lock.unlock();
     }
-    List<DatasetVariable> variables = variableSetService.getVariables(event.getPersistable(), false);
-    variables.stream()
-      .filter(var -> !var.containsSet(id))
-      .forEach(var -> {
-        var.addSet(id);
-        toIndex.add(var);
-      });
-    indexer.indexAllIndexables(Indexer.PUBLISHED_VARIABLE_INDEX, toIndex);
   }
 
   @Async
   @Subscribe
-  public synchronized void documentSetDeleted(DocumentSetDeletedEvent event) {
+  public void documentSetDeleted(DocumentSetDeletedEvent event) {
     if (!variableSetService.isForType(event.getPersistable())) return;
-    DocumentSet documentSet = event.getPersistable();
-    List<DatasetVariable> toIndex = Lists.newArrayList();
-    {
-      List<DatasetVariable> toRemove = variableSetService.getVariables(event.getPersistable(), false);
-      toRemove.forEach(var -> var.removeSet(documentSet.getId()));
-      toIndex.addAll(toRemove);
+    lock.lock();
+    try {
+      DocumentSet documentSet = event.getPersistable();
+      List<DatasetVariable> toIndex = Lists.newArrayList();
+      {
+        List<DatasetVariable> toRemove = variableSetService.getVariables(event.getPersistable(), false);
+        toRemove.forEach(var -> var.removeSet(documentSet.getId()));
+        toIndex.addAll(toRemove);
+      }
+      indexer.indexAllIndexables(Indexer.PUBLISHED_VARIABLE_INDEX, toIndex);
+    } finally {
+      lock.unlock();
     }
-    indexer.indexAllIndexables(Indexer.PUBLISHED_VARIABLE_INDEX, toIndex);
   }
 
   //
