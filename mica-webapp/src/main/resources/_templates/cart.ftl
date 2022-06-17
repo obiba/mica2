@@ -163,12 +163,12 @@
 
                 <#if config.harmonizationDatasetEnabled && config.studyDatasetEnabled>
                   <div class="float-left">
-                    <ul class="nav nav-pills" id="studyClassNameChoice" role="tablist" v-cloak>
+                    <ul class="nav nav-pills" id="studyClassNameChoice" :title="countWarning ? '<@message "count-warning"/>' : ''" role="tablist" v-cloak>
                       <li class="nav-item" role="presentation">
-                        <a class="nav-link active" id="individual-tab" @click="onStudyClassNameChange('Study')" href="" data-toggle="tab" role="tab" aria-controls="home" aria-selected="true"><@message "individual-search"/> <span class="badge badge-light right">{{individualSubCount}}</span></a>
+                        <a class="nav-link active" id="individual-tab" @click="onStudyClassNameChange('Study')" href="" data-toggle="tab" role="tab" aria-controls="home" aria-selected="true"><@message "individual-search"/> <span :class="{ 'badge-warning': countWarning, 'badge-light': !countWarning }" class="badge right">{{individualSubCount}}</span></a>
                       </li>
                       <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="harmonization-tab" @click="onStudyClassNameChange('HarmonizationStudy')" href="" data-toggle="tab" role="tab" aria-controls="profile" aria-selected="false"><@message "harmonization-search"/> <span class="badge badge-light right">{{harmonizationSubCount}}</span></a>
+                        <a class="nav-link" id="harmonization-tab" @click="onStudyClassNameChange('HarmonizationStudy')" href="" data-toggle="tab" role="tab" aria-controls="profile" aria-selected="false"><@message "harmonization-search"/> <span :class="{ 'badge-warning': countWarning, 'badge-light': !countWarning }" class="badge right">{{harmonizationSubCount}}</span></a>
                       </li>
                     </ul>
                   </div>
