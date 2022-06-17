@@ -301,10 +301,10 @@
 
             if (this.studyClassName === 'Study') {
               this.individualSubCount = totalCount === 0 ? totalCount : (result.totalHits).toLocaleString(Mica.locale);
-              this.harmonizationSubCount = totalCount === 0 ? totalCount : (totalCount - result.totalHits).toLocaleString(Mica.locale);
+              this.harmonizationSubCount = totalCount === 0 ? totalCount : (Math.max(totalCount - result.totalHits, 0)).toLocaleString(Mica.locale);
             } else {
               this.harmonizationSubCount = totalCount === 0 ? totalCount : (result.totalHits).toLocaleString(Mica.locale);
-              this.individualSubCount = totalCount === 0 ? totalCount : (totalCount - result.totalHits).toLocaleString(Mica.locale);
+              this.individualSubCount = totalCount === 0 ? totalCount : (Math.max(totalCount - result.totalHits, 0)).toLocaleString(Mica.locale);
             }
 
             this.pagination.update(result.totalHits, this.size, (this.from/this.size)+1);
@@ -477,14 +477,14 @@
                 let result = (response.data[resultDto] || {totalHits: 0});
                 if (result.totalHits !== totalCount) {
                   this.countWarning = true;
+                }
 
-                  if (this.studyClassName === 'Study') {
-                    let convertedIndividualCount = this.convertNumber(this.individualSubCount, '${.lang}');
-                    this.harmonizationSubCount = (result.totalHits - convertedIndividualCount).toLocaleString(Mica.locale);
-                  } else {
-                    let convertedHarmoCount = this.convertNumber(this.harmonizationSubCount, '${.lang}');
-                    this.individualSubCount = (result.totalHits - convertedHarmoCount).toLocaleString(Mica.locale);
-                  }
+                if (this.studyClassName === 'Study') {
+                  let convertedIndividualCount = this.convertNumber(this.individualSubCount, '${.lang}');
+                  this.harmonizationSubCount = (result.totalHits - convertedIndividualCount).toLocaleString(Mica.locale);
+                } else {
+                  let convertedHarmoCount = this.convertNumber(this.harmonizationSubCount, '${.lang}');
+                  this.individualSubCount = (result.totalHits - convertedHarmoCount).toLocaleString(Mica.locale);
                 }
               }
 
