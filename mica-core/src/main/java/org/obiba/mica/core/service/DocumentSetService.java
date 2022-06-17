@@ -189,6 +189,8 @@ public abstract class DocumentSetService {
     DocumentSet documentSet = get(id);
     if (identifiers.isEmpty()) return documentSet;
 
+    if (documentSet.getIdentifiers().containsAll(identifiers)) return documentSet;
+
     List<String> concatenatedIdentifiers = Stream.concat(documentSet.getIdentifiers().stream(), identifiers.stream())
       .distinct()
       .limit(micaConfigService.getConfig().getMaxItemsPerSet())
@@ -209,7 +211,10 @@ public abstract class DocumentSetService {
     DocumentSet documentSet = get(id);
     if (identifiers.isEmpty()) return documentSet;
 
+    int originalSize = documentSet.getIdentifiers().size();
     documentSet.getIdentifiers().removeAll(identifiers);
+    if (documentSet.getIdentifiers().size() == originalSize) return documentSet;
+
     return save(documentSet, Sets.newLinkedHashSet(identifiers));
   }
 
