@@ -297,6 +297,8 @@
 
             let result = (data[dto] || {totalHits: 0});
 
+            let badTotals = totalCount - result.totalHits < 0;
+
             if (this.studyClassName === 'Study') {
               this.individualSubCount = totalCount === 0 ? totalCount : (result.totalHits).toLocaleString(Mica.locale);
               this.harmonizationSubCount = totalCount === 0 ? totalCount : (totalCount - result.totalHits).toLocaleString(Mica.locale);
@@ -308,9 +310,9 @@
             this.pagination.update(result.totalHits, this.size, (this.from/this.size)+1);
             this.hasResult = result.totalHits > 0;
             this.pageSizeSelector.update(this.size);
-          }
 
-          this.verifyTotalCount();
+            if (badTotals) this.verifyTotalCount();
+          }
         },
         onSelectionChanged(payload) {
           let count = 0;
@@ -469,7 +471,7 @@
 
           if (totalVerificationTree) {
             let url = '/ws/' + (!tab ? 'variables' : tab) + '/_rql?query=' + totalVerificationTree.serialize();
-            axios.get(MicaService.normalizeUrl(url)).then(response => {
+            axios.get(MicaService.normalizeUrl(url)).then(function (response){
 
               if (response.data) {
                 let result = (response.data[resultDto] || {totalHits: 0});
@@ -486,7 +488,7 @@
                 }
               }
 
-            });
+            }.bind(this));
           }
         },
         doQuery(tab) {
