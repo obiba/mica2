@@ -115,7 +115,7 @@
               </div>
               <#if cartEnabled && variablesCartEnabled>
                 <div class="card-footer">
-                  <#if user??>
+                  <#if user?? || cartAnonymousEnabled>
                     <a id="cart-add" href="javascript:void(0)" onclick="onVariablesCartAdd('${variableCartId}')" style="display: none;">
                       <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
                     </a>

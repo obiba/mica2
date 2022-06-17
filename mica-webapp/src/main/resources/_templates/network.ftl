@@ -165,7 +165,7 @@
               </div>
                 <#if cartEnabled && networksCartEnabled>
                   <div class="card-footer">
-                      <#if user??>
+                      <#if user?? || cartAnonymousEnabled>
                         <a id="cart-add" href="javascript:void(0)" onclick="onNetworksCartAdd('${network.id}')" style="display: none;">
                             <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
                         </a>

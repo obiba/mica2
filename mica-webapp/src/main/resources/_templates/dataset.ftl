@@ -125,7 +125,7 @@
                     </#if>
                     <#if cartEnabled && variablesCartEnabled>
                       <div id="cart-add" class="float-right">
-                        <#if user??>
+                        <#if user?? || cartAnonymousEnabled>
                           <button type="button" class="btn btn-link" onclick="onVariablesCartAdd('${dataset.id}')">
                             <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
                           </button>

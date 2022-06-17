@@ -133,7 +133,7 @@
               </div>
               <#if cartEnabled && studiesCartEnabled>
                 <div class="card-footer">
-                  <#if user??>
+                  <#if user?? || cartAnonymousEnabled>
                     <a id="cart-add" href="javascript:void(0)" onclick="onStudiesCartAdd('${study.id}')" style="display: none;">
                         <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
                     </a>
