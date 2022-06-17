@@ -311,7 +311,10 @@
             this.hasResult = result.totalHits > 0;
             this.pageSizeSelector.update(this.size);
 
-            if (badTotals) this.verifyTotalCount();
+            if (badTotals) {
+              this.countWarning = true;
+              this.verifyTotalCount();
+            }
           }
         },
         onSelectionChanged(payload) {
@@ -475,16 +478,20 @@
 
               if (response.data) {
                 let result = (response.data[resultDto] || {totalHits: 0});
-                if (result.totalHits !== totalCount) {
+
+                if (result.totalHits !== totalCount && convertedIndividualCount + convertedHarmoCount !== totalCount) {
                   this.countWarning = true;
+                } else {
+                  this.countWarning = false;
                 }
 
+                let convertedIndividualCount = this.convertNumber(this.individualSubCount, '${.lang}');
+                let convertedHarmoCount = this.convertNumber(this.harmonizationSubCount, '${.lang}');
+
                 if (this.studyClassName === 'Study') {
-                  let convertedIndividualCount = this.convertNumber(this.individualSubCount, '${.lang}');
-                  this.harmonizationSubCount = (result.totalHits - convertedIndividualCount).toLocaleString(Mica.locale);
+                  this.harmonizationSubCount = (Math.max(result.totalHits - convertedIndividualCount, 0)).toLocaleString(Mica.locale);
                 } else {
-                  let convertedHarmoCount = this.convertNumber(this.harmonizationSubCount, '${.lang}');
-                  this.individualSubCount = (result.totalHits - convertedHarmoCount).toLocaleString(Mica.locale);
+                  this.individualSubCount = (Math.max(result.totalHits - convertedHarmoCount, 0)).toLocaleString(Mica.locale);
                 }
               }
 
