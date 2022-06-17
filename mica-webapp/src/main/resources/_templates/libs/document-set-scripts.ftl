@@ -70,7 +70,8 @@
     "studies-added-to-cart": "<@message "studies-added-to-cart"/>",
     "no-network-added": "<@message "sets.cart.no-network-added"/>",
     "networks-added-to-cart": "<@message "networks-added-to-cart"/>",
-    "data-access-request": "<@message "data-access-request"/>"
+    "data-access-request": "<@message "data-access-request"/>",
+    "count-warning": "<@message "count-warning"/>"
   };
 
   Mica.querySettings = {
@@ -266,11 +267,13 @@
           studyClassName: Mica.defaultSearchMode,
           hasCheckboxes: !Mica.setIsLocked || Mica.isAdministrator,
           individualSubCount: "0",
-          harmonizationSubCount: "0"
+          harmonizationSubCount: "0",
+          countWarning: false
         };
       },
       methods: {
         onResult(payload) {
+          this.countWarning = false;
           const data = payload.response;
 
           if (data) {
@@ -306,6 +309,8 @@
             this.hasResult = result.totalHits > 0;
             this.pageSizeSelector.update(this.size);
           }
+
+          this.verifyTotalCount();
         },
         onSelectionChanged(payload) {
           let count = 0;
@@ -396,6 +401,94 @@
 
           return urlParts;
         },
+        convertNumber(num, locale) {
+          const { format } = new Intl.NumberFormat(locale);
+          const [, decimalSign] = /^0(.)1$/.exec(format(0.1));
+          return +num
+          .replace(new RegExp('[^' + decimalSign + '\\d]', 'g'), '')
+          .replace(decimalSign, '.');
+        },
+        verifyTotalCount() {
+          let tab = this.currentWindowLocationSearch()['type'];
+
+          let setId = '${set.id}';
+
+          <#if studiesSet??>
+          let studySetId = '${studiesSet.id}';
+          <#else>
+          let studySetId = '';
+          </#if>
+
+          <#if networksSet??>
+          let networkSetId = '${networksSet.id}';
+          <#else>
+          let networkSetId = '';
+          </#if>
+
+          let totalVerificationTree = null;
+          let resultDto = 'variableResultDto';
+          let totalCount = 0;
+
+          if (!tab || tab === 'variables') {
+            totalVerificationTree = new RQL.QueryTree();
+            let targetQuery = new RQL.Query(TARGETS.VARIABLE);
+            totalVerificationTree.addQuery(null, targetQuery);
+
+            totalVerificationTree.addQuery(targetQuery, new RQL.Query('in', ['Mica_variable.sets', setId]));
+            totalVerificationTree.addQuery(targetQuery, new RQL.Query('limit', [0, 0]));
+
+            totalVerificationTree.addQuery(null, new RQL.Query('locale', ['${.lang}']));
+
+            resultDto = 'variableResultDto';
+            totalCount = (window.location.pathname === '/cart' ? totalCounts.variablesCount : totalCounts.currentSetIdentifiersCount) || 0;
+          } else if (tab && tab === 'studies' && studySetId) {
+            totalVerificationTree = new RQL.QueryTree();
+            let studyTargetQuery = new RQL.Query(TARGETS.STUDY);
+            totalVerificationTree.addQuery(null, studyTargetQuery);
+
+            totalVerificationTree.addQuery(studyTargetQuery, new RQL.Query('in', ['Mica_study.sets', studySetId]));
+            totalVerificationTree.addQuery(studyTargetQuery, new RQL.Query('limit', [0, 0]));
+
+            totalVerificationTree.addQuery(null, new RQL.Query('locale', ['${.lang}']));
+
+            resultDto = 'studyResultDto';
+            totalCount = totalCounts.studiesCount || 0;
+          } else if (tab && tab === 'networks' && networkSetId) {
+            totalVerificationTree = new RQL.QueryTree();
+            let networkTargetQuery = new RQL.Query(TARGETS.NETWORK);
+            totalVerificationTree.addQuery(null, networkTargetQuery);
+
+            totalVerificationTree.addQuery(networkTargetQuery, new RQL.Query('in', ['Mica_network.sets', networkSetId]));
+            totalVerificationTree.addQuery(networkTargetQuery, new RQL.Query('limit', [0, 0]));
+
+            totalVerificationTree.addQuery(null, new RQL.Query('locale', ['${.lang}']));
+
+            resultDto = 'networkResultDto';
+            totalCount = totalCounts.networksCount || 0;
+          }
+
+          if (totalVerificationTree) {
+            let url = '/ws/' + (!tab ? 'variables' : tab) + '/_rql?query=' + totalVerificationTree.serialize();
+            axios.get(MicaService.normalizeUrl(url)).then(response => {
+
+              if (response.data) {
+                let result = (response.data[resultDto] || {totalHits: 0});
+                if (result.totalHits !== totalCount) {
+                  this.countWarning = true;
+
+                  if (this.studyClassName === 'Study') {
+                    let convertedIndividualCount = this.convertNumber(this.individualSubCount, '${.lang}');
+                    this.harmonizationSubCount = (result.totalHits - convertedIndividualCount).toLocaleString(Mica.locale);
+                  } else {
+                    let convertedHarmoCount = this.convertNumber(this.harmonizationSubCount, '${.lang}');
+                    this.individualSubCount = (result.totalHits - convertedHarmoCount).toLocaleString(Mica.locale);
+                  }
+                }
+              }
+
+            });
+          }
+        },
         doQuery(tab) {
           tab = tab ? tab : this.currentWindowLocationSearch()['type'];
 
@@ -415,13 +508,13 @@
 
           let setId = '${set.id}';
 
-           <#if studiesSet??>
+          <#if studiesSet??>
           let studySetId = '${studiesSet.id}';
           <#else>
           let studySetId = '';
           </#if>
 
-           <#if networksSet??>
+          <#if networksSet??>
           let networkSetId = '${networksSet.id}';
           <#else>
           let networkSetId = '';
