@@ -60,13 +60,6 @@
           <div class="card card-info card-outline">
             <div class="card-header">
               <h3 class="card-title"><@message "studies"/></h3>
-              <#if individualStudies?size gt 0 || harmonizationStudies?size gt 0>
-                <div class="float-right">
-                  <a class="btn btn-info ml-2" href="${contextPath}/search#lists?type=${type}&query=${query}">
-                    <i class="fas fa-search"></i>
-                  </a>
-                </div>
-              </#if>
             </div>
             <div class="card-body">
               <#if ids?size gt (individualStudies?size + harmonizationStudies?size)>
@@ -101,6 +94,13 @@
                 </#if>
                 <div class="tab-content">
                   <div class="tab-pane active" id="tab_individual_studies">
+                    <#if individualQuery??>
+                      <div class="float-right">
+                        <a class="btn btn-sm btn-info ml-2" href="${contextPath}/individual-search#lists?type=${type}&query=${individualQuery}">
+                          <i class="fas fa-search"></i>
+                        </a>
+                      </div>
+                    </#if>
                     <#if individualStudies?size gt 0>
                       <table id="compare-individual-studies" class="table table-responsive table-striped">
                         <thead>
@@ -118,6 +118,13 @@
                     </#if>
                   </div>
                   <div class="tab-pane <#if individualStudies?size == 0>active</#if>" id="tab_harmonization_studies">
+                    <#if harmonizationQuery??>
+                      <div class="float-right">
+                        <a class="btn btn-sm btn-info ml-2" href="${contextPath}/harmonization-search#lists?type=${type}&query=${harmonizationQuery}">
+                          <i class="fas fa-search"></i>
+                        </a>
+                      </div>
+                    </#if>
                     <#if harmonizationStudies?size gt 0>
                       <table id="compare-harmonization-studies" class="table table-responsive table-striped">
                         <thead>
@@ -144,13 +151,6 @@
           <div class="card card-info card-outline">
             <div class="card-header">
               <h3 class="card-title"><@message "networks"/></h3>
-              <#if networks?size gt 0>
-                <div class="float-right">
-                  <a class="btn btn-info ml-2" href="${contextPath}/search#lists?type=${type}&query=${query}">
-                    <i class="fas fa-search"></i>
-                  </a>
-                </div>
-              </#if>
             </div>
             <div class="card-body">
               <#if ids?size gt networks?size>
@@ -162,6 +162,13 @@
               <#if networks?size == 0>
                 <span class="text-muted"><@message "compare-networks-none"/></span>
               <#else>
+                <#if query??>
+                  <div class="float-right">
+                    <a class="btn btn-sm btn-info ml-2" href="${contextPath}/search#lists?type=${type}&query=${query}">
+                      <i class="fas fa-search"></i>
+                    </a>
+                  </div>
+                </#if>
                 <table id="compare-networks" class="table table-responsive table-striped">
                 <thead>
                 <tr>

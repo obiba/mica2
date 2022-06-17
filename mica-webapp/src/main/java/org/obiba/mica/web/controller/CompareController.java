@@ -7,6 +7,7 @@ import com.google.common.collect.Sets;
 import jersey.repackaged.com.google.common.collect.Lists;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
+import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.NetworkSetService;
@@ -23,6 +24,7 @@ import org.obiba.mica.study.service.StudySetService;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.domain.Persistable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -66,7 +68,6 @@ public class CompareController extends BaseController {
     List<Study> individualStudies = Lists.newArrayList();
     List<HarmonizationStudy> harmonizationStudies = Lists.newArrayList();
     List<Network> networks = Lists.newArrayList();
-    String searchQuery = "";
     Map<String, Object> params = newParameters();
 
     if (!Strings.isNullOrEmpty(ids))
@@ -95,16 +96,25 @@ public class CompareController extends BaseController {
         List<BaseStudy> studies = publishedStudyService.findByIds(Lists.newArrayList(documentIds).subList(0, Math.min(documentIds.size(), config.getMaxItemsPerCompare())));
         individualStudies = studies.stream().filter(study -> study instanceof Study).map(study -> (Study)study).collect(Collectors.toList());
         harmonizationStudies = studies.stream().filter(study -> study instanceof HarmonizationStudy).map(study -> (HarmonizationStudy)study).collect(Collectors.toList());
-        searchQuery = String.format("study(in(Mica_study.id,(%s)))", Joiner.on(",").join(documentIds));
+        if (!individualStudies.isEmpty()) {
+          String individualSearchQuery = String.format("study(in(Mica_study.id,(%s)))", Joiner.on(",").join(individualStudies.stream().map(Persistable::getId).collect(Collectors.toList())));
+          params.put("individualQuery", individualSearchQuery);
+        }
+        if (!harmonizationStudies.isEmpty()) {
+          String harmonizationSearchQuery = String.format("study(in(Mica_study.id,(%s)))", Joiner.on(",").join(harmonizationStudies.stream().map(Persistable::getId).collect(Collectors.toList())));
+          params.put("harmonizationQuery", harmonizationSearchQuery);
+        }
       } else if ("networks".equals(documentType) && config.isNetworksCompareEnabled()) {
         networks = publishedNetworkService.findByIds(Lists.newArrayList(documentIds).subList(0, Math.min(documentIds.size(), config.getMaxItemsPerCompare())));
-        searchQuery = String.format("network(in(Mica_network.id,(%s)))", Joiner.on(",").join(documentIds));
+        if (!documentIds.isEmpty()) {
+          String searchQuery = String.format("network(in(Mica_network.id,(%s)))", Joiner.on(",").join(documentIds));
+          params.put("query", searchQuery);
+        }
       }
     }
     params.put("individualStudies", individualStudies);
     params.put("harmonizationStudies", harmonizationStudies);
     params.put("networks", networks);
-    params.put("query", searchQuery);
 
     return new ModelAndView("compare", params);
   }
