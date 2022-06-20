@@ -51,11 +51,6 @@ public class DceIdAggregationMetaDataHelper extends AbstractStudyAggregationMeta
         });
       });
 
-      sudo(() -> publishedStudyService.findAllByClassName(HarmonizationStudy.class.getSimpleName()))
-          .stream()
-          .forEach(hStudy -> hStudy.getPopulations().stream()
-              .forEach(population -> mapIdToMetadata(map, hStudy, population, null)));
-
       return map;
     } catch (Exception e) {
       log.debug("Could not build DCE aggregation metadata {}", e);

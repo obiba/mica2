@@ -23,6 +23,7 @@ import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
@@ -104,9 +105,11 @@ public abstract class AbstractPublishedStudyResource {
     ModelAwareTranslator.ForLocale modelTranslator = modelAwareTranslator.getModelAwareTranslatorForLocale(locale);
 
     modelTranslator.translateModel(study);
-    study.getPopulations().forEach(modelTranslator::translateModel);
-    study.getPopulations()
-      .forEach(population -> population.getDataCollectionEvents()
-        .forEach(modelTranslator::translateModel));
+    if (study instanceof Study) {
+      study.getPopulations().forEach(modelTranslator::translateModel);
+      study.getPopulations()
+        .forEach(population -> population.getDataCollectionEvents()
+          .forEach(modelTranslator::translateModel));
+    }
   }
 }
