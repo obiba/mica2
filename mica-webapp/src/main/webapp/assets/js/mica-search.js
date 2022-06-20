@@ -616,7 +616,9 @@ class TableFixedHeaderUtility {
         dceChecked: false,
         bucketTitles: {
           study: Mica.tr.study,
+          initiative: Mica.tr.initiative,
           dataset: Mica.tr.dataset,
+          protocol: Mica.tr.protocol,
           dce: Mica.tr['data-collection-event'],
         },
         chartOptions: Mica.charts.chartIds.map(id => chartOptions[id]),

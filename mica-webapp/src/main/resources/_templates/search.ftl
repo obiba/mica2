@@ -352,7 +352,7 @@
                                  href role="tab"
                                  @click="onSelectBucket('study')"
                                  aria-controls="study"
-                                 aria-selected="true">{{ bucketTitles.study }}</a>
+                                 aria-selected="true">{{ <#if searchContext == "individual">bucketTitles.study<#else>bucketTitles.initiative</#if> }}</a>
                             </li>
                             <li class="nav-item">
                               <a class="nav-link"
@@ -361,21 +361,23 @@
                                  href role="tab"
                                  @click="onSelectBucket('dataset')"
                                  aria-controls="dataset"
-                                 aria-selected="true">{{ bucketTitles.dataset }}</a>
+                                 aria-selected="true">{{  <#if searchContext == "individual">bucketTitles.dataset<#else>bucketTitles.protocol</#if> }}</a>
                             </li>
                           </ul>
 
                           <ul class="nav nav-pills float-right" role="tablist">
-                            <li v-if="selectedBucket !==' dataset'" class="mt-auto mb-auto">
-                              <div class="custom-control custom-switch">
-                                <input type="checkbox"
-                                       id="bucket-dce"
-                                       v-model="dceChecked"
-                                       @change="onSelectBucket(dceChecked ? 'dce' : 'study')"
-                                       class="custom-control-input">
-                                <label for="bucket-dce" class="custom-control-label">{{ bucketTitles.dce }}</label>
-                              </div>
-                            </li>
+                            <#if searchContext == "individual">
+                              <li v-if="selectedBucket !==' dataset'" class="mt-auto mb-auto">
+                                <div class="custom-control custom-switch">
+                                  <input type="checkbox"
+                                         id="bucket-dce"
+                                         v-model="dceChecked"
+                                         @change="onSelectBucket(dceChecked ? 'dce' : 'study')"
+                                         class="custom-control-input">
+                                  <label for="bucket-dce" class="custom-control-label">{{ bucketTitles.dce }}</label>
+                                </div>
+                              </li>
+                            </#if>
                             <li class="ml-3">
                               <div class="dropleft">
                                 <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><@message "search.filter"/></button>
