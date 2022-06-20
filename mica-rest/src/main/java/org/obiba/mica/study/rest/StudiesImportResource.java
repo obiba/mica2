@@ -243,7 +243,7 @@ public class StudiesImportResource {
 			try {
 				BaseStudy localStudy = studyService.findStudy(id);
 
-				Integer localPopulationSize = localStudy.getPopulations().size();
+				Integer localPopulationSize = localStudy.hasPopulations() ? localStudy.getPopulations().size() : 0;
 				Integer localDCEsSize = 0;
 
 				for (Population localPopulation : localStudy.getPopulations()) {
@@ -483,7 +483,7 @@ public class StudiesImportResource {
 			remoteStudy.setPopulations(localStudy.getPopulations());
 		} else if (listDiffsForm.contains(DATA_COLLECTION_EVENT_FORM_SECTION)) {
 			for (Population remotePopulation : remoteStudy.getPopulations()) {
-				if (!localStudy.getPopulations().contains(remotePopulation)) {
+				if (!localStudy.hasPopulations() && localStudy.getPopulations().contains(remotePopulation)) {
 					remotePopulation.setDataCollectionEvents(Sets.newTreeSet());
 				} else {
 					for (Population localPopulation : localStudy.getPopulations()) {

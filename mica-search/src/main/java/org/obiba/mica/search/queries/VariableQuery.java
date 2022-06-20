@@ -222,7 +222,7 @@ public class VariableQuery extends AbstractDocumentQuery {
           String dceId = variable.getDceId();
           if (!Strings.isNullOrEmpty(dceId)) {
             String[] parts = dceId.split(":");
-            if (parts.length > 1) {
+            if (parts.length > 1 && study.hasPopulations()) {
               Optional<Population> optionalPopulation = study.getPopulations().stream().filter(population -> population.getId().equals(parts[1])).findFirst();
               if (optionalPopulation.isPresent()) {
                 Population population = optionalPopulation.get();

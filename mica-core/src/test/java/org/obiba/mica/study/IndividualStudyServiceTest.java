@@ -33,6 +33,7 @@ import org.obiba.git.command.GitCommandHandler;
 import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.config.MongoDbConfiguration;
 import org.obiba.mica.core.ModelAwareTranslator;
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.notification.EntityPublicationFlowMailNotification;
@@ -54,8 +55,7 @@ import org.obiba.mica.micaConfig.service.TaxonomyConfigService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.security.service.SubjectAclService;
-import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.domain.StudyState;
+import org.obiba.mica.study.domain.*;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
 import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.mica.study.service.PublishedStudyService;
@@ -127,6 +127,18 @@ public class IndividualStudyServiceTest {
     mongoTemplate.getDb().dropDatabase();
     reset(eventBus);
   }
+
+  @Test
+  public void test() {
+    BaseStudy study = new HarmonizationStudy();
+    study.setId("0001");
+    study.setAcronym(LocalizedString.en("toto"));
+    study.setObjectives(LocalizedString.en("Bla bla bla bnla"));
+    for (Population pop : study.getPopulations()) {
+      pop.setId("lll");
+    }
+  }
+
 
   @Test
   public void test_create_and_load_new_study() throws Exception {
