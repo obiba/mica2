@@ -219,7 +219,7 @@ const makeHarmonizedVariablesTable = function() {
           dceName = dceName + ' -- ' + localizedString(dce.name);
         }
         harmonizedVariablesTableBody.append('<tr>' +
-          '<td title=""><a href="' + Mica.contextPath + '/variable/' + harmonizedVariable.resolver.id + '">' + harmonizedVariable.resolver.name + '</a> ' + localizedString(baseStudyTable.name) + '</td>' +
+          '<td title=""><a href="' + Mica.contextPath + '/variable/' + harmonizedVariable.resolver.id + '">' + harmonizedVariable.resolver.name + '</a></td>' +
           '<td>' + studyAnchor(baseStudyTable.studySummary) + '</td>' +
           '<td>' + getTableInformation(baseStudyTable, studyTableName) + '</td>' +
           '<td>' + dceName + '</td>' +

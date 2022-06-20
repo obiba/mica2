@@ -77,7 +77,7 @@ public class DceIdAggregationMetaDataHelper extends AbstractStudyAggregationMeta
 
     if (study instanceof HarmonizationStudy) {
       String sortField = study.getId();
-      map.put(StudyTable.getDataCollectionEventUId(study.getId(), population.getId()),
+      map.put(StudyTable.getDataCollectionEventUId(study.getId()),
           new AggregationMetaDataProvider.LocalizedMetaData(title, description, "", null, null, sortField));
     } else {
       String start = dce.hasStart() ? dce.getStart().getYearMonth() : null;

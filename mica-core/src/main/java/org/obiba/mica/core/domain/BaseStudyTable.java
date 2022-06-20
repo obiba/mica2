@@ -51,8 +51,8 @@ public class BaseStudyTable extends OpalTable {
         .toString();
   }
 
-  public static String getDataCollectionEventUId(String studyId, String populationId) {
-    return new StringBuilder(studyId).append(":").append(populationId).append(":.").toString();
+  public static String getDataCollectionEventUId(String studyId) {
+    return new StringBuilder(studyId).append(":").append(".:.").toString();
   }
 
   public void setPopulationId(String populationId) {
