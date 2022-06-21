@@ -312,6 +312,8 @@
             this.pageSizeSelector.update(this.size);
 
             if (badTotals) {
+              MicaService.toastWarning("<@message "count-warning"/>");
+
               this.countWarning = true;
               this.verifyTotalCount();
             }
@@ -646,7 +648,7 @@
               totalCount = totalCounts.networksCount;
             }
 
-            if (totalCount > 0) this.doQuery(setType);
+            this.doQuery(setType);
           }));
       },
       beforeDestory() {
