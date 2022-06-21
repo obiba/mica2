@@ -531,7 +531,7 @@ const EntitiesSortingComponent = {
       this.$emit("sort-update", this.selectedChoice);
     },
     sortLabel(choice) {
-      return this.options.filter(option => option.key === choice)[0].label;
+      return (this.options.filter(option => option.key === choice)[0] || this.options[0]).label;
     }
   }
 };
