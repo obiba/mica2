@@ -81,7 +81,8 @@ class Criterion {
         case "TERMS":
         case "NUMERIC":
           let val = (input.args[0] || "");
-          found = (Array.isArray(val) && val.length > 0 ? val[0] : val).split(/\./)[1] === vocabulary.name;
+          let res = (Array.isArray(val) && val.length > 0 ? val[0] : val);
+          found = typeof res.split !== 'undefined' ?  res.split(/\./)[1] === vocabulary.name : false;
 
           break;
         case "MATCH":
@@ -148,7 +149,7 @@ class Criterion {
       this.value = [];
     } else {
       this._operator = "match";
-      this.value = "";
+      this.value = "*";
     }
 
     this.type = Criterion.typeOfVocabulary(vocabulary);
@@ -267,7 +268,7 @@ class Criterion {
         if (!this.__stringIsNullOrEmpty(this.value)) {
           query.push([Criterion.__doubleQuotesAreClosed(this.value) ? this.value : Criterion.__quote(this.value)]);
         } else {
-          query.push([""]);
+          query.push(["*"]);
         }
 
         query.push(`${taxonomy}.${this.vocabulary.name}`);
