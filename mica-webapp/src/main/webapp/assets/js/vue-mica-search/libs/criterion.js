@@ -25,12 +25,19 @@ class Criterion {
     return text;
   }
 
-  static __cleanUnclosedDoubleQuotes(text) {
+  static __doubleQuotesAreClosed(text) {
     let output = (text || "").trim();
     const doubleQuotesRegxp = /"/g;
     const instancesOfDoubleQuoteCharacters = (output.match(doubleQuotesRegxp) || []).length;
 
-    if (instancesOfDoubleQuoteCharacters % 2 !== 0) {
+    return instancesOfDoubleQuoteCharacters % 2 === 0;
+  }
+
+  static __cleanUnclosedDoubleQuotes(text) {
+    let output = (text || "").trim();
+    const doubleQuotesRegxp = /"/g;
+
+    if (Criterion.__doubleQuotesAreClosed(output)) {
       return output.replace(doubleQuotesRegxp, "");
     }
 
@@ -258,7 +265,7 @@ class Criterion {
         break;
       default:
         if (!this.__stringIsNullOrEmpty(this.value)) {
-          query.push([Criterion.__quote(this.value)]);
+          query.push([Criterion.__doubleQuotesAreClosed(this.value) ? this.value : Criterion.__quote(this.value)]);
         } else {
           query.push([""]);
         }
