@@ -81,7 +81,7 @@ class Criterion {
         case "TERMS":
         case "NUMERIC":
           let val = (input.args[0] || "");
-          found = (Array.isArray(val) ? val[0] : val).split(/\./)[1] === vocabulary.name;
+          found = (Array.isArray(val) && val.length > 0 ? val[0] : val).split(/\./)[1] === vocabulary.name;
 
           break;
         case "MATCH":
