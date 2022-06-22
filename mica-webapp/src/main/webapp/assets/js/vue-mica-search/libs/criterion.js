@@ -149,7 +149,7 @@ class Criterion {
       this.value = [];
     } else {
       this._operator = "match";
-      this.value = "*";
+      this.value = "";
     }
 
     this.type = Criterion.typeOfVocabulary(vocabulary);
