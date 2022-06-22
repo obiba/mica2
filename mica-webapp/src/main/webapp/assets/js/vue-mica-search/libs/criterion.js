@@ -17,6 +17,26 @@ class Criterion {
     return !Array.isArray(vocabulary.terms) && (vocabulary.attributes || []).filter(attribute => (attribute.key === "localized" && "true" === attribute.value) || (attribute.key === "type" && attribute.value === "string")).length > 0;
   }
 
+  static __quote(text) {
+    if ((text || "").trim().length > 0) {
+      return `"${text.trim().replace(/^"|"$/g, "").replace(/"/, '\\"')}"`;
+    }
+
+    return text;
+  }
+
+  static __cleanUnclosedDoubleQuotes(text) {
+    let output = (text || "").trim();
+    const doubleQuotesRegxp = /"/g;
+    const instancesOfDoubleQuoteCharacters = (output.match(doubleQuotesRegxp) || []).length;
+
+    if (instancesOfDoubleQuoteCharacters % 2 !== 0) {
+      return output.replace(doubleQuotesRegxp, "");
+    }
+
+    return output;
+  }
+
   __findTerm(vocabulary, termName) {
     const found = (vocabulary.terms || []).filter(term => term.name === termName);
     return found.length > 0 ? found[0] : undefined;
@@ -238,7 +258,7 @@ class Criterion {
         break;
       default:
         if (!this.__stringIsNullOrEmpty(this.value)) {
-          query.push([this.value]);
+          query.push([Criterion.__quote(this.value)]);
         } else {
           query.push([""]);
         }
