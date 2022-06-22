@@ -53,7 +53,8 @@ class Criterion {
       switch(type) {
         case "TERMS":
         case "NUMERIC":
-          found = (input.args[0] || "").split(/\./)[1] === vocabulary.name;
+          let val = (input.args[0] || "");
+          found = (Array.isArray(val) ? val[0] : val).split(/\./)[1] === vocabulary.name;
 
           break;
         case "MATCH":
@@ -187,7 +188,8 @@ class Criterion {
 
         break;
       default:
-        this.value = input.args[0];
+        let val = input.args[0];
+        this.value = Array.isArray(val) ? val[0] : val;
 
         break;
     }
@@ -236,9 +238,9 @@ class Criterion {
         break;
       default:
         if (!this.__stringIsNullOrEmpty(this.value)) {
-          query.push(this.value);
+          query.push([this.value]);
         } else {
-          query.push("");
+          query.push([""]);
         }
 
         query.push(`${taxonomy}.${this.vocabulary.name}`);
