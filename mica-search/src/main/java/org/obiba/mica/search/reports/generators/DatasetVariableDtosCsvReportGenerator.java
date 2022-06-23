@@ -103,10 +103,10 @@ public class DatasetVariableDtosCsvReportGenerator extends CsvReportGenerator {
           String rval = cat.getName();
           Optional<Mica.AttributeDto> lblAttrOpt = cat.getAttributesList().stream().filter(attr -> attr.getName().equals("label")).findFirst();
           if (lblAttrOpt.isPresent() && !lblAttrOpt.get().getValuesList().isEmpty()) {
-            rval = rval + ": " + lblAttrOpt.get().getValuesList().get(0).getValue();
+            rval = rval + " __=__ " + lblAttrOpt.get().getValuesList().get(0).getValue();
           }
           return rval;
-        }).collect(Collectors.joining(" | ")));
+        }).collect(Collectors.joining(" __|__ ")));
       else line.add("");
     }
     if (mustShow("showVariablesTypeColumn"))
