@@ -10,7 +10,6 @@
 
 package org.obiba.mica.micaConfig.service;
 
-import com.google.common.eventbus.EventBus;
 import org.joda.time.DateTime;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
@@ -28,16 +27,12 @@ public class DataAccessFormService extends AbstractDataAccessEntityFormService<D
 
   private DataAccessFormRepository dataAccessFormRepository;
 
-  private EventBus eventBus;
-
   @Inject
   public DataAccessFormService(
     FileStoreService fileStoreService,
-    DataAccessFormRepository dataAccessFormRepository,
-    EventBus eventBus) {
+    DataAccessFormRepository dataAccessFormRepository) {
     this.fileStoreService = fileStoreService;
     this.dataAccessFormRepository = dataAccessFormRepository;
-    this.eventBus = eventBus;
   }
 
   @Override
