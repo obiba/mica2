@@ -17,15 +17,6 @@ import com.google.common.base.MoreObjects;
 
 public class HarmonizationStudyTable extends BaseStudyTable implements Serializable {
 
-
-    public String getPopulationUId() {
-      return String.format("%s:.", studyId);
-    }
-
-    public String getDataCollectionEventUId() {
-      return String.format("%s:.", getPopulationUId());
-    }
-
-    private static final long serialVersionUID = -7165136303147086535L;
+     private static final long serialVersionUID = -7165136303147086535L;
 
 }
