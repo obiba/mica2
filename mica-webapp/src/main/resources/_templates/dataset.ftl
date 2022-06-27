@@ -239,18 +239,22 @@
                               </a>
                             </td>
                             <td>
-                              <#assign popId="${table.study.id}-${table.population.id}">
-                              <@populationDialog id=popId population=table.population></@populationDialog>
-                              <a href="#" data-toggle="modal" data-target="#modal-${popId}">
-                                ${localize(table.population.name)}
-                              </a>
+                              <#if table.population??>
+                                <#assign popId="${table.study.id}-${table.population.id}">
+                                <@populationDialog id=popId population=table.population></@populationDialog>
+                                <a href="#" data-toggle="modal" data-target="#modal-${popId}">
+                                  ${localize(table.population.name)}
+                                </a>
+                              </#if>
                             </td>
                             <td>
-                              <#assign dceId="${table.study.id}-${table.population.id}-${table.dce.id}">
-                              <@dceDialog id=dceId dce=table.dce></@dceDialog>
-                              <a href="#" data-toggle="modal" data-target="#modal-${dceId}">
-                                ${localize(table.dce.name)}
-                              </a>
+                              <#if table.population?? && table.dce??>
+                                <#assign dceId="${table.study.id}-${table.population.id}-${table.dce.id}">
+                                <@dceDialog id=dceId dce=table.dce></@dceDialog>
+                                <a href="#" data-toggle="modal" data-target="#modal-${dceId}">
+                                  ${localize(table.dce.name)}
+                                </a>
+                              </#if>
                             </td>
                           </tr>
                         </#list>

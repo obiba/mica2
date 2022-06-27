@@ -98,6 +98,8 @@ public class CollectedDatasetServiceTest {
     StudyTable st = new StudyTable();
     st.setProject("proj");
     st.setTable("tab");
+    st.setPopulationId("1");
+    st.setDataCollectionEventId("1");
     ds.setStudyTable(st);
     ds.setName(new LocalizedString(Locale.CANADA, "test"));
 

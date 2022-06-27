@@ -158,18 +158,20 @@
       </#if>
       <#if studyTables?? && studyTables?size != 0>
         <#list studyTables as table>
-          makeFilesVue('#study-${table.study.id}-${table.population.id}-files-app', {
-            type: 'individual-study',
-            id: '${table.study.id}',
-            basePath: '/population/${table.population.id}',
-            path: '/',
-            folder: {},
-            tr: filesTr,
-            locale: '${.lang}',
-            contextPath: '${contextPath}'
-          }, function(file) {
-            return !(file.type === 'FOLDER' && file.name === 'data-collection-event');
-          });
+          <#if table.population??>
+            makeFilesVue('#study-${table.study.id}-${table.population.id}-files-app', {
+              type: 'individual-study',
+              id: '${table.study.id}',
+              basePath: '/population/${table.population.id}',
+              path: '/',
+              folder: {},
+              tr: filesTr,
+              locale: '${.lang}',
+              contextPath: '${contextPath}'
+            }, function(file) {
+              return !(file.type === 'FOLDER' && file.name === 'data-collection-event');
+            });
+          </#if>
         </#list>
       </#if>
     </#if>
@@ -188,16 +190,18 @@
       </#if>
       <#if studyTables?? && studyTables?size != 0>
         <#list studyTables as table>
-          makeFilesVue('#study-${table.study.id}-${table.population.id}-${table.dce.id}-files-app', {
-            type: 'individual-study',
-            id: '${table.study.id}',
-            basePath: '/population/${table.population.id}/data-collection-event/${table.dce.id}',
-            path: '/',
-            folder: {},
-            tr: filesTr,
-            locale: '${.lang}',
-            contextPath: '${contextPath}'
-          });
+          <#if table.population?? && table.dce??>
+            makeFilesVue('#study-${table.study.id}-${table.population.id}-${table.dce.id}-files-app', {
+              type: 'individual-study',
+              id: '${table.study.id}',
+              basePath: '/population/${table.population.id}/data-collection-event/${table.dce.id}',
+              path: '/',
+              folder: {},
+              tr: filesTr,
+              locale: '${.lang}',
+              contextPath: '${contextPath}'
+            });
+          </#if>
         </#list>
       </#if>
     </#if>

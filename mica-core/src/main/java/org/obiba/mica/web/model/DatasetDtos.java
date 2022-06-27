@@ -413,9 +413,17 @@ class DatasetDtos {
       .setTable(studyTable.getTable()) //
       .setWeight(studyTable.getWeight()) //
       .setStudyId(studyTable.getStudyId()) //
-      .setPopulationId(studyTable.getPopulationId()) //
-      .setDataCollectionEventId(studyTable.getDataCollectionEventId()) //
       .setDceId(studyTable.getDataCollectionEventUId());
+
+    String populationId = studyTable.getPopulationId();
+    if (!Strings.isNullOrEmpty(populationId)) {
+      sbuilder.setPopulationId(populationId);
+    }
+
+    String dceId = studyTable.getDataCollectionEventId();
+    if (!Strings.isNullOrEmpty(dceId)) {
+      sbuilder.setDataCollectionEventId(dceId);
+    }
 
     if(includeSummary) sbuilder.setStudySummary(studySummaryDtos.asDto(studyTable.getStudyId()));
 
@@ -790,8 +798,12 @@ class DatasetDtos {
   private StudyTable fromDto(Mica.DatasetDto.StudyTableDto dto) {
     StudyTable table = new StudyTable();
     table.setStudyId(dto.getStudyId());
-    table.setPopulationId(dto.getPopulationId());
-    table.setDataCollectionEventId(dto.getDataCollectionEventId());
+    if (dto.hasPopulationId()) {
+      table.setPopulationId(dto.getPopulationId());
+    }
+    if (dto.hasDataCollectionEventId()) {
+      table.setDataCollectionEventId(dto.getDataCollectionEventId());
+    }
     table.setProject(dto.getProject());
     table.setTable(dto.getTable());
     table.setWeight(dto.getWeight());
