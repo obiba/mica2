@@ -286,7 +286,7 @@ function NgObibaMicaUrlProvider() {
   };
 }
 
-angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schemaForm-datepicker', 'schemaForm-timepicker', 'schemaForm-datetimepicker', 'sfObibaFileUpload', 'ngFileUpload', 'ui.bootstrap'])
+angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schemaForm-datepicker', 'schemaForm-timepicker', 'schemaForm-datetimepicker', 'sfObibaSelectionTree', 'sfObibaFileUpload', 'ngFileUpload', 'ui.bootstrap'])
   .config(['$provide', function ($provide) {
     $provide.provider('ngObibaMicaUrl', NgObibaMicaUrlProvider);
   }])
