@@ -28,6 +28,8 @@ import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.mica.study.domain.DataCollectionEvent;
+import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.opal.rest.client.magma.RestDatasource;
@@ -87,7 +89,7 @@ public class CollectedDatasetServiceTest {
     RestDatasource r = mock(RestDatasource.class);
     when(r.getValueTable(anyString())).thenThrow(new MagmaRuntimeException());
     when(opalService.getDatasource(anyString(), anyString())).thenReturn(r);
-    when(individualStudyService.findDraft(anyString())).thenReturn(study);
+    when(individualStudyService.findStudy(anyString())).thenReturn(study);
     when(studyDatasetStateRepository.findOne(anyString())).thenReturn(state);
 
     collectedDatasetService.save(dataset);
@@ -115,7 +117,15 @@ public class CollectedDatasetServiceTest {
 
   private Study buildStudy() {
     Study s = new Study();
+    s.setId("study");
     s.setOpal("opal");
+
+    Population population = new Population();
+    population.setId("1");
+    DataCollectionEvent dce = new DataCollectionEvent();
+    dce.setId("1");
+    population.addDataCollectionEvent(dce);
+    s.addPopulation(population);
 
     return s;
   }
