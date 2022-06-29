@@ -881,21 +881,8 @@ class MicaQueryExecutor {
     const currentPathname = window.location.pathname;
 
     if ('/search' !== currentPathname && ('/harmonization-search' === currentPathname && !studyTypeSelection.harmonization || '/individual-search' === currentPathname && !studyTypeSelection.study)) {
-      let foundStudyClassName = tree ? tree.search((name, args, parent) => 'in' === name && args[0] === 'Mica_study.className' && parent.name === TARGETS.STUDY) : null;
-
-      let correctStudyClassName = '/harmonization-search' === currentPathname ? 'HarmonizationStudy' : 'Study';
-
-      let targetQuery = tree.search((name) => name === TARGETS.STUDY);
-      if (!targetQuery) {
-        targetQuery = new RQL.Query(TARGETS.STUDY);
-        tree.addQuery(null, targetQuery);
-      }
-
-      if (!foundStudyClassName) {
-        tree.addQuery(targetQuery, new RQL.Query('in', ['Mica_study.className', correctStudyClassName]));
-      } else {
-        tree.findAndUpdateQuery((name, args) => args[0] === 'Mica_study.className', ['Mica_study.className', correctStudyClassName]);
-      }
+      let correctStudyClassNameQuery = new RQL.Query('in', ['Mica_study.className', '/harmonization-search' === currentPathname ? 'HarmonizationStudy' : 'Study']);
+      tree = this._query[type].prepareForUpdatesAndSelection(tree, type, [{target: TARGETS.STUDY, query: correctStudyClassNameQuery, operator: 'and'}], true);
     }
 
     const query = tree.serialize();
