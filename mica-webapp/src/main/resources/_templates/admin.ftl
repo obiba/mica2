@@ -247,6 +247,7 @@
 <script src="${contextPath}/bower_components/sf-obiba-simple-mde/dist/sf-obiba-simple-mde.js"></script>
 <script src="${contextPath}/bower_components/obiba-country-codes/dist/all.js"></script>
 <script src="${contextPath}/bower_components/sf-obiba-countries-ui-select/dist/sf-obiba-countries-ui-select.js"></script>
+<script src="${contextPath}/bower_components/sf-obiba-selection-tree/dist/sf-obiba-selection-tree.js"></script>
 <script src="${contextPath}/bower_components/sf-radio-group-collection/dist/sf-radio-group-collection.js"></script>
 <script src="${contextPath}/bower_components/es6-shim/es6-shim.js"></script>
 <script src="${contextPath}/bower_components/obiba-shims/dist/obiba-shims.min.js"></script>
