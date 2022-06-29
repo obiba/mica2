@@ -530,6 +530,7 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
       throw new MissingCommentException("Due to the server configuration, comments are required when saving this document.");
     }
 
+    ensureValidStudyTable(dataset);
     StudyDataset saved = prepareSave(dataset);
 
     StudyDatasetState studyDatasetState = findEntityState(dataset, StudyDatasetState::new);
@@ -543,6 +544,30 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
     studyDatasetRepository.save(saved);
     gitService.save(saved, comment);
     eventBus.post(new DatasetUpdatedEvent(saved));
+  }
+
+  private void ensureValidStudyTable(StudyDataset dataset) {
+    if (dataset.hasStudyTable()) {
+      StudyTable studyTable = dataset.getStudyTable();
+      if (Strings.isNullOrEmpty(studyTable.getPopulationId()) || Strings.isNullOrEmpty(studyTable.getDataCollectionEventId())) {
+        throw new IllegalArgumentException("Dataset StudyTable requires a Population and a Data Collection Event.");
+      }
+
+      BaseStudy study = individualStudyService.findStudy(studyTable.getStudyId());
+
+      if (study == null) {
+        throw NoSuchStudyException.withId(dataset.getStudyTable().getStudyId());
+      }
+
+      if (study.findPopulation(studyTable.getPopulationId()) == null) {
+        throw new IllegalArgumentException("Study " + study.getId() + " does not have a population with id " + studyTable.getPopulationId());
+      }
+
+      String dataCollectionEventId = studyTable.getDataCollectionEventId();
+      if (study.getPopulations().stream().filter(pop -> pop.findDataCollectionEvent(dataCollectionEventId) != null).count() < 1) {
+        throw new IllegalArgumentException("Study " + study.getId() + " does not have a data collection event with id " + dataCollectionEventId);
+      }
+    }
   }
 
   private StudyDataset prepareSave(StudyDataset dataset) {

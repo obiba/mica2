@@ -948,10 +948,17 @@ mica.dataset
 
       $scope.save = function (form) {
         if (form.$valid) {
+          const populationId =
+            $scope.selected.isHarmonizationTable || !$scope.selected.study.population ? null : $scope.selected.study.population.id;
+
+          const dceId = $scope.selected.isHarmonizationTable ||
+            !$scope.selected.study.population ||
+            !$scope.selected.study.population.dataCollectionEvent ? null : $scope.selected.study.population.dataCollectionEvent.id;
+
           angular.extend($scope.table, {
             studyId: $scope.selected.study.id,
-            populationId: $scope.selected.isHarmonizationTable ? null : $scope.selected.study.population.id,
-            dataCollectionEventId: $scope.selected.isHarmonizationTable ? null : $scope.selected.study.population.dataCollectionEvent.id,
+            populationId: populationId,
+            dataCollectionEventId: dceId,
             project: $scope.selected.project.name,
             table: $scope.selected.project.table
           });

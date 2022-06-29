@@ -102,8 +102,17 @@ public class DatasetController extends BaseController {
     try {
       Study study = (Study) getStudy(studyTable.getStudyId());
       Population population = study.findPopulation(studyTable.getPopulationId());
-      DataCollectionEvent dce = population.findDataCollectionEvent(studyTable.getDataCollectionEventId());
-      String id = study.getId() + ":" + population.getId() + ":" + dce.getId();
+      DataCollectionEvent dce = null;
+      String id = study.getId();
+
+      if (population != null) {
+        id += ":" + population.getId();
+        dce = population.findDataCollectionEvent(studyTable.getDataCollectionEventId());
+        if (dce != null) {
+          id += ":" + dce.getId();
+        }
+      }
+
       if (!ids.contains(id)) { // could be different datasets from same dce
         params.put("study", study);
         params.put("population", population);

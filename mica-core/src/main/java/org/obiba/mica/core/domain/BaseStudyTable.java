@@ -11,6 +11,7 @@
 package org.obiba.mica.core.domain;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Strings;
 
 import java.io.Serializable;
 
@@ -39,7 +40,7 @@ public class BaseStudyTable extends OpalTable {
   }
 
   public static String getPopulationUId(String studyId, String populationId) {
-    return new StringBuilder(studyId).append(":").append(populationId).toString();
+    return new StringBuilder(studyId).append(":").append(Strings.isNullOrEmpty(populationId) ? "." : populationId).toString();
   }
 
   public String getDataCollectionEventUId() {
@@ -47,8 +48,10 @@ public class BaseStudyTable extends OpalTable {
   }
 
   public static String getDataCollectionEventUId(String studyId, String populationId, String dataCollectionEventId) {
-    return new StringBuilder(studyId).append(":").append(populationId).append(":").append(dataCollectionEventId)
-        .toString();
+    return new StringBuilder(BaseStudyTable.getPopulationUId(studyId, populationId))
+      .append(":")
+      .append(Strings.isNullOrEmpty(dataCollectionEventId) ? "." : dataCollectionEventId)
+      .toString();
   }
 
   public static String getDataCollectionEventUId(String studyId) {

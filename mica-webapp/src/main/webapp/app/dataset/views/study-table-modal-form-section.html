@@ -52,10 +52,10 @@
           ng-class="{'has-error': (form['population'].$dirty || form.saveAttempted) && form['population'].$invalid}">
           <label class="control-label">
             <span translate>study.population</span>
-            <span>*</span>
+            <span ng-if="!isHarmonizedDatasetScope">*</span>
           </label>
-          <ui-select theme="bootstrap" name="population" ng-model="selected.study.population" reset-search-input="true" required="true">
-            <ui-select-match>{{$select.selected.id}}</ui-select-match>
+          <ui-select theme="bootstrap" name="population" ng-model="selected.study.population" reset-search-input="true" ng-required="!isHarmonizedDatasetScope">
+            <ui-select-match allow-clear="{{isHarmonizedDatasetScope}}">{{$select.selected.id}}</ui-select-match>
             <ui-select-choices repeat="population in selected.study.populationSummaries | filter: $select.search">
               <span ng-bind-html="population.id | highlight: $select.search"></span> - <span ng-bind-html="population.name[0].value | highlight: $select.search"></span>
             </ui-select-choices>
@@ -67,10 +67,10 @@
           ng-class="{'has-error': (form['dce'].$dirty || form.saveAttempted) && form['dce'].$invalid}">
           <label class="control-label">
             <span translate>study.data-collection-event</span>
-            <span>*</span>
+            <span ng-if="!isHarmonizedDatasetScope">*</span>
           </label>
-          <ui-select theme="bootstrap" name="dce" ng-model="selected.study.population.dataCollectionEvent" reset-search-input="true" required="true">
-            <ui-select-match>{{$select.selected.id}}</ui-select-match>
+          <ui-select theme="bootstrap" name="dce" ng-model="selected.study.population.dataCollectionEvent" reset-search-input="true" ng-required="!isHarmonizedDatasetScope"">
+            <ui-select-match allow-clear="{{isHarmonizedDatasetScope}}">{{$select.selected.id}}</ui-select-match>
             <ui-select-choices repeat="population in selected.study.population.dataCollectionEventSummaries | filter: $select.search">
               <span ng-bind-html="population.id | highlight: $select.search"></span> - <span ng-bind-html="population.name[0].value | highlight: $select.search"></span>
             </ui-select-choices>
