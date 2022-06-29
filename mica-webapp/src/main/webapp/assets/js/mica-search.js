@@ -540,7 +540,7 @@ class TableFixedHeaderUtility {
     if (studyTypeSelection.study) {
       isOk = isOk || ['Study', 'StudyDataset', 'CollectedDataset'].indexOf(foundAttr.value) > -1;
     } else if (studyTypeSelection.harmonization) {
-      isOk = isOk || ['HarmonizationStudy', 'HarmonizedDataset', 'HarmonizationDataset'].indexOf(foundAttr.value) > -1 ;
+      isOk = isOk || ['HarmonizationStudy', 'HarmonizedDataset', 'HarmonizationDataset'].indexOf(foundAttr.value) > -1;
     } else {
       isOk = true;
     }

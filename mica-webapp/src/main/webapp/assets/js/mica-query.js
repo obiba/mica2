@@ -887,7 +887,7 @@ class MicaQueryExecutor {
 
       let targetQuery = tree.search((name) => name === TARGETS.STUDY);
       if (!targetQuery) {
-        targetQuery = new RQL.Query(target);
+        targetQuery = new RQL.Query(TARGETS.STUDY);
         tree.addQuery(null, targetQuery);
       }
 
