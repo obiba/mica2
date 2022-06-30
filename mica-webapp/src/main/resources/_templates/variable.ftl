@@ -165,7 +165,7 @@
                   <#else>
                     <dd class="col-sm-8">${localize(study.acronym)}</dd>
                   </#if>
-                  <#if type == "Collected">
+                  <#if population??>
                     <dt class="col-sm-4"><@message "population"/></dt>
                     <dd class="col-sm-8">
                       <#if studyPublished>
