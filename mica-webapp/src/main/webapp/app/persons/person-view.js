@@ -17,7 +17,8 @@
   const MODE = {
     VIEW: 'view',
     EDIT: 'edit',
-    NEW: 'new'
+    NEW: 'new',
+    REVISIONS: 'revisions'
   };
 
   class PersonViewController {
@@ -28,6 +29,7 @@
                 $filter,
                 $uibModal,
                 $q,
+                screenSize,
                 EntityMembershipService,
                 LocalizedSchemaFormService,
                 MicaConfigResource,
@@ -56,17 +58,30 @@
       this.EntityTitleService = EntityTitleService;
       this.AlertService = AlertService;
       this.validated = true;
+      this.screenSize = screenSize;
+      this.screen = {size: null, device: null};
+    }
+
+    __getScreenSize() {
+      var size = ['lg', 'md', 'sm', 'xs'].filter(function (size) {
+        return this.screenSize.is(size);
+      });
+
+      this.screen.size = size ? size[0] : 'lg';
+      this.screen.device = this.screenSize.is('md, lg') ? 'desktop' : 'mobile';
+      this.screen.is = this.screenSize.is;
     }
 
     __getMode() {
       let mode = MODE.VIEW;
-      const parts = this.$location.path().match(/\/(new|edit)$/);
+      const parts = this.$location.path().match(/\/(new|edit|revisions)$/);
 
       if (parts) {
         const modePart = parts[1];
         switch (modePart) {
           case MODE.NEW:
           case MODE.EDIT:
+          case MODE.REVISIONS:
             mode = modePart;
             break;
         }
@@ -468,6 +483,7 @@
         '$filter',
         '$uibModal',
         '$q',
+        'screenSize',
         'EntityMembershipService',
         'LocalizedSchemaFormService',
         'MicaConfigResource',

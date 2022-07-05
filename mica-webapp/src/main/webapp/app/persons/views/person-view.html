@@ -16,11 +16,11 @@
 
   <div class="tabs-menu hidden-print" ng-class="{'tabs-left': screen.is('lg')}">
     <ul class="nav nav-tabs">
-      <li ng-class="{'active': tabName === 'view'}">
-        <a href="#/persons/{{$ctrl.person.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
+      <li ng-class="{'active': $ctrl.mode === 'view'}">
+        <a href="#/person/{{$ctrl.person.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
       </li>
-      <li ng-class="{'active': tabName === 'revisions'}">
-        <a href="#/persons/{{$ctrl.person.id}}/revisions" title="{{'revisions' | translate}}"><i class="fa fa-list-ol"></i></a>
+      <li ng-class="{'active': $ctrl.mode === 'revisions'}">
+        <a href="#/person/{{$ctrl.person.id}}/revisions" title="{{'revisions' | translate}}"><i class="fa fa-list-ol"></i></a>
       </li>
     </ul>
   </div>

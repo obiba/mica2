@@ -20,6 +20,37 @@ mica.persons = angular.module('mica.persons', [
 ]);
 
 mica.persons
+  .config(['$routeProvider', function ($routeProvider) {
+    $routeProvider
+      .when('/persons', {
+        templateUrl: 'app/admin/views/persons.html',
+        reloadOnSearch: false,
+        access: {
+          authorizedRoles: ['mica-administrator']
+        }
+      })
+      .when('/person/:id', {
+        templateUrl: 'app/admin/views/person.html',
+        reloadOnSearch: false,
+        access: {
+          authorizedRoles: ['mica-administrator']
+        }
+      })
+      .when('/person/:id/edit', {
+        templateUrl: 'app/admin/views/person.html',
+        reloadOnSearch: false,
+        access: {
+          authorizedRoles: ['mica-administrator']
+        }
+      })
+      .when('/person/:id/revisions', {
+        templateUrl: 'app/admin/views/person.html',
+        reloadOnSearch: false,
+        access: {
+          authorizedRoles: ['mica-administrator']
+        }
+      });
+  }])
   .service('EntityTitleService', ['$filter', function($filter) {
     function translate(entityType, plural) {
       return plural ?
