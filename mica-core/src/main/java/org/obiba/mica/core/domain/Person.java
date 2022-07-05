@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 OBiBa. All rights reserved.
+ * Copyright (c) 2022 OBiBa. All rights reserved.
  *
  * This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0.
@@ -11,17 +11,16 @@
 package org.obiba.mica.core.domain;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.obiba.mica.network.domain.Network;
-import org.obiba.mica.spi.search.Identified;
 import org.obiba.mica.study.domain.BaseStudy;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -31,14 +30,7 @@ import com.google.common.collect.Lists;
 import static java.util.stream.Collectors.toList;
 
 @Document
-public class Person implements Persistable<String>, Identified {
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  @Id
-  String id;
+public class Person extends AbstractGitPersistable {
 
   private static final long serialVersionUID = -3098622168836970902L;
 
@@ -174,15 +166,10 @@ public class Person implements Persistable<String>, Identified {
     this.institution = institution;
   }
 
-  @Override
-  public String getId() {
-    return id;
-  }
-
   @JsonIgnore
   @Override
   public boolean isNew() {
-    return id == null;
+    return this.getId() == null;
   }
 
   public List<Membership> getStudyMemberships() {
@@ -335,5 +322,20 @@ public class Person implements Persistable<String>, Identified {
     public int hashCode() {
       return Objects.hash(parentId, role);
     }
+  }
+
+  @Override
+  public Map<String, Serializable> parts() {
+    Person self = this;
+    return new HashMap<String, Serializable>() {
+      {
+        put(self.getClass().getSimpleName(), self);
+      }
+    };
+  }
+
+  @Override
+  public String pathPrefix() {
+    return "people";
   }
 }
