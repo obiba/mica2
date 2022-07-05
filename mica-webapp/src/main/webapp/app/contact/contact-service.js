@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 OBiBa. All rights reserved.
+ * Copyright (c) 2022 OBiBa. All rights reserved.
  *
  * This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0.
@@ -32,6 +32,27 @@ mica.contact
       'getNetworkMemberships': {url: contextPath + '/ws/draft/persons/network/:networkId', method: 'GET', isArray: true, params: {networkId: '@networkId'}}
     });
   }])
+  .factory('PersonRevisionsResource', ['$resource',
+    function ($resource) {
+      return $resource(contextPath + '/ws/draft/person/:id/commits', {}, {
+        'get': {method: 'GET', params: {id: '@id'}},
+        'diff': {method: 'GET', url: contextPath + '/ws/draft/person/:id/_diff', params: {id: '@id'}}
+      });
+    }])
+
+  .factory('PersonkRestoreRevisionResource', ['$resource',
+    function ($resource) {
+      return $resource(contextPath + '/ws/draft/person/:id/commit/:commitId/restore', {}, {
+        'restore': {method: 'PUT', params: {id: '@id', commitId: '@commitId'}}
+      });
+    }])
+
+  .factory('PersonViewRevisionResource', ['$resource', 'ContactSerializationService',
+    function ($resource, ContactSerializationService) {
+      return $resource(contextPath + '/ws/draft/person/:id/commit/:commitId/view', {}, {
+        'view': {method: 'GET', params: {id: '@id', commitId: '@commitId'}, transformResponse: ContactSerializationService.deserialize}
+      });
+    }])
   .factory('ContactSerializationService', ['LocalizedValues',
     function (LocalizedValues) {
 
