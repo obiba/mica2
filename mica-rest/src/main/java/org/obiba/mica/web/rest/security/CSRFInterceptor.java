@@ -22,6 +22,7 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class CSRFInterceptor implements ContainerRequestFilter {
 
@@ -31,14 +32,15 @@ public class CSRFInterceptor implements ContainerRequestFilter {
 
   private static final String REFERER_HEADER = "Referer";
 
-  private final String serverPort;
+  private static final Pattern localhostPattern = Pattern.compile("^http[s]?://localhost:");
+
+  private static final Pattern loopbackhostPattern = Pattern.compile("^http[s]?://127\\.0\\.0\\.1:");
 
   private final boolean productionMode;
 
   private final List<String> csrfAllowed;
 
-  public CSRFInterceptor(String port, boolean productionMode, String csrfAllowed) {
-    serverPort = port;
+  public CSRFInterceptor(boolean productionMode, String csrfAllowed) {
     this.productionMode = productionMode;
     this.csrfAllowed = Strings.isNullOrEmpty(csrfAllowed) ? Lists.newArrayList() : Splitter.on(",").splitToList(csrfAllowed.trim());
   }
@@ -61,13 +63,8 @@ public class CSRFInterceptor implements ContainerRequestFilter {
       // explicitly ok
       if (csrfAllowed.contains(refererHostPort)) return;
 
-      String localhost = String.format("localhost:%s", serverPort);
-      String loopbackhost = String.format("127.0.0.1:%s", serverPort);
       boolean forbidden = false;
-      if (localhost.equals(host) || loopbackhost.equals(host)) {
-        if (!referer.startsWith(String.format("http://%s/", host)))
-          forbidden = true;
-      } else if (!referer.startsWith(String.format("https://%s/", host))) {
+      if (!localhostPattern.matcher(host).matches() && !loopbackhostPattern.matcher(host).matches() && !referer.startsWith(String.format("https://%s/", host))) {
         forbidden = true;
       }
 
