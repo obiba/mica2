@@ -617,9 +617,9 @@ const StudiesResult = {
           } else if (col === 'networks') {
             return this.withNetworks;
           } else if (col === 'individual') {
-            return this.withCollectedDatasets;
+            return false;
           } else if (col === 'harmonization') {
-            return this.withHarmonizedDatasets;
+            return false;
           } else if (['datasets', 'variables'].includes(col)) {
             return this.withCollectedDatasets || this.withHarmonizedDatasets;
           }
@@ -789,9 +789,9 @@ const NetworksResult = {
           if (col === 'type') {
             return this.withCollectedDatasets && this.withHarmonizedDatasets;
           } else if (col === 'individual') {
-            return this.withCollectedDatasets;
+            return false;
           } else if (col === 'harmonization') {
-            return this.withHarmonizedDatasets;
+            return false;
           } else if (col === 'studies' || col === 'initiatives') {
             return this.withStudies;
           } else if (col === 'datasets') {
