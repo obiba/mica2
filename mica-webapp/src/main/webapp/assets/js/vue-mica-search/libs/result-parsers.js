@@ -452,6 +452,8 @@ class StudiesResultParser {
             row.push(hasDatasource(dataSources, "questionnaires") ? checkIcon : "-");
             row.push(hasDatasource(dataSources, "physical_measures") ? checkIcon : "-");
             row.push(hasDatasource(dataSources, "biological_samples") ? checkIcon : "-");
+            row.push(hasDatasource(dataSources, "cognitive_measures") ? checkIcon : "-");
+            row.push(hasDatasource(dataSources, "administratives_databases") ? checkIcon : "-");
             row.push(hasDatasource(dataSources, "others") ? checkIcon : "-");
             break;
           }
