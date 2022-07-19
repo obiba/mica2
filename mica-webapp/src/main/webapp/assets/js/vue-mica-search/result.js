@@ -629,7 +629,7 @@ const StudiesResult = {
           return {
             name: col,
             rowspan: (['name', 'type', 'study-design', 'participants', 'networks'].includes(col) ? 2 : 1),
-            colspan: (['name', 'type', 'study-design', 'participants', 'networks'].includes(col) ? 1 : (col === 'data-sources-available' ? 4 : 2))
+            colspan: (['name', 'type', 'study-design', 'participants', 'networks'].includes(col) ? 1 : (col === 'data-sources-available' ? 6 : 2))
           }
         });
     },
@@ -683,6 +683,16 @@ const StudiesResult = {
               id: id,
               title: 'Mica_study.populations-dataCollectionEvents-dataSources.biological_samples',
               icon: 'fa fa-flask'
+              });
+            items2.push({
+              id: id,
+              title: 'Mica_study.populations-dataCollectionEvents-dataSources.cognitive_measures',
+              icon: 'fas fa-brain'
+              });
+            items2.push({
+              id: id,
+              title: 'Mica_study.populations-dataCollectionEvents-dataSources.administratives_databases',
+              icon: 'fas fa-database'
               });
             items2.push({
               id: id,
