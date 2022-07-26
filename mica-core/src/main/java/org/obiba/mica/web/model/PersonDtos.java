@@ -99,6 +99,9 @@ class PersonDtos {
       }
     }).map(m -> asNetworkMembershipDto(m, asDraft)).collect(toList()));
 
+
+    builder.setTimestamps(TimestampsDtos.asDto(person));
+
     return builder.build();
   }
 
