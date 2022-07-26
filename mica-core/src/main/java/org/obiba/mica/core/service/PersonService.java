@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 OBiBa. All rights reserved.
+ * Copyright (c) 2022 OBiBa. All rights reserved.
  *
  * This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0.
@@ -10,15 +10,25 @@
 
 package org.obiba.mica.core.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 
+import org.obiba.git.CommitInfo;
 import org.obiba.mica.contact.event.PersonDeletedEvent;
 import org.obiba.mica.contact.event.PersonUpdatedEvent;
 import org.obiba.mica.core.domain.Membership;
@@ -28,10 +38,10 @@ import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.event.NetworkDeletedEvent;
 import org.obiba.mica.study.domain.BaseStudy;
-import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -50,10 +60,27 @@ public class PersonService {
   PersonRepository personRepository;
 
   @Inject
+  protected GitService gitService;
+
+  @Inject
+  protected ObjectMapper objectMapper;
+
+  @Inject
   EventBus eventBus;
 
   public Person findById(String id) {
     return personRepository.findOne(id);
+  }
+
+  public Person getFromCommit(@NotNull Person gitPersistable, @NotNull String commitId) {
+    String blob = gitService.getBlob(gitPersistable, commitId, getType());
+    InputStream inputStream = new ByteArrayInputStream(blob.getBytes(StandardCharsets.UTF_8));
+
+    try {
+      return objectMapper.readValue(inputStream, getType());
+    } catch(IOException e) {
+      throw Throwables.propagate(e);
+    }
   }
 
   public List<Person> getStudyMemberships(String studyId) {
@@ -65,15 +92,42 @@ public class PersonService {
   }
 
   public Person save(Person person) {
-    Person saved = personRepository.save(person);
+    Person saved = person;
+
+    if (!person.isNew()) {
+      saved = personRepository.findOne(person.getId());
+
+      if (saved != null) {
+        BeanUtils.copyProperties(person, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy", "lastModifiedDate");
+      } else {
+        saved = person;
+      }
+    }
+
+    personRepository.save(saved);
+    
     eventBus.post(new PersonUpdatedEvent(saved));
+    gitService.save(saved);
     return saved;
   }
 
   public void delete(String id) {
     Person personToDelete = findById(id);
     personRepository.delete(id);
+    gitService.deleteGitRepository(personToDelete);
     eventBus.post(new PersonDeletedEvent(personToDelete));
+  }
+
+  public Iterable<CommitInfo> getCommitInfos(@NotNull Person persistable) {
+    return gitService.getCommitsInfo(persistable, persistable.getClass());
+  }
+
+  public CommitInfo getCommitInfo(@NotNull Person persistable, @NotNull String commitInfo) {
+    return gitService.getCommitInfo(persistable, commitInfo, persistable.getClass());
+  }
+
+  public Iterable<String> getDiffEntries(@NotNull Person persistable, @NotNull String commitId, @Nullable String prevCommitId) {
+    return gitService.getDiffEntries(persistable, commitId, prevCommitId, persistable.getClass());
   }
 
   public Map<String, List<Membership>> getStudyMembershipMap(String studyId) {
@@ -129,6 +183,14 @@ public class PersonService {
     });
 
     return membershipMap;
+  }
+
+  protected Class<Person> getType() {
+    return Person.class;
+  }
+
+  public String getTypeName() {
+    return "person";
   }
 
   @Async

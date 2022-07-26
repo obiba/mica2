@@ -345,6 +345,7 @@
 <script src="${contextPath}/app/persons/persons.js"></script>
 <script src="${contextPath}/app/persons/persons-list.js"></script>
 <script src="${contextPath}/app/persons/person-view.js"></script>
+<script src="${contextPath}/app/persons/person-revisions.js"></script>
 <script src="${contextPath}/app/persons/person-memberships.js"></script>
 <script src="${contextPath}/app/persons/entity-list.js"></script>
 <script src="${contextPath}/app/persons/membership-roles.js"></script>
