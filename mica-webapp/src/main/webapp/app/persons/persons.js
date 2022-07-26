@@ -30,21 +30,21 @@ mica.persons
         }
       })
       .when('/person/:id', {
-        templateUrl: 'app/admin/views/person.html',
+        templateUrl: 'app/admin/views/person-view.html',
         reloadOnSearch: false,
         access: {
           authorizedRoles: ['mica-administrator']
         }
       })
       .when('/person/:id/edit', {
-        templateUrl: 'app/admin/views/person.html',
+        templateUrl: 'app/admin/views/person-view.html',
         reloadOnSearch: false,
         access: {
           authorizedRoles: ['mica-administrator']
         }
       })
       .when('/person/:id/revisions', {
-        templateUrl: 'app/admin/views/person.html',
+        templateUrl: 'app/admin/views/person-revisions.html',
         reloadOnSearch: false,
         access: {
           authorizedRoles: ['mica-administrator']

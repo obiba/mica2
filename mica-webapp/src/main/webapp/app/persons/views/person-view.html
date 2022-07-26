@@ -2,19 +2,19 @@
   <h2>
     <ol class="breadcrumb mica-breadcrumb">
       <li><a href ng-click="$ctrl.navigateOut('/persons')" translate>persons.title</a></li>
-      <li class="active" >{{$ctrl.person.firstName}} {{$ctrl.person.lastName}}</li>
+      <li class="active">{{$ctrl.person.firstName}} {{$ctrl.person.lastName}}</li>
     </ol>
   </h2>
 
   <p ng-if="$ctrl.loading" class="voffset2 loading"></p>
 
   <div class="alert alert-warning" role="alert" ng-if="$ctrl.person && $ctrl.person.id && !$ctrl.memberships.networks && !$ctrl.memberships.studies">
-    <span>{{'persons.no-memberships' |translate:{fullname: $ctrl.person.firstName+' '+ $ctrl.person.lastName} }}</span>
+    <span>{{'persons.no-memberships' | translate:{fullname: $ctrl.person.firstName+' '+ $ctrl.person.lastName} }}</span>
   </div>
 
   <obiba-alert id="PersonViewComponent"></obiba-alert>
 
-  <div class="tabs-menu hidden-print" ng-class="{'tabs-left': screen.is('lg')}">
+  <div class="tabs-menu hidden-print" ng-class="{'tabs-left': $ctrl.layoutHelper.is('lg')}">
     <ul class="nav nav-tabs">
       <li ng-class="{'active': $ctrl.mode === 'view'}">
         <a href="#/person/{{$ctrl.person.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>

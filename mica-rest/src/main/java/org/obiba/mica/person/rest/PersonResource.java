@@ -1,6 +1,7 @@
 package org.obiba.mica.person.rest;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,7 +95,14 @@ public class PersonResource {
   @Path("/{id}/commits")
   @RequiresPermissions({ "/draft/individual-study:VIEW", "/draft/harmonization-study:VIEW", "/draft/network:VIEW" })
   public List<GitCommitInfoDto> getCommitsInfo(@PathParam("id") String id) {
-    return dtos.asDto(personService.getCommitInfos(personService.findById(id)));
+
+    try {
+      return dtos.asDto(personService.getCommitInfos(personService.findById(id)));
+    } catch(Exception ex) {
+      //
+    }
+    
+    return new ArrayList<>();
   }
 
   @PUT

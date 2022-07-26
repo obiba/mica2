@@ -35,12 +35,12 @@ mica.contact
   .factory('PersonRevisionsResource', ['$resource',
     function ($resource) {
       return $resource(contextPath + '/ws/draft/person/:id/commits', {}, {
-        'get': {method: 'GET', params: {id: '@id'}},
+        'get': {method: 'GET', params: {id: '@id'}, isArray: true},
         'diff': {method: 'GET', url: contextPath + '/ws/draft/person/:id/_diff', params: {id: '@id'}}
       });
     }])
 
-  .factory('PersonkRestoreRevisionResource', ['$resource',
+  .factory('PersonRestoreRevisionResource', ['$resource',
     function ($resource) {
       return $resource(contextPath + '/ws/draft/person/:id/commit/:commitId/restore', {}, {
         'restore': {method: 'PUT', params: {id: '@id', commitId: '@commitId'}}

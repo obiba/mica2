@@ -21,6 +21,18 @@
     REVISIONS: 'revisions'
   };
 
+  function getScreenSize(screenSize) {
+    var size = ['lg', 'md', 'sm', 'xs'].filter(function (size) {
+      return screenSize.is(size);
+    });
+
+    return {
+      size: size ? size[0] : 'lg',
+      device: screenSize.is('md, lg') ? 'desktop' : 'mobile',
+      is: screenSize.is
+    };
+  }
+
   class PersonViewController {
     constructor($rootScope,
                 $scope,
@@ -60,16 +72,6 @@
       this.validated = true;
       this.screenSize = screenSize;
       this.screen = {size: null, device: null};
-    }
-
-    __getScreenSize() {
-      var size = ['lg', 'md', 'sm', 'xs'].filter(function (size) {
-        return this.screenSize.is(size);
-      });
-
-      this.screen.size = size ? size[0] : 'lg';
-      this.screen.device = this.screenSize.is('md, lg') ? 'desktop' : 'mobile';
-      this.screen.is = this.screenSize.is;
     }
 
     __getMode() {
@@ -351,6 +353,7 @@
     $onInit() {
       this.$translateChangeSuccessHandler = this.$rootScope.$on('$translateChangeSuccess', () => this.__initializeForm());
       this.__initializeForm();
+      this.layoutHelper = getScreenSize(this.screenSize);
       this.pagination = this.$location.search();
       this.$location.search({}).replace();
     }
