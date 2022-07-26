@@ -25,6 +25,12 @@
     </ul>
   </div>
 
+  <h3 style="margin-top: 0;" class="pull-left">
+    <span ng-if="$ctrl.mode === 'view'" translate>view</span>
+    <span ng-if="$ctrl.mode === 'edit'" translate>edit</span>
+    <span ng-if="$ctrl.mode === 'new'" translate>edit</span>
+  </h3>
+
   <div ng-if="$ctrl.mode !== 'view'" class="pull-right">
     <a href class="btn btn-default" ng-click="$ctrl.onCancel()">
       <span translate>cancel</span>
