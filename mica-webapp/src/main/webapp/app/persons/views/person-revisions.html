@@ -1,0 +1,67 @@
+<div>
+  <h2>
+    <ol class="breadcrumb mica-breadcrumb">
+      <li><a href ng-click="$ctrl.navigateOut('/persons')" translate>persons.title</a></li>
+      <li class="active">{{$ctrl.person.firstName}} {{$ctrl.person.lastName}}</li>
+    </ol>
+  </h2>
+
+  <p ng-if="$ctrl.loading" class="voffset2 loading"></p>
+
+  <obiba-alert id="PersonRevisionsComponent"></obiba-alert>
+
+  <div class="tabs-menu hidden-print" ng-class="{'tabs-left': $ctrl.layoutHelper.is('lg')}">
+    <ul class="nav nav-tabs">
+      <li ng-class="{'active': $ctrl.mode === 'view'}">
+        <a href="#/person/{{$ctrl.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
+      </li>
+      <li ng-class="{'active': $ctrl.mode === 'revisions'}">
+        <a href="#/person/{{$ctrl.id}}/revisions" title="{{'revisions' | translate}}"><i class="fa fa-list-ol"></i></a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="clearfix"></div>
+
+  <h3 style="margin-top: 0;" translate>revisions</h3>
+
+  <table class="table table-bordered table-striped" ng-show="$ctrl.commitInfos.length">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th translate>date</th>
+        <th translate>author</th>
+        <th width="40%" translate>comment-label</th>
+        <th translate>actions</th>
+      </tr>
+    </thead>
+      <tr dir-paginate="commitInfo in $ctrl.commitInfos | filter: $ctrl.searchText | itemsPerPage: 20">
+        <td>
+          <span class="ellipsis pull-left" title="{{commitInfo.commitId}}">
+            {{commitInfo.commitId}}
+          </span>
+        </td>
+        <td class="no-wrap">
+          {{commitInfo.date | amDateFormat: 'lll'}}
+        </td>
+        <td>
+          {{commitInfo.author}}
+        </td>
+        <td>
+          {{commitInfo.comment}}
+        </td>
+        <td class="no-wrap">
+          <span ng-if="$index > 0">
+            <a ng-click="$ctrl.viewDiff($ctrl.commitInfos[0], commitInfo)" href title="{{'revisions-difference-tooltip' | translate}}"><span>{{'revisions-difference' | translate}}</span></a>
+          </span>
+        </td>
+      </tr>
+    <tbody>
+
+    </tbody>
+  </table>
+
+  <p class="help-block" ng-show="$ctrl.commitInfos.length === 0">
+    <span translate>revisions-none</span>
+  </p>
+</div>

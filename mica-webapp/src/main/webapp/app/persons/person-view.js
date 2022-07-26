@@ -17,8 +17,21 @@
   const MODE = {
     VIEW: 'view',
     EDIT: 'edit',
-    NEW: 'new'
+    NEW: 'new',
+    REVISIONS: 'revisions'
   };
+
+  function getScreenSize(screenSize) {
+    var size = ['lg', 'md', 'sm', 'xs'].filter(function (size) {
+      return screenSize.is(size);
+    });
+
+    return {
+      size: size ? size[0] : 'lg',
+      device: screenSize.is('md, lg') ? 'desktop' : 'mobile',
+      is: screenSize.is
+    };
+  }
 
   class PersonViewController {
     constructor($rootScope,
@@ -28,6 +41,7 @@
                 $filter,
                 $uibModal,
                 $q,
+                screenSize,
                 EntityMembershipService,
                 LocalizedSchemaFormService,
                 MicaConfigResource,
@@ -56,17 +70,20 @@
       this.EntityTitleService = EntityTitleService;
       this.AlertService = AlertService;
       this.validated = true;
+      this.screenSize = screenSize;
+      this.screen = {size: null, device: null};
     }
 
     __getMode() {
       let mode = MODE.VIEW;
-      const parts = this.$location.path().match(/\/(new|edit)$/);
+      const parts = this.$location.path().match(/\/(new|edit|revisions)$/);
 
       if (parts) {
         const modePart = parts[1];
         switch (modePart) {
           case MODE.NEW:
           case MODE.EDIT:
+          case MODE.REVISIONS:
             mode = modePart;
             break;
         }
@@ -336,6 +353,7 @@
     $onInit() {
       this.$translateChangeSuccessHandler = this.$rootScope.$on('$translateChangeSuccess', () => this.__initializeForm());
       this.__initializeForm();
+      this.layoutHelper = getScreenSize(this.screenSize);
       this.pagination = this.$location.search();
       this.$location.search({}).replace();
     }
@@ -468,6 +486,7 @@
         '$filter',
         '$uibModal',
         '$q',
+        'screenSize',
         'EntityMembershipService',
         'LocalizedSchemaFormService',
         'MicaConfigResource',

@@ -1541,6 +1541,7 @@
   "settings": "Settings",
   "other-settings": "Other settings",
   "revisions": "Revisions",
+  "revisions-none": "No Revision",
   "revision": "Revision",
   "revision-date": "Revision Date",
   "revision-date-on": "On",
