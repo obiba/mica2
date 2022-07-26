@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.joda.time.DateTime;
 import org.obiba.git.CommitInfo;
 import org.obiba.mica.contact.event.PersonDeletedEvent;
 import org.obiba.mica.contact.event.PersonUpdatedEvent;
@@ -103,6 +104,8 @@ public class PersonService {
         saved = person;
       }
     }
+
+    saved.setLastModifiedDate(DateTime.now());
 
     personRepository.save(saved);
     

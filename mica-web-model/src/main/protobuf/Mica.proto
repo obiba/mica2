@@ -336,6 +336,7 @@ message PersonDto {
   optional string id = 9;
   repeated MembershipDto studyMemberships = 10;
   repeated MembershipDto networkMemberships = 11;
+  optional TimestampsDto timestamps = 12;
 
   message InstitutionDto {
     repeated LocalizedStringDto name = 1;
