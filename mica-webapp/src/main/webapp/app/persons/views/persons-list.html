@@ -41,11 +41,12 @@
   <p class="help-block" ng-if="!$ctrl.loading && $ctrl.persons.length < 1" translate>persons.none</p>
 
   <div class="table-responsive" ng-if="$ctrl.persons.length > 0">
-    <table class="table table-bordered table-striped">
+    <table class="table table-bordered table-striped" obiba-table-sorter="$ctrl.onSortColumn" data-column-name="{{$ctrl.sort.column}}" data-order="{{$ctrl.sort.order}}">
       <thead>
       <tr>
-        <th style="width:20%" translate>contact.name</th>
-        <th style="width:20%" translate>contact.email</th>
+        <th data-column-name="lastName" style="width:20%">{{"contact.name" | translate}}</th>
+        <th translate>contact.email</th>
+        <th data-column-name="lastModifiedDate" style="width:10%">{{"global.lastUpdate" | translate}}</th>
         <th style="width:20%" translate>global.individual-studies</th>
         <th style="width:20%" translate>global.harmonization-studies</th>
         <th style="width:20%" translate>networks</th>
@@ -62,6 +63,7 @@
         <td>
           {{person.email}}
         </td>
+        <td class="text-nowrap">{{person.timestamps.lastUpdate | amDateFormat : 'lll'}}</td>
         <td>
             <ul class="list-no-style list-inline" ng-repeat="entity in person.studies.entities | orderBy:'acronym'">
               <li>

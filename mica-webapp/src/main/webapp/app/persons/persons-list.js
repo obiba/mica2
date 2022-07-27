@@ -12,89 +12,96 @@
 
 (function () {
 
-  class PersonsListController {
-    constructor($rootScope, $timeout, $location, ContactsSearchResource, EntityMembershipService) {
-      this.onLocationChangeHandler = $rootScope.$on('$locationChangeSuccess', () => this.onLocationChange(arguments));
-      this.$timeout = $timeout;
-      this.$location = $location;
-      this.ContactsSearchResource = ContactsSearchResource;
-      this.EntityMembershipService = EntityMembershipService;
-      this.loading = false;
-      this.pagination = {page: 1, size: mica.commons.DEFAULT_LIMIT};
-      this.persons = [];
-      this.total = 0;
-      this._query = null;
-      this.timeoutHandler = null;
-      this.ngObibaStringUtils = new obiba.utils.NgObibaStringUtils();
-    }
+  function PersonsListController($rootScope, $timeout, $location, ContactsSearchResource, EntityMembershipService) {
+    const self = this;
 
-    get query() {
-      return this._query || null;
-    }
+    self.onLocationChangeHandler = $rootScope.$on('$locationChangeSuccess', () => onLocationChange(arguments));
+    self.$timeout = $timeout;
+    self.$location = $location;
+    self.ContactsSearchResource = ContactsSearchResource;
+    self.EntityMembershipService = EntityMembershipService;
+    self.loading = false;
+    self.pagination = {page: 1, size: mica.commons.DEFAULT_LIMIT};
+    self.persons = [];
+    self.total = 0;
+    self._query = null;
+    self.timeoutHandler = null;
+    self.ngObibaStringUtils = new obiba.utils.NgObibaStringUtils();
+    self.sort = {column: 'lastName', order: 'asc'};
 
-    set query(text) {
-      this._query = text ? text.trim() : null;
-
-      if (this.timeoutHandler) {
-        this.$timeout.cancel(this.timeoutHandler);
+    Object.defineProperty(self, 'query', {
+      enumerable: true,
+      configurable: true,
+      get () {
+        return self._query || null;
+      },
+  
+      set (text) {
+        self._query = text ? text.trim() : null;
+  
+        if (self.timeoutHandler) {
+          self.$timeout.cancel(self.timeoutHandler);
+        }
+  
+        self.timeoutHandler = self.$timeout((getPersons(self._query, 0)), 250);
       }
+    });
 
-      this.timeoutHandler = this.$timeout((this.__getPersons(this._query, 0)), 250);
-    }
-
-    __getDownloadUrl() {
-      let url = `ws/draft/persons/_search/_download?limit=${this.total}`;
-      if (this.query) {
-        url = `${url}&query=${mica.commons.cleanupQuery(this.query)}`;
+    function getDownloadUrl() {
+      let url = `ws/draft/persons/_search/_download?limit=${self.total}`;
+      if (self.query) {
+        url = `${url}&query=${mica.commons.cleanupQuery(self.query)}`;
       }
 
       return url;
     }
 
-    __getPersons(query, from, limit, exclude) {
+    function getPersons(query, from, limit, exclude) {
       const searchQuery = query ? mica.commons.cleanupQuery(query) : query;
-      this.loading = true;
-      this.ContactsSearchResource.search({
+      self.loading = true;
+      self.ContactsSearchResource.search({
         query: searchQuery,
         from: from,
         limit: limit || mica.commons.DEFAULT_LIMIT,
+        sort: self.sort.column,
+        order: self.sort.order,
         exclude: exclude
       }).$promise
         .then(result => {
-          this.loading = false;
-          this.persons = (result.persons || []).map((person) => {
+          self.loading = false;
+          self.persons = (result.persons || []).map((person) => {
             if (person.networkMemberships) {
-              person.networks = this.EntityMembershipService.groupRolesByEntity('networks', person.networkMemberships);
+              person.networks = self.EntityMembershipService.groupRolesByEntity('networks', person.networkMemberships);
             }
 
             if (person.studyMemberships) {
               person.studies =
-                this.EntityMembershipService.groupRolesByEntity(
+                self.EntityMembershipService.groupRolesByEntity(
                   'studies',
                   person.studyMemberships.filter(membership => membership['obiba.mica.PersonDto.StudyMembershipDto.meta'].type ==='individual-study'));
             }
 
             if (person.studyMemberships) {
               person.initiatives =
-                this.EntityMembershipService.groupRolesByEntity(
+                self.EntityMembershipService.groupRolesByEntity(
                   'initiatives',
                   person.studyMemberships.filter(membership => membership['obiba.mica.PersonDto.StudyMembershipDto.meta'].type !=='individual-study'));
             }
 
             return person;
           });
-          this.total = result.total;
-          this.downloadUrl = this.__getDownloadUrl();
+          self.total = result.total;
+          self.downloadUrl = getDownloadUrl();
         })
         .catch(error => {
           console.error(`Search failed for ${searchQuery} - ${error.data ? error.data.message : error.statusText}`);
-          this.loading = false;
-          this.persons = [];
-          this.total = 0;
+          self.loading = false;
+          self.persons = [];
+          self.total = 0;
         });
     }
 
-    __getPaginationFromUrl(search) {
+    function getPaginationFromUrl(search) {
       let pagination = {page: 1, size: mica.commons.DEFAULT_LIMIT};
 
       if (search) {
@@ -110,32 +117,32 @@
       return pagination;
     }
 
-    __setPaginationInUrl(pagination) {
-      const search = this.$location.search();
+    function setPaginationInUrl(pagination) {
+      const search = self.$location.search();
       search.page = pagination.page;
       search.size = pagination.size;
-      this.$location.search(search);
+      self.$location.search(search);
     }
 
-    __calculateFromByPage(page) {
-      return this.pagination.size * (page - 1);
+    function calculateFromByPage(page) {
+      return self.pagination.size * (page - 1);
     }
 
-    __setFocusOnSearchInput() {
+    function setFocusOnSearchInput() {
       const searchInput = document.querySelectorAll('#persons-listing #persons-search-input');
       if (searchInput) {
         searchInput[0].focus();
       }
     }
 
-    __fetchPersons(exclude) {
-      const from = this.__calculateFromByPage(this.pagination.page);
-      this.__getPersons(this.query, from, this.pagination.size, exclude);
+    function fetchPersons(exclude) {
+      const from = calculateFromByPage(self.pagination.page);
+      getPersons(self.query, from, self.pagination.size, exclude);
     }
 
-    __getValidPage(pagination, userDeleted) {
-      const total = 'total' in pagination ? parseInt(pagination.total) : this.total;
-      const from = this.__calculateFromByPage(pagination.page);
+    function getValidPage(pagination, userDeleted) {
+      const total = 'total' in pagination ? parseInt(pagination.total) : self.total;
+      const from = calculateFromByPage(pagination.page);
 
       if (userDeleted) {
         if (total - 1 === from) {
@@ -149,71 +156,90 @@
       return pagination.page;
     }
 
-    navigateOut(path) {
-      let pagination = this.pagination;
+    function navigateOut(path) { //
+      let pagination = self.pagination;
       if (pagination) {
-        pagination.total = this.total;
-        pagination.query = this.query;
+        pagination.total = self.total;
+        pagination.query = self.query;
       }
 
-      this.$location.path(path).search(pagination || {});
+      self.$location.path(path).search(pagination || {});
     }
 
-    $onInit() {
-      this.__setFocusOnSearchInput();
-      const search = this.$location.search();
-      this.pagination = this.__getPaginationFromUrl(search);
+    function onSortColumn(column, order) { //
+      self.sort.column = column.replaceAll('__locale__', 'en') || 'lastName';
+      self.sort.order = order || 'asc';
+
+      if (self.timeoutHandler) {
+        self.$timeout.cancel(self.timeoutHandler);
+      }
+
+      self.timeoutHandler = self.$timeout((getPersons(self._query, 0)), 250);
+    }
+
+    function $onInit() { //
+      setFocusOnSearchInput();
+      const search = self.$location.search();
+      self.pagination = getPaginationFromUrl(search);
 
       if (search && 'total' in search) {
         // Exclude the deleted user before retrieving users, there may be a delay in indexing persons and if the exclusion
         // is not made, the deleted user will be included in the new list
-        this.exclude = search.exclude;
-        this.total = search.total;
-        this._query = search.query || '';
-        search.page = this.__getValidPage(this.pagination, 'exclude' in search);
+        self.exclude = search.exclude;
+        self.total = search.total;
+        self._query = search.query || '';
+        search.page = getValidPage(self.pagination, 'exclude' in search);
         delete search.exclude;
         delete search.total;
         delete search.query;
         // Location change will fetch users
-        this.$location.search(search).replace();
+        self.$location.search(search).replace();
       } else {
-        this.__fetchPersons();
+        fetchPersons();
       }
     }
 
-    $onDestroy() {
-      this.onLocationChangeHandler();
+    function $onDestroy() { //
+      self.onLocationChangeHandler();
     }
 
-    onPageChanged(newPage/*, oldPage*/) {
-      this.pagination.page = newPage;
-      this.__setPaginationInUrl(this.pagination);
+    function onPageChanged(newPage/*, oldPage*/) { //
+      self.pagination.page = newPage;
+      setPaginationInUrl(self.pagination);
     }
 
-    onPageSizeSelected(size) {
-      this.pagination.size = size;
-      this.pagination.page = 1;
-      this.__setPaginationInUrl(this.pagination, true);
+    function onPageSizeSelected(size) { //
+      self.pagination.size = size;
+      self.pagination.page = 1;
+      setPaginationInUrl(self.pagination, true);
     }
 
-    onLocationChange() {
-      const path = this.$location.path();
+    function onLocationChange() { //
+      const path = self.$location.path();
       if (path.startsWith('/persons')) {
-        const search = this.$location.search();
-        this.pagination = this.__getPaginationFromUrl(search);
-        const validPage = this.__getValidPage(this.pagination);
-        if (validPage !== this.pagination.page) {
+        const search = self.$location.search();
+        self.pagination = getPaginationFromUrl(search);
+        const validPage = getValidPage(self.pagination);
+        if (validPage !== self.pagination.page) {
           // correct URL
-          this.pagination.page = validPage;
-          this.$location.search(this.pagination).replace();
+          self.pagination.page = validPage;
+          self.$location.search(self.pagination).replace();
         } else {
-          const exclude = this.exclude;
-          this.exclude = null;
-          this.__fetchPersons(exclude);
-          this.__setFocusOnSearchInput();
+          const exclude = self.exclude;
+          self.exclude = null;
+          fetchPersons(exclude);
+          setFocusOnSearchInput();
         }
       }
     }
+
+    self.onLocationChange = onLocationChange;
+    self.onPageSizeSelected = onPageSizeSelected;
+    self.onPageChanged = onPageChanged;
+    self.$onDestroy = $onDestroy;
+    self.$onInit = $onInit;
+    self.onSortColumn = onSortColumn;
+    self.navigateOut = navigateOut;
   }
 
   mica.persons
