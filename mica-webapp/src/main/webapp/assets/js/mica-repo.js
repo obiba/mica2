@@ -316,7 +316,7 @@ class DatasetService {
 
 class MetricsService {
   static getStats(onsuccess, onfailure) {
-    axios.get(MicaService.normalizeUrl(MicaService.normalizeUrl('/ws/config/metrics')))
+    axios.get(MicaService.normalizeUrl('/ws/config/metrics'))
       .then(response => {
         const result = (response.data.documents || []).reduce((acc, obj) => {
           const total = obj.properties.filter(prop => ['total', 'published'].includes(prop.name)).pop();
