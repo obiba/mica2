@@ -107,6 +107,15 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     return getDatasetVariableDtosInternal(rql, from, limit, sort, order);
   }
 
+  protected Mica.DatasetVariablesDto getDatasetVariableDtosWithNameQuery(@NotNull String datasetId, @NotNull String nameQuery, DatasetVariable.Type type, int from,
+                                                            int limit, @Nullable String sort, @Nullable String order) {
+    String rql = String.format("and(eq(datasetId,%s),eq(variableType,%s))", datasetId, type.toString());
+    if (!Strings.isNullOrEmpty(nameQuery)) {
+      rql = String.format("and(match((%s),name.analyzed), %s)", nameQuery, rql);
+    }
+    return getDatasetVariableDtosInternal(rql, from, limit, sort, order);
+  }
+
   protected Mica.DatasetVariablesDto getDatasetVariableDtos(@NotNull String datasetId, DatasetVariable.Type type, int from,
                                                             int limit, @Nullable String sort, @Nullable String order) {
     String rql = String.format("and(eq(datasetId,%s),eq(variableType,%s))", datasetId, type.toString());
