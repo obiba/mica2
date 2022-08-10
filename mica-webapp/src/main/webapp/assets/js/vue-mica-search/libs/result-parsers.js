@@ -302,7 +302,7 @@ class VariablesResultParser {
           case 'study': {
             if (!micaConfig.isSingleStudyEnabled) {
               path = this.normalizePath(`/study/${summary.studyId}`);
-              row.push(`<a href="${path}">${localize(summary.studyAcronym)}</a>`);
+              row.push(`<a href="${path}" title="${localize(summary.studyName)}">${localize(summary.studyAcronym)}</a>`);
             }
             break;
           }
@@ -310,7 +310,7 @@ class VariablesResultParser {
           case 'initiative': {
             if (!micaConfig.isSingleStudyEnabled) {
               path = this.normalizePath(`/study/${summary.studyId}`);
-              row.push(`<a href="${path}">${localize(summary.studyAcronym)}</a>`);
+              row.push(`<a href="${path}" title="${localize(summary.studyName)}">${localize(summary.studyAcronym)}</a>`);
             }
             break;
           }
