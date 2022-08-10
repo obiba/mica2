@@ -49,7 +49,7 @@
     "sf-typeahead": "https://github.com/obiba/sf-typeahead.git#1.1.1",
     "sf-obiba-simple-mde": "https://github.com/obiba/sf-obiba-simple-mde.git#1.0.3",
     "sf-obiba-countries-ui-select": "https://github.com/obiba/sf-obiba-countries-ui-select.git#1.0.3",
-    "sf-obiba-selection-tree": "https://github.com/obiba/sf-obiba-selection-tree.git#1.0.0",
+    "sf-obiba-selection-tree": "https://github.com/obiba/sf-obiba-selection-tree.git#1.0.1",
     "sf-radio-group-collection": "https://github.com/obiba/sf-radio-group-collection.git#1.1.0",
     "obiba-shims": "https://github.com/obiba/obiba-shims.git#1.0.0"
   },
