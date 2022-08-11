@@ -259,8 +259,12 @@ class VariableService {
  */
 class DatasetService {
 
-  static getHarmonizedVariables(id, from, limit, onsuccess, onfailure) {
+  static getHarmonizedVariables(id, search,  from, limit, onsuccess, onfailure) {
     let url = '/ws/harmonized-dataset/' + id + '/variables/harmonizations/_summary?from=' + from + '&limit=' + limit;
+    if (search && search.length > 1) {
+      url += `&query=${search.trim()}`;
+    }
+
     axios.get(MicaService.normalizeUrl(url))
       .then(response => {
         //console.dir(response);
