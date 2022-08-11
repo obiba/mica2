@@ -11,6 +11,7 @@
 package org.obiba.mica.dataset.search.rest.harmonization;
 
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.domain.DatasetVariable;
@@ -111,9 +112,10 @@ public class PublishedHarmonizedDatasetResource extends AbstractPublishedDataset
   @Path("/variables/harmonizations/_summary")
   @Timed
   public Mica.DatasetVariablesHarmonizationSummaryDto getVariableHarmonizationsSummary(@PathParam("id") String id,
+                                                                                       @QueryParam("query") String query,
                                                                                        @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
                                                                                        @QueryParam("sort") @DefaultValue("index") String sort, @QueryParam("order") @DefaultValue("asc") String order) {
-    return getVariableHarmonizationsSummaryInternal(id, from, limit, sort, order, true);
+    return getVariableHarmonizationsSummaryInternal(id, query, from, limit, sort, order, true);
   }
 
   @GET
@@ -195,13 +197,15 @@ public class PublishedHarmonizedDatasetResource extends AbstractPublishedDataset
   }
 
   private Mica.DatasetVariablesHarmonizationSummaryDto getVariableHarmonizationsSummaryInternal(String id,
+                                                                                                String nameQuery,
                                                                                                 int from, int limit, String sort, String order, boolean includeSummaries) {
 
     checkDatasetAccess(id);
     Mica.DatasetVariablesHarmonizationSummaryDto.Builder builder = Mica.DatasetVariablesHarmonizationSummaryDto.newBuilder();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, id);
-    Mica.DatasetVariablesDto variablesDto = getDatasetVariableDtos(id, DatasetVariable.Type.Dataschema, from, limit,
-      sort, order);
+    Mica.DatasetVariablesDto variablesDto = Strings.isNullOrEmpty(nameQuery)
+      ? getDatasetVariableDtos(id, DatasetVariable.Type.Dataschema, from, limit, sort, order)
+      : getDatasetVariableDtosWithNameQuery(id, nameQuery, DatasetVariable.Type.Dataschema, from, limit, sort, order);
 
     String ids = variablesDto.getVariablesList().stream().map(variableDto -> variableDto.getName()).collect(Collectors.joining(","));
     String namesQuery = String.format("in(name,(%s))",ids);

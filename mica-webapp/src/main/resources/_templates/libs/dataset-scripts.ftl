@@ -67,10 +67,20 @@
     <#if type == "Harmonized">
       $('#harmonizedTable').show();
       const dataTableOpts = {
+        drawCallback: function() {
+          const pagination = $(this).closest('.dataTables_wrapper').find('.pagination-bar');
+          if (pagination) {
+            if (this.api().page.info().pages > 1) {
+              pagination.removeClass('d-none');
+            } else {
+              pagination.addClass('d-none');
+            }
+          }
+        },
         "paging": true,
         "pageLength": 25,
         "lengthChange": true,
-        "searching": false,
+        "searching": true,
         "ordering": false,
         "info": false,
         "autoWidth": true,
@@ -80,7 +90,8 @@
         "processing": true,
         "serverSide": true,
         "ajax": function(data, callback) {
-          DatasetService.getHarmonizedVariables('${dataset.id}', data.start, data.length, function(response) {
+          const search = 'search' in data && data.search.value ? data.search.value : null;
+          DatasetService.getHarmonizedVariables('${dataset.id}', search, data.start, data.length, function(response) {
             $('#loadingSummary').hide();
             if (response.variableHarmonizations) {
               let rows = [];
@@ -106,11 +117,17 @@
                 recordsTotal: response.total,
                 recordsFiltered: response.total
               });
+            } else {
+              callback({
+                data: [],
+                recordsTotal: 0,
+                recordsFiltered: 0
+              });
             }
           });
         },
         "fixedHeader": true,
-        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>><'row'<'table-responsive col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
+        dom: "<'row'<'col-sm-12'f>><'row pagination-bar'<'col-sm-3'l><'col-sm-9'p>><'row'<'table-responsive col-sm-12'tr>><'row pagination-bar'<'col-sm-5'i><'col-sm-7'p>>",
         "info": true
       };
       $("#harmonizedTable").DataTable(dataTableOpts);
