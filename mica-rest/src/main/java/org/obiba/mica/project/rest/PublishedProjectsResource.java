@@ -32,7 +32,6 @@ import org.springframework.context.ApplicationContext;
 import com.codahale.metrics.annotation.Timed;
 
 @Path("/")
-@RequiresAuthentication
 public class PublishedProjectsResource {
 
   @Inject
