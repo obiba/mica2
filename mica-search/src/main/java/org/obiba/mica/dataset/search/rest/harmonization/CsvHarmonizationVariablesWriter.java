@@ -35,7 +35,7 @@ public class CsvHarmonizationVariablesWriter {
 
   private final List<String> namespaces;
 
-  private static final String EMPTY_STATUS = "";
+  private static final String EMPTY = "";
 
   public CsvHarmonizationVariablesWriter(List<String> namespaces) {
     this.namespaces = namespaces;
@@ -88,14 +88,16 @@ public class CsvHarmonizationVariablesWriter {
                       && resolver.getProject().equals(table.getProject())
                       && resolver.getTable().equals(table.getTable()))) {
 
-                    row.add(getStatus(summary, locale));
+                    String statusDetail = getAttributeByName(summary, "status_detail", locale);
+
+                    row.add(getStatus(summary, locale) + (EMPTY.equals(statusDetail) ? "" : " (" + getAttributeByName(summary, "status_detail", locale) + ")"));
                     found[0] = true;
                     return;
                   }
                 });
 
               if (row.size() == 0 || !found[0]) {
-                row.add(EMPTY_STATUS);
+                row.add(EMPTY);
               }
             }
           );
@@ -107,16 +109,19 @@ public class CsvHarmonizationVariablesWriter {
   }
 
   private String getStatus(Mica.DatasetVariableSummaryDto summary, String locale) {
+    return getAttributeByName(summary, "status", locale);
+  }
 
+  private String getAttributeByName(Mica.DatasetVariableSummaryDto summary, String attributeName, String locale) {
     Optional<Mica.LocalizedStringDto> result = summary.getAttributesList().stream()
-        .filter(attribute -> namespaces.contains(attribute.getNamespace()) && attribute.getName().equals("status"))
+        .filter(attribute -> namespaces.contains(attribute.getNamespace()) && attribute.getName().equals(attributeName))
         .map(Mica.AttributeDto::getValuesList).flatMap(Collection::stream).filter(value -> {
           String lang = value.getLang();
           return locale.equals(lang) || LanguageTag.UNDETERMINED.equals(lang);
         }).findFirst();
 
 
-    return result.isPresent() ? result.get().getValue()  : EMPTY_STATUS;
+    return result.isPresent() ? result.get().getValue() : EMPTY;
   }
 
 }
