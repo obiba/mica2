@@ -152,7 +152,7 @@ mica.project
       $scope.loading = true;
       $scope.pagination = {current: 1, searchText: ''};
       $scope.totalCount = 0;
-      $scope.limit = 3;
+      $scope.limit = 20;
       $scope.sort = {
         column: `id`,
         order: 'asc'
@@ -173,6 +173,11 @@ mica.project
         update();
       });
 
+      $scope.onPageSizeSelected = function(size) {
+        $scope.limit = size;
+        $scope.pagination.current = 1;
+        loadPage($scope.pagination.current);
+      };
       update();
     }])
 
