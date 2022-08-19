@@ -855,14 +855,14 @@
     "information-content-help": "Overview of the type of variables harmonized or to be harmonized (e.g. smoking, income), targeted time intervals (e.g. all pregnancy or first trimester) and required information repetition (e.g. two measures).",
     "participants": "Number of Participants",
     "procedures": "Procedures",
-    "procedures-help": "General approach to harmonization (central team or studies responsible for data harmonization, or other approach).",
+    "procedures-help": "General procedure used for harmonization (e.g.  central team or studies responsible for data processing).",
     "participants-inclusion": "Participants Inclusion",
     "participants-inclusion-help": "Criteria to be met for participants to be included in the harmonization effort (e.g. age (min/max), sex/gender, health status).",
     "infrastructure": "Infrastructure",
-    "infrastructure-help": "Data infrastructure (hardware and software) implemented to support data hosting, harmonization, and processing (harmonized data stored centrally, locally, or other structure).",
+    "infrastructure-help": "General procedure used for harmonization the data infrastructure (hardware and software) implemented to support data hosting, harmonization, and processing.",
     "qualitative-quantitative": {
       "title": "Type",
-      "help": "Qualitative (achieved using metadata only, i.e., data dictionaries and questionnaires) or quantitative (using study data to generate harmonized data)",
+      "help": "Indicator of whether the harmonization effort is qualitative (achieved using metadata only, i.e., data dictionaries and questionnaires) or quantitative (using study data to generate harmonized data).",
       "enum": {
         "qualitative": "Qualitative",
         "quantitative": "Quantitative"
@@ -870,7 +870,7 @@
     },
     "prospective-retrospective": {
       "title": "Approach",
-      "help": "Prospective (core data items defined before initiating data collection) or retrospective (core data items defined after data collection)",
+      "help": "Indicator of whether the approach used to define the DataSchema variables is prospective (core data items defined before initiating data collection) or retrospective (core data items defined after data collection).",
       "enum": {
         "prospective": "Prospective",
         "retrospective": "Retrospective"
