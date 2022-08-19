@@ -856,7 +856,7 @@
     "participants": "Number of Participants",
     "procedures": "Procedures",
     "procedures-help": "General procedure used for harmonization (e.g.  central team or studies responsible for data processing).",
-    "participants-inclusion": "Participants Inclusion",
+    "participants-inclusion": "Participant Inclusion",
     "participants-inclusion-help": "Criteria to be met for participants to be included in the harmonization effort (e.g. age (min/max), sex/gender, health status).",
     "infrastructure": "Infrastructure",
     "infrastructure-help": "Data infrastructure (hardware and software) implemented to support data hosting, harmonization, and processing.",
