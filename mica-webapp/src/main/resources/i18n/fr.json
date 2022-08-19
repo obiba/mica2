@@ -855,14 +855,14 @@
     "information-content-help": "Aperçu du type de variables harmonisées ou à harmoniser (par exemple, tabagisme, revenu), des intervalles de temps ciblés (par exemple, toutes les grossesses ou premier trimestre) et de la répétition des informations requises (par exemple, deux mesures).",
     "participants": "Nombre de participants",
     "procedures": "Procédures",
-    "procedures-help": "Approche générale de l'harmonisation (équipe centrale ou études responsables de l'harmonisation des données, ou autre approche).",
+    "procedures-help": "Procédure générale utilisée pour l'harmonisation (par ex. équipe centrale ou études responsables du traitement des données).",
     "participants-inclusion": "Inclusion des participants",
     "participants-inclusion-help": "Critères à remplir pour que les participants soient inclus dans l'effort d'harmonisation (par exemple, âge (min/max), sexe/genre, état de santé).",
     "infrastructure": "Infrastructure",
-    "infrastructure-help": "Infrastructure de données (matériel et logiciel) mise en oeuvre pour prendre en charge l'hébergement, l'harmonisation et le traitement des données (données harmonisées stockées de manière centralisée, locale ou autre).",
+    "infrastructure-help": "Mise en place d'une infrastructure de données (matériel et logiciel) pour permettre l'hébergement, l'harmonisation et le traitement des données.",
     "qualitative-quantitative": {
       "title": "Type",
-      "help": "Les grandes lignes de l'effort d'harmonisation sont qualitatives (réalisées à l'aide de métadonnées uniquement, c'est-à-dire des dictionnaires de données et des questionnaires) ou quantitatives (utilisation des données de l'étude pour générer des données harmonisées)",
+      "help": "Indicateur permettant de savoir si le travail d'harmonisation est qualitatif (réalisé en utilisant uniquement des métadonnées, c'est-à-dire des dictionnaires de données et des questionnaires) ou quantitatif (en utilisant les données de l'étude pour générer les données harmonisées).",
       "enum": {
         "qualitative": "Qualitative",
         "quantitative": "Quantitative"
@@ -870,7 +870,7 @@
     },
     "prospective-retrospective": {
       "title": "Approche",
-      "help": "Indiquez si l'approche utilisée pour définir les variables du schéma de données est prospective (éléments de données de base définis avant le début de la collecte des données) ou rétrospective (éléments de données de base définis après la collecte des données)",
+      "help": "Indicateur permettant de savoir si l'approche utilisée pour définir les variables DataSchema est prospective (éléments de données de base définis avant de commencer la collecte des données) ou rétrospective (éléments de données de base définis après la collecte des données).",
       "enum": {
         "prospective": "Prospective",
         "retrospective": "Rétrospective"

@@ -1107,7 +1107,7 @@ const CoverageResult = {
             <thead>
               <tr>
                 <th v-bind:rowspan="bucketStartsWithDce ? 1 : 2" v-bind:colspan="studyTypeSelection && studyTypeSelection.harmonization ? 3 : table.cols.colSpan">
-                  <span v-if="!studyTypeSelection || !studyTypeSelection.harmonization">{{ ('coverage-buckets-' + bucketName) | translate}}</span>
+                  <span v-if="!studyTypeSelection || !studyTypeSelection.harmonization">{{ (bucketName === 'dce' ? '' : ('coverage-buckets-' + bucketName)) | translate}}</span>
                   <span v-else>{{ 'coverage-buckets-harmonization' | translate}}</span>
                 </th>
                 <th v-for="(header, index) in table.vocabularyHeaders" v-bind:key="index" v-bind:colspan="header.termsCount">
