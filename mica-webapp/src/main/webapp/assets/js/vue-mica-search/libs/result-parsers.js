@@ -31,6 +31,8 @@ class GraphicsResultParser {
           },
           x: x.reverse(),
           y: y.reverse(),
+          customdata: y.reverse(),
+          hovertemplate: "<extra></extra>(%{x}, %{customdata})",
           width
         }];
       },
