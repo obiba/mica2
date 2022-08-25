@@ -163,7 +163,7 @@
                   <li class="nav-item"><a id="coverage-tab" class="nav-link" href="#tab_coverage" data-toggle="tab" @click="onSelectCoverage()"><@message "coverage"/></a></li>
                 </#if>
                 <#if searchGraphicsDisplay>
-                  <li v-if="currentStudyTypeSelection && !currentStudyTypeSelection.harmonization" class="nav-item"><a id="graphics-tab" class="nav-link" href="#tab_graphics" data-toggle="tab" @click="onSelectGraphics()"><@message "graphics"/></a></li>
+                  <li v-show="currentStudyTypeSelection && !currentStudyTypeSelection.harmonization" class="nav-item"><a id="graphics-tab" class="nav-link" href="#tab_graphics" data-toggle="tab" @click="onSelectGraphics()"><@message "graphics"/></a></li>
                 </#if>
               </ul>
             </div><!-- /.card-header -->
