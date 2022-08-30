@@ -41,7 +41,11 @@ class GraphicsResultParser {
           t: 20,
           b: 40
         },
+        xaxis: {
+          rangemode: 'nonnegative'
+        },
         yaxis: {
+          rangemode: 'nonnegative',
           automargin: true,
           ticksuffix: ' '
         }
@@ -100,7 +104,7 @@ class GraphicsResultParser {
           locations,
           text,
           z,
-          zmax: Math.max(...z),
+          zmax: Math.max(...z) || 2,
           zmin: 0,
           hoverinfo: "text+z",
           colorbar: {
