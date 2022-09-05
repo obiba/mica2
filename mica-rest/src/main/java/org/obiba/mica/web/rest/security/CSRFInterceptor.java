@@ -64,7 +64,7 @@ public class CSRFInterceptor implements ContainerRequestFilter {
       if (csrfAllowed.contains(refererHostPort)) return;
 
       boolean forbidden = false;
-      if (!localhostPattern.matcher(host).matches() && !loopbackhostPattern.matcher(host).matches() && !referer.startsWith(String.format("https://%s/", host))) {
+      if (!matchesLocalhost(host) && !referer.startsWith(String.format("https://%s/", host))) {
         forbidden = true;
       }
 
@@ -74,6 +74,13 @@ public class CSRFInterceptor implements ContainerRequestFilter {
         throw new ForbiddenException();
       }
     }
+  }
+
+  private boolean matchesLocalhost(String host) {
+    return localhostPattern.matcher(host).matches()
+      || loopbackhostPattern.matcher(host).matches()
+      || host.startsWith("localhost:")
+      || host.startsWith("127.0.0.1:");
   }
 
 }
