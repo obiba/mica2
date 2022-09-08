@@ -4,7 +4,10 @@ import com.google.common.collect.Lists;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
-import org.obiba.mica.access.domain.*;
+import org.obiba.mica.access.domain.DataAccessAmendment;
+import org.obiba.mica.access.domain.DataAccessFeasibility;
+import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.domain.DataAccessRequestTimeline;
 import org.obiba.mica.access.notification.DataAccessRequestReportNotificationService;
 import org.obiba.mica.access.service.DataAccessAmendmentService;
 import org.obiba.mica.access.service.DataAccessFeasibilityService;
@@ -24,13 +27,17 @@ import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.controller.domain.DataAccessConfigBundle;
 import org.obiba.mica.web.controller.domain.FormStatusChangeEvent;
 import org.obiba.mica.web.controller.domain.SchemaFormConfig;
+import org.obiba.mica.web.controller.domain.TimelineItem;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -130,35 +137,14 @@ public class DataAccessController extends BaseController {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       Map<String, Object> params = newParameters(id);
-      DataAccessRequest dar = (DataAccessRequest) params.get("dar");
       addDataAccessConfiguration(params);
 
       List<String> permissions = getPermissions(params);
       if (isPermitted("/data-access-request/private-comment", "VIEW", null))
         permissions.add("VIEW_PRIVATE_COMMENTS");
-
       params.put("permissions", permissions);
 
-      // merge change history from main form, feasibility and amendment forms
-      final List<FormStatusChangeEvent> events = Lists.newArrayList(
-        dar.getStatusChangeHistory().stream()
-          .map(e -> new FormStatusChangeEvent(userProfileService, dar, e)).collect(Collectors.toList()));
-      getDataAccessFeasibilities(params).forEach(a -> {
-        a.getStatusChangeHistory().stream().map(e -> new FormStatusChangeEvent(userProfileService, a, e))
-          .forEach(events::add);
-      });
-      getDataAccessAmendments(params).forEach(a -> {
-        a.getStatusChangeHistory().stream().map(e -> new FormStatusChangeEvent(userProfileService, a, e))
-          .forEach(events::add);
-      });
-
-      // order change events
-      params.put("statusChangeEvents", events.stream().sorted(new Comparator<FormStatusChangeEvent>() {
-        @Override
-        public int compare(FormStatusChangeEvent event1, FormStatusChangeEvent event2) {
-          return event1.getDate().compareTo(event2.getDate());
-        }
-      }).collect(Collectors.toList()));
+      params.put("statusChangeEvents", getFormStatusChangeEvents(params));
 
       return new ModelAndView("data-access-history", params);
     } else {
@@ -243,10 +229,7 @@ public class DataAccessController extends BaseController {
       if (isPermitted("/data-access-request/private-comment", "VIEW", null))
         permissions.add("VIEW_PRIVATE_COMMENTS");
 
-      List<Comment> comments = commentsService.findPublicComments("/data-access-request", id);
-      params.put("comments", comments);
-      params.put("authors", comments.stream().map(AbstractAuditableDocument::getCreatedBy).distinct()
-        .collect(Collectors.toMap(u -> u, u -> userProfileService.getProfileMap(u, true))));
+      addTimelineItems(commentsService.findPublicComments("/data-access-request", id), params);
 
       params.put("permissions", permissions);
 
@@ -272,10 +255,7 @@ public class DataAccessController extends BaseController {
 
       params.put("permissions", permissions);
 
-      List<Comment> comments = commentsService.findPrivateComments("/data-access-request", id);
-      params.put("comments", comments);
-      params.put("authors", comments.stream().map(AbstractAuditableDocument::getCreatedBy).distinct()
-        .collect(Collectors.toMap(u -> u, u -> userProfileService.getProfileMap(u, true))));
+      addTimelineItems(commentsService.findPrivateComments("/data-access-request", id), params);
 
       return new ModelAndView("data-access-private-comments", params);
     } else {
@@ -291,6 +271,48 @@ public class DataAccessController extends BaseController {
   //
   // Private methods
   //
+
+  private void addTimelineItems(List<Comment> comments, Map<String, Object> params) {
+    params.put("comments", comments);
+    List<TimelineItem> items = Lists.newArrayList();
+    items.addAll(comments.stream().map(TimelineItem::new).collect(Collectors.toList()));
+    items.addAll(getFormStatusChangeEvents(params).stream().map(TimelineItem::new).collect(Collectors.toList()));
+
+    items = items.stream().sorted(Comparator.comparing(TimelineItem::getDate)).collect(Collectors.toList());
+    // last comment may be removable
+    DataAccessRequest dar = getDataAccessRequest(params);
+    if (!dar.isArchived()) {
+
+      TimelineItem item = items.stream().filter(TimelineItem::isCommentItem).reduce((first, second) -> second).orElse(null);
+      if (item != null) {
+        Subject subject = SecurityUtils.getSubject();
+        item.setCanRemove(subject.getPrincipal().toString().equals(item.getAuthor()) || subject.hasRole(Roles.MICA_DAO) || subject.hasRole(Roles.MICA_ADMIN));
+      }
+    }
+    params.put("items", items);
+    params.put("authors", items.stream().map(TimelineItem::getAuthor).distinct()
+      .collect(Collectors.toMap(u -> u, u -> userProfileService.getProfileMap(u, true))));
+  }
+
+  private List<FormStatusChangeEvent> getFormStatusChangeEvents(Map<String, Object> params) {
+    DataAccessRequest dar = getDataAccessRequest(params);
+
+    // merge change history from main form, feasibility and amendment forms
+    final List<FormStatusChangeEvent> events = Lists.newArrayList(
+      dar.getStatusChangeHistory().stream()
+        .map(e -> new FormStatusChangeEvent(userProfileService, dar, e)).collect(Collectors.toList()));
+    getDataAccessFeasibilities(params).forEach(a -> {
+      a.getStatusChangeHistory().stream().map(e -> new FormStatusChangeEvent(userProfileService, a, e))
+        .forEach(events::add);
+    });
+    getDataAccessAmendments(params).forEach(a -> {
+      a.getStatusChangeHistory().stream().map(e -> new FormStatusChangeEvent(userProfileService, a, e))
+        .forEach(events::add);
+    });
+
+    // order change events
+    return events.stream().sorted(Comparator.comparing(FormStatusChangeEvent::getDate)).collect(Collectors.toList());
+  }
 
   private Map<String, Object> newParameters(String id) {
     checkPermission("/data-access-request", "VIEW", id);
