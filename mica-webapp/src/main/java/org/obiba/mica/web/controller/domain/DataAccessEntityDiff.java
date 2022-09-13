@@ -48,8 +48,14 @@ public class DataAccessEntityDiff {
         List<DiffRow> rows = generator.generateDiffRows(
           Collections.singletonList(entry.getValue().get(1) == null ? "" : entry.getValue().get(1).toString()),
           Collections.singletonList(entry.getValue().get(2) == null ? "" : entry.getValue().get(2).toString()));
-        newValue.set(1, rows.get(0).getOldLine());
-        newValue.set(2, rows.get(0).getNewLine());
+        newValue.set(1, rows.stream()
+          .map(DiffRow::getOldLine)
+          .reduce((a, b) -> a + "<br/>" + b)
+          .orElse(""));
+        newValue.set(2, rows.stream()
+          .map(DiffRow::getNewLine)
+          .reduce((a, b) -> a + "<br/>" + b)
+          .orElse(""));
         diffs.put(entry.getKey(), newValue);
       });
     getOnlyLeft().entrySet().stream()
