@@ -20,7 +20,6 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,17 +42,13 @@ import com.ryantenney.metrics.spring.config.annotation.MetricsConfigurerAdapter;
 @EnableMetrics(proxyTargetClass = true)
 public class MetricsConfiguration extends MetricsConfigurerAdapter implements EnvironmentAware {
 
-  private static final String ENV_METRICS = "metrics.";
+  private static final String PROP_JMX_ENABLED = "metrics.jmx.enabled";
 
-  private static final String ENV_METRICS_GRAPHITE = "metrics.graphite.";
+  private static final String PROP_GRAPHITE_ENABLED = "metrics.graphite.enabled";
 
-  private static final String PROP_JMX_ENABLED = "jmx.enabled";
+  private static final String PROP_PORT = "metrics.graphite.port";
 
-  private static final String PROP_GRAPHITE_ENABLED = "enabled";
-
-  private static final String PROP_PORT = "port";
-
-  private static final String PROP_HOST = "host";
+  private static final String PROP_HOST = "metrics.graphite.host";
 
   private static final String PROP_METRIC_REG_JVM_MEMORY = "jvm.memory";
 
@@ -71,11 +66,11 @@ public class MetricsConfiguration extends MetricsConfigurerAdapter implements En
 
   private static final HealthCheckRegistry HEALTH_CHECK_REGISTRY = new HealthCheckRegistry();
 
-  private RelaxedPropertyResolver propertyResolver;
+  private Environment environment;
 
   @Override
   public void setEnvironment(Environment environment) {
-    propertyResolver = new RelaxedPropertyResolver(environment, ENV_METRICS);
+    this.environment = environment;
   }
 
   @Override
@@ -99,7 +94,7 @@ public class MetricsConfiguration extends MetricsConfigurerAdapter implements En
     METRIC_REGISTRY.register(PROP_METRIC_REG_JVM_FILES, new FileDescriptorRatioGauge());
     METRIC_REGISTRY
         .register(PROP_METRIC_REG_JVM_BUFFERS, new BufferPoolMetricSet(ManagementFactory.getPlatformMBeanServer()));
-    if(propertyResolver.getProperty(PROP_JMX_ENABLED, Boolean.class, false)) {
+    if(environment.getProperty(PROP_JMX_ENABLED, Boolean.class, false)) {
       log.info("Initializing Metrics JMX reporting");
       JmxReporter jmxReporter = JmxReporter.forRegistry(METRIC_REGISTRY).build();
       jmxReporter.start();
@@ -115,20 +110,20 @@ public class MetricsConfiguration extends MetricsConfigurerAdapter implements En
     @Inject
     private MetricRegistry metricRegistry;
 
-    private RelaxedPropertyResolver propertyResolver;
+    private Environment environment;
 
     @Override
     public void setEnvironment(Environment environment) {
-      propertyResolver = new RelaxedPropertyResolver(environment, ENV_METRICS_GRAPHITE);
+      this.environment = environment;
     }
 
     @PostConstruct
     private void init() {
-      Boolean graphiteEnabled = propertyResolver.getProperty(PROP_GRAPHITE_ENABLED, Boolean.class, false);
+      Boolean graphiteEnabled = environment.getProperty(PROP_GRAPHITE_ENABLED, Boolean.class, false);
       if(graphiteEnabled) {
         log.info("Initializing Metrics Graphite reporting");
-        String graphiteHost = propertyResolver.getRequiredProperty(PROP_HOST);
-        Integer graphitePort = propertyResolver.getRequiredProperty(PROP_PORT, Integer.class);
+        String graphiteHost = environment.getRequiredProperty(PROP_HOST);
+        Integer graphitePort = environment.getRequiredProperty(PROP_PORT, Integer.class);
         Graphite graphite = new Graphite(new InetSocketAddress(graphiteHost, graphitePort));
         GraphiteReporter graphiteReporter = GraphiteReporter.forRegistry(metricRegistry)
             .convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MILLISECONDS).build(graphite);

@@ -1,6 +1,5 @@
 package org.obiba.mica.core.service;
 
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
@@ -25,10 +24,9 @@ public class AgateServerConfigService {
 
   @PostConstruct
   public void initialize() {
-    RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(env, "agate.");
-    agateUrl = propertyResolver.getProperty("url");
-    serviceName = propertyResolver.getProperty("application.name");
-    serviceKey = propertyResolver.getProperty("application.key");
+    agateUrl = env.getProperty("agate.url");
+    serviceName = env.getProperty("agate.application.name");
+    serviceKey = env.getProperty("agate.application.key");
   }
 
   public String getServiceKey() {

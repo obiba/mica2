@@ -34,7 +34,6 @@ import org.obiba.opal.web.taxonomy.Dtos;
 import org.obiba.security.KeyStoreManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -55,7 +54,7 @@ public class OpalService implements EnvironmentAware {
 
   private Map<String, Pair<OpalCredential, RestDatasource>> cachedDatasources = new HashMap<>();
 
-  private RelaxedPropertyResolver opalPropertyResolver;
+  private Environment environment;
 
   private OpalJavaClient opalJavaClient;
 
@@ -73,7 +72,7 @@ public class OpalService implements EnvironmentAware {
 
   @Override
   public void setEnvironment(Environment environment) {
-    opalPropertyResolver = new RelaxedPropertyResolver(environment, "opal.");
+    this.environment = environment;
   }
 
   /**
@@ -150,7 +149,7 @@ public class OpalService implements EnvironmentAware {
    * @return
    */
   public String getDefaultOpal() {
-    return opalPropertyResolver.getProperty("url");
+    return environment.getProperty("opal.url");
   }
 
   //
@@ -310,15 +309,15 @@ public class OpalService implements EnvironmentAware {
   }
 
   private String getOpalUsername() {
-    return opalPropertyResolver.getProperty("username");
+    return environment.getProperty("opal.username");
   }
 
   private String getOpalPassword() {
-    return opalPropertyResolver.getProperty("password");
+    return environment.getProperty("opal.password");
   }
 
   private String getOpalToken() {
-    return opalPropertyResolver.getProperty("token");
+    return environment.getProperty("opal.token");
   }
 
   private OpalJavaClient getOpalJavaClient() throws URISyntaxException {
