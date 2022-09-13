@@ -10,10 +10,31 @@
 
 package org.obiba.mica.config;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.servlet.InstrumentedFilter;
-import com.codahale.metrics.servlets.MetricsServlet;
-import com.google.common.base.Strings;
+import static javax.servlet.DispatcherType.ASYNC;
+import static javax.servlet.DispatcherType.ERROR;
+import static javax.servlet.DispatcherType.FORWARD;
+import static javax.servlet.DispatcherType.INCLUDE;
+import static javax.servlet.DispatcherType.REQUEST;
+import static org.obiba.mica.config.JerseyConfiguration.WS_ROOT;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.EnumSet;
+
+import javax.inject.Inject;
+import javax.servlet.DispatcherType;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.FilterRegistration;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRegistration;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.shiro.web.env.EnvironmentLoaderListener;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -26,11 +47,9 @@ import org.obiba.mica.web.filter.StaticResourcesProductionFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
-import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.jetty.JettyServerCustomizer;
+import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
+import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
@@ -39,17 +58,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
-import javax.inject.Inject;
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
-
-import static javax.servlet.DispatcherType.*;
-import static org.obiba.mica.config.JerseyConfiguration.WS_ROOT;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.servlet.InstrumentedFilter;
+import com.codahale.metrics.servlets.MetricsServlet;
+import com.google.common.base.Strings;
 
 /**
  * Configuration of web application with Servlet 3.0 APIs.
@@ -91,8 +103,7 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
   @Override
   public void setEnvironment(Environment environment) {
     this.environment = environment;
-    RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(environment, "https.");
-    httpsPort = propertyResolver.getProperty("port", Integer.class, DEFAULT_HTTPS_PORT);
+    httpsPort = environment.getProperty("https.port", Integer.class, DEFAULT_HTTPS_PORT);
     serverAddress = environment.getProperty("server.address", "localhost");
     contextPath = environment.getProperty("server.context-path", "");
     if (Strings.isNullOrEmpty(contextPath))
@@ -100,12 +111,16 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
   }
 
   @Bean
-  public EmbeddedServletContainerCustomizer containerCustomizer() throws Exception {
-    return (ConfigurableEmbeddedServletContainer container) -> {
-      JettyEmbeddedServletContainerFactory jetty = (JettyEmbeddedServletContainerFactory) container;
-      jetty.setServerCustomizers(Collections.singleton(this));
-      if (!Strings.isNullOrEmpty(contextPath) && contextPath.startsWith("/"))
-        container.setContextPath(contextPath);
+  public WebServerFactoryCustomizer<JettyServletWebServerFactory> containerCustomizer() throws Exception {
+    WebConfiguration that = this;
+
+    return new WebServerFactoryCustomizer<JettyServletWebServerFactory>() {
+
+      @Override
+      public void customize(JettyServletWebServerFactory factory) {
+        factory.setServerCustomizers(Arrays.asList(that));
+        if (!Strings.isNullOrEmpty(contextPath) && contextPath.startsWith("/")) factory.setContextPath(contextPath);        
+      }
     };
   }
 

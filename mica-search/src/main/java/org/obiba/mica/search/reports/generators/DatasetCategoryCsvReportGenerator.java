@@ -2,13 +2,13 @@ package org.obiba.mica.search.reports.generators;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import com.google.common.collect.Sets;
-import jersey.repackaged.com.google.common.collect.Lists;
 import org.obiba.mica.core.domain.Attributes;
 import org.obiba.mica.dataset.domain.DatasetCategory;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -18,7 +18,7 @@ class DatasetCategoryCsvReportGenerator extends DocumentCsvReportGenerator {
 
   private final List<DatasetVariable> variables;
 
-  private List<String> headers = Lists.newArrayList();
+  private List<String> headers = new ArrayList<>();
 
   public DatasetCategoryCsvReportGenerator(List<DatasetVariable> variables, String locale) {
     super(locale);
@@ -51,7 +51,7 @@ class DatasetCategoryCsvReportGenerator extends DocumentCsvReportGenerator {
     variables.stream()
       .filter(DatasetVariable::hasCategories)
       .forEach(variable -> variable.getCategories().forEach(category -> {
-        List<String> line = Lists.newArrayList();
+        List<String> line = new ArrayList<>();
         line.add(variable.getId());
         line.add(category.getName());
         line.add(category.isMissing() + "");

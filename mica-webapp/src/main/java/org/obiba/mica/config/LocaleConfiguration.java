@@ -10,17 +10,16 @@
 
 package org.obiba.mica.config;
 
-import com.google.common.eventbus.Subscribe;
+import javax.inject.Inject;
+
 import org.obiba.mica.config.locale.AngularCookieLocaleResolver;
 import org.obiba.mica.config.locale.ExtendedResourceBundleMessageSource;
 import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.servlet.LocaleResolver;
@@ -28,12 +27,12 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
-import javax.inject.Inject;
+import com.google.common.eventbus.Subscribe;
 
 @Configuration
 public class LocaleConfiguration extends WebMvcConfigurerAdapter implements EnvironmentAware {
 
-  private RelaxedPropertyResolver propertyResolver;
+  private Environment environment;
 
   private final MicaConfigService micaConfigService;
 
@@ -46,7 +45,7 @@ public class LocaleConfiguration extends WebMvcConfigurerAdapter implements Envi
 
   @Override
   public void setEnvironment(Environment environment) {
-    propertyResolver = new RelaxedPropertyResolver(environment, "spring.messageSource.");
+    this.environment = environment;
   }
 
   @Bean(name = "localeResolver")
@@ -58,7 +57,7 @@ public class LocaleConfiguration extends WebMvcConfigurerAdapter implements Envi
 
   @Bean
   public MessageSource messageSource() {
-    int cacheSeconds = propertyResolver.getProperty("cacheSeconds", Integer.class, 60);
+    int cacheSeconds = environment.getProperty("spring.messageSource.cacheSeconds", Integer.class, 60);
     messageSource = new ExtendedResourceBundleMessageSource(micaConfigService, cacheSeconds);
     messageSource.setBasenames("classpath:/translations/messages", "classpath:/i18n/messages");
     messageSource.setDefaultEncoding("UTF-8");

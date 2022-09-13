@@ -52,24 +52,6 @@ public class UpgradeConfiguration {
   @Bean(name = "upgradeSteps")
   public List<UpgradeStep> upgradeSteps(ApplicationContext applicationContext) {
     return Lists.newArrayList(
-      applicationContext.getBean(NetworkStateUpgrade.class),
-      applicationContext.getBean(AttachmentsPathUpgrade.class),
-      applicationContext.getBean(AttachmentsCleanupUpgrade.class),
-      applicationContext.getBean(ContactsRefactorUpgrade.class),
-      applicationContext.getBean(DatasetStateUpgrade.class),
-      applicationContext.getBean(ElasticsearchUpgrade.class),
-      applicationContext.getBean(HarmonizationDatasetUpgrade.class),
-      applicationContext.getBean(SchemaFormUpgrade.class),
-      applicationContext.getBean(Mica2Upgrade.class),
-      applicationContext.getBean(Mica220Upgrade.class),
-      applicationContext.getBean(Mica3Upgrade.class),
-      applicationContext.getBean(Mica310Upgrade.class),
-      applicationContext.getBean(Mica320Upgrade.class),
-      applicationContext.getBean(Mica330Upgrade.class),
-      applicationContext.getBean(Mica350Upgrade.class),
-      applicationContext.getBean(Mica372Upgrade.class),
-      applicationContext.getBean(Mica380Upgrade.class),
-      applicationContext.getBean(ElasticsearchMigrationUpgrade.class),
       applicationContext.getBean(Mica460Upgrade.class),
       applicationContext.getBean(Mica500Upgrade.class)
     );

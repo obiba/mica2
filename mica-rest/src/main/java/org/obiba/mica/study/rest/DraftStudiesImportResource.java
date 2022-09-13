@@ -13,7 +13,6 @@ package org.obiba.mica.study.rest;
 import java.io.IOException;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.POST;
@@ -30,6 +29,8 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.study.service.StudyPackageImportService;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 @Path("/draft/studies/_import")
 public class DraftStudiesImportResource {
@@ -40,33 +41,11 @@ public class DraftStudiesImportResource {
   @POST
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @RequiresPermissions("/draft/individual-study:ADD")
-  public Response importZip(@Context HttpServletRequest request,
+  public Response importZip(@RequestParam("file") MultipartFile uploadedFile,
     @QueryParam("publish") @DefaultValue("false") boolean publish) throws FileUploadException, IOException {
-    FileItem uploadedFile = getUploadedFile(request);
-
     studyPackageImportService.importZip(uploadedFile.getInputStream(), publish);
 
     return Response.ok().build();
-  }
-
-  /**
-   * Returns the first {@code FileItem} that is represents a file upload field. If no such field exists, this method
-   * returns null
-   *
-   * @param request
-   * @return
-   * @throws FileUploadException
-   */
-  FileItem getUploadedFile(HttpServletRequest request) throws FileUploadException {
-    FileItemFactory factory = new DiskFileItemFactory();
-    ServletFileUpload upload = new ServletFileUpload(factory);
-    for(FileItem fileItem : upload.parseRequest(request)) {
-      if(!fileItem.isFormField()) {
-        return fileItem;
-      }
-    }
-
-    return null;
   }
 
 }

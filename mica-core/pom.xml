@@ -120,7 +120,7 @@
       <artifactId>geronimo-javamail_1.4_mail</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.hibernate</groupId>
+      <groupId>org.hibernate.validator</groupId>
       <artifactId>hibernate-validator</artifactId>
     </dependency>
     <dependency>
@@ -162,12 +162,8 @@
       <artifactId>spring-context-support</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.github.jhipster.loaded</groupId>
-      <artifactId>core</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.mongodb</groupId>
-      <artifactId>mongodb-driver</artifactId>
+      <artifactId>mongodb-driver-sync</artifactId>
     </dependency>
 
     <!-- Test dependencies -->

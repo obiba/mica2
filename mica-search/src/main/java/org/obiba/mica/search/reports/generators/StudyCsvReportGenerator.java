@@ -1,7 +1,6 @@
 package org.obiba.mica.search.reports.generators;
 
 import au.com.bytecode.opencsv.CSVWriter;
-import jersey.repackaged.com.google.common.collect.Lists;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.search.reports.ReportGenerator;
@@ -11,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -25,7 +25,7 @@ public class StudyCsvReportGenerator extends DocumentCsvReportGenerator {
   private final PersonService personService;
   private final boolean forHarmonization;
 
-  private List<String> headers = Lists.newArrayList();
+  private List<String> headers = new ArrayList<>();
 
   public StudyCsvReportGenerator(List<BaseStudy> studies, String locale, PersonService personService, boolean forHarmonization) {
     super(locale);
@@ -91,7 +91,7 @@ public class StudyCsvReportGenerator extends DocumentCsvReportGenerator {
   @Override
   protected void writeEachLine(CSVWriter writer) {
     studies.forEach(std -> {
-      List<String> line = Lists.newArrayList();
+      List<String> line = new ArrayList<>();
       line.add(std.getId());
       line.add(std.getResourcePath().replace("-study", ""));
       line.add(translate(std.getAcronym()));
