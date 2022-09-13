@@ -225,7 +225,7 @@
         <artifactId>geronimo-javamail_1.4_mail</artifactId>
         <version>${geronimo-javamail_1.4_mail.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>org.mongodb</groupId>
         <artifactId>mongodb-driver-sync</artifactId>
