@@ -143,7 +143,7 @@ public abstract class AbstractGitPersistableResource<T extends EntityState, T1 e
     T1 leftCommit = getService().getFromCommit(getService().findDraft(getId()), left);
     T1 rightCommit = getService().getFromCommit(getService().findDraft(getId()), right);
 
-    Map<String, Object> data = new HashMap<>();
+    Map<String, Map<String, List<Object>>> data = new HashMap<>();
 
     try {
       MapDifference<String, Object> difference = DocumentDifferenceService.diff(leftCommit, rightCommit);

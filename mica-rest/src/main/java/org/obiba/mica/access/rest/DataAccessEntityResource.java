@@ -6,6 +6,7 @@ import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.access.domain.DataAccessEntity;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.service.DataAccessEntityService;
+import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.file.FileStoreService;
@@ -24,13 +25,15 @@ import java.util.stream.Stream;
 
 public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
 
-  protected SubjectAclService subjectAclService;
+  protected final SubjectAclService subjectAclService;
 
-  protected FileStoreService fileStoreService;
+  protected final FileStoreService fileStoreService;
 
-  protected DataAccessConfigService dataAccessConfigService;
+  protected final DataAccessConfigService dataAccessConfigService;
 
-  protected VariableSetService variableSetService;
+  protected final VariableSetService variableSetService;
+
+  protected final DataAccessRequestUtilService dataAccessRequestUtilService;
 
   protected abstract DataAccessEntityService<T> getService();
 
@@ -42,11 +45,13 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
     SubjectAclService subjectAclService,
     FileStoreService fileStoreService,
     DataAccessConfigService dataAccessConfigService,
-    VariableSetService variableSetService) {
+    VariableSetService variableSetService,
+    DataAccessRequestUtilService dataAccessRequestUtilService) {
     this.subjectAclService = subjectAclService;
     this.fileStoreService = fileStoreService;
     this.dataAccessConfigService = dataAccessConfigService;
     this.variableSetService = variableSetService;
+    this.dataAccessRequestUtilService = dataAccessRequestUtilService;
   }
 
   @Subscribe

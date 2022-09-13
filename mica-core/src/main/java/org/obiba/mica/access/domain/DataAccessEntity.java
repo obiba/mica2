@@ -2,7 +2,6 @@ package org.obiba.mica.access.domain;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import org.joda.time.DateTime;
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.domain.SchemaFormContentAware;
@@ -10,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class DataAccessEntity extends AbstractAuditableDocument implements SchemaFormContentAware {
 
@@ -69,14 +69,20 @@ public abstract class DataAccessEntity extends AbstractAuditableDocument impleme
     this.content = content;
   }
 
-  public DateTime getSubmissionDate() {
+  public StatusChange getLastSubmission() {
     for (int i = getStatusChangeHistory().size()-1; i>=0; i--) {
       StatusChange chg = getStatusChangeHistory().get(i);
       if (chg.getTo().equals(DataAccessEntityStatus.SUBMITTED)) {
-        return chg.getChangedOn();
+        return chg;
       }
     }
     return null;
+  }
+
+  public List<StatusChange> getSubmissions() {
+    return getStatusChangeHistory().stream()
+      .filter(chg -> chg.getTo().equals(DataAccessEntityStatus.SUBMITTED))
+      .collect(Collectors.toList());
   }
 
   public boolean hasStatusChangeHistory() {

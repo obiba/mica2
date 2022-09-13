@@ -110,6 +110,10 @@
                   </span>
                 </#if>
                 <span class="float-right <#if permissions?seq_contains("EDIT_STATUS")>border-right mr-2 pr-2</#if>" ng-if="schema.readOnly">
+                  <#if diffs??>
+                    <button type="button" class="btn btn-outline-info" data-toggle="modal"
+                            data-target="#modal-diff"><i class="fas fa-code-branch"></i> <@message "form-diff"/></button>
+                  </#if>
                   <#if accessConfig.downloadPdf>
                     <a href="${contextPath}/ws/data-access-request/${dar.id}/_pdf?lang=${.lang}" class="btn btn-default">
                       <i class="fas fa-file-pdf"></i> <@message "download"/>
@@ -142,6 +146,11 @@
               </div>
             </#if>
           </div>
+
+          <!-- Submission diffs modal -->
+          <#if diffs??>
+            <@diffsModal/>
+          </#if>
 
           <!-- Confirm submission modal -->
           <div class="modal fade" id="modal-submit">

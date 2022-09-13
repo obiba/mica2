@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.google.common.base.Strings;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
@@ -19,15 +20,7 @@ import org.obiba.core.translator.PrefixedValueTranslator;
 import org.obiba.core.translator.TranslationUtils;
 import org.obiba.core.translator.Translator;
 import org.obiba.mica.core.support.RegexHashMap;
-import org.obiba.mica.micaConfig.domain.DataCollectionEventConfig;
-import org.obiba.mica.micaConfig.domain.EntityConfig;
-import org.obiba.mica.micaConfig.domain.HarmonizationDatasetConfig;
-import org.obiba.mica.micaConfig.domain.HarmonizationStudyConfig;
-import org.obiba.mica.micaConfig.domain.NetworkConfig;
-import org.obiba.mica.micaConfig.domain.PopulationConfig;
-import org.obiba.mica.micaConfig.domain.ProjectConfig;
-import org.obiba.mica.micaConfig.domain.StudyConfig;
-import org.obiba.mica.micaConfig.domain.StudyDatasetConfig;
+import org.obiba.mica.micaConfig.domain.*;
 import org.springframework.stereotype.Component;
 
 import net.minidev.json.JSONArray;
@@ -46,18 +39,27 @@ public class EntityConfigKeyTranslationService {
   private final ProjectConfigService projectConfigService;
   private final StudyDatasetConfigService studyDatasetConfigService;
 
+  private final DataAccessFormService dataAccessFormService;
+
+  private final DataAccessFeasibilityFormService dataAccessFeasibilityFormService;
+
+  private final DataAccessAmendmentFormService dataAccessAmendmentFormService;
+
   private final Map<String, String> beanFieldToTranslationKeyMap;
 
   @Inject
   public EntityConfigKeyTranslationService(MicaConfigService micaConfigService,
-      DataCollectionEventConfigService dataCollectionEventConfigService,
-      HarmonizationDatasetConfigService harmonizationDatasetConfigService,
-      HarmonizationStudyConfigService harmonizationStudyConfigService,
-      IndividualStudyConfigService individualStudyConfigService,
-      NetworkConfigService networkConfigService,
-      PopulationConfigService populationConfigService,
-      ProjectConfigService projectConfigService,
-      StudyDatasetConfigService studyDatasetConfigService) {
+                                           DataCollectionEventConfigService dataCollectionEventConfigService,
+                                           HarmonizationDatasetConfigService harmonizationDatasetConfigService,
+                                           HarmonizationStudyConfigService harmonizationStudyConfigService,
+                                           IndividualStudyConfigService individualStudyConfigService,
+                                           NetworkConfigService networkConfigService,
+                                           PopulationConfigService populationConfigService,
+                                           ProjectConfigService projectConfigService,
+                                           StudyDatasetConfigService studyDatasetConfigService,
+                                           DataAccessFormService dataAccessFormService,
+                                           DataAccessFeasibilityFormService dataAccessFeasibilityFormService,
+                                           DataAccessAmendmentFormService dataAccessAmendmentFormService) {
     this.micaConfigService = micaConfigService;
     this.dataCollectionEventConfigService = dataCollectionEventConfigService;
     this.harmonizationDatasetConfigService = harmonizationDatasetConfigService;
@@ -67,6 +69,9 @@ public class EntityConfigKeyTranslationService {
     this.populationConfigService = populationConfigService;
     this.projectConfigService = projectConfigService;
     this.studyDatasetConfigService = studyDatasetConfigService;
+    this.dataAccessFormService = dataAccessFormService;
+    this.dataAccessFeasibilityFormService = dataAccessFeasibilityFormService;
+    this.dataAccessAmendmentFormService = dataAccessAmendmentFormService;
 
     String joinedLocales = getJoinedLocales();
 
@@ -116,99 +121,119 @@ public class EntityConfigKeyTranslationService {
 
     beanFieldToTranslationKeyMap.forEach((key, translationKey) -> translationMap.put(key, translator.translate(translationKey)));
 
-    switch (serviceTypename) {
-      case "individual-study":
+    if (!Strings.isNullOrEmpty(serviceTypename)) {
+      switch (serviceTypename) {
+        case "individual-study":
 
-        Optional<StudyConfig> optionalIndividualStudySchemaForm = individualStudyConfigService.findComplete();
-        Optional<PopulationConfig> optionalPopulationSchemaForm = populationConfigService.findComplete();
-        Optional<DataCollectionEventConfig> optionalDataCollectionEventSchemaForm = dataCollectionEventConfigService.findComplete();
+          Optional<StudyConfig> optionalIndividualStudySchemaForm = individualStudyConfigService.findComplete();
+          Optional<PopulationConfig> optionalPopulationSchemaForm = populationConfigService.findComplete();
+          Optional<DataCollectionEventConfig> optionalDataCollectionEventSchemaForm = dataCollectionEventConfigService.findComplete();
 
-        if (optionalIndividualStudySchemaForm.isPresent()) {
-          StudyConfig individualStudySchemaForm = optionalIndividualStudySchemaForm.get();
-          translateSchemaForm(translator, individualStudySchemaForm);
+          if (optionalIndividualStudySchemaForm.isPresent()) {
+            StudyConfig individualStudySchemaForm = optionalIndividualStudySchemaForm.get();
+            translateSchemaForm(translator, individualStudySchemaForm);
 
-          translationMap.putAll(getTranslationMap(individualStudySchemaForm, ""));
-        }
+            translationMap.putAll(getTranslationMap(individualStudySchemaForm, ""));
+          }
 
-        if (optionalPopulationSchemaForm.isPresent()) {
-          PopulationConfig populationSchemaForm = optionalPopulationSchemaForm.get();
-          translateSchemaForm(translator, populationSchemaForm);
+          if (optionalPopulationSchemaForm.isPresent()) {
+            PopulationConfig populationSchemaForm = optionalPopulationSchemaForm.get();
+            translateSchemaForm(translator, populationSchemaForm);
 
-          translationMap.putAll(getTranslationMap(populationSchemaForm, "^populations\\[\\d+\\]\\."));
-        }
+            translationMap.putAll(getTranslationMap(populationSchemaForm, "^populations\\[\\d+\\]\\."));
+          }
 
-        if (optionalDataCollectionEventSchemaForm.isPresent()) {
-          DataCollectionEventConfig dataCollectionEventSchemaForm = optionalDataCollectionEventSchemaForm.get();
-          translateSchemaForm(translator, dataCollectionEventSchemaForm);
+          if (optionalDataCollectionEventSchemaForm.isPresent()) {
+            DataCollectionEventConfig dataCollectionEventSchemaForm = optionalDataCollectionEventSchemaForm.get();
+            translateSchemaForm(translator, dataCollectionEventSchemaForm);
 
-          translationMap.putAll(getTranslationMap(dataCollectionEventSchemaForm, "^populations\\[\\d+\\]\\.dataCollectionEvents\\[\\d+\\]\\."));
-        }
+            translationMap.putAll(getTranslationMap(dataCollectionEventSchemaForm, "^populations\\[\\d+\\]\\.dataCollectionEvents\\[\\d+\\]\\."));
+          }
 
-        break;
+          break;
 
-      case "harmonization-study":
+        case "harmonization-study":
 
-        Optional<HarmonizationStudyConfig> optionalHarmonizationStudySchemaForm = harmonizationStudyConfigService.findComplete();
+          Optional<HarmonizationStudyConfig> optionalHarmonizationStudySchemaForm = harmonizationStudyConfigService.findComplete();
 
-        if (optionalHarmonizationStudySchemaForm.isPresent()) {
-          HarmonizationStudyConfig harmonizationStudySchemaForm = optionalHarmonizationStudySchemaForm.get();
-          translateSchemaForm(translator, harmonizationStudySchemaForm);
+          if (optionalHarmonizationStudySchemaForm.isPresent()) {
+            HarmonizationStudyConfig harmonizationStudySchemaForm = optionalHarmonizationStudySchemaForm.get();
+            translateSchemaForm(translator, harmonizationStudySchemaForm);
 
-          translationMap.putAll(getTranslationMap(harmonizationStudySchemaForm, ""));
-        }
+            translationMap.putAll(getTranslationMap(harmonizationStudySchemaForm, ""));
+          }
 
-        break;
+          break;
 
-      case "network":
-        Optional<NetworkConfig> optionalNetworkSchemaForm = networkConfigService.findComplete();
+        case "network":
+          Optional<NetworkConfig> optionalNetworkSchemaForm = networkConfigService.findComplete();
 
-        if (optionalNetworkSchemaForm.isPresent()) {
-          NetworkConfig networkSchemaForm = optionalNetworkSchemaForm.get();
-          translateSchemaForm(translator, networkSchemaForm);
+          if (optionalNetworkSchemaForm.isPresent()) {
+            NetworkConfig networkSchemaForm = optionalNetworkSchemaForm.get();
+            translateSchemaForm(translator, networkSchemaForm);
 
-          translationMap.putAll(getTranslationMap(networkSchemaForm, ""));
-        }
+            translationMap.putAll(getTranslationMap(networkSchemaForm, ""));
+          }
 
-        break;
+          break;
 
-      case "collected-dataset":
-        Optional<StudyDatasetConfig> optionalStudyDatasetSchemaForm = studyDatasetConfigService.findComplete();
+        case "collected-dataset":
+          Optional<StudyDatasetConfig> optionalStudyDatasetSchemaForm = studyDatasetConfigService.findComplete();
 
-        if (optionalStudyDatasetSchemaForm.isPresent()) {
-          StudyDatasetConfig studyDatasetSchemaForm = optionalStudyDatasetSchemaForm.get();
-          translateSchemaForm(translator, studyDatasetSchemaForm);
+          if (optionalStudyDatasetSchemaForm.isPresent()) {
+            StudyDatasetConfig studyDatasetSchemaForm = optionalStudyDatasetSchemaForm.get();
+            translateSchemaForm(translator, studyDatasetSchemaForm);
 
-          translationMap.putAll(getTranslationMap(studyDatasetSchemaForm, ""));
-        }
+            translationMap.putAll(getTranslationMap(studyDatasetSchemaForm, ""));
+          }
 
-        break;
+          break;
 
-      case "harmonized-dataset":
-        Optional<HarmonizationDatasetConfig> optionalHarmonizationDatasetSchemaForm = harmonizationDatasetConfigService.findComplete();
+        case "harmonized-dataset":
+          Optional<HarmonizationDatasetConfig> optionalHarmonizationDatasetSchemaForm = harmonizationDatasetConfigService.findComplete();
 
-        if (optionalHarmonizationDatasetSchemaForm.isPresent()) {
-          HarmonizationDatasetConfig harmonizationDatasetSchemaForm = optionalHarmonizationDatasetSchemaForm.get();
-          translateSchemaForm(translator, harmonizationDatasetSchemaForm);
+          if (optionalHarmonizationDatasetSchemaForm.isPresent()) {
+            HarmonizationDatasetConfig harmonizationDatasetSchemaForm = optionalHarmonizationDatasetSchemaForm.get();
+            translateSchemaForm(translator, harmonizationDatasetSchemaForm);
 
-          translationMap.putAll(getTranslationMap(harmonizationDatasetSchemaForm, ""));
-        }
+            translationMap.putAll(getTranslationMap(harmonizationDatasetSchemaForm, ""));
+          }
 
-        break;
+          break;
 
-      case "project":
-        Optional<ProjectConfig> optionalProjectSchemaForm = projectConfigService.findComplete();
+        case "project":
+          Optional<ProjectConfig> optionalProjectSchemaForm = projectConfigService.findComplete();
 
-        if (optionalProjectSchemaForm.isPresent()) {
-          ProjectConfig projectSchemaForm = optionalProjectSchemaForm.get();
-          translateSchemaForm(translator, projectSchemaForm);
+          if (optionalProjectSchemaForm.isPresent()) {
+            ProjectConfig projectSchemaForm = optionalProjectSchemaForm.get();
+            translateSchemaForm(translator, projectSchemaForm);
 
-          translationMap.putAll(getTranslationMap(projectSchemaForm, ""));
-        }
+            translationMap.putAll(getTranslationMap(projectSchemaForm, ""));
+          }
 
-        break;
+          break;
 
-      default:
-        break;
+        case "data-access-form":
+          DataAccessForm dataAccessForm = dataAccessFormService.findLatest();
+          translateSchemaForm(translator, dataAccessForm);
+          translationMap.putAll(getTranslationMap(dataAccessForm, ""));
+          break;
+
+        case "data-access-feasibility":
+          DataAccessFeasibilityForm dataAccessFeasibilityForm = dataAccessFeasibilityFormService.findLatest();
+          translateSchemaForm(translator, dataAccessFeasibilityForm);
+          translationMap.putAll(getTranslationMap(dataAccessFeasibilityForm, ""));
+          break;
+
+        case "data-access-amendment":
+          DataAccessAmendmentForm dataAccessAmendmentForm = dataAccessAmendmentFormService.findLatest();
+          translateSchemaForm(translator, dataAccessAmendmentForm);
+          translationMap.putAll(getTranslationMap(dataAccessAmendmentForm, ""));
+          break;
+
+        default:
+          break;
+      }
     }
 
     return translationMap;
@@ -244,7 +269,7 @@ public class EntityConfigKeyTranslationService {
       if (read != null) {
         String cleanKey = key.replaceAll("(\\$\\[')|('\\])", "").replaceAll("(\\[')", ".").replaceAll("\\.title$", "").replaceAll("^properties\\.", "").replaceAll("\\.properties", "");
 
-        String processedKey = (cleanKey.startsWith("_") ? prefix : prefix + "model\\.") + Pattern.quote((cleanKey.startsWith("_") ? cleanKey.substring(1) : cleanKey)) + "(\\[\\d+\\])?" + "(" + joinedLocales + ")?";
+        String processedKey = (cleanKey.startsWith("_") ? prefix : prefix + "(model\\.)?") + Pattern.quote((cleanKey.startsWith("_") ? cleanKey.substring(1) : cleanKey)) + "(\\[\\d+\\])?" + "(" + joinedLocales + ")?";
 
         map.put(processedKey, read.toString());
       }

@@ -7,14 +7,15 @@ import org.obiba.mica.JSONUtils;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessFeasibility;
 import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.domain.StatusChange;
 import org.obiba.mica.access.service.DataAccessEntityService;
 import org.obiba.mica.access.service.DataAccessFeasibilityService;
 import org.obiba.mica.access.service.DataAccessRequestService;
+import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.domain.AbstractDataAccessEntityForm;
 import org.obiba.mica.micaConfig.domain.DataAccessFeasibilityForm;
-import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.DataAccessFeasibilityFormService;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -26,8 +27,10 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -57,8 +60,9 @@ public class DataAccessFeasibilityResource extends DataAccessEntityResource<Data
     DataAccessRequestService dataAccessRequestService,
     DataAccessFeasibilityService dataAccessFeasibilityService,
     DataAccessFeasibilityFormService dataAccessFeasibilityFormService,
-    VariableSetService variableSetService) {
-    super(subjectAclService, fileStoreService, dataAccessConfigService, variableSetService);
+    VariableSetService variableSetService,
+    DataAccessRequestUtilService dataAccessRequestUtilService) {
+    super(subjectAclService, fileStoreService, dataAccessConfigService, variableSetService, dataAccessRequestUtilService);
     this.dtos = dtos;
     this.dataAccessRequestService = dataAccessRequestService;
     this.dataAccessFeasibilityService = dataAccessFeasibilityService;
@@ -134,6 +138,22 @@ public class DataAccessFeasibilityResource extends DataAccessEntityResource<Data
     DataAccessRequest request = dataAccessRequestService.findById(parentId);
     if (request.isArchived()) throw new BadRequestException("Data access request is archived");
     return super.doUpdateStatus(id, status);
+  }
+
+  @GET
+  @Path("/_diff")
+  public Response diffStatusChanges(@QueryParam("locale") @DefaultValue("en") String locale) {
+    subjectAclService.checkPermission(getResourcePath(), "EDIT", id);
+    DataAccessFeasibility feasibility = dataAccessFeasibilityService.findById(id);
+
+    List<StatusChange> submissions = feasibility.getSubmissions();
+
+    Map<String, Map<String, List<Object>>> data = submissions.stream()
+      .reduce((first, second) -> second)
+      .map(change ->  dataAccessRequestUtilService.getContentDiff("data-access-feasibility", change.getContent(), feasibility.getContent(), locale))
+      .orElse(null);
+
+    return Response.ok(data, MediaType.APPLICATION_JSON_TYPE).build();
   }
 
   @GET

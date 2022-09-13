@@ -101,7 +101,7 @@ public class PersonResource {
     } catch(Exception ex) {
       //
     }
-    
+
     return new ArrayList<>();
   }
 
@@ -137,7 +137,7 @@ public class PersonResource {
     Person leftCommit = personService.getFromCommit(personService.findById(id), left);
     Person rightCommit = personService.getFromCommit(personService.findById(id), right);
 
-    Map<String, Object> data = new HashMap<>();
+    Map<String, Map<String, List<Object>>> data = new HashMap<>();
 
     try {
       MapDifference<String, Object> difference = DocumentDifferenceService.diff(leftCommit, rightCommit);

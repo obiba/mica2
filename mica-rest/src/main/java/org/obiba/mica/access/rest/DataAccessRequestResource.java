@@ -23,7 +23,7 @@ import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.ActionLog;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
-import org.obiba.mica.access.domain.DataAccessRequestTimeline;
+import org.obiba.mica.access.domain.StatusChange;
 import org.obiba.mica.access.notification.DataAccessRequestCommentMailNotification;
 import org.obiba.mica.access.notification.DataAccessRequestReportNotificationService;
 import org.obiba.mica.access.service.DataAccessEntityService;
@@ -56,10 +56,10 @@ import sun.util.locale.LanguageTag;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -107,8 +107,9 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     FileStoreService fileStoreService,
     DataAccessConfigService dataAccessConfigService,
     TempFileService tempFileService,
-    VariableSetService variableSetService) {
-    super(subjectAclService, fileStoreService, dataAccessConfigService, variableSetService);
+    VariableSetService variableSetService,
+    DataAccessRequestUtilService dataAccessRequestUtilService) {
+    super(subjectAclService, fileStoreService, dataAccessConfigService, variableSetService, dataAccessRequestUtilService);
     this.dataAccessRequestService = dataAccessRequestService;
     this.commentMailNotification = commentMailNotification;
     this.reportNotificationService = reportNotificationService;
@@ -225,6 +226,22 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     DataAccessRequest request = dataAccessRequestService.findById(id);
     dataAccessRequestService.archive(request, false);
     return Response.noContent().build();
+  }
+
+  @GET
+  @Path("/_diff")
+  public Response diffStatusChanges(@PathParam("id") String id, @QueryParam("locale") @DefaultValue("en") String locale) {
+    subjectAclService.checkPermission("/data-access-request", "EDIT", id);
+    DataAccessRequest request = dataAccessRequestService.findById(id);
+
+    List<StatusChange> submissions = request.getSubmissions();
+
+    Map<String, Map<String, List<Object>>> data = submissions.stream()
+      .reduce((first, second) -> second)
+      .map(change ->  dataAccessRequestUtilService.getContentDiff("data-access-form", change.getContent(), request.getContent(), locale))
+      .orElse(null);
+
+    return Response.ok(data, MediaType.APPLICATION_JSON_TYPE).build();
   }
 
   @PUT

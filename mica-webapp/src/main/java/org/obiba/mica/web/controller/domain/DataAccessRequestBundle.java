@@ -3,6 +3,7 @@ package org.obiba.mica.web.controller.domain;
 import org.joda.time.DateTime;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.domain.StatusChange;
 
 public class DataAccessRequestBundle {
 
@@ -13,13 +14,13 @@ public class DataAccessRequestBundle {
   private final int pendingAmendments;
   private final int totalFeasibilities;
   private final int pendingFeasibilities;
-  private DateTime submitDate;
+  private StatusChange submission;
 
   public DataAccessRequestBundle(DataAccessRequest request, String title, int totalAmendments, int pendingAmendments, int totalFeasibilities, int pendingFeasibilities) {
     this.id = request.getId();
     this.request = request;
     this.title = title;
-    this.submitDate = request.getSubmissionDate();
+    this.submission = request.getLastSubmission();
     this.totalAmendments = totalAmendments;
     this.pendingAmendments = pendingAmendments;
     this.totalFeasibilities = totalFeasibilities;
@@ -47,7 +48,7 @@ public class DataAccessRequestBundle {
   }
 
   public DateTime getSubmitDate() {
-    return submitDate;
+    return submission == null ? null : submission.getChangedOn();
   }
 
   public DataAccessEntityStatus getStatus() {
