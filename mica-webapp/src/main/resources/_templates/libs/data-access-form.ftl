@@ -91,8 +91,16 @@
               <@message "form-diff-current-with-previous-submission"/>
             (<span class="moment-datetime">${diffs.statusChange.changedOn.toString(datetimeFormat)}</span>)
           </p>
+          <ul>
+            <li class="diff">
+              <del>&nbsp;<@message "form-diff-deleted"/>&nbsp;</del>
+            </li>
+            <li class="diff">
+              <ins>&nbsp;<@message "form-diff-replacement"/>&nbsp;</ins>
+            </li>
+          </ul>
           <div>
-            <table id="diffs" class="table table-bordered table-striped diff-comparison">
+            <table id="diffs" class="table table-bordered table-striped diff">
               <thead>
               <tr>
                 <th><@message "revisions-difference-field"/></th>
