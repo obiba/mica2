@@ -35,6 +35,10 @@ public class DataAccessEntityDiff {
     return statusChange;
   }
 
+  public boolean hasDifferences() {
+    return !getDifferences().isEmpty();
+  }
+
   /**
    * Merge the different differences types and filter/sort keys.
    * @return

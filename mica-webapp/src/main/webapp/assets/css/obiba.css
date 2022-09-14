@@ -133,3 +133,19 @@
   font-size: 12px !important;
   color: black !important;
 }
+.diff del {
+  text-decoration: none;
+  background-color: rgba(255,129,130,0.4);
+}
+.diff ins {
+  text-decoration: none;
+  background-color: #abf2bc;
+}
+.st-tree {
+  /*border: solid 1px #ddd;*/
+}
+.st-description {
+  border: solid 1px #ddd;
+  padding: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}

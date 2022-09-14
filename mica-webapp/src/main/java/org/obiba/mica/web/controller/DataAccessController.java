@@ -135,6 +135,7 @@ public class DataAccessController extends BaseController {
         params.put("diffs", submissions.stream()
           .reduce((first, second) -> second)
           .map(change -> new DataAccessEntityDiff(change, dataAccessRequestUtilService.getContentDiff("data-access-form", change.getContent(), content, lg)))
+          .filter(DataAccessEntityDiff::hasDifferences)
           .orElse(null));
       }
 
@@ -192,6 +193,7 @@ public class DataAccessController extends BaseController {
         params.put("diffs", submissions.stream()
           .reduce((first, second) -> second)
           .map(change -> new DataAccessEntityDiff(change, dataAccessRequestUtilService.getContentDiff("data-access-form", change.getContent(), content, lg)))
+          .filter(DataAccessEntityDiff::hasDifferences)
           .orElse(null));
       }
 
@@ -229,6 +231,7 @@ public class DataAccessController extends BaseController {
         params.put("diffs", submissions.stream()
           .reduce((first, second) -> second)
           .map(change -> new DataAccessEntityDiff(change, dataAccessRequestUtilService.getContentDiff("data-access-form", change.getContent(), content, lg)))
+          .filter(DataAccessEntityDiff::hasDifferences)
           .orElse(null));
       }
 

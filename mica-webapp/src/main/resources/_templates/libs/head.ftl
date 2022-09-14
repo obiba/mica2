@@ -123,14 +123,6 @@
     url("${assetsPath}/fonts/Source_Sans_Pro/sourcesanspro-italic-webfont.woff2") format("woff2"),
     url("${assetsPath}/fonts/Source_Sans_Pro/sourcesanspro-italic-webfont.woff") format("woff");
   }
-  .diff del {
-    text-decoration: none;
-    background-color: rgba(255,129,130,0.4);
-  }
-  .diff ins {
-    text-decoration: none;
-    background-color: #abf2bc;
-  }
 </style>
 <!-- DataTables -->
 <link rel="stylesheet" href="${adminLTEPath}/plugins/datatables-bs4/css/dataTables.bootstrap4.css">
