@@ -27,13 +27,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
-import sun.util.locale.LanguageTag;
-
 import static java.text.Normalizer.normalize;
 
 public class LocalizedString extends TreeMap<String, String> {
 
   private static final long serialVersionUID = 5813178087884887246L;
+
+  private static final String LANGUAGE_TAG_UNDETERMINED = "und";
 
   public LocalizedString() {}
 
@@ -45,12 +45,12 @@ public class LocalizedString extends TreeMap<String, String> {
   @Override
   public String put(@Nullable String locale, String value) {
     if(Strings.isNullOrEmpty(value)) return null;
-    return super.put(locale == null ? LanguageTag.UNDETERMINED : Locale.forLanguageTag(locale).toLanguageTag(), value);
+    return super.put(locale == null ? LANGUAGE_TAG_UNDETERMINED : Locale.forLanguageTag(locale).toLanguageTag(), value);
   }
 
   public String put(@NotNull Locale locale, @NotNull String str) {
     if(Strings.isNullOrEmpty(str)) return null;
-    return super.put(locale == null ? LanguageTag.UNDETERMINED : locale.toLanguageTag(), str);
+    return super.put(locale == null ? LANGUAGE_TAG_UNDETERMINED : locale.toLanguageTag(), str);
   }
 
   /**
@@ -61,7 +61,7 @@ public class LocalizedString extends TreeMap<String, String> {
   @JsonIgnore
   @Nullable
   public String getUndetermined() {
-    return get(LanguageTag.UNDETERMINED);
+    return get(LANGUAGE_TAG_UNDETERMINED);
   }
 
   public LocalizedString forLocale(@NotNull Locale locale, @NotNull String str) {

@@ -53,7 +53,6 @@ import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import sun.util.locale.LanguageTag;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -75,6 +74,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class DataAccessRequestResource extends DataAccessEntityResource<DataAccessRequest> {
 
   private static final Logger log = getLogger(DataAccessRequestResource.class);
+
+  private static final String LANGUAGE_TAG_UNDETERMINED = "und";
 
   private DataAccessRequestService dataAccessRequestService;
 
@@ -169,7 +170,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   public Response getPdf(@PathParam("id") String id, @QueryParam("lang") String lang) {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
 
-    if (Strings.isNullOrEmpty(lang)) lang = LanguageTag.UNDETERMINED;
+    if (Strings.isNullOrEmpty(lang)) lang = LANGUAGE_TAG_UNDETERMINED;
 
     return Response.ok(dataAccessRequestService.getRequestPdf(id, lang))
       .header("Content-Disposition", "attachment; filename=\"" + "data-access-request-" + id + ".pdf" + "\"").build();

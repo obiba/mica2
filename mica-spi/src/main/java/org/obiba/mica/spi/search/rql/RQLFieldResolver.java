@@ -26,8 +26,6 @@ import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 
 import com.google.common.collect.Lists;
 
-import sun.util.locale.LanguageTag;
-
 public class RQLFieldResolver {
 
   public static final String TYPE_STRING = "string";
@@ -39,6 +37,8 @@ public class RQLFieldResolver {
   private static final String DEFAULT_TAXO_PREFIX = "Mica_";
 
   private static final String POSFIX_ANALYZED = ".analyzed";
+
+  private static final String LANGUAGE_TAG_UNDETERMINED = "und";
 
   private final List<Taxonomy> taxonomies;
 
@@ -143,11 +143,11 @@ public class RQLFieldResolver {
     }
 
     if (process) {
-      Pattern pattern = Pattern.compile("\\." + LanguageTag.UNDETERMINED + "$");
+      Pattern pattern = Pattern.compile("\\." + LANGUAGE_TAG_UNDETERMINED + "$");
       Matcher matcher = pattern.matcher(field);
 
       field = matcher.find()
-        ? field.replace(LanguageTag.UNDETERMINED, locale)
+        ? field.replace(LANGUAGE_TAG_UNDETERMINED, locale)
         : localized ? field + TAXO_SEPARATOR + locale : getSafeLocalizedField(field);
 
       return indexFieldMapping.isAnalyzed(field) ? field + POSFIX_ANALYZED : field;
