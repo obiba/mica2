@@ -4,14 +4,12 @@ import com.google.common.collect.Lists;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
-import org.obiba.mica.access.domain.DataAccessAmendment;
-import org.obiba.mica.access.domain.DataAccessFeasibility;
-import org.obiba.mica.access.domain.DataAccessRequest;
-import org.obiba.mica.access.domain.DataAccessRequestTimeline;
+import org.obiba.mica.access.domain.*;
 import org.obiba.mica.access.notification.DataAccessRequestReportNotificationService;
 import org.obiba.mica.access.service.DataAccessAmendmentService;
 import org.obiba.mica.access.service.DataAccessFeasibilityService;
 import org.obiba.mica.access.service.DataAccessRequestService;
+import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.service.CommentsService;
@@ -24,10 +22,7 @@ import org.obiba.mica.micaConfig.service.DataAccessFeasibilityFormService;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.user.UserProfileService;
-import org.obiba.mica.web.controller.domain.DataAccessConfigBundle;
-import org.obiba.mica.web.controller.domain.FormStatusChangeEvent;
-import org.obiba.mica.web.controller.domain.SchemaFormConfig;
-import org.obiba.mica.web.controller.domain.TimelineItem;
+import org.obiba.mica.web.controller.domain.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -55,6 +50,9 @@ public class DataAccessController extends BaseController {
 
   @Inject
   private DataAccessConfigService dataAccessConfigervice;
+
+  @Inject
+  private DataAccessRequestUtilService dataAccessRequestUtilService;
 
   @Inject
   private DataAccessFormService dataAccessFormService;
@@ -118,13 +116,28 @@ public class DataAccessController extends BaseController {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       Map<String, Object> params = newParameters(id);
-      addDataAccessFormConfiguration(params, getDataAccessRequest(params), !edit, getLang(locale, language));
+      String lg = getLang(locale, language);
+      addDataAccessFormConfiguration(params, getDataAccessRequest(params), !edit, lg);
 
       List<String> permissions = getPermissions(params);
       if (isPermitted("/data-access-request/private-comment", "VIEW", null))
         permissions.add("VIEW_PRIVATE_COMMENTS");
 
       params.put("permissions", permissions);
+
+      // show differences with previous submission (if any)
+      if (subject.hasRole(Roles.MICA_ADMIN) || subject.hasRole(Roles.MICA_DAO)) {
+        List<StatusChange> submissions = getDataAccessRequest(params).getSubmissions();
+        if (!DataAccessEntityStatus.OPENED.equals(getDataAccessRequest(params).getStatus())) {
+          submissions = submissions.subList(0, submissions.size() - 1); // compare with previous submission, not with itself
+        }
+        String content = getDataAccessRequest(params).getContent();
+        params.put("diffs", submissions.stream()
+          .reduce((first, second) -> second)
+          .map(change -> new DataAccessEntityDiff(change, dataAccessRequestUtilService.getContentDiff("data-access-form", change.getContent(), content, lg)))
+          .filter(DataAccessEntityDiff::hasDifferences)
+          .orElse(null));
+      }
 
       return new ModelAndView("data-access-form", params);
     } else {
@@ -160,14 +173,29 @@ public class DataAccessController extends BaseController {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       Map<String, Object> params = newFeasibilityParameters(id);
+      String lg = getLang(locale, language);
       DataAccessFeasibility feasibility = getDataAccessFeasibility(params);
-      addDataAccessFeasibilityFormConfiguration(params, feasibility, !edit, getLang(locale, language));
+      addDataAccessFeasibilityFormConfiguration(params, feasibility, !edit, lg);
 
       List<String> permissions = getPermissions(params);
       if (isPermitted("/data-access-request/private-comment", "VIEW", null))
         permissions.add("VIEW_PRIVATE_COMMENTS");
 
       params.put("permissions", permissions);
+
+      // show differences with previous submission (if any)
+      if (subject.hasRole(Roles.MICA_ADMIN) || subject.hasRole(Roles.MICA_DAO)) {
+        List<StatusChange> submissions = feasibility.getSubmissions();
+        if (!DataAccessEntityStatus.OPENED.equals(feasibility.getStatus())) {
+          submissions = submissions.subList(0, submissions.size() - 1); // compare with previous submission, not with itself
+        }
+        String content = feasibility.getContent();
+        params.put("diffs", submissions.stream()
+          .reduce((first, second) -> second)
+          .map(change -> new DataAccessEntityDiff(change, dataAccessRequestUtilService.getContentDiff("data-access-form", change.getContent(), content, lg)))
+          .filter(DataAccessEntityDiff::hasDifferences)
+          .orElse(null));
+      }
 
       return new ModelAndView("data-access-feasibility-form", params);
     } else {
@@ -183,14 +211,29 @@ public class DataAccessController extends BaseController {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       Map<String, Object> params = newAmendmentParameters(id);
+      String lg = getLang(locale, language);
       DataAccessAmendment amendment = getDataAccessAmendment(params);
-      addDataAccessAmendmentFormConfiguration(params, amendment, !edit, getLang(locale, language));
+      addDataAccessAmendmentFormConfiguration(params, amendment, !edit, lg);
 
       List<String> permissions = getPermissions(params);
       if (isPermitted("/data-access-request/private-comment", "VIEW", null))
         permissions.add("VIEW_PRIVATE_COMMENTS");
 
       params.put("permissions", permissions);
+
+      // show differences with previous submission (if any)
+      if (subject.hasRole(Roles.MICA_ADMIN) || subject.hasRole(Roles.MICA_DAO)) {
+        List<StatusChange> submissions = amendment.getSubmissions();
+        if (!DataAccessEntityStatus.OPENED.equals(amendment.getStatus())) {
+          submissions = submissions.subList(0, submissions.size() - 1); // compare with previous submission, not with itself
+        }
+        String content = amendment.getContent();
+        params.put("diffs", submissions.stream()
+          .reduce((first, second) -> second)
+          .map(change -> new DataAccessEntityDiff(change, dataAccessRequestUtilService.getContentDiff("data-access-form", change.getContent(), content, lg)))
+          .filter(DataAccessEntityDiff::hasDifferences)
+          .orElse(null));
+      }
 
       return new ModelAndView("data-access-amendment-form", params);
     } else {

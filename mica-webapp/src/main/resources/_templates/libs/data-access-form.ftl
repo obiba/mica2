@@ -76,6 +76,66 @@
   </div>
 </#macro>
 
+<#macro diffsModal>
+  <div class="modal fade" id="modal-diff">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title"><@message "form-diff"/></h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>
+              <@message "form-diff-current-with-previous-submission"/>
+            (<span class="moment-datetime">${diffs.statusChange.changedOn.toString(datetimeFormat)}</span>)
+          </p>
+          <ul>
+            <li class="diff">
+              <del>&nbsp;<@message "form-diff-deleted"/>&nbsp;</del>
+            </li>
+            <li class="diff">
+              <ins>&nbsp;<@message "form-diff-replacement"/>&nbsp;</ins>
+            </li>
+          </ul>
+          <div>
+            <table id="diffs" class="table table-bordered table-striped diff">
+              <thead>
+              <tr>
+                <th><@message "revisions-difference-field"/></th>
+                <th><@message "revisions-difference-right"/></th>
+                <th><@message "revisions-difference-left"/></th>
+              </tr>
+              </thead>
+              <tbody>
+              <#list diffs.differences as k, v>
+                <tr>
+                  <td>
+                    <#if v[0]??>
+                      <div><strong>${v[0]}</strong></div>
+                    </#if>
+                    <smalll><code>${k}</code></smalll>
+                  </td>
+                  <td class="marked">${v[1]}</td>
+                  <td class="marked">${v[2]}</td>
+                </tr>
+              </#list>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal"><@message "close"/></button>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
+</#macro>
+
 <!-- Variables linking -->
 <#assign variablesEnabled = accessConfig.variablesEnabled && config.cartEnabled/>
 <#assign feasibilityVariablesEnabled = accessConfig.feasibilityVariablesEnabled && config.cartEnabled/>

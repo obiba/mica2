@@ -358,13 +358,14 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
     DataAccessEntityStatus from = request.getStatus();
     dataAccessRequestUtilService.checkStatusTransition(request, to);
     request.setStatus(to);
-    request.getStatusChangeHistory().add( //
-      StatusChange.newBuilder() //
-        .previous(from) //
-        .current(to) //
-        .author(SecurityUtils.getSubject().getPrincipal().toString()) //
-        .now().build() //
-    ); //
+    request.getStatusChangeHistory().add(
+      StatusChange.newBuilder()
+        .previous(from)
+        .current(to)
+        .content(request.getContent())
+        .author(SecurityUtils.getSubject().getPrincipal().toString())
+        .now().build()
+    );
   }
 
   protected String generateId() {

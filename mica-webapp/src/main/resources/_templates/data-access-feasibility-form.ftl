@@ -101,6 +101,10 @@
                   </span>
                 </#if>
                 <span class="float-right" ng-if="schema.readOnly">
+                  <#if diffs??>
+                    <button type="button" class="btn btn-outline-info" data-toggle="modal"
+                            data-target="#modal-diff"><i class="fas fa-code-branch"></i> <@message "form-diff"/></button>
+                  </#if>
                   <a href="#" onclick="window.print()" class="btn btn-default">
                     <i class="fas fa-print"></i> <@message "global.print"/>
                   </a>
@@ -127,6 +131,11 @@
               </div>
             </#if>
           </div>
+
+          <!-- Submission diffs modal -->
+          <#if diffs??>
+            <@diffsModal/>
+          </#if>
 
           <!-- Confirm submission modal -->
           <div class="modal fade" id="modal-submit">

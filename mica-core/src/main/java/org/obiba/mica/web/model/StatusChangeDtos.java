@@ -55,13 +55,4 @@ public class StatusChangeDtos {
       .setAuthor(statusChange.getAuthor()) //
       .setChangedOn(statusChange.getChangedOn().toString());
   }
-
-  StatusChange fromDto(StatusChangeDto dto) {
-    return StatusChange.newBuilder() //
-      .previous(DataAccessEntityStatus.valueOf(dto.getFrom())) //
-      .current(DataAccessEntityStatus.valueOf(dto.getTo())) //
-      .author(dto.getAuthor()) //
-      .changedOn(DateTime.parse(dto.getChangedOn())) //
-      .build(); //
-  }
 }

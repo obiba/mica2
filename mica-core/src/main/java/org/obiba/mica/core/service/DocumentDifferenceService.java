@@ -49,8 +49,8 @@ public class DocumentDifferenceService {
     return map;
   }
 
-  public static Map<String, Object> withTranslations(MapDifference<String, Object> difference, RegexHashMap completeConfigTranslationMap) {
-    Map<String, Object> data = new HashMap<>();
+  public static Map<String, Map<String, List<Object>>> withTranslations(MapDifference<String, Object> difference, RegexHashMap completeConfigTranslationMap) {
+    Map<String, Map<String, List<Object>>> data = new HashMap<>();
 
     data.put("differing", fromEntriesDifferenceMap(difference.entriesDiffering(), completeConfigTranslationMap));
     data.put("onlyLeft", fromEntries(difference.entriesOnlyOnLeft(), completeConfigTranslationMap));

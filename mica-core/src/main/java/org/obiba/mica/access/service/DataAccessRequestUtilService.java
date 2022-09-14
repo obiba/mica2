@@ -10,16 +10,22 @@
 
 package org.obiba.mica.access.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.MapDifference;
+import com.google.common.collect.Maps;
 import com.jayway.jsonpath.*;
 import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.access.domain.*;
+import org.obiba.mica.core.service.DocumentDifferenceService;
+import org.obiba.mica.core.support.RegexHashMap;
 import org.obiba.mica.micaConfig.domain.AbstractDataAccessEntityForm;
 import org.obiba.mica.micaConfig.domain.DataAccessConfig;
 import org.obiba.mica.micaConfig.service.DataAccessAmendmentFormService;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
+import org.obiba.mica.micaConfig.service.EntityConfigKeyTranslationService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.user.UserProfileService;
@@ -32,6 +38,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class DataAccessRequestUtilService {
@@ -58,12 +65,35 @@ public class DataAccessRequestUtilService {
   @Inject
   private UserProfileService userProfileService;
 
+  @Inject
+  private EntityConfigKeyTranslationService entityConfigKeyTranslationService;
+
   public AbstractDataAccessEntityForm getDataAccessForm(DataAccessEntity dataAccessEntity) {
     String formRevision = dataAccessEntity.hasFormRevision() ? dataAccessEntity.getFormRevision().toString() : "latest";
     return dataAccessEntity instanceof DataAccessRequest ?
       dataAccessFormService.findByRevision(formRevision).get() :
       dataAccessAmendmentFormService.findByRevision(formRevision).get();
   }
+
+  public Map<String, Map<String, List<Object>>> getContentDiff(String formType, String left, String right, String locale) {
+
+    Map<String, Map<String, List<Object>>> data = Maps.newHashMap();
+    Object leftCommit = getContentAsObject(left);
+    Object rightCommit = getContentAsObject(right);
+
+    try {
+      MapDifference<String, Object> difference = DocumentDifferenceService.diff(leftCommit, rightCommit);
+      RegexHashMap completeConfigTranslationMap = entityConfigKeyTranslationService.getCompleteConfigTranslationMap(formType, locale);
+
+      data = DocumentDifferenceService.withTranslations(difference, completeConfigTranslationMap);
+
+    } catch (JsonProcessingException e) {
+      //
+    }
+
+    return data;
+  }
+
 
   public String getRequestTitle(DataAccessEntity request) {
     AbstractDataAccessEntityForm dataAccessForm = getDataAccessForm(request);
@@ -82,9 +112,8 @@ public class DataAccessRequestUtilService {
     AbstractDataAccessEntityForm dataAccessForm = getDataAccessForm(request);
     String titleFieldPath = dataAccessForm.getTitleFieldPath();
     if (!Strings.isNullOrEmpty(titleFieldPath)) {
-      String rawContent = request.getContent();
-      if (!Strings.isNullOrEmpty(titleFieldPath) && !Strings.isNullOrEmpty(rawContent)) {
-        Object content = Configuration.defaultConfiguration().jsonProvider().parse(rawContent);
+      if (!Strings.isNullOrEmpty(titleFieldPath) && !Strings.isNullOrEmpty(request.getContent())) {
+        Object content = getContentAsObject(request.getContent());
         DocumentContext context = JsonPath.using(conf).parse(content);
 
         try {
@@ -190,6 +219,14 @@ public class DataAccessRequestUtilService {
   //
   // Private methods
   //
+
+  private Object getContentAsObject(String rawContent) {
+    Object content = null;
+    if (!Strings.isNullOrEmpty(rawContent)) {
+      content = Configuration.defaultConfiguration().jsonProvider().parse(rawContent);
+    }
+    return content;
+  }
 
   private String getRequestField(DataAccessEntity request, String fieldPath) {
     String rawContent = request.getContent();

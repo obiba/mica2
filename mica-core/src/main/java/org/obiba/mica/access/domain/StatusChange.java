@@ -20,12 +20,18 @@ public class StatusChange extends ChangeLog {
 
   private DataAccessEntityStatus to;
 
+  private String content;
+
   public DataAccessEntityStatus getFrom() {
     return from;
   }
 
   public DataAccessEntityStatus getTo() {
     return to;
+  }
+
+  public String getContent() {
+    return content;
   }
 
   public static Builder newBuilder(StatusChange source) {
@@ -49,6 +55,11 @@ public class StatusChange extends ChangeLog {
 
     public Builder current(DataAccessEntityStatus value) {
       statusChange.to = value;
+      return this;
+    }
+
+    public Builder content(String content) {
+      statusChange.content = content;
       return this;
     }
 
