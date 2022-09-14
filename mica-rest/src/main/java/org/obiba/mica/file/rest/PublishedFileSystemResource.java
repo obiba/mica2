@@ -24,7 +24,6 @@ import org.springframework.web.util.UriUtils;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import java.io.UnsupportedEncodingException;
 
 @Component
 @Path("/")
