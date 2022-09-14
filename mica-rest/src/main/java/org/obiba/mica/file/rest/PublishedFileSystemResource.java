@@ -61,7 +61,7 @@ public class PublishedFileSystemResource extends AbstractFileSystemResource {
 
       return Response.ok(fileStoreService.getFile(attachment.getFileReference()))
         .header("Content-Disposition", "attachment; filename*=" + uriEncodedFilename).build();
-    } catch (NoSuchEntityException | UnsupportedEncodingException e) {
+    } catch (NoSuchEntityException e) {
       String name = doZip(path);
 
       return Response.ok(tempFileService.getInputStreamFromFile(name))
