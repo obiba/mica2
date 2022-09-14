@@ -1,20 +1,12 @@
 package org.obiba.mica.micaConfig.service;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
-
+import net.minidev.json.JSONArray;
 import org.obiba.core.translator.JsonTranslator;
 import org.obiba.core.translator.PrefixedValueTranslator;
 import org.obiba.core.translator.TranslationUtils;
@@ -23,7 +15,10 @@ import org.obiba.mica.core.support.RegexHashMap;
 import org.obiba.mica.micaConfig.domain.*;
 import org.springframework.stereotype.Component;
 
-import net.minidev.json.JSONArray;
+import javax.inject.Inject;
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Component
 public class EntityConfigKeyTranslationService {
@@ -263,39 +258,49 @@ public class EntityConfigKeyTranslationService {
     String joinedLocales = getJoinedLocales();
 
     normalArray.stream().map(Object::toString)
-    .filter(key -> key.endsWith("['title']"))
-    .forEach(key -> {
-      Object read = JsonPath.parse(string).read(key);
-      if (read != null) {
-        String cleanKey = key.replaceAll("(\\$\\[')|('\\])", "").replaceAll("(\\[')", ".").replaceAll("\\.title$", "").replaceAll("^properties\\.", "").replaceAll("\\.properties", "");
+      .filter(key -> key.endsWith("['title']"))
+      .forEach(key -> {
+        Object read = JsonPath.parse(string).read(key);
+        if (read != null) {
+          String cleanKey = key.replaceAll("(\\$\\[')|('\\])", "").replaceAll("(\\[')", ".").replaceAll("\\.title$", "").replaceAll("^properties\\.", "").replaceAll("\\.properties", "");
+          String prefixStr = cleanKey.startsWith("_") ? prefix : prefix + "(model\\.)?";
+          cleanKey = cleanKey.startsWith("_") ? cleanKey.substring(1) : cleanKey;
 
-        String processedKey = (cleanKey.startsWith("_") ? prefix : prefix + "(model\\.)?") + Pattern.quote((cleanKey.startsWith("_") ? cleanKey.substring(1) : cleanKey)) + "(\\[\\d+\\])?" + "(" + joinedLocales + ")?";
+          String quotedKey = Pattern.quote(cleanKey);
+          if (cleanKey.contains(".items.")) {
+            quotedKey = Joiner.on("\\[\\d+\\]\\.").join(
+              Splitter.on(".items.").splitToList(cleanKey).stream()
+                .map(Pattern::quote)
+                .collect(Collectors.toList()));
+          }
 
-        map.put(processedKey, read.toString());
-      }
-    });
+          String processedKey = prefixStr + quotedKey + "(\\.obibaFiles)?(\\[\\d+\\])?" + "(" + joinedLocales + "|\\.fileName|\\.size)?";
+
+          map.put(processedKey, read.toString());
+        }
+      });
 
     itemsArray.stream().map(Object::toString)
-    .forEach(itemkey -> {
-      Object read = JsonPath.parse(string).read(itemkey);
-      if (read != null && read instanceof List) {
-        JSONArray array = (JSONArray) read;
-        array.forEach(arrayItem -> {
+      .forEach(itemkey -> {
+        Object read = JsonPath.parse(string).read(itemkey);
+        if (read != null && read instanceof List) {
+          JSONArray array = (JSONArray) read;
+          array.forEach(arrayItem -> {
 
-          if (arrayItem != null && arrayItem instanceof Map) {
-            Map itemMap = (Map) arrayItem;
-            Object key = itemMap.get("key");
-            Object name = itemMap.get("name");
+            if (arrayItem != null && arrayItem instanceof Map) {
+              Map itemMap = (Map) arrayItem;
+              Object key = itemMap.get("key");
+              Object name = itemMap.get("name");
 
-            String cleanKey = itemkey.replaceAll("(\\$\\[')|('\\])", "").replaceAll("(\\[')", ".").replaceAll("\\.items$", "").replaceAll("^properties\\.", "").replaceAll("\\.properties", "") + "." + key.toString();
+              String cleanKey = itemkey.replaceAll("(\\$\\[')|('\\])", "").replaceAll("(\\[')", ".").replaceAll("\\.items$", "").replaceAll("^properties\\.", "").replaceAll("\\.properties", "") + "." + key.toString();
 
-            String processedKey = (cleanKey.startsWith("_") ? prefix : prefix + "model\\.") + Pattern.quote((cleanKey.startsWith("_") ? cleanKey.substring(1) : cleanKey));
+              String processedKey = (cleanKey.startsWith("_") ? prefix : prefix + "model\\.") + Pattern.quote((cleanKey.startsWith("_") ? cleanKey.substring(1) : cleanKey));
 
-            map.put(processedKey, name);
-          }
-        });
-      }
-    });
+              map.put(processedKey, name);
+            }
+          });
+        }
+      });
 
     return map;
   }

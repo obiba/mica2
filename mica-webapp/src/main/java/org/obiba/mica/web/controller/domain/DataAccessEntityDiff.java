@@ -60,7 +60,7 @@ public class DataAccessEntityDiff {
           .map(DiffRow::getNewLine)
           .reduce((a, b) -> a + "<br/>" + b)
           .orElse(""));
-        diffs.put(entry.getKey(), newValue);
+        diffs.put(cleanDiffKey(entry.getKey()), newValue);
       });
     getOnlyLeft().entrySet().stream()
       .filter(entry -> includeDiffKey(entry.getKey()))
@@ -69,7 +69,7 @@ public class DataAccessEntityDiff {
           .map(val -> val == null ? null : val.toString())
           .collect(Collectors.toList());
         newValue.add("");
-        diffs.put(entry.getKey(), newValue);
+        diffs.put(cleanDiffKey(entry.getKey()), newValue);
       });
     getOnlyRight().entrySet().stream()
       .filter(entry -> includeDiffKey(entry.getKey()))
@@ -78,7 +78,7 @@ public class DataAccessEntityDiff {
           .map(val -> val == null ? null : val.toString())
           .collect(Collectors.toList());
         newValue.add(1, "");
-        diffs.put(entry.getKey(), newValue);
+        diffs.put(cleanDiffKey(entry.getKey()), newValue);
       });
 
     return diffs;
@@ -87,6 +87,10 @@ public class DataAccessEntityDiff {
   //
   // Private methods
   //
+
+  private String cleanDiffKey(String key) {
+    return key.replaceAll(".obibaFiles", "");
+  }
 
   private boolean includeDiffKey(String key) {
     return !key.contains(".obibaFiles[") || (!key.endsWith(".md5") && !key.endsWith(".id") && !key.endsWith(".timestamps.created"));

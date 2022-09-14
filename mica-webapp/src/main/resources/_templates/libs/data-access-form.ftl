@@ -112,10 +112,10 @@
               <#list diffs.differences as k, v>
                 <tr>
                   <td>
-                      <#if v[0]??>
-                        <div><strong>${v[0]}</strong></div>
-                      </#if>
-                    <small>${k}</small>
+                    <#if v[0]??>
+                      <div><strong>${v[0]}</strong></div>
+                    </#if>
+                    <smalll><code>${k}</code></smalll>
                   </td>
                   <td class="marked">${v[1]}</td>
                   <td class="marked">${v[2]}</td>
