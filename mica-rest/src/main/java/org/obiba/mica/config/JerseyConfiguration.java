@@ -10,7 +10,7 @@
 
 package org.obiba.mica.config;
 
-import org.glassfish.jersey.filter.LoggingFilter;
+import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
@@ -19,7 +19,6 @@ import org.obiba.mica.micaConfig.rest.ConfigurationInterceptor;
 import org.obiba.mica.web.rest.security.AuditInterceptor;
 import org.obiba.mica.web.rest.security.AuthenticationInterceptor;
 import org.obiba.mica.web.rest.security.CSRFInterceptor;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -36,7 +35,7 @@ public class JerseyConfiguration extends ResourceConfig {
   public JerseyConfiguration(Environment environment) {
     register(RequestContextFilter.class);
     packages("org.obiba.mica", "org.obiba.jersey", "com.fasterxml.jackson");
-    register(LoggingFilter.class);
+    register(LoggingFeature.class);
     register(AuthenticationInterceptor.class);
     register(ConfigurationInterceptor.class);
     register(AuditInterceptor.class);
@@ -47,7 +46,6 @@ public class JerseyConfiguration extends ResourceConfig {
   }
 
   private String getServerPort(Environment environment) {
-    RelaxedPropertyResolver relaxedPropertyResolver = new RelaxedPropertyResolver(environment, "server.");
-    return relaxedPropertyResolver.getProperty("port", "8082");
+    return environment.getProperty("server.port", "8082");
   }
 }
