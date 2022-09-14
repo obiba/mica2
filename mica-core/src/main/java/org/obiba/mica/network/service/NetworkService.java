@@ -54,6 +54,7 @@ import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
@@ -112,9 +113,10 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
     if(network.isNew()) {
       generateId(saved);
     } else {
-      saved = networkRepository.findOne(network.getId());
+      Optional<Network> found = networkRepository.findById(network.getId());
 
-      if (saved != null) {
+      if (found.isPresent()) {
+        saved = found.get();
         BeanUtils.copyProperties(network, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
             "lastModifiedDate");
       } else {
@@ -163,11 +165,10 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
    */
   @NotNull
   public Network findById(@NotNull String id) throws NoSuchNetworkException {
-    Network network = networkRepository.findOne(id);
+    Optional<Network> found = networkRepository.findById(id);
+    if(!found.isPresent()) throw NoSuchNetworkException.withId(id);
 
-    if(network == null) throw NoSuchNetworkException.withId(id);
-
-    return network;
+    return found.get();
   }
 
   /**
@@ -206,7 +207,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
    * @return
    */
   public List<Network> findAllNetworks(Iterable<String> ids) {
-    return Lists.newArrayList(networkRepository.findAll(ids));
+    return Lists.newArrayList(networkRepository.findAllById(ids));
   }
 
   /**
@@ -264,8 +265,9 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
    */
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'network'") })
   public void publish(@NotNull String id, boolean publish, PublishCascadingScope cascadingScope) throws NoSuchEntityException {
-    Network network = networkRepository.findOne(id);
-    if (network == null) return;
+    Optional<Network> found = networkRepository.findById(id);
+    if (!found.isPresent()) return;
+    Network network = found.get();
     if (publish) {
       processNetworkForPublishedNumberOfStudies(network);
       publishState(id);
@@ -312,7 +314,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
     if (network.getLogo() != null) fileStoreService.delete(network.getLogo().getId());
 
     fileSystemService.delete(FileUtils.getEntityPath(network));
-    networkStateRepository.delete(id);
+    networkStateRepository.deleteById(id);
     gitService.deleteGitRepository(network);
     eventBus.post(new NetworkDeletedEvent(network));
   }

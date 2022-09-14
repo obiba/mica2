@@ -15,9 +15,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -128,29 +130,30 @@ public class FileSystemService {
     if(attachment.isNew()) {
       attachment.setId(new ObjectId().toString());
     } else {
-      saved = attachmentRepository.findOne(attachment.getId());
-      if(saved == null || attachment.isJustUploaded()) {
+      Optional<Attachment> found = attachmentRepository.findById(attachment.getId());
+      if(!found.isPresent() || attachment.isJustUploaded()) {
         saved = attachment;
       } else if(state.isPublished() && state.getPublishedAttachment().getId().equals(attachment.getId())) {
         // about to update a published attachment, so make a soft copy of it
         attachment.setFileReference(saved.getFileReference());
-        attachment.setCreatedDate(DateTime.now());
+        attachment.setCreatedDate(LocalDateTime.now());
         attachment.setId(new ObjectId().toString());
         saved = attachment;
       } else {
+        saved = found.get();
         BeanUtils.copyProperties(attachment, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
             "lastModifiedDate", "fileReference");
       }
 
-      saved.setLastModifiedDate(DateTime.now());
+      saved.setLastModifiedDate(LocalDateTime.now());
       saved.setLastModifiedBy(getCurrentUsername());
     }
 
     if(saved.isJustUploaded()) {
-      if(attachmentRepository.exists(saved.getId())) {
+      if(attachmentRepository.existsById(saved.getId())) {
         // replace already existing attachment
         fileStoreService.delete(saved.getId());
-        attachmentRepository.delete(saved.getId());
+        attachmentRepository.deleteById(saved.getId());
       }
       fileStoreService.save(saved.getId());
       saved.setJustUploaded(false);
@@ -159,7 +162,7 @@ public class FileSystemService {
     attachmentRepository.save(saved);
 
     state.setAttachment(saved);
-    state.setLastModifiedDate(DateTime.now());
+    state.setLastModifiedDate(LocalDateTime.now());
     state.setLastModifiedBy(getCurrentUsername());
     if(state.isNew()) {
       if(FileUtils.isDirectory(state)) {
@@ -221,14 +224,14 @@ public class FileSystemService {
       attachment.setId(new ObjectId().toString());
       attachment.setName(DIR_NAME);
       attachment.setPath(path);
-      attachment.setLastModifiedDate(DateTime.now());
+      attachment.setLastModifiedDate(LocalDateTime.now());
       attachment.setLastModifiedBy(getCurrentUsername());
       attachmentRepository.save(attachment);
       AttachmentState state = new AttachmentState();
       state.setName(DIR_NAME);
       state.setPath(path);
       state.setAttachment(attachment);
-      state.setLastModifiedDate(DateTime.now());
+      state.setLastModifiedDate(LocalDateTime.now());
       state.setLastModifiedBy(getCurrentUsername());
       attachmentStateRepository.save(state);
       eventBus.post(new FileUpdatedEvent(state));
@@ -308,7 +311,7 @@ public class FileSystemService {
         state.unPublish();
       }
 
-      state.setLastModifiedDate(DateTime.now());
+      state.setLastModifiedDate(LocalDateTime.now());
       state.setLastModifiedBy(publisher);
       attachmentStateRepository.save(state);
       eventBus.post(publish ? new FilePublishedEvent(state): new FileUnPublishedEvent(state));
@@ -468,7 +471,7 @@ public class FileSystemService {
     Attachment newAttachment = new Attachment();
     BeanUtils.copyProperties(attachment, newAttachment, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
         "lastModifiedDate");
-    newAttachment.setLastModifiedDate(DateTime.now());
+    newAttachment.setLastModifiedDate(LocalDateTime.now());
     newAttachment.setLastModifiedBy(getCurrentUsername());
     save(newAttachment);
   }

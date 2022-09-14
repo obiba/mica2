@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -87,7 +88,11 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
     // ensure study exists
     getEntityState(id);
 
-    T study = getRepository().findOne(id);
+    Optional<T> found = getRepository().findById(id);
+
+    if (!found.isPresent()) throw NoSuchEntityException.withId(getType(), id);
+    
+    T study = found.get();
 
     if (locale != null) {
       modelAwareTranslator.translateModel(locale, study);
@@ -121,7 +126,7 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
 
   @NotNull
   public List<String> findIds(List<String> ids) {
-    return StreamSupport.stream(getRepository().findAll(ids).spliterator(), false)
+    return StreamSupport.stream(getRepository().findAllById(ids).spliterator(), false)
       .map(AbstractGitPersistable::getId)
       .collect(Collectors.toList());
   }
@@ -161,7 +166,7 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
   }
 
   public List<T> findAllDraftStudies(Iterable<String> ids) {
-    return Lists.newArrayList(getRepository().findAll(ids));
+    return Lists.newArrayList(getRepository().findAllById(ids));
   }
 
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", allEntries = true),
@@ -176,7 +181,7 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
     checkStudyConstraints(study);
 
     fileSystemService.delete(FileUtils.getEntityPath(study));
-    getEntityStateRepository().delete(id);
+    getEntityStateRepository().deleteById(id);
     getRepository().delete(study);
     gitService.deleteGitRepository(study);
     eventBus.post(new StudyDeletedEvent(study));

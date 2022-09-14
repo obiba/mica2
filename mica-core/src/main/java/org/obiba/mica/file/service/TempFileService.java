@@ -17,7 +17,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -82,10 +84,13 @@ public class TempFileService {
   public TempFile addTempFile(@NotNull TempFile tempFile, @NotNull InputStream uploadedInputStream) throws IOException {
     TempFile savedTempFile;
     if (tempFile.getId() != null) {
-      savedTempFile = tempFileRepository.findOne(tempFile.getId());
-      if (savedTempFile == null) {
+      Optional<TempFile> found = tempFileRepository.findById(tempFile.getId());
+      
+      if (!found.isPresent()) {
         savedTempFile = tempFileRepository.save(tempFile);
       }
+
+      savedTempFile = found.get();
     } else {
       savedTempFile = tempFileRepository.save(tempFile);
     }
@@ -102,9 +107,9 @@ public class TempFileService {
 
   @NotNull
   public TempFile getMetadata(@NotNull String id) throws NoSuchTempFileException {
-    TempFile tempFile = tempFileRepository.findOne(id);
-    if(tempFile == null) throw new NoSuchTempFileException(id);
-    return tempFile;
+    Optional<TempFile> tempFile = tempFileRepository.findById(id);
+    if(!tempFile.isPresent()) throw new NoSuchTempFileException(id);
+    return tempFile.get();
   }
 
   public byte[] getContent(@NotNull String id) throws NoSuchTempFileException {
@@ -138,7 +143,7 @@ public class TempFileService {
   }
 
   public void delete(@NotNull String id) {
-    tempFileRepository.delete(id);
+    tempFileRepository.deleteById(id);
 
     if(!getFile(id).delete()) {
       log.debug("Could not delete temp file {}", id);
@@ -148,7 +153,7 @@ public class TempFileService {
   @Scheduled(fixedDelay = TEMP_FILE_CLEANUP_INTERVAL)
   public void cleanupTempFiles() {
     log.debug("Cleaning up tempfiles");
-    List<TempFile> tempFiles = tempFileRepository.findByCreatedDateLessThan(DateTime.now().minusHours(TEMP_FILE_EXPIRE_TIMEOUT), new PageRequest(0, 100));
+    List<TempFile> tempFiles = tempFileRepository.findByCreatedDateLessThan(LocalDateTime.now().minusHours(TEMP_FILE_EXPIRE_TIMEOUT), PageRequest.of(0, 100));
 
     tempFiles.forEach(f -> tempFileRepository.delete(f));
   }

@@ -22,7 +22,7 @@ import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @Configuration
-@EnableMongoRepositories("org.obiba.mica")
+@EnableMongoRepositories(basePackages = "org.obiba.mica")
 public class MongoDbConfiguration {
 
   @Bean

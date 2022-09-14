@@ -35,7 +35,7 @@ public class JerseyConfiguration extends ResourceConfig {
   public JerseyConfiguration(Environment environment) {
     register(RequestContextFilter.class);
     packages("org.obiba.mica", "org.obiba.jersey", "com.fasterxml.jackson");
-    register(LoggingFeature.class);
+    // register(LoggingFeature.class);
     register(AuthenticationInterceptor.class);
     register(ConfigurationInterceptor.class);
     register(AuditInterceptor.class);

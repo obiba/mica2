@@ -11,6 +11,7 @@
 package org.obiba.mica.micaConfig.service;
 
 import java.util.Map;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -57,7 +58,7 @@ public class TaxonomyConfigService {
   }
 
   public void delete(TaxonomyTarget target) {
-    taxonomyConfigRepository.delete(target.asId());
+    taxonomyConfigRepository.deleteById(target.asId());
     initDefaults();
   }
 
@@ -81,14 +82,14 @@ public class TaxonomyConfigService {
     // taxonomy of taxonomies is not editable so fall back to the one that comes from the classpath
     if(TaxonomyTarget.TAXONOMY.equals(target)) return defaultTaxonomyTaxonomy;
     String id = target.asId();
-    TaxonomyEntityWrapper taxonomyEntityWrapper = taxonomyConfigRepository.findOne(id);
+    Optional<TaxonomyEntityWrapper> taxonomyEntityWrapper = taxonomyConfigRepository.findById(id);
 
-    if(taxonomyEntityWrapper == null) {
+    if(!taxonomyEntityWrapper.isPresent()) {
       createDefault(target);
-      taxonomyEntityWrapper = taxonomyConfigRepository.findOne(id);
+      taxonomyEntityWrapper = taxonomyConfigRepository.findById(id);
     }
 
-    return taxonomyEntityWrapper.getTaxonomy();
+    return taxonomyEntityWrapper.get().getTaxonomy();
   }
 
   void mergeVocabulariesTerms(Taxonomy taxonomy, Taxonomy defaultTaxonomy) {

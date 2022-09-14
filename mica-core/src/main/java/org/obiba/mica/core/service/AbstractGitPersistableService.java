@@ -43,6 +43,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -98,14 +99,14 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
 
   @Nullable
   public T findStateById(@NotNull String id) throws NoSuchEntityException {
-    return getEntityStateRepository().findOne(id);
+    return getEntityStateRepository().findById(id).get();
   }
 
   @NotNull
   public T getEntityState(String id) {
-    T entityState = getEntityStateRepository().findOne(id);
-    if(entityState == null) throw NoSuchEntityException.withId(getType(), id);
-    return entityState;
+    Optional<T> found = getEntityStateRepository().findById(id);
+    if(!found.isPresent()) throw NoSuchEntityException.withId(getType(), id);
+    return found.get();
   }
 
   @NotNull
@@ -121,9 +122,9 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
       return defaultState;
     }
 
-    T existingState = getEntityStateRepository().findOne(gitPersistable.getId());
+    Optional<T> found = getEntityStateRepository().findById(gitPersistable.getId());
 
-    if(existingState == null) {
+    if(!found.isPresent()) {
       defaultState = stateSupplier.get();
       defaultState.setId(gitPersistable.getId());
       getEntityStateRepository().save(defaultState);
@@ -131,7 +132,7 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
       return defaultState;
     }
 
-    return existingState;
+    return found.get();
   }
 
 
@@ -207,7 +208,7 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
   }
 
   public List<T> findAllStates(Iterable<String> ids) {
-    return Lists.newArrayList(getEntityStateRepository().findAll(ids));
+    return Lists.newArrayList(getEntityStateRepository().findAllById(ids));
   }
 
   public T saveState(@NotNull T entityState) {

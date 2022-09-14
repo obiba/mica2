@@ -72,7 +72,6 @@
     <rql-parser.version>0.3.3-obiba</rql-parser.version>
     <shiro.version>1.9.1</shiro.version>
     <shiro-extras.version>1.1.0</shiro-extras.version>
-    <spring-data-commons.version>1.13.16.RELEASE</spring-data-commons.version>
     <lang-tag.version>1.4.4</lang-tag.version>
     <jakarta.servlet>4.0.4</jakarta.servlet>
 
@@ -226,11 +225,7 @@
         <artifactId>geronimo-javamail_1.4_mail</artifactId>
         <version>${geronimo-javamail_1.4_mail.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.springframework.data</groupId>
-        <artifactId>spring-data-commons</artifactId>
-        <version>${spring-data-commons.version}</version>
-      </dependency>
+      
       <dependency>
         <groupId>org.mongodb</groupId>
         <artifactId>mongodb-driver-sync</artifactId>

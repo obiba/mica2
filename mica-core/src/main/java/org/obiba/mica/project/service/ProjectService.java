@@ -44,6 +44,7 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
@@ -96,18 +97,18 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
    */
   @NotNull
   public Project findById(@NotNull String id) throws NoSuchProjectException {
-    Project project = projectRepository.findOne(id);
+    Optional<Project> project = projectRepository.findById(id);
 
-    if(project == null) throw NoSuchProjectException.withId(id);
+    if(!project.isPresent()) throw NoSuchProjectException.withId(id);
 
-    return project;
+    return project.get();
   }
 
   @Override
   public Project findDraft(@NotNull String id) throws NoSuchEntityException {
-    Project project = projectRepository.findOne(id);
-    if(project == null) throw NoSuchEntityException.withId(Project.class, id);
-    return project;
+    Optional<Project> project = projectRepository.findById(id);
+    if(!project.isPresent()) throw NoSuchEntityException.withId(Project.class, id);
+    return project.get();
   }
 
   @Override
@@ -121,9 +122,10 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
     if(project.isNew()) {
       generateId(saved);
     } else {
-      saved = projectRepository.findOne(project.getId());
+      Optional<Project> found = projectRepository.findById(project.getId());     
 
-      if(saved != null) {
+      if(found.isPresent()) {
+        saved = found.get();
         BeanUtils.copyProperties(project, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
           "lastModifiedDate", "dataAccessRequestId");
       } else {
@@ -159,8 +161,8 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
   public void delete(@NotNull String id) throws NoSuchProjectException {
     Project project = findById(id);
     fileSystemService.delete(FileUtils.getEntityPath(project));
-    projectStateRepository.delete(id);
-    projectRepository.delete(id);
+    projectStateRepository.deleteById(id);
+    projectRepository.deleteById(id);
     gitService.deleteGitRepository(project);
     eventBus.post(new ProjectDeletedEvent(project));
   }
@@ -179,8 +181,9 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'project'") })
   public void publish(@NotNull String id, boolean publish, PublishCascadingScope cascadingScope)
     throws NoSuchEntityException {
-    Project project = projectRepository.findOne(id);
-    if(project == null) return;
+    Optional<Project> found = projectRepository.findById(id);
+    if(!found.isPresent()) return;
+    Project project = found.get();
     if(publish) {
       publishState(id);
       eventBus.post(new ProjectPublishedEvent(project, getCurrentUsername(), cascadingScope));
@@ -236,7 +239,7 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
    * @return
    */
   public List<Project> findAllProjects(Iterable<String> ids) {
-    return Lists.newArrayList(projectRepository.findAll(ids));
+    return Lists.newArrayList(projectRepository.findAllById(ids));
   }
 
   /**
@@ -276,10 +279,10 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
     if(Strings.isNullOrEmpty(prefix)) return null;
     String next = prefix;
 
-    if(!projectRepository.exists(next)) return next;
+    if(!projectRepository.existsById(next)) return next;
     for(int i = 1; i <= 1000; i++) {
       next = prefix + "-" + i;
-      if(!projectRepository.exists(next)) return next;
+      if(!projectRepository.existsById(next)) return next;
     }
     return null;
   }
@@ -293,7 +296,7 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
   @Subscribe
   public void dataAccessRequestUpdated(DataAccessRequestUpdatedEvent event) {
     DataAccessRequest request = event.getPersistable();
-    if(!projectRepository.exists(request.getId()) && request.getStatus() == DataAccessEntityStatus.APPROVED) {
+    if(!projectRepository.existsById(request.getId()) && request.getStatus() == DataAccessEntityStatus.APPROVED) {
       Project project = new Project();
       project.setId(event.getPersistable().getId());
       project.setDataAccessRequestId(event.getPersistable().getId());
