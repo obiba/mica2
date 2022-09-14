@@ -93,7 +93,7 @@ public class DataAccessEntityDiff {
   }
 
   private boolean includeDiffKey(String key) {
-    return !key.contains(".obibaFiles[") || (!key.endsWith(".md5") && !key.endsWith(".id") && !key.endsWith(".timestamps.created"));
+    return !key.contains(".obibaFiles[") || key.endsWith(".fileName") || key.endsWith(".size");
   }
 
   private Map<String, List<Object>> getDiffering() {
