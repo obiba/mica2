@@ -11,14 +11,14 @@
 package org.obiba.mica.config;
 
 import com.google.common.collect.Lists;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+
+import org.bson.Document;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.runtime.Version;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.data.mongodb.core.convert.CustomConversions;
+import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @Configuration
@@ -26,25 +26,25 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 public class MongoDbConfiguration {
 
   @Bean
-  public CustomConversions customConversions() {
-    return new CustomConversions(
+  public MongoCustomConversions mongoCustomConversions() {
+    return new MongoCustomConversions(
         Lists.newArrayList(new LocalizedStringWriteConverter(), new LocalizedStringReadConverter(), new VersionReadConverter()));
   }
 
-  public static class LocalizedStringWriteConverter implements Converter<LocalizedString, DBObject> {
+  public static class LocalizedStringWriteConverter implements Converter<LocalizedString, Document> {
 
     @Override
-    public DBObject convert(LocalizedString source) {
-      DBObject dbo = new BasicDBObject();
+    public Document convert(LocalizedString source) {
+      Document dbo = new Document();
       source.entrySet().forEach(entry -> dbo.put(entry.getKey(), entry.getValue()));
       return dbo;
     }
   }
 
-  public static class LocalizedStringReadConverter implements Converter<DBObject, LocalizedString> {
+  public static class LocalizedStringReadConverter implements Converter<Document, LocalizedString> {
 
     @Override
-    public LocalizedString convert(DBObject source) {
+    public LocalizedString convert(Document source) {
       LocalizedString rval = new LocalizedString();
       source.keySet()
           .forEach(key -> rval.put(key, source.get(key) == null ? null : source.get(key).toString()));
@@ -52,10 +52,10 @@ public class MongoDbConfiguration {
     }
   }
 
-  public static class VersionReadConverter implements Converter<DBObject, Version> {
+  public static class VersionReadConverter implements Converter<Document, Version> {
 
     @Override
-    public Version convert(DBObject dbObject) {
+    public Version convert(Document dbObject) {
       return new Version((int)dbObject.get("major"), (int)dbObject.get("minor"), (int)dbObject.get("micro"), (String)dbObject.get("qualifier"));
     }
   }

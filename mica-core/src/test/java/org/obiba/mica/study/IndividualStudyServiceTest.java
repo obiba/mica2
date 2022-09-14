@@ -64,7 +64,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.convert.CustomConversions;
+import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.gridfs.GridFsOperations;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.test.annotation.DirtiesContext;
@@ -483,8 +483,8 @@ public class IndividualStudyServiceTest {
 
     @Override
     @Bean
-    public CustomConversions customConversions() {
-      return new CustomConversions(
+    public MongoCustomConversions customConversions() {
+      return new MongoCustomConversions(
           Lists.newArrayList(new MongoDbConfiguration.LocalizedStringWriteConverter(),
               new MongoDbConfiguration.LocalizedStringReadConverter()));
     }

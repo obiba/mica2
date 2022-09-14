@@ -48,10 +48,11 @@ opalTaxonomies:
     defaultTermsSortOrder: "title"
 
 spring:
+    config.activate.on-profile: prod
+    main.allow-bean-definition-overriding: true
     data:
         mongodb:
             uri: mongodb://localhost:27017/mica
-    profiles: prod
 
 sets:
   cleanup:
