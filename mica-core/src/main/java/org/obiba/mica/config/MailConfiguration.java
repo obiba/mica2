@@ -14,7 +14,6 @@ import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,25 +23,23 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 @Configuration
 public class MailConfiguration implements EnvironmentAware {
 
-  private static final String ENV_SPRING_MAIL = "spring.mail.";
-
   private static final String DEFAULT_HOST = "127.0.0.1";
 
-  private static final String PROP_HOST = "host";
+  private static final String PROP_HOST = "spring.mail.host";
 
   private static final String DEFAULT_PROP_HOST = "localhost";
 
-  private static final String PROP_PORT = "port";
+  private static final String PROP_PORT = "spring.mail.port";
 
-  private static final String PROP_USER = "user";
+  private static final String PROP_USER = "spring.mail.user";
 
-  private static final String PROP_PASSWORD = "password";
+  private static final String PROP_PASSWORD = "spring.mail.password";
 
-  private static final String PROP_PROTO = "protocol";
+  private static final String PROP_PROTO = "spring.mail.protocol";
 
-  private static final String PROP_TLS = "tls";
+  private static final String PROP_TLS = "spring.mail.tls";
 
-  private static final String PROP_AUTH = "auth";
+  private static final String PROP_AUTH = "spring.mail.auth";
 
   private static final String PROP_SMTP_AUTH = "mail.smtp.auth";
 
@@ -52,26 +49,26 @@ public class MailConfiguration implements EnvironmentAware {
 
   private static final Logger log = LoggerFactory.getLogger(MailConfiguration.class);
 
-  private RelaxedPropertyResolver propertyResolver;
+  private Environment environment;
 
   public MailConfiguration() {
   }
 
   @Override
   public void setEnvironment(Environment environment) {
-    propertyResolver = new RelaxedPropertyResolver(environment, ENV_SPRING_MAIL);
+    this.environment = environment;
   }
 
   @Bean
   public JavaMailSenderImpl javaMailSender() {
     log.debug("Configuring mail server");
-    String host = propertyResolver.getProperty(PROP_HOST, DEFAULT_PROP_HOST);
-    int port = propertyResolver.getProperty(PROP_PORT, Integer.class, 0);
-    String user = propertyResolver.getProperty(PROP_USER);
-    String password = propertyResolver.getProperty(PROP_PASSWORD);
-    String protocol = propertyResolver.getProperty(PROP_PROTO);
-    Boolean tls = propertyResolver.getProperty(PROP_TLS, Boolean.class, false);
-    Boolean auth = propertyResolver.getProperty(PROP_AUTH, Boolean.class, false);
+    String host = environment.getProperty(PROP_HOST, DEFAULT_PROP_HOST);
+    int port = environment.getProperty(PROP_PORT, Integer.class, 0);
+    String user = environment.getProperty(PROP_USER);
+    String password = environment.getProperty(PROP_PASSWORD);
+    String protocol = environment.getProperty(PROP_PROTO);
+    Boolean tls = environment.getProperty(PROP_TLS, Boolean.class, false);
+    Boolean auth = environment.getProperty(PROP_AUTH, Boolean.class, false);
 
     JavaMailSenderImpl sender = new JavaMailSenderImpl();
     if(host != null && !host.isEmpty()) {

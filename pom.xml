@@ -74,6 +74,7 @@
     <shiro-extras.version>1.1.0</shiro-extras.version>
     <spring-data-commons.version>1.13.16.RELEASE</spring-data-commons.version>
     <lang-tag.version>1.4.4</lang-tag.version>
+    <jakarta.servlet>4.0.4</jakarta.servlet>
 
     <!-- maven plugins -->
     <github-release-plugin.version>1.2.0</github-release-plugin.version>
@@ -205,6 +206,13 @@
         <groupId>javax.inject</groupId>
         <artifactId>javax.inject</artifactId>
         <version>${javax.inject.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>jakarta.servlet</groupId>
+        <artifactId>jakarta.servlet-api</artifactId>
+        <version>${jakarta.servlet}</version>
+        <scope>provided</scope>
       </dependency>
 
       <dependency>

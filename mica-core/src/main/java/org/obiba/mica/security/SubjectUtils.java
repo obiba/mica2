@@ -12,12 +12,12 @@ package org.obiba.mica.security;
 
 import java.util.concurrent.Callable;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.obiba.shiro.authc.SudoAuthToken;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 
 public class SubjectUtils {
 
