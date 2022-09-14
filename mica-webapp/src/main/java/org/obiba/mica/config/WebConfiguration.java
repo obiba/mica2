@@ -124,6 +124,10 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
     };
   }
 
+  public void filterRegistrationBean() {
+
+  }
+
   @Override
   public void customize(Server server) {
     customizeSsl(server);
