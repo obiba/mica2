@@ -99,7 +99,6 @@ public class SignController extends BaseController {
     if (!subject.isAuthenticated()) {
       ModelAndView mv = new ModelAndView("signout");
       mv.getModel().put("authenticated", false);
-      mv.getModel().put("confirm", false);
       mv.getModel().put("postLogoutRedirectUri", null);
       return mv;
     }
@@ -117,7 +116,6 @@ public class SignController extends BaseController {
 
     ModelAndView mv = new ModelAndView("signout");
     mv.getModel().put("authenticated", true);
-    mv.getModel().put("confirm", true);
     mv.getModel().put("postLogoutRedirectUri", postLogoutRedirectUri);
     return mv;
   }
