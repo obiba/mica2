@@ -1,6 +1,7 @@
 package org.obiba.mica.web.controller;
 
 import org.owasp.esapi.ESAPI;
+import org.springframework.boot.autoconfigure.web.ErrorController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class ErrorController {
+public class ErrorControllerImpl implements ErrorController {
 
   @GetMapping("/error")
   public ModelAndView error(@RequestParam(value = "error", required = false, defaultValue = "500") String status, @RequestParam(defaultValue = "") String message) {
@@ -28,8 +29,13 @@ public class ErrorController {
 
   private ModelAndView makeModelAndView(String status, String message) {
     ModelAndView mv = new ModelAndView("error");
-    mv.getModel().put("status", status);
+    mv.getModel().put("status", ESAPI.encoder().encodeForHTML(status));
     mv.getModel().put("msg", ESAPI.encoder().encodeForHTML(message));
     return mv;
+  }
+
+  @Override
+  public String getErrorPath() {
+    return "/error";
   }
 }
