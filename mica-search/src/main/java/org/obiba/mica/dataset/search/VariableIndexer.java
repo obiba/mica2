@@ -146,13 +146,13 @@ public class VariableIndexer {
     lock.lock();
     try {
       DocumentSet documentSet = event.getPersistable();
-      List<DatasetVariable> toIndex = Lists.newArrayList();
-      {
+      if (!documentSet.getIdentifiers().isEmpty()) {
+        List<DatasetVariable> toIndex = Lists.newArrayList();
         List<DatasetVariable> toRemove = variableSetService.getVariables(event.getPersistable(), false);
         toRemove.forEach(var -> var.removeSet(documentSet.getId()));
         toIndex.addAll(toRemove);
+        indexer.indexAllIndexables(Indexer.PUBLISHED_VARIABLE_INDEX, toIndex);
       }
-      indexer.indexAllIndexables(Indexer.PUBLISHED_VARIABLE_INDEX, toIndex);
     } finally {
       lock.unlock();
     }

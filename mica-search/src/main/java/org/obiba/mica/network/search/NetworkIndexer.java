@@ -160,13 +160,13 @@
       lock.lock();
       try {
         DocumentSet documentSet = event.getPersistable();
-        List<Network> toIndex = Lists.newArrayList();
-        {
+        if (!documentSet.getIdentifiers().isEmpty()) {
+          List<Network> toIndex = Lists.newArrayList();
           List<Network> toRemove = networkSetService.getPublishedNetworks(event.getPersistable(), false);
           toRemove.forEach(ntw -> ntw.removeSet(documentSet.getId()));
           toIndex.addAll(toRemove);
+          indexer.indexAll(Indexer.PUBLISHED_NETWORK_INDEX, toIndex);
         }
-        indexer.indexAll(Indexer.PUBLISHED_NETWORK_INDEX, toIndex);
       } finally {
         lock.unlock();
       }
