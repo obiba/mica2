@@ -1,8 +1,8 @@
 package org.obiba.mica.micaConfig.domain;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
-import org.joda.time.DateTime;
 import org.obiba.mica.core.domain.LocalizedString;
 
 import com.google.common.base.Strings;
@@ -12,7 +12,7 @@ public abstract class AbstractDataAccessEntityForm extends EntityConfig {
 
   private int revision = 0;
 
-  private DateTime lastUpdateDate;
+  private LocalDateTime lastUpdateDate;
 
   private Map<String, LocalizedString> properties;
 
@@ -34,11 +34,11 @@ public abstract class AbstractDataAccessEntityForm extends EntityConfig {
     this.revision = revision;
   }
 
-  public DateTime getLastUpdateDate() {
-    return lastUpdateDate == null ? DateTime.now() : lastUpdateDate;
+  public LocalDateTime getLastUpdateDate() {
+    return lastUpdateDate == null ? LocalDateTime.now() : lastUpdateDate;
   }
 
-  public void setLastUpdateDate(DateTime lastUpdateDate) {
+  public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
     this.lastUpdateDate = lastUpdateDate;
   }
 

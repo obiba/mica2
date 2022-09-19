@@ -48,9 +48,11 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.jayway.jsonpath.Configuration.defaultConfiguration;
@@ -95,7 +97,7 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
 
   @Override
   public DataAccessRequest save(@NotNull DataAccessRequest request) {
-    return save(request, DateTime.now());
+    return save(request, LocalDateTime.now());
   }
 
   public DataAccessRequest archive(@NotNull DataAccessRequest request, boolean archived) {
@@ -247,11 +249,11 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
   //
 
   private void touch(@NotNull DataAccessRequest request) {
-    request.setLastModifiedDate(DateTime.now());
+    request.setLastModifiedDate(LocalDateTime.now());
     dataAccessRequestRepository.saveWithReferences(request);
   }
 
-  private DataAccessRequest save(@NotNull DataAccessRequest request, DateTime lastModifiedDate) {
+  private DataAccessRequest save(@NotNull DataAccessRequest request, LocalDateTime lastModifiedDate) {
     DataAccessRequest saved = request;
     DataAccessEntityStatus from = null;
     Iterable<Attachment> attachmentsToDelete = null;
@@ -262,8 +264,9 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
       saved.setId(generateId());
       attachmentsToSave = saved.getAttachments();
     } else {
-      saved = dataAccessRequestRepository.findOne(request.getId());
-      if (saved != null) {
+      Optional<DataAccessRequest> found = dataAccessRequestRepository.findById(request.getId());
+      if (found.isPresent()) {
+        saved = found.get();
         if (!SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) &&
           !SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN)) {
           // preserve current actionLogs as no other user role can add or remove them
@@ -287,7 +290,7 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
       }
     }
 
-    schemaFormContentFileService.save(saved, dataAccessRequestRepository.findOne(request.getId()),
+    schemaFormContentFileService.save(saved, dataAccessRequestRepository.findById(request.getId()).get(),
       String.format("/data-access-request/%s", saved.getId()));
 
     if (attachmentsToSave != null) attachmentsToSave.forEach(a -> {

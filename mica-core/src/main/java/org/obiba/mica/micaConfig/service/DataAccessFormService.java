@@ -10,15 +10,16 @@
 
 package org.obiba.mica.micaConfig.service;
 
-import org.joda.time.DateTime;
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import javax.inject.Inject;
+
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.repository.DataAccessFormRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
-
-import javax.inject.Inject;
-import java.util.Optional;
 
 @Component
 public class DataAccessFormService extends AbstractDataAccessEntityFormService<DataAccessForm> {
@@ -50,18 +51,18 @@ public class DataAccessFormService extends AbstractDataAccessEntityFormService<D
       }
     });
     dataAccessForm.setRevision(0);
-    dataAccessForm.setLastUpdateDate(DateTime.now());
+    dataAccessForm.setLastUpdateDate(LocalDateTime.now());
     return dataAccessFormRepository.save(dataAccessForm);
   }
 
   @Override
   public DataAccessForm findDraft() {
-    DataAccessForm form = dataAccessFormRepository.findOne(DataAccessForm.DEFAULT_ID);
-    if (form == null) {
+    Optional<DataAccessForm> form = dataAccessFormRepository.findById(DataAccessForm.DEFAULT_ID);
+    if (!form.isPresent()) {
       createOrUpdate(createDefaultDataAccessForm());
-      form = dataAccessFormRepository.findOne(DataAccessForm.DEFAULT_ID);
+      form = dataAccessFormRepository.findById(DataAccessForm.DEFAULT_ID);
     }
-    return form;
+    return form.get();
   }
 
   @Override
@@ -93,7 +94,7 @@ public class DataAccessFormService extends AbstractDataAccessEntityFormService<D
   //
 
   private Optional<DataAccessForm> findFirstSortByRevisionDesc() {
-    return dataAccessFormRepository.findAll(new Sort(Sort.Direction.DESC, "revision")).stream()
+    return dataAccessFormRepository.findAll(Sort.by(Sort.Order.desc("revision"))).stream()
       .filter(form -> form.getRevision() > 0)
       .findFirst();
   }

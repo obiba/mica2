@@ -91,7 +91,7 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
     Optional<T> found = getRepository().findById(id);
 
     if (!found.isPresent()) throw NoSuchEntityException.withId(getType(), id);
-    
+
     T study = found.get();
 
     if (locale != null) {
@@ -134,10 +134,10 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
   @NotNull
   public T findStudy(@NotNull String id) throws NoSuchEntityException {
     // ensure study exists
-    T study = getRepository().findOne(id);
-    if (study == null)
+    Optional<T> study = getRepository().findById(id);
+    if (!study.isPresent())
       throw NoSuchEntityException.withId(getType(), id);
-    return study;
+    return study.get();
   }
 
   public boolean isPublished(@NotNull String id) throws NoSuchEntityException {
@@ -172,19 +172,19 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", allEntries = true),
       @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id") })
   public void delete(@NotNull String id) {
-    T study = getRepository().findOne(id);
+    Optional<T> study = getRepository().findById(id);
 
-    if (study == null) {
+    if (!study.isPresent()) {
       throw NoSuchEntityException.withId(getType(), id);
     }
 
-    checkStudyConstraints(study);
+    checkStudyConstraints(study.get());
 
-    fileSystemService.delete(FileUtils.getEntityPath(study));
+    fileSystemService.delete(FileUtils.getEntityPath(study.get()));
     getEntityStateRepository().deleteById(id);
-    getRepository().delete(study);
-    gitService.deleteGitRepository(study);
-    eventBus.post(new StudyDeletedEvent(study));
+    getRepository().delete(study.get());
+    gitService.deleteGitRepository(study.get());
+    eventBus.post(new StudyDeletedEvent(study.get()));
   }
 
   protected abstract MongoRepository<T, String> getRepository();
@@ -228,14 +228,18 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
   public void publish(@NotNull String id, boolean publish, PublishCascadingScope cascadingScope)
       throws NoSuchEntityException {
     log.info("Publish study: {}", id);
-    T study = getRepository().findOne(id);
+    Optional<T> study = getRepository().findById(id);
+
+    if (!study.isPresent()) {
+      throw NoSuchEntityException.withId(getType(), id);
+    }
 
     if (publish) {
       publishState(id);
-      eventBus.post(new StudyPublishedEvent(study, getCurrentUsername(), cascadingScope));
+      eventBus.post(new StudyPublishedEvent(study.get(), getCurrentUsername(), cascadingScope));
     } else {
       unPublishState(id);
-      eventBus.post(new StudyUnpublishedEvent(study));
+      eventBus.post(new StudyUnpublishedEvent(study.get()));
     }
   }
 

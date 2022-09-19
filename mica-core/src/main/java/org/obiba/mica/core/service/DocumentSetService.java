@@ -36,6 +36,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -76,9 +78,9 @@ public abstract class DocumentSetService {
    * @return
    */
   public DocumentSet findOne(String id) {
-    DocumentSet documentSet = documentSetRepository.findOne(id);
-    if (documentSet == null) throw new NoSuchElementException("No '" + getType() + "' set with id: " + id);
-    return documentSet;
+    Optional<DocumentSet> documentSet = documentSetRepository.findById(id);
+    if (!documentSet.isPresent()) throw new NoSuchElementException("No '" + getType() + "' set with id: " + id);
+    return documentSet.get();
   }
 
   /**
@@ -280,7 +282,7 @@ public abstract class DocumentSetService {
       .filter(set -> getType().equals(set.getType()))
       .forEach(set -> {
         int timeToLive = set.hasName() ? config.getSetTimeToLive() : config.getCartTimeToLive();
-        cleanUpIfExpired(set, DateTime.now().minusDays(timeToLive));
+        cleanUpIfExpired(set, LocalDateTime.now().minusDays(timeToLive));
       });
   }
 
@@ -291,12 +293,12 @@ public abstract class DocumentSetService {
       .filter(set -> getType().equals(set.getType()) && !set.hasName() && set.getIdentifiers().isEmpty())
       .forEach(set -> {
         int timeToLive = 1;
-        cleanUpIfExpired(set, DateTime.now().minusDays(timeToLive));
+        cleanUpIfExpired(set, LocalDateTime.now().minusDays(timeToLive));
       });
   }
 
-  private void cleanUpIfExpired(DocumentSet set, DateTime deadline) {
-    if (set.getLastModifiedDate().isBefore(deadline) && !set.isLocked()) {
+  private void cleanUpIfExpired(DocumentSet set, LocalDateTime deadline) {
+    if (set.getLastModifiedDate().orElse(LocalDateTime.now()).isBefore(deadline) && !set.isLocked()) {
       log.debug("Last updated {} - expiration {}", set.getLastModifiedDate(), deadline);
       log.info("{} {} has expired, deleting...", (set.hasName() ? "Set" : "Cart"), set.getId());
       delete(set);
@@ -323,7 +325,7 @@ public abstract class DocumentSetService {
 
   private DocumentSet saveInternal(DocumentSet documentSet) {
     ensureType(documentSet);
-    documentSet.setLastModifiedDate(DateTime.now());
+    documentSet.setLastModifiedDate(LocalDateTime.now());
     if (Strings.isNullOrEmpty(documentSet.getUsername())) {
       Object principal = SecurityUtils.getSubject().getPrincipal();
       if (principal != null) {

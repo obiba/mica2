@@ -10,14 +10,19 @@
 
 package org.obiba.mica.network.service;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import org.joda.time.DateTime;
+import static java.util.stream.Collectors.toList;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.PublishCascadingScope;
@@ -28,14 +33,17 @@ import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
-import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.NetworkStateRepository;
 import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.domain.NetworkState;
-import org.obiba.mica.network.event.*;
+import org.obiba.mica.network.event.IndexNetworksEvent;
+import org.obiba.mica.network.event.NetworkDeletedEvent;
+import org.obiba.mica.network.event.NetworkPublishedEvent;
+import org.obiba.mica.network.event.NetworkUnpublishedEvent;
+import org.obiba.mica.network.event.NetworkUpdatedEvent;
 import org.obiba.mica.study.ConstraintException;
 import org.obiba.mica.study.service.StudyService;
 import org.slf4j.Logger;
@@ -43,20 +51,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import static java.util.stream.Collectors.toList;
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
 
 @Service
 @Validated
@@ -148,7 +151,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
     networkState.incrementRevisionsAhead();
     networkStateRepository.save(networkState);
 
-    saved.setLastModifiedDate(DateTime.now());
+    saved.setLastModifiedDate(LocalDateTime.now());
 
     networkRepository.save(saved);
 

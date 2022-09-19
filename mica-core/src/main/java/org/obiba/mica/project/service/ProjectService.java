@@ -10,11 +10,16 @@
 
 package org.obiba.mica.project.service;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import org.joda.time.DateTime;
+import static java.util.stream.Collectors.toList;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import javax.inject.Inject;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
@@ -33,20 +38,21 @@ import org.obiba.mica.project.ProjectRepository;
 import org.obiba.mica.project.ProjectStateRepository;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.domain.ProjectState;
-import org.obiba.mica.project.event.*;
+import org.obiba.mica.project.event.IndexProjectsEvent;
+import org.obiba.mica.project.event.ProjectDeletedEvent;
+import org.obiba.mica.project.event.ProjectPublishedEvent;
+import org.obiba.mica.project.event.ProjectUnpublishedEvent;
+import org.obiba.mica.project.event.ProjectUpdatedEvent;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.util.List;
-import java.util.Optional;
-
-import static java.util.stream.Collectors.toList;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
 @Service
 public class ProjectService extends AbstractGitPersistableService<ProjectState, Project> {
@@ -122,7 +128,7 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
     if(project.isNew()) {
       generateId(saved);
     } else {
-      Optional<Project> found = projectRepository.findById(project.getId());     
+      Optional<Project> found = projectRepository.findById(project.getId());
 
       if(found.isPresent()) {
         saved = found.get();
@@ -145,7 +151,7 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
     projectState.incrementRevisionsAhead();
     projectStateRepository.save(projectState);
 
-    saved.setLastModifiedDate(DateTime.now());
+    saved.setLastModifiedDate(LocalDateTime.now());
 
     projectRepository.save(saved);
     eventBus.post(new ProjectUpdatedEvent(saved));

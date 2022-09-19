@@ -54,7 +54,7 @@ public class PersonIndexer {
     log.info("Reindexing all persons");
     if(indexer.hasIndex(Indexer.PERSON_INDEX)) indexer.dropIndex(Indexer.PERSON_INDEX);
 
-    Pageable pageRequest = new PageRequest(0, 100);
+    Pageable pageRequest = PageRequest.of(0, 100);
     Page<Person> persons;
 
     do {

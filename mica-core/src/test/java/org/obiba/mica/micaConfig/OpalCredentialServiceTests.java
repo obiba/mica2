@@ -60,7 +60,7 @@ public class OpalCredentialServiceTests {
   @Test
   public void testGetOpalCredential() {
     OpalCredential credential = new OpalCredential("https://opal", AuthType.USERNAME, "test", "encrypted");
-    when(opalCredentialRepository.findOne("https://opal")).thenReturn(credential);
+    when(opalCredentialRepository.findById("https://opal").get()).thenReturn(credential);
     when(micaConfigService.decrypt("encrypted")).thenReturn("password");
     OpalCredential actual = opalCredentialService.getOpalCredential("https://opal");
 
@@ -69,7 +69,7 @@ public class OpalCredentialServiceTests {
 
   @Test
   public void testGetOpalCredentialThrowsException() {
-    when(opalCredentialRepository.findOne("https://opal")).thenReturn(null);
+    when(opalCredentialRepository.findById("https://opal").get()).thenReturn(null);
     exception.expect(NoSuchOpalCredential.class);
 
     opalCredentialService.getOpalCredential("https://opal");
@@ -77,7 +77,7 @@ public class OpalCredentialServiceTests {
 
   @Test
   public void testCreateUsernamePasswordCredential() {
-    when(opalCredentialRepository.findOne("https://opal")).thenReturn(null);
+    when(opalCredentialRepository.findById("https://opal").get()).thenReturn(null);
     when(micaConfigService.encrypt("password")).thenReturn("encrypted");
 
     opalCredentialService.createOrUpdateOpalCredential("https://opal", "test", "password");
@@ -88,7 +88,7 @@ public class OpalCredentialServiceTests {
   @Test
   public void testUpdateUsernamePasswordCredential() {
     OpalCredential credential = new OpalCredential("https://opal", AuthType.USERNAME, "test", "encrypted");
-    when(opalCredentialRepository.findOne("https://opal")).thenReturn(credential);
+    when(opalCredentialRepository.findById("https://opal").get()).thenReturn(credential);
     when(micaConfigService.encrypt("password")).thenReturn("encrypted");
 
     opalCredentialService.createOrUpdateOpalCredential("https://opal", "test", "password");
@@ -99,7 +99,7 @@ public class OpalCredentialServiceTests {
   @Test
   public void testDeleteCertificateCredential() throws KeyStoreException {
     OpalCredential credential = new OpalCredential("https://opal", AuthType.CERTIFICATE);
-    when(opalCredentialRepository.findOne("https://opal")).thenReturn(credential);
+    when(opalCredentialRepository.findById("https://opal").get()).thenReturn(credential);
     KeyStoreManager keyStore = mock(KeyStoreManager.class);
     doNothing().when(keyStore).deleteKey("https://opal");
     when(keyStoreService.getKeyStore("opal")).thenReturn(keyStore);

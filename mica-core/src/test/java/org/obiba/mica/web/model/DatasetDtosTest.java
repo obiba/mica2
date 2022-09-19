@@ -30,6 +30,7 @@ import org.obiba.mica.study.service.PublishedStudyService;
 
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -90,7 +91,7 @@ public class DatasetDtosTest {
 
   @Test
   public void test_harmonized_dataset_dto() throws Exception {
-    when(harmonizationDatasetStateRepository.findOne(anyString())).thenReturn(new HarmonizationDatasetState());
+    when(harmonizationDatasetStateRepository.findById(anyString())).thenReturn(Optional.of(new HarmonizationDatasetState()));
     HarmonizationDataset harmonizationDataset = createHarmonizedDataset();
     Mica.DatasetDto dto = datasetDtos.asDto(harmonizationDataset);
 

@@ -16,8 +16,6 @@ import javax.validation.constraints.NotNull;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.study.HarmonizationStudyStateRepository;
 import org.obiba.mica.study.StudyStateRepository;
-import org.obiba.mica.study.domain.HarmonizationStudyState;
-import org.obiba.mica.study.domain.StudyState;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.lang.Assert;
@@ -39,9 +37,7 @@ public class StudyIdGeneratorService {
 
   private String getNextId(String prefix, int count) {
     String id = prefix + (count > 0 ? "-" + count : "");
-    StudyState studyState = studyStateRepository.findOne(id);
-    HarmonizationStudyState harmonizationStudyState = harmonizationStudyStateRepository.findOne(id);
-    if (studyState == null && harmonizationStudyState == null) {
+    if (!studyStateRepository.existsById(id) && !harmonizationStudyStateRepository.existsById(id)) {
       return id;
     }
 

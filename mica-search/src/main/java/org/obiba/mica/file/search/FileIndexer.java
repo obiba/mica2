@@ -83,7 +83,7 @@ public class FileIndexer {
     if(indexer.hasIndex(Indexer.ATTACHMENT_DRAFT_INDEX)) indexer.dropIndex(Indexer.ATTACHMENT_DRAFT_INDEX);
     if(indexer.hasIndex(Indexer.ATTACHMENT_PUBLISHED_INDEX)) indexer.dropIndex(Indexer.ATTACHMENT_PUBLISHED_INDEX);
 
-    Pageable pageRequest = new PageRequest(0, 100);
+    Pageable pageRequest = PageRequest.of(0, 100);
     Page<AttachmentState> attachments;
 
     do {

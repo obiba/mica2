@@ -29,9 +29,11 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
@@ -126,9 +128,9 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
    */
   @NotNull
   public T findById(@NotNull String id) throws NoSuchDataAccessRequestException {
-    T request = getRepository().findOne(id);
-    if (request == null) throw NoSuchDataAccessRequestException.withId(id);
-    return request;
+    Optional<T> request = getRepository().findById(id);
+    if (!request.isPresent()) throw NoSuchDataAccessRequestException.withId(id);
+    return request.get();
   }
 
   /**
@@ -371,7 +373,7 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
     while (tries < 100) {
       tries++;
       String id = idGenerator.generateIdentifier();
-      if (getRepository().findOne(id) == null) return id;
+      if (!getRepository().existsById(id) ) return id;
     }
 
     throw new DataAccessRequestGenerationException("Exceeded 100 id generation tries");
@@ -420,7 +422,7 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
    * @return
    */
   private List<T> applyDefaultSort(List<T> list) {
-    list.sort(Comparator.comparing(AbstractAuditableDocument::getLastModifiedDate).reversed());
+    list.sort(Comparator.comparing(item -> ((AbstractAuditableDocument) item).getLastModifiedDate().orElse(null), Comparator.nullsLast(LocalDateTime::compareTo)).reversed());
     return list;
   }
 

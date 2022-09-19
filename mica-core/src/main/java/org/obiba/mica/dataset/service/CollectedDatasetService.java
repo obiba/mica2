@@ -74,6 +74,8 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 
+import java.time.LocalDateTime;
+
 @Service
 @Validated
 public class CollectedDatasetService extends DatasetService<StudyDataset, StudyDatasetState> {
@@ -134,7 +136,7 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
   @Override
   @NotNull
   public StudyDataset findById(@NotNull String id) throws NoSuchDatasetException {
-    StudyDataset dataset = studyDatasetRepository.findOne(id);
+    StudyDataset dataset = studyDatasetRepository.findById(id).orElse(null);
     if(dataset == null) throw NoSuchDatasetException.withId(id);
     return dataset;
   }
@@ -199,7 +201,7 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
   }
 
   public List<StudyDataset> findAllDatasets(Iterable<String> ids) {
-    return Lists.newArrayList(studyDatasetRepository.findAll(ids));
+    return Lists.newArrayList(studyDatasetRepository.findAllById(ids));
   }
 
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'dataset'") })
@@ -352,7 +354,7 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
           return state.getId();
         })
         .collect(toList());
-      studyDatasetStateRepository.save(states);
+      studyDatasetStateRepository.saveAll(states);
 
       // index datasets
       List<StudyDataset> datasets = findAllDatasets(datasetIds);
@@ -369,7 +371,7 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
           .stream()
           .peek(state -> state.setRequireIndexing(true))
           .collect(toList());
-        studyDatasetStateRepository.save(states);
+        studyDatasetStateRepository.saveAll(states);
       }
     }
   }
@@ -453,7 +455,7 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
   }
 
   public void delete(String id) {
-    StudyDataset dataset = studyDatasetRepository.findOne(id);
+    StudyDataset dataset = studyDatasetRepository.findById(id).orElse(null);
 
     if(dataset == null) {
       throw NoSuchDatasetException.withId(id);
@@ -461,8 +463,8 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
 
     fileSystemService.delete(FileUtils.getEntityPath(dataset));
     helper.evictCache(dataset);
-    studyDatasetRepository.delete(id);
-    studyDatasetStateRepository.delete(id);
+    studyDatasetRepository.deleteById(id);
+    studyDatasetStateRepository.deleteById(id);
     gitService.deleteGitRepository(dataset);
     eventBus.post(new DatasetDeletedEvent(dataset));
   }
@@ -485,7 +487,7 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
         .stream()
         .peek(state -> state.setRequireIndexing(true))
         .collect(toList());
-      studyDatasetStateRepository.save(states);
+      studyDatasetStateRepository.saveAll(states);
     }
   }
 
@@ -540,7 +542,7 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
     studyDatasetState.incrementRevisionsAhead();
     studyDatasetStateRepository.save(studyDatasetState);
 
-    saved.setLastModifiedDate(DateTime.now());
+    saved.setLastModifiedDate(LocalDateTime.now());
     studyDatasetRepository.save(saved);
     gitService.save(saved, comment);
     eventBus.post(new DatasetUpdatedEvent(saved));
@@ -575,7 +577,7 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
       dataset.setId(generateDatasetId(dataset));
       return dataset;
     } else {
-      StudyDataset saved = studyDatasetRepository.findOne(dataset.getId());
+      StudyDataset saved = studyDatasetRepository.findById(dataset.getId()).orElse(null);
       if(saved != null) {
         BeanUtils.copyProperties(dataset, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
           "lastModifiedDate");

@@ -72,6 +72,8 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 
+import java.time.LocalDateTime;
+
 @Service
 @Validated
 public class HarmonizedDatasetService extends DatasetService<HarmonizationDataset, HarmonizationDatasetState> {
@@ -139,7 +141,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
   @Override
   @NotNull
   public HarmonizationDataset findById(@NotNull String id) throws NoSuchDatasetException {
-    HarmonizationDataset dataset = harmonizationDatasetRepository.findOne(id);
+    HarmonizationDataset dataset = harmonizationDatasetRepository.findById(id).orElse(null);
     if(dataset == null) throw NoSuchDatasetException.withId(id);
     return dataset;
   }
@@ -169,7 +171,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
    * @return
    */
   public List<HarmonizationDataset> findAllDatasets(Iterable<String> ids) {
-    return Lists.newArrayList(harmonizationDatasetRepository.findAll(ids));
+    return Lists.newArrayList(harmonizationDatasetRepository.findAllById(ids));
   }
 
   /**
@@ -332,7 +334,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
   }
 
   public void delete(String id) {
-    HarmonizationDataset dataset = harmonizationDatasetRepository.findOne(id);
+    HarmonizationDataset dataset = harmonizationDatasetRepository.findById(id).orElse(null);
 
     if(dataset == null) {
       throw NoSuchDatasetException.withId(id);
@@ -340,8 +342,8 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
 
     fileSystemService.delete(FileUtils.getEntityPath(dataset));
     helper.evictCache(dataset);
-    harmonizationDatasetStateRepository.delete(id);
-    harmonizationDatasetRepository.delete(id);
+    harmonizationDatasetStateRepository.deleteById(id);
+    harmonizationDatasetRepository.deleteById(id);
     gitService.deleteGitRepository(dataset);
     eventBus.post(new DatasetDeletedEvent(dataset));
   }
@@ -449,7 +451,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
     harmonizationDatasetState.incrementRevisionsAhead();
     harmonizationDatasetStateRepository.save(harmonizationDatasetState);
 
-    saved.setLastModifiedDate(DateTime.now());
+    saved.setLastModifiedDate(LocalDateTime.now());
     harmonizationDatasetRepository.save(saved);
     gitService.save(saved, comment);
     helper.getPublishedVariables(saved);
@@ -460,11 +462,12 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
       dataset.setId(generateDatasetId(dataset));
       return dataset;
     } else {
-      HarmonizationDataset saved = harmonizationDatasetRepository.findOne(dataset.getId());
-      if(saved != null) {
-        BeanUtils.copyProperties(dataset, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
+      Optional<HarmonizationDataset> saved = harmonizationDatasetRepository.findById(dataset.getId());
+      if(saved.isPresent()) {
+        HarmonizationDataset harmonizationDataset = saved.get();
+        BeanUtils.copyProperties(dataset, harmonizationDataset, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
           "lastModifiedDate");
-        return saved;
+        return harmonizationDataset;
       }
       return dataset;
     }

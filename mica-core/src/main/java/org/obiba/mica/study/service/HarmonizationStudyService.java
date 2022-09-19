@@ -10,12 +10,17 @@
 
 package org.obiba.mica.study.service;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import org.joda.time.DateTime;
+import static java.util.stream.Collectors.toList;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.core.service.MissingCommentException;
@@ -31,7 +36,6 @@ import org.obiba.mica.study.HarmonizationStudyRepository;
 import org.obiba.mica.study.HarmonizationStudyStateRepository;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.HarmonizationStudyState;
-import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
 import org.slf4j.Logger;
@@ -40,14 +44,10 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 @Service
 @Validated
@@ -103,7 +103,7 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
     studyState.incrementRevisionsAhead();
     harmonizationStudyStateRepository.save(studyState);
 
-    study.setLastModifiedDate(DateTime.now());
+    study.setLastModifiedDate(LocalDateTime.now());
 
     harmonizationStudyRepository.save(study);
 
@@ -136,7 +136,7 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
     return harmonizationDatasetRepository
         .findByHarmonizationTableStudyId(studyId)
         .stream()
-        .filter(ds -> harmonizationDatasetStateRepository.findOne(ds.getId()).isPublished())
+        .filter(ds -> harmonizationDatasetStateRepository.findById(ds.getId()).get().isPublished())
         .collect(Collectors.toList());
   }
 

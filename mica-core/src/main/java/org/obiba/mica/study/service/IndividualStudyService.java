@@ -10,13 +10,25 @@
 
 package org.obiba.mica.study.service;
 
-import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import org.joda.time.DateTime;
+import static java.util.stream.Collectors.toList;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.core.service.MissingCommentException;
@@ -40,19 +52,10 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
+import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @Service
 @Validated
@@ -100,7 +103,10 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
 
     // checks if population and dce are still the same
     if (study.getId() != null) {
-      List<String> list = populationsOrDceAffected(study, studyRepository.findOne(study.getId()), false);
+      Optional<Study> foundStudy = studyRepository.findById(study.getId());
+      if (!foundStudy.isPresent()) throw NoSuchEntityException.withId(getType(), study.getId());
+
+      List<String> list = populationsOrDceAffected(study, foundStudy.get(), false);
       if (list != null && list.size() > 0) {
         checkPopulationOrDceMissingConstraints(list);
       }
@@ -122,7 +128,7 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
     }
 
     studyStateRepository.save(studyState);
-    study.setLastModifiedDate(DateTime.now());
+    study.setLastModifiedDate(LocalDateTime.now());
 
     studyRepository.save(study);
 
@@ -202,13 +208,16 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
     return studyDatasetRepository
         .findByStudyTableStudyId(studyId)
         .stream()
-        .filter(ds -> studyDatasetStateRepository.findOne(ds.getId()).isPublished())
+        .filter(ds -> studyDatasetStateRepository.findById(ds.getId()).get().isPublished())
         .collect(Collectors.toList());
   }
 
   public Map<String, List<String>> getPotentialConflicts(Study study, boolean publishing) {
     if (study.getId() != null) {
-      Study oldStudy = publishing ? study : studyRepository.findOne(study.getId());
+      Optional<Study> foundStudy = studyRepository.findById(study.getId());
+      if (!foundStudy.isPresent()) throw NoSuchEntityException.withId(getType(), study.getId());
+
+      Study oldStudy = publishing ? study : foundStudy.get();
       if (oldStudy != null) {
         List<String> dceUIDs = publishing ? toListOfDceUids(study, true) : populationsOrDceAffected(study, oldStudy, true);
 

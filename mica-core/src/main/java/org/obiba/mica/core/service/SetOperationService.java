@@ -11,9 +11,13 @@
 package org.obiba.mica.core.service;
 
 
-import com.google.common.base.Joiner;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+
 import org.apache.shiro.SecurityUtils;
-import org.joda.time.DateTime;
 import org.obiba.mica.core.domain.ComposedSet;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.domain.SetOperation;
@@ -21,9 +25,7 @@ import org.obiba.mica.core.repository.SetOperationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.google.common.base.Joiner;
 
 public abstract class SetOperationService {
 
@@ -75,7 +77,7 @@ public abstract class SetOperationService {
 
     SetOperation setOperation = new SetOperation();
     setOperation.setType(getType());
-    setOperation.setLastModifiedDate(DateTime.now());
+    setOperation.setLastModifiedDate(LocalDateTime.now());
     Object principal = SecurityUtils.getSubject().getPrincipal();
     if (principal != null) {
       setOperation.setUsername(principal.toString());

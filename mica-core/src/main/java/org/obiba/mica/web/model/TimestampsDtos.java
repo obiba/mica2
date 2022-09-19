@@ -10,7 +10,8 @@
 
 package org.obiba.mica.web.model;
 
-import org.joda.time.DateTime;
+import java.time.LocalDateTime;
+
 import org.obiba.mica.core.domain.Timestamped;
 
 class TimestampsDtos {
@@ -25,7 +26,7 @@ class TimestampsDtos {
   }
 
   static void fromDto(Mica.TimestampsDtoOrBuilder dto, Timestamped timestamped) {
-    if(dto.hasCreated()) timestamped.setCreatedDate(DateTime.parse(dto.getCreated()));
-    if(dto.hasLastUpdate()) timestamped.setLastModifiedDate(DateTime.parse(dto.getLastUpdate()));
+    if(dto.hasCreated()) timestamped.setCreatedDate(LocalDateTime.parse(dto.getCreated()));
+    if(dto.hasLastUpdate()) timestamped.setLastModifiedDate(LocalDateTime.parse(dto.getLastUpdate()));
   }
 }

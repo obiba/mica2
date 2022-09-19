@@ -29,7 +29,7 @@ import com.google.common.base.Strings;
 @Document
 public class Attachment extends AbstractAuditableDocument implements AttributeAware, Comparable<Attachment> {
 
-  private static final long serialVersionUID = 7881381748865114007L;
+  private static final long serialVersionUID = 2L;
 
   @JsonIgnore
   private boolean justUploaded;
@@ -180,6 +180,6 @@ public class Attachment extends AbstractAuditableDocument implements AttributeAw
     if (cmp != 0) return cmp;
     cmp = getName().compareToIgnoreCase(o.getName());
     if (cmp != 0) return cmp;
-    return getCreatedDate().compareTo(o.getCreatedDate());
+    return getCreatedDate().orElse(null).compareTo(o.getCreatedDate().orElse(null));
   }
 }

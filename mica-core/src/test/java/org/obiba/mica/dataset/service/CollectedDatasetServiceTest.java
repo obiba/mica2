@@ -90,7 +90,7 @@ public class CollectedDatasetServiceTest {
     when(r.getValueTable(anyString())).thenThrow(new MagmaRuntimeException());
     when(opalService.getDatasource(anyString(), anyString())).thenReturn(r);
     when(individualStudyService.findStudy(anyString())).thenReturn(study);
-    when(studyDatasetStateRepository.findOne(anyString())).thenReturn(state);
+    when(studyDatasetStateRepository.findById(anyString()).get()).thenReturn(state);
 
     collectedDatasetService.save(dataset);
   }
