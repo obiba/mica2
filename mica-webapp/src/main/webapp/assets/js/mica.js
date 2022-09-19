@@ -812,7 +812,13 @@ class MicaService {
   }
 
   static redirect(path) {
-    window.location.assign(path);
+    if (path && path.startsWith('http')) {
+      window.location.assign(path);
+    } else if (path) {
+      $.redirect(path, {}, 'GET');
+    } else {
+      $.redirect(this.normalizeUrl('/'), {}, 'GET');
+    }
   }
 
 }

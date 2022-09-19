@@ -47,7 +47,7 @@
       <a id="userMenu" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><i class="fas fa-user"></i> ${user.fullName}</a>
       <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
         <li><a href="${contextPath}/profile" class="dropdown-item"><@message "profile"/></a></li>
-        <li><a href="#" onclick="UserService.signout();" class="dropdown-item"><@message "sign-out"/></a></li>
+        <li><a href="${contextPath}/signout" class="dropdown-item"><@message "sign-out"/></a></li>
       </ul>
     </li>
   <#elseif config??>
