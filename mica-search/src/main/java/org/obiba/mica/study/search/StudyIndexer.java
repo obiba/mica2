@@ -161,13 +161,13 @@ public class StudyIndexer {
     lock.lock();
     try {
       DocumentSet documentSet = event.getPersistable();
-      List<BaseStudy> toIndex = Lists.newArrayList();
-      {
+      if (!documentSet.getIdentifiers().isEmpty()) {
+        List<BaseStudy> toIndex = Lists.newArrayList();
         List<BaseStudy> toRemove = studySetService.getPublishedStudies(event.getPersistable(), false);
         toRemove.forEach(std -> std.removeSet(documentSet.getId()));
         toIndex.addAll(toRemove);
+        indexer.indexAllIndexables(Indexer.PUBLISHED_STUDY_INDEX, toIndex);
       }
-      indexer.indexAllIndexables(Indexer.PUBLISHED_STUDY_INDEX, toIndex);
     } finally {
       lock.unlock();
     }

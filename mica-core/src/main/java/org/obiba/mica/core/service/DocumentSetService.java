@@ -273,20 +273,34 @@ public abstract class DocumentSetService {
   }
 
   @Async
-  @Scheduled(cron = "${sets.cleanup.cron:0 0 * * * ?}")
+  @Scheduled(cron = "${sets.cleanup.cron:0 0 * * * *}")
   public void cleanupOldSets() {
     MicaConfig config = micaConfigService.getConfig();
     documentSetRepository.findAll().stream()
       .filter(set -> getType().equals(set.getType()))
       .forEach(set -> {
         int timeToLive = set.hasName() ? config.getSetTimeToLive() : config.getCartTimeToLive();
-        DateTime deadline = DateTime.now().minusDays(timeToLive);
-        if (set.getLastModifiedDate().isBefore(deadline) && !set.isLocked()) {
-          log.debug("Last updated {} - expiration {}", set.getLastModifiedDate(), deadline);
-          log.info("{} {} has expired, deleting...", (set.hasName() ? "Set" : "Cart"), set.getId());
-          delete(set);
-        }
+        cleanUpIfExpired(set, DateTime.now().minusDays(timeToLive));
       });
+  }
+
+  @Async
+  @Scheduled(cron = "${sets.cleanup.emptyCron:0 0/1 * * * *}") // hourly
+  public void cleanupOldEmptyCarts() {
+    documentSetRepository.findAll().stream()
+      .filter(set -> getType().equals(set.getType()) && !set.hasName() && set.getIdentifiers().isEmpty())
+      .forEach(set -> {
+        int timeToLive = 1;
+        cleanUpIfExpired(set, DateTime.now().minusDays(timeToLive));
+      });
+  }
+
+  private void cleanUpIfExpired(DocumentSet set, DateTime deadline) {
+    if (set.getLastModifiedDate().isBefore(deadline) && !set.isLocked()) {
+      log.debug("Last updated {} - expiration {}", set.getLastModifiedDate(), deadline);
+      log.info("{} {} has expired, deleting...", (set.hasName() ? "Set" : "Cart"), set.getId());
+      delete(set);
+    }
   }
 
   protected List<String> extractIdentifiers(String importedIdentifiers, Predicate<String> predicate) {
