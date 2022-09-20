@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import org.obiba.mica.core.service.AgateServerConfigService;
 import org.obiba.mica.core.service.UserAuthService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.controller.domain.AuthConfiguration;
 import org.obiba.mica.web.controller.domain.OidcProvider;
 import org.obiba.oidc.OIDCAuthProviderSummary;
@@ -25,6 +26,7 @@ import javax.ws.rs.core.UriBuilder;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,6 +38,9 @@ public class SignController extends BaseController {
 
   @Inject
   private UserAuthService userAuthService;
+
+  @Inject
+  private UserProfileService userProfileService;
 
   @Inject
   protected AgateServerConfigService agateServerConfigService;
@@ -104,14 +109,19 @@ public class SignController extends BaseController {
     }
 
     String postLogoutRedirectUri = null;
-    if (!callback && subject.getPrincipals().getRealmNames().contains("obiba-realm")) {
-      // mica signout callback url
-      UriBuilder micaBuilder = UriBuilder.fromUri(String.format("%s/signout", micaConfigService.getPublicUrl()))
-        .queryParam("cb", "true");
-      // agate signout url
-      UriBuilder agateBuilder = UriBuilder.fromUri(String.format("%s/signout", agateServerConfigService.getAgateUrl()))
-        .queryParam("post_logout_redirect_uri", micaBuilder.build());
-      postLogoutRedirectUri = agateBuilder.build().toString();
+    if (!callback) { // we are not in the logout callback
+      if (subject.getPrincipals().getRealmNames().contains("obiba-realm")) {
+        // not an ini realm user
+        // check if agate has delegated to an external ID provider
+        String username = subject.getPrincipal().toString();
+        Map<String, Object> params = userProfileService.getProfileMap(username, true);
+        if (params.containsKey("attributes")) {
+          Map<String, String> attrs = (Map<String, String>) params.get("attributes");
+          if (attrs.containsKey("realm") && !"agate-user-realm".equals(attrs.get("realm"))) {
+            postLogoutRedirectUri = makePostLogoutRedirectUri();
+          }
+        }
+      }
     }
 
     ModelAndView mv = new ModelAndView("signout");
@@ -120,8 +130,17 @@ public class SignController extends BaseController {
     return mv;
   }
 
+  private String makePostLogoutRedirectUri() {
+    // mica signout callback url
+    UriBuilder micaBuilder = UriBuilder.fromUri(String.format("%s/signout", micaConfigService.getPublicUrl()))
+      .queryParam("cb", "true");
+    // agate signout url
+    UriBuilder agateBuilder = UriBuilder.fromUri(String.format("%s/signout", agateServerConfigService.getAgateUrl()))
+      .queryParam("post_logout_redirect_uri", micaBuilder.build());
+    return agateBuilder.build().toString();
+  }
 
-    @GetMapping("/just-registered")
+  @GetMapping("/just-registered")
   public ModelAndView justRegistered(@RequestParam(value = "signin", required = false, defaultValue = "false") boolean canSignin) {
     ModelAndView mv = new ModelAndView("just-registered");
     mv.getModel().put("canSignin", canSignin);
