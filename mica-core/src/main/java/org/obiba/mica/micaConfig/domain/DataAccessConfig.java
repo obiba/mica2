@@ -75,6 +75,8 @@ public class DataAccessConfig extends AbstractAuditableDocument {
 
   private String intermediateReportSubject;
 
+  private String collaboratorInvitationSubject;
+
   private boolean withReview = true;
 
   private boolean withConditionalApproval = false;
@@ -431,5 +433,13 @@ public class DataAccessConfig extends AbstractAuditableDocument {
 
   public void setAmendmentCsvExportFormat(String amendmentCsvExportFormat) {
     this.amendmentCsvExportFormat = amendmentCsvExportFormat;
+  }
+
+  public String getCollaboratorInvitationSubject() {
+    return collaboratorInvitationSubject;
+  }
+
+  public void setCollaboratorInvitationSubject(String collaboratorInvitationSubject) {
+    this.collaboratorInvitationSubject = collaboratorInvitationSubject;
   }
 }

@@ -134,6 +134,40 @@
     </div>
     <!-- /.modal -->
 
+    <!-- Add collaborator modal -->
+    <div class="modal fade" id="modal-collaborator-add">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title"><@message "collaborator-invite-title"/></h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p><@message "collaborator-invite-text"/></p>
+            <div class="input-group mb-3">
+              <input name="email" type="email" class="form-control" placeholder="<@message "email"/>">
+              <div class="input-group-append">
+                <div class="input-group-text">
+                  <span class="fas fa-envelope"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal"
+                    onclick="DataAccessService.inviteCollaborator('${dar.id}', $('input[name=email]').val())"><@message "invite"/>
+            </button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
     <!-- Main content -->
     <section class="content">
 
@@ -417,6 +451,22 @@
                 </#if>
 
               </#if>
+            </div>
+          </div>
+
+          <div class="card card-info card-outline">
+            <div class="card-header">
+              <h3 class="card-title"><@message "collaborators"/></h3>
+              <div class="float-right">
+                <#if !dar.archived && (user.username == dar.applicant || isAdministrator || isDAO)>
+                  <button type="button" class="btn btn-primary ml-4" data-toggle="modal" data-target="#modal-collaborator-add">
+                    <i class="fas fa-plus"></i> <@message "new-collaborator"/>
+                  </button>
+                </#if>
+              </div>
+            </div>
+            <div class="card-body">
+                <@dataAccessCollaborators/>
             </div>
           </div>
         </div>

@@ -851,6 +851,16 @@ message DataAccessFeasibilityDto {
   }
 }
 
+message DataAccessCollaboratorDto {
+  required string requestId = 1;
+  required string email = 2;
+  required bool invitationPending = 3;
+  required bool banned = 4;
+  required string createdBy = 5;
+  optional string modifiedBy = 6;
+  required TimestampsDto timestamps = 7;
+}
+
 message TimelineDto {
   required string startDate = 1;
   required string endDate = 2;

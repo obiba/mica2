@@ -17,6 +17,8 @@ import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
 import com.jayway.jsonpath.*;
 import org.apache.shiro.SecurityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.obiba.mica.access.domain.*;
 import org.obiba.mica.core.service.DocumentDifferenceService;
 import org.obiba.mica.core.support.RegexHashMap;
@@ -148,6 +150,11 @@ public class DataAccessRequestUtilService {
     }
   }
 
+  public List<String> getEmails(DataAccessEntity entity) {
+    Object content = getContentAsObject(entity.getContent());
+    return extractEmails(content);
+  }
+
   public void checkStatusTransition(DataAccessEntity request, DataAccessEntityStatus to)
     throws IllegalArgumentException {
     if (request.getStatus() == to) return;
@@ -219,6 +226,32 @@ public class DataAccessRequestUtilService {
   //
   // Private methods
   //
+
+  private List<String> extractEmails(Object content) {
+    List<String> emails = Lists.newArrayList();
+    if (content instanceof Map) {
+      Map<String, Object> map = (Map<String, Object>) content;
+      for (Map.Entry<String, Object> entry : map.entrySet()) {
+        emails.addAll(extractEmails(entry.getValue()));
+      }
+    } else if (content instanceof JSONArray) {
+      JSONArray array = ((JSONArray) content);
+      for (int i=0; i<array.length(); i++) {
+        try {
+          emails.addAll(extractEmails(array.get(i)));
+        } catch (JSONException e) {
+          // ignore
+        }
+      }
+    } else if (content instanceof List) {
+      ((List<Object>) content)
+        .forEach(obj -> emails.addAll(extractEmails(obj)));
+    } else if (content instanceof String) {
+      if (content.toString().contains("@"))
+        emails.add(content.toString().trim());
+    }
+    return emails;
+  }
 
   private Object getContentAsObject(String rawContent) {
     Object content = null;

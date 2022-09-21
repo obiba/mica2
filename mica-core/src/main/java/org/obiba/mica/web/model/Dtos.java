@@ -478,6 +478,11 @@ public class Dtos {
   }
 
   @NotNull
+  public Mica.DataAccessCollaboratorDto asDto(@NotNull DataAccessCollaborator collaborator) {
+    return dataAccessRequestDtos.asDto(collaborator);
+  }
+
+  @NotNull
   public List<Mica.DataAccessRequestDto.StatusChangeDto> asStatusChangeDtoList(@NotNull DataAccessEntity entity) {
     return dataAccessRequestDtos.asStatusChangeDtoList(entity);
   }

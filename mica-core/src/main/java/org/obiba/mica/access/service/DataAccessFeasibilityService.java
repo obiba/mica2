@@ -98,7 +98,7 @@ public class DataAccessFeasibilityService extends DataAccessEntityService<DataAc
   }
 
   @Override
-  protected Map<String, String> getNotificationEmailContext(DataAccessFeasibility request) {
+  Map<String, String> getNotificationEmailContext(DataAccessFeasibility request) {
     Map<String, String> notificationEmailContext = super.getNotificationEmailContext(request);
     notificationEmailContext.put("parentId", request.getParentId());
     return notificationEmailContext;

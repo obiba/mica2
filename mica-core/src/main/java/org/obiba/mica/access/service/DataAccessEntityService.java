@@ -200,7 +200,7 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
     });
   }
 
-  protected Map<String, String> getNotificationEmailContext(T request) {
+  Map<String, String> getNotificationEmailContext(T request) {
     Map<String, String> ctx = Maps.newHashMap();
     String organization = micaConfigService.getConfig().getName();
     String id = request.getId();

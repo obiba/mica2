@@ -106,3 +106,58 @@
   </div>
   <!-- END Timeline -->
 </#macro>
+
+<#macro dataAccessCollaborators>
+  <#if collaborators?has_content>
+    <div class="table-responsive">
+      <table id="collaborators" class="table table-bordered table-striped">
+        <thead>
+        <tr>
+          <th><@message "email"/></th>
+          <th><@message "status"/></th>
+          <th><@message "last-update"/></th>
+          <#if !dar.archived && (user.username == dar.applicant || isAdministrator || isDAO)>
+            <th></th>
+          </#if>
+        </tr>
+        </thead>
+        <tbody>
+        <#list collaborators as collaborator>
+          <tr>
+            <td>
+              <a href="mailto:${collaborator.email}">${collaborator.email}</a>
+            </td>
+            <td>
+              <#if collaborator.invitationPending>
+                  <@message "invited"/>
+              <#elseif collaborator.banned>
+                  <@message "banned"/>
+              <#else>
+                  <@message "accepted"/>
+              </#if>
+            </td>
+            <td data-sort="${collaborator.createdDate.toString(datetimeFormat)}" class="moment-datetime">${collaborator.createdDate.toString(datetimeFormat)}</td>
+            <#if !dar.archived && (user.username == dar.applicant || isAdministrator || isDAO)>
+              <td>
+                <div class="btn-group">
+                  <button type="button" class="btn text-muted" data-toggle="dropdown" aria-expanded="false">
+                    <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                  </button>
+                  <ul class="dropdown-menu" style="">
+                    <#if collaborator.invitationPending>
+                      <li><a class="dropdown-item" href="#" onclick="DataAccessService.inviteCollaborator('${dar.id}', '${collaborator.email}')"><i class="fa fa-paper-plane mr-2"></i> <@message "invite"/></a></li>
+                    </#if>
+                    <li><a class="dropdown-item" href="#" onclick="DataAccessService.deleteCollaborator('${dar.id}', '${collaborator.email}')"><i class="fa fa-trash mr-2"></i>  <@message "remove"/></a></li>
+                  </ul>
+                </div>
+              </td>
+            </#if>
+          </tr>
+        </#list>
+        </tbody>
+      </table>
+    </div>
+  <#else >
+    <p><@message "no-collaborators"/></p>
+  </#if>
+</#macro>
