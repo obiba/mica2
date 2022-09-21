@@ -1,6 +1,7 @@
 package org.obiba.mica.web.controller.domain;
 
-import org.joda.time.DateTime;
+import java.time.LocalDateTime;
+
 import org.obiba.mica.core.domain.Comment;
 
 public class TimelineItem {
@@ -44,11 +45,11 @@ public class TimelineItem {
   }
 
   public String getAuthor() {
-    return isCommentItem() ? comment.getCreatedBy() : event.getAuthor();
+    return isCommentItem() ? comment.getCreatedBy().get() : event.getAuthor();
   }
 
-  public DateTime getDate() {
-    return isCommentItem() ? comment.getCreatedDate() : event.getDate();
+  public LocalDateTime getDate() {
+    return isCommentItem() ? comment.getCreatedDate().get() : event.getDate();
   }
 
 }

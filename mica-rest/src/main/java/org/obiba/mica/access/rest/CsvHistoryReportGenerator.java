@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UncheckedIOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -135,8 +137,8 @@ public class CsvHistoryReportGenerator implements ReportGenerator {
     }
 
     String getDate() {
-      String timeFormat = locale.getLanguage().equalsIgnoreCase("en") ? "hh:mm a" : "HH:mm";
-      return changeLog.getChangedOn().toString("MMM d yyyy " + timeFormat, locale);
+      String timeFormat = locale.getLanguage().equalsIgnoreCase("en") ? "hh:mm a" : "HH:mm";      
+      return DateTimeFormatter.ofPattern("MMM d yyyy " + timeFormat, locale).format(changeLog.getChangedOn());
     }
 
     String getStatus() {
@@ -145,7 +147,7 @@ public class CsvHistoryReportGenerator implements ReportGenerator {
         : ((ActionLog)changeLog).getAction();
     }
 
-    DateTime getChangedOn() {
+    LocalDateTime getChangedOn() {
       return changeLog.getChangedOn();
     }
 

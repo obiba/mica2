@@ -10,20 +10,33 @@
 
 package org.obiba.mica.access.service;
 
-import com.google.common.base.Throwables;
-import com.google.common.collect.Sets;
-import com.google.common.eventbus.Subscribe;
-import com.google.common.io.ByteStreams;
-import com.itextpdf.text.DocumentException;
+import static com.jayway.jsonpath.Configuration.defaultConfiguration;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+
 import org.apache.shiro.SecurityUtils;
-import org.joda.time.DateTime;
 import org.obiba.mica.access.DataAccessEntityRepository;
 import org.obiba.mica.access.DataAccessRequestRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.ActionLog;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
-import org.obiba.mica.access.event.*;
+import org.obiba.mica.access.event.DataAccessAmendmentDeletedEvent;
+import org.obiba.mica.access.event.DataAccessAmendmentUpdatedEvent;
+import org.obiba.mica.access.event.DataAccessFeasibilityDeletedEvent;
+import org.obiba.mica.access.event.DataAccessFeasibilityUpdatedEvent;
+import org.obiba.mica.access.event.DataAccessRequestDeletedEvent;
+import org.obiba.mica.access.event.DataAccessRequestUpdatedEvent;
 import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.event.CommentDeletedEvent;
 import org.obiba.mica.core.event.CommentUpdatedEvent;
@@ -44,18 +57,11 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static com.jayway.jsonpath.Configuration.defaultConfiguration;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.Subscribe;
+import com.google.common.io.ByteStreams;
+import com.itextpdf.text.DocumentException;
 
 @Service
 @Validated
@@ -103,7 +109,7 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
   public DataAccessRequest archive(@NotNull DataAccessRequest request, boolean archived) {
     request.setArchived(archived);
     request.getActionLogHistory().add(ActionLog.newBuilder().action(archived ? "Archived" : "Unarchived")
-      .changedOn(DateTime.now())
+      .changedOn(LocalDateTime.now())
       .author(SecurityUtils.getSubject().getPrincipal().toString()).build());
     return save(request, null);
   }

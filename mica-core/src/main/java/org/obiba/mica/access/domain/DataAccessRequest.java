@@ -19,6 +19,8 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
+
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -57,7 +59,7 @@ public class DataAccessRequest extends DataAccessEntity implements AttachmentAwa
     // default is approval date
     for (StatusChange change : getStatusChangeHistory()) {
       if (change.getTo().equals(DataAccessEntityStatus.APPROVED)) {
-        return change.getChangedOn().toDate();
+        return Date.from(change.getChangedOn().atZone(ZoneId.systemDefault()).toInstant());
       }
     }
     return null;

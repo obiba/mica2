@@ -10,9 +10,10 @@
 
 package org.obiba.mica.web.model;
 
+import java.time.LocalDateTime;
+
 import javax.inject.Inject;
 
-import org.joda.time.DateTime;
 import org.obiba.mica.access.domain.ActionLog;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.model.Mica.DataAccessRequestDto.ActionLogDto;
@@ -45,7 +46,7 @@ public class ActionLogDtos {
   ActionLog fromDto(ActionLogDto dto) {
     return ActionLog.newBuilder() //
       .author(dto.getAuthor()) //
-      .changedOn(DateTime.parse(dto.getChangedOn())) //
+      .changedOn(LocalDateTime.parse(dto.getChangedOn())) //
       .action(dto.getAction()) //
       .build(); //
   }

@@ -24,6 +24,7 @@ import org.obiba.mica.access.domain.StatusChange;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -66,17 +67,17 @@ public class ReportGeneratorTest {
 
     CsvReportGenerator csvReportGenerator = new CsvReportGenerator(null, "{}", "{}", null);
     List<StatusChange> statusChangeHistory = asList(
-      StatusChange.newBuilder().changedOn(new DateTime(2000, 1, 1, 1, 1)).current(DataAccessEntityStatus.APPROVED).build(),
-      StatusChange.newBuilder().changedOn(new DateTime(2001, 1, 1, 1, 1)).current(DataAccessEntityStatus.APPROVED).build(),
-      StatusChange.newBuilder().changedOn(new DateTime(2016, 1, 1, 1, 1)).current(DataAccessEntityStatus.OPENED).build(),
-      StatusChange.newBuilder().changedOn(new DateTime(2015, 1, 1, 1, 1)).current(DataAccessEntityStatus.APPROVED).build(),
-      StatusChange.newBuilder().changedOn(new DateTime(2002, 1, 1, 1, 1)).current(DataAccessEntityStatus.APPROVED).build(),
-      StatusChange.newBuilder().changedOn(new DateTime(2003, 1, 1, 1, 1)).current(DataAccessEntityStatus.APPROVED).build()
+      StatusChange.newBuilder().changedOn(LocalDateTime.of(2000, 1, 1, 1, 1)).current(DataAccessEntityStatus.APPROVED).build(),
+      StatusChange.newBuilder().changedOn(LocalDateTime.of(2001, 1, 1, 1, 1)).current(DataAccessEntityStatus.APPROVED).build(),
+      StatusChange.newBuilder().changedOn(LocalDateTime.of(2016, 1, 1, 1, 1)).current(DataAccessEntityStatus.OPENED).build(),
+      StatusChange.newBuilder().changedOn(LocalDateTime.of(2015, 1, 1, 1, 1)).current(DataAccessEntityStatus.APPROVED).build(),
+      StatusChange.newBuilder().changedOn(LocalDateTime.of(2002, 1, 1, 1, 1)).current(DataAccessEntityStatus.APPROVED).build(),
+      StatusChange.newBuilder().changedOn(LocalDateTime.of(2003, 1, 1, 1, 1)).current(DataAccessEntityStatus.APPROVED).build()
     );
 
-    DateTime lastApprovedOrRejectedDate = csvReportGenerator.extractLastApprovedOrRejectDate(statusChangeHistory);
+    LocalDateTime lastApprovedOrRejectedDate = csvReportGenerator.extractLastApprovedOrRejectDate(statusChangeHistory);
 
-    assertThat(lastApprovedOrRejectedDate, is(new DateTime(2015, 1, 1, 1, 1)));
+    assertThat(lastApprovedOrRejectedDate, is(LocalDateTime.of(2015, 1, 1, 1, 1)));
   }
 
   @Test
@@ -84,17 +85,17 @@ public class ReportGeneratorTest {
 
     CsvReportGenerator csvReportGenerator = new CsvReportGenerator(null, "{}", "{}", null);
     List<StatusChange> statusChangeHistory = asList(
-      StatusChange.newBuilder().changedOn(new DateTime(2000, 1, 1, 1, 1)).current(DataAccessEntityStatus.SUBMITTED).build(),
-      StatusChange.newBuilder().changedOn(new DateTime(2001, 1, 1, 1, 1)).current(DataAccessEntityStatus.SUBMITTED).build(),
-      StatusChange.newBuilder().changedOn(new DateTime(1900, 1, 1, 1, 1)).current(DataAccessEntityStatus.OPENED).build(),
-      StatusChange.newBuilder().changedOn(new DateTime(1901, 1, 1, 1, 1)).current(DataAccessEntityStatus.SUBMITTED).build(),
-      StatusChange.newBuilder().changedOn(new DateTime(2002, 1, 1, 1, 1)).current(DataAccessEntityStatus.SUBMITTED).build(),
-      StatusChange.newBuilder().changedOn(new DateTime(2003, 1, 1, 1, 1)).current(DataAccessEntityStatus.SUBMITTED).build()
+      StatusChange.newBuilder().changedOn(LocalDateTime.of(2000, 1, 1, 1, 1)).current(DataAccessEntityStatus.SUBMITTED).build(),
+      StatusChange.newBuilder().changedOn(LocalDateTime.of(2001, 1, 1, 1, 1)).current(DataAccessEntityStatus.SUBMITTED).build(),
+      StatusChange.newBuilder().changedOn(LocalDateTime.of(1900, 1, 1, 1, 1)).current(DataAccessEntityStatus.OPENED).build(),
+      StatusChange.newBuilder().changedOn(LocalDateTime.of(1901, 1, 1, 1, 1)).current(DataAccessEntityStatus.SUBMITTED).build(),
+      StatusChange.newBuilder().changedOn(LocalDateTime.of(2002, 1, 1, 1, 1)).current(DataAccessEntityStatus.SUBMITTED).build(),
+      StatusChange.newBuilder().changedOn(LocalDateTime.of(2003, 1, 1, 1, 1)).current(DataAccessEntityStatus.SUBMITTED).build()
     );
 
-    DateTime firstSubmissionDate = csvReportGenerator.extractFirstSubmissionDate(statusChangeHistory);
+    LocalDateTime firstSubmissionDate = csvReportGenerator.extractFirstSubmissionDate(statusChangeHistory);
 
-    assertThat(firstSubmissionDate, is(new DateTime(1901, 1, 1, 1, 1)));
+    assertThat(firstSubmissionDate, is(LocalDateTime.of(1901, 1, 1, 1, 1)));
   }
 
   @Test
@@ -152,10 +153,10 @@ public class ReportGeneratorTest {
 
   private DataAccessEntity openedSubmittedDataAccessEntity(DataAccessEntity dataAccessEntity, String id) {
     dataAccessEntity.setId(id);
-    dataAccessEntity.setCreatedDate(new DateTime(2016, 8, 20, 14, 36));
-    dataAccessEntity.setLastModifiedDate(new DateTime(2016, 8, 25, 14, 36));
+    dataAccessEntity.setCreatedDate(LocalDateTime.of(2016, 8, 20, 14, 36));
+    dataAccessEntity.setLastModifiedDate(LocalDateTime.of(2016, 8, 25, 14, 36));
     dataAccessEntity.setStatusChangeHistory(Collections.singletonList(
-      StatusChange.newBuilder().changedOn(new DateTime(2016, 6, 1, 1, 1)).current(DataAccessEntityStatus.SUBMITTED).build()));
+      StatusChange.newBuilder().changedOn(LocalDateTime.of(2016, 6, 1, 1, 1)).current(DataAccessEntityStatus.SUBMITTED).build()));
     return dataAccessEntity;
   }
 
@@ -177,11 +178,11 @@ public class ReportGeneratorTest {
 
   private DataAccessEntity approvedDataAccessEntity(DataAccessEntity dataAccessEntity, String id) {
     dataAccessEntity.setId("approved id3");
-    dataAccessEntity.setCreatedDate(new DateTime(2016, 8, 20, 14, 36));
-    dataAccessEntity.setLastModifiedDate(new DateTime(2015, 8, 25, 14, 36));
+    dataAccessEntity.setCreatedDate(LocalDateTime.of(2016, 8, 20, 14, 36));
+    dataAccessEntity.setLastModifiedDate(LocalDateTime.of(2015, 8, 25, 14, 36));
     dataAccessEntity.setStatusChangeHistory(asList(
-      StatusChange.newBuilder().changedOn(new DateTime(2017, 1, 1, 1, 1)).current(DataAccessEntityStatus.APPROVED).build(),
-      StatusChange.newBuilder().changedOn(new DateTime(2016, 6, 1, 1, 1)).current(DataAccessEntityStatus.SUBMITTED).build()));
+      StatusChange.newBuilder().changedOn(LocalDateTime.of(2017, 1, 1, 1, 1)).current(DataAccessEntityStatus.APPROVED).build(),
+      StatusChange.newBuilder().changedOn(LocalDateTime.of(2016, 6, 1, 1, 1)).current(DataAccessEntityStatus.SUBMITTED).build()));
     return dataAccessEntity;
   }
 
@@ -416,7 +417,7 @@ public class ReportGeneratorTest {
   private String expectedResultWithAmendments() {
     return "\"<Organisation> Access Office\"\n" +
       "\"Rapport des demandes d'accès\"\n" +
-      "\"" + new DateTime().toString(CsvReportGenerator.DATETIME_FORMAT) + "\"\n" +
+      "\"" + CsvReportGenerator.DATETIME_FORMAT.format(LocalDateTime.now()) + "\"\n" +
       "\"\"\n" +
       "\"SOMMAIRE\"\n" +
       "\"STATUT ACTUEL\",\"NOMBRE DE DEMANDES D'ACCÈS\"\n" +
@@ -454,7 +455,7 @@ public class ReportGeneratorTest {
   private String expectedResult() {
     return "\"<Organisation> Access Office\"\n" +
       "\"Rapport des demandes d'accès\"\n" +
-      "\"" + new DateTime().toString(CsvReportGenerator.DATETIME_FORMAT) + "\"\n" +
+      "\"" + CsvReportGenerator.DATETIME_FORMAT.format(LocalDateTime.now()) + "\"\n" +
       "\"\"\n" +
       "\"SOMMAIRE\"\n" +
       "\"STATUT ACTUEL\",\"NOMBRE DE DEMANDES D'ACCÈS\"\n" +

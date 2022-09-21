@@ -10,34 +10,36 @@
 
 package org.obiba.mica.access.rest;
 
-import au.com.bytecode.opencsv.CSVWriter;
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.PathNotFoundException;
-import org.joda.time.DateTime;
-import org.joda.time.Days;
-import org.joda.time.base.AbstractInstant;
-import org.obiba.mica.access.domain.DataAccessAmendment;
-import org.obiba.mica.access.domain.DataAccessEntity;
-import org.obiba.mica.access.domain.DataAccessEntityStatus;
-import org.obiba.mica.access.domain.DataAccessRequest;
-import org.obiba.mica.access.domain.StatusChange;
+import static java.util.Arrays.asList;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UncheckedIOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
+import org.obiba.mica.access.domain.DataAccessAmendment;
+import org.obiba.mica.access.domain.DataAccessEntity;
+import org.obiba.mica.access.domain.DataAccessEntityStatus;
+import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.domain.StatusChange;
+
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.PathNotFoundException;
+
+import au.com.bytecode.opencsv.CSVWriter;
 
 public class CsvReportGenerator {
 
-  public static final String DATETIME_FORMAT = "dd/MM/YYYY";
+  public static final DateTimeFormatter DATETIME_FORMAT = DateTimeFormatter.ofPattern("dd/MM/YYYY");
 
   private static final String DEFAULT_LANGUAGE = "en";
   private static final String GENERIC_VARIALES_PREFIX = "generic";
@@ -128,12 +130,12 @@ public class CsvReportGenerator {
   private void addGenericVariablesInDocumentContext(DataAccessEntity dataAccessEntity, DocumentContext context, DocumentContext dataAccessRequestContent) {
     dataAccessRequestContent.put("$", GENERIC_VARIALES_PREFIX, new HashMap<>());
     dataAccessRequestContent.put(GENERIC_VARIALES_PREFIX, "status", extractTranslatedField(context, dataAccessEntity.getStatus()));
-    dataAccessRequestContent.put(GENERIC_VARIALES_PREFIX, "creationDate", formatDate(dataAccessEntity.getCreatedDate()));
+    dataAccessRequestContent.put(GENERIC_VARIALES_PREFIX, "creationDate", formatDate(dataAccessEntity.getCreatedDate().orElse(LocalDateTime.now())));
     dataAccessRequestContent.put(GENERIC_VARIALES_PREFIX, "accessRequestId", dataAccessEntity.getId());
 
-    DateTime lastApprovedOrRejectDate = extractLastApprovedOrRejectDate(dataAccessEntity.getStatusChangeHistory());
-    DateTime firstSubmissionDate = extractFirstSubmissionDate(dataAccessEntity.getStatusChangeHistory());
-    Integer numberOfDaysBetweenSubmissionAndApproveOrReject = calculateDaysBetweenDates(lastApprovedOrRejectDate, firstSubmissionDate);
+    LocalDateTime lastApprovedOrRejectDate = extractLastApprovedOrRejectDate(dataAccessEntity.getStatusChangeHistory());
+    LocalDateTime firstSubmissionDate = extractFirstSubmissionDate(dataAccessEntity.getStatusChangeHistory());
+    Long numberOfDaysBetweenSubmissionAndApproveOrReject = calculateDaysBetweenDates(lastApprovedOrRejectDate, firstSubmissionDate);
     dataAccessRequestContent.put(GENERIC_VARIALES_PREFIX, "lastApprovedOrRejectedDate", lastApprovedOrRejectDate != null ? formatDate(lastApprovedOrRejectDate) : EMPTY_CELL_CONTENT);
     dataAccessRequestContent.put(GENERIC_VARIALES_PREFIX, "firstSubmissionDate", firstSubmissionDate != null ? formatDate(firstSubmissionDate) : EMPTY_CELL_CONTENT);
     dataAccessRequestContent.put(GENERIC_VARIALES_PREFIX, "numberOfDaysBetweenFirstSubmissionAndApproveOrReject", numberOfDaysBetweenSubmissionAndApproveOrReject != null ? numberOfDaysBetweenSubmissionAndApproveOrReject : EMPTY_CELL_CONTENT);
@@ -156,14 +158,14 @@ public class CsvReportGenerator {
   private void writeHeader(CSVWriter writer) {
     writer.writeNext(toArray(extractTranslatedField(darSchema, GENERIC_TANSLATION_PREFIX + ".title")));
     writer.writeNext(toArray(extractTranslatedField(darSchema, GENERIC_TANSLATION_PREFIX + ".subtitle")));
-    writer.writeNext(toArray(formatDate(new DateTime())));
+    writer.writeNext(toArray(formatDate(LocalDateTime.now())));
     writer.writeNext(toArray(""));
   }
 
-  private Integer calculateDaysBetweenDates(DateTime lastApprovedOrRejectDate, DateTime firstSubmissionDate) {
+  private Long calculateDaysBetweenDates(LocalDateTime lastApprovedOrRejectDate, LocalDateTime firstSubmissionDate) {
     if (lastApprovedOrRejectDate == null || firstSubmissionDate == null)
       return null;
-    return Days.daysBetween(firstSubmissionDate, lastApprovedOrRejectDate).getDays();
+    return ChronoUnit.DAYS.between(firstSubmissionDate, lastApprovedOrRejectDate);
   }
 
   private String extractValueFromDataAccessRequest(DocumentContext dataAccessRequestDetails, String key) {
@@ -196,8 +198,8 @@ public class CsvReportGenerator {
     return elements;
   }
 
-  private String formatDate(DateTime dateTime) {
-    return dateTime.toString(DATETIME_FORMAT);
+  private String formatDate(LocalDateTime dateTime) {    
+    return DATETIME_FORMAT.format(dateTime);
   }
 
   private String extractTranslatedField(DocumentContext context, DataAccessEntityStatus status) {
@@ -232,19 +234,19 @@ public class CsvReportGenerator {
     }
   }
 
-  DateTime extractLastApprovedOrRejectDate(List<StatusChange> statusChangeHistory) {
+  LocalDateTime extractLastApprovedOrRejectDate(List<StatusChange> statusChangeHistory) {
     return statusChangeHistory.stream()
       .filter(statusChange -> asList(DataAccessEntityStatus.APPROVED, DataAccessEntityStatus.REJECTED).contains(statusChange.getTo()))
       .map(StatusChange::getChangedOn)
-      .max(AbstractInstant::compareTo)
+      .max(LocalDateTime::compareTo)
       .orElseGet(() -> null);
   }
 
-  DateTime extractFirstSubmissionDate(List<StatusChange> statusChangeHistory) {
+  LocalDateTime extractFirstSubmissionDate(List<StatusChange> statusChangeHistory) {
     return statusChangeHistory.stream()
       .filter(statusChange -> DataAccessEntityStatus.SUBMITTED.equals(statusChange.getTo()))
       .map(StatusChange::getChangedOn)
-      .min(AbstractInstant::compareTo)
+      .min(LocalDateTime::compareTo)
       .orElseGet(() -> null);
   }
 }

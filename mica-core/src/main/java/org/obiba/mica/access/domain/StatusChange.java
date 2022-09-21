@@ -10,7 +10,7 @@
 
 package org.obiba.mica.access.domain;
 
-import org.joda.time.DateTime;
+import java.time.LocalDateTime;
 
 public class StatusChange extends ChangeLog {
 
@@ -69,11 +69,11 @@ public class StatusChange extends ChangeLog {
     }
 
     public Builder now() {
-      statusChange.changedOn = DateTime.now();
+      statusChange.changedOn = LocalDateTime.now();
       return this;
     }
 
-    public Builder changedOn(DateTime value) {
+    public Builder changedOn(LocalDateTime value) {
       statusChange.changedOn = value;
       return this;
     }

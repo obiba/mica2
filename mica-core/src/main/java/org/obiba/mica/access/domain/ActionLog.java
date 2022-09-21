@@ -1,6 +1,6 @@
 package org.obiba.mica.access.domain;
 
-import org.joda.time.DateTime;
+import java.time.LocalDateTime;
 
 public class ActionLog extends ChangeLog {
   private static final long serialVersionUID = -8071043213070449724L;
@@ -48,7 +48,7 @@ public class ActionLog extends ChangeLog {
       return this;
     }
 
-    public Builder changedOn(DateTime value) {
+    public Builder changedOn(LocalDateTime value) {
       this.actionLog.changedOn = value;
       return this;
     }
