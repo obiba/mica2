@@ -2034,6 +2034,8 @@
   "data-access-config": {
     "dao-can-edit": "Autoriser l'agent d'accès aux données de modifier les demandes d'accès.",
     "dao-can-edit-help": "Le responsable de l'accès aux données a la permission de modifier une demande / un amendement d'accès aux données ayant le statut statut <strong>SOUMISE</strong>, <strong>EN RÉVISION</strong>, <strong>APPROUVÉE</strong> ou <strong>REJETÉE</strong>",
+    "collaborators-enabled": "Activer l'ajout de collaborateurs",
+    "collaborators-enabled-help": "Les collaborateurs auront un accès en lecture seule à la demande d'accès et recevront les courriels de notifications.",
     "menu": "Accès aux données",
     "title": "Configuration de l'accès aux données",
     "title-edit": "Modifier la configuration d'accès aux données",
@@ -2103,6 +2105,7 @@
     "settings": {
       "title": "Paramètres",
       "info": "Activer des formulaires complémentaires et modifier des permissions.",
+      "collaborators": "Collaborateurs",
       "other-forms-title": "Autres Formulaires",
       "permissions-title": "Permissions",
       "variables-title": "Variables"

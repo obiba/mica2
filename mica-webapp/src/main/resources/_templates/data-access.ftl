@@ -454,21 +454,26 @@
             </div>
           </div>
 
-          <div class="card card-info card-outline">
-            <div class="card-header">
-              <h3 class="card-title"><@message "collaborators"/></h3>
-              <div class="float-right">
-                <#if !dar.archived && (user.username == dar.applicant || isAdministrator || isDAO)>
-                  <button type="button" class="btn btn-primary ml-4" data-toggle="modal" data-target="#modal-collaborator-add">
-                    <i class="fas fa-plus"></i> <@message "new-collaborator"/>
-                  </button>
+          <#if accessConfig.collaboratorsEnabled || collaborators?has_content>
+            <div class="card card-info card-outline">
+              <div class="card-header">
+                <h3 class="card-title"><@message "collaborators"/></h3>
+                <#if accessConfig.collaboratorsEnabled>
+                  <div class="float-right">
+                    <#if !dar.archived && (user.username == dar.applicant || isAdministrator || isDAO)>
+                      <button type="button" class="btn btn-primary ml-4" data-toggle="modal" data-target="#modal-collaborator-add">
+                        <i class="fas fa-plus"></i> <@message "new-collaborator"/>
+                      </button>
+                    </#if>
+                  </div>
                 </#if>
               </div>
-            </div>
-            <div class="card-body">
+              <div class="card-body">
                 <@dataAccessCollaborators/>
+              </div>
             </div>
-          </div>
+          </#if>
+
         </div>
         <!-- /.col-6 -->
         <div class="col-sm-12 col-lg-6">

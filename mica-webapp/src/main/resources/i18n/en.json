@@ -2034,6 +2034,8 @@
   "data-access-config": {
     "dao-can-edit": "Grant Edit Permission to Data Access Officers.",
     "dao-can-edit-help": "Data Access Officer has permission to edit a data access request/amendment when it is <strong>SUBMITTED</strong>, <strong>REVIEWED</strong>, <strong>APPROVED</strong> or <strong>REJECTED</strong>",
+    "collaborators-enabled": "Enable collaborators",
+    "collaborators-enabled-help": "Collaborators will have read-only access to the data access request and will receive notification emails.",
     "menu": "Data Access",
     "title": "Data Access Configuration",
     "title-edit": "Edit Data Access Configuration",
@@ -2103,6 +2105,7 @@
     "settings": {
       "title": "General",
       "info": "Alternate forms and permissions can be enabled.",
+      "collaborators": "Collaborators",
       "other-forms-title": "Other Forms",
       "permissions-title": "Permissions",
       "variables-title": "Variables"

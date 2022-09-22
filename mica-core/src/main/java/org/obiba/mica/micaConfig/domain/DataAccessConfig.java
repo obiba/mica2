@@ -91,6 +91,8 @@ public class DataAccessConfig extends AbstractAuditableDocument {
 
   private boolean amendmentsEnabled = false;
 
+  private boolean collaboratorsEnabled = true;
+
   private boolean variablesEnabled = true;
 
   private boolean feasibilityVariablesEnabled = false;
@@ -329,6 +331,14 @@ public class DataAccessConfig extends AbstractAuditableDocument {
 
   public void setAmendmentsEnabled(boolean amendmentsEnabled) {
     this.amendmentsEnabled = amendmentsEnabled;
+  }
+
+  public boolean isCollaboratorsEnabled() {
+    return collaboratorsEnabled;
+  }
+
+  public void setCollaboratorsEnabled(boolean collaboratorsEnabled) {
+    this.collaboratorsEnabled = collaboratorsEnabled;
   }
 
   public void setVariablesEnabled(boolean variablesEnabled) {
