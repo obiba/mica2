@@ -168,6 +168,35 @@
     </div>
     <!-- /.modal -->
 
+    <!-- Confirm collaborator removal modal -->
+    <div class="modal fade" id="modal-collaborator-delete">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title"><@message "confirm-collaborator-delete-title"/></h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p><@message "confirm-collaborator-delete-text"/></p>
+            <p>
+              <strong id="collaborator-to-delete"></strong>
+            </p>
+          </div>
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal"
+                    onclick="DataAccessService.deleteCollaborator('${dar.id}', $('#collaborator-to-delete').text())"><@message "confirm"/>
+            </button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
     <!-- Main content -->
     <section class="content">
 
