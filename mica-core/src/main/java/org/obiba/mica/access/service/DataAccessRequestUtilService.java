@@ -24,10 +24,7 @@ import org.obiba.mica.core.service.DocumentDifferenceService;
 import org.obiba.mica.core.support.RegexHashMap;
 import org.obiba.mica.micaConfig.domain.AbstractDataAccessEntityForm;
 import org.obiba.mica.micaConfig.domain.DataAccessConfig;
-import org.obiba.mica.micaConfig.service.DataAccessAmendmentFormService;
-import org.obiba.mica.micaConfig.service.DataAccessConfigService;
-import org.obiba.mica.micaConfig.service.DataAccessFormService;
-import org.obiba.mica.micaConfig.service.EntityConfigKeyTranslationService;
+import org.obiba.mica.micaConfig.service.*;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.user.UserProfileService;
@@ -51,6 +48,9 @@ public class DataAccessRequestUtilService {
   public static final String DEFAULT_NOTIFICATION_SUBJECT = "[${organization}] ${title}";
 
   public static final SimpleDateFormat ISO_8601 = new SimpleDateFormat("yyyy-MM-dd");
+
+  @Inject
+  private MicaConfigService micaConfigService;
 
   @Inject
   private DataAccessConfigService dataAccessConfigService;
@@ -221,6 +221,28 @@ public class DataAccessRequestUtilService {
         break;
     }
     return to;
+  }
+
+  Map<String, String> getNotificationEmailContext(DataAccessEntity request) {
+    Map<String, String> ctx = Maps.newHashMap();
+    String organization = micaConfigService.getConfig().getName();
+    String id = request.getId();
+    String title = getRequestTitle(request);
+
+    ctx.put("organization", organization);
+    ctx.put("publicUrl", micaConfigService.getPublicUrl());
+    ctx.put("id", id);
+    ctx.put("type", request.getClass().getSimpleName());
+    if (request instanceof DataAccessAmendment)
+      ctx.put("parentId", ((DataAccessAmendment) request).getParentId());
+    if (request instanceof DataAccessFeasibility)
+      ctx.put("parentId", ((DataAccessFeasibility) request).getParentId());
+    if (Strings.isNullOrEmpty(title)) title = id;
+    ctx.put("title", title);
+    ctx.put("applicant", request.getApplicant());
+    ctx.put("status", request.getStatus().name());
+
+    return ctx;
   }
 
   //

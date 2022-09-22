@@ -120,10 +120,8 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
   }
 
   @Override
-  Map<String, String> getNotificationEmailContext(DataAccessAmendment request) {
-    Map<String, String> notificationEmailContext = super.getNotificationEmailContext(request);
-    notificationEmailContext.put("parentId", request.getParentId());
-    return notificationEmailContext;
+  protected String getMainRequestId(DataAccessAmendment request) {
+    return request.getParentId();
   }
 
   public List<DataAccessAmendment> findByStatus(@Nullable String parentId, @Nullable List<String> status) {

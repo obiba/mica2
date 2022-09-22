@@ -64,7 +64,7 @@ public class DataAccessCollaboratorService {
   private MailService mailService;
 
   @Inject
-  private DataAccessRequestService dataAccessRequestService;
+  private DataAccessRequestUtilService dataAccessRequestUtilService;
 
   @Inject
   private EventBus eventBus;
@@ -86,7 +86,7 @@ public class DataAccessCollaboratorService {
    */
   public String inviteCollaborator(@NotNull DataAccessRequest dar, String email) {
     String key = makeInvitationKey(dar, email);
-    Map<String, String> context = dataAccessRequestService.getNotificationEmailContext(dar);
+    Map<String, String> context = dataAccessRequestUtilService.getNotificationEmailContext(dar);
     context.put("key", key);
       mailService.sendEmailToUsers(
       mailService.getSubject(dataAccessConfigService.getOrCreateConfig().getCollaboratorInvitationSubject(),

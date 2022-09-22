@@ -96,7 +96,7 @@ public class DataAccessRequestCommentMailNotification implements MailNotificatio
 
     } else {
       mailService.sendEmailToUsers(mailService.getSubject(dataAccessConfig.getCommentedSubject(), ctx, DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT),
-        "dataAccessRequestCommentAdded", ctx, request.getApplicant());
+        "dataAccessRequestCommentAdded", ctx, dataAccessRequestService.getApplicantAndCollaborators(request));
     }
 
     mailService.sendEmailToGroups(mailService.getSubject(dataAccessConfig.getCommentedSubject(), ctx, DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT),
