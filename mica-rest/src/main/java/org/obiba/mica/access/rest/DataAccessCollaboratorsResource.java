@@ -8,7 +8,6 @@ import org.obiba.mica.access.service.DataAccessCollaboratorService;
 import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.security.service.SubjectAclService;
-import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.annotation.Scope;
@@ -40,9 +39,6 @@ public class DataAccessCollaboratorsResource {
   @Inject
   private DataAccessCollaboratorService dataAccessCollaboratorService;
 
-  @Inject
-  private UserProfileService userProfileService;
-
   private String parentId;
 
   public void setParentId(String parentId) {
@@ -68,6 +64,9 @@ public class DataAccessCollaboratorsResource {
   @PUT
   @Path("/_invite")
   public Response inviteCollaborator(@QueryParam("email") String email) {
+    if (!dataAccessRequestUtilService.getDataAccessConfig().isCollaboratorsEnabled())
+      return Response.status(Response.Status.FORBIDDEN).build();
+
     subjectAclService.checkPermission("/data-access-request", "EDIT", parentId);
     if (Strings.isNullOrEmpty(email) || !email.contains("@")) throw new BadRequestException("Not a valid email");
 

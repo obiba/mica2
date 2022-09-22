@@ -83,9 +83,9 @@ public class DataAccessController extends BaseController {
   public ModelAndView get(@PathVariable String id, @RequestParam(value = "invitation", required = false) String invitation) {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
-      if (!Strings.isNullOrEmpty(invitation)) {
+      if (!Strings.isNullOrEmpty(invitation) && dataAccessConfigervice.getOrCreateConfig().isCollaboratorsEnabled()) {
         // apply invitation if necessary, this will grant read access
-        dataAccessCollaboratorService.acceptCollaborator(id, invitation);
+        dataAccessCollaboratorService.acceptCollaborator(getDataAccessRequest(id), invitation);
       }
       Map<String, Object> params = newParameters(id);
       addDataAccessConfiguration(params);
@@ -114,7 +114,7 @@ public class DataAccessController extends BaseController {
       return new ModelAndView("data-access", params);
     } else {
       String path = micaConfigService.getContextPath() + "/data-access/" + id;
-      if (!Strings.isNullOrEmpty(invitation)) {
+      if (!Strings.isNullOrEmpty(invitation) && dataAccessConfigervice.getOrCreateConfig().isCollaboratorsEnabled()) {
         path = path + "?invitation=" + invitation;
       }
       try {

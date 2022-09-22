@@ -68,7 +68,7 @@
           <p class="help-block" translate>data-access-config.pdf-template.info</p>
 
           <uib-tabset>
-            <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" disable="tab.disabled">
+            <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" disabled="tab.disabled">
               <div class="voffset2"></div>
               <attachment-input files="pdfTemplates[tab.lang]" accept="*.pdf" multiple="false"></attachment-input>
             </uib-tab>
@@ -188,25 +188,25 @@
           <div class="row">
             <div class="col-md-6">
               <div form-checkbox name="notifyCreated" model="config.notifyCreated" label="data-access-config.notifications.created" help="data-access-config.notifications.created-help"></div>
-              <div form-input name="createdSubject" model="config.createdSubject" label="data-access-config.notifications.createdSubject" placeholder="[${organization}] ${title}" required="false" disable="!config.notifySubmitted"></div>
+              <div form-input name="createdSubject" model="config.createdSubject" label="data-access-config.notifications.createdSubject" placeholder="[${organization}] ${title}" required="false" disabled="!config.notifyCreated"></div>
               <div form-checkbox name="notifySubmitted" model="config.notifySubmitted" label="data-access-config.notifications.submitted" help="data-access-config.notifications.submitted-help"></div>
-              <div form-input name="submittedSubject" model="config.submittedSubject" label="data-access-config.notifications.submittedSubject" placeholder="[${organization}] ${title}" required="false" disable="!config.notifySubmitted"></div>
+              <div form-input name="submittedSubject" model="config.submittedSubject" label="data-access-config.notifications.submittedSubject" placeholder="[${organization}] ${title}" required="false" disabled="!config.notifySubmitted"></div>
               <div form-checkbox name="notifyReviewed" model="config.notifyReviewed" label="data-access-config.notifications.reviewed" help="data-access-config.notifications.reviewed-help"></div>
-              <div form-input name="reviewedSubject" model="config.reviewedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.reviewedSubject" required="false" disable="!config.notifyReviewed"></div>
+              <div form-input name="reviewedSubject" model="config.reviewedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.reviewedSubject" required="false" disabled="!config.notifyReviewed"></div>
               <div form-checkbox name="notifyReopened" model="config.notifyReopened" label="data-access-config.notifications.reopened" help="data-access-config.notifications.reopened-help"></div>
-              <div form-input name="reopenedSubject" model="config.reopenedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.reopenedSubject" required="false" disable="!config.notifyReopened"></div>
+              <div form-input name="reopenedSubject" model="config.reopenedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.reopenedSubject" required="false" disabled="!config.notifyReopened"></div>
               <div form-checkbox name="notifyConditionallyApproved" model="config.notifyConditionallyApproved" label="data-access-config.notifications.conditionallyApproved" help="data-access-config.notifications.conditionallyApproved-help"></div>
-              <div form-input name="conditionallyApprovedSubject" model="config.conditionallyApprovedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.conditionallyApprovedSubject"></div>
+              <div form-input name="conditionallyApprovedSubject" model="config.conditionallyApprovedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.conditionallyApprovedSubject" disabled="!config.notifyConditionallyApproved"></div>
             </div>
             <div class="col-md-6">
               <div form-checkbox name="notifyRejected" model="config.notifyRejected" label="data-access-config.notifications.rejected" help="data-access-config.notifications.rejected-help"></div>
-              <div form-input name="rejectedSubject" model="config.rejectedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.rejectedSubject" required="false" disable="!config.notifyRejected"></div>
+              <div form-input name="rejectedSubject" model="config.rejectedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.rejectedSubject" required="false" disabled="!config.notifyRejected"></div>
               <div form-checkbox name="notifyApproved" model="config.notifyApproved" label="data-access-config.notifications.approved" help="data-access-config.notifications.approved-help"></div>
-              <div form-input name="approvedSubject" model="config.approvedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.approvedSubject" required="false" disable="!config.notifyApproved"></div>
+              <div form-input name="approvedSubject" model="config.approvedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.approvedSubject" required="false" disabled="!config.notifyApproved"></div>
               <div form-checkbox name="notifyCommented" model="config.notifyCommented" label="data-access-config.notifications.commented" help="data-access-config.notifications.commented-help"></div>
-              <div form-input name="commentedSubject" model="config.commentedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.commentedSubject" required="false" disable="!config.notifyCommented"></div>
+              <div form-input name="commentedSubject" model="config.commentedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.commentedSubject" required="false" disabled="!config.notifyCommented"></div>
               <div form-checkbox name="notifyAttachment" model="config.notifyAttachment" label="data-access-config.notifications.attachment" help="data-access-config.notifications.attachment-help"></div>
-              <div form-input name="attachmentSubject" model="config.attachmentSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.attachmentSubject" required="false" disable="!config.notifyAttachment"></div>
+              <div form-input name="attachmentSubject" model="config.attachmentSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.attachmentSubject" required="false" disabled="!config.notifyAttachment"></div>
             </div>
           </div>
         </form>
@@ -216,12 +216,23 @@
           <div class="row">
             <div class="col-md-6">
               <div form-checkbox name="notifyFinalReport" model="config.notifyFinalReport" label="data-access-config.notifications.finalReport" help="data-access-config.notifications.finalReport-help"></div>
-              <div form-input name="finalReportSubject" model="config.finalReportSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.finalReportSubject" required="false" disable="!config.notifyFinalReport"></div>
+              <div form-input name="finalReportSubject" model="config.finalReportSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.finalReportSubject" required="false" disabled="!config.notifyFinalReport"></div>
               <div form-checkbox name="notifyIntermediateReport" model="config.notifyIntermediateReport" label="data-access-config.notifications.intermediateReport" help="data-access-config.notifications.intermediateReport-help"></div>
-              <div form-input name="intermediateReportSubject" model="config.intermediateReportSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.intermediateReportSubject" required="false" disable="!config.notifyIntermediateReport"></div>
+              <div form-input name="intermediateReportSubject" model="config.intermediateReportSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.intermediateReportSubject" required="false" disabled="!config.notifyIntermediateReport"></div>
             </div>
             <div class="col-md-6">
               <div form-input type="number" model="config.nbOfDaysBeforeReport" label="data-access-config.notifications.nbOfDaysBeforeReport" help="data-access-config.notifications.nbOfDaysBeforeReport-help"></div>
+            </div>
+          </div>
+        </form>
+      </uib-tab>
+      <uib-tab heading="{{'data-access-config.notifications.collaborators' | translate}}">
+        <form>
+          <div class="row">
+            <div class="col-md-6">
+              <div form-input name="collaboratorInvitationSubject" model="config.collaboratorInvitationSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.collaboratorInvitationSubject" required="false" disabled="!config.collaboratorsEnabled"></div>
+              <div form-checkbox name="notifyCollaboratorAccepted" model="config.notifyCollaboratorAccepted" label="data-access-config.notifications.collaboratorAccepted" help="data-access-config.notifications.collaboratorAccepted-help" disabled="!config.collaboratorsEnabled"></div>
+              <div form-input name="collaboratorAcceptedSubject" model="config.collaboratorAcceptedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.collaboratorAcceptedSubject" required="false" disabled="!config.collaboratorsEnabled || !config.notifyCollaboratorAccepted"></div>
             </div>
           </div>
         </form>

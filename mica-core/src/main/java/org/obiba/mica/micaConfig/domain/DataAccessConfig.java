@@ -77,6 +77,10 @@ public class DataAccessConfig extends AbstractAuditableDocument {
 
   private String collaboratorInvitationSubject;
 
+  private boolean notifyCollaboratorAccepted = true;
+
+  private String collaboratorAcceptedSubject;
+
   private boolean withReview = true;
 
   private boolean withConditionalApproval = false;
@@ -451,5 +455,21 @@ public class DataAccessConfig extends AbstractAuditableDocument {
 
   public void setCollaboratorInvitationSubject(String collaboratorInvitationSubject) {
     this.collaboratorInvitationSubject = collaboratorInvitationSubject;
+  }
+
+  public boolean isNotifyCollaboratorAccepted() {
+    return notifyCollaboratorAccepted;
+  }
+
+  public void setNotifyCollaboratorAccepted(boolean notifyCollaboratorAccepted) {
+    this.notifyCollaboratorAccepted = notifyCollaboratorAccepted;
+  }
+
+  public String getCollaboratorAcceptedSubject() {
+    return collaboratorAcceptedSubject;
+  }
+
+  public void setCollaboratorAcceptedSubject(String collaboratorAcceptedSubject) {
+    this.collaboratorAcceptedSubject = collaboratorAcceptedSubject;
   }
 }

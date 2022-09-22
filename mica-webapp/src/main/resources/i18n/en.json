@@ -2159,7 +2159,12 @@
       "intermediateReportSubject": "Intermediate report reminder email subject",
       "intermediateReport-help": "Email is sent to applicant to remind that an intermediate (yearly) report is due. Applies to approved data access requests only.",
       "nbOfDaysBeforeReport": "Days before sending a report reminder",
-      "nbOfDaysBeforeReport-help": "Number of days before sending a reminder email for the intermediate or the final reports."
+      "nbOfDaysBeforeReport-help": "Number of days before sending a reminder email for the intermediate or the final reports.",
+      "collaborators": "Collaborators",
+      "collaboratorInvitationSubject": "Collaborator invitation email subject",
+      "collaboratorAccepted": "On collaboration accepted",
+      "collaboratorAcceptedSubject": "On collaboration accepted email subject",
+      "collaboratorAccepted-help": "Email is sent to applicant when an invitation to collaborate to the data access request has been accepted."
     },
     "workflow": {
       "title": "Workflow",

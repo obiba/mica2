@@ -324,6 +324,7 @@ class MicaConfigDtos {
       .setNotifyAttachment(dataAccessConfig.isNotifyAttachment())
       .setNotifyFinalReport(dataAccessConfig.isNotifyFinalReport())
       .setNotifyIntermediateReport(dataAccessConfig.isNotifyIntermediateReport())
+      .setNotifyCollaboratorAccepted(dataAccessConfig.isNotifyCollaboratorAccepted())
       .setWithReview(dataAccessConfig.isWithReview())
       .setApprovedFinal(dataAccessConfig.isApprovedFinal())
       .setRejectedFinal(dataAccessConfig.isRejectedFinal())
@@ -356,6 +357,9 @@ class MicaConfigDtos {
     if(dataAccessConfig.getIntermediateReportSubject() != null) builder.setIntermediateReportSubject(dataAccessConfig.getIntermediateReportSubject());
 
     builder.setNbOfDaysBeforeReport(dataAccessConfig.getNbOfDaysBeforeReport());
+
+    if(dataAccessConfig.getCollaboratorInvitationSubject() != null) builder.setCollaboratorInvitationSubject(dataAccessConfig.getCollaboratorInvitationSubject());
+    if(dataAccessConfig.getCollaboratorAcceptedSubject() != null) builder.setCollaboratorAcceptedSubject(dataAccessConfig.getCollaboratorAcceptedSubject());
 
     if(dataAccessConfig.getPredefinedActions() != null) builder.addAllPredefinedActions(dataAccessConfig.getPredefinedActions());
 
@@ -414,6 +418,10 @@ class MicaConfigDtos {
     dataAccessConfig.setIntermediateReportSubject(dto.getIntermediateReportSubject());
 
     if (dto.hasNbOfDaysBeforeReport()) dataAccessConfig.setNbOfDaysBeforeReport(dto.getNbOfDaysBeforeReport());
+
+    dataAccessConfig.setCollaboratorInvitationSubject(dto.getCollaboratorInvitationSubject());
+    dataAccessConfig.setNotifyCollaboratorAccepted(dto.getNotifyCollaboratorAccepted());
+    dataAccessConfig.setCollaboratorAcceptedSubject(dto.getCollaboratorAcceptedSubject());
 
     dataAccessConfig.setWithReview(dto.getWithReview());
     dataAccessConfig.setApprovedFinal(dto.getApprovedFinal());

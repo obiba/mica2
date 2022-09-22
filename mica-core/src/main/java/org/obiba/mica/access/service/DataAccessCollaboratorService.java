@@ -84,36 +84,29 @@ public class DataAccessCollaboratorService {
    * @param email
    * @return
    */
-  public String inviteCollaborator(@NotNull DataAccessRequest dar, String email) {
-    String key = makeInvitationKey(dar, email);
-    Map<String, String> context = dataAccessRequestUtilService.getNotificationEmailContext(dar);
-    context.put("key", key);
-      mailService.sendEmailToUsers(
-      mailService.getSubject(dataAccessConfigService.getOrCreateConfig().getCollaboratorInvitationSubject(),
-        context, DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT),
-      "dataAccessRequestCollaboratorInvitation", context, email);
+  public void inviteCollaborator(@NotNull DataAccessRequest dar, String email) {
     Optional<DataAccessCollaborator> collaboratorOpt = dataAccessCollaboratorRepository.findByRequestIdAndEmail(dar.getId(), email);
     save(collaboratorOpt.orElseGet(() -> DataAccessCollaborator.newBuilder(dar.getId()).email(email).invited().author(SecurityUtils.getSubject().getPrincipal().toString()).build()));
-    return key;
+    sendCollaboratorInvitation(dar, email, makeInvitationKey(dar, email));
   }
 
   /**
    * Verify the invitation key applies to current user and provided request ID
    * before accepting the collaborator.
    *
-   * @param requestId
+   * @param dar
    * @param invitation
    */
-  public void acceptCollaborator(String requestId, String invitation) {
+  public void acceptCollaborator(@NotNull DataAccessRequest dar, String invitation) {
     try {
       JSONObject jsonKey = new JSONObject(micaConfigService.decrypt(invitation));
       String darId = jsonKey.getString(REQUEST_KEY);
-      if (!requestId.equals(darId))
+      if (!dar.getId().equals(darId))
         throw new IllegalArgumentException("Invitation does not apply to this data access request");
       String principal = SecurityUtils.getSubject().getPrincipal().toString();
       String email = jsonKey.getString(EMAIL_KEY);
       boolean found = false;
-      ObibaRealm.Subject subject = userProfileService.getProfile(principal,true);
+      ObibaRealm.Subject subject = userProfileService.getProfile(principal, true);
       if (subject.getAttributes() != null) {
         for (Map<String, String> map : subject.getAttributes()) {
           String key = map.get("key");
@@ -132,7 +125,7 @@ public class DataAccessCollaboratorService {
       Optional<DataAccessCollaborator> collaboratorOpt = dataAccessCollaboratorRepository.findByRequestIdAndEmail(darId, email);
       if (collaboratorOpt.isPresent() && collaboratorOpt.get().isBanned())
         throw new ForbiddenException("Invitation does not apply to a banned collaborator");
-      DataAccessCollaborator collaborator = collaboratorOpt.orElseGet(() -> DataAccessCollaborator.newBuilder(requestId).email(email).author(author).build());
+      DataAccessCollaborator collaborator = collaboratorOpt.orElseGet(() -> DataAccessCollaborator.newBuilder(dar.getId()).email(email).author(author).build());
       collaborator.setInvitationPending(false);
       collaborator.setPrincipal(principal);
       save(collaborator);
@@ -140,6 +133,7 @@ public class DataAccessCollaboratorService {
       if (!subjectAclService.isPermitted("/data-access-request", "VIEW", darId)) {
         subjectAclService.addUserPermission(principal, "/data-access-request", "VIEW", darId);
       }
+      sendCollaboratorAcceptedNotification(dar, email);
     } catch (JSONException e) {
       log.warn("Invitation key is not valid");
       throw new IllegalArgumentException("Invitation format is not valid");
@@ -173,6 +167,39 @@ public class DataAccessCollaboratorService {
   //
   // Private methods
   //
+
+  /**
+   * Send an invitation to a collaborator's email, providing a personal key.
+   *
+   * @param dar
+   * @param email
+   * @param key
+   */
+  private void sendCollaboratorInvitation(DataAccessRequest dar, String email, String key) {
+    Map<String, String> context = dataAccessRequestUtilService.getNotificationEmailContext(dar);
+    context.put("key", key);
+    mailService.sendEmailToUsers(
+      mailService.getSubject(dataAccessConfigService.getOrCreateConfig().getCollaboratorInvitationSubject(),
+        context, DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT),
+      "dataAccessRequestCollaboratorInvitation", context, email);
+  }
+
+  /**
+   * Inform applicant that the collaborator invitation was accepted.
+   *
+   * @param dar
+   * @param email
+   */
+  private void sendCollaboratorAcceptedNotification(DataAccessRequest dar, String email) {
+    if (!dataAccessConfigService.getOrCreateConfig().isNotifyCollaboratorAccepted()) return;
+
+    Map<String, String> context = dataAccessRequestUtilService.getNotificationEmailContext(dar);
+    context.put("email", email);
+    mailService.sendEmailToUsers(
+      mailService.getSubject(dataAccessConfigService.getOrCreateConfig().getCollaboratorAcceptedSubject(),
+        context, DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT),
+      "dataAccessRequestCollaboratorAccepted", context, dar.getApplicant());
+  }
 
   private String makeInvitationKey(@NotNull DataAccessRequest dar, String email) {
     JSONObject jsonKey = new JSONObject();

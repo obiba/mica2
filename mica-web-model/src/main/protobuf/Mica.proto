@@ -946,6 +946,9 @@ message DataAccessConfigDto {
   optional string feasibilityCsvExportFormat = 48;
   optional string amendmentCsvExportFormat = 49;
   required bool collaboratorsEnabled = 50;
+  optional string collaboratorInvitationSubject = 51;
+  required bool notifyCollaboratorAccepted = 52;
+  optional string collaboratorAcceptedSubject = 53;
 }
 
 message DataAccessFormDto {

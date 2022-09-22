@@ -96,7 +96,6 @@ public class DataAccessRequestUtilService {
     return data;
   }
 
-
   public String getRequestTitle(DataAccessEntity request) {
     AbstractDataAccessEntityForm dataAccessForm = getDataAccessForm(request);
     return getRequestField(request, dataAccessForm.getTitleFieldPath());
@@ -243,6 +242,10 @@ public class DataAccessRequestUtilService {
     ctx.put("status", request.getStatus().name());
 
     return ctx;
+  }
+
+  public DataAccessConfig getDataAccessConfig() {
+    return dataAccessConfigService.getOrCreateConfig();
   }
 
   //
