@@ -96,9 +96,9 @@ public class DataAccessController extends BaseController {
       List<DataAccessCollaborator> collaborators = dataAccessCollaboratorService.findByRequestId(id);
       params.put("collaborators", collaborators);
       List<String> collabotorEmails = collaborators.stream().map(DataAccessCollaborator::getEmail).collect(Collectors.toList());
-      params.put("suggestedCollaborators", dataAccessRequestUtilService.getEmails(getDataAccessRequest(params)).stream()
+      params.put("suggestedCollaborators", dataAccessConfigervice.getOrCreateConfig().isCollaboratorsEnabled() ? dataAccessRequestUtilService.getEmails(getDataAccessRequest(params)).stream()
         .filter(email -> !collabotorEmails.contains(email))
-        .collect(Collectors.toList()));
+        .collect(Collectors.toList()) : Lists.newArrayList());
 
       List<String> permissions = getPermissions(params);
       if (isArchivePermitted(getDataAccessRequest(params), timeline))

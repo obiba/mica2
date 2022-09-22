@@ -66,11 +66,12 @@ public class DataAccessCollaboratorsResource {
   public Response inviteCollaborator(@QueryParam("email") String email) {
     if (!dataAccessRequestUtilService.getDataAccessConfig().isCollaboratorsEnabled())
       return Response.status(Response.Status.FORBIDDEN).build();
-
-    subjectAclService.checkPermission("/data-access-request", "EDIT", parentId);
+    DataAccessRequest request = dataAccessRequestService.findById(parentId);
+    if (!subjectAclService.isCurrentUser(request.getApplicant()))
+      subjectAclService.checkPermission("/data-access-request", "EDIT", parentId);
     if (Strings.isNullOrEmpty(email) || !email.contains("@")) throw new BadRequestException("Not a valid email");
 
-    dataAccessCollaboratorService.inviteCollaborator(dataAccessRequestService.findById(parentId), email);
+    dataAccessCollaboratorService.inviteCollaborator(request, email);
     return Response.ok().build();
   }
 

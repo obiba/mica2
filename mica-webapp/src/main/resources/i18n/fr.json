@@ -2159,7 +2159,12 @@
       "intermediateReportSubject": "Objet du courriel rappelant de soumettre un rapport intermédiaire",
       "intermediateReport-help": "Le courriel est envoyé au demandeur pour lui rappeler qu'un rapport intermédiaire (annuel) doit être soumis. Ce courriel ne s'applique qu'aux demande d'accès aux données ayant été approuvées.",
       "nbOfDaysBeforeReport": "Jours avant d'envoyer un courriel de rappel",
-      "nbOfDaysBeforeReport-help": "Nombre de jours avant d'envoyer un courriel de rappel pour les rapports intermédiaires ou final."
+      "nbOfDaysBeforeReport-help": "Nombre de jours avant d'envoyer un courriel de rappel pour les rapports intermédiaires ou final.",
+      "collaborators": "Collaborateurs",
+      "collaboratorInvitationSubject": "Objet du courriel invitant un collaborateur",
+      "collaboratorAccepted": "Sur acceptation d'un collaborateur",
+      "collaboratorAcceptedSubject": "Objet du courriel informant qu'un collaborateur a accepté une invitation",
+      "collaboratorAccepted-help": "Le courriel est envoyé au demandeur principal pour l'informer qu'une invitation a collaborer a été acceptée."
     },
     "workflow": {
       "title": "Flux de travail",

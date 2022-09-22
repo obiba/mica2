@@ -394,6 +394,7 @@ module.exports = function (grunt) {
           {expand: true, src: ['node_modules/jquery.redirect/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/js-cookie/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/bootstrap-datepicker/dist/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/bootstrap-4-autocomplete/dist/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/chartjs-chart-geo/build/**'], dest: 'src/main/webapp/assets/libs/'},
         ]
       }

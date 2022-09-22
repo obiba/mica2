@@ -145,7 +145,7 @@
                   </button>
                   <ul class="dropdown-menu" style="">
                     <#if accessConfig.collaboratorsEnabled && collaborator.invitationPending>
-                      <li><a class="dropdown-item" href="#" onclick="DataAccessService.inviteCollaborator('${dar.id}', '${collaborator.email}')"><i class="fa fa-paper-plane mr-2"></i> <@message "invite"/></a></li>
+                      <li><a class="dropdown-item" href="#" onclick="DataAccessService.reinviteCollaborator('${dar.id}', '${collaborator.email}', '<@message "invitation-resent"/>')"><i class="fa fa-paper-plane mr-2"></i> <@message "invite"/></a></li>
                     </#if>
                     <li><a class="dropdown-item" href="#" onclick="DataAccessService.deleteCollaborator('${dar.id}', '${collaborator.email}')"><i class="fa fa-trash mr-2"></i>  <@message "remove"/></a></li>
                   </ul>

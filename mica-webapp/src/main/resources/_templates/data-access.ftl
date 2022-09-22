@@ -147,7 +147,7 @@
           <div class="modal-body">
             <p><@message "collaborator-invite-text"/></p>
             <div class="input-group mb-3">
-              <input name="email" type="email" class="form-control" placeholder="<@message "email"/>">
+              <input id="collaborator-email" name="collaborator-email" type="email" class="form-control" placeholder="<@message "email"/>">
               <div class="input-group-append">
                 <div class="input-group-text">
                   <span class="fas fa-envelope"></span>
@@ -158,7 +158,7 @@
           <div class="modal-footer justify-content-between">
             <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
             <button type="button" class="btn btn-primary" data-dismiss="modal"
-                    onclick="DataAccessService.inviteCollaborator('${dar.id}', $('input[name=email]').val())"><@message "invite"/>
+                    onclick="DataAccessService.inviteCollaborator('${dar.id}', $('input[name=collaborator-email]').val())"><@message "invite"/>
             </button>
           </div>
         </div>
@@ -635,21 +635,7 @@
 
 <#include "libs/scripts.ftl">
 <#include "libs/data-access-scripts.ftl">
-<!-- Datepicker -->
-<script src="${assetsPath}/libs/node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
-<script>
-  $(function () {
-    $('#dashboard-menu').addClass('active').attr('href', '#');
-    $("#amendments").DataTable(dataTablesSortOpts);
-    $('#start-date').datepicker({
-      locale: '${.lang}',
-      format: 'yyyy-mm-dd'
-    });
-    $('#start-date-submit').click(function() {
-      DataAccessService.setStartDate('${dar.id}', $('#start-date').val());
-    });
-  });
-</script>
+<#include "libs/data-access-dashboard-scripts.ftl">
 
 </body>
 </html>

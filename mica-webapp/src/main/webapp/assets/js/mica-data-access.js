@@ -85,6 +85,18 @@ class DataAccessService {
       });
   }
 
+  static reinviteCollaborator(id, email, msg) {
+    let url = '/ws/data-access-request/' + id + '/collaborators/_invite?email=' + email;
+    axios.put(MicaService.normalizeUrl(url))
+      .then(() => {
+        MicaService.toastSuccess(msg);
+      })
+      .catch(response => {
+        console.dir(response);
+        MicaService.toastError('Invitation failed.');
+      });
+  }
+
   static deleteCollaborator(id, email) {
     let url = '/ws/data-access-request/' + id + '/collaborator/' + email;
     let redirect = '/data-access/' + id;

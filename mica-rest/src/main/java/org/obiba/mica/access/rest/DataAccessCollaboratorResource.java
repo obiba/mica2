@@ -66,7 +66,9 @@ public class DataAccessCollaboratorResource {
 
   @DELETE
   public Response deleteCollaborator() {
-    subjectAclService.checkPermission("/data-access-request", "EDIT", parentId);
+    DataAccessRequest request = dataAccessRequestService.findById(parentId);
+    if (!subjectAclService.isCurrentUser(request.getApplicant()))
+      subjectAclService.checkPermission("/data-access-request", "EDIT", parentId);
     Optional<DataAccessCollaborator> collaboratorOpt = dataAccessCollaboratorService.findByRequestIdAndEmail(parentId, email);
     collaboratorOpt.ifPresent(collaborator -> dataAccessCollaboratorService.delete(collaborator));
     return Response.ok().build();
