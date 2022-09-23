@@ -97,6 +97,8 @@ public class DataAccessConfig extends AbstractAuditableDocument {
 
   private boolean collaboratorsEnabled = true;
 
+  private int collaboratorInvitationDays = 7;
+
   private boolean variablesEnabled = true;
 
   private boolean feasibilityVariablesEnabled = false;
@@ -343,6 +345,14 @@ public class DataAccessConfig extends AbstractAuditableDocument {
 
   public void setCollaboratorsEnabled(boolean collaboratorsEnabled) {
     this.collaboratorsEnabled = collaboratorsEnabled;
+  }
+
+  public int getCollaboratorInvitationDays() {
+    return collaboratorInvitationDays;
+  }
+
+  public void setCollaboratorInvitationDays(int collaboratorInvitationDays) {
+    this.collaboratorInvitationDays = collaboratorInvitationDays;
   }
 
   public void setVariablesEnabled(boolean variablesEnabled) {

@@ -133,6 +133,7 @@
 
           <h4 translate>data-access-config.settings.collaborators</h4>
           <div form-checkbox name="collaboratorsEnabled" model="config.collaboratorsEnabled" label="data-access-config.collaborators-enabled" help="data-access-config.collaborators-enabled-help"></div>
+          <div form-input type="number" model="config.collaboratorInvitationDays" label="data-access-config.collaborator-invitation-days" help="data-access-config.collaborator-invitation-days-help" disabled="!config.collaboratorsEnabled"></div>
 
           <h4 translate>data-access-config.settings.other-forms-title</h4>
           <div form-checkbox name="feasibilityEnabled" model="config.feasibilityEnabled" label="data-access-config.feasibility-enabled" help="data-access-config.feasibility-enabled-help"></div>

@@ -2036,6 +2036,8 @@
     "dao-can-edit-help": "Data Access Officer has permission to edit a data access request/amendment when it is <strong>SUBMITTED</strong>, <strong>REVIEWED</strong>, <strong>APPROVED</strong> or <strong>REJECTED</strong>",
     "collaborators-enabled": "Enable collaborators",
     "collaborators-enabled-help": "Collaborators will have read-only access to the data access request and will receive notification emails.",
+    "collaborator-invitation-days": "Collaborator invitation validity",
+    "collaborator-invitation-days-help": "Number of days after which a collaborator invitation is expired.",
     "menu": "Data Access",
     "title": "Data Access Configuration",
     "title-edit": "Edit Data Access Configuration",

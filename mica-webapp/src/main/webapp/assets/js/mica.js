@@ -815,7 +815,7 @@ class MicaService {
     if (path && path.startsWith('http')) {
       window.location.assign(path);
     } else if (path) {
-      $.redirect(path, {}, 'GET');
+      window.location.assign(path);
     } else {
       $.redirect(this.normalizeUrl('/'), {}, 'GET');
     }

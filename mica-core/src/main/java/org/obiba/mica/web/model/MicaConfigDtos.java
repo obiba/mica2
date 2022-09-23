@@ -366,6 +366,7 @@ class MicaConfigDtos {
     builder.setFeasibilityEnabled(dataAccessConfig.isFeasibilityEnabled());
     builder.setAmendmentsEnabled(dataAccessConfig.isAmendmentsEnabled());
     builder.setCollaboratorsEnabled(dataAccessConfig.isCollaboratorsEnabled());
+    builder.setCollaboratorInvitationDays(dataAccessConfig.getCollaboratorInvitationDays());
 
     builder.setVariablesEnabled(dataAccessConfig.isVariablesEnabled());
     builder.setFeasibilityVariablesEnabled(dataAccessConfig.isFeasibilityVariablesEnabled());
@@ -434,6 +435,7 @@ class MicaConfigDtos {
     dataAccessConfig.setFeasibilityEnabled(dto.getFeasibilityEnabled());
     dataAccessConfig.setAmendmentsEnabled(dto.getAmendmentsEnabled());
     dataAccessConfig.setCollaboratorsEnabled(dto.getCollaboratorsEnabled());
+    dataAccessConfig.setCollaboratorInvitationDays(dto.getCollaboratorInvitationDays());
 
     dataAccessConfig.setVariablesEnabled(dto.getVariablesEnabled());
     dataAccessConfig.setFeasibilityVariablesEnabled(dto.getFeasibilityVariablesEnabled());

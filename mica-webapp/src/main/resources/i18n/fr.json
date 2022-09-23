@@ -2036,6 +2036,8 @@
     "dao-can-edit-help": "Le responsable de l'accès aux données a la permission de modifier une demande / un amendement d'accès aux données ayant le statut statut <strong>SOUMISE</strong>, <strong>EN RÉVISION</strong>, <strong>APPROUVÉE</strong> ou <strong>REJETÉE</strong>",
     "collaborators-enabled": "Activer l'ajout de collaborateurs",
     "collaborators-enabled-help": "Les collaborateurs auront un accès en lecture seule à la demande d'accès et recevront les courriels de notifications.",
+    "collaborator-invitation-days": "Durée de validité de l'invitation à collaborer",
+    "collaborator-invitation-days-help": "Nombre de jours au delà desquels une invitation n'est plus valide.",
     "menu": "Accès aux données",
     "title": "Configuration de l'accès aux données",
     "title-edit": "Modifier la configuration d'accès aux données",

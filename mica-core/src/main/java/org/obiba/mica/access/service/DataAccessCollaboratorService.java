@@ -103,7 +103,7 @@ public class DataAccessCollaboratorService {
       JSONObject jsonKey = new JSONObject(micaConfigService.decrypt(invitation));
       String darId = jsonKey.getString(REQUEST_KEY);
       if (!dar.getId().equals(darId))
-        throw new IllegalArgumentException("Invitation does not apply to this data access request");
+        throw new IllegalArgumentException("invitation-wrong-request");
       String principal = SecurityUtils.getSubject().getPrincipal().toString();
       String email = jsonKey.getString(EMAIL_KEY);
       boolean found = false;
@@ -119,13 +119,17 @@ public class DataAccessCollaboratorService {
         }
       }
       if (!found) {
-        throw new IllegalArgumentException("Invitation does not apply to current user");
+        throw new IllegalArgumentException("invitation-wrong-user");
+      }
+      DateTime expired = DateTime.parse(jsonKey.getString(CREATED_KEY)).plusDays(dataAccessConfigService.getOrCreateConfig().getCollaboratorInvitationDays());
+      if (expired.isBefore(DateTime.now())) {
+        throw new IllegalArgumentException("invitation-expired");
       }
       String author = jsonKey.getString(AUTHOR_KEY);
       // check and register the collaborator
       Optional<DataAccessCollaborator> collaboratorOpt = dataAccessCollaboratorRepository.findByRequestIdAndEmail(darId, email);
       if (collaboratorOpt.isPresent() && collaboratorOpt.get().isBanned())
-        throw new ForbiddenException("Invitation does not apply to a banned collaborator");
+        throw new ForbiddenException("invitation-banned-collaborator");
       DataAccessCollaborator collaborator = collaboratorOpt.orElseGet(() -> DataAccessCollaborator.newBuilder(dar.getId()).email(email).author(author).build());
       collaborator.setInvitationPending(false);
       collaborator.setPrincipal(principal);
@@ -137,7 +141,7 @@ public class DataAccessCollaboratorService {
       sendCollaboratorAcceptedNotification(dar, email);
     } catch (JSONException e) {
       log.warn("Invitation key is not valid");
-      throw new IllegalArgumentException("Invitation format is not valid");
+      throw new IllegalArgumentException("invitation-key-invalid");
     }
   }
 
