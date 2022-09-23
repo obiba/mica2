@@ -253,7 +253,7 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
 
       mailService.sendEmailToUsers(mailService.getSubject(dataAccessConfig.getReviewedSubject(), ctx,
           DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "ReviewedApplicantEmail", ctx,
-        getApplicantAndCollaborators(request));
+        request.getApplicant());
     }
   }
 
@@ -266,7 +266,7 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
 
       mailService.sendEmailToUsers(mailService.getSubject(dataAccessConfig.getReopenedSubject(), ctx,
           DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "ReopenedApplicantEmail", ctx,
-        getApplicantAndCollaborators(request));
+        request.getApplicant());
     }
   }
 
@@ -303,7 +303,7 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
 
       mailService.sendEmailToUsers(mailService.getSubject(dataAccessConfig.getAttachmentSubject(), ctx,
           DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestAttachmentsUpdated", ctx,
-        getApplicantAndCollaborators(request));
+        request.getApplicant());
 
       mailService.sendEmailToGroups(mailService.getSubject(dataAccessConfig.getAttachmentSubject(), ctx,
           DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestAttachmentsUpdated", ctx,
