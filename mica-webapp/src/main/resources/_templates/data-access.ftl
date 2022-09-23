@@ -134,6 +134,71 @@
     </div>
     <!-- /.modal -->
 
+    <!-- Add collaborator modal -->
+    <div class="modal fade" id="modal-collaborator-add">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title"><@message "collaborator-invite-title"/></h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p><@message "collaborator-invite-text"/></p>
+            <div class="input-group mb-3">
+              <input id="collaborator-email" name="collaborator-email" type="email" class="form-control" placeholder="<@message "email"/>">
+              <div class="input-group-append">
+                <div class="input-group-text">
+                  <span class="fas fa-envelope"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal"
+                    onclick="DataAccessService.inviteCollaborator('${dar.id}', $('input[name=collaborator-email]').val())"><@message "invite"/>
+            </button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
+    <#if permissions?seq_contains("DELETE_COLLABORATORS")>
+      <!-- Confirm collaborator removal modal -->
+      <div class="modal fade" id="modal-collaborator-delete">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title"><@message "confirm-collaborator-delete-title"/></h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p><@message "confirm-collaborator-delete-text"/></p>
+              <p>
+                <strong id="collaborator-to-delete"></strong>
+              </p>
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
+              <button type="button" class="btn btn-primary" data-dismiss="modal"
+                      onclick="DataAccessService.deleteCollaborator('${dar.id}', $('#collaborator-to-delete').text())"><@message "confirm"/>
+              </button>
+            </div>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+      <!-- /.modal -->
+    </#if>
+
     <!-- Main content -->
     <section class="content">
 
@@ -419,6 +484,27 @@
               </#if>
             </div>
           </div>
+
+          <#if accessConfig.collaboratorsEnabled || collaborators?has_content>
+            <div class="card card-info card-outline">
+              <div class="card-header">
+                <h3 class="card-title"><@message "collaborators"/></h3>
+                <#if accessConfig.collaboratorsEnabled>
+                  <div class="float-right">
+                    <#if permissions?seq_contains("ADD_COLLABORATORS")>
+                      <button type="button" class="btn btn-primary ml-4" data-toggle="modal" data-target="#modal-collaborator-add">
+                        <i class="fas fa-plus"></i> <@message "new-collaborator"/>
+                      </button>
+                    </#if>
+                  </div>
+                </#if>
+              </div>
+              <div class="card-body">
+                <@dataAccessCollaborators/>
+              </div>
+            </div>
+          </#if>
+
         </div>
         <!-- /.col-6 -->
         <div class="col-sm-12 col-lg-6">
@@ -580,21 +666,7 @@
 
 <#include "libs/scripts.ftl">
 <#include "libs/data-access-scripts.ftl">
-<!-- Datepicker -->
-<script src="${assetsPath}/libs/node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
-<script>
-  $(function () {
-    $('#dashboard-menu').addClass('active').attr('href', '#');
-    $("#amendments").DataTable(dataTablesSortOpts);
-    $('#start-date').datepicker({
-      locale: '${.lang}',
-      format: 'yyyy-mm-dd'
-    });
-    $('#start-date-submit').click(function() {
-      DataAccessService.setStartDate('${dar.id}', $('#start-date').val());
-    });
-  });
-</script>
+<#include "libs/data-access-dashboard-scripts.ftl">
 
 </body>
 </html>

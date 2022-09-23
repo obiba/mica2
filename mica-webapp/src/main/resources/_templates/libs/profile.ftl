@@ -11,8 +11,10 @@
   <dl class="row">
     <dt class="col-sm-4"><@message "full-name"/></dt>
     <dd class="col-sm-8">${profile.fullName}</dd>
-    <dt class="col-sm-4"><@message "username"/></dt>
-    <dd class="col-sm-8">${profile.username}</dd>
+    <#if profile.username == user.username || isAdministrator || isDAO>
+      <dt class="col-sm-4"><@message "username"/></dt>
+      <dd class="col-sm-8">${profile.username}</dd>
+    </#if>
     <#if showProfileGroups && profile.groups??>
       <dt class="col-sm-4"><@message "groups"/></dt>
       <dd class="col-sm-8">
@@ -21,39 +23,54 @@
         </#list>
       </dd>
     </#if>
-    <#if showProfileRole && profile.roles??>
-      <dt class="col-sm-4"><@message "roles"/></dt>
-      <dd class="col-sm-8">
-        <#list profile.roles as role>
-          <span class="badge badge-primary">${role}</span>
+    <#if profile.username == user.username || isAdministrator || isDAO>
+      <#if showProfileRole && profile.roles??>
+        <dt class="col-sm-4"><@message "roles"/></dt>
+        <dd class="col-sm-8">
+          <#list profile.roles as role>
+            <span class="badge badge-primary">${role}</span>
+          </#list>
+        </dd>
+      </#if>
+      <#if profile.attributes??>
+        <#list profile.attributes?keys as key>
+          <#if key != "realm" || isAdministrator>
+            <dt class="col-sm-4">
+              <@message key/>
+            </dt>
+            <dd class="col-sm-8">
+              <#if key == "createdDate" || key == "lastLogin">
+                <span class="moment-datetime">${profile.attributes[key].toString(datetimeFormat)}</span>
+              <#elseif key == "email">
+                <a href="mailto:${profile.attributes[key]}">${profile.attributes[key]}</a>
+              <#elseif key == "locale">
+                <@message profile.attributes[key]/>
+              <#elseif profile.attributes[key] == "true">
+                <i class="fas fa-check"></i>
+              <#elseif profile.attributes[key] == "false">
+                <i class="fas fa-times"></i>
+              <#elseif key == "realm">
+                <code>${profile.attributes[key]}</code>
+              <#else>
+                ${profile.attributes[key]}
+              </#if>
+            </dd>
+          </#if>
         </#list>
-      </dd>
-    </#if>
-    <#if profile.attributes??>
-      <#list profile.attributes?keys as key>
-        <#if key != "realm" || isAdministrator>
-          <dt class="col-sm-4">
-            <@message key/>
-          </dt>
-          <dd class="col-sm-8">
-            <#if key == "createdDate" || key == "lastLogin">
-              <span class="moment-datetime">${profile.attributes[key].toString(datetimeFormat)}</span>
-            <#elseif key == "email">
+      </#if>
+    <#else>
+      <#if profile.attributes??>
+        <#list profile.attributes?keys as key>
+          <#if key == "email">
+            <dt class="col-sm-4">
+              <@message key/>
+            </dt>
+            <dd class="col-sm-8">
               <a href="mailto:${profile.attributes[key]}">${profile.attributes[key]}</a>
-            <#elseif key == "locale">
-              <@message profile.attributes[key]/>
-            <#elseif profile.attributes[key] == "true">
-              <i class="fas fa-check"></i>
-            <#elseif profile.attributes[key] == "false">
-              <i class="fas fa-times"></i>
-            <#elseif key == "realm">
-              <code>${profile.attributes[key]}</code>
-            <#else>
-              ${profile.attributes[key]}
-            </#if>
-          </dd>
-        </#if>
-      </#list>
+            </dd>
+          </#if>
+        </#list>
+      </#if>
     </#if>
   </dl>
 </#macro>

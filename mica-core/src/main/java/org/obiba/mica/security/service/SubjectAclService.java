@@ -20,8 +20,12 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.subject.Subject;
 import org.obiba.mica.access.domain.DataAccessAmendment;
+import org.obiba.mica.access.domain.DataAccessCollaborator;
+import org.obiba.mica.access.domain.DataAccessFeasibility;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.event.DataAccessAmendmentDeletedEvent;
+import org.obiba.mica.access.event.DataAccessCollaboratorDeletedEvent;
+import org.obiba.mica.access.event.DataAccessFeasibilityDeletedEvent;
 import org.obiba.mica.access.event.DataAccessRequestDeletedEvent;
 import org.obiba.mica.dataset.event.DatasetDeletedEvent;
 import org.obiba.mica.file.FileUtils;
@@ -460,12 +464,32 @@ public class SubjectAclService {
 
   @Async
   @Subscribe
+  public void dataAccessFeasibilityDeleted(DataAccessFeasibilityDeletedEvent event) {
+    DataAccessFeasibility feasibility = event.getPersistable();
+    String resource = String.format("/data-access-request/%s/feasibility", feasibility.getParentId());
+    String id = feasibility.getId();
+    removeResourcePermissions(resource, id);
+    removeResourcePermissions(resource + "/" + id, "_status");
+  }
+
+  @Async
+  @Subscribe
   public void dataAccessAmendmentDeleted(DataAccessAmendmentDeletedEvent event) {
     DataAccessAmendment amendment = event.getPersistable();
     String resource = String.format("/data-access-request/%s/amendment", amendment.getParentId());
     String id = amendment.getId();
     removeResourcePermissions(resource, id);
     removeResourcePermissions(resource + "/" + id, "_status");
+  }
+
+  @Async
+  @Subscribe
+  public void dataAccessCollaboratorDeleted(DataAccessCollaboratorDeletedEvent event) {
+    DataAccessCollaborator collaborator = event.getPersistable();
+    if (!collaborator.hasPrincipal()) return;
+
+    String resource = String.format("/data-access-request/%s", collaborator.getRequestId());
+    removeUserPermission(collaborator.getPrincipal(), resource, "VIEW", null);
   }
 
   @Async

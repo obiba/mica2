@@ -546,6 +546,23 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     return dataAccessAmendmentResource;
   }
 
+  @Path("/collaborators")
+  public DataAccessCollaboratorsResource getCollaborators(@PathParam("id") String id) {
+    dataAccessRequestService.findById(id);
+    DataAccessCollaboratorsResource resource = applicationContext.getBean(DataAccessCollaboratorsResource.class);
+    resource.setParentId(id);
+    return resource;
+  }
+
+  @Path("/collaborator/{email}")
+  public DataAccessCollaboratorResource getCollaborator(@PathParam("id") String id, @PathParam("email") String email) {
+    dataAccessRequestService.findById(id);
+    DataAccessCollaboratorResource resource = applicationContext.getBean(DataAccessCollaboratorResource.class);
+    resource.setParentId(id);
+    resource.setEmail(email);
+    return resource;
+  }
+
   @Override
   protected DataAccessEntityService<DataAccessRequest> getService() {
     return dataAccessRequestService;

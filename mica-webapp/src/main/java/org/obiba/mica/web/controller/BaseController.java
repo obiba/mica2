@@ -17,7 +17,9 @@ import org.springframework.web.util.UriUtils;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.NotFoundException;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -41,24 +43,24 @@ public class BaseController {
   @Inject
   private NetworkSetService networkSetService;
 
-  @ExceptionHandler(NoSuchElementException.class)
+  @ExceptionHandler({NotFoundException.class, NoSuchElementException.class})
   public ModelAndView notFoundError(HttpServletRequest request, Exception ex) {
     return makeErrorModelAndView(request, "404", ex.getMessage());
   }
 
-  @ExceptionHandler(UnauthorizedException.class)
+  @ExceptionHandler({UnauthorizedException.class, ForbiddenException.class})
   public ModelAndView unauthorizedError(HttpServletRequest request, Exception ex) {
-    return makeErrorModelAndView(request,"403", ex.getMessage());
+    return makeErrorModelAndView(request, "403", ex.getMessage());
   }
 
-  @ExceptionHandler(ForbiddenException.class)
-  public ModelAndView forbiddenError(HttpServletRequest request, Exception ex) {
-    return unauthorizedError(request, ex);
+  @ExceptionHandler({IllegalArgumentException.class, BadRequestException.class})
+  public ModelAndView illegalArgumentError(HttpServletRequest request, Exception ex) {
+    return makeErrorModelAndView(request, "400", ex.getMessage());
   }
 
   @ExceptionHandler(Exception.class)
   public ModelAndView anyError(HttpServletRequest request, Exception ex) {
-    return makeErrorModelAndView(request,"500", ex.getMessage());
+    return makeErrorModelAndView(request, "500", ex.getMessage());
   }
 
   protected ModelAndView makeErrorModelAndView(HttpServletRequest request, String status, String message) {

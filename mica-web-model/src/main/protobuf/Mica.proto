@@ -851,6 +851,16 @@ message DataAccessFeasibilityDto {
   }
 }
 
+message DataAccessCollaboratorDto {
+  required string requestId = 1;
+  required string email = 2;
+  required bool invitationPending = 3;
+  required bool banned = 4;
+  required string createdBy = 5;
+  optional string modifiedBy = 6;
+  required TimestampsDto timestamps = 7;
+}
+
 message TimelineDto {
   required string startDate = 1;
   required string endDate = 2;
@@ -935,6 +945,11 @@ message DataAccessConfigDto {
   optional string csvExportFormat = 47;
   optional string feasibilityCsvExportFormat = 48;
   optional string amendmentCsvExportFormat = 49;
+  required bool collaboratorsEnabled = 50;
+  optional int32 collaboratorInvitationDays = 51;
+  optional string collaboratorInvitationSubject = 52;
+  required bool notifyCollaboratorAccepted = 53;
+  optional string collaboratorAcceptedSubject = 54;
 }
 
 message DataAccessFormDto {

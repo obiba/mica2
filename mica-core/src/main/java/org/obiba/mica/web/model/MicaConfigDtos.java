@@ -324,6 +324,7 @@ class MicaConfigDtos {
       .setNotifyAttachment(dataAccessConfig.isNotifyAttachment())
       .setNotifyFinalReport(dataAccessConfig.isNotifyFinalReport())
       .setNotifyIntermediateReport(dataAccessConfig.isNotifyIntermediateReport())
+      .setNotifyCollaboratorAccepted(dataAccessConfig.isNotifyCollaboratorAccepted())
       .setWithReview(dataAccessConfig.isWithReview())
       .setApprovedFinal(dataAccessConfig.isApprovedFinal())
       .setRejectedFinal(dataAccessConfig.isRejectedFinal())
@@ -357,10 +358,15 @@ class MicaConfigDtos {
 
     builder.setNbOfDaysBeforeReport(dataAccessConfig.getNbOfDaysBeforeReport());
 
+    if(dataAccessConfig.getCollaboratorInvitationSubject() != null) builder.setCollaboratorInvitationSubject(dataAccessConfig.getCollaboratorInvitationSubject());
+    if(dataAccessConfig.getCollaboratorAcceptedSubject() != null) builder.setCollaboratorAcceptedSubject(dataAccessConfig.getCollaboratorAcceptedSubject());
+
     if(dataAccessConfig.getPredefinedActions() != null) builder.addAllPredefinedActions(dataAccessConfig.getPredefinedActions());
 
     builder.setFeasibilityEnabled(dataAccessConfig.isFeasibilityEnabled());
     builder.setAmendmentsEnabled(dataAccessConfig.isAmendmentsEnabled());
+    builder.setCollaboratorsEnabled(dataAccessConfig.isCollaboratorsEnabled());
+    builder.setCollaboratorInvitationDays(dataAccessConfig.getCollaboratorInvitationDays());
 
     builder.setVariablesEnabled(dataAccessConfig.isVariablesEnabled());
     builder.setFeasibilityVariablesEnabled(dataAccessConfig.isFeasibilityVariablesEnabled());
@@ -414,6 +420,10 @@ class MicaConfigDtos {
 
     if (dto.hasNbOfDaysBeforeReport()) dataAccessConfig.setNbOfDaysBeforeReport(dto.getNbOfDaysBeforeReport());
 
+    dataAccessConfig.setCollaboratorInvitationSubject(dto.getCollaboratorInvitationSubject());
+    dataAccessConfig.setNotifyCollaboratorAccepted(dto.getNotifyCollaboratorAccepted());
+    dataAccessConfig.setCollaboratorAcceptedSubject(dto.getCollaboratorAcceptedSubject());
+
     dataAccessConfig.setWithReview(dto.getWithReview());
     dataAccessConfig.setApprovedFinal(dto.getApprovedFinal());
     dataAccessConfig.setRejectedFinal(dto.getRejectedFinal());
@@ -424,6 +434,8 @@ class MicaConfigDtos {
     dataAccessConfig.setPredefinedActions(dto.getPredefinedActionsList());
     dataAccessConfig.setFeasibilityEnabled(dto.getFeasibilityEnabled());
     dataAccessConfig.setAmendmentsEnabled(dto.getAmendmentsEnabled());
+    dataAccessConfig.setCollaboratorsEnabled(dto.getCollaboratorsEnabled());
+    dataAccessConfig.setCollaboratorInvitationDays(dto.getCollaboratorInvitationDays());
 
     dataAccessConfig.setVariablesEnabled(dto.getVariablesEnabled());
     dataAccessConfig.setFeasibilityVariablesEnabled(dto.getFeasibilityVariablesEnabled());

@@ -1,15 +1,13 @@
 package org.obiba.mica.web.controller;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.*;
 import org.obiba.mica.access.notification.DataAccessRequestReportNotificationService;
-import org.obiba.mica.access.service.DataAccessAmendmentService;
-import org.obiba.mica.access.service.DataAccessFeasibilityService;
-import org.obiba.mica.access.service.DataAccessRequestService;
-import org.obiba.mica.access.service.DataAccessRequestUtilService;
+import org.obiba.mica.access.service.*;
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.service.CommentsService;
@@ -29,6 +27,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +47,9 @@ public class DataAccessController extends BaseController {
 
   @Inject
   private DataAccessAmendmentService dataAccessAmendmentService;
+
+  @Inject
+  private DataAccessCollaboratorService dataAccessCollaboratorService;
 
   @Inject
   private DataAccessConfigService dataAccessConfigervice;
@@ -77,14 +80,27 @@ public class DataAccessController extends BaseController {
   private Pattern amendmentIdPattern = Pattern.compile("-A\\d+$");
 
   @GetMapping("/data-access/{id:.+}")
-  public ModelAndView get(@PathVariable String id) {
+  public ModelAndView get(@PathVariable String id, @RequestParam(value = "invitation", required = false) String invitation) {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
+      if (!Strings.isNullOrEmpty(invitation) && dataAccessConfigervice.getOrCreateConfig().isCollaboratorsEnabled()) {
+        // apply invitation if necessary, this will grant read access
+        dataAccessCollaboratorService.acceptCollaborator(getDataAccessRequest(id), invitation);
+      }
       Map<String, Object> params = newParameters(id);
       addDataAccessConfiguration(params);
 
       DataAccessRequestTimeline timeline = dataAccessRequestReportNotificationService.getReportsTimeline(getDataAccessRequest(params));
       params.put("reportTimeline", timeline);
+
+      List<DataAccessCollaborator> collaborators = dataAccessCollaboratorService.findByRequestId(id);
+      params.put("collaborators", collaborators.stream()
+          .map(collaborator -> new DataAccessCollaboratorBundle(collaborator, userProfileService.getProfileMap(collaborator.hasPrincipal() ? collaborator.getPrincipal() : collaborator.getEmail(), true)))
+          .collect(Collectors.toList()));
+      List<String> collaboratorEmails = collaborators.stream().map(DataAccessCollaborator::getEmail).collect(Collectors.toList());
+      params.put("suggestedCollaborators", dataAccessConfigervice.getOrCreateConfig().isCollaboratorsEnabled() ? dataAccessRequestUtilService.getEmails(getDataAccessRequest(params)).stream()
+        .filter(email -> !collaboratorEmails.contains(email))
+        .collect(Collectors.toList()) : Lists.newArrayList());
 
       List<String> permissions = getPermissions(params);
       if (isArchivePermitted(getDataAccessRequest(params), timeline))
@@ -99,7 +115,16 @@ public class DataAccessController extends BaseController {
 
       return new ModelAndView("data-access", params);
     } else {
-      return new ModelAndView("redirect:../signin?redirect=" + micaConfigService.getContextPath() + "/data-access%2F" + id);
+      String path = micaConfigService.getContextPath() + "/data-access/" + id;
+      if (!Strings.isNullOrEmpty(invitation) && dataAccessConfigervice.getOrCreateConfig().isCollaboratorsEnabled()) {
+        path = path + "?invitation=" + invitation;
+      }
+      try {
+        path = URLEncoder.encode(path, "UTF-8");
+      } catch (UnsupportedEncodingException e) {
+        // ignore
+      }
+      return new ModelAndView("redirect:../signin?redirect=" + path);
     }
   }
 
@@ -369,6 +394,17 @@ public class DataAccessController extends BaseController {
       .collect(Collectors.toList());
     if (!dar.isArchived() && isPermitted("/data-access-request/" + id, "EDIT", "_status"))
       permissions.add("EDIT_STATUS");
+    if (!dar.isArchived()) {
+      if (subjectAclService.isCurrentUser(dar.getApplicant()) || subjectAclService.isPermitted("/data-access-request", "EDIT", id)) {
+        if (dataAccessConfigervice.getOrCreateConfig().isCollaboratorsEnabled()) {
+          permissions.add("ADD_COLLABORATORS"); // invite
+          permissions.add("DELETE_COLLABORATORS");
+        } else {
+          // not enabled but still allow to manage a not empty list of collaborators
+          permissions.add("DELETE_COLLABORATORS");
+        }
+      }
+    }
     params.put("permissions", permissions);
 
     List<DataAccessFeasibility> feasibilities = dataAccessFeasibilityService.findByParentId(id);

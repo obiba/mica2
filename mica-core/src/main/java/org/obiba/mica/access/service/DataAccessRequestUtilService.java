@@ -17,15 +17,14 @@ import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
 import com.jayway.jsonpath.*;
 import org.apache.shiro.SecurityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.obiba.mica.access.domain.*;
 import org.obiba.mica.core.service.DocumentDifferenceService;
 import org.obiba.mica.core.support.RegexHashMap;
 import org.obiba.mica.micaConfig.domain.AbstractDataAccessEntityForm;
 import org.obiba.mica.micaConfig.domain.DataAccessConfig;
-import org.obiba.mica.micaConfig.service.DataAccessAmendmentFormService;
-import org.obiba.mica.micaConfig.service.DataAccessConfigService;
-import org.obiba.mica.micaConfig.service.DataAccessFormService;
-import org.obiba.mica.micaConfig.service.EntityConfigKeyTranslationService;
+import org.obiba.mica.micaConfig.service.*;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.user.UserProfileService;
@@ -49,6 +48,9 @@ public class DataAccessRequestUtilService {
   public static final String DEFAULT_NOTIFICATION_SUBJECT = "[${organization}] ${title}";
 
   public static final SimpleDateFormat ISO_8601 = new SimpleDateFormat("yyyy-MM-dd");
+
+  @Inject
+  private MicaConfigService micaConfigService;
 
   @Inject
   private DataAccessConfigService dataAccessConfigService;
@@ -93,7 +95,6 @@ public class DataAccessRequestUtilService {
 
     return data;
   }
-
 
   public String getRequestTitle(DataAccessEntity request) {
     AbstractDataAccessEntityForm dataAccessForm = getDataAccessForm(request);
@@ -146,6 +147,11 @@ public class DataAccessRequestUtilService {
       log.warn("Not a valid (ISO 8601) date format: {}", value);
       return null;
     }
+  }
+
+  public List<String> getEmails(DataAccessEntity entity) {
+    Object content = getContentAsObject(entity.getContent());
+    return extractEmails(content);
   }
 
   public void checkStatusTransition(DataAccessEntity request, DataAccessEntityStatus to)
@@ -216,9 +222,61 @@ public class DataAccessRequestUtilService {
     return to;
   }
 
+  Map<String, String> getNotificationEmailContext(DataAccessEntity request) {
+    Map<String, String> ctx = Maps.newHashMap();
+    String organization = micaConfigService.getConfig().getName();
+    String id = request.getId();
+    String title = getRequestTitle(request);
+
+    ctx.put("organization", organization);
+    ctx.put("publicUrl", micaConfigService.getPublicUrl());
+    ctx.put("id", id);
+    ctx.put("type", request.getClass().getSimpleName());
+    if (request instanceof DataAccessAmendment)
+      ctx.put("parentId", ((DataAccessAmendment) request).getParentId());
+    if (request instanceof DataAccessFeasibility)
+      ctx.put("parentId", ((DataAccessFeasibility) request).getParentId());
+    if (Strings.isNullOrEmpty(title)) title = id;
+    ctx.put("title", title);
+    ctx.put("applicant", request.getApplicant());
+    ctx.put("status", request.getStatus().name());
+
+    return ctx;
+  }
+
+  public DataAccessConfig getDataAccessConfig() {
+    return dataAccessConfigService.getOrCreateConfig();
+  }
+
   //
   // Private methods
   //
+
+  private List<String> extractEmails(Object content) {
+    List<String> emails = Lists.newArrayList();
+    if (content instanceof Map) {
+      Map<String, Object> map = (Map<String, Object>) content;
+      for (Map.Entry<String, Object> entry : map.entrySet()) {
+        emails.addAll(extractEmails(entry.getValue()));
+      }
+    } else if (content instanceof JSONArray) {
+      JSONArray array = ((JSONArray) content);
+      for (int i=0; i<array.length(); i++) {
+        try {
+          emails.addAll(extractEmails(array.get(i)));
+        } catch (JSONException e) {
+          // ignore
+        }
+      }
+    } else if (content instanceof List) {
+      ((List<Object>) content)
+        .forEach(obj -> emails.addAll(extractEmails(obj)));
+    } else if (content instanceof String) {
+      if (content.toString().contains("@"))
+        emails.add(content.toString().trim());
+    }
+    return emails;
+  }
 
   private Object getContentAsObject(String rawContent) {
     Object content = null;

@@ -71,6 +71,46 @@ class DataAccessService {
       });
   }
 
+  static inviteCollaborator(id, email) {
+    let url = '/ws/data-access-request/' + id + '/collaborators/_invite?email=' + email;
+    let redirect = '/data-access/' + id;
+    axios.put(MicaService.normalizeUrl(url))
+      .then(() => {
+        //console.dir(response);
+        MicaService.redirect(MicaService.normalizeUrl(redirect));
+      })
+      .catch(response => {
+        console.dir(response);
+        MicaService.toastError('Invitation failed.');
+      });
+  }
+
+  static reinviteCollaborator(id, email, msg) {
+    let url = '/ws/data-access-request/' + id + '/collaborators/_invite?email=' + email;
+    axios.put(MicaService.normalizeUrl(url))
+      .then(() => {
+        MicaService.toastSuccess(msg);
+      })
+      .catch(response => {
+        console.dir(response);
+        MicaService.toastError('Invitation failed.');
+      });
+  }
+
+  static deleteCollaborator(id, email) {
+    let url = '/ws/data-access-request/' + id + '/collaborator/' + email;
+    let redirect = '/data-access/' + id;
+    axios.delete(MicaService.normalizeUrl(url))
+      .then(() => {
+        //console.dir(response);
+        MicaService.redirect(MicaService.normalizeUrl(redirect));
+      })
+      .catch(response => {
+        console.dir(response);
+        MicaService.toastError('Deletion failed.');
+      });
+  }
+
   static archive(id, type, aId) {
     let url = '/ws/data-access-request/' + id + '/_archive';
     let redirect = '/data-access/' + id;

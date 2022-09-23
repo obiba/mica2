@@ -75,6 +75,12 @@ public class DataAccessConfig extends AbstractAuditableDocument {
 
   private String intermediateReportSubject;
 
+  private String collaboratorInvitationSubject;
+
+  private boolean notifyCollaboratorAccepted = true;
+
+  private String collaboratorAcceptedSubject;
+
   private boolean withReview = true;
 
   private boolean withConditionalApproval = false;
@@ -88,6 +94,10 @@ public class DataAccessConfig extends AbstractAuditableDocument {
   private boolean feasibilityEnabled = false;
 
   private boolean amendmentsEnabled = false;
+
+  private boolean collaboratorsEnabled = true;
+
+  private int collaboratorInvitationDays = 7;
 
   private boolean variablesEnabled = true;
 
@@ -329,6 +339,22 @@ public class DataAccessConfig extends AbstractAuditableDocument {
     this.amendmentsEnabled = amendmentsEnabled;
   }
 
+  public boolean isCollaboratorsEnabled() {
+    return collaboratorsEnabled;
+  }
+
+  public void setCollaboratorsEnabled(boolean collaboratorsEnabled) {
+    this.collaboratorsEnabled = collaboratorsEnabled;
+  }
+
+  public int getCollaboratorInvitationDays() {
+    return collaboratorInvitationDays;
+  }
+
+  public void setCollaboratorInvitationDays(int collaboratorInvitationDays) {
+    this.collaboratorInvitationDays = collaboratorInvitationDays;
+  }
+
   public void setVariablesEnabled(boolean variablesEnabled) {
     this.variablesEnabled = variablesEnabled;
   }
@@ -431,5 +457,29 @@ public class DataAccessConfig extends AbstractAuditableDocument {
 
   public void setAmendmentCsvExportFormat(String amendmentCsvExportFormat) {
     this.amendmentCsvExportFormat = amendmentCsvExportFormat;
+  }
+
+  public String getCollaboratorInvitationSubject() {
+    return collaboratorInvitationSubject;
+  }
+
+  public void setCollaboratorInvitationSubject(String collaboratorInvitationSubject) {
+    this.collaboratorInvitationSubject = collaboratorInvitationSubject;
+  }
+
+  public boolean isNotifyCollaboratorAccepted() {
+    return notifyCollaboratorAccepted;
+  }
+
+  public void setNotifyCollaboratorAccepted(boolean notifyCollaboratorAccepted) {
+    this.notifyCollaboratorAccepted = notifyCollaboratorAccepted;
+  }
+
+  public String getCollaboratorAcceptedSubject() {
+    return collaboratorAcceptedSubject;
+  }
+
+  public void setCollaboratorAcceptedSubject(String collaboratorAcceptedSubject) {
+    this.collaboratorAcceptedSubject = collaboratorAcceptedSubject;
   }
 }

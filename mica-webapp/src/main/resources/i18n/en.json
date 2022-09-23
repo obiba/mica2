@@ -2034,6 +2034,10 @@
   "data-access-config": {
     "dao-can-edit": "Grant Edit Permission to Data Access Officers.",
     "dao-can-edit-help": "Data Access Officer has permission to edit a data access request/amendment when it is <strong>SUBMITTED</strong>, <strong>REVIEWED</strong>, <strong>APPROVED</strong> or <strong>REJECTED</strong>",
+    "collaborators-enabled": "Enable collaborators",
+    "collaborators-enabled-help": "Collaborators will have read-only access to the data access request and will receive notification emails.",
+    "collaborator-invitation-days": "Collaborator invitation validity",
+    "collaborator-invitation-days-help": "Number of days after which a collaborator invitation is expired.",
     "menu": "Data Access",
     "title": "Data Access Configuration",
     "title-edit": "Edit Data Access Configuration",
@@ -2103,6 +2107,7 @@
     "settings": {
       "title": "General",
       "info": "Alternate forms and permissions can be enabled.",
+      "collaborators": "Collaborators",
       "other-forms-title": "Other Forms",
       "permissions-title": "Permissions",
       "variables-title": "Variables"
@@ -2156,7 +2161,12 @@
       "intermediateReportSubject": "Intermediate report reminder email subject",
       "intermediateReport-help": "Email is sent to applicant to remind that an intermediate (yearly) report is due. Applies to approved data access requests only.",
       "nbOfDaysBeforeReport": "Days before sending a report reminder",
-      "nbOfDaysBeforeReport-help": "Number of days before sending a reminder email for the intermediate or the final reports."
+      "nbOfDaysBeforeReport-help": "Number of days before sending a reminder email for the intermediate or the final reports.",
+      "collaborators": "Collaborators",
+      "collaboratorInvitationSubject": "Collaborator invitation email subject",
+      "collaboratorAccepted": "On collaboration accepted",
+      "collaboratorAcceptedSubject": "On collaboration accepted email subject",
+      "collaboratorAccepted-help": "Email is sent to applicant when an invitation to collaborate to the data access request has been accepted."
     },
     "workflow": {
       "title": "Workflow",

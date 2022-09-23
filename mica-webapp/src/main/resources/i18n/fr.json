@@ -2034,6 +2034,10 @@
   "data-access-config": {
     "dao-can-edit": "Autoriser l'agent d'accès aux données de modifier les demandes d'accès.",
     "dao-can-edit-help": "Le responsable de l'accès aux données a la permission de modifier une demande / un amendement d'accès aux données ayant le statut statut <strong>SOUMISE</strong>, <strong>EN RÉVISION</strong>, <strong>APPROUVÉE</strong> ou <strong>REJETÉE</strong>",
+    "collaborators-enabled": "Activer l'ajout de collaborateurs",
+    "collaborators-enabled-help": "Les collaborateurs auront un accès en lecture seule à la demande d'accès et recevront les courriels de notifications.",
+    "collaborator-invitation-days": "Durée de validité de l'invitation à collaborer",
+    "collaborator-invitation-days-help": "Nombre de jours au delà desquels une invitation n'est plus valide.",
     "menu": "Accès aux données",
     "title": "Configuration de l'accès aux données",
     "title-edit": "Modifier la configuration d'accès aux données",
@@ -2103,6 +2107,7 @@
     "settings": {
       "title": "Paramètres",
       "info": "Activer des formulaires complémentaires et modifier des permissions.",
+      "collaborators": "Collaborateurs",
       "other-forms-title": "Autres Formulaires",
       "permissions-title": "Permissions",
       "variables-title": "Variables"
@@ -2156,7 +2161,12 @@
       "intermediateReportSubject": "Objet du courriel rappelant de soumettre un rapport intermédiaire",
       "intermediateReport-help": "Le courriel est envoyé au demandeur pour lui rappeler qu'un rapport intermédiaire (annuel) doit être soumis. Ce courriel ne s'applique qu'aux demande d'accès aux données ayant été approuvées.",
       "nbOfDaysBeforeReport": "Jours avant d'envoyer un courriel de rappel",
-      "nbOfDaysBeforeReport-help": "Nombre de jours avant d'envoyer un courriel de rappel pour les rapports intermédiaires ou final."
+      "nbOfDaysBeforeReport-help": "Nombre de jours avant d'envoyer un courriel de rappel pour les rapports intermédiaires ou final.",
+      "collaborators": "Collaborateurs",
+      "collaboratorInvitationSubject": "Objet du courriel invitant un collaborateur",
+      "collaboratorAccepted": "Sur acceptation d'un collaborateur",
+      "collaboratorAcceptedSubject": "Objet du courriel informant qu'un collaborateur a accepté une invitation",
+      "collaboratorAccepted-help": "Le courriel est envoyé au demandeur principal pour l'informer qu'une invitation a collaborer a été acceptée."
     },
     "workflow": {
       "title": "Flux de travail",
