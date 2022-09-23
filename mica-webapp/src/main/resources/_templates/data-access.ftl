@@ -168,34 +168,36 @@
     </div>
     <!-- /.modal -->
 
-    <!-- Confirm collaborator removal modal -->
-    <div class="modal fade" id="modal-collaborator-delete">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title"><@message "confirm-collaborator-delete-title"/></h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
+    <#if permissions?seq_contains("DELETE_COLLABORATORS")>
+      <!-- Confirm collaborator removal modal -->
+      <div class="modal fade" id="modal-collaborator-delete">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title"><@message "confirm-collaborator-delete-title"/></h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p><@message "confirm-collaborator-delete-text"/></p>
+              <p>
+                <strong id="collaborator-to-delete"></strong>
+              </p>
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
+              <button type="button" class="btn btn-primary" data-dismiss="modal"
+                      onclick="DataAccessService.deleteCollaborator('${dar.id}', $('#collaborator-to-delete').text())"><@message "confirm"/>
+              </button>
+            </div>
           </div>
-          <div class="modal-body">
-            <p><@message "confirm-collaborator-delete-text"/></p>
-            <p>
-              <strong id="collaborator-to-delete"></strong>
-            </p>
-          </div>
-          <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-            <button type="button" class="btn btn-primary" data-dismiss="modal"
-                    onclick="DataAccessService.deleteCollaborator('${dar.id}', $('#collaborator-to-delete').text())"><@message "confirm"/>
-            </button>
-          </div>
+          <!-- /.modal-content -->
         </div>
-        <!-- /.modal-content -->
+        <!-- /.modal-dialog -->
       </div>
-      <!-- /.modal-dialog -->
-    </div>
-    <!-- /.modal -->
+      <!-- /.modal -->
+    </#if>
 
     <!-- Main content -->
     <section class="content">
@@ -489,7 +491,7 @@
                 <h3 class="card-title"><@message "collaborators"/></h3>
                 <#if accessConfig.collaboratorsEnabled>
                   <div class="float-right">
-                    <#if !dar.archived && (user.username == dar.applicant || isAdministrator || isDAO)>
+                    <#if permissions?seq_contains("ADD_COLLABORATORS")>
                       <button type="button" class="btn btn-primary ml-4" data-toggle="modal" data-target="#modal-collaborator-add">
                         <i class="fas fa-plus"></i> <@message "new-collaborator"/>
                       </button>

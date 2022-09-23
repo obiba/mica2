@@ -392,6 +392,17 @@ public class DataAccessController extends BaseController {
       .collect(Collectors.toList());
     if (!dar.isArchived() && isPermitted("/data-access-request/" + id, "EDIT", "_status"))
       permissions.add("EDIT_STATUS");
+    if (!dar.isArchived()) {
+      if (subjectAclService.isCurrentUser(dar.getApplicant()) || subjectAclService.isPermitted("/data-access-request", "EDIT", id)) {
+        if (dataAccessConfigervice.getOrCreateConfig().isCollaboratorsEnabled()) {
+          permissions.add("ADD_COLLABORATORS"); // invite
+          permissions.add("DELETE_COLLABORATORS");
+        } else {
+          // not enabled but still allow to manage a not empty list of collaborators
+          permissions.add("DELETE_COLLABORATORS");
+        }
+      }
+    }
     params.put("permissions", permissions);
 
     List<DataAccessFeasibility> feasibilities = dataAccessFeasibilityService.findByParentId(id);

@@ -85,6 +85,7 @@ public class DataAccessCollaboratorService {
    * @return
    */
   public void inviteCollaborator(@NotNull DataAccessRequest dar, String email) {
+    if (!dataAccessRequestUtilService.getDataAccessConfig().isCollaboratorsEnabled()) throw new ForbiddenException("Inviting collaborators is not enabled");
     Optional<DataAccessCollaborator> collaboratorOpt = dataAccessCollaboratorRepository.findByRequestIdAndEmail(dar.getId(), email);
     save(collaboratorOpt.orElseGet(() -> DataAccessCollaborator.newBuilder(dar.getId()).email(email).invited().author(SecurityUtils.getSubject().getPrincipal().toString()).build()));
     sendCollaboratorInvitation(dar, email, makeInvitationKey(dar, email));

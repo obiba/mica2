@@ -116,7 +116,7 @@
           <th><@message "email"/></th>
           <th><@message "status"/></th>
           <th><@message "last-update"/></th>
-          <#if !dar.archived && (user.username == dar.applicant || isAdministrator || isDAO)>
+          <#if permissions?seq_contains("ADD_COLLABORATORS") || permissions?seq_contains("DELETE_COLLABORATORS")>
             <th></th>
           </#if>
         </tr>
@@ -137,17 +137,19 @@
               </#if>
             </td>
             <td data-sort="${collaborator.createdDate.toString(datetimeFormat)}" class="moment-datetime">${collaborator.createdDate.toString(datetimeFormat)}</td>
-            <#if !dar.archived && (user.username == dar.applicant || isAdministrator || isDAO)>
+            <#if permissions?seq_contains("ADD_COLLABORATORS") || permissions?seq_contains("DELETE_COLLABORATORS")>
               <td>
                 <div class="btn-group">
                   <button type="button" class="btn text-muted" data-toggle="dropdown" aria-expanded="false">
                     <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                   </button>
                   <ul class="dropdown-menu" style="">
-                    <#if accessConfig.collaboratorsEnabled && collaborator.invitationPending>
+                    <#if permissions?seq_contains("ADD_COLLABORATORS") && collaborator.invitationPending>
                       <li><a class="dropdown-item" href="#" onclick="DataAccessService.reinviteCollaborator('${dar.id}', '${collaborator.email}', '<@message "invitation-resent"/>')"><i class="fa fa-paper-plane mr-2"></i> <@message "invite"/></a></li>
                     </#if>
-                    <li><a class="dropdown-item" href="#" onclick="$('#collaborator-to-delete').text('${collaborator.email}')" data-toggle="modal" data-target="#modal-collaborator-delete"><i class="fa fa-trash mr-2"></i> <@message "remove"/></a></li>
+                    <#if permissions?seq_contains("DELETE_COLLABORATORS")>
+                      <li><a class="dropdown-item" href="#" onclick="$('#collaborator-to-delete').text('${collaborator.email}')" data-toggle="modal" data-target="#modal-collaborator-delete"><i class="fa fa-trash mr-2"></i> <@message "remove"/></a></li>
+                    </#if>
                   </ul>
                 </div>
               </td>
