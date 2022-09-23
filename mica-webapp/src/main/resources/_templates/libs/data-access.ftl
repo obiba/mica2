@@ -125,7 +125,7 @@
         <#list collaborators as collaborator>
           <tr>
             <td>
-              <a href="mailto:${collaborator.email}">${collaborator.email}</a>
+              <a href="mailto:${collaborator.email}">${collaborator.fullName}</a>
             </td>
             <td>
               <#if collaborator.invitationPending>
@@ -136,7 +136,7 @@
                   <@message "accepted"/>
               </#if>
             </td>
-            <td data-sort="${collaborator.createdDate.toString(datetimeFormat)}" class="moment-datetime">${collaborator.createdDate.toString(datetimeFormat)}</td>
+            <td data-sort="${collaborator.lastModifiedDate.toString(datetimeFormat)}" class="moment-datetime">${collaborator.lastModifiedDate.toString(datetimeFormat)}</td>
             <#if permissions?seq_contains("ADD_COLLABORATORS") || permissions?seq_contains("DELETE_COLLABORATORS")>
               <td>
                 <div class="btn-group">

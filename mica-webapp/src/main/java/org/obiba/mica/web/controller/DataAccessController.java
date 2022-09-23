@@ -94,10 +94,12 @@ public class DataAccessController extends BaseController {
       params.put("reportTimeline", timeline);
 
       List<DataAccessCollaborator> collaborators = dataAccessCollaboratorService.findByRequestId(id);
-      params.put("collaborators", collaborators);
-      List<String> collabotorEmails = collaborators.stream().map(DataAccessCollaborator::getEmail).collect(Collectors.toList());
+      params.put("collaborators", collaborators.stream()
+          .map(collaborator -> new DataAccessCollaboratorBundle(collaborator, userProfileService.getProfileMap(collaborator.hasPrincipal() ? collaborator.getPrincipal() : collaborator.getEmail(), true)))
+          .collect(Collectors.toList()));
+      List<String> collaboratorEmails = collaborators.stream().map(DataAccessCollaborator::getEmail).collect(Collectors.toList());
       params.put("suggestedCollaborators", dataAccessConfigervice.getOrCreateConfig().isCollaboratorsEnabled() ? dataAccessRequestUtilService.getEmails(getDataAccessRequest(params)).stream()
-        .filter(email -> !collabotorEmails.contains(email))
+        .filter(email -> !collaboratorEmails.contains(email))
         .collect(Collectors.toList()) : Lists.newArrayList());
 
       List<String> permissions = getPermissions(params);
