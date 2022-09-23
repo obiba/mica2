@@ -1,5 +1,7 @@
 package org.obiba.mica.web.controller;
 
+import javax.inject.Inject;
+
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.obiba.mica.dataset.service.CollectedDatasetService;
@@ -10,12 +12,9 @@ import org.obiba.mica.project.service.ProjectService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.IndividualStudyService;
-import org.obiba.mica.study.service.StudyService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
-
-import javax.inject.Inject;
 
 @Controller
 public class AdminController extends BaseController {
