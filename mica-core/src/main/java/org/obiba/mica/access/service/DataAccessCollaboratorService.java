@@ -27,6 +27,8 @@ import org.springframework.validation.annotation.Validated;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.ForbiddenException;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -151,7 +153,7 @@ public class DataAccessCollaboratorService {
 
   public DataAccessCollaborator save(DataAccessCollaborator collaborator) {
     collaborator.setLastModifiedBy(SecurityUtils.getSubject().getPrincipal().toString());
-    collaborator.setLastModifiedDate(DateTime.now());
+    collaborator.setLastModifiedDate(LocalDateTime.now());
     return dataAccessCollaboratorRepository.save(collaborator);
   }
 
