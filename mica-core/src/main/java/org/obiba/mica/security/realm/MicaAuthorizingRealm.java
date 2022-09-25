@@ -94,6 +94,23 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
     return rolePermissionResolver;
   }
 
+  /**
+   * Forces cache wipe out, for operations requiring real time permission updates (SubjectAclUpdatedEvent
+   * is triggerred ASync).
+   */
+  public void invalidateCache() {
+    logger.warn("Invalidating authorization cache");
+    if(isCachingEnabled()) {
+      getAuthorizationCache().clear();
+
+      subjectPermissionsCache.invalidateAll();
+      subjectPermissionsCache.cleanUp();
+
+      rolePermissionsCache.invalidateAll();
+      rolePermissionsCache.cleanUp();
+    }
+  }
+
   //
   // AuthorizingRealm
   //
@@ -148,19 +165,6 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
   //
   // Private methods
   //
-
-  private void invalidateCache() {
-    logger.warn("Invalidating authorization cache");
-    if(isCachingEnabled()) {
-      getAuthorizationCache().clear();
-
-      subjectPermissionsCache.invalidateAll();
-      subjectPermissionsCache.cleanUp();
-
-      rolePermissionsCache.invalidateAll();
-      rolePermissionsCache.cleanUp();
-    }
-  }
 
   private List<String> loadUserPermissions(PrincipalCollection principals) {
     return loadSubjectPermissions(principals.getPrimaryPrincipal().toString(), SubjectAcl.Type.USER);

@@ -14,6 +14,7 @@ import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.Roles;
+import org.obiba.mica.security.realm.MicaAuthorizingRealm;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.shiro.realm.ObibaRealm;
@@ -66,6 +67,9 @@ public class DataAccessCollaboratorService {
 
   @Inject
   private EventBus eventBus;
+
+  @Inject
+  private MicaAuthorizingRealm micaAuthorizingRealm;
 
   public List<DataAccessCollaborator> findByRequestId(@NotNull String requestId) {
     return dataAccessCollaboratorRepository.findByRequestId(requestId);
@@ -134,6 +138,7 @@ public class DataAccessCollaboratorService {
       // verify and set permissions
       if (!subjectAclService.isPermitted("/data-access-request", "VIEW", darId)) {
         subjectAclService.addUserPermission(principal, "/data-access-request", "VIEW", darId);
+        micaAuthorizingRealm.invalidateCache();
       }
       eventBus.post(new DataAccessCollaboratorAcceptedEvent(collaborator, invitation));
       sendCollaboratorAcceptedNotification(dar, email);
@@ -151,8 +156,10 @@ public class DataAccessCollaboratorService {
 
   public void delete(DataAccessCollaborator collaborator) {
     dataAccessCollaboratorRepository.delete(collaborator);
-    if (collaborator.hasPrincipal() && !SecurityUtils.getSubject().hasRole(Roles.MICA_DAO))
+    if (collaborator.hasPrincipal()) {
       subjectAclService.removeUserPermission(collaborator.getPrincipal(), "/data-access-request", "VIEW", collaborator.getRequestId());
+      micaAuthorizingRealm.invalidateCache();
+    }
   }
 
   //
