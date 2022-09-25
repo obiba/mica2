@@ -28,11 +28,6 @@ public class DataAccessCollaboratorBundle {
   public boolean isInvitationPending() {
     return collaborator.isInvitationPending();
   }
-
-  public boolean isBanned() {
-    return collaborator.isBanned();
-  }
-
   public DateTime getLastModifiedDate() {
     return collaborator.getLastModifiedDate();
   }

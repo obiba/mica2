@@ -14,10 +14,16 @@ import org.obiba.mica.access.domain.DataAccessCollaborator;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.core.event.PersistableUpdatedEvent;
 
-public class DataAccessCollaboratorDeletedEvent extends PersistableUpdatedEvent<DataAccessCollaborator> {
+public class DataAccessCollaboratorAcceptedEvent extends PersistableUpdatedEvent<DataAccessCollaborator> {
 
-  public DataAccessCollaboratorDeletedEvent(DataAccessCollaborator persistable) {
+  private final String key;
+
+  public DataAccessCollaboratorAcceptedEvent(DataAccessCollaborator persistable, String key) {
     super(persistable);
+    this.key = key;
   }
 
+  public String getKey() {
+    return key;
+  }
 }

@@ -74,6 +74,9 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
   private DataAccessFeasibilityService dataAccessFeasibilityService;
 
   @Inject
+  private DataAccessCollaboratorService dataAccessCollaboratorService;
+
+  @Inject
   private DataAccessRequestRepository dataAccessRequestRepository;
 
   @Inject
@@ -155,6 +158,7 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
     schemaFormContentFileService.deleteFiles(dataAccessRequest);
     deleteAmendments(id);
     deleteFeasibilities(id);
+    deleteCollaborators(id);
 
     attachments.forEach(a -> fileStoreService.delete(a.getId()));
     eventBus.post(new DataAccessRequestDeletedEvent(dataAccessRequest));
@@ -225,6 +229,13 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
     if (comment.getResourceId().equals("/data-access-request") && !comment.getAdmin()) {
       touch(findById(comment.getInstanceId()));
     }
+  }
+
+  @Subscribe
+  public void dataAccessCollaboratorAccepted(DataAccessCollaboratorAcceptedEvent event) {
+    DataAccessRequest request = findById(event.getPersistable().getRequestId());
+    request.addAcceptedCollaboratorInvitation(event.getKey());
+    save(request);
   }
 
   //
@@ -302,6 +313,10 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
 
   private void deleteFeasibilities(String id) {
     dataAccessFeasibilityService.findByParentId(id).forEach(dataAccessFeasibilityService::delete);
+  }
+
+  private void deleteCollaborators(String id) {
+    dataAccessCollaboratorService.deleteAll(id);
   }
 
   private byte[] getTemplate(DataAccessRequest request, Locale locale) throws IOException {

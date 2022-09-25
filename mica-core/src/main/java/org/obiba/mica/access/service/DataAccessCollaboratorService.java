@@ -2,7 +2,6 @@ package org.obiba.mica.access.service;
 
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import org.apache.shiro.SecurityUtils;
 import org.joda.time.DateTime;
 import org.json.JSONException;
@@ -10,17 +9,16 @@ import org.json.JSONObject;
 import org.obiba.mica.access.DataAccessCollaboratorRepository;
 import org.obiba.mica.access.domain.DataAccessCollaborator;
 import org.obiba.mica.access.domain.DataAccessRequest;
-import org.obiba.mica.access.event.DataAccessCollaboratorDeletedEvent;
-import org.obiba.mica.access.event.DataAccessRequestDeletedEvent;
+import org.obiba.mica.access.event.DataAccessCollaboratorAcceptedEvent;
 import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.shiro.realm.ObibaRealm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -122,14 +120,13 @@ public class DataAccessCollaboratorService {
         throw new IllegalArgumentException("invitation-wrong-user");
       }
       DateTime expired = DateTime.parse(jsonKey.getString(CREATED_KEY)).plusDays(dataAccessConfigService.getOrCreateConfig().getCollaboratorInvitationDays());
-      if (expired.isBefore(DateTime.now())) {
+      if (dar.hasAcceptedCollaboratorInvitation(invitation) || expired.isBefore(DateTime.now())) {
         throw new IllegalArgumentException("invitation-expired");
       }
+
       String author = jsonKey.getString(AUTHOR_KEY);
       // check and register the collaborator
       Optional<DataAccessCollaborator> collaboratorOpt = dataAccessCollaboratorRepository.findByRequestIdAndEmail(darId, email);
-      if (collaboratorOpt.isPresent() && collaboratorOpt.get().isBanned())
-        throw new ForbiddenException("invitation-banned-collaborator");
       DataAccessCollaborator collaborator = collaboratorOpt.orElseGet(() -> DataAccessCollaborator.newBuilder(dar.getId()).email(email).author(author).build());
       collaborator.setInvitationPending(false);
       collaborator.setPrincipal(principal);
@@ -138,6 +135,7 @@ public class DataAccessCollaboratorService {
       if (!subjectAclService.isPermitted("/data-access-request", "VIEW", darId)) {
         subjectAclService.addUserPermission(principal, "/data-access-request", "VIEW", darId);
       }
+      eventBus.post(new DataAccessCollaboratorAcceptedEvent(collaborator, invitation));
       sendCollaboratorAcceptedNotification(dar, email);
     } catch (JSONException e) {
       log.warn("Invitation key is not valid");
@@ -153,20 +151,8 @@ public class DataAccessCollaboratorService {
 
   public void delete(DataAccessCollaborator collaborator) {
     dataAccessCollaboratorRepository.delete(collaborator);
-    eventBus.post(new DataAccessCollaboratorDeletedEvent(collaborator));
-  }
-
-  //
-  // Events handling
-  //
-
-  @Async
-  @Subscribe
-  public void dataAccessRequestDeleted(DataAccessRequestDeletedEvent event) {
-    List<DataAccessCollaborator> collaborators = findByRequestId(event.getPersistable().getId());
-    if (!collaborators.isEmpty())
-      dataAccessCollaboratorRepository.delete(collaborators);
-    // note: permissions are removed by the SubjectAclService
+    if (collaborator.hasPrincipal() && !SecurityUtils.getSubject().hasRole(Roles.MICA_DAO))
+      subjectAclService.removeUserPermission(collaborator.getPrincipal(), "/data-access-request", "VIEW", collaborator.getRequestId());
   }
 
   //
@@ -217,5 +203,9 @@ public class DataAccessCollaboratorService {
       throw new IllegalArgumentException(e);
     }
     return micaConfigService.encrypt(jsonKey.toString());
+  }
+
+  public void deleteAll(String requestId) {
+    dataAccessCollaboratorRepository.delete(findByRequestId(requestId));
   }
 }

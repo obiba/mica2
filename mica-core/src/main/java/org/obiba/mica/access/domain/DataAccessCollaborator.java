@@ -19,8 +19,6 @@ public class DataAccessCollaborator extends AbstractAuditableDocument {
 
   private boolean invitationPending;
 
-  private boolean banned;
-
   public void setRequestId(String requestId) {
     this.requestId = requestId;
   }
@@ -43,14 +41,6 @@ public class DataAccessCollaborator extends AbstractAuditableDocument {
 
   public void setInvitationPending(boolean invitationPending) {
     this.invitationPending = invitationPending;
-  }
-
-  public boolean isBanned() {
-    return banned;
-  }
-
-  public void setBanned(boolean banned) {
-    this.banned = banned;
   }
 
   public static DataAccessCollaborator.Builder newBuilder(String requestId) {

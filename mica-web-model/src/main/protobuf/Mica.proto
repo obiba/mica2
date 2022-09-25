@@ -855,10 +855,9 @@ message DataAccessCollaboratorDto {
   required string requestId = 1;
   required string email = 2;
   required bool invitationPending = 3;
-  required bool banned = 4;
-  required string createdBy = 5;
-  optional string modifiedBy = 6;
-  required TimestampsDto timestamps = 7;
+  required string createdBy = 4;
+  optional string modifiedBy = 5;
+  required TimestampsDto timestamps = 6;
 }
 
 message TimelineDto {

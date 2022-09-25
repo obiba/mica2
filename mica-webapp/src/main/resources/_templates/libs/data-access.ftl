@@ -130,8 +130,6 @@
             <td>
               <#if collaborator.invitationPending>
                   <@message "invited"/>
-              <#elseif collaborator.banned>
-                  <@message "banned"/>
               <#else>
                   <@message "accepted"/>
               </#if>

@@ -401,7 +401,7 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
    */
   public String[] getApplicantAndCollaborators(T request) {
     List<DataAccessCollaborator> collaborators = dataAccessCollaboratorService.findByRequestId(getMainRequestId(request)).stream()
-      .filter(collaborator -> collaborator.hasPrincipal() && !collaborator.isBanned())
+      .filter(DataAccessCollaborator::hasPrincipal)
       .collect(Collectors.toList());
     String[] usernames = new String[collaborators.size() + 1];
     usernames[0] = request.getApplicant();

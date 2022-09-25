@@ -39,6 +39,8 @@ public class DataAccessRequest extends DataAccessEntity implements AttachmentAwa
 
   private boolean archived;
 
+  private List<String> acceptedCollaboratorInvitations = Lists.newArrayList();
+
   public boolean hasStartDate() {
     return startDate != null;
   }
@@ -122,6 +124,23 @@ public class DataAccessRequest extends DataAccessEntity implements AttachmentAwa
   @Override
   public Attachment findAttachmentById(String attachmentId) {
     return getAttachments().stream().filter(a -> a != null && a.getId().equals(attachmentId)).findAny().orElse(null);
+  }
+
+  public List<String> getAcceptedCollaboratorInvitations() {
+    return acceptedCollaboratorInvitations == null ? acceptedCollaboratorInvitations = Lists.newArrayList() : acceptedCollaboratorInvitations;
+  }
+
+  public void setAcceptedCollaboratorInvitations(List<String> acceptedCollaboratorInvitations) {
+    this.acceptedCollaboratorInvitations = acceptedCollaboratorInvitations;
+  }
+
+  public void addAcceptedCollaboratorInvitation(String key) {
+    if (!hasAcceptedCollaboratorInvitation(key))
+      getAcceptedCollaboratorInvitations().add(key);
+  }
+
+  public boolean hasAcceptedCollaboratorInvitation(String key) {
+    return getAcceptedCollaboratorInvitations().contains(key);
   }
 
   public static Builder newBuilder() {
