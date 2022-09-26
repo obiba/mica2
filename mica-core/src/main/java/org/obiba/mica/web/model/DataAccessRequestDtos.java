@@ -267,8 +267,8 @@ class DataAccessRequestDtos {
       .setRequestId(collaborator.getRequestId())
       .setEmail(collaborator.getEmail())
       .setInvitationPending(collaborator.isInvitationPending())
-      .setCreatedBy(collaborator.getCreatedBy())
-      .setModifiedBy(collaborator.getLastModifiedBy())
+      .setCreatedBy(collaborator.getCreatedBy().get())
+      .setModifiedBy(collaborator.getLastModifiedBy().get())
       .setTimestamps(TimestampsDtos.asDto(collaborator))
       .build();
   }

@@ -33,6 +33,7 @@ import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.event.DataAccessAmendmentDeletedEvent;
 import org.obiba.mica.access.event.DataAccessAmendmentUpdatedEvent;
+import org.obiba.mica.access.event.DataAccessCollaboratorAcceptedEvent;
 import org.obiba.mica.access.event.DataAccessFeasibilityDeletedEvent;
 import org.obiba.mica.access.event.DataAccessFeasibilityUpdatedEvent;
 import org.obiba.mica.access.event.DataAccessRequestDeletedEvent;

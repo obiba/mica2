@@ -31,8 +31,8 @@ public class DataAccessCollaboratorBundle {
   public boolean isInvitationPending() {
     return collaborator.isInvitationPending();
   }
-  public DateTime getLastModifiedDate() {
-    return collaborator.getLastModifiedDate();
+  public LocalDateTime getLastModifiedDate() {
+    return collaborator.getLastModifiedDate().get();
   }
 
   public DataAccessCollaborator getCollaborator() {
