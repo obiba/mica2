@@ -39,6 +39,7 @@ import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.service.TempFileService;
 import org.obiba.mica.micaConfig.DataAccessAmendmentsNotEnabled;
+import org.obiba.mica.micaConfig.DataAccessAgreementNotEnabled;
 import org.obiba.mica.micaConfig.DataAccessFeasibilityNotEnabled;
 import org.obiba.mica.micaConfig.domain.AbstractDataAccessEntityForm;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
@@ -508,42 +509,63 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   public DataAccessFeasibilitiesResource getFeasibilities(@PathParam("id") String id) {
     if (!dataAccessRequestService.isFeasibilityEnabled()) throw new DataAccessFeasibilityNotEnabled();
     dataAccessRequestService.findById(id);
-    DataAccessFeasibilitiesResource dataAccessFeasibilitiesResource = applicationContext
+    DataAccessFeasibilitiesResource resource = applicationContext
       .getBean(DataAccessFeasibilitiesResource.class);
-    dataAccessFeasibilitiesResource.setParentId(id);
-    return dataAccessFeasibilitiesResource;
+    resource.setParentId(id);
+    return resource;
   }
 
   @Path("/feasibility/{feasibilityId}")
   public DataAccessFeasibilityResource getFeasibility(@PathParam("id") String id, @PathParam("feasibilityId") String feasibilityId) {
     if (!dataAccessRequestService.isFeasibilityEnabled()) throw new DataAccessFeasibilityNotEnabled();
     dataAccessRequestService.findById(id);
-    DataAccessFeasibilityResource dataAccessFeasibilityResource = applicationContext
+    DataAccessFeasibilityResource resource = applicationContext
       .getBean(DataAccessFeasibilityResource.class);
-    dataAccessFeasibilityResource.setParentId(id);
-    dataAccessFeasibilityResource.setId(feasibilityId);
-    return dataAccessFeasibilityResource;
+    resource.setParentId(id);
+    resource.setId(feasibilityId);
+    return resource;
+  }
+
+  @Path("/agreements")
+  public DataAccessAgreementsResource getAgreements(@PathParam("id") String id) {
+    if (!dataAccessRequestService.isAgreementEnabled()) throw new DataAccessAgreementNotEnabled();
+    dataAccessRequestService.findById(id);
+    DataAccessAgreementsResource resource = applicationContext
+      .getBean(DataAccessAgreementsResource.class);
+    resource.setParentId(id);
+    return resource;
+  }
+
+  @Path("/agreement/{agreementId}")
+  public DataAccessAgreementResource getAgreement(@PathParam("id") String id, @PathParam("agreementId") String agreementId) {
+    if (!dataAccessRequestService.isAgreementEnabled()) throw new DataAccessAgreementNotEnabled();
+    dataAccessRequestService.findById(id);
+    DataAccessAgreementResource resource = applicationContext
+      .getBean(DataAccessAgreementResource.class);
+    resource.setParentId(id);
+    resource.setId(agreementId);
+    return resource;
   }
 
   @Path("/amendments")
   public DataAccessAmendmentsResource getAmendments(@PathParam("id") String id) {
     if (!dataAccessRequestService.isAmendmentsEnabled()) throw new DataAccessAmendmentsNotEnabled();
     dataAccessRequestService.findById(id);
-    DataAccessAmendmentsResource dataAccessAmendmentsResource = applicationContext
+    DataAccessAmendmentsResource resource = applicationContext
       .getBean(DataAccessAmendmentsResource.class);
-    dataAccessAmendmentsResource.setParentId(id);
-    return dataAccessAmendmentsResource;
+    resource.setParentId(id);
+    return resource;
   }
 
   @Path("/amendment/{amendmentId}")
   public DataAccessAmendmentResource getAmendment(@PathParam("id") String id, @PathParam("amendmentId") String amendmentId) {
     if (!dataAccessRequestService.isAmendmentsEnabled()) throw new DataAccessAmendmentsNotEnabled();
     dataAccessRequestService.findById(id);
-    DataAccessAmendmentResource dataAccessAmendmentResource = applicationContext
+    DataAccessAmendmentResource resource = applicationContext
       .getBean(DataAccessAmendmentResource.class);
-    dataAccessAmendmentResource.setParentId(id);
-    dataAccessAmendmentResource.setId(amendmentId);
-    return dataAccessAmendmentResource;
+    resource.setParentId(id);
+    resource.setId(amendmentId);
+    return resource;
   }
 
   @Path("/collaborators")

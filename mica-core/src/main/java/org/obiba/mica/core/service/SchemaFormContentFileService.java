@@ -43,6 +43,7 @@ public class SchemaFormContentFileService {
 
   public void save(@NotNull SchemaFormContentAware newEntity, SchemaFormContentAware oldEntity, String entityPath) {
     Assert.notNull(newEntity, "New content cannot be null");
+    if (newEntity.getContent() == null) return;
 
     Object json = defaultConfiguration().jsonProvider().parse(newEntity.getContent());
     DocumentContext newContext = JsonPath.using(defaultConfiguration().addOptions(Option.AS_PATH_LIST)).parse(json);

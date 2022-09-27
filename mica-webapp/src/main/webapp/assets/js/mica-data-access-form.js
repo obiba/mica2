@@ -339,8 +339,6 @@ angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schem
       }
     });
 
-
-
     $scope.validate = function () {
       $scope.$broadcast('schemaFormValidate');
       // check if the form is valid
@@ -375,6 +373,16 @@ angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schem
       // check if the form is valid
       if ($scope.forms.requestForm.$valid) {
         DataAccessService.submit(id, type, aId);
+      } else {
+        // an invalid form cannot be submitted
+        MicaService.toastError(formMessages.validationErrorOnSubmit);
+      }
+    };
+    $scope.approveAgreement = function (id, aId) {
+      $scope.$broadcast('schemaFormValidate');
+      // check if the form is valid
+      if ($scope.forms.requestForm.$valid) {
+        DataAccessService.approve(id, 'agreement', aId);
       } else {
         // an invalid form cannot be submitted
         MicaService.toastError(formMessages.validationErrorOnSubmit);

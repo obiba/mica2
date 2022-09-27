@@ -38,15 +38,17 @@
       <div class="timeline-item">
         <div class="timeline-body">
 
-          <#if user.username == dar.applicant>
-            <span><@message "start-date-applicant-text"/></span>
-          <#else>
+          <#if isDAO || isAdministrator>
             <p><@message "start-date-dao-text"/></p>
             <div>
               <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-start-date" <#if dar.archived>disabled</#if>>
                 <i class="fas fa-clock"></i> <@message "start-date"/>
               </button>
             </div>
+          <#else>
+            <p><@message "start-date-applicant-text"/></p>
+            <a href="${contextPath}/data-access-comments/${dar.id}"><@message "send-message"/> <i
+                class="fas fa-arrow-circle-right ml-1"></i></a>
           </#if>
         </div>
       </div>
@@ -67,10 +69,10 @@
           <div class="timeline-item">
             <div class="timeline-body">
               <span class="badge badge-info">${date?counter}</span>
-              <#if user.username == dar.applicant>
-                <span><@message "intermediate-date-applicant-text"/></span>
-              <#else>
+              <#if isDAO || isAdministrator>
                 <span><@message "intermediate-date-dao-text"/></span>
+              <#else>
+                <span><@message "intermediate-date-applicant-text"/></span>
               </#if>
             </div>
           </div>
@@ -90,10 +92,10 @@
       <div class="timeline-item">
         <div class="timeline-body">
 
-          <#if user.username == dar.applicant>
-            <span><@message "end-date-applicant-text"/></span>
-          <#else>
+          <#if isDAO || isAdministrator>
             <span><@message "end-date-dao-text"/></span>
+          <#else>
+            <span><@message "end-date-applicant-text"/></span>
           </#if>
         </div>
       </div>
@@ -107,6 +109,46 @@
   <!-- END Timeline -->
 </#macro>
 
+<#macro dataAccessAgreementsNote>
+  <#list agreements as agreement>
+    <#if agreement.applicant == user.username>
+      <p>
+        <a class="btn btn-outline-secondary" href="${contextPath}/data-access-agreement-form/${agreement.id}">
+          <i class="fas fa-circle nav-icon text-${statusColor(agreement.status.toString())}"
+             title="<@message agreement.status.toString()/>"></i>
+            <@message "agreement-current-user"/>
+        </a>
+      </p>
+    </#if>
+  </#list>
+
+  <div class="mb-3">
+    <#if agreementsRejected?size gt 0>
+      <div class="alert alert-danger">
+        <p><i class="icon fas fa-ban"></i>
+          <#if isDAO || isAdministrator>
+            <@message "agreements-rejected-dao-text"/>
+          <#else>
+            <@message "agreements-rejected-text"/>
+          </#if>
+        </p>
+        <p>
+          <a href="${contextPath}/data-access-comments/${dar.id}"><@message "send-message"/> <i
+              class="fas fa-arrow-circle-right ml-1"></i></a>
+        </p>
+      </div>
+    <#elseif agreementsOpened?size gt 0>
+      <div class="alert alert-info">
+        <p><i class="icon fas fa-info"></i> <@message "agreements-opened-text"/></p>
+      </div>
+    <#elseif agreementsApproved?size == agreements?size>
+      <div class="alert alert-success">
+        <p><i class="icon fas fa-check"></i> <@message "agreements-approved-text"/></p>
+      </div>
+    </#if>
+  </div>
+</#macro>
+
 <#macro dataAccessCollaborators>
   <#if collaborators?has_content>
     <div class="table-responsive">
@@ -116,6 +158,9 @@
           <th><@message "email"/></th>
           <th><@message "status"/></th>
           <th><@message "last-update"/></th>
+          <#if accessConfig.agreementEnabled>
+            <th><@message "agreement"/></th>
+          </#if>
           <#if permissions?seq_contains("ADD_COLLABORATORS") || permissions?seq_contains("DELETE_COLLABORATORS")>
             <th></th>
           </#if>
@@ -135,6 +180,18 @@
               </#if>
             </td>
             <td data-sort="${collaborator.lastModifiedDate.toString(datetimeFormat)}" class="moment-datetime">${collaborator.lastModifiedDate.toString(datetimeFormat)}</td>
+            <#if accessConfig.agreementEnabled>
+              <td>
+                  <#list agreements as agreement>
+                      <#if collaborator.principal?? && agreement.applicant == collaborator.principal>
+                        <a href="${contextPath}/data-access-agreement-form/${agreement.id}">
+                          <i class="fas fa-circle nav-icon text-${statusColor(agreement.status.toString())}"
+                             title="<@message agreement.status.toString()/>"></i>
+                        </a>
+                      </#if>
+                  </#list>
+              </td>
+            </#if>
             <#if permissions?seq_contains("ADD_COLLABORATORS") || permissions?seq_contains("DELETE_COLLABORATORS")>
               <td>
                 <div class="btn-group">

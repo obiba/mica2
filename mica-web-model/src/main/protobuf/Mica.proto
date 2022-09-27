@@ -851,6 +851,14 @@ message DataAccessFeasibilityDto {
   }
 }
 
+message DataAccessAgreementDto {
+  required string parentId = 1;
+
+  extend DataAccessRequestDto {
+    required DataAccessAgreementDto agreement = 1002;
+  }
+}
+
 message DataAccessCollaboratorDto {
   required string requestId = 1;
   required string email = 2;
@@ -949,6 +957,7 @@ message DataAccessConfigDto {
   optional string collaboratorInvitationSubject = 52;
   required bool notifyCollaboratorAccepted = 53;
   optional string collaboratorAcceptedSubject = 54;
+  required bool agreementEnabled = 55;
 }
 
 message DataAccessFormDto {
@@ -970,6 +979,13 @@ message DataAccessFormDto {
 }
 
 message DataAccessFeasibilityFormDto {
+  required string schema = 1;
+  required string definition = 2;
+  optional int32 revision = 3;
+  optional string lastUpdateDate = 4;
+}
+
+message DataAccessAgreementFormDto {
   required string schema = 1;
   required string definition = 2;
   optional int32 revision = 3;

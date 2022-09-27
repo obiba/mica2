@@ -63,6 +63,21 @@ mica.dataAccessConfig
       });
     }])
 
+  .factory('DataAccessAgreementFormResource', ['$resource',
+    function ($resource) {
+      return $resource(contextPath + '/ws/config/data-access-agreement-form', {}, {
+        'get': {method: 'GET', params: { revision: '@revision' }, errorHandler: true},
+        'save': {method: 'PUT', errorHandler: true}
+      });
+    }])
+
+  .factory('DataAccessAgreementFormPublicationResource', ['$resource',
+    function ($resource) {
+      return $resource(contextPath + '/ws/config/data-access-agreement-form/_publish', {}, {
+        'publish': {method: 'PUT', errorHandler: true}
+      });
+    }])
+
   .factory('DataAccessAmendmentFormResource', ['$resource',
     function ($resource) {
       return $resource(contextPath + '/ws/config/data-access-amendment-form', {}, {

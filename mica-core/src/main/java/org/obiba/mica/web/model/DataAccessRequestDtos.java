@@ -225,6 +225,25 @@ class DataAccessRequestDtos {
   }
 
   @NotNull
+  public Mica.DataAccessRequestDto asAgreementDto(@NotNull DataAccessAgreement agreement) {
+    return asDtoBuilder(agreement).build();
+  }
+
+  @NotNull
+  public DataAccessAgreement fromAgreementDto(@NotNull Mica.DataAccessRequestDto dto) {
+    DataAccessFeasibility.Builder builder = DataAccessFeasibility.newBuilder();
+    Mica.DataAccessAgreementDto extension = dto.getExtension(Mica.DataAccessAgreementDto.agreement);
+    builder.parentId(extension.getParentId());
+
+    fromDto(dto, builder);
+    DataAccessAgreement agreement = (DataAccessAgreement) builder.build();
+    if (dto.hasId()) agreement.setId(dto.getId());
+    TimestampsDtos.fromDto(dto.getTimestamps(), agreement);
+
+    return (DataAccessAgreement) builder.build();
+  }
+
+  @NotNull
   public Mica.DataAccessRequestDto asAmendmentDto(@NotNull DataAccessAmendment amendment) {
     return asDtoBuilder(amendment).build();
   }

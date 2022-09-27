@@ -463,8 +463,18 @@ public class Dtos {
   }
 
   @NotNull
+  public Mica.DataAccessRequestDto asAgreementDto(@NotNull DataAccessAgreement agreement) {
+    return dataAccessRequestDtos.asAgreementDto(agreement);
+  }
+
+  @NotNull
   public DataAccessFeasibility fromFeasibilityDto(@NotNull Mica.DataAccessRequestDto dto) {
     return dataAccessRequestDtos.fromFeasibilityDto(dto);
+  }
+
+  @NotNull
+  public DataAccessAgreement fromAgreementDto(@NotNull Mica.DataAccessRequestDto dto) {
+    return dataAccessRequestDtos.fromAgreementDto(dto);
   }
 
   @NotNull
@@ -550,6 +560,16 @@ public class Dtos {
 
   @NotNull
   public DataAccessFeasibilityForm fromDto(@NotNull Mica.DataAccessFeasibilityFormDto dto) {
+    return micaConfigDtos.fromDto(dto);
+  }
+
+  @NotNull
+  public Mica.DataAccessAgreementFormDto asDto(@NotNull DataAccessAgreementForm dataAccessAgreementForm) {
+    return micaConfigDtos.asDto(dataAccessAgreementForm);
+  }
+
+  @NotNull
+  public DataAccessAgreementForm fromDto(@NotNull Mica.DataAccessAgreementFormDto dto) {
     return micaConfigDtos.fromDto(dto);
   }
 

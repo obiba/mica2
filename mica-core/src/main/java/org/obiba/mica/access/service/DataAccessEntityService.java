@@ -381,11 +381,13 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
     return request.getId();
   }
 
-  private String getTemplatePrefix(Map<String, String> ctx) {
+  protected String getTemplatePrefix(Map<String, String> ctx) {
     if (isDataAccessAmendmentContext(ctx))
       return "dataAccessAmendment";
     if (isDataAccessFeasibilityContext(ctx))
       return "dataAccessFeasibility";
+    if (isDataAccessAgreementContext(ctx))
+      return "dataAccessAgreement";
     return "dataAccessRequest";
   }
 
@@ -428,5 +430,9 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
 
   private boolean isDataAccessFeasibilityContext(Map<String, String> ctx) {
     return ctx.containsKey("type") && ctx.get("type").equals(DataAccessFeasibility.class.getSimpleName());
+  }
+
+  private boolean isDataAccessAgreementContext(Map<String, String> ctx) {
+    return ctx.containsKey("type") && ctx.get("type").equals(DataAccessAgreement.class.getSimpleName());
   }
 }

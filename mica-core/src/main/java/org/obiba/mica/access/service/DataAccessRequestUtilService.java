@@ -354,8 +354,12 @@ public class DataAccessRequestUtilService {
     return request instanceof DataAccessFeasibility;
   }
 
+  private boolean isDataAccessAgreement(DataAccessEntity request) {
+    return request instanceof DataAccessAgreement;
+  }
+
   private void checkOpenedStatusTransition(DataAccessEntity request, DataAccessEntityStatus to) {
-    if (to != DataAccessEntityStatus.SUBMITTED)
+    if (to != DataAccessEntityStatus.SUBMITTED && !isDataAccessAgreement(request))
       throw new IllegalArgumentException("Opened data access form can only be submitted");
   }
 
@@ -400,12 +404,18 @@ public class DataAccessRequestUtilService {
     if (dataAccessConfig.isApprovedFinal())
       throw new IllegalArgumentException("Approved data access form cannot be modified");
 
-    if (!isDataAccessFeasibility(request) && dataAccessConfig.isWithReview() && to != DataAccessEntityStatus.REVIEWED) {
-      throw new IllegalArgumentException("Approved data access form can only be put under review");
-    }
+    if (isDataAccessAgreement(request)) {
+      if (to != DataAccessEntityStatus.OPENED) {
+        throw new IllegalArgumentException("Approved data access agreement can only be reopened");
+      }
+    } else {
+      if (!isDataAccessFeasibility(request) && dataAccessConfig.isWithReview() && to != DataAccessEntityStatus.REVIEWED) {
+        throw new IllegalArgumentException("Approved data access form can only be put under review");
+      }
 
-    if (!dataAccessConfig.isWithReview() && to != DataAccessEntityStatus.SUBMITTED) {
-      throw new IllegalArgumentException("Approved data access form can only go to submitted state");
+      if (!dataAccessConfig.isWithReview() && to != DataAccessEntityStatus.SUBMITTED) {
+        throw new IllegalArgumentException("Approved data access form can only go to submitted state");
+      }
     }
   }
 
@@ -414,12 +424,18 @@ public class DataAccessRequestUtilService {
     if (dataAccessConfig.isRejectedFinal())
       throw new IllegalArgumentException("Rejected data access form cannot be modified");
 
-    if (dataAccessConfig.isWithReview() && to != DataAccessEntityStatus.REVIEWED) {
-      throw new IllegalArgumentException("Rejected data access form can only be put under review");
-    }
+    if (isDataAccessAgreement(request)) {
+      if (to != DataAccessEntityStatus.OPENED) {
+        throw new IllegalArgumentException("Rejected data access agreement can only be reopened");
+      }
+    } else {
+      if (dataAccessConfig.isWithReview() && to != DataAccessEntityStatus.REVIEWED) {
+        throw new IllegalArgumentException("Rejected data access form can only be put under review");
+      }
 
-    if (!dataAccessConfig.isWithReview() && to != DataAccessEntityStatus.SUBMITTED) {
-      throw new IllegalArgumentException("Rejected data access form can only go to submitted state");
+      if (!dataAccessConfig.isWithReview() && to != DataAccessEntityStatus.SUBMITTED) {
+        throw new IllegalArgumentException("Rejected data access form can only go to submitted state");
+      }
     }
   }
 }

@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "properties": {
+    "signature": {
+      "title": "t(data-access-request.default.signature.check)",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "signature"
+  ]
+}

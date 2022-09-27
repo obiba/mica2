@@ -12,12 +12,10 @@ import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.service.CommentsService;
 import org.obiba.mica.micaConfig.domain.DataAccessAmendmentForm;
+import org.obiba.mica.micaConfig.domain.DataAccessAgreementForm;
 import org.obiba.mica.micaConfig.domain.DataAccessFeasibilityForm;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
-import org.obiba.mica.micaConfig.service.DataAccessAmendmentFormService;
-import org.obiba.mica.micaConfig.service.DataAccessConfigService;
-import org.obiba.mica.micaConfig.service.DataAccessFeasibilityFormService;
-import org.obiba.mica.micaConfig.service.DataAccessFormService;
+import org.obiba.mica.micaConfig.service.*;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.controller.domain.*;
@@ -46,6 +44,9 @@ public class DataAccessController extends BaseController {
   private DataAccessFeasibilityService dataAccessFeasibilityService;
 
   @Inject
+  private DataAccessAgreementService dataAccessAgreementService;
+
+  @Inject
   private DataAccessAmendmentService dataAccessAmendmentService;
 
   @Inject
@@ -65,6 +66,9 @@ public class DataAccessController extends BaseController {
 
   @Inject
   private DataAccessFeasibilityFormService dataAccessFeasibilityFormService;
+
+  @Inject
+  private DataAccessAgreementFormService dataAccessAgreementFormService;
 
   @Inject
   private UserProfileService userProfileService;
@@ -228,6 +232,32 @@ public class DataAccessController extends BaseController {
     }
   }
 
+  @GetMapping("/data-access-agreement-form/{id:.+}")
+  public ModelAndView getAgreementForm(@PathVariable String id,
+                                         @RequestParam(value = "edit", defaultValue = "false") boolean edit,
+                                         @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
+                                         @RequestParam(value = "language", required = false) String language) {
+    Subject subject = SecurityUtils.getSubject();
+    if (subject.isAuthenticated()) {
+      Map<String, Object> params = newAgreementParameters(id);
+      String lg = getLang(locale, language);
+      DataAccessAgreement agreement = getDataAccessAgreement(params);
+      addDataAccessAgreementFormConfiguration(params, agreement, !edit, lg);
+
+      params.put("applicant", userProfileService.getProfileMap(agreement.getApplicant(), true));
+
+      List<String> permissions = getPermissions(params);
+      if (isPermitted("/data-access-request/private-comment", "VIEW", null))
+        permissions.add("VIEW_PRIVATE_COMMENTS");
+
+      params.put("permissions", permissions);
+
+      return new ModelAndView("data-access-agreement-form", params);
+    } else {
+      return new ModelAndView("redirect:../signin?redirect=" + micaConfigService.getContextPath() + "/data-access-agreement-form%2F" + id);
+    }
+  }
+
   @GetMapping("/data-access-amendment-form/{id:.+}")
   public ModelAndView getAmendmentForm(@PathVariable String id,
                                        @RequestParam(value = "edit", defaultValue = "false") boolean edit,
@@ -377,6 +407,10 @@ public class DataAccessController extends BaseController {
       a.getStatusChangeHistory().stream().map(e -> new FormStatusChangeEvent(userProfileService, a, e))
         .forEach(events::add);
     });
+    getDataAccessAgreements(params).forEach(a -> {
+      a.getStatusChangeHistory().stream().map(e -> new FormStatusChangeEvent(userProfileService, a, e))
+        .forEach(events::add);
+    });
 
     // order change events
     return events.stream().sorted(Comparator.comparing(FormStatusChangeEvent::getDate)).collect(Collectors.toList());
@@ -407,15 +441,20 @@ public class DataAccessController extends BaseController {
     }
     params.put("permissions", permissions);
 
-    List<DataAccessFeasibility> feasibilities = dataAccessFeasibilityService.findByParentId(id);
+    List<DataAccessFeasibility> feasibilities = dataAccessRequestUtilService.getDataAccessConfig().isFeasibilityEnabled() ? dataAccessFeasibilityService.findByParentId(id) : Lists.newArrayList();
     params.put("feasibilities", feasibilities);
-
     DataAccessFeasibility lastFeasibility = feasibilities.stream().max(Comparator.comparing(AbstractAuditableDocument::getLastModifiedDate)).orElse(null);
     params.put("lastFeasibility", lastFeasibility);
 
-    List<DataAccessAmendment> amendments = dataAccessAmendmentService.findByParentId(id);
-    params.put("amendments", amendments);
+    List<DataAccessAgreement> agreements = dataAccessRequestUtilService.getDataAccessConfig().isAgreementEnabled() && dar.getStatus().equals(DataAccessEntityStatus.APPROVED) ?
+      dataAccessAgreementService.getOrCreate(dar) : Lists.newArrayList();
+    params.put("agreements", agreements);
+    params.put("agreementsOpened", agreements.stream().filter(agreement -> agreement.getStatus().equals(DataAccessEntityStatus.OPENED)).collect(Collectors.toList()));
+    params.put("agreementsApproved", agreements.stream().filter(agreement -> agreement.getStatus().equals(DataAccessEntityStatus.APPROVED)).collect(Collectors.toList()));
+    params.put("agreementsRejected", agreements.stream().filter(agreement -> agreement.getStatus().equals(DataAccessEntityStatus.REJECTED)).collect(Collectors.toList()));
 
+    List<DataAccessAmendment> amendments = dataAccessRequestUtilService.getDataAccessConfig().isAmendmentsEnabled() ? dataAccessAmendmentService.findByParentId(id) : Lists.newArrayList();
+    params.put("amendments", amendments);
     DataAccessAmendment lastAmendment = amendments.stream().max(Comparator.comparing(AbstractAuditableDocument::getLastModifiedDate)).orElse(null);
     params.put("lastAmendment", lastAmendment);
 
@@ -436,6 +475,21 @@ public class DataAccessController extends BaseController {
     if (!dar.isArchived() && isPermitted("/data-access-request/" + feasibility.getParentId() + "/feasibility/" + id, "EDIT", "_status"))
       permissions.add("EDIT_STATUS");
     params.put("feasibilityPermissions", permissions);
+
+    return params;
+  }
+
+  private Map<String, Object> newAgreementParameters(String id) {
+    DataAccessAgreement agreement = dataAccessAgreementService.findById(id);
+    Map<String, Object> params = newParameters(agreement.getParentId());
+    params.put("agreement", agreement);
+
+    DataAccessRequest dar = getDataAccessRequest(params);
+    List<String> permissions = Lists.newArrayList("VIEW", "EDIT", "DELETE").stream()
+      .filter(action -> ("VIEW".equals(action) || !dar.isArchived()) && isAgreementPermitted(action, agreement.getParentId(), id)).collect(Collectors.toList());
+    if (!dar.isArchived() && isPermitted("/data-access-request/" + agreement.getParentId() + "/agreement/" + id, "EDIT", "_status"))
+      permissions.add("EDIT_STATUS");
+    params.put("agreementPermissions", permissions);
 
     return params;
   }
@@ -476,6 +530,10 @@ public class DataAccessController extends BaseController {
     return isPermitted("/data-access-request/" + id + "/feasibility", action, feasibilityId);
   }
 
+  private boolean isAgreementPermitted(String action, String id, String agreementId) {
+    return isPermitted("/data-access-request/" + id + "/agreement", action, agreementId);
+  }
+
   private boolean isAmendmentPermitted(String action, String id, String amendmentId) {
     return isPermitted("/data-access-request/" + id + "/amendment", action, amendmentId);
   }
@@ -496,6 +554,14 @@ public class DataAccessController extends BaseController {
     return (List<DataAccessFeasibility>) params.get("feasibilities");
   }
 
+  private DataAccessAgreement getDataAccessAgreement(Map<String, Object> params) {
+    return (DataAccessAgreement) params.get("agreement");
+  }
+
+  private List<DataAccessAgreement> getDataAccessAgreements(Map<String, Object> params) {
+    return (List<DataAccessAgreement>) params.get("agreements");
+  }
+
   private DataAccessAmendment getDataAccessAmendment(Map<String, Object> params) {
     return (DataAccessAmendment) params.get("amendment");
   }
@@ -513,9 +579,9 @@ public class DataAccessController extends BaseController {
   }
 
   private void addDataAccessFormConfiguration(Map<String, Object> params, DataAccessRequest request, boolean readOnly, String locale) {
-    DataAccessForm dataAccessForm = getDataAccessForm(request);
-    params.put("formConfig", new SchemaFormConfig(micaConfigService, dataAccessForm.getSchema(), dataAccessForm.getDefinition(), request.getContent(), locale, readOnly));
-    params.put("accessConfig", new DataAccessConfigBundle(dataAccessConfigervice.getOrCreateConfig(), dataAccessForm));
+    DataAccessForm form = getDataAccessForm(request);
+    params.put("formConfig", new SchemaFormConfig(micaConfigService, form.getSchema(), form.getDefinition(), request.getContent(), locale, readOnly));
+    params.put("accessConfig", new DataAccessConfigBundle(dataAccessConfigervice.getOrCreateConfig(), form));
   }
 
   private void addDataAccessAmendmentFormConfiguration(Map<String, Object> params, DataAccessAmendment amendment, boolean readOnly, String locale) {
@@ -525,8 +591,14 @@ public class DataAccessController extends BaseController {
   }
 
   private void addDataAccessFeasibilityFormConfiguration(Map<String, Object> params, DataAccessFeasibility feasibility, boolean readOnly, String locale) {
-    DataAccessFeasibilityForm dataAccessFeasibilityForm = dataAccessFeasibilityFormService.findByRevision("latest").get();
-    params.put("formConfig", new SchemaFormConfig(micaConfigService, dataAccessFeasibilityForm.getSchema(), dataAccessFeasibilityForm.getDefinition(), feasibility.getContent(), locale, readOnly));
+    DataAccessFeasibilityForm form = dataAccessFeasibilityFormService.findByRevision("latest").get();
+    params.put("formConfig", new SchemaFormConfig(micaConfigService, form.getSchema(), form.getDefinition(), feasibility.getContent(), locale, readOnly));
+    params.put("accessConfig", dataAccessConfigervice.getOrCreateConfig());
+  }
+
+  private void addDataAccessAgreementFormConfiguration(Map<String, Object> params, DataAccessAgreement agreement, boolean readOnly, String locale) {
+    DataAccessAgreementForm form = dataAccessAgreementFormService.findByRevision("latest").get();
+    params.put("formConfig", new SchemaFormConfig(micaConfigService, form.getSchema(), form.getDefinition(), agreement.getContent(), locale, readOnly));
     params.put("accessConfig", dataAccessConfigervice.getOrCreateConfig());
   }
 

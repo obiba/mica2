@@ -447,8 +447,15 @@
                 </#if>
 
               <#elseif dar.status == "APPROVED">
+                <#if accessConfig.agreementEnabled>
+                  <h4><@message "agreements-title"/></h4>
+                  <p><@message "agreements-text"/></p>
+
+                  <@dataAccessAgreementsNote/>
+                </#if>
 
                 <#if dataAccessReportTimelineEnabled && reportTimeline.endDate??>
+
                   <h4><@message "report-timeline-title"/></h4>
                   <p><@message "report-timeline-text"/></p>
 
@@ -605,8 +612,8 @@
               </div>
               <#if !dar.archived>
                 <div class="card-footer">
-                  <a href="/data-access-comments/${dar.id}"><@message "send-message"/> <i
-                            class="fas fa-arrow-circle-right"></i></a>
+                  <a href="${contextPath}/data-access-comments/${dar.id}"><@message "send-message"/> <i
+                            class="fas fa-arrow-circle-right ml-1"></i></a>
                 </div>
               </#if>
             </div>

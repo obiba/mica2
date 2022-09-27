@@ -21,6 +21,10 @@ public class DataAccessCollaboratorBundle {
     return profile.containsKey("fullName") ? profile.get("fullName").toString() : getEmail();
   }
 
+  public String getPrincipal() {
+    return collaborator.getPrincipal();
+  }
+
   public String getEmail() {
     return collaborator.getEmail();
   }

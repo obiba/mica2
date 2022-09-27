@@ -118,6 +118,45 @@
             </ul>
           </li>
         </#if>
+        <#if accessConfig.agreementEnabled>
+          <#if dar.status == "APPROVED">
+            <li class="nav-item has-treeview <#if agreement??>menu-open</#if>">
+              <a id="agreement-form-menu" href="#" class="nav-link">
+                <i class="nav-icon fa fa-gavel"></i>
+                <p>
+                  <@message "agreements"/>
+                  <span class="badge badge-info right">${agreements?size}</span>
+                  <#if agreements?size != 0>
+                    <i class="fas fa-angle-left right mr-1"></i>
+                  </#if>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <#list agreements as agreement>
+                  <li class="nav-item">
+                    <a id="agreement-form-menu-${agreement.id}" href="${contextPath}/data-access-agreement-form/${agreement.id}" class="nav-link">
+                      <i class="fas fa-circle nav-icon text-${statusColor(agreement.status.toString())}"
+                         title="<@message agreement.status.toString()/>"></i>
+                      <p>${agreement.id}</p>
+                      <#if agreement.applicant == user.username>
+                        <span class="right"><i class="fa fa-star align-top"></i></span>
+                      </#if>
+                    </a>
+                  </li>
+                </#list>
+              </ul>
+            </li>
+          <#else>
+            <li class="nav-item">
+              <div id="agreement-form-menu" href="#" class="nav-link">
+                <i class="nav-icon fa fa-gavel"></i>
+                <p>
+                  <@message "agreements"/>
+                </p>
+              </div>
+            </li>
+          </#if>
+        </#if>
         <li class="nav-item">
           <a id="documents-menu" href="${contextPath}/data-access-documents/${dar.id}" class="nav-link">
             <i class="fas fa-copy nav-icon"></i>
@@ -162,54 +201,58 @@
 
 </aside>
 
-<!-- Confirm feasibility addition modal -->
-<div class="modal fade" id="modal-feasibility-add">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title"><@message "confirm-creation"/></h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+<#if accessConfig.feasibilityEnabled>
+  <!-- Confirm feasibility addition modal -->
+  <div class="modal fade" id="modal-feasibility-add">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title"><@message "confirm-creation"/></h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p><@message "confirm-data-access-feasibility-creation"/></p>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal"
+                  onclick="DataAccessService.create('${dar.id}', 'feasibility')"><@message "confirm"/>
+          </button>
+        </div>
       </div>
-      <div class="modal-body">
-        <p><@message "confirm-data-access-feasibility-creation"/></p>
-      </div>
-      <div class="modal-footer justify-content-between">
-        <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-        <button type="button" class="btn btn-primary" data-dismiss="modal"
-                onclick="DataAccessService.create('${dar.id}', 'feasibility')"><@message "confirm"/>
-        </button>
-      </div>
+      <!-- /.modal-content -->
     </div>
-    <!-- /.modal-content -->
+    <!-- /.modal-dialog -->
   </div>
-  <!-- /.modal-dialog -->
-</div>
-<!-- /.modal -->
+  <!-- /.modal -->
+</#if>
 
-<!-- Confirm amendment addition modal -->
-<div class="modal fade" id="modal-amendment-add">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title"><@message "confirm-creation"/></h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+<#if accessConfig.amendmentsEnabled>
+  <!-- Confirm amendment addition modal -->
+  <div class="modal fade" id="modal-amendment-add">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title"><@message "confirm-creation"/></h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p><@message "confirm-data-access-amendment-creation"/></p>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal"
+                  onclick="DataAccessService.create('${dar.id}', 'amendment')"><@message "confirm"/>
+          </button>
+        </div>
       </div>
-      <div class="modal-body">
-        <p><@message "confirm-data-access-amendment-creation"/></p>
-      </div>
-      <div class="modal-footer justify-content-between">
-        <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-        <button type="button" class="btn btn-primary" data-dismiss="modal"
-                onclick="DataAccessService.create('${dar.id}', 'amendment')"><@message "confirm"/>
-        </button>
-      </div>
+      <!-- /.modal-content -->
     </div>
-    <!-- /.modal-content -->
+    <!-- /.modal-dialog -->
   </div>
-  <!-- /.modal-dialog -->
-</div>
-<!-- /.modal -->
+  <!-- /.modal -->
+</#if>
