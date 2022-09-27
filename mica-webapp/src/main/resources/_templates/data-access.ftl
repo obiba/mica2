@@ -146,6 +146,9 @@
           </div>
           <div class="modal-body">
             <p><@message "collaborator-invite-text"/></p>
+            <#if accessConfig.agreementEnabled>
+              <p><@message "collaborator-invite-agreement-text"/></p>
+            </#if>
             <div class="input-group mb-3">
               <input id="collaborator-email" name="collaborator-email" type="email" class="form-control" placeholder="<@message "email"/>">
               <div class="input-group-append">
