@@ -11,8 +11,14 @@ spring:
     messageSource:
         cacheSeconds: 1
     freemarker:
-      template-loader-path: classpath:/web/,classpath:/static/templates/,classpath:/public/templates/,classpath:/templates/,classpath:/_templates/
-      request-context-attribute: rc
+        suffix: ftl
+        template-loader-path: classpath:/web/,classpath:/static/templates/,classpath:/public/templates/,classpath:/templates/,classpath:/_templates/
+        request-context-attribute: rc
+    task:
+        scheduling:
+            pool:
+                size: 30
+            thread-name-prefix: mica-executor-
 
 metrics:
     jmx.enabled: true
@@ -23,13 +29,6 @@ metrics:
 
 cache:
     timeToLiveSeconds: 3600
-
-async:
-    poolSize: 1
-    queueCapacity: 100000
-    opal:
-        poolSize: 30
-        queueCapacity: 100000
 
 portal.draftResource.urlPattern: "{portalUrl}/mica/{resourceType}/{resourceId}/draft/{shareKey}"
 

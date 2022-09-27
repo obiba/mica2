@@ -50,6 +50,8 @@ opalTaxonomies:
 spring:
     config.activate.on-profile: prod
     main.allow-bean-definition-overriding: true
+    freemarker:
+        suffix: ftl
     data:
         mongodb:
             uri: mongodb://localhost:27017/mica
