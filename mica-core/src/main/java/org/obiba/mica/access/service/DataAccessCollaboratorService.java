@@ -10,6 +10,7 @@ import org.obiba.mica.access.DataAccessCollaboratorRepository;
 import org.obiba.mica.access.domain.DataAccessCollaborator;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.event.DataAccessCollaboratorAcceptedEvent;
+import org.obiba.mica.access.event.DataAccessCollaboratorDeletedEvent;
 import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
@@ -160,6 +161,7 @@ public class DataAccessCollaboratorService {
       subjectAclService.removeUserPermission(collaborator.getPrincipal(), "/data-access-request", "VIEW", collaborator.getRequestId());
       micaAuthorizingRealm.invalidateCache();
     }
+    eventBus.post(new DataAccessCollaboratorDeletedEvent(collaborator));
   }
 
   //

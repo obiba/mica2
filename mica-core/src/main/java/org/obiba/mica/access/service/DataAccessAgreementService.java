@@ -11,13 +11,14 @@
 package org.obiba.mica.access.service;
 
 import com.google.common.collect.Lists;
+import com.google.common.eventbus.Subscribe;
 import org.joda.time.DateTime;
 import org.obiba.mica.access.DataAccessAgreementRepository;
 import org.obiba.mica.access.DataAccessEntityRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.*;
-import org.obiba.mica.access.event.DataAccessAgreementDeletedEvent;
 import org.obiba.mica.access.event.DataAccessAgreementUpdatedEvent;
+import org.obiba.mica.access.event.DataAccessCollaboratorDeletedEvent;
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.micaConfig.domain.DataAccessConfig;
 import org.obiba.mica.security.Roles;
@@ -65,7 +66,7 @@ public class DataAccessAgreementService extends DataAccessEntityService<DataAcce
 
     if (agreement.isNew()) {
       setAndLogStatus(saved, DataAccessEntityStatus.OPENED);
-      saved.setId(String.format("%s-%s", agreement.getParentId(), agreement.getApplicant()));
+      saved.setId(makeAgreementId(agreement.getParentId(), agreement.getApplicant()));
     } else {
       saved = dataAccessAgreementRepository.findOne(agreement.getId());
       if (saved != null) {
@@ -189,17 +190,29 @@ public class DataAccessAgreementService extends DataAccessEntityService<DataAcce
     String resource = "/data-access-request/" + agreement.getParentId() + "/agreement";
     subjectAclService.removeUserPermission(agreement.getApplicant(), resource, "EDIT", agreement.getId());
     subjectAclService.removeUserPermission(agreement.getApplicant(), resource + "/" + agreement.getId(), "EDIT", "_status");
-    delete(agreement);
-  }
-
-  void changeApplicantAndSave(DataAccessAgreement agreement, String applicant) {
-    agreement.setApplicant(applicant);
-    save(agreement);
-  }
-
-  void delete(@NotNull DataAccessAgreement agreement) throws NoSuchDataAccessRequestException {
     schemaFormContentFileService.deleteFiles(agreement);
-    eventBus.post(new DataAccessAgreementDeletedEvent(agreement));
     dataAccessAgreementRepository.delete(agreement);
+  }
+
+  //
+  // Events handling
+  //
+
+  @Subscribe
+  public void dataAccessCollaboratorDeleted(DataAccessCollaboratorDeletedEvent event) {
+    if (!event.getPersistable().hasPrincipal()) return;
+    try {
+      delete(makeAgreementId(event.getPersistable().getRequestId(), event.getPersistable().getPrincipal()));
+    } catch (Exception e) {
+      // ignore
+    }
+  }
+
+  //
+  // Private methods
+  //
+
+  private String makeAgreementId(String requestId, String applicant) {
+    return String.format("%s-%s", requestId, applicant);
   }
 }

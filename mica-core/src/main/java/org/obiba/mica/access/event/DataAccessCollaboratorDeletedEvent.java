@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 OBiBa. All rights reserved.
+ * Copyright (c) 2018 OBiBa. All rights reserved.
  *
  * This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0.
@@ -10,12 +10,12 @@
 
 package org.obiba.mica.access.event;
 
-import org.obiba.mica.access.domain.DataAccessAgreement;
+import org.obiba.mica.access.domain.DataAccessCollaborator;
 import org.obiba.mica.core.event.PersistableUpdatedEvent;
 
-public class DataAccessAgreementDeletedEvent extends PersistableUpdatedEvent<DataAccessAgreement> {
+public class DataAccessCollaboratorDeletedEvent extends PersistableUpdatedEvent<DataAccessCollaborator> {
 
-  public DataAccessAgreementDeletedEvent(DataAccessAgreement persistable) {
+  public DataAccessCollaboratorDeletedEvent(DataAccessCollaborator persistable) {
     super(persistable);
   }
 
