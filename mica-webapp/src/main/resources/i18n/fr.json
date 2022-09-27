@@ -2057,12 +2057,14 @@
     "amendments-enabled-help":"Permet d'amender des modifications à une demande d'accès aux données approuvée.",
     "feasibility-enabled": "Activer la demande de faisabilité.",
     "feasibility-enabled-help":"Permet d'investiguer la faisabilité d'une demande d'accès aux données.",
-    "variables-enabled": "Enable Variables attachment.",
-    "variables-enabled-help":"Enable attaching a variable list to the main form.",
-    "amendment-variables-enabled": "Enable Variables attachment to an Amendment.",
-    "amendment-variables-enabled-help":"Enable attaching a variable list to an amendment form.",
-    "feasibility-variables-enabled": "Enable Variables attachment to a Feasibility Inquiry.",
-    "feasibility-variables-enabled-help":"Enable attaching a variable list to a feasibility inquiry form.",
+    "agreement-enabled": "Activer le contrat d'utilisateur final.",
+    "agreement-enabled-help":"Active le contrat d'utilisateur final d'une demande d'accès aux données. Ce formulaire est à remplir par le demandeur principal ainsi que par chaque collaborateur",
+    "variables-enabled": "Activer l'association de variables.",
+    "variables-enabled-help":"Une liste de variables peut-être associée au formulaire principal.",
+    "amendment-variables-enabled": "Activer l'association de variables à un amandement.",
+    "amendment-variables-enabled-help":"Une liste de variables peut-être associée à un amendement.",
+    "feasibility-variables-enabled": "Activer l'association de variables à la demande de faisabilité.",
+    "feasibility-variables-enabled-help":"Une liste de variables peut-être associée à une demande de faisabilité.",
     "pdf-download": {
       "title": "Télécharger le PDF",
       "info": "Les données collectées dans le formulaire peuvent être représentées dans un fichier PDF. Choisissez l'une des options suivantes:"
@@ -2212,6 +2214,12 @@
       "schema-form": {
         "title": "Formulaire de faisabilité",
         "info": "Le formulaire de faisabilité peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du Schema Form</a> pour plus de détails."
+      }
+    },
+    "agreement": {
+      "schema-form": {
+        "title": "Formulaire de contrat d'utilisateur final",
+        "info": "Le formulaire de contrat d'utilisateur final peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du Schema Form</a> pour plus de détails."
       }
     }
   },

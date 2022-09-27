@@ -181,6 +181,10 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
     return dataAccessConfigService.getOrCreateConfig().isFeasibilityEnabled();
   }
 
+  public boolean isAgreementEnabled() {
+    return dataAccessConfigService.getOrCreateConfig().isAgreementEnabled();
+  }
+
   public boolean isAmendmentsEnabled() {
     return dataAccessConfigService.getOrCreateConfig().isAmendmentsEnabled();
   }

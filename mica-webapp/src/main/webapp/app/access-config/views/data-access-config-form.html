@@ -30,6 +30,9 @@
       <li ng-class="{'active': tab.name === 'amendment'}">
         <a href ng-click="tab.name = 'amendment'" title="{{'data-access-config.amendment.schema-form.title' | translate}}"><i class="fa fa-wpforms"></i></a>
       </li>
+      <li ng-class="{'active': tab.name === 'agreement'}">
+        <a href ng-click="tab.name = 'agreement'" title="{{'data-access-config.agreement.schema-form.title' | translate}}"><i class="fa fa-gavel"></i></a>
+      </li>
       <li ng-class="{'active': tab.name === 'notifications'}">
         <a href ng-click="tab.name = 'notifications'" title="{{'data-access-config.notifications.title' | translate}}"><i class="fa fa-envelope"></i></a>
       </li>
@@ -120,6 +123,12 @@
 
   </div>
 
+  <div ng-show="tab.name === 'agreement'">
+    <span class="config-navigation"><h3 class="config-navigation-item" ng-class="{'active': tab.name === 'agreement'}" translate>data-access-config.agreement.schema-form.title</h3></span>
+    <p class="help-block" translate>data-access-config.agreement.schema-form.info</p>
+    <entity-sf-config form="formAgreement" alert-id="DataAccessConfigController" dirty-observable="agreementState.getDirtyObservable()"></entity-sf-config>
+  </div>
+
   <div ng-show="tab.name === 'settings'">
 
     <div class="row">
@@ -138,6 +147,7 @@
           <h4 translate>data-access-config.settings.other-forms-title</h4>
           <div form-checkbox name="feasibilityEnabled" model="config.feasibilityEnabled" label="data-access-config.feasibility-enabled" help="data-access-config.feasibility-enabled-help"></div>
           <div form-checkbox name="amendmentsEnabled" model="config.amendmentsEnabled" label="data-access-config.amendments-enabled" help="data-access-config.amendments-enabled-help"></div>
+          <div form-checkbox name="agreementEnabled" model="config.agreementEnabled" label="data-access-config.agreement-enabled" help="data-access-config.agreement-enabled-help"></div>
 
           <h4 translate>data-access-config.settings.variables-title</h4>
           <div form-checkbox name="variablesEnabled" model="config.variablesEnabled" label="data-access-config.variables-enabled" help="data-access-config.variables-enabled-help"></div>

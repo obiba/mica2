@@ -364,6 +364,7 @@ class MicaConfigDtos {
     if(dataAccessConfig.getPredefinedActions() != null) builder.addAllPredefinedActions(dataAccessConfig.getPredefinedActions());
 
     builder.setFeasibilityEnabled(dataAccessConfig.isFeasibilityEnabled());
+    builder.setAgreementEnabled(dataAccessConfig.isAgreementEnabled());
     builder.setAmendmentsEnabled(dataAccessConfig.isAmendmentsEnabled());
     builder.setCollaboratorsEnabled(dataAccessConfig.isCollaboratorsEnabled());
     builder.setCollaboratorInvitationDays(dataAccessConfig.getCollaboratorInvitationDays());
@@ -433,6 +434,7 @@ class MicaConfigDtos {
     dataAccessConfig.setConditionallyApprovedSubject(dto.getConditionallyApprovedSubject());
     dataAccessConfig.setPredefinedActions(dto.getPredefinedActionsList());
     dataAccessConfig.setFeasibilityEnabled(dto.getFeasibilityEnabled());
+    dataAccessConfig.setAgreementEnabled(dto.getAgreementEnabled());
     dataAccessConfig.setAmendmentsEnabled(dto.getAmendmentsEnabled());
     dataAccessConfig.setCollaboratorsEnabled(dto.getCollaboratorsEnabled());
     dataAccessConfig.setCollaboratorInvitationDays(dto.getCollaboratorInvitationDays());
@@ -521,6 +523,24 @@ class MicaConfigDtos {
     dataAccessFeasibilityForm.setDefinition(dto.getDefinition());
 
     return dataAccessFeasibilityForm;
+  }
+
+  Mica.DataAccessAgreementFormDto asDto(@NotNull DataAccessAgreementForm dataAccessAgreementForm) {
+    Mica.DataAccessAgreementFormDto.Builder builder = Mica.DataAccessAgreementFormDto.newBuilder()
+      .setRevision(dataAccessAgreementForm.getRevision())
+      .setLastUpdateDate(dataAccessAgreementForm.getLastUpdateDate().toString())
+      .setDefinition(dataAccessAgreementForm.getDefinition())
+      .setSchema(dataAccessAgreementForm.getSchema());
+    return builder.build();
+  }
+
+  DataAccessAgreementForm fromDto(@NotNull Mica.DataAccessAgreementFormDto dto) {
+    DataAccessAgreementForm dataAccessAgreementForm = new DataAccessAgreementForm();
+
+    dataAccessAgreementForm.setSchema(dto.getSchema());
+    dataAccessAgreementForm.setDefinition(dto.getDefinition());
+
+    return dataAccessAgreementForm;
   }
 
   Mica.DataAccessAmendmentFormDto asDto(@NotNull DataAccessAmendmentForm dataAccessAmendmentForm,

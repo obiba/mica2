@@ -27,6 +27,8 @@ mica.dataAccessConfig
     'AlertBuilder',
     'DataAccessFeasibilityFormResource',
     'DataAccessFeasibilityFormPublicationResource',
+    'DataAccessAgreementFormResource',
+    'DataAccessAgreementFormPublicationResource',
     'DataAccessAmendmentFormResource',
     'DataAccessAmendmentFormPublicationResource',
     function ($rootScope,
@@ -44,6 +46,8 @@ mica.dataAccessConfig
               AlertBuilder,
               DataAccessFeasibilityFormResource,
               DataAccessFeasibilityFormPublicationResource,
+              DataAccessAgreementFormResource,
+              DataAccessAgreementFormPublicationResource,
               DataAccessAmendmentFormResource,
               DataAccessAmendmentFormPublicationResource) {
 
@@ -56,6 +60,7 @@ mica.dataAccessConfig
 
       $scope.formState = new mica.commons.EntityState($q, $scope);
       $scope.feasibilityState = new mica.commons.EntityState($q, $scope);
+      $scope.agreementState = new mica.commons.EntityState($q, $scope);
       $scope.amendmentState = new mica.commons.EntityState($q, $scope);
       $scope.pdfTemplates = {};
 
@@ -153,6 +158,41 @@ mica.dataAccessConfig
           });
       };
 
+      var saveAgreementForm = function() {
+        switch (EntitySchemaFormService.isFormValid($scope.formAgreement)) {
+          case EntitySchemaFormService.ParseResult.VALID:
+            entitySchemaFormSanitizeToSave('agreementForm', 'agreementForm');
+            entitySchemaFormDelete('agreementForm');
+
+            DataAccessAgreementFormResource.save($scope.agreementForm).$promise
+              .then(function () {
+                $scope.agreementState.setDirty(false);
+                AlertBuilder.newBuilder().delay(3000).type('success').trMsg('entity-config.save-alert.data-access-agreement-form-success').build();
+                refreshDataAccessAgreementForms();
+              }, function (reason) {
+                AlertBuilder.newBuilder().response(reason).build();
+              });
+
+            break;
+          case EntitySchemaFormService.ParseResult.SCHEMA:
+            AlertBuilder.newBuilder().trMsg('data-access-config.syntax-error.schema').build();
+            break;
+          case EntitySchemaFormService.ParseResult.DEFINITION:
+            AlertBuilder.newBuilder().trMsg('data-access-config.syntax-error.definition').build();
+            break;
+        }
+      };
+
+      var publishAgreementForm = function() {
+        DataAccessAgreementFormPublicationResource.publish().$promise
+          .then(function () {
+            AlertBuilder.newBuilder().delay(3000).type('success').trMsg('entity-config.publish-alert.data-access-agreement-form-success').build();
+            refreshDataAccessAgreementForms();
+          }, function (reason) {
+            AlertBuilder.newBuilder().response(reason).build();
+          });
+      };
+
       var saveAmendmentForm = function() {
         switch (EntitySchemaFormService.isFormValid($scope.formAmendment)) {
           case EntitySchemaFormService.ParseResult.VALID:
@@ -199,6 +239,7 @@ mica.dataAccessConfig
 
       $scope.dataAccessForm = {schema: '', definition: '', pdfTemplates: []};
       $scope.feasibilityForm = {schema: '', definition: ''};
+      $scope.agreementForm = {schema: '', definition: ''};
       $scope.amendmentForm = {schema: '', definition: ''};
       $scope.fileTypes = '.pdf';
 
@@ -321,6 +362,31 @@ mica.dataAccessConfig
       };
       refreshDataAccessFeasibilityForms(true);
 
+      const refreshDataAccessAgreementForms = function(setUpWatch) {
+        $scope.formAgreement = DataAccessAgreementFormResource.get({revision: 'draft'},
+          function(agreementForm){
+            $scope.agreementForm = entitySchemaFormSanitize(agreementForm);
+
+            if (agreementForm.definitionJson.length === 0) {
+              AlertBuilder.newBuilder().trMsg('data-access-config-agreement.parse-error.schema').build();
+            }
+            if (Object.getOwnPropertyNames(agreementForm.schemaJson).length === 0) {
+              AlertBuilder.newBuilder().trMsg('data-access-config-agreement.parse-error.definition').build();
+            }
+
+            if (setUpWatch) {
+              startWatchForDirty('agreementForm', $scope.agreementState);
+            }
+          }, entitySchemaFormError);
+
+        DataAccessAgreementFormResource.get({revision: 'latest'},
+          function(agreementForm) {
+            $scope.dataAccessAgreementFormLatestDate = agreementForm.lastUpdateDate;
+          }
+        );
+      };
+      refreshDataAccessAgreementForms(true);
+
       const refreshDataAccessAmendmentForms = function(setUpWatch) {
         $scope.formAmendment = DataAccessAmendmentFormResource.get({revision: 'draft'},
           function(amendmentForm){
@@ -377,6 +443,8 @@ mica.dataAccessConfig
       $scope.publishForm = publishForm;
       $scope.saveFeasibilityForm = saveFeasibilityForm;
       $scope.publishFeasibilityForm = publishFeasibilityForm;
+      $scope.saveAgreementForm = saveAgreementForm;
+      $scope.publishAgreementForm = publishAgreementForm;
       $scope.saveAmendmentForm = saveAmendmentForm;
       $scope.publishAmendmentForm = publishAmendmentForm;
       $scope.saveConfig = saveConfig;

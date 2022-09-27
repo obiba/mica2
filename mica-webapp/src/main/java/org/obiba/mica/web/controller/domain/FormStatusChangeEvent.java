@@ -3,7 +3,6 @@ package org.obiba.mica.web.controller.domain;
 import org.joda.time.DateTime;
 import org.obiba.mica.access.domain.*;
 import org.obiba.mica.user.UserProfileService;
-import org.obiba.mica.web.controller.DataAccessController;
 
 import java.util.Map;
 
@@ -29,6 +28,10 @@ public class FormStatusChangeEvent {
 
   public boolean isFeasibility() {
     return form instanceof DataAccessFeasibility;
+  }
+
+  public boolean isAgreement() {
+    return form instanceof DataAccessAgreement;
   }
 
   public DataAccessEntityStatus getStatus() {

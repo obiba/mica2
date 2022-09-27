@@ -12,14 +12,9 @@ package org.obiba.mica.micaConfig.domain;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
-import org.obiba.mica.file.Attachment;
-import org.obiba.mica.micaConfig.PdfDownloadType;
 
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 public class DataAccessConfig extends AbstractAuditableDocument {
 
@@ -92,6 +87,8 @@ public class DataAccessConfig extends AbstractAuditableDocument {
   private List<String> predefinedActions = null;
 
   private boolean feasibilityEnabled = false;
+
+  private boolean agreementEnabled = false;
 
   private boolean amendmentsEnabled = false;
 
@@ -329,6 +326,14 @@ public class DataAccessConfig extends AbstractAuditableDocument {
 
   public void setFeasibilityEnabled(boolean feasibilityEnabled) {
     this.feasibilityEnabled = feasibilityEnabled;
+  }
+
+  public boolean isAgreementEnabled() {
+    return agreementEnabled;
+  }
+
+  public void setAgreementEnabled(boolean agreementEnabled) {
+    this.agreementEnabled = agreementEnabled;
   }
 
   public boolean isAmendmentsEnabled() {

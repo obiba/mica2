@@ -2057,6 +2057,8 @@
     "amendments-enabled-help":"Enable the capability of requesting amendments to an approved data access request.",
     "feasibility-enabled": "Enable Feasibility Inquiry.",
     "feasibility-enabled-help":"Enable the capability of inquiring for feasibility of a data access request.",
+    "agreement-enabled": "Enable End User Agreement.",
+    "agreement-enabled-help":"Enable the end user agreement of a data access request. This form is to be filled in by the applicant and each of the collaborators.",
     "variables-enabled": "Enable Variables attachment.",
     "variables-enabled-help":"Enable attaching a variable list to the main form.",
     "amendment-variables-enabled": "Enable Variables attachment to an Amendment.",
@@ -2212,6 +2214,12 @@
       "schema-form": {
         "title": "Feasibility Form",
         "info": "The feasibility form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+      }
+    },
+    "agreement": {
+      "schema-form": {
+        "title": "End User Agreement Form",
+        "info": "The end user agreement form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
       }
     }
   },

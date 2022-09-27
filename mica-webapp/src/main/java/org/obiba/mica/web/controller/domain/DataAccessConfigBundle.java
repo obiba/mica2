@@ -41,6 +41,10 @@ public class DataAccessConfigBundle {
     return config.isFeasibilityEnabled();
   }
 
+  public boolean isAgreementEnabled() {
+    return config.isAgreementEnabled();
+  }
+
   public boolean isVariablesEnabled() {
     return config.isVariablesEnabled();
   }
