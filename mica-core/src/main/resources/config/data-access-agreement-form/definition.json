@@ -4,7 +4,7 @@
     "items": [
       {
         "type": "help",
-        "helpvalue": "<h3>t(data-access-request.default.signature.title)</h3>"
+        "helpvalue": "<h3>t(data-access-agreement.default.signature.title)</h3>"
       },
       "signature"
     ]

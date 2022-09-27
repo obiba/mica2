@@ -291,6 +291,15 @@
       </button>
     </span>
 
+    <span ng-show="tab.name === 'agreement'">
+      <button ng-click="saveAgreementForm()" class="btn btn-primary">
+        <span translate>save</span>
+      </button>
+      <button ng-disabled="formAgreement.lastUpdateDate === dataAccessAgreementFormLatestDate" ng-click="publishAgreementForm()" class="btn btn-info">
+        <span title="{{dataAccessAgreementFormLatestDate | amDateFormat : 'lll'}}" translate>publish.label</span>
+      </button>
+    </span>
+
     <button ng-show="tab.name === 'notifications' || tab.name === 'settings'" ng-click="saveConfig()" class="btn btn-primary">
       <span translate>save</span>
     </button>

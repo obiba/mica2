@@ -1804,6 +1804,14 @@
       "data-linkage": "Données qui seront liées aux données demandées (préciser quel(s) ensembles de données, le type de données et leur origine), si applicable"
     }
   },
+  "data-access-agreement": {
+    "default": {
+      "signature": {
+        "title": "Signature",
+        "check": "Je déclare comprendre les dernières étapes requises avant l'obtention du matériel demandé."
+      }
+    }
+  },
   "data-access-requests": "Demandes d'accès aux données",
   "data-access-request": {
     "applicant": "Demandeur",
@@ -2241,13 +2249,15 @@
       "data-access-form-success": "Le formulaire a été sauvegardé. Assurez-vous de le publier pour le rendre visible dans les demandes d'accès aux données.",
       "data-access-feasibility-form-success": "Le formulaire de faisabilité a été sauvegardé. Assurez-vous de le publier pour le rendre visible dans les demandes d'accès aux données.",
       "data-access-amendment-form-success": "Le formulaire d'amendement a été sauvegardé. Assurez-vous de le publier pour le rendre visible dans les demandes d'accès aux données.",
+      "data-access-agreement-form-success": "Le formulaire de contrat d'utilisateur final a été sauvegardé. Assurez-vous de le publier pour le rendre visible dans les demandes d'accès aux données.",
       "data-access-config-success": "Les paramètres de la gestion des demandes d'accès aux données ont été sauvegardés.",
       "success": "Toutes vos modifications ont été enregistrées avec succès."
     },
     "publish-alert": {
       "data-access-form-success": "Le formulaire a été publié.",
       "data-access-feasibility-form-success": "Le formulaire de faisabilité a été publié.",
-      "data-access-amendment-form-success": "Le formulaire d'amendement a été publié."
+      "data-access-amendment-form-success": "Le formulaire d'amendement a été publié.",
+      "data-access-agreement-form-success": "Le formulaire de contrat d'utilisateur final a été publié."
     },
     "syntax-error": {
       "definition": "La définition du formulaire n'est pas un document valide, veuillez réviser et corriger les erreurs.",

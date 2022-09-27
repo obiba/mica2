@@ -90,9 +90,6 @@ public class DataAccessAgreementFormService extends AbstractDataAccessEntityForm
     DataAccessAgreementForm form = new DataAccessAgreementForm();
     form.setDefinition(getDefaultDataAccessFormResourceAsString("definition.json"));
     form.setSchema(getDefaultDataAccessFormResourceAsString("schema.json"));
-    form.setTitleFieldPath("projectTitle");
-    form.setSummaryFieldPath("summary");
-    form.setEndDateFieldPath("endDate");
     form.setRevision(0);
     return form;
   }
