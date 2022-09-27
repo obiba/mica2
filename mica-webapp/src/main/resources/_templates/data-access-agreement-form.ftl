@@ -79,11 +79,11 @@
                     </span>
                   </#if>
                   <#if agreementPermissions?seq_contains("EDIT_STATUS")>
-                    <span class="float-right border-left ml-2 pl-2">
+                    <span class="float-right">
                       <#if agreement.status == "OPENED">
-                        <button type="button" class="btn btn-success" data-toggle="modal"
+                        <button type="button" class="btn btn-success" ng-if="schema.readOnly" data-toggle="modal"
                                 data-target="#modal-approve"><@message "approve"/></button>
-                        <button type="button" class="btn btn-danger" data-toggle="modal"
+                        <button type="button" class="btn btn-danger" ng-if="schema.readOnly" data-toggle="modal"
                                 data-target="#modal-reject"><@message "reject"/></button>
                         <button type="button" class="btn btn-success"
                                 ng-click="validate()"><@message "validate"/></button>
@@ -96,7 +96,7 @@
                       </#if>
                     </span>
                   </#if>
-                  <span class="float-right" ng-if="schema.readOnly">
+                  <span class="float-right <#if agreement.status == "OPENED">border-right mr-2 pr-2</#if>" ng-if="schema.readOnly">
                     <#if diffs??>
                       <button type="button" class="btn btn-outline-info" data-toggle="modal"
                               data-target="#modal-diff"><i class="fas fa-code-branch"></i> <@message "form-diff"/></button>

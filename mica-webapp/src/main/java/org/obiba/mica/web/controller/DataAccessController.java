@@ -422,6 +422,7 @@ public class DataAccessController extends BaseController {
     DataAccessRequest dar = getDataAccessRequest(id);
     params.put("dar", dar);
     params.put("applicant", userProfileService.getProfileMap(dar.getApplicant(), true));
+    params.put("mainApplicant", params.get("applicant"));
 
     List<String> permissions = Lists.newArrayList("VIEW", "EDIT", "DELETE").stream()
       .filter(action -> ("VIEW".equals(action) || !dar.isArchived()) && isPermitted(action, id))

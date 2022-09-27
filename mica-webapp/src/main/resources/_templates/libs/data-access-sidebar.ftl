@@ -27,7 +27,7 @@
               class="fas fa-circle fa-2x pl-2 text-${statusColor(dar.status.toString())}"></i></span>
       </div>
       <div class="info">
-        <a href="${contextPath}/data-access/${dar.id}" class="d-inline">${applicant.fullName} </a>
+        <a href="${contextPath}/data-access/${dar.id}" class="d-inline">${mainApplicant.fullName} </a>
       </div>
     </div>
 
