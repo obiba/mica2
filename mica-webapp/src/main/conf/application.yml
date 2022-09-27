@@ -52,6 +52,7 @@ spring:
     main.allow-bean-definition-overriding: true
     freemarker:
         suffix: ftl
+        enabled: true
     data:
         mongodb:
             uri: mongodb://localhost:27017/mica

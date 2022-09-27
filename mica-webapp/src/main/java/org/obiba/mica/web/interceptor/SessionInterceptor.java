@@ -73,6 +73,7 @@ public class SessionInterceptor implements AsyncHandlerInterceptor {
 
   @Override
   public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+    if (modelAndView == null) return;
     populateUserEntries(request, modelAndView, micaConfigService, userProfileService, variableSetService, studySetService, networkSetService, subjectAclService);
   }
 
