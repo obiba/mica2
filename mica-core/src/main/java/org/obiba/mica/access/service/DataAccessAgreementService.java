@@ -19,6 +19,8 @@ import org.obiba.mica.access.domain.*;
 import org.obiba.mica.access.event.DataAccessAgreementDeletedEvent;
 import org.obiba.mica.access.event.DataAccessAgreementUpdatedEvent;
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
+import org.obiba.mica.micaConfig.domain.DataAccessConfig;
+import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,6 +92,34 @@ public class DataAccessAgreementService extends DataAccessEntityService<DataAcce
     eventBus.post(new DataAccessAgreementUpdatedEvent(saved));
     sendNotificationEmails(saved, from);
     return saved;
+  }
+
+  @Override
+  protected void sendApprovedNotificationEmail(DataAccessAgreement request) {
+    DataAccessConfig dataAccessConfig = dataAccessConfigService.getOrCreateConfig();
+    if (dataAccessConfig.isNotifyApproved()) {
+      Map<String, String> ctx = dataAccessRequestUtilService.getNotificationEmailContext(request);
+
+      String prefix = getTemplatePrefix(ctx);
+
+      mailService.sendEmailToGroups(mailService.getSubject(dataAccessConfig.getApprovedSubject(), ctx,
+          DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "ApprovedDAOEmail", ctx,
+        Roles.MICA_DAO);
+    }
+  }
+
+  @Override
+  protected void sendRejectedNotificationEmail(DataAccessAgreement request) {
+    DataAccessConfig dataAccessConfig = dataAccessConfigService.getOrCreateConfig();
+    if (dataAccessConfig.isNotifyApproved()) {
+      Map<String, String> ctx = dataAccessRequestUtilService.getNotificationEmailContext(request);
+
+      String prefix = getTemplatePrefix(ctx);
+
+      mailService.sendEmailToGroups(mailService.getSubject(dataAccessConfig.getApprovedSubject(), ctx,
+          DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "RejectedDAOEmail", ctx,
+        Roles.MICA_DAO);
+    }
   }
 
   @Override

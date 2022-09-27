@@ -381,7 +381,7 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
     return request.getId();
   }
 
-  private String getTemplatePrefix(Map<String, String> ctx) {
+  protected String getTemplatePrefix(Map<String, String> ctx) {
     if (isDataAccessAmendmentContext(ctx))
       return "dataAccessAmendment";
     if (isDataAccessFeasibilityContext(ctx))
