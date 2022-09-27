@@ -12,6 +12,7 @@ package org.obiba.mica.config;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.servlet.Filter;
@@ -47,7 +48,11 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
+import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.servlet.InstrumentedFilter;
@@ -151,6 +156,23 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
     servletContext.addListener(EnvironmentLoaderListener.class);
 
     log.info("Web application fully configured");
+  }
+
+  @Bean
+  public ViewResolver viewResolver() {
+    FreeMarkerViewResolver freeMarkerViewResolver = new FreeMarkerViewResolver();
+    freeMarkerViewResolver.setSuffix(".ftl");
+    freeMarkerViewResolver.getAttributesMap().put("requestContextAttribute", "rc");
+
+    return freeMarkerViewResolver;
+  }
+
+  @Bean
+  public FreeMarkerConfigurer freeMarkerConfigurer() {
+    FreeMarkerConfigurer freeMarkerConfigurer = new FreeMarkerConfigurer();
+    freeMarkerConfigurer.setTemplateLoaderPaths("classpath:/web/", "classpath:/static/templates/", "classpath:/public/templates/", "classpath:/templates/", "classpath:/_templates/");
+
+    return freeMarkerConfigurer;
   }
 
   @Bean
