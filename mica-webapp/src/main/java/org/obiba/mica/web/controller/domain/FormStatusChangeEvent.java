@@ -22,6 +22,10 @@ public class FormStatusChangeEvent {
     return form;
   }
 
+  public String getType() {
+    return form.getClass().getSimpleName().replaceAll("DataAccess", "").toLowerCase();
+  }
+
   public boolean isAmendment() {
     return form instanceof DataAccessAmendment;
   }

@@ -147,6 +147,8 @@
 <#assign dataAccessCalloutsEnabled = true/>
 <#assign dataAccessReportTimelineEnabled = true/>
 <#assign dataAccessArchiveEnabled = true/>
+<#assign showDataAccessEventsInComments = ["request", "feasibility", "amendment", "agreement"]/>
+
 
 <!-- Charts -->
 <#assign barChartBackgroundColor = "rgb(54, 162, 235)"/>
