@@ -38,11 +38,24 @@ public class MongoAggregationExecutor {
       scripts.stream().map(CustomAggregationOperation::new).collect(Collectors.toList())
     );
 
-    AggregationResults<Document> results = mongoTemplate.aggregate(aggregation, collection, Document.class);
-    return results.getMappedResults()
+    AggregationResults<Document> aggregate = mongoTemplate.aggregate(aggregation, collection, Document.class);
+
+    return aggregate.getMappedResults()
       .stream()
-      .map(LinkedHashMap.class::cast)
+      .map(this::documentToMap)
       .collect(Collectors.toList());
+  }
+
+  /**
+   * Helper to convert Document to LinkedHashMap.
+   *
+   * @param document
+   * @return
+   */
+  private LinkedHashMap<String, Object> documentToMap(Document document) {
+    LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+    document.entrySet().forEach(entry -> map.put(entry.getKey(), entry.getValue()));
+    return map;
   }
 
   /**
