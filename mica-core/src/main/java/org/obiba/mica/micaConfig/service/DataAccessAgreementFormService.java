@@ -17,6 +17,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Component
@@ -33,16 +35,16 @@ public class DataAccessAgreementFormService extends AbstractDataAccessEntityForm
   public DataAccessAgreementForm createOrUpdate(DataAccessAgreementForm dataAccessForm) {
     validateForm(dataAccessForm);
     dataAccessForm.setRevision(0);
-    dataAccessForm.setLastUpdateDate(DateTime.now());
+    dataAccessForm.setLastUpdateDate(LocalDateTime.now());
     return dataAccessAgreementFormRepository.save(dataAccessForm);
   }
 
   @Override
   public DataAccessAgreementForm findDraft() {
-    DataAccessAgreementForm form = dataAccessAgreementFormRepository.findOne(DataAccessAgreementForm.DEFAULT_ID);
+    DataAccessAgreementForm form = dataAccessAgreementFormRepository.findById(DataAccessAgreementForm.DEFAULT_ID).orElse(null);
     if (form == null) {
       createOrUpdate(createDefaultDataAccessAgreementForm());
-      form = dataAccessAgreementFormRepository.findOne(DataAccessAgreementForm.DEFAULT_ID);
+      form = dataAccessAgreementFormRepository.findById(DataAccessAgreementForm.DEFAULT_ID).get();
     }
     return form;
   }
@@ -81,7 +83,7 @@ public class DataAccessAgreementFormService extends AbstractDataAccessEntityForm
   //
 
   private Optional<DataAccessAgreementForm> findFirstSortByRevisionDesc() {
-    return dataAccessAgreementFormRepository.findAll(new Sort(Sort.Direction.DESC, "revision")).stream()
+    return dataAccessAgreementFormRepository.findAll(Sort.by(Sort.Order.desc("revision"))).stream()
       .filter(form -> form.getRevision()>0)
       .findFirst();
   }

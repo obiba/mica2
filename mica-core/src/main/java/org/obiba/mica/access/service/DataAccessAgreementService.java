@@ -32,6 +32,8 @@ import org.springframework.validation.annotation.Validated;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
+
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -68,7 +70,7 @@ public class DataAccessAgreementService extends DataAccessEntityService<DataAcce
       setAndLogStatus(saved, DataAccessEntityStatus.OPENED);
       saved.setId(makeAgreementId(agreement.getParentId(), agreement.getApplicant()));
     } else {
-      saved = dataAccessAgreementRepository.findOne(agreement.getId());
+      saved = dataAccessAgreementRepository.findById(agreement.getId()).orElse(null);
       if (saved != null) {
         from = saved.getStatus();
         // validate the status
@@ -84,10 +86,10 @@ public class DataAccessAgreementService extends DataAccessEntityService<DataAcce
       }
     }
 
-    schemaFormContentFileService.save(saved, dataAccessAgreementRepository.findOne(agreement.getId()),
+    schemaFormContentFileService.save(saved, dataAccessAgreementRepository.findById(agreement.getId()).orElse(null),
       String.format("/data-access-request/%s/agreement/%s", saved.getParentId(), agreement.getId()));
 
-    saved.setLastModifiedDate(DateTime.now());
+    saved.setLastModifiedDate(LocalDateTime.now());
 
     dataAccessAgreementRepository.save(saved);
     eventBus.post(new DataAccessAgreementUpdatedEvent(saved));
