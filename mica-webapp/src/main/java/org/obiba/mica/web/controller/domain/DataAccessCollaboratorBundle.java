@@ -32,7 +32,7 @@ public class DataAccessCollaboratorBundle {
     return collaborator.isInvitationPending();
   }
   public LocalDateTime getLastModifiedDate() {
-    return collaborator.getLastModifiedDate().get();
+    return collaborator.getLastModifiedDate().orElse(LocalDateTime.now());
   }
 
   public DataAccessCollaborator getCollaborator() {

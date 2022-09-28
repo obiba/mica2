@@ -27,6 +27,7 @@ import org.obiba.mica.core.service.MissingCommentException;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
@@ -136,7 +137,7 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
     return harmonizationDatasetRepository
         .findByHarmonizationTableStudyId(studyId)
         .stream()
-        .filter(ds -> harmonizationDatasetStateRepository.findById(ds.getId()).get().isPublished())
+        .filter(ds -> harmonizationDatasetStateRepository.findById(ds.getId()).orElse(new HarmonizationDatasetState()).isPublished())
         .collect(Collectors.toList());
   }
 

@@ -41,12 +41,12 @@ public class DataAccessAgreementFormService extends AbstractDataAccessEntityForm
 
   @Override
   public DataAccessAgreementForm findDraft() {
-    DataAccessAgreementForm form = dataAccessAgreementFormRepository.findById(DataAccessAgreementForm.DEFAULT_ID).orElse(null);
-    if (form == null) {
+    Optional<DataAccessAgreementForm> form = dataAccessAgreementFormRepository.findById(DataAccessAgreementForm.DEFAULT_ID);
+    if (!form.isPresent()) {
       createOrUpdate(createDefaultDataAccessAgreementForm());
-      form = dataAccessAgreementFormRepository.findById(DataAccessAgreementForm.DEFAULT_ID).get();
+      form = dataAccessAgreementFormRepository.findById(DataAccessAgreementForm.DEFAULT_ID);
     }
-    return form;
+    return form.get();
   }
 
   @Override

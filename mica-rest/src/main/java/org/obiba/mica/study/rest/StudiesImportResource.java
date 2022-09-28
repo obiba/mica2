@@ -327,8 +327,10 @@ public class StudiesImportResource {
     String schema = (mapper.readValue((String) content.get(SCHEMA), JsonNode.class)).toString();
     String definition = (mapper.readValue((String) content.get(DEFINITION), JsonNode.class)).toString();
 
-    String localSchema = (mapper.readValue(configService.findPartial().get().getSchema(), JsonNode.class)).toString();
-    String localDefinition = (mapper.readValue(configService.findPartial().get().getDefinition(), JsonNode.class)).toString();
+    EntityConfig entityConfig = configService.findPartial().get();
+
+    String localSchema = (mapper.readValue(entityConfig.getSchema(), JsonNode.class)).toString();
+    String localDefinition = (mapper.readValue(entityConfig.getDefinition(), JsonNode.class)).toString();
 
     JsonNode jsonDTO = mapper.createObjectNode();
     ((ObjectNode) jsonDTO).put("formSection", formSection);

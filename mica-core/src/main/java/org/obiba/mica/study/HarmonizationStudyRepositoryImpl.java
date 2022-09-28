@@ -72,7 +72,7 @@ public class HarmonizationStudyRepositoryImpl implements HarmonizationStudyRepos
   @Override
   public HarmonizationStudy insertWithReferences(HarmonizationStudy study) {
     saveContacts(study);
-    mongoTemplate.insert    (study);
+    mongoTemplate.insert(study);
     updateRemovedContacts(study);
 
     return study;
