@@ -32,7 +32,7 @@ public class DefaultEntityBase implements EntityBase {
 
   @Override
   public @NotNull Optional<LocalDateTime> getCreatedDate() {
-    return Optional.of(createdDate);
+    return Optional.ofNullable(createdDate);
   }
 
   @Override
@@ -42,7 +42,7 @@ public class DefaultEntityBase implements EntityBase {
 
   @Override
   public Optional<LocalDateTime> getLastModifiedDate() {
-    return Optional.of(lastModifiedDate);
+    return Optional.ofNullable(lastModifiedDate);
   }
 
   @Override

@@ -12,7 +12,6 @@ package org.obiba.mica.config;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.servlet.Filter;
@@ -48,9 +47,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
-import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
@@ -159,10 +156,10 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
   }
 
   @Bean
-  public ViewResolver viewResolver() {
+  public FreeMarkerViewResolver freemarkerViewResolver() {
     FreeMarkerViewResolver freeMarkerViewResolver = new FreeMarkerViewResolver();
+    freeMarkerViewResolver.setRequestContextAttribute("rc");
     freeMarkerViewResolver.setSuffix(".ftl");
-    freeMarkerViewResolver.getAttributesMap().put("requestContextAttribute", "rc");
 
     return freeMarkerViewResolver;
   }

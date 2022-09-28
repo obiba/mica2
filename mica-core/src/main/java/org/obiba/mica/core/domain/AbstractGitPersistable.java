@@ -49,7 +49,7 @@ public abstract class AbstractGitPersistable implements GitPersistable, Serializ
 
   @Override
   public @NotNull Optional<LocalDateTime> getCreatedDate() {
-    return Optional.of(createdDate);
+    return Optional.ofNullable(createdDate);
   }
 
   @Override
@@ -59,7 +59,7 @@ public abstract class AbstractGitPersistable implements GitPersistable, Serializ
 
   @Override
   public Optional<LocalDateTime> getLastModifiedDate() {
-    return Optional.of(lastModifiedDate);
+    return Optional.ofNullable(lastModifiedDate);
   }
 
   @Override

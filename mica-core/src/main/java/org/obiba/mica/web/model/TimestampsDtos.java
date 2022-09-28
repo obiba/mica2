@@ -20,8 +20,8 @@ class TimestampsDtos {
 
   static Mica.TimestampsDto asDto(Timestamped timestamped) {
     Mica.TimestampsDto.Builder builder = Mica.TimestampsDto.newBuilder()
-        .setCreated(timestamped.getCreatedDate().toString());
-    if(timestamped.getLastModifiedDate() != null) builder.setLastUpdate(timestamped.getLastModifiedDate().toString());
+        .setCreated(timestamped.getCreatedDate().get().toString());
+    if(timestamped.getLastModifiedDate().isPresent()) builder.setLastUpdate(timestamped.getLastModifiedDate().get().toString());
     return builder.build();
   }
 
