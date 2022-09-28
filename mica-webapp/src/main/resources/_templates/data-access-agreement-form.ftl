@@ -96,11 +96,7 @@
                       </#if>
                     </span>
                   </#if>
-                  <span class="float-right <#if agreement.status == "OPENED">border-right mr-2 pr-2</#if>" ng-if="schema.readOnly">
-                    <#if diffs??>
-                      <button type="button" class="btn btn-outline-info" data-toggle="modal"
-                              data-target="#modal-diff"><i class="fas fa-code-branch"></i> <@message "form-diff"/></button>
-                    </#if>
+                  <span class="float-right <#if agreementPermissions?seq_contains("EDIT_STATUS") && agreement.status == "OPENED">border-right mr-2 pr-2</#if>" ng-if="schema.readOnly">
                     <a href="#" onclick="window.print()" class="btn btn-default">
                       <i class="fas fa-print"></i> <@message "global.print"/>
                     </a>
