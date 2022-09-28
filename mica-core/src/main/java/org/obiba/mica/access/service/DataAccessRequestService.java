@@ -10,20 +10,11 @@
 
 package org.obiba.mica.access.service;
 
-import static com.jayway.jsonpath.Configuration.defaultConfiguration;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-
+import com.google.common.base.Throwables;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.Subscribe;
+import com.google.common.io.ByteStreams;
+import com.itextpdf.text.DocumentException;
 import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.access.DataAccessEntityRepository;
 import org.obiba.mica.access.DataAccessRequestRepository;
@@ -31,13 +22,7 @@ import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.ActionLog;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
-import org.obiba.mica.access.event.DataAccessAmendmentDeletedEvent;
-import org.obiba.mica.access.event.DataAccessAmendmentUpdatedEvent;
-import org.obiba.mica.access.event.DataAccessCollaboratorAcceptedEvent;
-import org.obiba.mica.access.event.DataAccessFeasibilityDeletedEvent;
-import org.obiba.mica.access.event.DataAccessFeasibilityUpdatedEvent;
-import org.obiba.mica.access.event.DataAccessRequestDeletedEvent;
-import org.obiba.mica.access.event.DataAccessRequestUpdatedEvent;
+import org.obiba.mica.access.event.*;
 import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.event.CommentDeletedEvent;
 import org.obiba.mica.core.event.CommentUpdatedEvent;
@@ -58,11 +43,18 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.google.common.base.Throwables;
-import com.google.common.collect.Sets;
-import com.google.common.eventbus.Subscribe;
-import com.google.common.io.ByteStreams;
-import com.itextpdf.text.DocumentException;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static com.jayway.jsonpath.Configuration.defaultConfiguration;
 
 @Service
 @Validated
@@ -265,8 +257,8 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
     DataAccessEntityStatus from = null;
     Iterable<Attachment> attachmentsToDelete = null;
     Iterable<Attachment> attachmentsToSave = null;
-
-    if (request.isNew()) {
+    boolean isNew = request.isNew();
+    if (isNew) {
       setAndLogStatus(saved, DataAccessEntityStatus.OPENED);
       saved.setId(generateId());
       attachmentsToSave = saved.getAttachments();
@@ -297,7 +289,7 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
       }
     }
 
-    schemaFormContentFileService.save(saved, dataAccessRequestRepository.findById(request.getId()).get(),
+    schemaFormContentFileService.save(saved, dataAccessRequestRepository.findById(request.getId()),
       String.format("/data-access-request/%s", saved.getId()));
 
     if (attachmentsToSave != null) attachmentsToSave.forEach(a -> {
@@ -308,7 +300,12 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
 
     if (lastModifiedDate != null)
       saved.setLastModifiedDate(lastModifiedDate);
-    dataAccessRequestRepository.saveWithReferences(saved);
+
+    if (isNew) {
+      dataAccessRequestRepository.insertWithReferences(saved);
+    } else {
+      dataAccessRequestRepository.saveWithReferences(saved);
+    }
 
     if (attachmentsToDelete != null) attachmentsToDelete.forEach(a -> fileStoreService.delete(a.getId()));
 

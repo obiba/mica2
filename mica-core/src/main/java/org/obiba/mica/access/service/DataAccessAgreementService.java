@@ -12,7 +12,6 @@ package org.obiba.mica.access.service;
 
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
-import org.joda.time.DateTime;
 import org.obiba.mica.access.DataAccessAgreementRepository;
 import org.obiba.mica.access.DataAccessEntityRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
@@ -32,7 +31,6 @@ import org.springframework.validation.annotation.Validated;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
-
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
@@ -86,7 +84,7 @@ public class DataAccessAgreementService extends DataAccessEntityService<DataAcce
       }
     }
 
-    schemaFormContentFileService.save(saved, dataAccessAgreementRepository.findById(agreement.getId()).orElse(null),
+    schemaFormContentFileService.save(saved, dataAccessAgreementRepository.findById(agreement.getId()),
       String.format("/data-access-request/%s/agreement/%s", saved.getParentId(), agreement.getId()));
 
     saved.setLastModifiedDate(LocalDateTime.now());

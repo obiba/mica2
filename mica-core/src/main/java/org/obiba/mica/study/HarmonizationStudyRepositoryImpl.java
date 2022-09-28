@@ -10,10 +10,7 @@
 
 package org.obiba.mica.study;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
+import com.google.common.eventbus.EventBus;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
@@ -24,7 +21,8 @@ import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
-import com.google.common.eventbus.EventBus;
+import javax.inject.Inject;
+import java.util.List;
 
 @Component
 public class HarmonizationStudyRepositoryImpl implements HarmonizationStudyRepositoryCustom, PersonAwareRepository<HarmonizationStudy> {
@@ -66,6 +64,15 @@ public class HarmonizationStudyRepositoryImpl implements HarmonizationStudyRepos
   public HarmonizationStudy saveWithReferences(HarmonizationStudy study) {
     saveContacts(study);
     mongoTemplate.save(study);
+    updateRemovedContacts(study);
+
+    return study;
+  }
+
+  @Override
+  public HarmonizationStudy insertWithReferences(HarmonizationStudy study) {
+    saveContacts(study);
+    mongoTemplate.insert    (study);
     updateRemovedContacts(study);
 
     return study;

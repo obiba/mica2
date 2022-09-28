@@ -10,28 +10,22 @@
 
 package org.obiba.mica.core.service;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-
-import net.minidev.json.JSONArray;
-
-import org.obiba.mica.core.domain.SchemaFormContentAware;
-import org.obiba.mica.file.FileStoreService;
-import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
-
 import com.google.common.collect.Sets;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.internal.JsonContext;
+import net.minidev.json.JSONArray;
+import org.obiba.mica.core.domain.SchemaFormContentAware;
+import org.obiba.mica.file.FileStoreService;
+import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.jayway.jsonpath.Configuration.defaultConfiguration;
 
@@ -41,7 +35,7 @@ public class SchemaFormContentFileService {
   @Inject
   private FileStoreService fileStoreService;
 
-  public void save(@NotNull SchemaFormContentAware newEntity, SchemaFormContentAware oldEntity, String entityPath) {
+  public void save(@NotNull SchemaFormContentAware newEntity, Optional<? extends SchemaFormContentAware> oldEntity, String entityPath) {
     Assert.notNull(newEntity, "New content cannot be null");
     if (newEntity.getContent() == null) return;
 
@@ -50,8 +44,8 @@ public class SchemaFormContentFileService {
     Map<String, JSONArray> newPaths = getPathFilesMap(newContext, json);
     if (newPaths == null) return; // content does not have any file field
 
-    if (oldEntity != null) {
-      Object oldJson = defaultConfiguration().jsonProvider().parse(oldEntity.getContent());
+    if (oldEntity.isPresent()) {
+      Object oldJson = defaultConfiguration().jsonProvider().parse(oldEntity.get().getContent());
       DocumentContext oldContext = JsonPath.using(defaultConfiguration().addOptions(Option.AS_PATH_LIST)).parse(oldJson);
       Map<String, JSONArray> oldPaths = getPathFilesMap(oldContext, oldJson);
       if (oldPaths != null) {

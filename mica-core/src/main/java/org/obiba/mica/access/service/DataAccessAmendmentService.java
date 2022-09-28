@@ -11,7 +11,6 @@
 package org.obiba.mica.access.service;
 
 import com.google.common.base.Strings;
-import org.joda.time.DateTime;
 import org.obiba.mica.access.DataAccessAmendmentRepository;
 import org.obiba.mica.access.DataAccessEntityRepository;
 import org.obiba.mica.access.DataAccessRequestRepository;
@@ -30,10 +29,8 @@ import org.springframework.validation.annotation.Validated;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
-
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -84,7 +81,7 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
     }
 
     ensureProjectTitle(saved);
-    schemaFormContentFileService.save(saved, dataAmendmentRequestRepository.findById(amendment.getId()).get(),
+    schemaFormContentFileService.save(saved, dataAmendmentRequestRepository.findById(amendment.getId()),
       String.format("/data-access-request/%s/amendment/%s", saved.getParentId(), amendment.getId()));
 
     saved.setLastModifiedDate(LocalDateTime.now());

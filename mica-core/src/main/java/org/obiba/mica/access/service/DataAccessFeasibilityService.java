@@ -10,16 +10,6 @@
 
 package org.obiba.mica.access.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-
 import org.obiba.mica.access.DataAccessEntityRepository;
 import org.obiba.mica.access.DataAccessFeasibilityRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
@@ -32,6 +22,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Validated
@@ -76,7 +74,7 @@ public class DataAccessFeasibilityService extends DataAccessEntityService<DataAc
       }
     }
 
-    schemaFormContentFileService.save(saved, dataFeasibilityRequestRepository.findById(feasibility.getId()).get(),
+    schemaFormContentFileService.save(saved, dataFeasibilityRequestRepository.findById(feasibility.getId()),
       String.format("/data-access-request/%s/feasibility/%s", saved.getParentId(), feasibility.getId()));
 
     saved.setLastModifiedDate(LocalDateTime.now());
