@@ -128,10 +128,13 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
       studyState.setPopulationOrDceWeightChange(true);
     }
 
-    studyStateRepository.save(studyState);
+    if (!study.isNew()) studyStateRepository.save(studyState);
+    else studyStateRepository.insert(studyState);
+
     study.setLastModifiedDate(LocalDateTime.now());
 
-    studyRepository.save(study);
+    if (!study.isNew()) studyRepository.save(study);
+    else studyRepository.insert(study);
 
     gitService.save(study, comment);
     eventBus.post(new DraftStudyUpdatedEvent(study));

@@ -102,11 +102,13 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
     if (!study.isNew()) ensureGitRepository(studyState);
 
     studyState.incrementRevisionsAhead();
-    harmonizationStudyStateRepository.save(studyState);
+    if (!study.isNew()) harmonizationStudyStateRepository.save(studyState);
+    else harmonizationStudyStateRepository.insert(studyState);
 
     study.setLastModifiedDate(LocalDateTime.now());
 
-    harmonizationStudyRepository.save(study);
+    if (!study.isNew()) harmonizationStudyRepository.save(study);
+    else harmonizationStudyRepository.insert(study);
 
     gitService.save(study, comment);
     eventBus.post(new DraftStudyUpdatedEvent(study));

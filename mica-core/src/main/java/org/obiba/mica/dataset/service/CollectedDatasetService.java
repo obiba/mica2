@@ -540,10 +540,15 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
     if(!dataset.isNew()) ensureGitRepository(studyDatasetState);
 
     studyDatasetState.incrementRevisionsAhead();
-    studyDatasetStateRepository.save(studyDatasetState);
+
+    if(!dataset.isNew()) studyDatasetStateRepository.save(studyDatasetState);
+    else studyDatasetStateRepository.insert(studyDatasetState);
 
     saved.setLastModifiedDate(LocalDateTime.now());
-    studyDatasetRepository.save(saved);
+    
+    if(!dataset.isNew()) studyDatasetRepository.save(saved);
+    else studyDatasetRepository.insert(saved);
+
     gitService.save(saved, comment);
     eventBus.post(new DatasetUpdatedEvent(saved));
   }

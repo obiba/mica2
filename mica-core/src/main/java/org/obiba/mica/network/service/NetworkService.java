@@ -149,11 +149,13 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
     if(!network.isNew()) ensureGitRepository(networkState);
 
     networkState.incrementRevisionsAhead();
-    networkStateRepository.save(networkState);
+    if (!network.isNew()) networkStateRepository.save(networkState);
+    else networkStateRepository.insert(networkState);
 
     saved.setLastModifiedDate(LocalDateTime.now());
 
-    networkRepository.save(saved);
+    if (!network.isNew()) networkRepository.save(saved);
+    else networkRepository.insert(saved);
 
     eventBus.post(new NetworkUpdatedEvent(saved));
     gitService.save(saved, comment);

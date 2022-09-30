@@ -10,13 +10,30 @@
 
 package org.obiba.mica.dataset.service;
 
-import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.common.eventbus.EventBus;
-import org.joda.time.DateTime;
-import org.obiba.magma.*;
+import static java.util.stream.Collectors.toList;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import org.obiba.magma.MagmaRuntimeException;
+import org.obiba.magma.NoSuchValueTableException;
+import org.obiba.magma.NoSuchVariableException;
+import org.obiba.magma.ValueTable;
+import org.obiba.magma.Variable;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.OpalTable;
@@ -59,20 +76,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
-import static java.util.stream.Collectors.toList;
-
-import java.time.LocalDateTime;
+import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
 
 @Service
 @Validated
@@ -449,10 +457,15 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
     if(!dataset.isNew()) ensureGitRepository(harmonizationDatasetState);
 
     harmonizationDatasetState.incrementRevisionsAhead();
-    harmonizationDatasetStateRepository.save(harmonizationDatasetState);
+
+    if(!dataset.isNew()) harmonizationDatasetStateRepository.save(harmonizationDatasetState);
+    else harmonizationDatasetStateRepository.insert(harmonizationDatasetState);
 
     saved.setLastModifiedDate(LocalDateTime.now());
-    harmonizationDatasetRepository.save(saved);
+
+    if(!dataset.isNew()) harmonizationDatasetRepository.save(saved);
+    else harmonizationDatasetRepository.insert(saved);
+    
     gitService.save(saved, comment);
     helper.getPublishedVariables(saved);
   }
