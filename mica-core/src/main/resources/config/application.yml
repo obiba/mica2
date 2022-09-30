@@ -10,11 +10,6 @@ spring:
         auth: false
     messageSource:
         cacheSeconds: 1
-    freemarker:
-        suffix: ftl
-        template-loader-path: classpath:/web/,classpath:/static/templates/,classpath:/public/templates/,classpath:/templates/,classpath:/_templates/
-        request-context-attribute: rc
-        enabled: true
     task:
         scheduling:
             pool:

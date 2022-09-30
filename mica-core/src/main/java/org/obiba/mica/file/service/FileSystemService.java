@@ -10,6 +10,8 @@
 
 package org.obiba.mica.file.service;
 
+import static java.util.stream.Collectors.toList;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -36,7 +38,6 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.UnknownSessionException;
 import org.apache.shiro.subject.Subject;
 import org.bson.types.ObjectId;
-import org.joda.time.DateTime;
 import org.obiba.git.command.AbstractGitWriteCommand;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.PublishCascadingScope;
@@ -81,8 +82,6 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-
-import static java.util.stream.Collectors.toList;
 
 @Component
 public class FileSystemService {
@@ -226,14 +225,14 @@ public class FileSystemService {
       attachment.setPath(path);
       attachment.setLastModifiedDate(LocalDateTime.now());
       attachment.setLastModifiedBy(getCurrentUsername());
-      attachmentRepository.save(attachment);
+      attachmentRepository.insert(attachment);
       AttachmentState state = new AttachmentState();
       state.setName(DIR_NAME);
       state.setPath(path);
       state.setAttachment(attachment);
       state.setLastModifiedDate(LocalDateTime.now());
       state.setLastModifiedBy(getCurrentUsername());
-      attachmentStateRepository.save(state);
+      attachmentStateRepository.insert(state);
       eventBus.post(new FileUpdatedEvent(state));
     }
   }

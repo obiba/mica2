@@ -101,7 +101,7 @@ class DatasetDtos {
 
     if(asDraft) {
       Optional<StudyDatasetState> state = studyDatasetStateRepository.findById(dataset.getId());
-      if(!state.isPresent()) {
+      if(state.isPresent()) {
         builder.setPublished(state.get().isPublished());
         Mica.EntityStateDto.Builder stateBuilder = entityStateDtos.asDto(state.get()).setPermissions(permissionsDto);
         builder.setExtension(

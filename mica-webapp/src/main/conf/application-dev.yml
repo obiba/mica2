@@ -46,11 +46,6 @@ opalTaxonomies:
 spring:
     config.activate.on-profile: dev
     main.allow-bean-definition-overriding: true
-    freemarker:
-        suffix: ftl
-        template-loader-path: classpath:/web/,classpath:/static/templates/,classpath:/public/templates/,classpath:/templates/,classpath:/_templates/
-        request-context-attribute: rc
-        enabled: true
     data:
         mongodb:
             uri: mongodb://localhost:27017/mica

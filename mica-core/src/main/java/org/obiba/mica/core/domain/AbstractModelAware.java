@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public abstract class AbstractModelAware extends AbstractGitPersistable implements ModelAware{
+public abstract class AbstractModelAware extends AbstractGitPersistable implements ModelAware {
 
   private Map<String, Object> model = new HashMap<>();
 
