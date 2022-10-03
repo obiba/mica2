@@ -72,13 +72,10 @@ public class JsonConfiguration {
 
     @Override
     public LocalDateTime deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException {
-      if (p.hasToken(JsonToken.VALUE_NUMBER_INT)) {
-        long value = p.getValueAsLong();
-        Instant instant = Instant.ofEpochMilli(value);
+      long value = p.getValueAsLong();
+      Instant instant = Instant.ofEpochMilli(value);
 
-        return LocalDateTime.ofInstant(instant, ZoneOffset.systemDefault());
-      }
-      return null;
+      return LocalDateTime.ofInstant(instant, ZoneOffset.systemDefault());
     }
   }
 
