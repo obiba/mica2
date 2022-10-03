@@ -19,13 +19,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.fasterxml.jackson.core.JacksonException;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -40,12 +43,25 @@ public class JsonConfiguration {
     mapper.registerModule(new JodaModule());
 
     JavaTimeModule javaTimeModule = new JavaTimeModule();
+    javaTimeModule.addSerializer(LocalDateTime.class, new CustomLocalDateSerializer());
     javaTimeModule.addDeserializer(LocalDateTime.class, new CustomLocalDateTimeDeserializer());
 
     mapper.registerModule(javaTimeModule);
 
     mapper.findAndRegisterModules();
     return mapper;
+  }
+
+  public static class CustomLocalDateSerializer extends StdSerializer<LocalDateTime> {
+
+    protected CustomLocalDateSerializer() {
+      super(LocalDateTime.class);
+    }
+
+    @Override
+    public void serialize(LocalDateTime value, JsonGenerator gen, SerializerProvider provider) throws IOException {      ;
+      gen.writeString("" + value.atZone(ZoneOffset.systemDefault()).toInstant().toEpochMilli());
+    }
   }
 
   public static class CustomLocalDateTimeDeserializer extends StdDeserializer<LocalDateTime> {

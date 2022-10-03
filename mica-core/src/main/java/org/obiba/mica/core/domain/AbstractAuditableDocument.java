@@ -21,13 +21,15 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.domain.Auditable;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 
 public abstract class AbstractAuditableDocument implements Auditable<String, String, LocalDateTime>, Timestamped, Identified {
 
-  private static final long serialVersionUID = -5039056351334888684L;
+  private static final long serialVersionUID = 2L;
 
   @Id
   private String id;
@@ -73,6 +75,11 @@ public abstract class AbstractAuditableDocument implements Auditable<String, Str
     return Optional.ofNullable(createdBy);
   }
 
+  @JsonGetter("createdBy")
+  public String getNullableCreatedBy() {
+    return createdBy;
+  }
+
   @Override
   public void setCreatedBy(String createdBy) {
     this.createdBy = createdBy;
@@ -81,6 +88,11 @@ public abstract class AbstractAuditableDocument implements Auditable<String, Str
   @Override
   public Optional<LocalDateTime> getCreatedDate() {
     return Optional.ofNullable(createdDate);
+  }
+
+  @JsonGetter("createdDate")
+  public LocalDateTime getNullableCreatedDate() {
+    return createdDate;
   }
 
   @Override
@@ -97,6 +109,11 @@ public abstract class AbstractAuditableDocument implements Auditable<String, Str
     return Optional.ofNullable(lastModifiedBy);
   }
 
+  @JsonGetter("lastModifiedBy")
+  public String getNullableLastModifiedBy() {
+    return lastModifiedBy;
+  }
+
   @Override
   public void setLastModifiedBy(String lastModifiedBy) {
     this.lastModifiedBy = lastModifiedBy;
@@ -105,6 +122,11 @@ public abstract class AbstractAuditableDocument implements Auditable<String, Str
   @Override
   public Optional<LocalDateTime> getLastModifiedDate() {
     return Optional.ofNullable(lastModifiedDate);
+  }
+
+  @JsonGetter("lastModifiedDate")
+  public LocalDateTime getNullableLastModifiedDate() {
+    return lastModifiedDate;
   }
 
   @Override

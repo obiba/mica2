@@ -17,7 +17,9 @@ import java.util.Optional;
 
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import org.obiba.mica.spi.search.Identified;
@@ -52,6 +54,11 @@ public abstract class AbstractGitPersistable implements GitPersistable, Serializ
     return Optional.ofNullable(createdDate);
   }
 
+  @JsonGetter("createdDate")
+  public LocalDateTime getNullableCreatedDate() {
+    return createdDate;
+  }
+
   @Override
   public void setCreatedDate(LocalDateTime createdDate) {
     this.createdDate = createdDate;
@@ -60,6 +67,11 @@ public abstract class AbstractGitPersistable implements GitPersistable, Serializ
   @Override
   public Optional<LocalDateTime> getLastModifiedDate() {
     return Optional.ofNullable(lastModifiedDate);
+  }
+
+  @JsonGetter("lastModifiedDate")
+  public LocalDateTime getNullableLastModifiedDate() {
+    return lastModifiedDate;
   }
 
   @Override
