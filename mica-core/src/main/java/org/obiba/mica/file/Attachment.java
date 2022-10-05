@@ -61,7 +61,7 @@ public class Attachment extends AbstractAuditableDocument implements AttributeAw
     out.writeObject(getId());
     out.writeObject(getVersion());
     out.writeObject(getCreatedBy().orElse(null));
-    out.writeObject(getLastModifiedDate().orElse(null));
+    out.writeObject(getLastModifiedBy().orElse(null));
     out.writeObject(getCreatedDate().orElse(null));
     out.writeObject(getLastModifiedDate().orElse(null));
 
