@@ -85,6 +85,7 @@ public class FileIndexer {
 
     Pageable pageRequest = PageRequest.of(0, 100);
     Page<AttachmentState> attachments;
+    boolean keepGoing = true;
 
     do {
       attachments = attachmentStateRepository.findAll(pageRequest);
@@ -97,6 +98,9 @@ public class FileIndexer {
           indexer.index(Indexer.ATTACHMENT_PUBLISHED_INDEX, a);
         }
       });
-    } while((pageRequest = attachments.nextPageable()) != null);
+
+      if (!attachments.hasNext()) keepGoing = false;
+      else pageRequest = attachments.nextPageable();
+    } while(keepGoing);
   }
 }
