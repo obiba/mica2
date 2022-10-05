@@ -10,8 +10,6 @@
 
 package org.obiba.mica.core.upgrade;
 
-import java.util.Optional;
-
 import javax.inject.Inject;
 
 import org.obiba.mica.micaConfig.domain.MicaConfig;

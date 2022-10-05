@@ -31,7 +31,7 @@ import com.codahale.metrics.ehcache.InstrumentedEhcache;
 import com.google.common.collect.Lists;
 
 @Component("datasetVariablesCacheResolver")
-public class DatasetCacheResolver implements CacheResolver{
+public class DatasetCacheResolver implements CacheResolver {
 
   @Inject
   private net.sf.ehcache.CacheManager cacheManager;

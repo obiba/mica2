@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.obiba.mica.core.upgrade.Mica460Upgrade;
 import org.obiba.mica.core.upgrade.Mica500Upgrade;
+import org.obiba.mica.core.upgrade.Mica510upgrade;
 import org.obiba.mica.core.upgrade.MicaVersionModifier;
 import org.obiba.mica.core.upgrade.RuntimeVersionProvider;
 import org.obiba.runtime.upgrade.UpgradeManager;
@@ -30,8 +31,8 @@ public class UpgradeConfiguration {
 
   private List<UpgradeStep> upgradeSteps;
 
-  public UpgradeConfiguration(Mica460Upgrade mica460Upgrade, Mica500Upgrade mica500Upgrade) {
-    upgradeSteps = Arrays.asList(mica460Upgrade, mica500Upgrade);
+  public UpgradeConfiguration(Mica460Upgrade mica460Upgrade, Mica500Upgrade mica500Upgrade, Mica510upgrade mica510upgrade) {
+    upgradeSteps = Arrays.asList(mica460Upgrade, mica500Upgrade, mica510upgrade);
   }
 
   @Bean

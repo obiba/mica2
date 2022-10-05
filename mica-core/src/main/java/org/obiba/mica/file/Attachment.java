@@ -10,6 +10,10 @@
 
 package org.obiba.mica.file;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -29,7 +33,7 @@ import com.google.common.base.Strings;
 @Document
 public class Attachment extends AbstractAuditableDocument implements AttributeAware, Comparable<Attachment> {
 
-  private static final long serialVersionUID = 2L;
+  private static final long serialVersionUID = 3L;
 
   @JsonIgnore
   private boolean justUploaded;
@@ -52,6 +56,44 @@ public class Attachment extends AbstractAuditableDocument implements AttributeAw
   private String path;
 
   private String fileReference;
+
+  private void writeObject(ObjectOutputStream out) throws IOException {
+    out.writeObject(getId());
+    out.writeObject(getVersion());
+    out.writeObject(getCreatedBy().orElse(null));
+    out.writeObject(getLastModifiedDate().orElse(null));
+    out.writeObject(getCreatedDate().orElse(null));
+    out.writeObject(getLastModifiedDate().orElse(null));
+
+    out.writeObject(name);
+    out.writeObject(type);
+    out.writeObject(description);
+    out.writeObject(lang);
+    out.writeLong(size);
+    out.writeObject(md5);
+    out.writeObject(attributes);
+    out.writeObject(path);
+    out.writeObject(fileReference);
+  }
+
+  private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+    setId((String) in.readObject());
+    setVersion((Long) in.readObject());
+    setCreatedBy((String) in.readObject());
+    setLastModifiedBy((String) in.readObject());
+    setCreatedDate((LocalDateTime) in.readObject());
+    setLastModifiedDate((LocalDateTime) in.readObject());
+
+    name = (String) in.readObject();
+    type = (String) in.readObject();
+    description = (LocalizedString) in.readObject();
+    lang = (Locale) in.readObject();
+    size = in.readLong();
+    md5 = (String) in.readObject();
+    attributes = (Attributes) in.readObject();
+    path = (String) in.readObject();
+    fileReference = (String) in.readObject();
+  }
 
   @NotNull
   public String getName() {
