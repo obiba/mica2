@@ -10,7 +10,9 @@
 
 package org.obiba.mica.config;
 
-import org.glassfish.jersey.logging.LoggingFeature;
+import javax.inject.Inject;
+import javax.ws.rs.ApplicationPath;
+
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
@@ -21,9 +23,6 @@ import org.obiba.mica.web.rest.security.AuthenticationInterceptor;
 import org.obiba.mica.web.rest.security.CSRFInterceptor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-
-import javax.inject.Inject;
-import javax.ws.rs.ApplicationPath;
 
 @Component
 @ApplicationPath(JerseyConfiguration.WS_ROOT)

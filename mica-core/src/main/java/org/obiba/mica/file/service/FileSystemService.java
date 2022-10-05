@@ -126,7 +126,9 @@ public class FileSystemService {
     List<AttachmentState> states = attachmentStateRepository.findByPathAndName(saved.getPath(), saved.getName());
     AttachmentState state = states.isEmpty() ? new AttachmentState() : states.get(0);
 
-    if(attachment.isNew()) {
+    boolean attachmentisNew = attachment.isNew();
+
+    if(attachmentisNew) {
       attachment.setId(new ObjectId().toString());
     } else {
       Optional<Attachment> found = attachmentRepository.findById(attachment.getId());
@@ -158,7 +160,7 @@ public class FileSystemService {
       saved.setJustUploaded(false);
     }
 
-    attachmentRepository.save(saved);
+    attachmentRepository.insert(saved);  
 
     state.setAttachment(saved);
     state.setLastModifiedDate(LocalDateTime.now());
@@ -170,7 +172,12 @@ public class FileSystemService {
         mkdirs(saved.getPath());
       }
     }
-    attachmentStateRepository.save(state);
+
+    if (attachmentisNew) {
+      attachmentStateRepository.insert(state);
+    } else {
+      attachmentStateRepository.save(state);
+    }    
 
     eventBus.post(new FileUpdatedEvent(state));
   }
