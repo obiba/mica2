@@ -113,7 +113,9 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
 
     Network saved = network;
 
-    if(network.isNew()) {
+    boolean networkIsNew = network.isNew();
+
+    if(networkIsNew) {
       generateId(saved);
     } else {
       Optional<Network> found = networkRepository.findById(network.getId());
@@ -146,15 +148,15 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
       return defaultState;
     });
 
-    if(!network.isNew()) ensureGitRepository(networkState);
+    if(!networkIsNew) ensureGitRepository(networkState);
 
     networkState.incrementRevisionsAhead();
-    if (!network.isNew()) networkStateRepository.save(networkState);
+    if (!networkIsNew) networkStateRepository.save(networkState);
     else networkStateRepository.insert(networkState);
 
     saved.setLastModifiedDate(LocalDateTime.now());
 
-    if (!network.isNew()) networkRepository.save(saved);
+    if (!networkIsNew) networkRepository.save(saved);
     else networkRepository.insert(saved);
 
     eventBus.post(new NetworkUpdatedEvent(saved));

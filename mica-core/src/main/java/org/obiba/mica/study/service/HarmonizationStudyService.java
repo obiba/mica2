@@ -85,6 +85,8 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
       throw new MissingCommentException("Due to the server configuration, comments are required when saving this document.");
     }
 
+    boolean studyIsNew = study.isNew();
+
     log.info("Saving harmonization study: {}", study.getId());
 
     if (study.getLogo() != null && study.getLogo().isJustUploaded()) {
@@ -99,15 +101,15 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
 
     HarmonizationStudyState studyState = findEntityState(study, HarmonizationStudyState::new);
 
-    if (!study.isNew()) ensureGitRepository(studyState);
+    if (!studyIsNew) ensureGitRepository(studyState);
 
     studyState.incrementRevisionsAhead();
-    if (!study.isNew()) harmonizationStudyStateRepository.save(studyState);
+    if (!studyIsNew) harmonizationStudyStateRepository.save(studyState);
     else harmonizationStudyStateRepository.insert(studyState);
 
     study.setLastModifiedDate(LocalDateTime.now());
 
-    if (!study.isNew()) harmonizationStudyRepository.save(study);
+    if (!studyIsNew) harmonizationStudyRepository.save(study);
     else harmonizationStudyRepository.insert(study);
 
     gitService.save(study, comment);

@@ -532,21 +532,23 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
       throw new MissingCommentException("Due to the server configuration, comments are required when saving this document.");
     }
 
+    boolean datasetIsNew = dataset.isNew();
+
     ensureValidStudyTable(dataset);
     StudyDataset saved = prepareSave(dataset);
 
     StudyDatasetState studyDatasetState = findEntityState(dataset, StudyDatasetState::new);
 
-    if(!dataset.isNew()) ensureGitRepository(studyDatasetState);
+    if(!datasetIsNew) ensureGitRepository(studyDatasetState);
 
     studyDatasetState.incrementRevisionsAhead();
 
-    if(!dataset.isNew()) studyDatasetStateRepository.save(studyDatasetState);
+    if(!datasetIsNew) studyDatasetStateRepository.save(studyDatasetState);
     else studyDatasetStateRepository.insert(studyDatasetState);
 
     saved.setLastModifiedDate(LocalDateTime.now());
-    
-    if(!dataset.isNew()) studyDatasetRepository.save(saved);
+
+    if(!datasetIsNew) studyDatasetRepository.save(saved);
     else studyDatasetRepository.insert(saved);
 
     gitService.save(saved, comment);

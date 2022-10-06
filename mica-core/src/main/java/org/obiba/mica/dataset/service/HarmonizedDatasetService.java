@@ -450,22 +450,24 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
       throw new MissingCommentException("Due to the server configuration, comments are required when saving this document.");
     }
 
+    boolean datasetIsNew = dataset.isNew();
+
     HarmonizationDataset saved = prepareSave(dataset);
 
     HarmonizationDatasetState harmonizationDatasetState = findEntityState(dataset, HarmonizationDatasetState::new);
 
-    if(!dataset.isNew()) ensureGitRepository(harmonizationDatasetState);
+    if(!datasetIsNew) ensureGitRepository(harmonizationDatasetState);
 
     harmonizationDatasetState.incrementRevisionsAhead();
 
-    if(!dataset.isNew()) harmonizationDatasetStateRepository.save(harmonizationDatasetState);
+    if(!datasetIsNew) harmonizationDatasetStateRepository.save(harmonizationDatasetState);
     else harmonizationDatasetStateRepository.insert(harmonizationDatasetState);
 
     saved.setLastModifiedDate(LocalDateTime.now());
 
-    if(!dataset.isNew()) harmonizationDatasetRepository.save(saved);
+    if(!datasetIsNew) harmonizationDatasetRepository.save(saved);
     else harmonizationDatasetRepository.insert(saved);
-    
+
     gitService.save(saved, comment);
     helper.getPublishedVariables(saved);
   }

@@ -102,6 +102,8 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
 
     log.info("Saving study: {}", study.getId());
 
+    boolean studyIsNew = study.isNew();
+
     // checks if population and dce are still the same
     if (study.getId() != null) {
       Optional<Study> foundStudy = studyRepository.findById(study.getId());
@@ -120,7 +122,7 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
 
     StudyState studyState = findEntityState(study, StudyState::new);
 
-    if (!study.isNew()) ensureGitRepository(studyState);
+    if (!studyIsNew) ensureGitRepository(studyState);
 
     studyState.incrementRevisionsAhead();
 
@@ -128,12 +130,12 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
       studyState.setPopulationOrDceWeightChange(true);
     }
 
-    if (!study.isNew()) studyStateRepository.save(studyState);
+    if (!studyIsNew) studyStateRepository.save(studyState);
     else studyStateRepository.insert(studyState);
 
     study.setLastModifiedDate(LocalDateTime.now());
 
-    if (!study.isNew()) studyRepository.save(study);
+    if (!studyIsNew) studyRepository.save(study);
     else studyRepository.insert(study);
 
     gitService.save(study, comment);

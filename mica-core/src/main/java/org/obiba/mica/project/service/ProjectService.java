@@ -123,9 +123,11 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
       throw new MissingCommentException("Due to the server configuration, comments are required when saving this document.");
     }
 
+    boolean projectIsNew = project.isNew();
+
     Project saved = project;
 
-    if(project.isNew()) {
+    if(projectIsNew) {
       generateId(saved);
     } else {
       Optional<Project> found = projectRepository.findById(project.getId());
@@ -146,7 +148,7 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
       return defaultState;
     });
 
-    if(!project.isNew()) ensureGitRepository(projectState);
+    if(!projectIsNew) ensureGitRepository(projectState);
 
     projectState.incrementRevisionsAhead();
     projectStateRepository.save(projectState);
