@@ -48,6 +48,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
@@ -107,7 +108,7 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
       @Override
       public void customize(JettyServletWebServerFactory factory) {
         factory.setServerCustomizers(Arrays.asList(that));
-        if (!Strings.isNullOrEmpty(contextPath) && contextPath.startsWith("/")) factory.setContextPath(contextPath);        
+        if (!Strings.isNullOrEmpty(contextPath) && contextPath.startsWith("/")) factory.setContextPath(contextPath);
       }
     };
   }
@@ -242,6 +243,20 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
     bean.addUrlPatterns("/styles/*");
     bean.setAsyncSupported(true);
 
+    return bean;
+  }
+
+  @Bean
+  public FilterRegistrationBean<CharacterEncodingFilter> CharacterEncodingFilterRegistration() {
+    FilterRegistrationBean<CharacterEncodingFilter> bean = new FilterRegistrationBean<>();
+    CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
+
+    characterEncodingFilter.setEncoding("UTF-8");
+    characterEncodingFilter.setForceResponseEncoding(true);
+
+    bean.setFilter(characterEncodingFilter);
+    bean.addUrlPatterns("/*");
+    bean.setAsyncSupported(true);
     return bean;
   }
 
