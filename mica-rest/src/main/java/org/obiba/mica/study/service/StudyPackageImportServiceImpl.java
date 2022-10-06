@@ -179,7 +179,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     }
 
     String id = updated.getId();
-    updated.setId("id");
+    updated.setId("");
     networkService.save(updated);
 
     updated.setId(id);
