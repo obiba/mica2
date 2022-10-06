@@ -178,9 +178,13 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       }
     }
 
+    String id = updated.getId();
+    updated.setId("id");
     networkService.save(updated);
 
-    if(publish) networkService.publish(updated.getId(), true, PublishCascadingScope.ALL);
+    updated.setId(id);
+
+    if(publish) networkService.publish(id, true, PublishCascadingScope.ALL);
   }
 
   private void saveTempFile(Attachment attachment, ByteSource content) throws IOException {
@@ -202,24 +206,33 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
 
   private void importDataset(StudyDataset dataset, boolean publish) {
     if(!dataset.hasStudyTable() || Strings.isNullOrEmpty(dataset.getStudyTable().getStudyId())) return;
+
+    String id = dataset.getId();
+
     try {
-      collectedDatasetService.findById(dataset.getId());
+      collectedDatasetService.findById(id);
       collectedDatasetService.save(dataset);
     } catch(NoSuchDatasetException e) {
+      dataset.setId("");
       collectedDatasetService.save(dataset);
+      dataset.setId(id);
     }
-    if(publish) collectedDatasetService.publish(dataset.getId(), publish, PublishCascadingScope.ALL);
+    if(publish) collectedDatasetService.publish(id, publish, PublishCascadingScope.ALL);
   }
 
   private void importDataset(HarmonizationDataset dataset, boolean publish) {
+    String id = dataset.getId();
+
     try {
-      HarmonizationDataset existing = harmonizedDatasetService.findById(dataset.getId());
+      HarmonizationDataset existing = harmonizedDatasetService.findById(id);
       // TODO merge study tables
       harmonizedDatasetService.save(existing);
     } catch(NoSuchDatasetException e) {
+      dataset.setId("");
       harmonizedDatasetService.save(dataset);
+      dataset.setId(id);
     }
-    if(publish) harmonizedDatasetService.publish(dataset.getId(), publish, PublishCascadingScope.ALL);
+    if(publish) harmonizedDatasetService.publish(id, publish, PublishCascadingScope.ALL);
   }
 
   private final class StudyPackage {
