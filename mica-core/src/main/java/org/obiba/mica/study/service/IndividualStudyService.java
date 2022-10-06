@@ -130,8 +130,7 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
       studyState.setPopulationOrDceWeightChange(true);
     }
 
-    if (!studyIsNew) studyStateRepository.save(studyState);
-    else studyStateRepository.insert(studyState);
+    studyStateRepository.save(studyState);
 
     study.setLastModifiedDate(LocalDateTime.now());
 

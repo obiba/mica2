@@ -543,8 +543,7 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
 
     studyDatasetState.incrementRevisionsAhead();
 
-    if(!datasetIsNew) studyDatasetStateRepository.save(studyDatasetState);
-    else studyDatasetStateRepository.insert(studyDatasetState);
+    studyDatasetStateRepository.save(studyDatasetState);
 
     saved.setLastModifiedDate(LocalDateTime.now());
 

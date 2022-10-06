@@ -460,8 +460,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
 
     harmonizationDatasetState.incrementRevisionsAhead();
 
-    if(!datasetIsNew) harmonizationDatasetStateRepository.save(harmonizationDatasetState);
-    else harmonizationDatasetStateRepository.insert(harmonizationDatasetState);
+    harmonizationDatasetStateRepository.save(harmonizationDatasetState);
 
     saved.setLastModifiedDate(LocalDateTime.now());
 
