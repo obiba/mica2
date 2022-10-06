@@ -25,7 +25,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.joda.time.DateTime;
 import org.obiba.mica.file.NoSuchTempFileException;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.TempFileRepository;
@@ -85,9 +84,9 @@ public class TempFileService {
     TempFile savedTempFile;
     if (tempFile.getId() != null) {
       Optional<TempFile> found = tempFileRepository.findById(tempFile.getId());
-      
+
       if (!found.isPresent()) {
-        savedTempFile = tempFileRepository.save(tempFile);
+        savedTempFile = tempFileRepository.insert(tempFile);
       }
 
       savedTempFile = found.get();
