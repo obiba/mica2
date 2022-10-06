@@ -87,9 +87,9 @@ public class TempFileService {
 
       if (!found.isPresent()) {
         savedTempFile = tempFileRepository.insert(tempFile);
+      } else {
+        savedTempFile = found.get();
       }
-
-      savedTempFile = found.get();
     } else {
       savedTempFile = tempFileRepository.save(tempFile);
     }

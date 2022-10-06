@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import org.apache.commons.math3.util.Pair;
 import org.bson.types.ObjectId;
 import org.obiba.jersey.protobuf.AbstractProtobufProvider;
+import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.dataset.NoSuchDatasetException;
@@ -143,10 +144,17 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     });
 
     String id = study.getId();
+    boolean exists = true;
 
-    study.setId("");
+    try {
+      studyService.findDraft(id);
+    } catch (NoSuchEntityException e) {
+      study.setId("");
+      exists = false;
+    }
+
     studyService.save(study, "Imported");
-    study.setId(id);
+    if (!exists) study.setId(id);
 
     attachments.forEach(a -> {
       a.setPath(String.format(a.getPath(), id));
@@ -160,13 +168,19 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
 
   private void importNetwork(Network network, boolean publish, StudyPackage studyPackage) throws IOException {
     Network updated;
+    boolean exists = true;
+
+    String id = network.getId();
+
     try {
-      Network existing = networkService.findById(network.getId());
+      Network existing = networkService.findById(id);
       network.getStudyIds().stream().filter(sid -> !existing.getStudyIds().contains(sid))
         .forEach(sid -> existing.getStudyIds().add(sid));
       updated = existing;
     } catch(NoSuchNetworkException e) {
+      exists = false;
       updated = network;
+      updated.setId("");
     }
 
     for(Map.Entry<String, ByteSource> e : studyPackage.attachments.entrySet()) {
@@ -178,11 +192,9 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       }
     }
 
-    String id = updated.getId();
-    updated.setId("");
     networkService.save(updated);
 
-    updated.setId(id);
+    if (!exists) updated.setId(id);
 
     if(publish) networkService.publish(id, true, PublishCascadingScope.ALL);
   }
