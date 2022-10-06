@@ -142,15 +142,19 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       }
     });
 
+    String id = study.getId();
+
+    study.setId("");
     studyService.save(study, "Imported");
+    study.setId(id);
 
     attachments.forEach(a -> {
-      a.setPath(String.format(a.getPath(), study.getId()));
+      a.setPath(String.format(a.getPath(), id));
       fileSystemService.save(a);
     });
 
     if(publish) {
-      studyService.publish(study.getId(), true, PublishCascadingScope.ALL);
+      studyService.publish(id, true, PublishCascadingScope.ALL);
     }
   }
 

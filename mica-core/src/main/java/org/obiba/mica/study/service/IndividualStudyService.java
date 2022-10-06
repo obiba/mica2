@@ -105,7 +105,7 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
     boolean studyIsNew = study.isNew();
 
     // checks if population and dce are still the same
-    if (study.getId() != null) {
+    if (!studyIsNew) {
       Optional<Study> foundStudy = studyRepository.findById(study.getId());
       if (!foundStudy.isPresent()) throw NoSuchEntityException.withId(getType(), study.getId());
 
