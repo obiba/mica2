@@ -161,6 +161,7 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
     FreeMarkerViewResolver freeMarkerViewResolver = new FreeMarkerViewResolver();
     freeMarkerViewResolver.setRequestContextAttribute("rc");
     freeMarkerViewResolver.setSuffix(".ftl");
+    freeMarkerViewResolver.setContentType("text/html;charset=UTF-8");
 
     return freeMarkerViewResolver;
   }
@@ -168,6 +169,7 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
   @Bean
   public FreeMarkerConfigurer freeMarkerConfigurer() {
     FreeMarkerConfigurer freeMarkerConfigurer = new FreeMarkerConfigurer();
+    freeMarkerConfigurer.setDefaultEncoding("UTF-8");
     freeMarkerConfigurer.setTemplateLoaderPaths("classpath:/web/", "classpath:/static/templates/", "classpath:/public/templates/", "classpath:/templates/", "classpath:/_templates/");
 
     return freeMarkerConfigurer;
