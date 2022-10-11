@@ -52,8 +52,9 @@ public class DataAccessFeasibilityService extends DataAccessEntityService<DataAc
   public DataAccessFeasibility save(@NotNull DataAccessFeasibility feasibility) {
     DataAccessFeasibility saved = feasibility;
     DataAccessEntityStatus from = null;
+    boolean feasabilityIsNew = feasibility.isNew();
 
-    if (feasibility.isNew()) {
+    if (feasabilityIsNew) {
       setAndLogStatus(saved, DataAccessEntityStatus.OPENED);
       saved.setId(ensureUniqueId(saved.getParentId()));
     } else {
@@ -79,7 +80,8 @@ public class DataAccessFeasibilityService extends DataAccessEntityService<DataAc
 
     saved.setLastModifiedDate(LocalDateTime.now());
 
-    dataFeasibilityRequestRepository.save(saved);
+    if (feasabilityIsNew) dataFeasibilityRequestRepository.insert(saved);
+    else dataFeasibilityRequestRepository.save(saved);
     eventBus.post(new DataAccessFeasibilityUpdatedEvent(saved));
     sendNotificationEmails(saved, from);
     return saved;
