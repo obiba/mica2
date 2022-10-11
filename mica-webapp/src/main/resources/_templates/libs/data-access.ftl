@@ -179,7 +179,7 @@
                   <@message "accepted"/>
               </#if>
             </td>
-            <td data-sort="${collaborator.lastModifiedDate.toString(datetimeFormat)}" class="moment-datetime">${collaborator.lastModifiedDate.toString(datetimeFormat)}</td>
+            <td data-sort="${collaborator.lastModifiedDate.toString()}" class="moment-datetime">${collaborator.lastModifiedDate.toString()}</td>
             <#if accessConfig.agreementEnabled>
               <td>
                   <#list agreements as agreement>

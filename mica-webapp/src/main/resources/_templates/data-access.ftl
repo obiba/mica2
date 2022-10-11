@@ -547,8 +547,8 @@
                       <#list feasibilities as feasibility>
                         <tr>
                           <td><a href="${contextPath}/data-access-feasibility-form/${feasibility.id}">${feasibility.id}</a></td>
-                          <td data-sort="${feasibility.lastModifiedDate.toString(datetimeFormat)}" class="moment-datetime">${feasibility.lastModifiedDate.toString(datetimeFormat)}</td>
-                          <td data-sort="<#if feasibility.submissionDate??>${feasibility.submissionDate.toString(datetimeFormat)}</#if>" class="moment-datetime"><#if feasibility.submissionDate??>${feasibility.submissionDate.toString(datetimeFormat)}</#if></td>
+                          <td data-sort="${feasibility.lastModifiedDate.get().toString()}" class="moment-datetime">${feasibility.lastModifiedDate.get().toString()}</td>
+                          <td data-sort="<#if feasibility.submissionDate??>${feasibility.submissionDate.toString()}</#if>" class="moment-datetime"><#if feasibility.submissionDate??>${feasibility.submissionDate.toString()}</#if></td>
                           <td><i class="fas fa-circle text-${statusColor(feasibility.status.toString())}"></i> <@message feasibility.status.toString()/></td>
                         </tr>
                       </#list>
@@ -590,8 +590,8 @@
                       <#list amendments as amendment>
                       <tr>
                         <td><a href="${contextPath}/data-access-amendment-form/${amendment.id}">${amendment.id}</a></td>
-                        <td data-sort="${amendment.lastModifiedDate.toString(datetimeFormat)}" class="moment-datetime">${amendment.lastModifiedDate.toString(datetimeFormat)}</td>
-                        <td data-sort="<#if amendment.submissionDate??>${amendment.submissionDate.toString(datetimeFormat)}</#if>" class="moment-datetime"><#if amendment.submissionDate??>${amendment.submissionDate.toString(datetimeFormat)}</#if></td>
+                        <td data-sort="${amendment.lastModifiedDate.get().toString()}" class="moment-datetime">${amendment.lastModifiedDate.get().toString()}</td>
+                        <td data-sort="<#if amendment.submissionDate??>${amendment.submissionDate.toString()}</#if>" class="moment-datetime"><#if amendment.submissionDate??>${amendment.submissionDate.toString()}</#if></td>
                         <td><i class="fas fa-circle text-${statusColor(amendment.status.toString())}"></i> <@message amendment.status.toString()/></td>
                       </tr>
                       </#list>
