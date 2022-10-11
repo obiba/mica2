@@ -140,7 +140,7 @@ public class UserProfileService extends AgateRestService {
     return profile != null && profile.getGroups() != null && profile.getGroups().stream().filter(g -> g.equals(role)).count() > 0;
   }
 
-  public void createUser(Map<String, String[]> params) {
+  public void createUser(Map<String, Object> params) {
     RestTemplate template = newRestTemplate();
     HttpHeaders headers = new HttpHeaders();
     headers.set(APPLICATION_AUTH_HEADER, getApplicationAuth());
@@ -152,18 +152,17 @@ public class UserProfileService extends AgateRestService {
       query.append("group=").append(group);
     }
     for (String field : params.keySet()) {
-      for (String value : params.get(field)) {
-        if (!Strings.isNullOrEmpty(value)) {
-          query.append("&");
-          try {
-            if ("g-recaptcha-response".equals(field))
-              query.append("reCaptchaResponse");
-            else
-              query.append(field);
-            query.append("=").append(URLEncoder.encode(value, "UTF-8"));
-          } catch (UnsupportedEncodingException e) {
-            // ignore
-          }
+      String value = params.get(field).toString();
+      if (!Strings.isNullOrEmpty(value)) {
+        query.append("&");
+        try {
+          if ("g-recaptcha-response".equals(field))
+            query.append("reCaptchaResponse");
+          else
+            query.append(field);
+          query.append("=").append(URLEncoder.encode(value, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+          // ignore
         }
       }
     }

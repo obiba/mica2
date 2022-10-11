@@ -962,26 +962,16 @@ class UserService {
     };
     $('#' + formId).submit(function(e) {
       e.preventDefault(); // avoid to execute the actual submit of the form.
-      let form = $(this);
+      let form = document.querySelector('#' + formId);
       let url = '/ws/users';
-      let data = form.serialize(); // serializes the form's elements.
-
-      let formData = form.serializeArray();
-
-      const getField = function(name) {
-        let fields = formData.filter(function(field) {
-          return field.name === name;
-        });
-        return fields.length > 0 ? fields[0] : undefined;
-      };
+      const formData = new FormData(form);
+      const json = Object.fromEntries(formData.entries());
 
       if (requiredFields) {
         let missingFields = [];
         requiredFields.forEach(function(item) {
-          let found = formData.filter(function(field) {
-            return field.name === item.name && field.value && field.value.trim().length>0;
-          }).length;
-          if (found === 0) {
+          let found = json[item.name];
+          if (!found) {
             missingFields.push(item.title);
           }
         });
@@ -990,23 +980,22 @@ class UserService {
           return;
         }
       }
-      const passwordField = getField('password');
+      const passwordField = json.password;
       if (passwordField) {
-        const password = passwordField.value;
-        if (password.length < 8) {
+        if (passwordField.length < 8) {
           onFailure('server.error.password.too-short');
           return;
         }
-        if (password.length > 64) {
+        if (passwordField.length > 64) {
           onFailure('server.error.password.too-long');
           return;
         }
       }
 
-      const realmField = getField('realm');
+      const realmField = json.realm;
 
       toggleSubmitButton(false);
-      axios.post(MicaService.normalizeUrl(url), data)
+      axios.post(MicaService.normalizeUrl(url), json)
         .then(() => {
           //console.dir(response);
           let redirect = MicaService.normalizeUrl('/');
