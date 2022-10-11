@@ -58,8 +58,9 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
   public DataAccessAmendment save(@NotNull DataAccessAmendment amendment) {
     DataAccessAmendment saved = amendment;
     DataAccessEntityStatus from = null;
+    boolean amendmentIsNew = amendment.isNew();
 
-    if (amendment.isNew()) {
+    if (amendmentIsNew) {
       setAndLogStatus(saved, DataAccessEntityStatus.OPENED);
       saved.setId(ensureUniqueId(saved.getParentId()));
     } else {
@@ -86,7 +87,8 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
 
     saved.setLastModifiedDate(LocalDateTime.now());
 
-    dataAmendmentRequestRepository.save(saved);
+    if (amendmentIsNew) dataAmendmentRequestRepository.insert(saved);
+    else dataAmendmentRequestRepository.save(saved);
     eventBus.post(new DataAccessAmendmentUpdatedEvent(saved));
     sendNotificationEmails(saved, from);
     return saved;
