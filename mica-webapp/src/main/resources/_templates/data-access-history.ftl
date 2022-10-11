@@ -134,7 +134,7 @@
                       <tr>
                         <td>${act.action}</td>
                         <td>${act.author}</td>
-                        <td data-sort="${act.changedOn.toString(datetimeFormat)}" class="moment-date">${act.changedOn.toString(datetimeFormat)}</td>
+                        <td data-sort="${act.changedOn.toString()}" class="moment-date">${act.changedOn.toString()}</td>
                       </tr>
                     </#list>
                     </tbody>
