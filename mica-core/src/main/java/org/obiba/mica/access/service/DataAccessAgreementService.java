@@ -63,8 +63,9 @@ public class DataAccessAgreementService extends DataAccessEntityService<DataAcce
   public DataAccessAgreement save(@NotNull DataAccessAgreement agreement) {
     DataAccessAgreement saved = agreement;
     DataAccessEntityStatus from = null;
+    boolean agreementIsNew = agreement.isNew();
 
-    if (agreement.isNew()) {
+    if (agreementIsNew) {
       setAndLogStatus(saved, DataAccessEntityStatus.OPENED);
       saved.setId(makeAgreementId(agreement.getParentId(), agreement.getApplicant()));
     } else {
@@ -89,7 +90,8 @@ public class DataAccessAgreementService extends DataAccessEntityService<DataAcce
 
     saved.setLastModifiedDate(LocalDateTime.now());
 
-    dataAccessAgreementRepository.save(saved);
+    if(agreementIsNew) dataAccessAgreementRepository.insert(saved);
+    else dataAccessAgreementRepository.save(saved);
     eventBus.post(new DataAccessAgreementUpdatedEvent(saved));
     sendNotificationEmails(saved, from);
     return saved;
