@@ -380,8 +380,8 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     attachment.setId(tempFile.getId());
     attachment.setName(tempFile.getName());
     attachment.setSize(tempFile.getSize());
-    attachment.setCreatedBy(tempFile.getCreatedBy().get());
-    attachment.setCreatedDate(tempFile.getCreatedDate().get());
+    attachment.setCreatedBy(tempFile.getCreatedBy().orElse(request.getApplicant()));
+    attachment.setCreatedDate(tempFile.getCreatedDate().orElse(LocalDateTime.now()));
     attachment.setJustUploaded(true);
 
     request.getAttachments().add(attachment);

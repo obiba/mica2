@@ -295,7 +295,7 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
     if (attachmentsToSave != null) attachmentsToSave.forEach(a -> {
       fileStoreService.save(a.getId());
       a.setJustUploaded(false);
-      attachmentRepository.save(a);
+      attachmentRepository.insert(a);
     });
 
     if (lastModifiedDate != null)

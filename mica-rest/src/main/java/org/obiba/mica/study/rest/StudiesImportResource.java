@@ -158,6 +158,8 @@ public class StudiesImportResource {
 	@Inject
 	private Dtos dtos;
 
+  @Inject
+  private ObjectMapper mapper;
 
 	@GET
 	@Path("/studies/import/_differences")
@@ -237,7 +239,6 @@ public class StudiesImportResource {
 		if (!micaConfigService.getConfig().isImportStudiesFeatureEnabled()) return Response.status(HttpStatus.SC_UNAUTHORIZED).build();
 
 		Map<String, String> existingIds = new HashMap<>();
-		ObjectMapper mapper = new ObjectMapper();
 
 		for (String id : ids) {
 			try {
@@ -319,7 +320,6 @@ public class StudiesImportResource {
 			String endpoint, EntityConfigService<EntityConfig> configService, String formSection,
 			String parentFormSection) throws IOException, URISyntaxException {
 
-    ObjectMapper mapper = new ObjectMapper();
     Map<String, Boolean> result = new LinkedHashMap<>();
 
     Map<String, Object> content = this.getJSONContent(url, username, password, null, endpoint);
@@ -538,7 +538,6 @@ public class StudiesImportResource {
 			throws IOException, URISyntaxException {
 
 		HttpURLConnection con = this.prepareRemoteConnection(url, username, password, param, endpoint);
-		ObjectMapper mapper = new ObjectMapper();
 
 		return mapper.readValue(con.getInputStream(), Map.class);
 	}

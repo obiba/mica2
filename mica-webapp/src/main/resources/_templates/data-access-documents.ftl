@@ -97,7 +97,7 @@
                   <#list dar.attachments as attachment>
                     <tr>
                       <td><a href="${contextPath}/ws/data-access-request/${dar.id}/attachments/${attachment.id}/_download" download="${attachment.name}">${attachment.name}</a></td>
-                      <td data-sort="${attachment.createdDate.toString(datetimeFormat)}" class="moment-datetime">${attachment.createdDate.toString(datetimeFormat)}</td>
+                      <td data-sort="${attachment.createdDate.get().toString()}" class="moment-datetime">${attachment.createdDate.get().toString()}</td>
                       <td>${si(attachment.size)}</td>
                       <#if !dar.archived>
                         <td>
