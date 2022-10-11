@@ -21,7 +21,6 @@ import org.springframework.context.annotation.Configuration;
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -54,7 +53,7 @@ public class JsonConfiguration {
 
   public static class CustomLocalDateSerializer extends StdSerializer<LocalDateTime> {
 
-    protected CustomLocalDateSerializer() {
+    public CustomLocalDateSerializer() {
       super(LocalDateTime.class);
     }
 

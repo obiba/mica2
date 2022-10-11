@@ -10,6 +10,8 @@
 
 package org.obiba.mica.study.service;
 
+import static java.util.stream.Collectors.toList;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -24,8 +26,6 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import au.com.bytecode.opencsv.CSVWriter;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.ModelAwareTranslator;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
@@ -37,7 +37,6 @@ import org.obiba.mica.core.service.DocumentDifferenceService;
 import org.obiba.mica.core.service.StudyIdGeneratorService;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
-import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.event.IndexStudiesEvent;
@@ -50,15 +49,14 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.scheduling.annotation.Async;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 
-import static java.util.stream.Collectors.toList;
+import au.com.bytecode.opencsv.CSVWriter;
 
 public abstract class AbstractStudyService<S extends EntityState, T extends BaseStudy>
     extends AbstractGitPersistableService<S, T> {
