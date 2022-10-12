@@ -14,7 +14,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -328,7 +330,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     if (Strings.isNullOrEmpty(action.get("text"))) return Response.status(Response.Status.BAD_REQUEST).build();
     try {
       request.getActionLogHistory().add(ActionLog.newBuilder().action(action.get("text"))
-        .changedOn(LocalDateTime.parse(action.get("date")))
+        .changedOn(LocalDate.parse(action.get("date")).atStartOfDay())
         .author(SecurityUtils.getSubject().getPrincipal().toString()).build());
       dataAccessRequestService.saveActionsLogs(request);
     } catch (Exception e) {
