@@ -429,13 +429,15 @@ public class DataAccessRequestUtilService {
         throw new IllegalArgumentException("Rejected data access agreement can only be reopened");
       }
     } else {
-      if (dataAccessConfig.isWithReview() && to != DataAccessEntityStatus.REVIEWED) {
-        throw new IllegalArgumentException("Rejected data access form can only be put under review");
-      }
-
-      if (!dataAccessConfig.isWithReview() && to != DataAccessEntityStatus.SUBMITTED) {
-        throw new IllegalArgumentException("Rejected data access form can only go to submitted state");
-      }
+      if (!isDataAccessFeasibility(request) && !isDataAccessAgreement(request)) {
+        if (dataAccessConfig.isWithReview() && to != DataAccessEntityStatus.REVIEWED) {
+          throw new IllegalArgumentException("Rejected data access form can only be put under review");
+        }
+  
+        if (!dataAccessConfig.isWithReview() && to != DataAccessEntityStatus.SUBMITTED) {
+          throw new IllegalArgumentException("Rejected data access form can only go to submitted state");
+        }
+      }      
     }
   }
 }
