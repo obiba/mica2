@@ -11,6 +11,8 @@
 package org.obiba.mica.web.model;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 
 import org.obiba.mica.core.domain.Timestamped;
 
@@ -26,7 +28,21 @@ class TimestampsDtos {
   }
 
   static void fromDto(Mica.TimestampsDtoOrBuilder dto, Timestamped timestamped) {
-    if(dto.hasCreated()) timestamped.setCreatedDate(LocalDateTime.parse(dto.getCreated()));
-    if(dto.hasLastUpdate()) timestamped.setLastModifiedDate(LocalDateTime.parse(dto.getLastUpdate()));
+    if(dto.hasCreated()) {
+      try {
+        timestamped.setCreatedDate(LocalDateTime.parse(dto.getCreated()));
+      } catch (DateTimeParseException e) {
+        timestamped.setCreatedDate(ZonedDateTime.parse(dto.getCreated()).toLocalDateTime());
+      }
+    }
+    
+    if(dto.hasLastUpdate()) {
+      try {
+        timestamped.setLastModifiedDate(LocalDateTime.parse(dto.getLastUpdate()));
+      } catch (DateTimeParseException e) {
+        timestamped.setLastModifiedDate(ZonedDateTime.parse(dto.getLastUpdate()).toLocalDateTime());
+      } 
+    }     
+    
   }
 }
