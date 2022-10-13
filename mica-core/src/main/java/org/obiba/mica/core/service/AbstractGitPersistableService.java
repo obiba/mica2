@@ -101,7 +101,7 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
 
   @Nullable
   public T findStateById(@NotNull String id) throws NoSuchEntityException {
-    return getEntityStateRepository().findById(id).get();
+    return getEntityStateRepository().findById(id).orElse(null);
   }
 
   @NotNull
