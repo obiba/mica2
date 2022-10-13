@@ -211,7 +211,6 @@
         <groupId>jakarta.servlet</groupId>
         <artifactId>jakarta.servlet-api</artifactId>
         <version>${jakarta.servlet}</version>
-        <scope>provided</scope>
       </dependency>
 
       <dependency>
