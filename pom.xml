@@ -63,14 +63,14 @@
     <metrics-spring.version>3.0.0</metrics-spring.version>
     <mongodb-driver.version>4.7.1</mongodb-driver.version>
     <nosqlunit.version>0.7.9</nosqlunit.version>
-    <obiba-commons.version>3.0-SNAPSHOT</obiba-commons.version>
-    <opal.version>4.4.5</opal.version>
+    <obiba-commons.version>3.0.2</obiba-commons.version>
+    <opal.version>4.5.2</opal.version>
     <opencsv.version>2.3</opencsv.version>
     <poi.version>3.9</poi.version>
     <protobuf.version>2.5.0</protobuf.version>
     <protobuf-java-format.version>1.2.1-obiba</protobuf-java-format.version>
     <rql-parser.version>0.3.3-obiba</rql-parser.version>
-    <shiro.version>1.9.1</shiro.version>
+    <shiro.version>1.10.0</shiro.version>
     <shiro-extras.version>1.1.0</shiro-extras.version>
     <lang-tag.version>1.4.4</lang-tag.version>
     <jakarta.servlet>4.0.4</jakarta.servlet>
