@@ -1,6 +1,5 @@
 # default advanced settings
 spring:
-    config.activate.on-profile: prod
     main.allow-bean-definition-overriding: true
     mail:
         host: localhost
