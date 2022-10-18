@@ -59,7 +59,7 @@ public class JsonConfiguration {
 
     @Override
     public void serialize(LocalDateTime value, JsonGenerator gen, SerializerProvider provider) throws IOException {      ;
-      gen.writeString("" + value.atZone(ZoneOffset.systemDefault()).toInstant().toEpochMilli());
+      gen.writeNumber(value.atZone(ZoneOffset.systemDefault()).toInstant().toEpochMilli());
     }
   }
 
