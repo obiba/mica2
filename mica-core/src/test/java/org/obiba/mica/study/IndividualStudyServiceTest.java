@@ -62,9 +62,9 @@ import org.obiba.mica.study.service.PublishedStudyService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
+import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.convert.CustomConversions;
+import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.gridfs.GridFsOperations;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.test.annotation.DirtiesContext;
@@ -76,12 +76,12 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.Files;
-import com.mongodb.Mongo;
+import com.mongodb.client.MongoClient;
 
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -124,7 +124,7 @@ public class IndividualStudyServiceTest {
 
   @Before
   public void clearDatabase() {
-    mongoTemplate.getDb().dropDatabase();
+    mongoTemplate.getDb().drop();
     reset(eventBus);
   }
 
@@ -337,7 +337,7 @@ public class IndividualStudyServiceTest {
 
   @Configuration
   @EnableMongoRepositories("org.obiba.mica")
-  static class Config extends AbstractMongoConfiguration {
+  static class Config extends AbstractMongoClientConfiguration {
 
     static final File BASE_REPO = Files.createTempDir();
 
@@ -476,15 +476,15 @@ public class IndividualStudyServiceTest {
       return "mica-test";
     }
 
-    @Override
-    public Mongo mongo() throws IOException {
-      return MongodForTestsFactory.with(Version.Main.PRODUCTION).newMongo();
-    }
+    // @Override
+    // public MongoClient mongo() throws IOException {
+    //   return MongodForTestsFactory.with(Version.Main.PRODUCTION).newMongo();
+    // }
 
     @Override
     @Bean
-    public CustomConversions customConversions() {
-      return new CustomConversions(
+    public MongoCustomConversions customConversions() {
+      return new MongoCustomConversions(
           Lists.newArrayList(new MongoDbConfiguration.LocalizedStringWriteConverter(),
               new MongoDbConfiguration.LocalizedStringReadConverter()));
     }

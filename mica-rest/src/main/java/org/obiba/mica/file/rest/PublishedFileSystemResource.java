@@ -24,7 +24,6 @@ import org.springframework.web.util.UriUtils;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import java.io.UnsupportedEncodingException;
 
 @Component
 @Path("/")
@@ -61,7 +60,7 @@ public class PublishedFileSystemResource extends AbstractFileSystemResource {
 
       return Response.ok(fileStoreService.getFile(attachment.getFileReference()))
         .header("Content-Disposition", "attachment; filename*=" + uriEncodedFilename).build();
-    } catch (NoSuchEntityException | UnsupportedEncodingException e) {
+    } catch (NoSuchEntityException e) {
       String name = doZip(path);
 
       return Response.ok(tempFileService.getInputStreamFromFile(name))

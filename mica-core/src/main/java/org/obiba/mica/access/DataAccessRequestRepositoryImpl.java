@@ -81,6 +81,14 @@ public class DataAccessRequestRepositoryImpl
   }
 
   @Override
+  public DataAccessRequest insertWithReferences(DataAccessRequest dataAccessRequest) {
+    saveAttachments(dataAccessRequest);
+    mongoTemplate.insert(dataAccessRequest);
+
+    return dataAccessRequest;
+  }
+
+  @Override
   public void deleteWithReferences(DataAccessRequest dataAccessRequest) {
     mongoTemplate.remove(dataAccessRequest);
     deleteAttachments(dataAccessRequest);

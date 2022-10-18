@@ -1,8 +1,6 @@
 package org.obiba.mica.core.support;
 
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
@@ -40,11 +38,24 @@ public class MongoAggregationExecutor {
       scripts.stream().map(CustomAggregationOperation::new).collect(Collectors.toList())
     );
 
-    AggregationResults<BasicDBObject> results = mongoTemplate.aggregate(aggregation, collection, BasicDBObject.class);
-    return results.getMappedResults()
+    AggregationResults<Document> aggregate = mongoTemplate.aggregate(aggregation, collection, Document.class);
+
+    return aggregate.getMappedResults()
       .stream()
-      .map(LinkedHashMap.class::cast)
+      .map(this::documentToMap)
       .collect(Collectors.toList());
+  }
+
+  /**
+   * Helper to convert Document to LinkedHashMap.
+   *
+   * @param document
+   * @return
+   */
+  private LinkedHashMap<String, Object> documentToMap(Document document) {
+    LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+    document.entrySet().forEach(entry -> map.put(entry.getKey(), entry.getValue()));
+    return map;
   }
 
   /**
@@ -58,20 +69,20 @@ public class MongoAggregationExecutor {
       this.script = queryScript;
     }
 
-    private DBObject parseScript() {
+    private Document parseScript() {
       // There are no parse() for SimpleDbList, use the same algorithm as the deprecated com.mongodb.util.JSON class
       if (script.charAt(0) == '[') {
         String arrScript = String.format("{stages:%s}", script);
-        BasicDBObject parsed = BasicDBObject.parse(arrScript);
-        return (BasicDBList)parsed.get("stages");
+        Document parsed = Document.parse(arrScript);
+        return parsed.get("stages", Document.class);
       }
 
-      return BasicDBObject.parse(script);
+      return Document.parse(script);
     }
 
     @Override
-    public DBObject toDBObject(AggregationOperationContext aggregationOperationContext) {
-      return aggregationOperationContext.getMappedObject(parseScript());
+    public Document toDocument(AggregationOperationContext context) {
+      return context.getMappedObject(parseScript());
     }
   }
 }

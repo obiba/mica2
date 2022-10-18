@@ -123,8 +123,7 @@ public class SubjectAclService {
    * @return
    */
   public List<SubjectAcl> findByResourceInstance(String resource, String instance) {
-    return subjectAclRepository.findByResourceAndInstance(resource, encode(instance),
-      new Sort(new Sort.Order(Sort.Direction.DESC, "type"), new Sort.Order(Sort.Direction.ASC, "principal")));
+    return subjectAclRepository.findByResourceAndInstance(resource, encode(instance), Sort.by(Sort.Order.desc("type"), Sort.Order.asc("principal")));
   }
 
   public boolean hasMicaRole() {
@@ -430,11 +429,11 @@ public class SubjectAclService {
 
   private void removeResourcePermissions(String resource, String instance) {
     // delete specific acls
-    subjectAclRepository.delete(subjectAclRepository.findByResourceAndInstance(resource, encode(instance)));
+    subjectAclRepository.deleteAll(subjectAclRepository.findByResourceAndInstance(resource, encode(instance)));
     // delete children acls, i.e. acls which resource name starts with regex "<resource>/<instance>/.+"
 
     String resourcePattern = resource + (Strings.isNullOrEmpty(instance) ? "" : "/" + encode(instance) + "/.+");
-    subjectAclRepository.delete(subjectAclRepository.findByResourceStartingWith(resourcePattern));
+    subjectAclRepository.deleteAll(subjectAclRepository.findByResourceStartingWith(resourcePattern));
   }
 
   /**
@@ -504,13 +503,13 @@ public class SubjectAclService {
   @Subscribe
   public void fileDeleted(FileDeletedEvent event) {
     subjectAclRepository
-      .delete(subjectAclRepository.findByResourceAndInstance("/file", encode(event.getPersistable().getFullPath())));
-    subjectAclRepository.delete(
+      .deleteAll(subjectAclRepository.findByResourceAndInstance("/file", encode(event.getPersistable().getFullPath())));
+    subjectAclRepository.deleteAll(
       subjectAclRepository.findByResourceAndInstanceRegex("/file", "^" + encode(event.getPersistable().getFullPath()) +
         "/"));
-    subjectAclRepository.delete(
+    subjectAclRepository.deleteAll(
       subjectAclRepository.findByResourceAndInstance("/draft/file", encode(event.getPersistable().getFullPath())));
-    subjectAclRepository.delete(subjectAclRepository
+    subjectAclRepository.deleteAll(subjectAclRepository
       .findByResourceAndInstanceRegex("/draft/file", "^" + encode(event.getPersistable().getFullPath()) + "/"));
   }
 
@@ -538,17 +537,17 @@ public class SubjectAclService {
    */
   private void removeInstance(String resource, String instance) {
     // entity, published and draft
-    subjectAclRepository.delete(subjectAclRepository.findByResourceAndInstance(resource, encode(instance)));
-    subjectAclRepository.delete(subjectAclRepository.findByResourceAndInstance("/draft" + resource, encode(instance)));
+    subjectAclRepository.deleteAll(subjectAclRepository.findByResourceAndInstance(resource, encode(instance)));
+    subjectAclRepository.deleteAll(subjectAclRepository.findByResourceAndInstance("/draft" + resource, encode(instance)));
 
     // file and descendants, published and draft
     subjectAclRepository
-      .delete(subjectAclRepository.findByResourceAndInstance("/file", resource + "/" + encode(instance)));
-    subjectAclRepository.delete(
+      .deleteAll(subjectAclRepository.findByResourceAndInstance("/file", resource + "/" + encode(instance)));
+    subjectAclRepository.deleteAll(
       subjectAclRepository.findByResourceAndInstanceRegex("/file", "^" + resource + "/" + encode(instance) + "/"));
     subjectAclRepository
-      .delete(subjectAclRepository.findByResourceAndInstance("/draft/file", resource + "/" + encode(instance)));
-    subjectAclRepository.delete(subjectAclRepository
+      .deleteAll(subjectAclRepository.findByResourceAndInstance("/draft/file", resource + "/" + encode(instance)));
+    subjectAclRepository.deleteAll(subjectAclRepository
       .findByResourceAndInstanceRegex("/draft/file", "^" + resource + "/" + encode(instance) + "/"));
   }
 

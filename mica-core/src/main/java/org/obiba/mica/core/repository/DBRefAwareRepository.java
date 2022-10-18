@@ -14,5 +14,7 @@ package org.obiba.mica.core.repository;
 public interface DBRefAwareRepository<T> {
   T saveWithReferences(T obj);
 
+  T insertWithReferences(T obj);
+
   void deleteWithReferences(T obj);
 }

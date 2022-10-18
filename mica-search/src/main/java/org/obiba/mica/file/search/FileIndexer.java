@@ -83,8 +83,9 @@ public class FileIndexer {
     if(indexer.hasIndex(Indexer.ATTACHMENT_DRAFT_INDEX)) indexer.dropIndex(Indexer.ATTACHMENT_DRAFT_INDEX);
     if(indexer.hasIndex(Indexer.ATTACHMENT_PUBLISHED_INDEX)) indexer.dropIndex(Indexer.ATTACHMENT_PUBLISHED_INDEX);
 
-    Pageable pageRequest = new PageRequest(0, 100);
+    Pageable pageRequest = PageRequest.of(0, 100);
     Page<AttachmentState> attachments;
+    boolean keepGoing = true;
 
     do {
       attachments = attachmentStateRepository.findAll(pageRequest);
@@ -97,6 +98,9 @@ public class FileIndexer {
           indexer.index(Indexer.ATTACHMENT_PUBLISHED_INDEX, a);
         }
       });
-    } while((pageRequest = attachments.nextPageable()) != null);
+
+      if (!attachments.hasNext()) keepGoing = false;
+      else pageRequest = attachments.nextPageable();
+    } while(keepGoing);
   }
 }

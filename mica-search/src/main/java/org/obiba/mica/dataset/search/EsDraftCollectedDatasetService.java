@@ -10,20 +10,21 @@
 
 package org.obiba.mica.dataset.search;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+
 import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.dataset.service.DraftCollectedDatasetService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 class EsDraftCollectedDatasetService extends AbstractEsDatasetService<StudyDataset> implements DraftCollectedDatasetService {

@@ -1,13 +1,16 @@
 package org.obiba.mica.web.controller;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
-import jersey.repackaged.com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
-import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.NetworkSetService;
@@ -30,12 +33,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 
 @Controller
 @Scope("request")
@@ -65,9 +66,9 @@ public class CompareController extends BaseController {
     MicaConfig config = micaConfigService.getConfig();
     String documentType = Strings.isNullOrEmpty(type) ? "studies" : type.toLowerCase();
     Set<String> documentIds = Sets.newTreeSet();
-    List<Study> individualStudies = Lists.newArrayList();
-    List<HarmonizationStudy> harmonizationStudies = Lists.newArrayList();
-    List<Network> networks = Lists.newArrayList();
+    List<Study> individualStudies = new ArrayList<>();
+    List<HarmonizationStudy> harmonizationStudies = new ArrayList<>();
+    List<Network> networks = new ArrayList<>();
     Map<String, Object> params = newParameters();
 
     if (!Strings.isNullOrEmpty(ids))
@@ -93,7 +94,7 @@ public class CompareController extends BaseController {
 
     if (!documentIds.isEmpty()) {
       if ("studies".equals(documentType) && config.isStudiesCompareEnabled()) {
-        List<BaseStudy> studies = publishedStudyService.findByIds(Lists.newArrayList(documentIds).subList(0, Math.min(documentIds.size(), config.getMaxItemsPerCompare())));
+        List<BaseStudy> studies = publishedStudyService.findByIds(documentIds.stream().collect(Collectors.toList()).subList(0, Math.min(documentIds.size(), config.getMaxItemsPerCompare())));
         individualStudies = studies.stream().filter(study -> study instanceof Study).map(study -> (Study)study).collect(Collectors.toList());
         harmonizationStudies = studies.stream().filter(study -> study instanceof HarmonizationStudy).map(study -> (HarmonizationStudy)study).collect(Collectors.toList());
         if (!individualStudies.isEmpty()) {
@@ -105,7 +106,7 @@ public class CompareController extends BaseController {
           params.put("harmonizationQuery", harmonizationSearchQuery);
         }
       } else if ("networks".equals(documentType) && config.isNetworksCompareEnabled()) {
-        networks = publishedNetworkService.findByIds(Lists.newArrayList(documentIds).subList(0, Math.min(documentIds.size(), config.getMaxItemsPerCompare())));
+        networks = publishedNetworkService.findByIds(documentIds.stream().collect(Collectors.toList()).subList(0, Math.min(documentIds.size(), config.getMaxItemsPerCompare())));
         if (!documentIds.isEmpty()) {
           String searchQuery = String.format("network(in(Mica_network.id,(%s)))", Joiner.on(",").join(documentIds));
           params.put("query", searchQuery);
@@ -137,7 +138,7 @@ public class CompareController extends BaseController {
       return result.getStudyResultDto().getExtension(MicaSearch.StudyResultDto.result).getSummariesList().stream()
         .map(Mica.StudySummaryDto::getId).collect(Collectors.toList());
     }
-    return Lists.newArrayList();
+    return new ArrayList<>();
   }
 
   private List<String> queryNetworkIds(String query) {
@@ -146,7 +147,7 @@ public class CompareController extends BaseController {
       return result.getNetworkResultDto().getExtension(MicaSearch.NetworkResultDto.result).getNetworksList().stream()
         .map(Mica.NetworkDto::getId).collect(Collectors.toList());
     }
-    return Lists.newArrayList();
+    return new ArrayList<>();
   }
 
   private MicaSearch.JoinQueryResultDto makeQuery(QueryType type, String query) {

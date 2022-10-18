@@ -1,16 +1,15 @@
 package org.obiba.mica.access.domain;
 
-import org.joda.time.DateTime;
-
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 public abstract class ChangeLog implements Serializable {
 
   protected String author;
 
-  protected DateTime changedOn;
+  protected LocalDateTime changedOn;
 
-  public DateTime getChangedOn() {
+  public LocalDateTime getChangedOn() {
     return changedOn;
   }
 

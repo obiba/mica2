@@ -66,14 +66,14 @@ public abstract class EntityConfigService<T extends EntityConfig> {
 
   private T findOrCreateDefaultForm() {
 
-    T form = getRepository().findOne(getDefaultId());
+    Optional<T> form = getRepository().findById(getDefaultId());
 
-    if (form == null) {
+    if (!form.isPresent()) {
       createOrUpdate(createDefaultForm());
-      form = getRepository().findOne(getDefaultId());
+      form = getRepository().findById(getDefaultId());
     }
 
-    return form;
+    return form.get();
   }
 
   private void validateSchema(String json) {

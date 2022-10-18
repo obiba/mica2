@@ -11,7 +11,6 @@
 package org.obiba.mica.access.service;
 
 import com.google.common.base.Strings;
-import org.joda.time.DateTime;
 import org.obiba.mica.access.DataAccessAmendmentRepository;
 import org.obiba.mica.access.DataAccessEntityRepository;
 import org.obiba.mica.access.DataAccessRequestRepository;
@@ -30,8 +29,9 @@ import org.springframework.validation.annotation.Validated;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,13 +58,15 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
   public DataAccessAmendment save(@NotNull DataAccessAmendment amendment) {
     DataAccessAmendment saved = amendment;
     DataAccessEntityStatus from = null;
+    boolean amendmentIsNew = amendment.isNew();
 
-    if (amendment.isNew()) {
+    if (amendmentIsNew) {
       setAndLogStatus(saved, DataAccessEntityStatus.OPENED);
       saved.setId(ensureUniqueId(saved.getParentId()));
     } else {
-      saved = dataAmendmentRequestRepository.findOne(amendment.getId());
-      if (saved != null) {
+      Optional<DataAccessAmendment> found = dataAmendmentRequestRepository.findById(amendment.getId());
+      if (found.isPresent()) {
+        saved = found.get();
         from = saved.getStatus();
         // validate the status
         dataAccessRequestUtilService.checkStatusTransition(saved, amendment.getStatus());
@@ -80,12 +82,13 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
     }
 
     ensureProjectTitle(saved);
-    schemaFormContentFileService.save(saved, dataAmendmentRequestRepository.findOne(amendment.getId()),
+    schemaFormContentFileService.save(saved, dataAmendmentRequestRepository.findById(amendment.getId()),
       String.format("/data-access-request/%s/amendment/%s", saved.getParentId(), amendment.getId()));
 
-    saved.setLastModifiedDate(DateTime.now());
+    saved.setLastModifiedDate(LocalDateTime.now());
 
-    dataAmendmentRequestRepository.save(saved);
+    if (amendmentIsNew) dataAmendmentRequestRepository.insert(saved);
+    else dataAmendmentRequestRepository.save(saved);
     eventBus.post(new DataAccessAmendmentUpdatedEvent(saved));
     sendNotificationEmails(saved, from);
     return saved;
@@ -98,7 +101,7 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
     do {
       count++;
       newId = String.format("%s-A%d", parentId, count);
-    } while (null != dataAmendmentRequestRepository.findOne(newId));
+    } while (null != dataAmendmentRequestRepository.findById(newId).orElse(null));
 
     return newId;
   }
@@ -112,9 +115,9 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
     String requestTitle = dataAccessRequestUtilService.getRequestTitle(amendment);
     if (Strings.isNullOrEmpty(requestTitle)) {
       // inherit title from parent
-      DataAccessRequest parentRequest = dataAccessRequestRepository.findOne(amendment.getParentId());
-      if (parentRequest == null) throw NoSuchDataAccessRequestException.withId(amendment.getParentId());
-      String parentRequestTitle = dataAccessRequestUtilService.getRequestTitle(parentRequest);
+      Optional<DataAccessRequest> parentRequest = dataAccessRequestRepository.findById(amendment.getParentId());
+      if (!parentRequest.isPresent()) throw NoSuchDataAccessRequestException.withId(amendment.getParentId());
+      String parentRequestTitle = dataAccessRequestUtilService.getRequestTitle(parentRequest.get());
       dataAccessRequestUtilService.setRequestTitle(amendment, parentRequestTitle);
     }
   }

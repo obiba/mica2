@@ -100,13 +100,13 @@ class DatasetDtos {
     Mica.PermissionsDto permissionsDto = permissionsDtos.asDto(dataset);
 
     if(asDraft) {
-      StudyDatasetState state = studyDatasetStateRepository.findOne(dataset.getId());
-      if(state != null) {
-        builder.setPublished(state.isPublished());
-        Mica.EntityStateDto.Builder stateBuilder = entityStateDtos.asDto(state).setPermissions(permissionsDto);
+      Optional<StudyDatasetState> state = studyDatasetStateRepository.findById(dataset.getId());
+      if(state.isPresent()) {
+        builder.setPublished(state.get().isPublished());
+        Mica.EntityStateDto.Builder stateBuilder = entityStateDtos.asDto(state.get()).setPermissions(permissionsDto);
         builder.setExtension(
           Mica.EntityStateDto.datasetState,
-          stateBuilder.setPermissions(permissionsDto).setRequireIndexing(state.isRequireIndexing()).build()
+          stateBuilder.setPermissions(permissionsDto).setRequireIndexing(state.get().isRequireIndexing()).build()
         );
       }
     }
@@ -154,11 +154,11 @@ class DatasetDtos {
 
     Mica.PermissionsDto permissionsDto = permissionsDtos.asDto(dataset);
     if(asDraft) {
-      HarmonizationDatasetState state = harmonizationDatasetStateRepository.findOne(dataset.getId());
-      if(state != null) {
-        builder.setPublished(state.isPublished());
+      Optional<HarmonizationDatasetState> state = harmonizationDatasetStateRepository.findById(dataset.getId());
+      if(state.isPresent()) {
+        builder.setPublished(state.get().isPublished());
         builder.setExtension(Mica.EntityStateDto.datasetState,
-          entityStateDtos.asDto(state).setPermissions(permissionsDto).build());
+          entityStateDtos.asDto(state.get()).setPermissions(permissionsDto).build());
       }
     }
 

@@ -10,11 +10,14 @@
 
 package org.obiba.mica.study.service;
 
+import static java.util.stream.Collectors.toList;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -23,8 +26,6 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import au.com.bytecode.opencsv.CSVWriter;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.ModelAwareTranslator;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
@@ -36,7 +37,6 @@ import org.obiba.mica.core.service.DocumentDifferenceService;
 import org.obiba.mica.core.service.StudyIdGeneratorService;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
-import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.event.IndexStudiesEvent;
@@ -49,15 +49,14 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.scheduling.annotation.Async;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 
-import static java.util.stream.Collectors.toList;
+import au.com.bytecode.opencsv.CSVWriter;
 
 public abstract class AbstractStudyService<S extends EntityState, T extends BaseStudy>
     extends AbstractGitPersistableService<S, T> {
@@ -87,7 +86,11 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
     // ensure study exists
     getEntityState(id);
 
-    T study = getRepository().findOne(id);
+    Optional<T> found = getRepository().findById(id);
+
+    if (!found.isPresent()) throw NoSuchEntityException.withId(getType(), id);
+
+    T study = found.get();
 
     if (locale != null) {
       modelAwareTranslator.translateModel(locale, study);
@@ -121,7 +124,7 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
 
   @NotNull
   public List<String> findIds(List<String> ids) {
-    return StreamSupport.stream(getRepository().findAll(ids).spliterator(), false)
+    return StreamSupport.stream(getRepository().findAllById(ids).spliterator(), false)
       .map(AbstractGitPersistable::getId)
       .collect(Collectors.toList());
   }
@@ -129,10 +132,10 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
   @NotNull
   public T findStudy(@NotNull String id) throws NoSuchEntityException {
     // ensure study exists
-    T study = getRepository().findOne(id);
-    if (study == null)
+    Optional<T> study = getRepository().findById(id);
+    if (!study.isPresent())
       throw NoSuchEntityException.withId(getType(), id);
-    return study;
+    return study.get();
   }
 
   public boolean isPublished(@NotNull String id) throws NoSuchEntityException {
@@ -161,25 +164,25 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
   }
 
   public List<T> findAllDraftStudies(Iterable<String> ids) {
-    return Lists.newArrayList(getRepository().findAll(ids));
+    return Lists.newArrayList(getRepository().findAllById(ids));
   }
 
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", allEntries = true),
       @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id") })
   public void delete(@NotNull String id) {
-    T study = getRepository().findOne(id);
+    Optional<T> study = getRepository().findById(id);
 
-    if (study == null) {
+    if (!study.isPresent()) {
       throw NoSuchEntityException.withId(getType(), id);
     }
 
-    checkStudyConstraints(study);
+    checkStudyConstraints(study.get());
 
-    fileSystemService.delete(FileUtils.getEntityPath(study));
-    getEntityStateRepository().delete(id);
-    getRepository().delete(study);
-    gitService.deleteGitRepository(study);
-    eventBus.post(new StudyDeletedEvent(study));
+    fileSystemService.delete(FileUtils.getEntityPath(study.get()));
+    getEntityStateRepository().deleteById(id);
+    getRepository().delete(study.get());
+    gitService.deleteGitRepository(study.get());
+    eventBus.post(new StudyDeletedEvent(study.get()));
   }
 
   protected abstract MongoRepository<T, String> getRepository();
@@ -223,14 +226,18 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
   public void publish(@NotNull String id, boolean publish, PublishCascadingScope cascadingScope)
       throws NoSuchEntityException {
     log.info("Publish study: {}", id);
-    T study = getRepository().findOne(id);
+    Optional<T> study = getRepository().findById(id);
+
+    if (!study.isPresent()) {
+      throw NoSuchEntityException.withId(getType(), id);
+    }
 
     if (publish) {
       publishState(id);
-      eventBus.post(new StudyPublishedEvent(study, getCurrentUsername(), cascadingScope));
+      eventBus.post(new StudyPublishedEvent(study.get(), getCurrentUsername(), cascadingScope));
     } else {
       unPublishState(id);
-      eventBus.post(new StudyUnpublishedEvent(study));
+      eventBus.post(new StudyUnpublishedEvent(study.get()));
     }
   }
 

@@ -72,7 +72,7 @@ public class AuditInterceptor implements ContainerResponseFilter {
 
   private String getArguments(ContainerRequestContext requestContext, ContainerResponseContext responseContext) {
     MDC.clear();
-    MDC.put("username", auditorAware.getCurrentAuditor());
+    MDC.put("username", auditorAware.getCurrentAuditor().get());
     MDC.put("status", responseContext.getStatus() + "");
     MDC.put("method", requestContext.getMethod());
     MDC.put("ip", getClientIP(requestContext));

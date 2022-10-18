@@ -1,10 +1,12 @@
 package org.obiba.mica.core.upgrade;
 
 import com.google.common.eventbus.EventBus;
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.Filters;
+
+import org.bson.Document;
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
@@ -46,9 +48,9 @@ public class Mica460Upgrade implements UpgradeStep {
   public void execute(Version currentVersion) {
     logger.info("Executing Mica upgrade to version 4.6.0");
     try {
-      DBObject dataAccessForm = mongoTemplate.execute(db -> db.getCollection("dataAccessForm").find().next());
-      DBObject dataAccessFeasibilityForm = mongoTemplate.execute(db -> db.getCollection("dataAccessFeasibilityForm").find().next());
-      DBObject dataAccessAmendmentForm = mongoTemplate.execute(db -> db.getCollection("dataAccessAmendmentForm").find().next());
+      Document dataAccessForm = mongoTemplate.getCollection("dataAccessForm").find().first();
+      Document dataAccessFeasibilityForm = mongoTemplate.getCollection("dataAccessFeasibilityForm").find().first();
+      Document dataAccessAmendmentForm = mongoTemplate.getCollection("dataAccessAmendmentForm").find().first();
 
       String csvExportFormat = dataAccessForm.get("csvExportFormat").toString();
       String feasibilityCsvExportFormat = dataAccessFeasibilityForm.get("csvExportFormat").toString();
@@ -64,13 +66,13 @@ public class Mica460Upgrade implements UpgradeStep {
       updateAndPublishDataAccessAmendmentForm(dataAccessAmendmentForm);
 
       logger.info("Applying form revision to submitted data access requests");
-      DBCursor dataAccessRequests = mongoTemplate.execute(db -> db.collectionExists("dataAccessRequest") ? db.getCollection("dataAccessRequest").find() : null);
+      MongoCursor<Document> dataAccessRequests = mongoTemplate.getCollection("dataAccessRequest").find().cursor();
       applyDataAccessRequestFormRevision(dataAccessRequests);
       logger.info("Applying form revision to submitted data access feasibilities");
-      DBCursor dataAccessFeasibilities = mongoTemplate.execute(db -> db.collectionExists("dataAccessFeasibility") ? db.getCollection("dataAccessFeasibility").find() : null);
+      MongoCursor<Document> dataAccessFeasibilities = mongoTemplate.getCollection("dataAccessFeasibility").find().cursor();
       applyDataAccessFeasibilityFormRevision(dataAccessFeasibilities);
       logger.info("Applying form revision to submitted data access amendments");
-      DBCursor dataAccessAmendments = mongoTemplate.execute(db -> db.collectionExists("dataAccessAmendment") ? db.getCollection("dataAccessAmendment").find() : null);
+      MongoCursor<Document> dataAccessAmendments = mongoTemplate.getCollection("dataAccessAmendment").find().cursor();
       applyDataAccessAmendmentFormRevision(dataAccessAmendments);
     } catch (RuntimeException e) {
       logger.error("Error occurred when trying to update data access forms or requests.", e);
@@ -78,7 +80,7 @@ public class Mica460Upgrade implements UpgradeStep {
 
     try {
       logger.info("Adding 'sets' vocabulary to the network taxonomy");
-      DBObject networkTaxonomy = mongoTemplate.execute(db -> db.getCollection("taxonomyEntityWrapper").findOne("network"));
+      Document networkTaxonomy = mongoTemplate.getCollection("taxonomyEntityWrapper").find(Filters.eq("network")).first();
       if (networkTaxonomy != null) {
         DBObject setsVocabulary = BasicDBObject.parse("{\n" +
           "  \"name\" : \"sets\",\n" +
@@ -99,11 +101,11 @@ public class Mica460Upgrade implements UpgradeStep {
           "  }\n" +
           "}");
         ((ArrayList<Object>)(((DBObject) networkTaxonomy.get("taxonomy")).get("vocabularies"))).add(setsVocabulary);
-        mongoTemplate.execute(db -> db.getCollection("taxonomyEntityWrapper").save(networkTaxonomy));
+        mongoTemplate.save(networkTaxonomy, "taxonomyEntityWrapper");
       }
 
       logger.info("Adding 'sets' vocabulary to the study taxonomy");
-      DBObject studyTaxonomy = mongoTemplate.execute(db -> db.getCollection("taxonomyEntityWrapper").findOne("study"));
+      Document studyTaxonomy = mongoTemplate.getCollection("taxonomyEntityWrapper").find(Filters.eq("study")).first();
       if (studyTaxonomy != null) {
         DBObject setsVocabulary = BasicDBObject.parse("{\n" +
           "  \"name\" : \"sets\",\n" +
@@ -124,7 +126,7 @@ public class Mica460Upgrade implements UpgradeStep {
           "  }\n" +
           "}");
         ((ArrayList<Object>)(((DBObject) studyTaxonomy.get("taxonomy")).get("vocabularies"))).add(setsVocabulary);
-        mongoTemplate.execute(db -> db.getCollection("taxonomyEntityWrapper").save(studyTaxonomy));
+        mongoTemplate.save(studyTaxonomy, "taxonomyEntityWrapper");
       }
 
       logger.info("Indexing Taxonomies");
@@ -134,132 +136,128 @@ public class Mica460Upgrade implements UpgradeStep {
     }
   }
 
-  private void insertDataAccessConfig(DBObject dataAccessForm, String csvExportFormat, String feasibilityCsvExportFormat, String amendmentCsvExportFormat) {
-    DBObject dataAccessConfig = new BasicDBObject();
+  private void insertDataAccessConfig(Document dataAccessForm, String csvExportFormat, String feasibilityCsvExportFormat, String amendmentCsvExportFormat) {
+    Document dataAccessConfig = new Document();
     dataAccessConfig.putAll(dataAccessForm);
     dataAccessConfig.put("csvExportFormat", csvExportFormat);
     dataAccessConfig.put("feasibilityCsvExportFormat", feasibilityCsvExportFormat);
     dataAccessConfig.put("amendmentCsvExportFormat", amendmentCsvExportFormat);
-    dataAccessConfig.removeField("pdfTemplates");
-    dataAccessConfig.removeField("pdfDownloadType");
-    dataAccessConfig.removeField("properties");
-    dataAccessConfig.removeField("titleFieldPath");
-    dataAccessConfig.removeField("summaryFieldPath");
-    dataAccessConfig.removeField("endDateFieldPath");
-    dataAccessConfig.removeField("schema");
-    dataAccessConfig.removeField("definition");
-    dataAccessConfig.removeField("_id");
+    dataAccessConfig.remove("pdfTemplates");
+    dataAccessConfig.remove("pdfDownloadType");
+    dataAccessConfig.remove("properties");
+    dataAccessConfig.remove("titleFieldPath");
+    dataAccessConfig.remove("summaryFieldPath");
+    dataAccessConfig.remove("endDateFieldPath");
+    dataAccessConfig.remove("schema");
+    dataAccessConfig.remove("definition");
+    dataAccessConfig.remove("_id");
     dataAccessConfig.put("version", 1);
     dataAccessConfig.put("_class", "org.obiba.mica.micaConfig.domain.DataAccessConfig");
 
-    mongoTemplate.execute(db -> {
-      if (!db.collectionExists("dataAccessConfig"))
-        db.createCollection("dataAccessConfig", new BasicDBObject());
-      return db.getCollection("dataAccessConfig").save(dataAccessConfig);
-    });
+    mongoTemplate.getCollection("dataAccessConfig").insertOne(dataAccessConfig);
   }
 
-  private void updateAndPublishDataAccessForm(DBObject dataAccessForm) {
+  private void updateAndPublishDataAccessForm(Document dataAccessForm) {
     // clean data access form from config info
-    dataAccessForm.removeField("idLength");
-    dataAccessForm.removeField("allowIdWithLeadingZeros");
-    dataAccessForm.removeField("notifyCreated");
-    dataAccessForm.removeField("notifySubmitted");
-    dataAccessForm.removeField("notifyReviewed");
-    dataAccessForm.removeField("notifyConditionallyApproved");
-    dataAccessForm.removeField("notifyApproved");
-    dataAccessForm.removeField("notifyRejected");
-    dataAccessForm.removeField("notifyReopened");
-    dataAccessForm.removeField("notifyCommented");
-    dataAccessForm.removeField("notifyAttachment");
-    dataAccessForm.removeField("notifyFinalReport");
-    dataAccessForm.removeField("notifyIntermediateReport");
-    dataAccessForm.removeField("createdSubject");
-    dataAccessForm.removeField("submittedSubject");
-    dataAccessForm.removeField("reviewedSubject");
-    dataAccessForm.removeField("conditionallyApprovedSubject");
-    dataAccessForm.removeField("approvedSubject");
-    dataAccessForm.removeField("rejectedSubject");
-    dataAccessForm.removeField("reopenedSubject");
-    dataAccessForm.removeField("commentedSubject");
-    dataAccessForm.removeField("attachmentSubject");
-    dataAccessForm.removeField("finalReportSubject");
-    dataAccessForm.removeField("intermediateReportSubject");
-    dataAccessForm.removeField("withReview");
-    dataAccessForm.removeField("withConditionalApproval");
-    dataAccessForm.removeField("approvedFinal");
-    dataAccessForm.removeField("rejectedFinal");
-    dataAccessForm.removeField("predefinedActions");
-    dataAccessForm.removeField("feasibilityEnabled");
-    dataAccessForm.removeField("amendmentsEnabled");
-    dataAccessForm.removeField("variablesEnabled");
-    dataAccessForm.removeField("feasibilityVariablesEnabled");
-    dataAccessForm.removeField("amendmentVariablesEnabled");
-    dataAccessForm.removeField("daoCanEdit");
-    dataAccessForm.removeField("nbOfDaysBeforeReport");
-    dataAccessForm.removeField("csvExportFormat");
+    dataAccessForm.remove("idLength");
+    dataAccessForm.remove("allowIdWithLeadingZeros");
+    dataAccessForm.remove("notifyCreated");
+    dataAccessForm.remove("notifySubmitted");
+    dataAccessForm.remove("notifyReviewed");
+    dataAccessForm.remove("notifyConditionallyApproved");
+    dataAccessForm.remove("notifyApproved");
+    dataAccessForm.remove("notifyRejected");
+    dataAccessForm.remove("notifyReopened");
+    dataAccessForm.remove("notifyCommented");
+    dataAccessForm.remove("notifyAttachment");
+    dataAccessForm.remove("notifyFinalReport");
+    dataAccessForm.remove("notifyIntermediateReport");
+    dataAccessForm.remove("createdSubject");
+    dataAccessForm.remove("submittedSubject");
+    dataAccessForm.remove("reviewedSubject");
+    dataAccessForm.remove("conditionallyApprovedSubject");
+    dataAccessForm.remove("approvedSubject");
+    dataAccessForm.remove("rejectedSubject");
+    dataAccessForm.remove("reopenedSubject");
+    dataAccessForm.remove("commentedSubject");
+    dataAccessForm.remove("attachmentSubject");
+    dataAccessForm.remove("finalReportSubject");
+    dataAccessForm.remove("intermediateReportSubject");
+    dataAccessForm.remove("withReview");
+    dataAccessForm.remove("withConditionalApproval");
+    dataAccessForm.remove("approvedFinal");
+    dataAccessForm.remove("rejectedFinal");
+    dataAccessForm.remove("predefinedActions");
+    dataAccessForm.remove("feasibilityEnabled");
+    dataAccessForm.remove("amendmentsEnabled");
+    dataAccessForm.remove("variablesEnabled");
+    dataAccessForm.remove("feasibilityVariablesEnabled");
+    dataAccessForm.remove("amendmentVariablesEnabled");
+    dataAccessForm.remove("daoCanEdit");
+    dataAccessForm.remove("nbOfDaysBeforeReport");
+    dataAccessForm.remove("csvExportFormat");
     dataAccessForm.put("lastUpdateDate", new Date());
-    mongoTemplate.execute(db -> db.getCollection("dataAccessForm").save(dataAccessForm));
+    mongoTemplate.save(dataAccessForm, "dataAccessForm");
 
     // publish
-    dataAccessForm.removeField("_id");
+    dataAccessForm.remove("_id");
     dataAccessForm.put("revision", 1);
-    mongoTemplate.execute(db -> db.getCollection("dataAccessForm").save(dataAccessForm));
+    mongoTemplate.save(dataAccessForm, "dataAccessForm");
   }
 
-  private void updateAndPublishDataAccessFeasibilityForm(DBObject dataAccessFeasibilityForm) {
+  private void updateAndPublishDataAccessFeasibilityForm(Document dataAccessFeasibilityForm) {
     // update
-    dataAccessFeasibilityForm.removeField("csvExportFormat");
+    dataAccessFeasibilityForm.remove("csvExportFormat");
     dataAccessFeasibilityForm.put("lastUpdateDate", new Date());
-    mongoTemplate.execute(db -> db.getCollection("dataAccessFeasibilityForm").save(dataAccessFeasibilityForm));
+    mongoTemplate.save(dataAccessFeasibilityForm, "dataAccessFeasibilityForm");
 
     // publish
-    dataAccessFeasibilityForm.removeField("_id");
+    dataAccessFeasibilityForm.remove("_id");
     dataAccessFeasibilityForm.put("revision", 1);
-    mongoTemplate.execute(db -> db.getCollection("dataAccessFeasibilityForm").save(dataAccessFeasibilityForm));
+    mongoTemplate.save(dataAccessFeasibilityForm, "dataAccessFeasibilityForm");
   }
 
-  private void updateAndPublishDataAccessAmendmentForm(DBObject dataAccessAmendmentForm) {
+  private void updateAndPublishDataAccessAmendmentForm(Document dataAccessAmendmentForm) {
     // update
-    dataAccessAmendmentForm.removeField("csvExportFormat");
+    dataAccessAmendmentForm.remove("csvExportFormat");
     dataAccessAmendmentForm.put("lastUpdateDate", new Date());
-    mongoTemplate.execute(db -> db.getCollection("dataAccessAmendmentForm").save(dataAccessAmendmentForm));
+    mongoTemplate.save(dataAccessAmendmentForm, "dataAccessAmendmentForm");
 
     // publish
-    dataAccessAmendmentForm.removeField("_id");
+    dataAccessAmendmentForm.remove("_id");
     dataAccessAmendmentForm.put("revision", 1);
-    mongoTemplate.execute(db -> db.getCollection("dataAccessAmendmentForm").save(dataAccessAmendmentForm));
+    mongoTemplate.save(dataAccessAmendmentForm, "dataAccessAmendmentForm");
   }
 
-  private void applyDataAccessRequestFormRevision(DBCursor dataAccessRequests) {
+  private void applyDataAccessRequestFormRevision(MongoCursor<Document> dataAccessRequests) {
     if (dataAccessRequests == null) return;
     while (dataAccessRequests.hasNext()) {
-      DBObject dataAccessRequest = dataAccessRequests.next();
+      Document dataAccessRequest = dataAccessRequests.next();
       if (!"OPENED".equals(dataAccessRequest.get("status").toString())) {
         dataAccessRequest.put("formRevision", 1);
-        mongoTemplate.execute(db -> db.getCollection("dataAccessRequest").save(dataAccessRequest));
+        mongoTemplate.save(dataAccessRequest, "dataAccessRequest");
       }
     }
   }
 
-  private void applyDataAccessFeasibilityFormRevision(DBCursor dataAccessFeasibilities) {
+  private void applyDataAccessFeasibilityFormRevision(MongoCursor<Document> dataAccessFeasibilities) {
     if (dataAccessFeasibilities == null) return;
     while (dataAccessFeasibilities.hasNext()) {
-      DBObject dataAccessRequest = dataAccessFeasibilities.next();
+      Document dataAccessRequest = dataAccessFeasibilities.next();
       if (!"OPENED".equals(dataAccessRequest.get("status").toString())) {
         dataAccessRequest.put("formRevision", 1);
-        mongoTemplate.execute(db -> db.getCollection("dataAccessFeasibility").save(dataAccessRequest));
+        mongoTemplate.save(dataAccessRequest, "dataAccessFeasibility");
       }
     }
   }
 
-  private void applyDataAccessAmendmentFormRevision(DBCursor dataAccessAmendments) {
+  private void applyDataAccessAmendmentFormRevision(MongoCursor<Document> dataAccessAmendments) {
     if (dataAccessAmendments == null) return;
     while (dataAccessAmendments.hasNext()) {
-      DBObject dataAccessRequest = dataAccessAmendments.next();
+      Document dataAccessRequest = dataAccessAmendments.next();
       if (!"OPENED".equals(dataAccessRequest.get("status").toString())) {
         dataAccessRequest.put("formRevision", 1);
-        mongoTemplate.execute(db -> db.getCollection("dataAccessAmendment").save(dataAccessRequest));
+        mongoTemplate.save(dataAccessRequest, "dataAccessAmendment");
       }
     }
   }

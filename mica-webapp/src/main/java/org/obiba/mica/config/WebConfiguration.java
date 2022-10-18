@@ -10,15 +10,24 @@
 
 package org.obiba.mica.config;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.servlet.InstrumentedFilter;
-import com.codahale.metrics.servlets.MetricsServlet;
-import com.google.common.base.Strings;
+import java.io.IOException;
+import java.util.Arrays;
+
+import javax.inject.Inject;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.shiro.web.env.EnvironmentLoaderListener;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
-import org.eclipse.jetty.servlets.GzipFilter;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.obiba.mica.web.filter.CachingHttpHeadersFilter;
 import org.obiba.mica.web.filter.ClickjackingHttpHeadersFilter;
@@ -26,30 +35,27 @@ import org.obiba.mica.web.filter.StaticResourcesProductionFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
-import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.jetty.JettyServerCustomizer;
+import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
+import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
-import javax.inject.Inject;
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
-
-import static javax.servlet.DispatcherType.*;
-import static org.obiba.mica.config.JerseyConfiguration.WS_ROOT;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.servlet.InstrumentedFilter;
+import com.codahale.metrics.servlets.MetricsServlet;
+import com.google.common.base.Strings;
 
 /**
  * Configuration of web application with Servlet 3.0 APIs.
@@ -70,8 +76,6 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
 
   private Environment environment;
 
-  private final MetricRegistry metricRegistry;
-
   private final org.obiba.ssl.SslContextFactory sslContextFactory;
 
   private int httpsPort;
@@ -81,18 +85,14 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
   private String contextPath;
 
   @Inject
-  public WebConfiguration(
-    MetricRegistry metricRegistry,
-    org.obiba.ssl.SslContextFactory sslContextFactory) {
-    this.metricRegistry = metricRegistry;
+  public WebConfiguration(org.obiba.ssl.SslContextFactory sslContextFactory) {
     this.sslContextFactory = sslContextFactory;
   }
 
   @Override
   public void setEnvironment(Environment environment) {
     this.environment = environment;
-    RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(environment, "https.");
-    httpsPort = propertyResolver.getProperty("port", Integer.class, DEFAULT_HTTPS_PORT);
+    httpsPort = environment.getProperty("https.port", Integer.class, DEFAULT_HTTPS_PORT);
     serverAddress = environment.getProperty("server.address", "localhost");
     contextPath = environment.getProperty("server.context-path", "");
     if (Strings.isNullOrEmpty(contextPath))
@@ -100,12 +100,16 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
   }
 
   @Bean
-  public EmbeddedServletContainerCustomizer containerCustomizer() throws Exception {
-    return (ConfigurableEmbeddedServletContainer container) -> {
-      JettyEmbeddedServletContainerFactory jetty = (JettyEmbeddedServletContainerFactory) container;
-      jetty.setServerCustomizers(Collections.singleton(this));
-      if (!Strings.isNullOrEmpty(contextPath) && contextPath.startsWith("/"))
-        container.setContextPath(contextPath);
+  public WebServerFactoryCustomizer<JettyServletWebServerFactory> containerCustomizer() throws Exception {
+    WebConfiguration that = this;
+
+    return new WebServerFactoryCustomizer<JettyServletWebServerFactory>() {
+
+      @Override
+      public void customize(JettyServletWebServerFactory factory) {
+        factory.setServerCustomizers(Arrays.asList(that));
+        if (!Strings.isNullOrEmpty(contextPath) && contextPath.startsWith("/")) factory.setContextPath(contextPath);
+      }
     };
   }
 
@@ -149,132 +153,138 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
 
     servletContext.addListener(EnvironmentLoaderListener.class);
 
-    initAllowedMethods(servletContext);
-    // Note: authentication filter was already added by Spring
-
-    EnumSet<DispatcherType> disps = EnumSet.of(REQUEST, FORWARD, ASYNC);
-    initForbiddenUrlsFilter(servletContext, disps);
-    initMetrics(servletContext, disps);
-
-    if(environment.acceptsProfiles(Profiles.PROD)) {
-      initStaticResourcesProductionFilter(servletContext, disps);
-      initCachingHttpHeadersFilter(servletContext, disps);
-    }
-
-    initClickjackingHttpHeadersFilter(servletContext, disps);
-    initGzipFilter(servletContext, disps);
-
     log.info("Web application fully configured");
   }
 
-  private void initForbiddenUrlsFilter(ServletContext servletContext, EnumSet<DispatcherType> disps) {
-    log.debug("Registering Forbidden URLs Filter");
+  @Bean
+  public FreeMarkerViewResolver freemarkerViewResolver() {
+    FreeMarkerViewResolver freeMarkerViewResolver = new FreeMarkerViewResolver();
+    freeMarkerViewResolver.setRequestContextAttribute("rc");
+    freeMarkerViewResolver.setSuffix(".ftl");
+    freeMarkerViewResolver.setContentType("text/html;charset=UTF-8");
 
-    FilterRegistration.Dynamic filterRegistration = servletContext.addFilter("forbiddenUrlsFilter", new ForbiddenUrlsFilter());
-
-    filterRegistration.addMappingForUrlPatterns(disps, true, "/.htaccess");
-    filterRegistration.addMappingForUrlPatterns(disps, true, "/.htaccess/");
-    filterRegistration.setAsyncSupported(true);
+    return freeMarkerViewResolver;
   }
 
-  private void initAllowedMethods(ServletContext servletContext) {
-    log.debug("Registering Allowed Methods Filter");
+  @Bean
+  public FreeMarkerConfigurer freeMarkerConfigurer() {
+    FreeMarkerConfigurer freeMarkerConfigurer = new FreeMarkerConfigurer();
+    freeMarkerConfigurer.setDefaultEncoding("UTF-8");
+    freeMarkerConfigurer.setTemplateLoaderPaths("classpath:/web/", "classpath:/static/templates/", "classpath:/public/templates/", "classpath:/templates/", "classpath:/_templates/");
 
-    FilterRegistration.Dynamic filterRegistration = servletContext.addFilter("noTrace", new NoTraceFilter());
-
-    filterRegistration.addMappingForUrlPatterns(EnumSet.of(REQUEST, FORWARD, ASYNC, INCLUDE, ERROR), true, "/*");
-    filterRegistration.setAsyncSupported(true);
+    return freeMarkerConfigurer;
   }
 
-  /**
-   * Initializes the GZip filter.
-   */
-  private void initGzipFilter(ServletContext servletContext, EnumSet<DispatcherType> disps) {
-    log.debug("Registering GZip Filter");
+  @Bean
+  public FilterRegistrationBean<InstrumentedFilter> instrumentedFilterRegistration() {
+    log.debug("Registering Instrumented Filter");
+    FilterRegistrationBean<InstrumentedFilter> bean = new FilterRegistrationBean<>();
 
-    FilterRegistration.Dynamic filterRegistration = servletContext.addFilter("gzipFilter", new GzipFilter());
+    bean.setFilter(new InstrumentedFilter());
+    bean.addUrlPatterns("/*");
+    bean.setAsyncSupported(true);
 
-    if(filterRegistration == null) {
-      filterRegistration = (FilterRegistration.Dynamic) servletContext.getFilterRegistration("gzipFilter");
-    }
-
-    filterRegistration.addMappingForUrlPatterns(disps, true, "*.css");
-    filterRegistration.addMappingForUrlPatterns(disps, true, "*.json");
-    filterRegistration.addMappingForUrlPatterns(disps, true, "*.html");
-    filterRegistration.addMappingForUrlPatterns(disps, true, "*.js");
-    filterRegistration.addMappingForUrlPatterns(disps, true, "/jvm/*");
-    filterRegistration.addMappingForUrlPatterns(disps, true, WS_ROOT + "/*");
-    filterRegistration.setAsyncSupported(true);
+    return bean;
   }
 
-  /**
-   * Initializes the static resources production Filter.
-   */
-  private void initStaticResourcesProductionFilter(ServletContext servletContext, EnumSet<DispatcherType> disps) {
-
-    log.debug("Registering static resources production Filter");
-    FilterRegistration.Dynamic resourcesFilter = servletContext
-      .addFilter("staticResourcesProductionFilter", new StaticResourcesProductionFilter());
-
-    resourcesFilter.addMappingForUrlPatterns(disps, true, "/favicon.ico");
-    resourcesFilter.addMappingForUrlPatterns(disps, true, "/robots.txt");
-    resourcesFilter.addMappingForUrlPatterns(disps, true, "/index.html");
-    resourcesFilter.addMappingForUrlPatterns(disps, true, "/images/*");
-    resourcesFilter.addMappingForUrlPatterns(disps, true, "/fonts/*");
-    resourcesFilter.addMappingForUrlPatterns(disps, true, "/scripts/*");
-    resourcesFilter.addMappingForUrlPatterns(disps, true, "/styles/*");
-    resourcesFilter.addMappingForUrlPatterns(disps, true, "/views/*");
-    resourcesFilter.setAsyncSupported(true);
-  }
-
-  /**
-   * Initializes the caching HTTP Headers Filter.
-   */
-  private void initCachingHttpHeadersFilter(ServletContext servletContext, EnumSet<DispatcherType> disps) {
-    log.debug("Registering Caching HTTP Headers Filter");
-    FilterRegistration.Dynamic cachingFilter = servletContext
-      .addFilter("cachingHttpHeadersFilter", new CachingHttpHeadersFilter());
-
-    cachingFilter.addMappingForUrlPatterns(disps, true, "/images/*");
-    cachingFilter.addMappingForUrlPatterns(disps, true, "/fonts/*");
-    cachingFilter.addMappingForUrlPatterns(disps, true, "/scripts/*");
-    cachingFilter.addMappingForUrlPatterns(disps, true, "/styles/*");
-    cachingFilter.setAsyncSupported(true);
-  }
-
-  /**
-   * Initializes the clickjacking HTTP Headers Filter.
-   */
-  private void initClickjackingHttpHeadersFilter(ServletContext servletContext, EnumSet<DispatcherType> disps) {
-    log.debug("Registering Clickjacking HTTP Headers Filter");
-    FilterRegistration.Dynamic cachingFilter = servletContext
-      .addFilter("clickjackingHttpHeadersFilter", new ClickjackingHttpHeadersFilter());
-
-    cachingFilter.addMappingForUrlPatterns(disps, true, "/*");
-    cachingFilter.setAsyncSupported(true);
-  }
-
-  /**
-   * Initializes Metrics.
-   */
-  private void initMetrics(ServletContext servletContext, EnumSet<DispatcherType> disps) {
-    log.debug("Initializing Metrics registries");
-    servletContext.setAttribute(InstrumentedFilter.REGISTRY_ATTRIBUTE, metricRegistry);
-    servletContext.setAttribute(MetricsServlet.METRICS_REGISTRY, metricRegistry);
-
-    log.debug("Registering Metrics Filter");
-    FilterRegistration.Dynamic metricsFilter = servletContext
-      .addFilter("webappMetricsFilter", new InstrumentedFilter());
-
-    metricsFilter.addMappingForUrlPatterns(disps, true, "/*");
-    metricsFilter.setAsyncSupported(true);
-
+  @Bean
+  public ServletRegistrationBean<MetricsServlet> metricsServlet(MetricRegistry metricRegistry) {
     log.debug("Registering Metrics Servlet");
-    ServletRegistration.Dynamic metricsAdminServlet = servletContext.addServlet("metricsServlet", new MetricsServlet());
+    ServletRegistrationBean<MetricsServlet> bean = new ServletRegistrationBean<>();
 
-    metricsAdminServlet.addMapping("/jvm/*");
-    metricsAdminServlet.setAsyncSupported(true);
-    metricsAdminServlet.setLoadOnStartup(2);
+    bean.setServlet(new MetricsServlet(metricRegistry));
+    bean.addUrlMappings("/metrics/metrics/*");
+    bean.setAsyncSupported(true);
+    bean.setLoadOnStartup(2);
+
+    return bean;
+  }
+
+  @Bean
+  public FilterRegistrationBean<ClickjackingHttpHeadersFilter> clickjackingHttpHeadersFilterRegistration() {
+    log.debug("Registering Click Jacking Http Header Filter");
+    FilterRegistrationBean<ClickjackingHttpHeadersFilter> bean = new FilterRegistrationBean<>();
+
+    bean.setFilter(new ClickjackingHttpHeadersFilter());
+    bean.addUrlPatterns("/*");
+    bean.setAsyncSupported(true);
+
+    return bean;
+  }
+
+  @Bean
+  @Profile({"prod"})
+  public FilterRegistrationBean<StaticResourcesProductionFilter> staticResourcesProductionFilterRegistration() {
+    log.debug("Registering Static Resources Production Filter");
+    FilterRegistrationBean<StaticResourcesProductionFilter> bean = new FilterRegistrationBean<>();
+
+    bean.setFilter(new StaticResourcesProductionFilter());
+    bean.addUrlPatterns("/favicon.ico");
+    bean.addUrlPatterns("/robots.txt");
+    bean.addUrlPatterns("/index.html");
+    bean.addUrlPatterns("/images/*");
+    bean.addUrlPatterns("/fonts/*");
+    bean.addUrlPatterns("/scripts/*");
+    bean.addUrlPatterns("/styles/*");
+    bean.addUrlPatterns("/views/*");
+    bean.setAsyncSupported(true);
+
+    return bean;
+  }
+
+  @Bean
+  @Profile({"prod"})
+  public FilterRegistrationBean<CachingHttpHeadersFilter> cachingHttpHeadersFilterRegistration() {
+    log.debug("Registering Caching Htpp Headers Filter");
+    FilterRegistrationBean<CachingHttpHeadersFilter> bean = new FilterRegistrationBean<>();
+
+    bean.setFilter(new CachingHttpHeadersFilter());
+    bean.addUrlPatterns("/images/*");
+    bean.addUrlPatterns("/fonts/*");
+    bean.addUrlPatterns("/scripts/*");
+    bean.addUrlPatterns("/styles/*");
+    bean.setAsyncSupported(true);
+
+    return bean;
+  }
+
+  @Bean
+  public FilterRegistrationBean<CharacterEncodingFilter> CharacterEncodingFilterRegistration() {
+    FilterRegistrationBean<CharacterEncodingFilter> bean = new FilterRegistrationBean<>();
+    CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
+
+    characterEncodingFilter.setEncoding("UTF-8");
+    characterEncodingFilter.setForceResponseEncoding(true);
+
+    bean.setFilter(characterEncodingFilter);
+    bean.addUrlPatterns("/*");
+    bean.setAsyncSupported(true);
+    return bean;
+  }
+
+  @Bean
+  public FilterRegistrationBean<NoTraceFilter> noTraceFilterRegistration() {
+    log.debug("Registering No Trace Filter");
+    FilterRegistrationBean<NoTraceFilter> bean = new FilterRegistrationBean<>();
+
+    bean.setFilter(new NoTraceFilter());
+    bean.addUrlPatterns("/*");
+    bean.setAsyncSupported(true);
+
+    return bean;
+  }
+
+  @Bean
+  public FilterRegistrationBean<ForbiddenUrlsFilter> forbiddenUrlsFilterRegistration() {
+    log.debug("Registering Forbidden Urls Filter");
+    FilterRegistrationBean<ForbiddenUrlsFilter> bean = new FilterRegistrationBean<>();
+
+    bean.setFilter(new ForbiddenUrlsFilter());
+    bean.addUrlPatterns("/.htaccess");
+    bean.addUrlPatterns("/.htaccess/");
+    bean.setAsyncSupported(true);
+
+    return bean;
   }
 
   /**

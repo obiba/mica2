@@ -12,6 +12,7 @@ package org.obiba.mica.web.model;
 
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -88,20 +89,20 @@ public class CommentDtos {
       .setMessage(comment.getMessage()) //
       .setResourceId(comment.getResourceId()) //
       .setInstanceId(comment.getInstanceId()) //
-      .setCreatedBy(comment.getCreatedBy()) //
+      .setCreatedBy(comment.getCreatedBy().orElse(null)) //
       .setTimestamps(TimestampsDtos.asDto(comment));
 
-    String modifiedBy = comment.getLastModifiedBy();
-    if (!Strings.isNullOrEmpty(modifiedBy)) builder.setModifiedBy(modifiedBy);
+    Optional<String> modifiedBy = comment.getLastModifiedBy();
+    if (modifiedBy.isPresent() && !Strings.isNullOrEmpty(modifiedBy.get())) builder.setModifiedBy(modifiedBy.get());
 
-    Subject profile = userProfileService.getProfile(comment.getCreatedBy());
+    Subject profile = userProfileService.getProfile(comment.getCreatedBy().orElse(null));
     if (profile != null) {
       builder.setCreatedByProfile(userProfileDtos.asDto(profile));
     }
 
-    String lastModifiedBy = comment.getLastModifiedBy();
-    if (!Strings.isNullOrEmpty(lastModifiedBy)) {
-      profile = userProfileService.getProfile(lastModifiedBy);
+    Optional<String> lastModifiedBy = comment.getLastModifiedBy();
+    if (lastModifiedBy.isPresent() && !Strings.isNullOrEmpty(lastModifiedBy.get())) {
+      profile = userProfileService.getProfile(lastModifiedBy.get());
       if(profile != null) {
         builder.setModifiedByProfile(userProfileDtos.asDto(profile));
       }

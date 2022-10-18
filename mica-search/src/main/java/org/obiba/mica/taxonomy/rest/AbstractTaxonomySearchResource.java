@@ -25,7 +25,6 @@ import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Term;
 import org.obiba.opal.web.model.Opal;
 import org.obiba.opal.web.taxonomy.Dtos;
-import sun.util.locale.LanguageTag;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -43,6 +42,8 @@ public class AbstractTaxonomySearchResource {
   private static final String[] VOCABULARY_FIELDS = {"title", "description"};
 
   private static final String[] TERM_FIELDS = {"title", "description", "keywords"};
+
+  private static final String LANGUAGE_TAG_UNDETERMINED = "und";
 
   @Inject
   private EsTaxonomyTermService esTaxonomyTermService;
@@ -178,7 +179,7 @@ public class AbstractTaxonomySearchResource {
 
     if (Strings.isNullOrEmpty(locale)) {
       locales.addAll(micaConfigService.getConfig().getLocalesAsString());
-      locales.add(LanguageTag.UNDETERMINED);
+      locales.add(LANGUAGE_TAG_UNDETERMINED);
     } else {
       locales.add(locale);
     }

@@ -1,13 +1,14 @@
 package org.obiba.mica.micaConfig.service;
 
-import org.joda.time.DateTime;
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import javax.inject.Inject;
+
 import org.obiba.mica.micaConfig.domain.DataAccessAmendmentForm;
 import org.obiba.mica.micaConfig.repository.DataAccessAmendmentFormRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
-
-import javax.inject.Inject;
-import java.util.Optional;
 
 @Component
 public class DataAccessAmendmentFormService extends AbstractDataAccessEntityFormService<DataAccessAmendmentForm> {
@@ -23,18 +24,18 @@ public class DataAccessAmendmentFormService extends AbstractDataAccessEntityForm
   public DataAccessAmendmentForm createOrUpdate(DataAccessAmendmentForm dataAccessForm) {
     validateForm(dataAccessForm);
     dataAccessForm.setRevision(0);
-    dataAccessForm.setLastUpdateDate(DateTime.now());
+    dataAccessForm.setLastUpdateDate(LocalDateTime.now());
     return dataAccessAmendmentFormRepository.save(dataAccessForm);
   }
 
   @Override
   public DataAccessAmendmentForm findDraft() {
-    DataAccessAmendmentForm form = dataAccessAmendmentFormRepository.findOne(DataAccessAmendmentForm.DEFAULT_ID);
-    if (form == null) {
+    Optional<DataAccessAmendmentForm> form = dataAccessAmendmentFormRepository.findById(DataAccessAmendmentForm.DEFAULT_ID);
+    if (!form.isPresent()) {
       createOrUpdate(createDefaultDataAccessAmendmentForm());
-      form = dataAccessAmendmentFormRepository.findOne(DataAccessAmendmentForm.DEFAULT_ID);
+      form = dataAccessAmendmentFormRepository.findById(DataAccessAmendmentForm.DEFAULT_ID);
     }
-    return form;
+    return form.get();
   }
 
   @Override
@@ -71,7 +72,7 @@ public class DataAccessAmendmentFormService extends AbstractDataAccessEntityForm
   //
 
   private Optional<DataAccessAmendmentForm> findFirstSortByRevisionDesc() {
-    return dataAccessAmendmentFormRepository.findAll(new Sort(Sort.Direction.DESC, "revision")).stream()
+    return dataAccessAmendmentFormRepository.findAll(Sort.by(Sort.Order.desc("revision"))).stream()
       .filter(form -> form.getRevision()>0)
       .findFirst();
   }

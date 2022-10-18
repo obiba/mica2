@@ -57,6 +57,7 @@ public class TempFilesResource {
     throws IOException, FileUploadException {
 
     FileItem fileItem = getUploadedFile(request);
+
     if (fileItem == null) throw new FileUploadException("Failed to extract file item from request");
     TempFile tempFile = tempFileService.addTempFile(fileItem.getName(), fileItem.getInputStream());
     URI location = uriInfo.getBaseUriBuilder().path(TempFilesResource.class).path(TempFilesResource.class, "file")
@@ -83,5 +84,4 @@ public class TempFilesResource {
 
     return null;
   }
-
 }

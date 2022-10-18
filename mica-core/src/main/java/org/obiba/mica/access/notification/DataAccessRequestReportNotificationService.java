@@ -37,6 +37,7 @@ import javax.inject.Inject;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
@@ -219,7 +220,7 @@ public class DataAccessRequestReportNotificationService {
   private Date getEndDateFromDataAccessAmendments(DataAccessRequest dar) {
     List<DataAccessAmendment> accessAmendments = dataAccessAmendmentService.findByParentId(dar.getId()).stream()
       .filter(d -> DataAccessEntityStatus.APPROVED.equals(d.getStatus()))
-      .sorted(Comparator.comparing(AbstractAuditableDocument::getLastModifiedDate).reversed()) // last modified first
+      .sorted(Comparator.comparing(item -> ((AbstractAuditableDocument) item).getLastModifiedDate().orElse(null), Comparator.nullsLast(LocalDateTime::compareTo)).reversed()) // last modified first
       .collect(Collectors.toList());
     for (DataAccessAmendment daa : accessAmendments) {
       Date endDate = dataAccessRequestUtilService.getRequestEndDate(daa);

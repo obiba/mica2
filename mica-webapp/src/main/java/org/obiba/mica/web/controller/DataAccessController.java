@@ -27,6 +27,8 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -444,7 +446,7 @@ public class DataAccessController extends BaseController {
 
     List<DataAccessFeasibility> feasibilities = dataAccessRequestUtilService.getDataAccessConfig().isFeasibilityEnabled() ? dataAccessFeasibilityService.findByParentId(id) : Lists.newArrayList();
     params.put("feasibilities", feasibilities);
-    DataAccessFeasibility lastFeasibility = feasibilities.stream().max(Comparator.comparing(AbstractAuditableDocument::getLastModifiedDate)).orElse(null);
+    DataAccessFeasibility lastFeasibility = feasibilities.stream().max(Comparator.comparing(item -> ((AbstractAuditableDocument) item).getLastModifiedDate().orElse(null), Comparator.nullsLast(LocalDateTime::compareTo))).orElse(null);
     params.put("lastFeasibility", lastFeasibility);
 
     List<DataAccessAgreement> agreements = dataAccessRequestUtilService.getDataAccessConfig().isAgreementEnabled() && dar.getStatus().equals(DataAccessEntityStatus.APPROVED) ?
@@ -456,7 +458,7 @@ public class DataAccessController extends BaseController {
 
     List<DataAccessAmendment> amendments = dataAccessRequestUtilService.getDataAccessConfig().isAmendmentsEnabled() ? dataAccessAmendmentService.findByParentId(id) : Lists.newArrayList();
     params.put("amendments", amendments);
-    DataAccessAmendment lastAmendment = amendments.stream().max(Comparator.comparing(AbstractAuditableDocument::getLastModifiedDate)).orElse(null);
+    DataAccessAmendment lastAmendment = amendments.stream().max(Comparator.comparing(item -> ((AbstractAuditableDocument) item).getLastModifiedDate().orElse(null), Comparator.nullsLast(LocalDateTime::compareTo))).orElse(null);
     params.put("lastAmendment", lastAmendment);
 
     params.put("commentsCount", commentsService.countPublicComments("/data-access-request", id));

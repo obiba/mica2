@@ -10,16 +10,32 @@
 
 package org.obiba.mica.core.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Throwables;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Lists;
+import static org.obiba.mica.core.domain.RevisionStatus.DELETED;
+import static org.obiba.mica.core.domain.RevisionStatus.DRAFT;
+import static org.obiba.mica.core.domain.RevisionStatus.UNDER_REVIEW;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.math3.util.Pair;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.UnknownSessionException;
 import org.apache.shiro.subject.Subject;
-import org.joda.time.DateTime;
 import org.obiba.git.CommitInfo;
 import org.obiba.git.command.AbstractGitWriteCommand;
 import org.obiba.mica.NoSuchEntityException;
@@ -33,24 +49,11 @@ import org.obiba.mica.core.repository.EntityStateRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
-import static org.obiba.mica.core.domain.RevisionStatus.DELETED;
-import static org.obiba.mica.core.domain.RevisionStatus.DRAFT;
-import static org.obiba.mica.core.domain.RevisionStatus.UNDER_REVIEW;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Throwables;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Lists;
 
 public abstract class AbstractGitPersistableService<T extends EntityState, T1 extends GitPersistable> {
 
@@ -98,14 +101,14 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
 
   @Nullable
   public T findStateById(@NotNull String id) throws NoSuchEntityException {
-    return getEntityStateRepository().findOne(id);
+    return getEntityStateRepository().findById(id).orElse(null);
   }
 
   @NotNull
   public T getEntityState(String id) {
-    T entityState = getEntityStateRepository().findOne(id);
-    if(entityState == null) throw NoSuchEntityException.withId(getType(), id);
-    return entityState;
+    Optional<T> found = getEntityStateRepository().findById(id);
+    if(!found.isPresent()) throw NoSuchEntityException.withId(getType(), id);
+    return found.get();
   }
 
   @NotNull
@@ -121,9 +124,9 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
       return defaultState;
     }
 
-    T existingState = getEntityStateRepository().findOne(gitPersistable.getId());
+    Optional<T> found = getEntityStateRepository().findById(gitPersistable.getId());
 
-    if(existingState == null) {
+    if(!found.isPresent()) {
       defaultState = stateSupplier.get();
       defaultState.setId(gitPersistable.getId());
       getEntityStateRepository().save(defaultState);
@@ -131,7 +134,7 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
       return defaultState;
     }
 
-    return existingState;
+    return found.get();
   }
 
 
@@ -207,7 +210,7 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
   }
 
   public List<T> findAllStates(Iterable<String> ids) {
-    return Lists.newArrayList(getEntityStateRepository().findAll(ids));
+    return Lists.newArrayList(getEntityStateRepository().findAllById(ids));
   }
 
   public T saveState(@NotNull T entityState) {
@@ -221,10 +224,10 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
       Pair<String, String> tagInfo = gitService.tag(entityState);
       entityState.setPublishedTag(tagInfo.getFirst());
       entityState.setPublishedId(tagInfo.getSecond());
-      entityState.setPublicationDate(DateTime.now());
+      entityState.setPublicationDate(LocalDateTime.now());
       entityState.setPublishedBy(getCurrentUsername());
       entityState.resetRevisionsAhead();
-      entityState.setPublicationDate(DateTime.now());
+      entityState.setPublicationDate(LocalDateTime.now());
     }
 
     return entityState;

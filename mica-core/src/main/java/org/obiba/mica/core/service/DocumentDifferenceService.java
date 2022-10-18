@@ -1,5 +1,6 @@
 package org.obiba.mica.core.service;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
 import com.google.common.collect.MapDifference.ValueDifference;
@@ -14,6 +16,7 @@ import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 
+import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.core.support.RegexHashMap;
 
 import net.minidev.json.JSONArray;
@@ -23,6 +26,16 @@ public class DocumentDifferenceService {
   private static final ObjectMapper mapper = new ObjectMapper();
 
   private DocumentDifferenceService() { }
+
+  static {
+    JavaTimeModule javaTimeModule = new JavaTimeModule();
+    javaTimeModule.addSerializer(LocalDateTime.class, new JsonConfiguration.CustomLocalDateSerializer());
+    javaTimeModule.addDeserializer(LocalDateTime.class, new JsonConfiguration.CustomLocalDateTimeDeserializer());
+
+    mapper.registerModule(javaTimeModule);
+
+    mapper.findAndRegisterModules();
+  }
 
   public static MapDifference<String, Object> diff(Object left, Object right) throws JsonProcessingException {
     return Maps.difference(flatten(left), flatten(right));

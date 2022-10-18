@@ -38,7 +38,6 @@ import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import sun.util.locale.LanguageTag;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
@@ -61,6 +60,8 @@ public class VariableQuery extends AbstractDocumentQuery {
   private static final String SETS = "sets";
 
   private static final String VARIABLE_TYPE = "variableType";
+
+  private static final String LANGUAGE_TAG_UNDETERMINED = "und";
 
   private final OpalService opalService;
 
@@ -324,7 +325,7 @@ public class VariableQuery extends AbstractDocumentQuery {
             String field = vocabulary.getAttributes().containsKey("field")
                 ? vocabulary.getAttributeValue("field")
                 : "attributes." + AttributeKey.getMapKey(vocabulary.getName(), taxonomy.getName()) + "." +
-                LanguageTag.UNDETERMINED;
+                LANGUAGE_TAG_UNDETERMINED;
             if (patterns.isEmpty() || patterns.stream().anyMatch(p -> p.matcher(field).find()))
               properties.put(field, "");
           }));

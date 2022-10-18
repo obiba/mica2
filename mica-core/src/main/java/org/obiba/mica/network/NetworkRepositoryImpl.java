@@ -10,10 +10,7 @@
 
 package org.obiba.mica.network;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
+import com.google.common.eventbus.EventBus;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.repository.PersonAwareRepository;
 import org.obiba.mica.core.repository.PersonRepository;
@@ -21,7 +18,8 @@ import org.obiba.mica.network.domain.Network;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
-import com.google.common.eventbus.EventBus;
+import javax.inject.Inject;
+import java.util.List;
 
 @Component
 public class NetworkRepositoryImpl implements NetworkRepositoryCustom, PersonAwareRepository<Network> {
@@ -54,6 +52,15 @@ public class NetworkRepositoryImpl implements NetworkRepositoryCustom, PersonAwa
   public Network saveWithReferences(Network network) {
     saveContacts(network);
     mongoTemplate.save(network);
+    updateRemovedContacts(network);
+
+    return network;
+  }
+
+  @Override
+  public Network insertWithReferences(Network network) {
+    saveContacts(network);
+    mongoTemplate.insert(network);
     updateRemovedContacts(network);
 
     return network;

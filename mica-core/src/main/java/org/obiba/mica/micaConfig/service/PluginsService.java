@@ -27,7 +27,6 @@ import org.obiba.plugins.spi.ServicePlugin;
 import org.obiba.runtime.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -50,15 +49,15 @@ public class PluginsService implements EnvironmentAware {
 
   private static final String PLUGINS_PATH = "${MICA_HOME}/plugins";
 
-  private static final String MICA_SEARCH_PLUGIN_NAME = "micaSearchPlugin";
+  private static final String MICA_SEARCH_PLUGIN_NAME = "plugins.micaSearchPlugin";
 
   private static final String DEFAULT_MICA_SEARCH_PLUGIN_NAME = "mica-search-es";
 
   private static final String DEFAULT_PLUGINS_UPDATE_SITE = "https://plugins.obiba.org";
 
-  private static final String[] ES_CONFIGURATION = new String[]{"dataNode", "clusterName", "shards", "replicas",
-      "settings", "maxConcurrentJoinQueries", "concurrentJoinQueriesWaitTimeout",
-      "transportClient", "transportAddress", "transportSniff"};
+  private static final String[] ES_CONFIGURATION = new String[]{"elasticsearch.dataNode", "elasticsearch.clusterName", "elasticsearch.shards", "elasticsearch.replicas",
+      "elasticsearch.settings", "elasticsearch.maxConcurrentJoinQueries", "elasticsearch.concurrentJoinQueriesWaitTimeout",
+      "elasticsearch.transportClient", "elasticsearch.transportAddress", "elasticsearch.transportSniff"};
 
   @Inject
   private ConfigurationProvider configurationProvider;
@@ -74,16 +73,13 @@ public class PluginsService implements EnvironmentAware {
 
   private List<ServicePlugin> servicePlugins = Lists.newArrayList();
 
-  private RelaxedPropertyResolver esPropertyResolver;
-
-  private RelaxedPropertyResolver pluginsPropertyResolver;
+  private Environment environment;
 
   private PluginRepositoryCache pluginRepositoryCache;
 
   @Override
   public void setEnvironment(Environment environment) {
-    esPropertyResolver = new RelaxedPropertyResolver(environment, "elasticsearch.");
-    pluginsPropertyResolver = new RelaxedPropertyResolver(environment, "plugins.");
+    this.environment = environment;
   }
 
   public SearchEngineService getSearchEngineService() {
@@ -115,7 +111,7 @@ public class PluginsService implements EnvironmentAware {
    */
   private void initPlugins() {
     Collection<PluginResources> plugins = getPlugins(true);
-    String pluginName = pluginsPropertyResolver.getProperty(MICA_SEARCH_PLUGIN_NAME, DEFAULT_MICA_SEARCH_PLUGIN_NAME);
+    String pluginName = environment.getProperty(MICA_SEARCH_PLUGIN_NAME, DEFAULT_MICA_SEARCH_PLUGIN_NAME);
 
     try {
       String pluginLatestVersion = getPluginRepositoryCache().getPluginLatestVersion(pluginName);
@@ -150,8 +146,8 @@ public class PluginsService implements EnvironmentAware {
     SearchEngineService service = SearchEngineServiceLoader.get(plugin.getURLClassLoader(false)).iterator().next();
     Properties properties = plugin.getProperties();
     for (String key : ES_CONFIGURATION) {
-      if (esPropertyResolver.containsProperty(key))
-        properties.setProperty(key, esPropertyResolver.getProperty(key));
+      if (environment.containsProperty(key))
+        properties.setProperty(key, environment.getProperty(key));
     }
     service.configure(properties);
     service.setConfigurationProvider(configurationProvider);
@@ -212,7 +208,7 @@ public class PluginsService implements EnvironmentAware {
 
   private PluginRepositoryCache getPluginRepositoryCache() {
     if (pluginRepositoryCache == null)
-      pluginRepositoryCache = new PluginRepositoryCache(runtimeVersionProvider, pluginsPropertyResolver.getProperty("updateSite", DEFAULT_PLUGINS_UPDATE_SITE));
+      pluginRepositoryCache = new PluginRepositoryCache(runtimeVersionProvider, environment.getProperty("plugins.updateSite", DEFAULT_PLUGINS_UPDATE_SITE));
     return pluginRepositoryCache;
   }
 }

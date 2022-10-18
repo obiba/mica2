@@ -40,6 +40,8 @@ import java.util.stream.Collectors;
 @Scope("request")
 public class CoverageQueryExecutor {
 
+  private static final String LANGUAGE_TAG_UNDETERMINED = "und";
+
   @Inject
   private OpalService opalService;
 
@@ -69,7 +71,7 @@ public class CoverageQueryExecutor {
         restrictedTermsMap.forEach((taxo, vocMap) -> vocMap.keySet().forEach(
             voc -> joinQuery.getVariableQuery().getAggregations()
                 .add("attributes." + AttributeKey.getMapKey(voc, taxo) + "." +
-                    LanguageTag.UNDETERMINED)));
+                LANGUAGE_TAG_UNDETERMINED)));
       }
     }
 

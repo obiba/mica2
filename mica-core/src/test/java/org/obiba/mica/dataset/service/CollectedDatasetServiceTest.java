@@ -35,8 +35,8 @@ import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.opal.rest.client.magma.RestDatasource;
 import com.google.common.eventbus.EventBus;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -90,7 +90,7 @@ public class CollectedDatasetServiceTest {
     when(r.getValueTable(anyString())).thenThrow(new MagmaRuntimeException());
     when(opalService.getDatasource(anyString(), anyString())).thenReturn(r);
     when(individualStudyService.findStudy(anyString())).thenReturn(study);
-    when(studyDatasetStateRepository.findOne(anyString())).thenReturn(state);
+    when(studyDatasetStateRepository.findById(anyString()).get()).thenReturn(state);
 
     collectedDatasetService.save(dataset);
   }

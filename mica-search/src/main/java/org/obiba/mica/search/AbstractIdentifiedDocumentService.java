@@ -11,23 +11,22 @@
 package org.obiba.mica.search;
 
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Lists;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Nullable;
+
 import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.core.service.IdentifiedDocumentService;
 import org.obiba.mica.spi.search.Identified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Lists;
 
 public abstract class AbstractIdentifiedDocumentService<T extends Identified> extends AbstractDocumentService<T> implements IdentifiedDocumentService<T> {
 

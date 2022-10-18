@@ -1,6 +1,7 @@
 package org.obiba.mica.web.controller.domain;
 
-import org.joda.time.DateTime;
+import java.time.LocalDateTime;
+
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.domain.StatusChange;
@@ -43,11 +44,11 @@ public class DataAccessRequestBundle {
     return title;
   }
 
-  public DateTime getLastUpdate() {
-    return request.getLastModifiedDate();
+  public LocalDateTime getLastUpdate() {
+    return request.getLastModifiedDate().orElse(LocalDateTime.now());
   }
 
-  public DateTime getSubmitDate() {
+  public LocalDateTime getSubmitDate() {
     return submission == null ? null : submission.getChangedOn();
   }
 

@@ -11,7 +11,6 @@
 package org.obiba.mica.config;
 
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,16 +28,16 @@ public class EsConcurrencyConfiguration implements EnvironmentAware {
 
   private static final int DEFAULT_MAX_CONCURRENT_MAX_JOIN_QUERIES = 4;
 
-  private RelaxedPropertyResolver propertyResolver;
+  private Environment environment;
 
   @Override
   public void setEnvironment(Environment environment) {
-    propertyResolver = new RelaxedPropertyResolver(environment, "elasticsearch.");
+    this.environment = environment;
   }
 
   @Bean(name = "esJoinQueriesSemaphore")
   @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
   public Semaphore getSemaphore() {
-    return new Semaphore(propertyResolver.getProperty("maxConcurrentJoinQueries", Integer.class, DEFAULT_MAX_CONCURRENT_MAX_JOIN_QUERIES));
+    return new Semaphore(environment.getProperty("elasticsearch.maxConcurrentJoinQueries", Integer.class, DEFAULT_MAX_CONCURRENT_MAX_JOIN_QUERIES));
   }
 }

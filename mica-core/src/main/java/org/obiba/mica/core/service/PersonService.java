@@ -18,10 +18,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -70,7 +72,7 @@ public class PersonService {
   EventBus eventBus;
 
   public Person findById(String id) {
-    return personRepository.findOne(id);
+    return personRepository.findById(id).orElse(null);
   }
 
   public Person getFromCommit(@NotNull Person gitPersistable, @NotNull String commitId) {
@@ -96,19 +98,20 @@ public class PersonService {
     Person saved = person;
 
     if (!person.isNew()) {
-      saved = personRepository.findOne(person.getId());
+      Optional<Person> found = personRepository.findById(person.getId());
 
-      if (saved != null) {
+      if (found.isPresent()) {
+        saved = found.get();
         BeanUtils.copyProperties(person, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy", "lastModifiedDate");
       } else {
         saved = person;
       }
     }
 
-    saved.setLastModifiedDate(DateTime.now());
+    saved.setLastModifiedDate(LocalDateTime.now());
 
     personRepository.save(saved);
-    
+
     eventBus.post(new PersonUpdatedEvent(saved));
     gitService.save(saved);
     return saved;
@@ -116,7 +119,7 @@ public class PersonService {
 
   public void delete(String id) {
     Person personToDelete = findById(id);
-    personRepository.delete(id);
+    personRepository.deleteById(id);
     gitService.deleteGitRepository(personToDelete);
     eventBus.post(new PersonDeletedEvent(personToDelete));
   }

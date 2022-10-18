@@ -54,13 +54,16 @@ public class PersonIndexer {
     log.info("Reindexing all persons");
     if(indexer.hasIndex(Indexer.PERSON_INDEX)) indexer.dropIndex(Indexer.PERSON_INDEX);
 
-    Pageable pageRequest = new PageRequest(0, 100);
+    Pageable pageRequest = PageRequest.of(0, 100);
     Page<Person> persons;
+    boolean keepGoing = true;
 
     do {
       persons = personRepository.findAll(pageRequest);
       indexer.indexAll(Indexer.PERSON_INDEX, persons);
-    } while((pageRequest = persons.nextPageable()) != null);
+      if (!persons.hasNext()) keepGoing = false;
+      else pageRequest = persons.nextPageable();
+    } while(keepGoing);
   }
 
   @Async

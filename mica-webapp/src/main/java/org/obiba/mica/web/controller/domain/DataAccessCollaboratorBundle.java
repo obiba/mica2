@@ -1,10 +1,9 @@
 package org.obiba.mica.web.controller.domain;
 
-import org.joda.time.DateTime;
-import org.obiba.mica.access.domain.DataAccessCollaborator;
-import org.obiba.shiro.realm.ObibaRealm;
-
+import java.time.LocalDateTime;
 import java.util.Map;
+
+import org.obiba.mica.access.domain.DataAccessCollaborator;
 
 public class DataAccessCollaboratorBundle {
 
@@ -32,8 +31,8 @@ public class DataAccessCollaboratorBundle {
   public boolean isInvitationPending() {
     return collaborator.isInvitationPending();
   }
-  public DateTime getLastModifiedDate() {
-    return collaborator.getLastModifiedDate();
+  public LocalDateTime getLastModifiedDate() {
+    return collaborator.getLastModifiedDate().orElse(LocalDateTime.now());
   }
 
   public DataAccessCollaborator getCollaborator() {

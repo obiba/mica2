@@ -263,12 +263,17 @@ class DataAccessRequestDtos {
   }
   @NotNull
   public Mica.DataAccessCollaboratorDto asDto(@NotNull DataAccessCollaborator collaborator) {
-    return Mica.DataAccessCollaboratorDto.newBuilder()
+    Mica.DataAccessCollaboratorDto.Builder builder = Mica.DataAccessCollaboratorDto.newBuilder();
+
+    if (collaborator.hasLastModifiedBy()) {
+      builder.setModifiedBy(collaborator.getLastModifiedBy().get());
+    }
+
+    return builder
       .setRequestId(collaborator.getRequestId())
       .setEmail(collaborator.getEmail())
       .setInvitationPending(collaborator.isInvitationPending())
-      .setCreatedBy(collaborator.getCreatedBy())
-      .setModifiedBy(collaborator.getLastModifiedBy())
+      .setCreatedBy(collaborator.getCreatedBy().get())
       .setTimestamps(TimestampsDtos.asDto(collaborator))
       .build();
   }

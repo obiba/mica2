@@ -10,14 +10,18 @@
 
 package org.obiba.mica.file.service;
 
+import static java.util.stream.Collectors.toList;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,7 +38,6 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.UnknownSessionException;
 import org.apache.shiro.subject.Subject;
 import org.bson.types.ObjectId;
-import org.joda.time.DateTime;
 import org.obiba.git.command.AbstractGitWriteCommand;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.PublishCascadingScope;
@@ -80,8 +83,6 @@ import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-import static java.util.stream.Collectors.toList;
-
 @Component
 public class FileSystemService {
 
@@ -125,41 +126,44 @@ public class FileSystemService {
     List<AttachmentState> states = attachmentStateRepository.findByPathAndName(saved.getPath(), saved.getName());
     AttachmentState state = states.isEmpty() ? new AttachmentState() : states.get(0);
 
-    if(attachment.isNew()) {
+    boolean attachmentisNew = attachment.isNew();
+
+    if(attachmentisNew) {
       attachment.setId(new ObjectId().toString());
     } else {
-      saved = attachmentRepository.findOne(attachment.getId());
-      if(saved == null || attachment.isJustUploaded()) {
+      Optional<Attachment> found = attachmentRepository.findById(attachment.getId());
+      if(!found.isPresent() || attachment.isJustUploaded()) {
         saved = attachment;
       } else if(state.isPublished() && state.getPublishedAttachment().getId().equals(attachment.getId())) {
         // about to update a published attachment, so make a soft copy of it
         attachment.setFileReference(saved.getFileReference());
-        attachment.setCreatedDate(DateTime.now());
+        attachment.setCreatedDate(LocalDateTime.now());
         attachment.setId(new ObjectId().toString());
         saved = attachment;
       } else {
+        saved = found.get();
         BeanUtils.copyProperties(attachment, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
             "lastModifiedDate", "fileReference");
       }
 
-      saved.setLastModifiedDate(DateTime.now());
+      saved.setLastModifiedDate(LocalDateTime.now());
       saved.setLastModifiedBy(getCurrentUsername());
     }
 
     if(saved.isJustUploaded()) {
-      if(attachmentRepository.exists(saved.getId())) {
+      if(attachmentRepository.existsById(saved.getId())) {
         // replace already existing attachment
         fileStoreService.delete(saved.getId());
-        attachmentRepository.delete(saved.getId());
+        attachmentRepository.deleteById(saved.getId());
       }
       fileStoreService.save(saved.getId());
       saved.setJustUploaded(false);
     }
 
-    attachmentRepository.save(saved);
+    attachmentRepository.insert(saved);  
 
     state.setAttachment(saved);
-    state.setLastModifiedDate(DateTime.now());
+    state.setLastModifiedDate(LocalDateTime.now());
     state.setLastModifiedBy(getCurrentUsername());
     if(state.isNew()) {
       if(FileUtils.isDirectory(state)) {
@@ -168,7 +172,12 @@ public class FileSystemService {
         mkdirs(saved.getPath());
       }
     }
-    attachmentStateRepository.save(state);
+
+    if (attachmentisNew) {
+      attachmentStateRepository.insert(state);
+    } else {
+      attachmentStateRepository.save(state);
+    }    
 
     eventBus.post(new FileUpdatedEvent(state));
   }
@@ -221,16 +230,16 @@ public class FileSystemService {
       attachment.setId(new ObjectId().toString());
       attachment.setName(DIR_NAME);
       attachment.setPath(path);
-      attachment.setLastModifiedDate(DateTime.now());
+      attachment.setLastModifiedDate(LocalDateTime.now());
       attachment.setLastModifiedBy(getCurrentUsername());
-      attachmentRepository.save(attachment);
+      attachmentRepository.insert(attachment);
       AttachmentState state = new AttachmentState();
       state.setName(DIR_NAME);
       state.setPath(path);
       state.setAttachment(attachment);
-      state.setLastModifiedDate(DateTime.now());
+      state.setLastModifiedDate(LocalDateTime.now());
       state.setLastModifiedBy(getCurrentUsername());
-      attachmentStateRepository.save(state);
+      attachmentStateRepository.insert(state);
       eventBus.post(new FileUpdatedEvent(state));
     }
   }
@@ -308,7 +317,7 @@ public class FileSystemService {
         state.unPublish();
       }
 
-      state.setLastModifiedDate(DateTime.now());
+      state.setLastModifiedDate(LocalDateTime.now());
       state.setLastModifiedBy(publisher);
       attachmentStateRepository.save(state);
       eventBus.post(publish ? new FilePublishedEvent(state): new FileUnPublishedEvent(state));
@@ -468,7 +477,7 @@ public class FileSystemService {
     Attachment newAttachment = new Attachment();
     BeanUtils.copyProperties(attachment, newAttachment, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
         "lastModifiedDate");
-    newAttachment.setLastModifiedDate(DateTime.now());
+    newAttachment.setLastModifiedDate(LocalDateTime.now());
     newAttachment.setLastModifiedBy(getCurrentUsername());
     save(newAttachment);
   }

@@ -11,18 +11,6 @@
 package org.obiba.mica.file.rest;
 
 
-import com.google.common.base.Strings;
-import com.google.common.io.Files;
-import java.io.UnsupportedEncodingException;
-import org.obiba.mica.NoSuchEntityException;
-import org.obiba.mica.core.domain.RevisionStatus;
-import org.obiba.mica.file.Attachment;
-import org.obiba.mica.file.FileStoreService;
-import org.obiba.mica.file.service.TempFileService;
-import org.obiba.mica.file.support.FileMediaType;
-import org.obiba.mica.web.model.Mica;
-import org.springframework.stereotype.Component;
-
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -35,7 +23,19 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
+import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.core.domain.RevisionStatus;
+import org.obiba.mica.file.Attachment;
+import org.obiba.mica.file.FileStoreService;
+import org.obiba.mica.file.service.TempFileService;
+import org.obiba.mica.file.support.FileMediaType;
+import org.obiba.mica.web.model.Mica;
+import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriUtils;
+
+import com.google.common.base.Strings;
+import com.google.common.io.Files;
 
 @Component
 @Path("/draft")
@@ -71,7 +71,7 @@ public class DraftFileSystemResource extends AbstractFileSystemResource {
 
       return Response.ok(fileStoreService.getFile(attachment.getFileReference()))
         .header("Content-Disposition", "attachment; filename=" + uriEncodedFilename).build();
-    } catch (NoSuchEntityException | UnsupportedEncodingException e) {
+    } catch (NoSuchEntityException e) {
       String name = doZip(path);
 
       return Response.ok(tempFileService.getInputStreamFromFile(name))

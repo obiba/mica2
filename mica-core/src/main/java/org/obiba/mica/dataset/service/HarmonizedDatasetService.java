@@ -10,13 +10,30 @@
 
 package org.obiba.mica.dataset.service;
 
-import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.common.eventbus.EventBus;
-import org.joda.time.DateTime;
-import org.obiba.magma.*;
+import static java.util.stream.Collectors.toList;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import org.obiba.magma.MagmaRuntimeException;
+import org.obiba.magma.NoSuchValueTableException;
+import org.obiba.magma.NoSuchVariableException;
+import org.obiba.magma.ValueTable;
+import org.obiba.magma.Variable;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.OpalTable;
@@ -59,18 +76,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
-import static java.util.stream.Collectors.toList;
+import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
 
 @Service
 @Validated
@@ -139,7 +149,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
   @Override
   @NotNull
   public HarmonizationDataset findById(@NotNull String id) throws NoSuchDatasetException {
-    HarmonizationDataset dataset = harmonizationDatasetRepository.findOne(id);
+    HarmonizationDataset dataset = harmonizationDatasetRepository.findById(id).orElse(null);
     if(dataset == null) throw NoSuchDatasetException.withId(id);
     return dataset;
   }
@@ -169,7 +179,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
    * @return
    */
   public List<HarmonizationDataset> findAllDatasets(Iterable<String> ids) {
-    return Lists.newArrayList(harmonizationDatasetRepository.findAll(ids));
+    return Lists.newArrayList(harmonizationDatasetRepository.findAllById(ids));
   }
 
   /**
@@ -332,7 +342,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
   }
 
   public void delete(String id) {
-    HarmonizationDataset dataset = harmonizationDatasetRepository.findOne(id);
+    HarmonizationDataset dataset = harmonizationDatasetRepository.findById(id).orElse(null);
 
     if(dataset == null) {
       throw NoSuchDatasetException.withId(id);
@@ -340,8 +350,8 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
 
     fileSystemService.delete(FileUtils.getEntityPath(dataset));
     helper.evictCache(dataset);
-    harmonizationDatasetStateRepository.delete(id);
-    harmonizationDatasetRepository.delete(id);
+    harmonizationDatasetStateRepository.deleteById(id);
+    harmonizationDatasetRepository.deleteById(id);
     gitService.deleteGitRepository(dataset);
     eventBus.post(new DatasetDeletedEvent(dataset));
   }
@@ -440,17 +450,23 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
       throw new MissingCommentException("Due to the server configuration, comments are required when saving this document.");
     }
 
+    boolean datasetIsNew = dataset.isNew();
+
     HarmonizationDataset saved = prepareSave(dataset);
 
     HarmonizationDatasetState harmonizationDatasetState = findEntityState(dataset, HarmonizationDatasetState::new);
 
-    if(!dataset.isNew()) ensureGitRepository(harmonizationDatasetState);
+    if(!datasetIsNew) ensureGitRepository(harmonizationDatasetState);
 
     harmonizationDatasetState.incrementRevisionsAhead();
+
     harmonizationDatasetStateRepository.save(harmonizationDatasetState);
 
-    saved.setLastModifiedDate(DateTime.now());
-    harmonizationDatasetRepository.save(saved);
+    saved.setLastModifiedDate(LocalDateTime.now());
+
+    if(!datasetIsNew) harmonizationDatasetRepository.save(saved);
+    else harmonizationDatasetRepository.insert(saved);
+
     gitService.save(saved, comment);
     helper.getPublishedVariables(saved);
   }
@@ -460,11 +476,12 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
       dataset.setId(generateDatasetId(dataset));
       return dataset;
     } else {
-      HarmonizationDataset saved = harmonizationDatasetRepository.findOne(dataset.getId());
-      if(saved != null) {
-        BeanUtils.copyProperties(dataset, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
+      Optional<HarmonizationDataset> saved = harmonizationDatasetRepository.findById(dataset.getId());
+      if(saved.isPresent()) {
+        HarmonizationDataset harmonizationDataset = saved.get();
+        BeanUtils.copyProperties(dataset, harmonizationDataset, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
           "lastModifiedDate");
-        return saved;
+        return harmonizationDataset;
       }
       return dataset;
     }

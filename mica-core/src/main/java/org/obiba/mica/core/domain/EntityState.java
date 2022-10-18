@@ -10,7 +10,8 @@
 
 package org.obiba.mica.core.domain;
 
-import org.joda.time.DateTime;
+import java.time.LocalDateTime;
+
 import org.springframework.data.mongodb.core.index.Indexed;
 
 import com.google.common.base.Strings;
@@ -25,7 +26,7 @@ public abstract class EntityState extends DefaultEntityBase implements GitIdenti
 
   private String publishedId;
 
-  private DateTime publicationDate;
+  private LocalDateTime publicationDate;
 
   private String publishedBy;
 
@@ -79,11 +80,11 @@ public abstract class EntityState extends DefaultEntityBase implements GitIdenti
     revisionStatus = status;
   }
 
-  public DateTime getPublicationDate() {
+  public LocalDateTime getPublicationDate() {
     return publicationDate;
   }
 
-  public void setPublicationDate(DateTime publicationDate) {
+  public void setPublicationDate(LocalDateTime publicationDate) {
     this.publicationDate = publicationDate;
   }
 

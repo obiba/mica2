@@ -33,7 +33,7 @@ public class EventBusConfiguration {
 
   // defined in AsyncConfiguration
   @Inject
-  @Qualifier("getAsyncExecutor")
+  @Qualifier("applicationTaskExecutor")
   private Executor executor;
 
   @Bean

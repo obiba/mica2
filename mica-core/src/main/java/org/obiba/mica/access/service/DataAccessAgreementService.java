@@ -12,7 +12,6 @@ package org.obiba.mica.access.service;
 
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
-import org.joda.time.DateTime;
 import org.obiba.mica.access.DataAccessAgreementRepository;
 import org.obiba.mica.access.DataAccessEntityRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
@@ -32,6 +31,7 @@ import org.springframework.validation.annotation.Validated;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -63,12 +63,13 @@ public class DataAccessAgreementService extends DataAccessEntityService<DataAcce
   public DataAccessAgreement save(@NotNull DataAccessAgreement agreement) {
     DataAccessAgreement saved = agreement;
     DataAccessEntityStatus from = null;
+    boolean agreementIsNew = agreement.isNew();
 
-    if (agreement.isNew()) {
+    if (agreementIsNew) {
       setAndLogStatus(saved, DataAccessEntityStatus.OPENED);
       saved.setId(makeAgreementId(agreement.getParentId(), agreement.getApplicant()));
     } else {
-      saved = dataAccessAgreementRepository.findOne(agreement.getId());
+      saved = dataAccessAgreementRepository.findById(agreement.getId()).orElse(null);
       if (saved != null) {
         from = saved.getStatus();
         // validate the status
@@ -84,12 +85,13 @@ public class DataAccessAgreementService extends DataAccessEntityService<DataAcce
       }
     }
 
-    schemaFormContentFileService.save(saved, dataAccessAgreementRepository.findOne(agreement.getId()),
+    schemaFormContentFileService.save(saved, dataAccessAgreementRepository.findById(agreement.getId()),
       String.format("/data-access-request/%s/agreement/%s", saved.getParentId(), agreement.getId()));
 
-    saved.setLastModifiedDate(DateTime.now());
+    saved.setLastModifiedDate(LocalDateTime.now());
 
-    dataAccessAgreementRepository.save(saved);
+    if(agreementIsNew) dataAccessAgreementRepository.insert(saved);
+    else dataAccessAgreementRepository.save(saved);
     eventBus.post(new DataAccessAgreementUpdatedEvent(saved));
     sendNotificationEmails(saved, from);
     return saved;

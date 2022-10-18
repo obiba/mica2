@@ -10,11 +10,16 @@
 
 package org.obiba.mica.project.service;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import org.joda.time.DateTime;
+import static java.util.stream.Collectors.toList;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import javax.inject.Inject;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
@@ -33,19 +38,21 @@ import org.obiba.mica.project.ProjectRepository;
 import org.obiba.mica.project.ProjectStateRepository;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.domain.ProjectState;
-import org.obiba.mica.project.event.*;
+import org.obiba.mica.project.event.IndexProjectsEvent;
+import org.obiba.mica.project.event.ProjectDeletedEvent;
+import org.obiba.mica.project.event.ProjectPublishedEvent;
+import org.obiba.mica.project.event.ProjectUnpublishedEvent;
+import org.obiba.mica.project.event.ProjectUpdatedEvent;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.util.List;
-
-import static java.util.stream.Collectors.toList;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
 @Service
 public class ProjectService extends AbstractGitPersistableService<ProjectState, Project> {
@@ -96,18 +103,18 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
    */
   @NotNull
   public Project findById(@NotNull String id) throws NoSuchProjectException {
-    Project project = projectRepository.findOne(id);
+    Optional<Project> project = projectRepository.findById(id);
 
-    if(project == null) throw NoSuchProjectException.withId(id);
+    if(!project.isPresent()) throw NoSuchProjectException.withId(id);
 
-    return project;
+    return project.get();
   }
 
   @Override
   public Project findDraft(@NotNull String id) throws NoSuchEntityException {
-    Project project = projectRepository.findOne(id);
-    if(project == null) throw NoSuchEntityException.withId(Project.class, id);
-    return project;
+    Optional<Project> project = projectRepository.findById(id);
+    if(!project.isPresent()) throw NoSuchEntityException.withId(Project.class, id);
+    return project.get();
   }
 
   @Override
@@ -116,14 +123,17 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
       throw new MissingCommentException("Due to the server configuration, comments are required when saving this document.");
     }
 
+    boolean projectIsNew = project.isNew();
+
     Project saved = project;
 
-    if(project.isNew()) {
+    if(projectIsNew) {
       generateId(saved);
     } else {
-      saved = projectRepository.findOne(project.getId());
+      Optional<Project> found = projectRepository.findById(project.getId());
 
-      if(saved != null) {
+      if(found.isPresent()) {
+        saved = found.get();
         BeanUtils.copyProperties(project, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
           "lastModifiedDate", "dataAccessRequestId");
       } else {
@@ -138,12 +148,12 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
       return defaultState;
     });
 
-    if(!project.isNew()) ensureGitRepository(projectState);
+    if(!projectIsNew) ensureGitRepository(projectState);
 
     projectState.incrementRevisionsAhead();
     projectStateRepository.save(projectState);
 
-    saved.setLastModifiedDate(DateTime.now());
+    saved.setLastModifiedDate(LocalDateTime.now());
 
     projectRepository.save(saved);
     eventBus.post(new ProjectUpdatedEvent(saved));
@@ -159,8 +169,8 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
   public void delete(@NotNull String id) throws NoSuchProjectException {
     Project project = findById(id);
     fileSystemService.delete(FileUtils.getEntityPath(project));
-    projectStateRepository.delete(id);
-    projectRepository.delete(id);
+    projectStateRepository.deleteById(id);
+    projectRepository.deleteById(id);
     gitService.deleteGitRepository(project);
     eventBus.post(new ProjectDeletedEvent(project));
   }
@@ -179,8 +189,9 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'project'") })
   public void publish(@NotNull String id, boolean publish, PublishCascadingScope cascadingScope)
     throws NoSuchEntityException {
-    Project project = projectRepository.findOne(id);
-    if(project == null) return;
+    Optional<Project> found = projectRepository.findById(id);
+    if(!found.isPresent()) return;
+    Project project = found.get();
     if(publish) {
       publishState(id);
       eventBus.post(new ProjectPublishedEvent(project, getCurrentUsername(), cascadingScope));
@@ -236,7 +247,7 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
    * @return
    */
   public List<Project> findAllProjects(Iterable<String> ids) {
-    return Lists.newArrayList(projectRepository.findAll(ids));
+    return Lists.newArrayList(projectRepository.findAllById(ids));
   }
 
   /**
@@ -276,10 +287,10 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
     if(Strings.isNullOrEmpty(prefix)) return null;
     String next = prefix;
 
-    if(!projectRepository.exists(next)) return next;
+    if(!projectRepository.existsById(next)) return next;
     for(int i = 1; i <= 1000; i++) {
       next = prefix + "-" + i;
-      if(!projectRepository.exists(next)) return next;
+      if(!projectRepository.existsById(next)) return next;
     }
     return null;
   }
@@ -293,7 +304,7 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
   @Subscribe
   public void dataAccessRequestUpdated(DataAccessRequestUpdatedEvent event) {
     DataAccessRequest request = event.getPersistable();
-    if(!projectRepository.exists(request.getId()) && request.getStatus() == DataAccessEntityStatus.APPROVED) {
+    if(!projectRepository.existsById(request.getId()) && request.getStatus() == DataAccessEntityStatus.APPROVED) {
       Project project = new Project();
       project.setId(event.getPersistable().getId());
       project.setDataAccessRequestId(event.getPersistable().getId());

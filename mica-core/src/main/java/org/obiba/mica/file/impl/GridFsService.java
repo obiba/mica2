@@ -10,6 +10,7 @@
 
 package org.obiba.mica.file.impl;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.inject.Inject;
@@ -22,7 +23,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsOperations;
 import org.springframework.stereotype.Component;
 
-import com.mongodb.gridfs.GridFSDBFile;
+import com.mongodb.client.gridfs.model.GridFSFile;
 
 @Component
 public class GridFsService implements FileStoreService {
@@ -35,12 +36,18 @@ public class GridFsService implements FileStoreService {
 
   @Override
   public InputStream getFile(String id) throws FileRuntimeException {
-    GridFSDBFile f = gridFsOperations.findOne(new Query().addCriteria(Criteria.where("filename").is(id)));
+    GridFSFile f = gridFsOperations.findOne(new Query().addCriteria(Criteria.where("filename").is(id)));
 
     if(f == null)
       throw new FileRuntimeException(id);
 
-    return f.getInputStream();
+    try {
+      return gridFsOperations.getResource(f).getInputStream();
+    } catch (IllegalStateException e) {
+      throw new FileRuntimeException(id);
+    } catch (IOException e) {
+      throw new FileRuntimeException(id);
+    }
   }
 
   @Override

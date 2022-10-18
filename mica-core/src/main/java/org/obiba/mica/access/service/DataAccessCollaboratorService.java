@@ -1,7 +1,15 @@
 package org.obiba.mica.access.service;
 
 
-import com.google.common.eventbus.EventBus;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import javax.ws.rs.ForbiddenException;
+
 import org.apache.shiro.SecurityUtils;
 import org.joda.time.DateTime;
 import org.json.JSONException;
@@ -14,7 +22,6 @@ import org.obiba.mica.access.event.DataAccessCollaboratorDeletedEvent;
 import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
-import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.realm.MicaAuthorizingRealm;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.user.UserProfileService;
@@ -24,12 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.ForbiddenException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import com.google.common.eventbus.EventBus;
 
 @Service
 @Validated
@@ -151,7 +153,7 @@ public class DataAccessCollaboratorService {
 
   public DataAccessCollaborator save(DataAccessCollaborator collaborator) {
     collaborator.setLastModifiedBy(SecurityUtils.getSubject().getPrincipal().toString());
-    collaborator.setLastModifiedDate(DateTime.now());
+    collaborator.setLastModifiedDate(LocalDateTime.now());
     return dataAccessCollaboratorRepository.save(collaborator);
   }
 
@@ -215,6 +217,6 @@ public class DataAccessCollaboratorService {
   }
 
   public void deleteAll(String requestId) {
-    dataAccessCollaboratorRepository.delete(findByRequestId(requestId));
+    dataAccessCollaboratorRepository.deleteById(requestId);
   }
 }

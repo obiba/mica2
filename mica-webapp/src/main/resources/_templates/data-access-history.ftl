@@ -97,7 +97,7 @@
                       </#if>
                       <td><i class="fas fa-circle text-${statusColor(event.status.toString())}"></i> <@message event.status.toString()/></td>
                       <td>${event.profile.fullName}</td>
-                      <td data-sort="${event.date.toString(datetimeFormat)}" class="moment-datetime">${event.date.toString(datetimeFormat)}</td>
+                      <td data-sort="${event.date.toString()}" class="moment-datetime">${event.date.toString()}</td>
                     </tr>
                   </#list>
                   </tbody>
@@ -134,7 +134,7 @@
                       <tr>
                         <td>${act.action}</td>
                         <td>${act.author}</td>
-                        <td data-sort="${act.changedOn.toString(datetimeFormat)}" class="moment-date">${act.changedOn.toString(datetimeFormat)}</td>
+                        <td data-sort="${act.changedOn.toString()}" class="moment-date">${act.changedOn.toString()}</td>
                       </tr>
                     </#list>
                     </tbody>

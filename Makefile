@@ -46,24 +46,24 @@ install:
 	${mvn_exec} install
 
 core:
-	cd mica-core && ${mvn_exec} install
+	cd mica-core && ${mvn_exec} clean install
 
 spi:
-	cd mica-spi && ${mvn_exec} install
+	cd mica-spi && ${mvn_exec} clean install
 
 search:
-	cd mica-search && ${mvn_exec} install
+	cd mica-search && ${mvn_exec} clean install
 
 proto: model
 
 model:
-	cd mica-web-model && ${mvn_exec} install
+	cd mica-web-model && ${mvn_exec} clean install
 
 python:
 	cd ../mica-python-client && ${mvn_exec} install
 
 rest:
-	cd mica-rest && ${mvn_exec} install
+	cd mica-rest && ${mvn_exec} clean install
 
 log:
 	tail -f ${mica_home}/logs/mica.log
@@ -92,16 +92,15 @@ run-prod:
 	cd ../mica-dist && \
 	mvn clean package && \
 	cd target && \
-	unzip mica-dist-${version}-dist.zip && \
-	mkdir mica_home && \
-	mv mica-dist-${version}/conf mica_home/conf && \
-	export MICA_HOME="${current_dir}/mica-dist/target/mica_home" && \
-	mica-dist-${version}/bin/mica2
+	unzip mica-${version}-dist.zip && \
+	mkdir -p ${mica_home} && \
+	if [ ! -d ${mica_home}/conf ]; then cp -r agate-${version}/conf ${mica_home}/conf; fi
+	export MICA_HOME="${mica_home}" && \
+	./mica-${version}/bin/mica2
 
 debug:
-	export MAVEN_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,address=8002,suspend=n && \
 	cd mica-webapp && \
-	${mvn_exec} spring-boot:run -Pdev -Dspring.profiles.active=dev -DMICA_HOME="${mica_home}" -DMICA_LOG="${mica_log}"
+	${mvn_exec} spring-boot:run -Pdev -Dspring-boot.run.jvmArguments="-Xmx2G -agentlib:jdwp=transport=dt_socket,server=y,address=8002,suspend=n -Dspring.profiles.active=dev -DMICA_HOME='${mica_home}' -DMICA_LOG='${mica_log}'"
 
 run-python:
 	cd ../mica-python-client/target/mica-python/bin && \

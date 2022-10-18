@@ -6,7 +6,7 @@
     <#list items as item>
       <#if !item.isEventItem() || showDataAccessEventsInComments?seq_contains(item.event.type)>
 
-        <#assign currentDay = item.date.toString(dateFormat)/>
+        <#assign currentDay = item.date.toString()/>
         <#if !day?? || day != currentDay>
             <#assign day = currentDay/>
           <!-- timeline time label -->
@@ -31,7 +31,7 @@
                 <a class="time text-danger" onclick="DataAccessService.deleteComment('${dar.id}', '${comment.id}', ${isPrivate})"><i class="fa fa-trash"></i></a>
               </#if>
               <span class="time"><i class="fas fa-clock"></i> <span
-                        class="moment-datetime">${item.date.toString(datetimeFormat)}</span></span>
+                        class="moment-datetime">${item.date.toString()}</span></span>
               <h3 class="timeline-header bg-light">${authors[item.author].fullName}</h3>
 
               <div class="timeline-body marked">
@@ -44,7 +44,7 @@
 
             <div class="timeline-item timeline-event-item">
               <span class="time"><i class="fas fa-clock"></i> <span
-                  class="moment-datetime">${item.date.toString(datetimeFormat)}</span></span>
+                  class="moment-datetime">${item.date.toString()}</span></span>
               <h3 class="timeline-header bg-light">${authors[item.author].fullName}</h3>
 
               <div class="timeline-body">

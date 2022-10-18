@@ -49,7 +49,7 @@ import static java.util.stream.Collectors.toSet;
  */
 public class Network extends AbstractModelAware implements AttributeAware, PersonAware {
 
-  private static final long serialVersionUID = -4271967393906681775L;
+  private static final long serialVersionUID = 2L;
 
   @NotNull
   private LocalizedString name;

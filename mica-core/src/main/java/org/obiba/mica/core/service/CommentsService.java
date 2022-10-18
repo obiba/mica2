@@ -10,9 +10,14 @@
 
 package org.obiba.mica.core.service;
 
-import com.google.common.eventbus.EventBus;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+
 import org.bson.types.ObjectId;
-import org.joda.time.DateTime;
 import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.domain.NoSuchCommentException;
 import org.obiba.mica.core.event.CommentDeletedEvent;
@@ -20,15 +25,11 @@ import org.obiba.mica.core.event.CommentUpdatedEvent;
 import org.obiba.mica.core.notification.MailNotification;
 import org.obiba.mica.core.repository.CommentsRepository;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import javax.inject.Inject;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import com.google.common.eventbus.EventBus;
 
 @Service
 @Validated
@@ -40,7 +41,7 @@ public class CommentsService {
   @Inject
   CommentsRepository commentsRepository;
 
-  private static final Pageable LIMITER = new PageRequest(0, 2);
+  private static final Pageable LIMITER = Pageable.ofSize(2);
 
   public Comment save(Comment comment, MailNotification<Comment> mailNotification) {
     if (comment.getMessage().isEmpty()) throw new IllegalArgumentException("Comment message cannot be empty");
@@ -48,14 +49,14 @@ public class CommentsService {
     Comment saved = comment;
 
     if (!comment.isNew()) {
-      saved = commentsRepository.findOne(comment.getId());
+      saved = commentsRepository.findById(comment.getId()).orElse(null);
       if(saved == null) {
         saved = comment;
       } else {
         BeanUtils.copyProperties(comment, saved, "id", "classId", "createdDate");
       }
 
-      saved.setLastModifiedDate(DateTime.now());
+      saved.setLastModifiedDate(LocalDateTime.now());
     }
 
     if (mailNotification != null) mailNotification.send(saved);
@@ -71,7 +72,7 @@ public class CommentsService {
   }
 
   public void delete(String id) throws NoSuchCommentException {
-    delete(commentsRepository.findOne(id));
+    delete(commentsRepository.findById(id).get());
   }
 
   public void delete(String name, String id) throws NoSuchCommentException {
@@ -79,7 +80,7 @@ public class CommentsService {
   }
 
   public Comment findById(String id) {
-    Comment comment = commentsRepository.findOne(id);
+    Comment comment = commentsRepository.findById(id).orElse(null);
     if(comment == null) throw NoSuchCommentException.withId(id);
     return comment;
   }

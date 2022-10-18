@@ -1,10 +1,10 @@
 package org.obiba.mica.search.reports.generators;
 
 import au.com.bytecode.opencsv.CSVWriter;
-import jersey.repackaged.com.google.common.collect.Lists;
 import org.obiba.mica.core.domain.Address;
 import org.obiba.mica.core.domain.Person;
 
+import java.util.ArrayList;
 import java.util.List;
 
 abstract class PersonCsvReportGenerator extends DocumentCsvReportGenerator {
@@ -13,7 +13,7 @@ abstract class PersonCsvReportGenerator extends DocumentCsvReportGenerator {
 
   private final List<Person> persons;
 
-  private List<String> headers = Lists.newArrayList();
+  private List<String> headers = new ArrayList<>();
 
   public PersonCsvReportGenerator(String parentId, List<Person> persons, String locale) {
     super(locale);
@@ -48,7 +48,7 @@ abstract class PersonCsvReportGenerator extends DocumentCsvReportGenerator {
   @Override
   protected void writeEachLine(CSVWriter writer) {
     persons.forEach(person -> {
-      List<String> line = Lists.newArrayList();
+      List<String> line = new ArrayList<>();
       line.add(parentId);
       line.add(getMemberships(person).stream()
         .filter(mb -> mb.getParentId().equals(parentId))

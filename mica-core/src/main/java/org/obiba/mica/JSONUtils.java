@@ -23,6 +23,8 @@ import com.google.common.base.Strings;
 
 public class JSONUtils {
 
+  private static final ObjectMapper mapper = new ObjectMapper();
+
   /**
    * Convert JSON string to map.
    *
@@ -30,7 +32,6 @@ public class JSONUtils {
    * @return
    */
   public static Map<String, Object> toMap(String jsonStr) {
-    ObjectMapper mapper = new ObjectMapper();
     // convert JSON string to Map
     try {
       return mapper.readValue(jsonStr, new TypeReference<Map<String, Object>>(){});
@@ -46,7 +47,6 @@ public class JSONUtils {
    * @return
    */
   public static String toJSON(Map<String, Object> map) {
-    ObjectMapper mapper = new ObjectMapper();
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
     try {

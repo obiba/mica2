@@ -10,11 +10,9 @@
 
 package org.obiba.mica.access.service;
 
-import org.joda.time.DateTime;
 import org.obiba.mica.access.DataAccessEntityRepository;
 import org.obiba.mica.access.DataAccessFeasibilityRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
-import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessFeasibility;
 import org.obiba.mica.access.event.DataAccessFeasibilityDeletedEvent;
@@ -28,8 +26,9 @@ import org.springframework.validation.annotation.Validated;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,13 +52,15 @@ public class DataAccessFeasibilityService extends DataAccessEntityService<DataAc
   public DataAccessFeasibility save(@NotNull DataAccessFeasibility feasibility) {
     DataAccessFeasibility saved = feasibility;
     DataAccessEntityStatus from = null;
+    boolean feasabilityIsNew = feasibility.isNew();
 
-    if (feasibility.isNew()) {
+    if (feasabilityIsNew) {
       setAndLogStatus(saved, DataAccessEntityStatus.OPENED);
       saved.setId(ensureUniqueId(saved.getParentId()));
     } else {
-      saved = dataFeasibilityRequestRepository.findOne(feasibility.getId());
-      if (saved != null) {
+      Optional<DataAccessFeasibility> found = dataFeasibilityRequestRepository.findById(feasibility.getId());
+      if (found.isPresent()) {
+        saved = found.get();
         from = saved.getStatus();
         // validate the status
         dataAccessRequestUtilService.checkStatusTransition(saved, feasibility.getStatus());
@@ -74,12 +75,13 @@ public class DataAccessFeasibilityService extends DataAccessEntityService<DataAc
       }
     }
 
-    schemaFormContentFileService.save(saved, dataFeasibilityRequestRepository.findOne(feasibility.getId()),
+    schemaFormContentFileService.save(saved, dataFeasibilityRequestRepository.findById(feasibility.getId()),
       String.format("/data-access-request/%s/feasibility/%s", saved.getParentId(), feasibility.getId()));
 
-    saved.setLastModifiedDate(DateTime.now());
+    saved.setLastModifiedDate(LocalDateTime.now());
 
-    dataFeasibilityRequestRepository.save(saved);
+    if (feasabilityIsNew) dataFeasibilityRequestRepository.insert(saved);
+    else dataFeasibilityRequestRepository.save(saved);
     eventBus.post(new DataAccessFeasibilityUpdatedEvent(saved));
     sendNotificationEmails(saved, from);
     return saved;
@@ -92,7 +94,7 @@ public class DataAccessFeasibilityService extends DataAccessEntityService<DataAc
     do {
       count++;
       newId = String.format("%s-F%d", parentId, count);
-    } while (null != dataFeasibilityRequestRepository.findOne(newId));
+    } while (null != dataFeasibilityRequestRepository.findById(newId).orElse(null));
 
     return newId;
   }

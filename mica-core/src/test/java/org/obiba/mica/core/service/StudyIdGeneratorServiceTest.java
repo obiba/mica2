@@ -14,13 +14,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.study.HarmonizationStudyStateRepository;
 import org.obiba.mica.study.StudyStateRepository;
 import org.obiba.mica.study.domain.StudyState;
 
 import java.util.Locale;
+import java.util.Optional;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -101,7 +102,7 @@ public class StudyIdGeneratorServiceTest {
 
   private void givenExistingAcronym(String... existingAcronyms) {
     for (String existingAcronym : existingAcronyms) {
-      when(studyStateRepository.findOne(existingAcronym)).thenReturn(new StudyState());
+      when(studyStateRepository.findById(existingAcronym)).thenReturn(Optional.of(new StudyState()));
     }
   }
 }

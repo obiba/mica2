@@ -42,7 +42,6 @@ import org.obiba.shiro.realm.ObibaRealm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -114,11 +113,9 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
   private SessionsSecurityManager doCreateSecurityManager() {
 
     ImmutableList.Builder<Realm> builder = ImmutableList.<Realm>builder().add(micaIniRealm());
-
-    RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(environment, "agate.");
-    String obibaRealmUrl = propertyResolver.getProperty("url");
-    String serviceName = propertyResolver.getProperty("application.name");
-    String serviceKey = propertyResolver.getProperty("application.key");
+    String obibaRealmUrl = environment.getProperty("agate.url");
+    String serviceName = environment.getProperty("agate.application.name");
+    String serviceKey = environment.getProperty("agate.application.key");
 
     if(!Strings.isNullOrEmpty(obibaRealmUrl)) {
       builder.add(obibaRealm(obibaRealmUrl, serviceName, serviceKey));

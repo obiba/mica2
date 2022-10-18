@@ -1,10 +1,15 @@
 package org.obiba.mica.web.controller.domain;
 
-import org.joda.time.DateTime;
-import org.obiba.mica.access.domain.*;
-import org.obiba.mica.user.UserProfileService;
-
+import java.time.LocalDateTime;
 import java.util.Map;
+
+import org.obiba.mica.access.domain.DataAccessAgreement;
+import org.obiba.mica.access.domain.DataAccessAmendment;
+import org.obiba.mica.access.domain.DataAccessEntity;
+import org.obiba.mica.access.domain.DataAccessEntityStatus;
+import org.obiba.mica.access.domain.DataAccessFeasibility;
+import org.obiba.mica.access.domain.StatusChange;
+import org.obiba.mica.user.UserProfileService;
 
 public class FormStatusChangeEvent {
 
@@ -50,7 +55,7 @@ public class FormStatusChangeEvent {
     return userProfileService.getProfileMap(change.getAuthor(), true);
   }
 
-  public DateTime getDate() {
+  public LocalDateTime getDate() {
     return change.getChangedOn();
   }
 }

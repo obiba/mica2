@@ -32,13 +32,13 @@ public interface PersonAwareRepository<T extends PersonAware> {
     updateRemovedContacts(obj);
     obj.getAllMemberships().forEach(c -> obj.addToPerson(c));
     List<Person> persons = obj.getAllMemberships().stream().map(Membership::getPerson).collect(toList());
-    getPersonRepository().save(persons);
+    getPersonRepository().saveAll(persons);
     persons.forEach(p -> getEventBus().post(new PersonUpdatedEvent(p)));
   }
 
   default void deleteContacts(T obj) {
     obj.getAllPersons().forEach(c -> obj.removeFromPerson(c));
-    getPersonRepository().save(obj.getAllPersons());
+    getPersonRepository().saveAll(obj.getAllPersons());
   }
 
   default void updateRemovedContacts(T obj) {
@@ -46,7 +46,7 @@ public interface PersonAwareRepository<T extends PersonAware> {
     Sets.SetView<Person> removedPersons = Sets
       .difference(Sets.newHashSet(persons), Sets.newHashSet(obj.getAllPersons()));
     removedPersons.forEach(c -> obj.removeFromPerson(c));
-    getPersonRepository().save(removedPersons);
+    getPersonRepository().saveAll(removedPersons);
     removedPersons.forEach(p -> getEventBus().post(new PersonUpdatedEvent(p)));
   }
 

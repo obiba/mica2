@@ -1,13 +1,14 @@
 package org.obiba.mica.micaConfig.service;
 
-import org.joda.time.DateTime;
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import javax.inject.Inject;
+
 import org.obiba.mica.micaConfig.domain.DataAccessFeasibilityForm;
 import org.obiba.mica.micaConfig.repository.DataAccessFeasibilityFormRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
-
-import javax.inject.Inject;
-import java.util.Optional;
 
 @Component
 public class DataAccessFeasibilityFormService extends AbstractDataAccessEntityFormService<DataAccessFeasibilityForm> {
@@ -23,18 +24,18 @@ public class DataAccessFeasibilityFormService extends AbstractDataAccessEntityFo
   public DataAccessFeasibilityForm createOrUpdate(DataAccessFeasibilityForm dataAccessForm) {
     validateForm(dataAccessForm);
     dataAccessForm.setRevision(0);
-    dataAccessForm.setLastUpdateDate(DateTime.now());
+    dataAccessForm.setLastUpdateDate(LocalDateTime.now());
     return dataAccessFeasibilityFormRepository.save(dataAccessForm);
   }
 
   @Override
   public DataAccessFeasibilityForm findDraft() {
-    DataAccessFeasibilityForm form = dataAccessFeasibilityFormRepository.findOne(DataAccessFeasibilityForm.DEFAULT_ID);
-    if (form == null) {
+    Optional<DataAccessFeasibilityForm> form = dataAccessFeasibilityFormRepository.findById(DataAccessFeasibilityForm.DEFAULT_ID);
+    if (!form.isPresent()) {
       createOrUpdate(createDefaultDataAccessFeasibilityForm());
-      form = dataAccessFeasibilityFormRepository.findOne(DataAccessFeasibilityForm.DEFAULT_ID);
+      form = dataAccessFeasibilityFormRepository.findById(DataAccessFeasibilityForm.DEFAULT_ID);
     }
-    return form;
+    return form.get();
   }
 
   @Override
@@ -71,7 +72,7 @@ public class DataAccessFeasibilityFormService extends AbstractDataAccessEntityFo
   //
 
   private Optional<DataAccessFeasibilityForm> findFirstSortByRevisionDesc() {
-    return dataAccessFeasibilityFormRepository.findAll(new Sort(Sort.Direction.DESC, "revision")).stream()
+    return dataAccessFeasibilityFormRepository.findAll(Sort.by(Sort.Order.desc("revision"))).stream()
       .filter(form -> form.getRevision()>0)
       .findFirst();
   }

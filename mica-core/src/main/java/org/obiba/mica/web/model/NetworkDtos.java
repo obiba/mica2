@@ -22,7 +22,6 @@ import javax.validation.constraints.NotNull;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import jersey.repackaged.com.google.common.collect.Lists;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
@@ -152,7 +151,7 @@ class NetworkDtos {
 
     if(!publishedStudies.isEmpty()) {
       Map<String, Long> datasetVariableCounts = asDraft ? null :
-        datasetVariableService.getCountByStudyIds(Lists.newArrayList(publishedStudyIds));
+        datasetVariableService.getCountByStudyIds(publishedStudyIds.stream().collect(Collectors.toList()));
 
       publishedStudies.forEach(study -> {
         builder.addStudyIds(study.getId());
@@ -230,7 +229,7 @@ class NetworkDtos {
     }
 
     if(dto.getNetworkIdsCount() > 0) {
-      network.setNetworkIds(Lists.newArrayList(Sets.newHashSet(dto.getNetworkIdsList())));
+      network.setNetworkIds(Sets.newHashSet(dto.getNetworkIdsList()).stream().collect(Collectors.toList()));
     }
 
     if (dto.getMembershipSortOrderCount() > 0) {

@@ -10,13 +10,36 @@
 
 package org.obiba.mica.access.rest;
 
-import com.codahale.metrics.annotation.Timed;
-import com.google.common.base.Strings;
-import com.google.common.eventbus.EventBus;
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.io.IOException;
+import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.joda.time.DateTime;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
@@ -53,20 +76,10 @@ import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import sun.util.locale.LanguageTag;
 
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static org.slf4j.LoggerFactory.getLogger;
+import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Strings;
+import com.google.common.eventbus.EventBus;
 
 
 @Component
@@ -75,6 +88,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class DataAccessRequestResource extends DataAccessEntityResource<DataAccessRequest> {
 
   private static final Logger log = getLogger(DataAccessRequestResource.class);
+
+  private static final String LANGUAGE_TAG_UNDETERMINED = "und";
 
   private DataAccessRequestService dataAccessRequestService;
 
@@ -169,7 +184,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   public Response getPdf(@PathParam("id") String id, @QueryParam("lang") String lang) {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
 
-    if (Strings.isNullOrEmpty(lang)) lang = LanguageTag.UNDETERMINED;
+    if (Strings.isNullOrEmpty(lang)) lang = LANGUAGE_TAG_UNDETERMINED;
 
     return Response.ok(dataAccessRequestService.getRequestPdf(id, lang))
       .header("Content-Disposition", "attachment; filename=\"" + "data-access-request-" + id + ".pdf" + "\"").build();
@@ -315,7 +330,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     if (Strings.isNullOrEmpty(action.get("text"))) return Response.status(Response.Status.BAD_REQUEST).build();
     try {
       request.getActionLogHistory().add(ActionLog.newBuilder().action(action.get("text"))
-        .changedOn(DateTime.parse(action.get("date")))
+        .changedOn(LocalDate.parse(action.get("date")).atStartOfDay())
         .author(SecurityUtils.getSubject().getPrincipal().toString()).build());
       dataAccessRequestService.saveActionsLogs(request);
     } catch (Exception e) {
@@ -367,8 +382,8 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     attachment.setId(tempFile.getId());
     attachment.setName(tempFile.getName());
     attachment.setSize(tempFile.getSize());
-    attachment.setCreatedBy(tempFile.getCreatedBy());
-    attachment.setCreatedDate(tempFile.getCreatedDate());
+    attachment.setCreatedBy(tempFile.getCreatedBy().orElse(request.getApplicant()));
+    attachment.setCreatedDate(tempFile.getCreatedDate().orElse(LocalDateTime.now()));
     attachment.setJustUploaded(true);
 
     request.getAttachments().add(attachment);

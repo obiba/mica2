@@ -10,10 +10,7 @@
 
 package org.obiba.mica.study;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
+import com.google.common.eventbus.EventBus;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.repository.PersonAwareRepository;
 import org.obiba.mica.core.repository.PersonRepository;
@@ -21,7 +18,8 @@ import org.obiba.mica.study.domain.Study;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
-import com.google.common.eventbus.EventBus;
+import javax.inject.Inject;
+import java.util.List;
 
 @Component
 public class StudyRepositoryImpl implements StudyRepositoryCustom, PersonAwareRepository<Study> {
@@ -54,6 +52,15 @@ public class StudyRepositoryImpl implements StudyRepositoryCustom, PersonAwareRe
   public Study saveWithReferences(Study study) {
     saveContacts(study);
     mongoTemplate.save(study);
+    updateRemovedContacts(study);
+
+    return study;
+  }
+
+  @Override
+  public Study insertWithReferences(Study study) {
+    saveContacts(study);  
+    mongoTemplate.insert(study);
     updateRemovedContacts(study);
 
     return study;

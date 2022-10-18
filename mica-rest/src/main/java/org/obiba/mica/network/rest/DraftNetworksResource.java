@@ -10,6 +10,8 @@
 
 package org.obiba.mica.network.rest;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,12 +30,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import com.codahale.metrics.annotation.Timed;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.eventbus.EventBus;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.domain.EntityStateFilter;
 import org.obiba.mica.core.service.DocumentService;
 import org.obiba.mica.network.domain.Network;
@@ -49,7 +46,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import static java.util.stream.Collectors.toList;
+import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.eventbus.EventBus;
 
 
 @Component

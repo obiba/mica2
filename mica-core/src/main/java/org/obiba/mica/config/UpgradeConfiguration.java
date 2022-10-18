@@ -11,26 +11,29 @@
 package org.obiba.mica.config;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Resource;
-
-import org.obiba.mica.core.upgrade.*;
+import org.obiba.mica.core.upgrade.Mica460Upgrade;
+import org.obiba.mica.core.upgrade.Mica500Upgrade;
+import org.obiba.mica.core.upgrade.Mica510upgrade;
+import org.obiba.mica.core.upgrade.MicaVersionModifier;
+import org.obiba.mica.core.upgrade.RuntimeVersionProvider;
 import org.obiba.runtime.upgrade.UpgradeManager;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.obiba.runtime.upgrade.support.DefaultUpgradeManager;
 import org.obiba.runtime.upgrade.support.NullVersionNewInstallationDetectionStrategy;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.google.common.collect.Lists;
 
 @Configuration
 public class UpgradeConfiguration {
 
-  @Resource(name="upgradeSteps")
-  List<UpgradeStep> upgradeSteps;
+  private List<UpgradeStep> upgradeSteps;
+
+  public UpgradeConfiguration(Mica460Upgrade mica460Upgrade, Mica500Upgrade mica500Upgrade, Mica510upgrade mica510upgrade) {
+    upgradeSteps = Arrays.asList(mica460Upgrade, mica500Upgrade, mica510upgrade);
+  }
 
   @Bean
   public UpgradeManager upgradeManager(MicaVersionModifier micaVersionModifier,
@@ -47,31 +50,5 @@ public class UpgradeConfiguration {
     upgradeManager.setNewInstallationDetectionStrategy(newInstallationDetectionStrategy);
 
     return upgradeManager;
-  }
-
-  @Bean(name = "upgradeSteps")
-  public List<UpgradeStep> upgradeSteps(ApplicationContext applicationContext) {
-    return Lists.newArrayList(
-      applicationContext.getBean(NetworkStateUpgrade.class),
-      applicationContext.getBean(AttachmentsPathUpgrade.class),
-      applicationContext.getBean(AttachmentsCleanupUpgrade.class),
-      applicationContext.getBean(ContactsRefactorUpgrade.class),
-      applicationContext.getBean(DatasetStateUpgrade.class),
-      applicationContext.getBean(ElasticsearchUpgrade.class),
-      applicationContext.getBean(HarmonizationDatasetUpgrade.class),
-      applicationContext.getBean(SchemaFormUpgrade.class),
-      applicationContext.getBean(Mica2Upgrade.class),
-      applicationContext.getBean(Mica220Upgrade.class),
-      applicationContext.getBean(Mica3Upgrade.class),
-      applicationContext.getBean(Mica310Upgrade.class),
-      applicationContext.getBean(Mica320Upgrade.class),
-      applicationContext.getBean(Mica330Upgrade.class),
-      applicationContext.getBean(Mica350Upgrade.class),
-      applicationContext.getBean(Mica372Upgrade.class),
-      applicationContext.getBean(Mica380Upgrade.class),
-      applicationContext.getBean(ElasticsearchMigrationUpgrade.class),
-      applicationContext.getBean(Mica460Upgrade.class),
-      applicationContext.getBean(Mica500Upgrade.class)
-    );
   }
 }

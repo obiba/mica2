@@ -42,12 +42,12 @@ public class OpalCredentialService {
   private MicaConfigService micaConfigService;
 
   public boolean hasOpalCredential(String id) {
-    return repository.findOne(id) != null;
+    return repository.findById(id).orElse(null) != null;
   }
 
   @NotNull
   public OpalCredential getOpalCredential(@NotNull String id) throws NoSuchOpalCredential {
-    OpalCredential opalCredential = Optional.ofNullable(repository.findOne(id)).orElseThrow(NoSuchOpalCredential::new);
+    OpalCredential opalCredential = repository.findById(id).orElseThrow(NoSuchOpalCredential::new);
 
     if(opalCredential.getAuthType() == AuthType.USERNAME)
       opalCredential.setPassword(micaConfigService.decrypt(opalCredential.getPassword()));
@@ -58,7 +58,7 @@ public class OpalCredentialService {
   }
 
   public Optional<OpalCredential> findOpalCredentialById(String id) {
-    OpalCredential opalCredential = repository.findOne(id);
+    OpalCredential opalCredential = repository.findById(id).orElse(null);
 
     if(opalCredential != null)
       if (opalCredential.getAuthType() == AuthType.USERNAME)
@@ -81,7 +81,7 @@ public class OpalCredentialService {
   }
 
   public void createOrUpdateOpalCredential(String opalUrl, String username, String password) {
-    OpalCredential credential = Optional.ofNullable(repository.findOne(opalUrl))
+    OpalCredential credential = repository.findById(opalUrl)
       .map(c -> {
         if(c.getAuthType() == AuthType.CERTIFICATE)
           keyStoreService.deleteKeyPair(OpalService.OPAL_KEYSTORE, opalUrl);
@@ -98,7 +98,7 @@ public class OpalCredentialService {
   }
 
   public void createOrUpdateOpalCredential(String opalUrl, String token) {
-    OpalCredential credential = Optional.ofNullable(repository.findOne(opalUrl))
+    OpalCredential credential = repository.findById(opalUrl)
       .map(c -> {
         if(c.getAuthType() == AuthType.CERTIFICATE)
           keyStoreService.deleteKeyPair(OpalService.OPAL_KEYSTORE, opalUrl);
@@ -115,7 +115,7 @@ public class OpalCredentialService {
   }
 
   public void deleteOpalCredential(String opalUrl) {
-    OpalCredential credential = repository.findOne(opalUrl);
+    OpalCredential credential = repository.findById(opalUrl).orElse(null);
 
     if(credential == null) return;
 
@@ -127,7 +127,7 @@ public class OpalCredentialService {
   }
 
   public void saveOrUpdateOpalCertificateCredential(String opalUrl) {
-    OpalCredential credential = Optional.ofNullable(repository.findOne(opalUrl))
+    OpalCredential credential = repository.findById(opalUrl)
       .map(c -> {
         c.setAuthType(AuthType.CERTIFICATE);
         c.setUsername(null);

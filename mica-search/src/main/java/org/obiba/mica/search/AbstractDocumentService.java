@@ -19,7 +19,6 @@ import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.util.locale.LanguageTag;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -32,6 +31,8 @@ import java.util.stream.Stream;
 public abstract class AbstractDocumentService<T> implements DocumentService<T> {
 
   private static final Logger log = LoggerFactory.getLogger(AbstractDocumentService.class);
+
+  private static final String LANGUAGE_TAG_UNDETERMINED = "und";
 
   protected static final int MAX_SIZE = 10000;
 
@@ -240,7 +241,7 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
 
   protected List<String> getLocalizedFields(String... fieldNames) {
     List<String> fields = Lists.newArrayList();
-    Stream.concat(micaConfigService.getConfig().getLocalesAsString().stream(), Stream.of(LanguageTag.UNDETERMINED))
+    Stream.concat(micaConfigService.getConfig().getLocalesAsString().stream(), Stream.of(LANGUAGE_TAG_UNDETERMINED))
       .forEach(locale -> Arrays.stream(fieldNames)
         .forEach(f -> fields.add(f + "." + locale + ".analyzed")));
     return fields;

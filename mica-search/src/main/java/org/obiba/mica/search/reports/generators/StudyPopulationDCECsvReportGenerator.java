@@ -1,13 +1,13 @@
 package org.obiba.mica.search.reports.generators;
 
 import au.com.bytecode.opencsv.CSVWriter;
-import jersey.repackaged.com.google.common.collect.Lists;
 import org.obiba.mica.study.date.PersistableYearMonth;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.Population;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +15,7 @@ class StudyPopulationDCECsvReportGenerator extends DocumentCsvReportGenerator {
 
   private final List<BaseStudy> studies;
 
-  private List<String> headers = Lists.newArrayList();
+  private List<String> headers = new ArrayList<>();
 
   public StudyPopulationDCECsvReportGenerator(List<BaseStudy> studies, String locale) {
     super(locale);
@@ -47,7 +47,7 @@ class StudyPopulationDCECsvReportGenerator extends DocumentCsvReportGenerator {
   @Override
   protected void writeEachLine(CSVWriter writer) {
     studies.forEach(study -> study.getPopulationsSorted().forEach(pop -> pop.getDataCollectionEventsSorted().forEach(dce -> {
-      List<String> line = Lists.newArrayList();
+      List<String> line = new ArrayList<>();
       line.add(study.getId());
       line.add(pop.getId());
       line.add(dce.getId());

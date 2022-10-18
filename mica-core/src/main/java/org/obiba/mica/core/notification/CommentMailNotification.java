@@ -58,7 +58,7 @@ public class CommentMailNotification implements MailNotification<Comment> {
 
     acls.addAll(subjectAclService.findByResourceInstance(comment.getResourceId(), comment.getInstanceId()));
     List<String> users = acls.stream().filter(s -> s.hasAction("VIEW") && s.getType() == SubjectAcl.Type.USER &&
-      !s.getPrincipal().equals(comment.getCreatedBy())).map(SubjectAcl::getPrincipal).collect(toList());
+      !s.getPrincipal().equals(comment.getCreatedBy().get())).map(SubjectAcl::getPrincipal).collect(toList());
     List<String> groups = acls.stream().filter(s -> s.hasAction("VIEW") && s.getType() == SubjectAcl.Type.GROUP)
       .map(SubjectAcl::getPrincipal).collect(toList());
 
@@ -69,7 +69,7 @@ public class CommentMailNotification implements MailNotification<Comment> {
     ctx.put("publicUrl", micaConfigService.getPublicUrl());
     ctx.put("documentType", comment.getResourceId().replaceFirst("/draft/", ""));
     ctx.put("documentId", comment.getInstanceId());
-    ctx.put("createdBy", comment.getCreatedBy());
+    ctx.put("createdBy", comment.getCreatedBy().get());
     ctx.put("message", comment.getMessage());
     ctx.put("status", comment.isNew() ? "CREATED" : "UPDATED");
 

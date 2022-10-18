@@ -43,7 +43,6 @@ public class DraftStudiesImportResource {
   public Response importZip(@Context HttpServletRequest request,
     @QueryParam("publish") @DefaultValue("false") boolean publish) throws FileUploadException, IOException {
     FileItem uploadedFile = getUploadedFile(request);
-
     studyPackageImportService.importZip(uploadedFile.getInputStream(), publish);
 
     return Response.ok().build();

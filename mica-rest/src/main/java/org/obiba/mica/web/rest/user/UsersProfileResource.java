@@ -10,34 +10,27 @@
 
 package org.obiba.mica.web.rest.user;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.obiba.mica.access.service.DataAccessRequestUtilService;
-import org.obiba.mica.core.service.MailService;
-import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.owasp.esapi.ESAPI;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @Path("/users")
@@ -66,13 +59,15 @@ public class UsersProfileResource {
 
   @POST
   public Response userJoin(@Context HttpServletRequest request) {
-    final Map<String, String[]> params = request.getParameterMap();
+    ObjectMapper mapper = new ObjectMapper();
+    Map<String, Object> params;
+
     try {
+      params =  mapper.readValue(request.getInputStream(),Map.class);
       userProfileService.createUser(params);
       return Response.ok().build();
-    } catch (HttpStatusCodeException e) {
-      String message = e.getResponseBodyAsString();
-      return Response.status(e.getRawStatusCode()).entity(message).build();
+    } catch (IOException e) {
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
     }
   }
 

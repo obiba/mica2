@@ -2,8 +2,8 @@ package org.obiba.mica.core.upgrade;
 
 import java.util.*;
 
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+
+import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,8 +21,9 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.eventbus.EventBus;
 import com.mongodb.BasicDBObject;
-import com.mongodb.WriteResult;
-import com.mongodb.client.model.DBCollectionUpdateOptions;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.result.UpdateResult;
 
 import javax.inject.Inject;
 
@@ -83,26 +84,26 @@ public class Mica500Upgrade implements UpgradeStep {
     }
   }
 
-  private DBObject getDBObjectSafely(String collectionName) {
-    DBCursor dbCursor = mongoTemplate.execute(db -> db.getCollection(collectionName).find());
-    if (dbCursor.hasNext()) {
-      return dbCursor.next();
+  private Document getDBObjectSafely(String collectionName) {
+    if (mongoTemplate.collectionExists(collectionName)) {
+      MongoCollection<Document> existingCollection = mongoTemplate.getCollection(collectionName);
+      return existingCollection.find().first();
     }
 
     return null;
   }
 
   private void updateMicaConfig() throws JSONException {
-    DBObject micaConfig = getDBObjectSafely("micaConfig");
+    Document micaConfig = getDBObjectSafely("micaConfig");
     // delete field anonymousCanCreateCart to reset to default
     if (null != micaConfig) {
-      micaConfig.removeField("anonymousCanCreateCart");
-      mongoTemplate.execute(db -> db.getCollection("micaConfig").save(micaConfig));
+      micaConfig.remove("anonymousCanCreateCart");
+      mongoTemplate.save(micaConfig, "micaConfig");
     }
   }
 
   private void updateHarmonizationInitiativeConfig() throws JSONException {
-    DBObject harmonizationStudyConfig = getDBObjectSafely("harmonizationStudyConfig");
+    Document harmonizationStudyConfig = getDBObjectSafely("harmonizationStudyConfig");
     if (null != harmonizationStudyConfig) {
       JSONObject schema = new JSONObject(harmonizationStudyConfig.get("schema").toString());
       JSONArray definition = new JSONArray(harmonizationStudyConfig.get("definition").toString());
@@ -115,12 +116,12 @@ public class Mica500Upgrade implements UpgradeStep {
 
       harmonizationStudyConfig.put("schema", schema.toString());
       harmonizationStudyConfig.put("definition", definition.toString());
-      mongoTemplate.execute(db -> db.getCollection("harmonizationStudyConfig").save(harmonizationStudyConfig));
+      mongoTemplate.save(harmonizationStudyConfig, "harmonizationStudyConfig");
     }
   }
 
   private void copyPopulationConfigurationToStudyConfiguration(JSONObject schema, JSONArray definition) throws JSONException {
-    DBObject harmonizationPopulationConfig = getDBObjectSafely("harmonizationPopulationConfig");
+    Document harmonizationPopulationConfig = getDBObjectSafely("harmonizationPopulationConfig");
     if (null != harmonizationPopulationConfig) {
       JSONObject popSchema = new JSONObject(harmonizationPopulationConfig.get("schema").toString());
 
@@ -295,7 +296,7 @@ public class Mica500Upgrade implements UpgradeStep {
   }
 
   private void updateHarmonizationProtocolConfig() throws JSONException {
-    DBObject harmonizationDatasetConfig = getDBObjectSafely("harmonizationDatasetConfig");
+    Document harmonizationDatasetConfig = getDBObjectSafely("harmonizationDatasetConfig");
     if (null != harmonizationDatasetConfig) {
       JSONObject schema = new JSONObject(harmonizationDatasetConfig.get("schema").toString());
       JSONArray definition = new JSONArray(harmonizationDatasetConfig.get("definition").toString());
@@ -449,7 +450,8 @@ public class Mica500Upgrade implements UpgradeStep {
 
       harmonizationDatasetConfig.put("schema", schema.toString());
       harmonizationDatasetConfig.put("definition", definition.toString());
-      mongoTemplate.execute(db -> db.getCollection("harmonizationDatasetConfig").save(harmonizationDatasetConfig));
+
+      mongoTemplate.save(harmonizationDatasetConfig, "harmonizationDatasetConfig");
     }
   }
 
@@ -472,14 +474,11 @@ public class Mica500Upgrade implements UpgradeStep {
 
       BasicDBObject arrayFilter = BasicDBObject.parse("{ \"elem.name\": { $in: " + new JSONArray(exclusiveStudyVocabularyNames) + " } }");
 
-      DBCollectionUpdateOptions dbCollectionUpdateOptions = new DBCollectionUpdateOptions();
-      dbCollectionUpdateOptions.multi(true).arrayFilters(Arrays.asList(arrayFilter));
+      UpdateOptions collectionUpdateOptions = new UpdateOptions().arrayFilters(Arrays.asList(arrayFilter));
 
-      WriteResult updateResult = mongoTemplate.getCollection("taxonomyEntityWrapper").update(dbObject,
-        BasicDBObject.parse("{ $set: { \"taxonomy.vocabularies.$[elem].attributes.forClassName\": \"Study\" } }"),
-        dbCollectionUpdateOptions);
+      UpdateResult updateResult = mongoTemplate.getCollection("taxonomyEntityWrapper").updateMany(dbObject, BasicDBObject.parse("{ $set: { \"taxonomy.vocabularies.$[elem].attributes.forClassName\": \"Study\" } }"), collectionUpdateOptions);
 
-      if (updateResult.isUpdateOfExisting()) {
+      if (updateResult.getModifiedCount() > 0) {
         logger.info("Added forClassName attribute for exclusive Study vocabularies");
 
         eventBus.post(new TaxonomiesUpdatedEvent());

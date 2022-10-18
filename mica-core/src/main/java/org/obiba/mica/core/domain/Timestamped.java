@@ -10,18 +10,19 @@
 
 package org.obiba.mica.core.domain;
 
-import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
-import org.joda.time.DateTime;
+import javax.validation.constraints.NotNull;
 
 public interface Timestamped {
 
   @NotNull
-  DateTime getCreatedDate();
+  Optional<LocalDateTime> getCreatedDate();
 
-  void setCreatedDate(DateTime createdDate);
+  void setCreatedDate(LocalDateTime createdDate);
 
-  DateTime getLastModifiedDate();
+  Optional<LocalDateTime> getLastModifiedDate();
 
-  void setLastModifiedDate(DateTime lastModifiedDate);
+  void setLastModifiedDate(LocalDateTime lastModifiedDate);
 }

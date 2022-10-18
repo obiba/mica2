@@ -28,7 +28,6 @@ import org.obiba.opal.web.model.Search;
 import org.obiba.opal.web.taxonomy.Dtos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
@@ -42,7 +41,7 @@ public class OpalServiceHelper implements EnvironmentAware {
 
   private static final Logger log = LoggerFactory.getLogger(OpalServiceHelper.class);
 
-  private RelaxedPropertyResolver opalTaxonomiesProperties;
+  private Environment environment;
 
   @Inject
   private EventBus eventBus;
@@ -56,7 +55,7 @@ public class OpalServiceHelper implements EnvironmentAware {
 
     ConcurrentMap<String, Taxonomy> taxonomiesList = taxonomies.stream().map(taxonomyDto -> {
       Taxonomy taxonomy = fromDto(taxonomyDto);
-      String defaultTermsSortOrder = opalTaxonomiesProperties.getProperty("defaultTermsSortOrder");
+      String defaultTermsSortOrder = environment.getProperty("opalTaxonomies.defaultTermsSortOrder");
 
       if (!Strings.isNullOrEmpty(defaultTermsSortOrder)) {
         taxonomy.getVocabularies().forEach(vocabulary -> vocabulary.addAttribute("termsSortKey", defaultTermsSortOrder));
@@ -103,6 +102,6 @@ public class OpalServiceHelper implements EnvironmentAware {
 
   @Override
   public void setEnvironment(Environment environment) {
-    this.opalTaxonomiesProperties = new RelaxedPropertyResolver(environment, "opalTaxonomies.");
+    this.environment = environment;
   }
 }

@@ -1,10 +1,12 @@
 package org.obiba.mica.access.domain;
 
-import com.google.common.base.Strings;
-import org.joda.time.DateTime;
-import org.obiba.mica.core.domain.AbstractAuditableDocument;
+import java.time.LocalDateTime;
 
 import javax.validation.constraints.NotNull;
+
+import org.obiba.mica.core.domain.AbstractAuditableDocument;
+
+import com.google.common.base.Strings;
 
 public class DataAccessCollaborator extends AbstractAuditableDocument {
 
@@ -65,7 +67,7 @@ public class DataAccessCollaborator extends AbstractAuditableDocument {
     public Builder(String requestId) {
       this.collaborator = new DataAccessCollaborator();
       this.collaborator.requestId = requestId;
-      this.collaborator.setCreatedDate(DateTime.now());
+      this.collaborator.setCreatedDate(LocalDateTime.now());
     }
 
     public Builder email(String email) {

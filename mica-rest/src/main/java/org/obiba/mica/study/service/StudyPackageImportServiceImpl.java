@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import org.apache.commons.math3.util.Pair;
 import org.bson.types.ObjectId;
 import org.obiba.jersey.protobuf.AbstractProtobufProvider;
+import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.dataset.NoSuchDatasetException;
@@ -142,27 +143,44 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       }
     });
 
+    String id = study.getId();
+    boolean exists = true;
+
+    try {
+      studyService.findDraft(id);
+    } catch (NoSuchEntityException e) {
+      study.setId("");
+      exists = false;
+    }
+
     studyService.save(study, "Imported");
+    if (!exists) study.setId(id);
 
     attachments.forEach(a -> {
-      a.setPath(String.format(a.getPath(), study.getId()));
+      a.setPath(String.format(a.getPath(), id));
       fileSystemService.save(a);
     });
 
     if(publish) {
-      studyService.publish(study.getId(), true, PublishCascadingScope.ALL);
+      studyService.publish(id, true, PublishCascadingScope.ALL);
     }
   }
 
   private void importNetwork(Network network, boolean publish, StudyPackage studyPackage) throws IOException {
     Network updated;
+    boolean exists = true;
+
+    String id = network.getId();
+
     try {
-      Network existing = networkService.findById(network.getId());
+      Network existing = networkService.findById(id);
       network.getStudyIds().stream().filter(sid -> !existing.getStudyIds().contains(sid))
         .forEach(sid -> existing.getStudyIds().add(sid));
       updated = existing;
     } catch(NoSuchNetworkException e) {
+      exists = false;
       updated = network;
+      updated.setId("");
     }
 
     for(Map.Entry<String, ByteSource> e : studyPackage.attachments.entrySet()) {
@@ -176,7 +194,9 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
 
     networkService.save(updated);
 
-    if(publish) networkService.publish(updated.getId(), true, PublishCascadingScope.ALL);
+    if (!exists) updated.setId(id);
+
+    if(publish) networkService.publish(id, true, PublishCascadingScope.ALL);
   }
 
   private void saveTempFile(Attachment attachment, ByteSource content) throws IOException {
@@ -198,24 +218,33 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
 
   private void importDataset(StudyDataset dataset, boolean publish) {
     if(!dataset.hasStudyTable() || Strings.isNullOrEmpty(dataset.getStudyTable().getStudyId())) return;
+
+    String id = dataset.getId();
+
     try {
-      collectedDatasetService.findById(dataset.getId());
+      collectedDatasetService.findById(id);
       collectedDatasetService.save(dataset);
     } catch(NoSuchDatasetException e) {
+      dataset.setId("");
       collectedDatasetService.save(dataset);
+      dataset.setId(id);
     }
-    if(publish) collectedDatasetService.publish(dataset.getId(), publish, PublishCascadingScope.ALL);
+    if(publish) collectedDatasetService.publish(id, publish, PublishCascadingScope.ALL);
   }
 
   private void importDataset(HarmonizationDataset dataset, boolean publish) {
+    String id = dataset.getId();
+
     try {
-      HarmonizationDataset existing = harmonizedDatasetService.findById(dataset.getId());
+      HarmonizationDataset existing = harmonizedDatasetService.findById(id);
       // TODO merge study tables
       harmonizedDatasetService.save(existing);
     } catch(NoSuchDatasetException e) {
+      dataset.setId("");
       harmonizedDatasetService.save(dataset);
+      dataset.setId(id);
     }
-    if(publish) harmonizedDatasetService.publish(dataset.getId(), publish, PublishCascadingScope.ALL);
+    if(publish) harmonizedDatasetService.publish(id, publish, PublishCascadingScope.ALL);
   }
 
   private final class StudyPackage {

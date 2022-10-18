@@ -1,8 +1,6 @@
 package org.obiba.mica.search.reports.generators;
 
 import au.com.bytecode.opencsv.CSVWriter;
-import jersey.repackaged.com.google.common.base.Joiner;
-import jersey.repackaged.com.google.common.collect.Lists;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.network.domain.Network;
@@ -10,8 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -23,7 +23,7 @@ public class NetworkCsvReportGenerator extends DocumentCsvReportGenerator {
 
   private final PersonService personService;
 
-  private List<String> headers = Lists.newArrayList();
+  private List<String> headers = new ArrayList<>();
 
   public NetworkCsvReportGenerator(List<Network> networks, String locale, PersonService personService) {
     super(locale);
@@ -77,13 +77,14 @@ public class NetworkCsvReportGenerator extends DocumentCsvReportGenerator {
   @Override
   protected void writeEachLine(CSVWriter writer) {
     networks.forEach(ntw -> {
-      List<String> line = Lists.newArrayList();
+      List<String> line = new ArrayList<>();
       line.add(ntw.getId());
       line.add(translate(ntw.getAcronym()));
       line.add(translate(ntw.getName()));
-      line.add(translate(ntw.getDescription()));
-      line.add(Joiner.on("|").join(ntw.getStudyIds()));
-      line.add(Joiner.on("|").join(ntw.getNetworkIds()));
+      line.add(translate(ntw.getDescription()));     
+
+      line.add(ntw.getStudyIds().stream().collect(Collectors.joining("|")));
+      line.add(ntw.getNetworkIds().stream().collect(Collectors.joining("|")));
 
       Map<String, Object> model = getModels().get(ntw.getId());
       for (String key : getModelKeys()) {

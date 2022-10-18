@@ -10,13 +10,19 @@
 
 package org.obiba.mica.core.domain;
 
-import org.joda.time.DateTime;
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class DefaultEntityBase implements EntityBase {
 
   private String id;
-  private DateTime createdDate = DateTime.now();
-  private DateTime lastModifiedDate;
+  private LocalDateTime createdDate = LocalDateTime.now();
+  private LocalDateTime lastModifiedDate;
 
   @Override
   public String getId() {
@@ -28,22 +34,32 @@ public class DefaultEntityBase implements EntityBase {
   }
 
   @Override
-  public DateTime getCreatedDate() {
+  public @NotNull Optional<LocalDateTime> getCreatedDate() {
+    return Optional.ofNullable(createdDate);
+  }
+
+  @JsonGetter("createdDate")
+  public LocalDateTime getNullableCreatedDate() {
     return createdDate;
   }
 
   @Override
-  public void setCreatedDate(DateTime createdDate) {
+  public void setCreatedDate(LocalDateTime createdDate) {
     this.createdDate = createdDate;
   }
 
   @Override
-  public DateTime getLastModifiedDate() {
+  public Optional<LocalDateTime> getLastModifiedDate() {
+    return Optional.ofNullable(lastModifiedDate);
+  }
+
+  @JsonGetter("lastModifiedDate")
+  public LocalDateTime getNullableLastModifiedDate() {
     return lastModifiedDate;
   }
 
   @Override
-  public void setLastModifiedDate(DateTime lastModifiedDate) {
+  public void setLastModifiedDate(LocalDateTime lastModifiedDate) {
     this.lastModifiedDate = lastModifiedDate;
   }
 
