@@ -51,6 +51,7 @@ spring:
     data:
         mongodb:
             uri: mongodb://localhost:27017/mica
+    profiles: prod
 
 sets:
   cleanup:

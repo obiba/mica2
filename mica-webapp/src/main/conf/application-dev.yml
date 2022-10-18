@@ -44,8 +44,6 @@ opalTaxonomies:
     defaultTermsSortOrder: "title"
 
 spring:
-    config.activate.on-profile: dev
-    main.allow-bean-definition-overriding: true
     data:
         mongodb:
             uri: mongodb://localhost:27017/mica
