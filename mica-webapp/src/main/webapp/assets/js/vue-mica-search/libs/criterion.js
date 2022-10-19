@@ -286,12 +286,12 @@ class Criterion {
     }
 
     if (this.type === "TERMS") {
-      if ((this.value || []).length > 5) return `${localizeStringFunction(this.vocabulary.title)}:...`;
-
-      const text = (this.value || []).map(val => {
+      const text = `${localizeStringFunction(this.vocabulary.title)}:` + (this.value || []).map(val => {
         const term = this.__findTerm(this.vocabulary, val);
         return term ? localizeStringFunction(term.title) : val;
       }).join(" | ");
+
+      if ((text || "").length > 50) return `${localizeStringFunction(this.vocabulary.title)}:...`;
 
       return `${text}`;
     } else if (this.type === "NUMERIC") {
