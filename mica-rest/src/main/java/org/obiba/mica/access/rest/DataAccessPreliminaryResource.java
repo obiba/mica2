@@ -15,19 +15,19 @@ import com.codahale.metrics.annotation.Timed;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
-import org.obiba.mica.access.domain.DataAccessFeasibility;
+import org.obiba.mica.access.domain.DataAccessPreliminary;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.domain.StatusChange;
 import org.obiba.mica.access.service.DataAccessEntityService;
-import org.obiba.mica.access.service.DataAccessFeasibilityService;
+import org.obiba.mica.access.service.DataAccessPreliminaryService;
 import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.domain.AbstractDataAccessEntityForm;
-import org.obiba.mica.micaConfig.domain.DataAccessFeasibilityForm;
+import org.obiba.mica.micaConfig.domain.DataAccessPreliminaryForm;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
-import org.obiba.mica.micaConfig.service.DataAccessFeasibilityFormService;
+import org.obiba.mica.micaConfig.service.DataAccessPreliminaryFormService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -49,34 +49,34 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Component
 @Scope("request")
 @RequiresAuthentication
-public class DataAccessFeasibilityResource extends DataAccessEntityResource<DataAccessFeasibility> {
+public class DataAccessPreliminaryResource extends DataAccessEntityResource<DataAccessPreliminary> {
 
-  private static final Logger log = getLogger(DataAccessFeasibilityResource.class);
+  private static final Logger log = getLogger(DataAccessPreliminaryResource.class);
 
   private final Dtos dtos;
 
   private final DataAccessRequestService dataAccessRequestService;
 
-  private final DataAccessFeasibilityService dataAccessFeasibilityService;
+  private final DataAccessPreliminaryService dataAccessPreliminaryService;
 
-  private final DataAccessFeasibilityFormService dataAccessFeasibilityFormService;
+  private final DataAccessPreliminaryFormService dataAccessPreliminaryFormService;
 
   @Inject
-  public DataAccessFeasibilityResource(
+  public DataAccessPreliminaryResource(
     SubjectAclService subjectAclService,
     FileStoreService fileStoreService,
     DataAccessConfigService dataAccessConfigService,
     Dtos dtos,
     DataAccessRequestService dataAccessRequestService,
-    DataAccessFeasibilityService dataAccessFeasibilityService,
-    DataAccessFeasibilityFormService dataAccessFeasibilityFormService,
+    DataAccessPreliminaryService dataAccessPreliminaryService,
+    DataAccessPreliminaryFormService dataAccessPreliminaryFormService,
     VariableSetService variableSetService,
     DataAccessRequestUtilService dataAccessRequestUtilService) {
     super(subjectAclService, fileStoreService, dataAccessConfigService, variableSetService, dataAccessRequestUtilService);
     this.dtos = dtos;
     this.dataAccessRequestService = dataAccessRequestService;
-    this.dataAccessFeasibilityService = dataAccessFeasibilityService;
-    this.dataAccessFeasibilityFormService = dataAccessFeasibilityFormService;
+    this.dataAccessPreliminaryService = dataAccessPreliminaryService;
+    this.dataAccessPreliminaryFormService = dataAccessPreliminaryFormService;
   }
 
   private String parentId;
@@ -85,10 +85,10 @@ public class DataAccessFeasibilityResource extends DataAccessEntityResource<Data
 
   @GET
   @Timed
-  public Mica.DataAccessRequestDto getFeasibility() {
+  public Mica.DataAccessRequestDto getPreliminary() {
     subjectAclService.checkPermission(getParentResourcePath(), "VIEW", parentId);
-    DataAccessFeasibility feasibility = dataAccessFeasibilityService.findById(id);
-    return dtos.asFeasibilityDto(feasibility);
+    DataAccessPreliminary preliminary = dataAccessPreliminaryService.getOrCreate(id);
+    return dtos.asPreliminaryDto(preliminary);
   }
 
   @GET
@@ -96,7 +96,7 @@ public class DataAccessFeasibilityResource extends DataAccessEntityResource<Data
   @Produces("application/json")
   public Map<String, Object> getModel() {
     subjectAclService.checkPermission(getResourcePath(), "VIEW", id);
-    return JSONUtils.toMap(dataAccessFeasibilityService.findById(id).getContent());
+    return JSONUtils.toMap(dataAccessPreliminaryService.findById(id).getContent());
   }
 
   @PUT
@@ -107,9 +107,9 @@ public class DataAccessFeasibilityResource extends DataAccessEntityResource<Data
     DataAccessRequest request = dataAccessRequestService.findById(parentId);
     if (request.isArchived()) throw new BadRequestException("Data access request is archived");
 
-    DataAccessFeasibility feasibility = dataAccessFeasibilityService.findById(id);
-    feasibility.setContent(content);
-    dataAccessFeasibilityService.save(feasibility);
+    DataAccessPreliminary preliminary = dataAccessPreliminaryService.findById(id);
+    preliminary.setContent(content);
+    dataAccessPreliminaryService.save(preliminary);
     return Response.ok().build();
   }
 
@@ -121,8 +121,8 @@ public class DataAccessFeasibilityResource extends DataAccessEntityResource<Data
     DataAccessRequest request = dataAccessRequestService.findById(parentId);
     if (request.isArchived()) throw new BadRequestException("Data access request is archived");
 
-    DataAccessFeasibility feasibility = dtos.fromFeasibilityDto(dto);
-    dataAccessFeasibilityService.save(feasibility);
+    DataAccessPreliminary preliminary = dtos.fromPreliminaryDto(dto);
+    dataAccessPreliminaryService.save(preliminary);
     return Response.noContent().build();
   }
 
@@ -134,9 +134,9 @@ public class DataAccessFeasibilityResource extends DataAccessEntityResource<Data
     if (request.isArchived()) throw new BadRequestException("Data access request is archived");
 
     try {
-      dataAccessFeasibilityService.delete(id);
+      dataAccessPreliminaryService.delete(id);
     } catch (NoSuchDataAccessRequestException e) {
-      log.error("Could not delete feasibility {}", e);
+      log.error("Could not delete preliminary {}", e);
     }
 
     return Response.noContent().build();
@@ -154,13 +154,13 @@ public class DataAccessFeasibilityResource extends DataAccessEntityResource<Data
   @Path("/_diff")
   public Response diffStatusChanges(@QueryParam("locale") @DefaultValue("en") String locale) {
     subjectAclService.checkPermission(getResourcePath(), "EDIT", id);
-    DataAccessFeasibility feasibility = dataAccessFeasibilityService.findById(id);
+    DataAccessPreliminary preliminary = dataAccessPreliminaryService.findById(id);
 
-    List<StatusChange> submissions = feasibility.getSubmissions();
+    List<StatusChange> submissions = preliminary.getSubmissions();
 
     Map<String, Map<String, List<Object>>> data = submissions.stream()
       .reduce((first, second) -> second)
-      .map(change ->  dataAccessRequestUtilService.getContentDiff("data-access-feasibility", change.getContent(), feasibility.getContent(), locale))
+      .map(change ->  dataAccessRequestUtilService.getContentDiff("data-access-preliminary", change.getContent(), preliminary.getContent(), locale))
       .orElse(null);
 
     return Response.ok(data, MediaType.APPLICATION_JSON_TYPE).build();
@@ -181,9 +181,9 @@ public class DataAccessFeasibilityResource extends DataAccessEntityResource<Data
   @Path("/variables")
   public Response setVariablesSet() {
     subjectAclService.checkPermission(getResourcePath(), "EDIT", id);
-    DataAccessFeasibility feasibility = getService().findById(id);
-    feasibility.setVariablesSet(createOrUpdateVariablesSet(feasibility));
-    dataAccessFeasibilityService.save(feasibility);
+    DataAccessPreliminary preliminary = getService().findById(id);
+    preliminary.setVariablesSet(createOrUpdateVariablesSet(preliminary));
+    dataAccessPreliminaryService.save(preliminary);
     return Response.noContent().build();
   }
 
@@ -191,28 +191,25 @@ public class DataAccessFeasibilityResource extends DataAccessEntityResource<Data
   @Path("/variables")
   public Response deleteVariablesSet() {
     subjectAclService.checkPermission(getResourcePath(), "EDIT", id);
-    DataAccessFeasibility feasibility = getService().findById(id);
-    if (feasibility.hasVariablesSet())
-      variableSetService.delete(feasibility.getVariablesSet());
+    DataAccessPreliminary preliminary = getService().findById(id);
+    if (preliminary.hasVariablesSet())
+      variableSetService.delete(preliminary.getVariablesSet());
     return Response.noContent().build();
-  }
-
-  public void setId(String id) {
-    this.id = id;
   }
 
   public void setParentId(String parentId) {
     this.parentId = parentId;
+    this.id = parentId;
   }
 
   @Override
-  protected DataAccessEntityService<DataAccessFeasibility> getService() {
-    return dataAccessFeasibilityService;
+  protected DataAccessEntityService<DataAccessPreliminary> getService() {
+    return dataAccessPreliminaryService;
   }
 
   @Override
   protected int getFormLatestRevision() {
-    Optional<DataAccessFeasibilityForm> form = dataAccessFeasibilityFormService.findByRevision("latest");
+    Optional<DataAccessPreliminaryForm> form = dataAccessPreliminaryFormService.findByRevision("latest");
     return form.map(AbstractDataAccessEntityForm::getRevision).orElse(0);
   }
 
@@ -222,6 +219,6 @@ public class DataAccessFeasibilityResource extends DataAccessEntityResource<Data
 
   @Override
   String getResourcePath() {
-    return String.format("/data-access-request/%s/feasibility", parentId);
+    return String.format("/data-access-request/%s/preliminary", parentId);
   }
 }

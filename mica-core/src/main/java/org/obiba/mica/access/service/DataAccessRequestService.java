@@ -178,6 +178,10 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
     return ba.toByteArray();
   }
 
+  public boolean isPreliminaryEnabled() {
+    return dataAccessConfigService.getOrCreateConfig().isPreliminaryEnabled();
+  }
+
   public boolean isFeasibilityEnabled() {
     return dataAccessConfigService.getOrCreateConfig().isFeasibilityEnabled();
   }

@@ -64,6 +64,7 @@ import org.obiba.mica.file.service.TempFileService;
 import org.obiba.mica.micaConfig.DataAccessAmendmentsNotEnabled;
 import org.obiba.mica.micaConfig.DataAccessAgreementNotEnabled;
 import org.obiba.mica.micaConfig.DataAccessFeasibilityNotEnabled;
+import org.obiba.mica.micaConfig.DataAccessPreliminaryNotEnabled;
 import org.obiba.mica.micaConfig.domain.AbstractDataAccessEntityForm;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
@@ -518,6 +519,16 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     DataAccessRequest request = dataAccessRequestService.findById(id);
     if (request.isArchived()) throw new BadRequestException("Data access request is archived");
     return super.doUpdateStatus(id, status);
+  }
+
+  @Path("/preliminary")
+  public DataAccessPreliminaryResource getPreliminary(@PathParam("id") String id) {
+    if (!dataAccessRequestService.isPreliminaryEnabled()) throw new DataAccessPreliminaryNotEnabled();
+    dataAccessRequestService.findById(id);
+    DataAccessPreliminaryResource resource = applicationContext
+      .getBean(DataAccessPreliminaryResource.class);
+    resource.setParentId(id);
+    return resource;
   }
 
   @Path("/feasibilities")

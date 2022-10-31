@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2022 OBiBa. All rights reserved.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.obiba.mica.micaConfig.service;
 
 import com.google.common.base.Joiner;
@@ -36,6 +46,8 @@ public class EntityConfigKeyTranslationService {
 
   private final DataAccessFormService dataAccessFormService;
 
+  private final DataAccessPreliminaryFormService dataAccessPreliminaryFormService;
+
   private final DataAccessFeasibilityFormService dataAccessFeasibilityFormService;
 
   private final DataAccessAmendmentFormService dataAccessAmendmentFormService;
@@ -53,6 +65,7 @@ public class EntityConfigKeyTranslationService {
                                            ProjectConfigService projectConfigService,
                                            StudyDatasetConfigService studyDatasetConfigService,
                                            DataAccessFormService dataAccessFormService,
+                                           DataAccessPreliminaryFormService dataAccessPreliminaryFormService,
                                            DataAccessFeasibilityFormService dataAccessFeasibilityFormService,
                                            DataAccessAmendmentFormService dataAccessAmendmentFormService) {
     this.micaConfigService = micaConfigService;
@@ -65,6 +78,7 @@ public class EntityConfigKeyTranslationService {
     this.projectConfigService = projectConfigService;
     this.studyDatasetConfigService = studyDatasetConfigService;
     this.dataAccessFormService = dataAccessFormService;
+    this.dataAccessPreliminaryFormService = dataAccessPreliminaryFormService;
     this.dataAccessFeasibilityFormService = dataAccessFeasibilityFormService;
     this.dataAccessAmendmentFormService = dataAccessAmendmentFormService;
 
@@ -212,6 +226,12 @@ public class EntityConfigKeyTranslationService {
           DataAccessForm dataAccessForm = dataAccessFormService.findLatest();
           translateSchemaForm(translator, dataAccessForm);
           translationMap.putAll(getTranslationMap(dataAccessForm, ""));
+          break;
+
+        case "data-access-preliminary":
+          DataAccessPreliminaryForm dataAccessPreliminaryForm = dataAccessPreliminaryFormService.findLatest();
+          translateSchemaForm(translator, dataAccessPreliminaryForm);
+          translationMap.putAll(getTranslationMap(dataAccessPreliminaryForm, ""));
           break;
 
         case "data-access-feasibility":

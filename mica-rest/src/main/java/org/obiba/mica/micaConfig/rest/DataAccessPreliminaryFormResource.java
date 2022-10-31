@@ -13,8 +13,8 @@ package org.obiba.mica.micaConfig.rest;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.micaConfig.NoSuchDataAccessFormException;
-import org.obiba.mica.micaConfig.domain.DataAccessFeasibilityForm;
-import org.obiba.mica.micaConfig.service.DataAccessFeasibilityFormService;
+import org.obiba.mica.micaConfig.domain.DataAccessPreliminaryForm;
+import org.obiba.mica.micaConfig.service.DataAccessPreliminaryFormService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -29,24 +29,24 @@ import javax.ws.rs.core.Response;
 import java.util.Optional;
 
 @Component
-@Path("/config/data-access-feasibility-form")
+@Path("/config/data-access-preliminary-form")
 @RequiresAuthentication
-public class DataAccessFeasibilityFormResource {
+public class DataAccessPreliminaryFormResource {
 
-  private DataAccessFeasibilityFormService dataAccessFeasibilityFormService;
+  private DataAccessPreliminaryFormService dataAccessPreliminaryFormService;
 
   private Dtos dtos;
 
   @Inject
-  public DataAccessFeasibilityFormResource(DataAccessFeasibilityFormService dataAccessFeasibilityFormService,
+  public DataAccessPreliminaryFormResource(DataAccessPreliminaryFormService dataAccessPreliminaryFormService,
                                            Dtos dtos) {
-    this.dataAccessFeasibilityFormService = dataAccessFeasibilityFormService;
+    this.dataAccessPreliminaryFormService = dataAccessPreliminaryFormService;
     this.dtos = dtos;
   }
 
   @GET
-  public Mica.DataAccessFeasibilityFormDto get(@QueryParam("revision") String revision) {
-    Optional<DataAccessFeasibilityForm> d = dataAccessFeasibilityFormService.findByRevision(revision);
+  public Mica.DataAccessPreliminaryFormDto get(@QueryParam("revision") String revision) {
+    Optional<DataAccessPreliminaryForm> d = dataAccessPreliminaryFormService.findByRevision(revision);
     if(!d.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
     return dtos.asDto(d.get());
   }
@@ -55,14 +55,14 @@ public class DataAccessFeasibilityFormResource {
   @Path("/_publish")
   @RequiresRoles(Roles.MICA_ADMIN)
   public Response publish() {
-    dataAccessFeasibilityFormService.publish();
+    dataAccessPreliminaryFormService.publish();
     return Response.ok().build();
   }
 
   @PUT
   @RequiresRoles(Roles.MICA_ADMIN)
-  public Response update(Mica.DataAccessFeasibilityFormDto dto) {
-    dataAccessFeasibilityFormService.createOrUpdate(dtos.fromDto(dto));
+  public Response update(Mica.DataAccessPreliminaryFormDto dto) {
+    dataAccessPreliminaryFormService.createOrUpdate(dtos.fromDto(dto));
     return Response.ok().build();
   }
 

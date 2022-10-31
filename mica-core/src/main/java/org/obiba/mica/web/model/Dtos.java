@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 OBiBa. All rights reserved.
+ * Copyright (c) 2022 OBiBa. All rights reserved.
  *
  * This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0.
@@ -458,6 +458,11 @@ public class Dtos {
   }
 
   @NotNull
+  public Mica.DataAccessRequestDto asPreliminaryDto(@NotNull DataAccessPreliminary preliminary) {
+    return dataAccessRequestDtos.asPreliminaryDto(preliminary);
+  }
+
+  @NotNull
   public Mica.DataAccessRequestDto asFeasibilityDto(@NotNull DataAccessFeasibility feasibility) {
     return dataAccessRequestDtos.asFeasibilityDto(feasibility);
   }
@@ -465,6 +470,11 @@ public class Dtos {
   @NotNull
   public Mica.DataAccessRequestDto asAgreementDto(@NotNull DataAccessAgreement agreement) {
     return dataAccessRequestDtos.asAgreementDto(agreement);
+  }
+
+  @NotNull
+  public DataAccessPreliminary fromPreliminaryDto(@NotNull Mica.DataAccessRequestDto dto) {
+    return dataAccessRequestDtos.fromPreliminaryDto(dto);
   }
 
   @NotNull
@@ -550,6 +560,16 @@ public class Dtos {
 
   @NotNull
   public DataAccessForm fromDto(@NotNull Mica.DataAccessFormDto dto) {
+    return micaConfigDtos.fromDto(dto);
+  }
+
+  @NotNull
+  public Mica.DataAccessPreliminaryFormDto asDto(@NotNull DataAccessPreliminaryForm dataAccessPreliminaryForm) {
+    return micaConfigDtos.asDto(dataAccessPreliminaryForm);
+  }
+
+  @NotNull
+  public DataAccessPreliminaryForm fromDto(@NotNull Mica.DataAccessPreliminaryFormDto dto) {
     return micaConfigDtos.fromDto(dto);
   }
 

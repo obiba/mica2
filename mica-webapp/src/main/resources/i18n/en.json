@@ -2063,6 +2063,8 @@
     "saved": "Data Access Form is successfully updated.",
     "amendments-enabled": "Enable Amendments.",
     "amendments-enabled-help":"Enable the capability of requesting amendments to an approved data access request.",
+    "preliminary-enabled": "Enable Preliminary request.",
+    "preliminary-enabled-help":"Enable the capability of getting a preliminary approval of a data access request.",
     "feasibility-enabled": "Enable Feasibility Inquiry.",
     "feasibility-enabled-help":"Enable the capability of inquiring for feasibility of a data access request.",
     "agreement-enabled": "Enable End User Agreement.",
@@ -2071,6 +2073,8 @@
     "variables-enabled-help":"Enable attaching a variable list to the main form.",
     "amendment-variables-enabled": "Enable Variables attachment to an Amendment.",
     "amendment-variables-enabled-help":"Enable attaching a variable list to an amendment form.",
+    "preliminary-variables-enabled": "Enable Variables attachment to a Preliminary request.",
+    "preliminary-variables-enabled-help":"Enable attaching a variable list to a preliminary form.",
     "feasibility-variables-enabled": "Enable Variables attachment to a Feasibility Inquiry.",
     "feasibility-variables-enabled-help":"Enable attaching a variable list to a feasibility inquiry form.",
     "pdf-download": {
@@ -2218,6 +2222,12 @@
       "end-date-field": "End Date Field",
       "end-date-field-help": "The end date of the project declared in the amendment. If no end date can be identified either in the request form or in an amendment form, no report notifications will be sent."
     },
+    "preliminary": {
+      "schema-form": {
+        "title": "Preliminary Form",
+        "info": "The preliminary form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+      }
+    },
     "feasibility": {
       "schema-form": {
         "title": "Feasibility Form",
@@ -2247,6 +2257,7 @@
   "entity-config": {
     "save-alert": {
       "data-access-form-success": "Data access form saved. Make sure to publish it to make it visible in data access requests.",
+      "data-access-preliminary-form-success": "Data access preliminary form saved. Make sure to publish it to make it visible in data access requests.",
       "data-access-feasibility-form-success": "Data access feasibility form saved. Make sure to publish it to make it visible in data access requests.",
       "data-access-amendment-form-success": "Data access amendment form saved. Make sure to publish it to make it visible in data access requests.",
       "data-access-agreement-form-success": "Data access agreement form saved. Make sure to publish it to make it visible in data access requests.",
@@ -2255,6 +2266,7 @@
     },
     "publish-alert": {
       "data-access-form-success": "Data access form published.",
+      "data-access-preliminary-form-success": "Data access preliminary form published.",
       "data-access-feasibility-form-success": "Data access feasibility form published.",
       "data-access-amendment-form-success": "Data access amendment form published.",
       "data-access-agreement-form-success": "Data access agreement form published."

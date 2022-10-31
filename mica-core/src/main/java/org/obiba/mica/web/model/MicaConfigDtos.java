@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 OBiBa. All rights reserved.
+ * Copyright (c) 2022 OBiBa. All rights reserved.
  *
  * This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0.
@@ -331,6 +331,7 @@ class MicaConfigDtos {
       .setWithConditionalApproval(dataAccessConfig.isWithConditionalApproval())
       .setNotifyConditionallyApproved(dataAccessConfig.isNotifyConditionallyApproved())
       .setCsvExportFormat(dataAccessConfig.getCsvExportFormat())
+      .setPreliminaryCsvExportFormat(dataAccessConfig.getPreliminaryCsvExportFormat())
       .setFeasibilityCsvExportFormat(dataAccessConfig.getFeasibilityCsvExportFormat())
       .setAmendmentCsvExportFormat(dataAccessConfig.getAmendmentCsvExportFormat());
 
@@ -363,6 +364,7 @@ class MicaConfigDtos {
 
     if(dataAccessConfig.getPredefinedActions() != null) builder.addAllPredefinedActions(dataAccessConfig.getPredefinedActions());
 
+    builder.setPreliminaryEnabled(dataAccessConfig.isPreliminaryEnabled());
     builder.setFeasibilityEnabled(dataAccessConfig.isFeasibilityEnabled());
     builder.setAgreementEnabled(dataAccessConfig.isAgreementEnabled());
     builder.setAmendmentsEnabled(dataAccessConfig.isAmendmentsEnabled());
@@ -370,6 +372,7 @@ class MicaConfigDtos {
     builder.setCollaboratorInvitationDays(dataAccessConfig.getCollaboratorInvitationDays());
 
     builder.setVariablesEnabled(dataAccessConfig.isVariablesEnabled());
+    builder.setPreliminaryVariablesEnabled(dataAccessConfig.isPreliminaryVariablesEnabled());
     builder.setFeasibilityVariablesEnabled(dataAccessConfig.isFeasibilityVariablesEnabled());
     builder.setAmendmentVariablesEnabled(dataAccessConfig.isAmendmentVariablesEnabled());
 
@@ -433,6 +436,7 @@ class MicaConfigDtos {
     dataAccessConfig.setNotifyConditionallyApproved(dto.getNotifyConditionallyApproved());
     dataAccessConfig.setConditionallyApprovedSubject(dto.getConditionallyApprovedSubject());
     dataAccessConfig.setPredefinedActions(dto.getPredefinedActionsList());
+    dataAccessConfig.setPreliminaryEnabled(dto.getPreliminaryEnabled());
     dataAccessConfig.setFeasibilityEnabled(dto.getFeasibilityEnabled());
     dataAccessConfig.setAgreementEnabled(dto.getAgreementEnabled());
     dataAccessConfig.setAmendmentsEnabled(dto.getAmendmentsEnabled());
@@ -440,10 +444,12 @@ class MicaConfigDtos {
     dataAccessConfig.setCollaboratorInvitationDays(dto.getCollaboratorInvitationDays());
 
     dataAccessConfig.setVariablesEnabled(dto.getVariablesEnabled());
+    dataAccessConfig.setPreliminaryVariablesEnabled(dto.getPreliminaryVariablesEnabled());
     dataAccessConfig.setFeasibilityVariablesEnabled(dto.getFeasibilityVariablesEnabled());
     dataAccessConfig.setAmendmentVariablesEnabled(dto.getAmendmentVariablesEnabled());
 
     if (dto.hasCsvExportFormat()) dataAccessConfig.setCsvExportFormat(dto.getCsvExportFormat());
+    if (dto.hasPreliminaryCsvExportFormat()) dataAccessConfig.setPreliminaryCsvExportFormat(dto.getPreliminaryCsvExportFormat());
     if (dto.hasFeasibilityCsvExportFormat()) dataAccessConfig.setFeasibilityCsvExportFormat(dto.getFeasibilityCsvExportFormat());
     if (dto.hasAmendmentCsvExportFormat()) dataAccessConfig.setAmendmentCsvExportFormat(dto.getAmendmentCsvExportFormat());
 
@@ -507,61 +513,79 @@ class MicaConfigDtos {
     return dataAccessForm;
   }
 
-  Mica.DataAccessFeasibilityFormDto asDto(@NotNull DataAccessFeasibilityForm dataAccessFeasibilityForm) {
+  Mica.DataAccessPreliminaryFormDto asDto(@NotNull DataAccessPreliminaryForm form) {
+    Mica.DataAccessPreliminaryFormDto.Builder builder = Mica.DataAccessPreliminaryFormDto.newBuilder()
+      .setRevision(form.getRevision())
+      .setLastUpdateDate(form.getLastUpdateDate().toString())
+      .setDefinition(form.getDefinition())
+      .setSchema(form.getSchema());
+    return builder.build();
+  }
+
+  DataAccessPreliminaryForm fromDto(@NotNull Mica.DataAccessPreliminaryFormDto dto) {
+    DataAccessPreliminaryForm form = new DataAccessPreliminaryForm();
+
+    form.setSchema(dto.getSchema());
+    form.setDefinition(dto.getDefinition());
+
+    return form;
+  }
+
+  Mica.DataAccessFeasibilityFormDto asDto(@NotNull DataAccessFeasibilityForm form) {
     Mica.DataAccessFeasibilityFormDto.Builder builder = Mica.DataAccessFeasibilityFormDto.newBuilder()
-      .setRevision(dataAccessFeasibilityForm.getRevision())
-      .setLastUpdateDate(dataAccessFeasibilityForm.getLastUpdateDate().toString())
-      .setDefinition(dataAccessFeasibilityForm.getDefinition())
-      .setSchema(dataAccessFeasibilityForm.getSchema());
+      .setRevision(form.getRevision())
+      .setLastUpdateDate(form.getLastUpdateDate().toString())
+      .setDefinition(form.getDefinition())
+      .setSchema(form.getSchema());
     return builder.build();
   }
 
   DataAccessFeasibilityForm fromDto(@NotNull Mica.DataAccessFeasibilityFormDto dto) {
-    DataAccessFeasibilityForm dataAccessFeasibilityForm = new DataAccessFeasibilityForm();
+    DataAccessFeasibilityForm form = new DataAccessFeasibilityForm();
 
-    dataAccessFeasibilityForm.setSchema(dto.getSchema());
-    dataAccessFeasibilityForm.setDefinition(dto.getDefinition());
+    form.setSchema(dto.getSchema());
+    form.setDefinition(dto.getDefinition());
 
-    return dataAccessFeasibilityForm;
+    return form;
   }
 
-  Mica.DataAccessAgreementFormDto asDto(@NotNull DataAccessAgreementForm dataAccessAgreementForm) {
+  Mica.DataAccessAgreementFormDto asDto(@NotNull DataAccessAgreementForm form) {
     Mica.DataAccessAgreementFormDto.Builder builder = Mica.DataAccessAgreementFormDto.newBuilder()
-      .setRevision(dataAccessAgreementForm.getRevision())
-      .setLastUpdateDate(dataAccessAgreementForm.getLastUpdateDate().toString())
-      .setDefinition(dataAccessAgreementForm.getDefinition())
-      .setSchema(dataAccessAgreementForm.getSchema());
+      .setRevision(form.getRevision())
+      .setLastUpdateDate(form.getLastUpdateDate().toString())
+      .setDefinition(form.getDefinition())
+      .setSchema(form.getSchema());
     return builder.build();
   }
 
   DataAccessAgreementForm fromDto(@NotNull Mica.DataAccessAgreementFormDto dto) {
-    DataAccessAgreementForm dataAccessAgreementForm = new DataAccessAgreementForm();
+    DataAccessAgreementForm form = new DataAccessAgreementForm();
 
-    dataAccessAgreementForm.setSchema(dto.getSchema());
-    dataAccessAgreementForm.setDefinition(dto.getDefinition());
+    form.setSchema(dto.getSchema());
+    form.setDefinition(dto.getDefinition());
 
-    return dataAccessAgreementForm;
+    return form;
   }
 
-  Mica.DataAccessAmendmentFormDto asDto(@NotNull DataAccessAmendmentForm dataAccessAmendmentForm,
+  Mica.DataAccessAmendmentFormDto asDto(@NotNull DataAccessAmendmentForm form,
                                         @NotNull DataAccessConfig dataAccessConfig) {
     Mica.DataAccessAmendmentFormDto.Builder builder = Mica.DataAccessAmendmentFormDto.newBuilder()
-      .setRevision(dataAccessAmendmentForm.getRevision())
-      .setLastUpdateDate(dataAccessAmendmentForm.getLastUpdateDate().toString())
-      .setDefinition(dataAccessAmendmentForm.getDefinition())
-      .setSchema(dataAccessAmendmentForm.getSchema())
-      .addAllProperties(asDtoList(dataAccessAmendmentForm.getProperties()));
+      .setRevision(form.getRevision())
+      .setLastUpdateDate(form.getLastUpdateDate().toString())
+      .setDefinition(form.getDefinition())
+      .setSchema(form.getSchema())
+      .addAllProperties(asDtoList(form.getProperties()));
 
-    if(dataAccessAmendmentForm.hasTitleFieldPath()) {
-      builder.setTitleFieldPath(dataAccessAmendmentForm.getTitleFieldPath());
+    if(form.hasTitleFieldPath()) {
+      builder.setTitleFieldPath(form.getTitleFieldPath());
     }
 
-    if(dataAccessAmendmentForm.hasSummaryFieldPath()) {
-      builder.setSummaryFieldPath(dataAccessAmendmentForm.getSummaryFieldPath());
+    if(form.hasSummaryFieldPath()) {
+      builder.setSummaryFieldPath(form.getSummaryFieldPath());
     }
 
-    if(dataAccessAmendmentForm.hasEndDateFieldPath()) {
-      builder.setEndDateFieldPath(dataAccessAmendmentForm.getEndDateFieldPath());
+    if(form.hasEndDateFieldPath()) {
+      builder.setEndDateFieldPath(form.getEndDateFieldPath());
     }
 
     builder.setWithReview(dataAccessConfig.isWithReview());
@@ -571,27 +595,27 @@ class MicaConfigDtos {
   }
 
   DataAccessAmendmentForm fromDto(@NotNull Mica.DataAccessAmendmentFormDto dto) {
-    DataAccessAmendmentForm dataAccessAmendmentForm = new DataAccessAmendmentForm();
+    DataAccessAmendmentForm form = new DataAccessAmendmentForm();
 
-    dataAccessAmendmentForm.setSchema(dto.getSchema());
-    dataAccessAmendmentForm.setDefinition(dto.getDefinition());
+    form.setSchema(dto.getSchema());
+    form.setDefinition(dto.getDefinition());
 
-    dataAccessAmendmentForm.setProperties(dto.getPropertiesList().stream()
+    form.setProperties(dto.getPropertiesList().stream()
       .collect(toMap(Mica.LocalizedPropertyDto::getName, e -> localizedStringDtos.fromDto(e.getValueList()))));
 
     if(dto.hasTitleFieldPath()) {
-      dataAccessAmendmentForm.setTitleFieldPath(dto.getTitleFieldPath());
+      form.setTitleFieldPath(dto.getTitleFieldPath());
     }
 
     if(dto.hasSummaryFieldPath()) {
-      dataAccessAmendmentForm.setSummaryFieldPath(dto.getSummaryFieldPath());
+      form.setSummaryFieldPath(dto.getSummaryFieldPath());
     }
 
     if(dto.hasEndDateFieldPath()) {
-      dataAccessAmendmentForm.setEndDateFieldPath(dto.getEndDateFieldPath());
+      form.setEndDateFieldPath(dto.getEndDateFieldPath());
     }
 
-    return dataAccessAmendmentForm;
+    return form;
   }
 
   @NotNull
