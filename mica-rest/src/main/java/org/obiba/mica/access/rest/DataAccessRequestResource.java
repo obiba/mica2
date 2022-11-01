@@ -521,6 +521,11 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     return super.doUpdateStatus(id, status);
   }
 
+  @Path("/preliminary/{preliminaryId}")
+  public DataAccessPreliminaryResource getPreliminary(@PathParam("id") String id, @PathParam("preliminaryId") String preliminaryId) {
+    return getPreliminary(id);
+  }
+
   @Path("/preliminary")
   public DataAccessPreliminaryResource getPreliminary(@PathParam("id") String id) {
     if (!dataAccessRequestService.isPreliminaryEnabled()) throw new DataAccessPreliminaryNotEnabled();

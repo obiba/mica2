@@ -14,11 +14,11 @@
 <div class="wrapper">
 
   <!-- Navbar -->
-    <#include "libs/aside-navbar.ftl">
+  <#include "libs/aside-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Sidebar -->
-    <#include "libs/data-access-sidebar.ftl">
+  <#include "libs/data-access-sidebar.ftl">
   <!-- /.sidebar -->
 
   <!-- Content Wrapper. Contains page content -->
@@ -50,7 +50,7 @@
               </#if>
           </div>
           <div class="col-sm-6">
-              <#include "libs/data-access-breadcrumb.ftl">
+            <#include "libs/data-access-breadcrumb.ftl">
           </div>
         </div>
       </div><!-- /.container-fluid -->
@@ -171,8 +171,8 @@
     </div>
     <!-- /.modal -->
 
+    <!-- Confirm collaborator removal modal -->
     <#if permissions?seq_contains("DELETE_COLLABORATORS")>
-      <!-- Confirm collaborator removal modal -->
       <div class="modal fade" id="modal-collaborator-delete">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -216,35 +216,35 @@
       <div class="row">
         <div class="col-md-3 col-sm-6">
 
-            <#if dar.status.toString() == "OPENED">
-                <#assign boxIcon = "fa fa-pen"/>
-                <#assign boxProgress = "10"/>
-                <#assign boxText = "data-access-progress-opened"/>
-            <#elseif dar.status.toString() == "APPROVED">
-                <#assign boxIcon = "fa fa-check"/>
-                <#assign boxProgress = "100"/>
-                <#assign boxText = "data-access-progress-approved"/>
-            <#elseif dar.status.toString() == "REJECTED">
-                <#assign boxIcon = "fa fa-ban"/>
-                <#assign boxProgress = "100"/>
-                <#assign boxText = "data-access-progress-rejected"/>
-            <#elseif dar.status.toString() == "SUBMITTED">
-                <#assign boxIcon = "far fa-clock"/>
-                <#assign boxProgress = "30"/>
-                <#assign boxText = "data-access-progress-submitted"/>
-            <#elseif dar.status.toString() == "REVIEWED">
-                <#assign boxIcon = "far fa-clock"/>
-                <#assign boxProgress = "50"/>
-                <#assign boxText = "data-access-progress-reviewed"/>
-            <#elseif dar.status.toString() == "CONDITIONALLY_APPROVED">
-                <#assign boxIcon = "fa fa-pen"/>
-                <#assign boxProgress = "80"/>
-                <#assign boxText = "data-access-progress-conditionally-approved"/>
-            <#else>
-                <#assign boxIcon = "far fa-clock"/>
-                <#assign boxProgress = "50"/>
-                <#assign boxText = ""/>
-            </#if>
+          <#if dar.status.toString() == "OPENED">
+            <#assign boxIcon = "fa fa-pen"/>
+            <#assign boxProgress = "10"/>
+            <#assign boxText = "data-access-progress-opened"/>
+          <#elseif dar.status.toString() == "APPROVED">
+            <#assign boxIcon = "fa fa-check"/>
+            <#assign boxProgress = "100"/>
+            <#assign boxText = "data-access-progress-approved"/>
+          <#elseif dar.status.toString() == "REJECTED">
+            <#assign boxIcon = "fa fa-ban"/>
+            <#assign boxProgress = "100"/>
+            <#assign boxText = "data-access-progress-rejected"/>
+          <#elseif dar.status.toString() == "SUBMITTED">
+            <#assign boxIcon = "far fa-clock"/>
+            <#assign boxProgress = "30"/>
+            <#assign boxText = "data-access-progress-submitted"/>
+          <#elseif dar.status.toString() == "REVIEWED">
+            <#assign boxIcon = "far fa-clock"/>
+            <#assign boxProgress = "50"/>
+            <#assign boxText = "data-access-progress-reviewed"/>
+          <#elseif dar.status.toString() == "CONDITIONALLY_APPROVED">
+            <#assign boxIcon = "fa fa-pen"/>
+            <#assign boxProgress = "80"/>
+            <#assign boxText = "data-access-progress-conditionally-approved"/>
+          <#else>
+            <#assign boxIcon = "far fa-clock"/>
+            <#assign boxProgress = "50"/>
+            <#assign boxText = ""/>
+          </#if>
 
           <div class="info-box bg-${statusColor(dar.status.toString())}">
             <span class="info-box-icon"><i class="${boxIcon}"></i></span>

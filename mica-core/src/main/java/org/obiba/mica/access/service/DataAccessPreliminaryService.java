@@ -10,6 +10,7 @@
 
 package org.obiba.mica.access.service;
 
+import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.access.DataAccessEntityRepository;
 import org.obiba.mica.access.DataAccessPreliminaryRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
@@ -144,6 +145,8 @@ public class DataAccessPreliminaryService extends DataAccessEntityService<DataAc
     else {
       DataAccessPreliminary preliminary = new DataAccessPreliminary();
       preliminary.setParentId(id);
+      String applicant = SecurityUtils.getSubject().getPrincipal().toString();
+      preliminary.setApplicant(applicant);
       return save(preliminary);
     }
   }

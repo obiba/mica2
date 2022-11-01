@@ -33,12 +33,16 @@ public class DataAccessConfigBundle {
     return config.isRejectedFinal();
   }
 
-  public boolean isAmendmentsEnabled() {
-    return config.isAmendmentsEnabled();
+  public boolean isPreliminaryEnabled() {
+    return config.isPreliminaryEnabled();
   }
 
   public boolean isFeasibilityEnabled() {
     return config.isFeasibilityEnabled();
+  }
+
+  public boolean isAmendmentsEnabled() {
+    return config.isAmendmentsEnabled();
   }
 
   public boolean isAgreementEnabled() {
@@ -49,12 +53,16 @@ public class DataAccessConfigBundle {
     return config.isVariablesEnabled();
   }
 
-  public boolean isAmendmentVariablesEnabled() {
-    return config.isAmendmentVariablesEnabled();
+  public boolean isPreliminaryVariablesEnabled() {
+    return config.isPreliminaryVariablesEnabled();
   }
 
   public boolean isFeasibilityVariablesEnabled() {
     return config.isFeasibilityVariablesEnabled();
+  }
+
+  public boolean isAmendmentVariablesEnabled() {
+    return config.isAmendmentVariablesEnabled();
   }
 
   public boolean isDownloadPdf() {

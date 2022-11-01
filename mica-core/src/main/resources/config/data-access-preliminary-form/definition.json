@@ -114,80 +114,6 @@
     ]
   },
   {
-    "type": "help",
-    "helpvalue": "<h3>D. t(data-access-request.default.I.D.title)</h3><p class='help-block'>t(data-access-request.default.I.D.info)</p>"
-  },
-  {
-    "type": "section",
-    "htmlClass": "row",
-    "items": [
-      {
-        "type": "section",
-        "htmlClass": "col-xs-6",
-        "items": [
-          "hasNoStaff",
-          {
-            "key": "staff",
-            "add": "New",
-            "style": {
-              "add": "btn-info"
-            },
-            "notitle": true,
-            "items": [
-              "staff[].name",
-              "staff[].title",
-              "staff[].position",
-              "staff[].email"
-            ],
-            "condition": "!model.hasNoStaff"
-          }
-        ]
-      },
-      {
-        "type": "section",
-        "htmlClass": "col-xs-6",
-        "items": []
-      }
-    ]
-  },
-  {
-    "type": "help",
-    "helpvalue": "<h3>E. t(data-access-request.default.I.E.title)</h3><p class='help-block'>t(data-access-request.default.I.E.info)</p>"
-  },
-  {
-    "type": "section",
-    "htmlClass": "row",
-    "items": [
-      {
-        "type": "section",
-        "htmlClass": "col-xs-6",
-        "items": [
-          "hasNoStudents",
-          {
-            "key": "students",
-            "add": "New",
-            "style": {
-              "add": "btn-info"
-            },
-            "notitle": true,
-            "items": [
-              "students[].name",
-              "students[].title",
-              "students[].position",
-              "students[].email"
-            ],
-            "condition": "!model.hasNoStudents"
-          }
-        ]
-      },
-      {
-        "type": "section",
-        "htmlClass": "col-xs-6",
-        "items": []
-      }
-    ]
-  },
-  {
     "type": "fieldset",
     "items": [
       {
@@ -206,65 +132,12 @@
     ]
   },
   {
-    "type": "fieldset",
-    "items": [
-      {
-        "type": "help",
-        "helpvalue": "<h3>G. t(data-access-request.default.I.G.title)</h3><p class='help-block'>t(data-access-request.default.I.G.info)</p>"
-      },
-      {
-        "key": "summary",
-        "notitle": true,
-        "type": "textarea",
-        "wordLimit": 200,
-        "validationMessage": {
-          "wordLimitError": "The 200 words limit has been exceeded."
-        }
-      }
-    ]
-  },
-  {
-    "type": "fieldset",
-    "items": [
-      {
-        "type": "help",
-        "helpvalue": "<h3>H. t(data-access-request.default.I.H.title)</h3><p class='help-block'>t(data-access-request.default.I.H.info)</p>"
-      },
-      {
-        "key": "endDate",
-        "notitle": true,
-        "dateOptions": {
-          "dateFormat": "yyyy-MM-dd"
-        },
-        "validationMessage": "t(data-access-request.default.date-error)"
-      }
-    ]
-  },
-  {
     "type": "help",
     "helpvalue": "<h2>II - t(data-access-request.default.documents.title)</h2>"
   },
   {
     "type": "fieldset",
     "items": [
-      {
-        "key": "rdRebResearchProtocol",
-        "type": "obibaFileUpload",
-        "validationMessage": {
-          "missingFiles": "t(missing-files)",
-          "minItems": "t(min-items)"
-        },
-        "emptyMessage": "t(data-access-request.no-documents)"
-      },
-      {
-        "key": "rdRebDecisionLetter",
-        "type": "obibaFileUpload",
-        "validationMessage": {
-          "missingFiles": "t(missing-files)",
-          "minItems": "t(min-items)"
-        },
-        "emptyMessage": "t(data-access-request.no-documents)"
-      },
       {
         "key": "rdCV",
         "type": "obibaFileUpload",
@@ -283,16 +156,6 @@
         },
         "emptyMessage": "t(data-access-request.no-documents)"
       }
-    ]
-  },
-  {
-    "type": "fieldset",
-    "items": [
-      {
-        "type": "help",
-        "helpvalue": "<h3>t(data-access-request.default.signature.title)</h3>"
-      },
-      "isFormCompleted"
     ]
   }
 ]

@@ -47,6 +47,21 @@
   </#if>
 </#macro>
 
+<!-- Help section, can be adapted to data access preliminary status -->
+<#macro dataAccessPreliminaryFormHelp preliminary>
+  <#if preliminary.status == "OPENED">
+    <@message "data-access-preliminary-form-opened-help"/>
+  <#elseif preliminary.status == "SUBMITTED">
+    <@message "data-access-preliminary-form-submitted-help"/>
+  <#elseif preliminary.status == "REVIEWED">
+    <@message "data-access-preliminary-form-reviewed-help"/>
+  <#elseif preliminary.status == "APPROVED">
+    <@message "data-access-preliminary-form-approved-help"/>
+  <#elseif preliminary.status == "REJECTED">
+    <@message "data-access-preliminary-form-rejected-help"/>
+  </#if>
+</#macro>
+
 <!-- Form print header and footer, not visible on screen -->
 <#macro dataAccessFormPrintHeader form type>
   <div class="clearfix border-bottom pb-3 mb-3">
@@ -138,5 +153,6 @@
 
 <!-- Variables linking -->
 <#assign variablesEnabled = accessConfig.variablesEnabled && config.cartEnabled/>
+<#assign preliminaryVariablesEnabled = accessConfig.preliminaryVariablesEnabled && config.cartEnabled/>
 <#assign feasibilityVariablesEnabled = accessConfig.feasibilityVariablesEnabled && config.cartEnabled/>
 <#assign amendmentVariablesEnabled = accessConfig.amendmentVariablesEnabled && config.cartEnabled/>
