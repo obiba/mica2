@@ -1,10 +1,9 @@
 package org.obiba.mica.access.rest;
 
 import com.codahale.metrics.annotation.Timed;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.access.domain.DataAccessFeasibility;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
+import org.obiba.mica.access.domain.DataAccessFeasibility;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.service.DataAccessFeasibilityService;
 import org.obiba.mica.access.service.DataAccessRequestService;
@@ -65,17 +64,16 @@ public class DataAccessFeasibilitiesResource {
     if (request.isArchived()) throw new BadRequestException("Data access request is archived");
 
     // force applicant and make sure it is a new request
-    String applicant = SecurityUtils.getSubject().getPrincipal().toString();
-    feasibility.setApplicant(applicant);
+    feasibility.setApplicant(request.getApplicant());
     feasibility.setId(null);
     feasibility.setParentId(parentId);
     feasibility.setStatus(DataAccessEntityStatus.OPENED);
 
+    // set permissions
     dataAccessFeasibilityService.save(feasibility);
     resource = String.format("/data-access-request/%s/feasibility", parentId);
-
-    subjectAclService.addPermission(resource, "VIEW,EDIT,DELETE", feasibility.getId());
-    subjectAclService.addPermission(resource + "/" + feasibility.getId(), "EDIT", "_status");
+    subjectAclService.addUserPermission(feasibility.getApplicant(), resource, "VIEW,EDIT,DELETE", feasibility.getId());
+    subjectAclService.addUserPermission(feasibility.getApplicant(), resource + "/" + feasibility.getId(), "EDIT", "_status");
 
     return Response.created(uriInfo.getBaseUriBuilder().segment("data-access-request", parentId, "feasibility", feasibility.getId()).build()).build();
   }

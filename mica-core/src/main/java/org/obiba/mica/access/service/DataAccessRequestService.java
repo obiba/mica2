@@ -75,6 +75,9 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
   private DataAccessFeasibilityService dataAccessFeasibilityService;
 
   @Inject
+  private DataAccessPreliminaryService dataAccessPreliminaryService;
+
+  @Inject
   private DataAccessCollaboratorService dataAccessCollaboratorService;
 
   @Inject
@@ -128,12 +131,9 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
       request.setApplicant(applicant);
       save(request);
 
-      dataAccessAmendmentService.findByParentId(request.getId()).forEach(amendment -> {
-        dataAccessAmendmentService.changeApplicantAndSave(amendment, applicant);
-      });
-      dataAccessFeasibilityService.findByParentId(request.getId()).forEach(feasibility -> {
-        dataAccessFeasibilityService.changeApplicantAndSave(feasibility, applicant);
-      });
+      dataAccessAmendmentService.changeApplicantAndSave(request);
+      dataAccessFeasibilityService.changeApplicantAndSave(request);
+      dataAccessPreliminaryService.changeApplicantAndSave(request);
 
       subjectAclService.applyPrincipal(
         subjectAclService.findBySubject(originalApplicant, SubjectAcl.Type.USER).stream()
@@ -157,9 +157,10 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
 
     dataAccessRequestRepository.deleteWithReferences(dataAccessRequest);
     schemaFormContentFileService.deleteFiles(dataAccessRequest);
-    deleteAmendments(id);
-    deleteFeasibilities(id);
-    deleteCollaborators(id);
+    dataAccessAmendmentService.findByParentId(id).forEach(dataAccessAmendmentService::delete);
+    dataAccessFeasibilityService.findByParentId(id).forEach(dataAccessFeasibilityService::delete);
+    dataAccessPreliminaryService.findByParentId(id).forEach(dataAccessPreliminaryService::delete);
+    dataAccessCollaboratorService.deleteAll(id);
 
     attachments.forEach(a -> fileStoreService.delete(a.getId()));
     eventBus.post(new DataAccessRequestDeletedEvent(dataAccessRequest));
@@ -320,18 +321,6 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
     eventBus.post(new DataAccessRequestUpdatedEvent(saved));
     sendNotificationEmails(saved, from);
     return saved;
-  }
-
-  private void deleteAmendments(String id) {
-    dataAccessAmendmentService.findByParentId(id).forEach(dataAccessAmendmentService::delete);
-  }
-
-  private void deleteFeasibilities(String id) {
-    dataAccessFeasibilityService.findByParentId(id).forEach(dataAccessFeasibilityService::delete);
-  }
-
-  private void deleteCollaborators(String id) {
-    dataAccessCollaboratorService.deleteAll(id);
   }
 
   private byte[] getTemplate(DataAccessRequest request, Locale locale) throws IOException {

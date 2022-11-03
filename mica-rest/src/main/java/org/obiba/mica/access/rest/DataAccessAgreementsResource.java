@@ -74,18 +74,18 @@ public class DataAccessAgreementsResource {
     DataAccessRequest request = dataAccessRequestService.findById(parentId);
     if (request.isArchived()) throw new BadRequestException("Data access request is archived");
 
-    // force applicant and make sure it is a new request
+    // force applicant (could be different from the request's applicant)
     String applicant = SecurityUtils.getSubject().getPrincipal().toString();
     agreement.setApplicant(applicant);
     agreement.setId(null);
     agreement.setParentId(parentId);
     agreement.setStatus(DataAccessEntityStatus.OPENED);
 
+    // set permissions
     dataAccessAgreementService.save(agreement);
     resource = String.format("/data-access-request/%s/agreement", parentId);
-
-    subjectAclService.addPermission(resource, "VIEW,EDIT,DELETE", agreement.getId());
-    subjectAclService.addPermission(resource + "/" + agreement.getId(), "EDIT", "_status");
+    subjectAclService.addUserPermission(applicant, resource, "VIEW,EDIT,DELETE", agreement.getId());
+    subjectAclService.addUserPermission(applicant,resource + "/" + agreement.getId(), "EDIT", "_status");
 
     return Response.created(uriInfo.getBaseUriBuilder().segment("data-access-request", parentId, "agreement", agreement.getId()).build()).build();
   }

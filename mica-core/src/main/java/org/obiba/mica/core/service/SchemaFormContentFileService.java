@@ -10,6 +10,7 @@
 
 package org.obiba.mica.core.service;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
@@ -45,7 +46,8 @@ public class SchemaFormContentFileService {
     if (newPaths == null) return; // content does not have any file field
 
     if (oldEntity.isPresent()) {
-      Object oldJson = defaultConfiguration().jsonProvider().parse(oldEntity.get().getContent());
+      String oldContent = Strings.isNullOrEmpty(oldEntity.get().getContent()) ? "{}" : oldEntity.get().getContent();
+      Object oldJson = defaultConfiguration().jsonProvider().parse(oldContent);
       DocumentContext oldContext = JsonPath.using(defaultConfiguration().addOptions(Option.AS_PATH_LIST)).parse(oldJson);
       Map<String, JSONArray> oldPaths = getPathFilesMap(oldContext, oldJson);
       if (oldPaths != null) {
@@ -64,7 +66,8 @@ public class SchemaFormContentFileService {
   }
 
   public void deleteFiles(SchemaFormContentAware entity) {
-    Object json = defaultConfiguration().jsonProvider().parse(entity.getContent());
+    String content = Strings.isNullOrEmpty(entity.getContent()) ? "{}" : entity.getContent();
+    Object json = defaultConfiguration().jsonProvider().parse(content);
     DocumentContext context = JsonPath.using(defaultConfiguration().addOptions(Option.AS_PATH_LIST)).parse(json);
     DocumentContext reader =
         new JsonContext(defaultConfiguration().addOptions(Option.REQUIRE_PROPERTIES)).parse(json);

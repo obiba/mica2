@@ -13,11 +13,14 @@ package org.obiba.mica.access.service;
 import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.access.DataAccessEntityRepository;
 import org.obiba.mica.access.DataAccessPreliminaryRepository;
+import org.obiba.mica.access.DataAccessRequestRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessPreliminary;
+import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.event.DataAccessPreliminaryDeletedEvent;
 import org.obiba.mica.access.event.DataAccessPreliminaryUpdatedEvent;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -43,6 +46,12 @@ public class DataAccessPreliminaryService extends DataAccessEntityService<DataAc
 
   @Inject
   private DataAccessPreliminaryRepository dataPreliminaryRequestRepository;
+
+  @Inject
+  private DataAccessRequestRepository dataAccessRequestRepository;
+
+  @Inject
+  private SubjectAclService subjectAclService;
 
   @Override
   protected DataAccessEntityRepository<DataAccessPreliminary> getRepository() {
@@ -126,7 +135,11 @@ public class DataAccessPreliminaryService extends DataAccessEntityService<DataAc
     delete(findById(id));
   }
 
-  void changeApplicantAndSave(DataAccessPreliminary preliminary, String applicant) {
+  void changeApplicantAndSave(DataAccessRequest request) {
+    findByParentId(request.getId()).forEach(preliminary -> changeApplicantAndSave(preliminary, request.getApplicant()));
+  }
+
+  private void changeApplicantAndSave(DataAccessPreliminary preliminary, String applicant) {
     preliminary.setApplicant(applicant);
     save(preliminary);
   }
@@ -143,11 +156,24 @@ public class DataAccessPreliminaryService extends DataAccessEntityService<DataAc
     Optional<DataAccessPreliminary> preliminaryOpt = getRepository().findById(id);
     if (preliminaryOpt.isPresent()) return preliminaryOpt.get();
     else {
-      DataAccessPreliminary preliminary = new DataAccessPreliminary();
-      preliminary.setParentId(id);
-      String applicant = SecurityUtils.getSubject().getPrincipal().toString();
-      preliminary.setApplicant(applicant);
-      return save(preliminary);
+      // ensure parent exists and set same applicant
+      Optional<DataAccessRequest> darOpt = dataAccessRequestRepository.findById(id);
+      if (darOpt.isPresent()) {
+        // create empty preliminary
+        DataAccessPreliminary preliminary = new DataAccessPreliminary();
+        preliminary.setParentId(id);
+        preliminary.setApplicant(darOpt.get().getApplicant());
+        preliminary.setContent("{}");
+        preliminary =  save(preliminary);
+
+        // set permissions
+        String resource = String.format("/data-access-request/%s/preliminary", id);
+        subjectAclService.addUserPermission(preliminary.getApplicant(), resource, "VIEW,EDIT,DELETE", id);
+        subjectAclService.addUserPermission(preliminary.getApplicant(), resource + "/" + id, "EDIT", "_status");
+
+        return preliminary;
+      } else
+        throw NoSuchDataAccessRequestException.withId(id);
     }
   }
 }
