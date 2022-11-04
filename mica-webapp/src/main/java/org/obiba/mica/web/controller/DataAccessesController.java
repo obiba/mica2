@@ -2,10 +2,8 @@ package org.obiba.mica.web.controller;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
-import org.obiba.mica.access.service.DataAccessAmendmentService;
-import org.obiba.mica.access.service.DataAccessFeasibilityService;
-import org.obiba.mica.access.service.DataAccessRequestService;
-import org.obiba.mica.access.service.DataAccessRequestUtilService;
+import org.obiba.mica.access.domain.DataAccessPreliminary;
+import org.obiba.mica.access.service.*;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
@@ -43,6 +41,9 @@ public class DataAccessesController extends BaseController {
   private DataAccessFeasibilityService dataAccessFeasibilityService;
 
   @Inject
+  private DataAccessPreliminaryService dataAccessPreliminaryService;
+
+  @Inject
   private UserProfileService userProfileService;
 
   @Inject
@@ -74,11 +75,16 @@ public class DataAccessesController extends BaseController {
   }
 
   private List<DataAccessRequestBundle> getDataAccessRequests(List<String> status) {
+    boolean preliminaryEnabled = dataAccessConfigService.getOrCreateConfig().isPreliminaryEnabled();
     return dataAccessRequestService.findByStatus(status).stream() //
       .filter(req -> isPermitted("/data-access-request", "VIEW", req.getId()))
-      .map(req -> new DataAccessRequestBundle(req, ESAPI.encoder().encodeForHTML(dataAccessRequestUtilService.getRequestTitle(req)),
-        dataAccessAmendmentService.countByParentId(req.getId()), dataAccessAmendmentService.countPendingByParentId(req.getId()),
-        dataAccessFeasibilityService.countByParentId(req.getId()), dataAccessFeasibilityService.countPendingByParentId(req.getId())))
+      .map(req -> {
+        DataAccessPreliminary preliminary = preliminaryEnabled ? dataAccessPreliminaryService.getOrCreate(req.getId()) : null;
+        return new DataAccessRequestBundle(req, preliminary,
+          ESAPI.encoder().encodeForHTML(dataAccessRequestUtilService.getRequestTitle(req)),
+          dataAccessAmendmentService.countByParentId(req.getId()), dataAccessAmendmentService.countPendingByParentId(req.getId()),
+          dataAccessFeasibilityService.countByParentId(req.getId()), dataAccessFeasibilityService.countPendingByParentId(req.getId()));
+      })
       .collect(Collectors.toList());
   }
 

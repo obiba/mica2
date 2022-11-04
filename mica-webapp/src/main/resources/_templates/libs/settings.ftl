@@ -147,7 +147,7 @@
 <#assign dataAccessCalloutsEnabled = true/>
 <#assign dataAccessReportTimelineEnabled = true/>
 <#assign dataAccessArchiveEnabled = true/>
-<#assign showDataAccessEventsInComments = ["request", "feasibility", "amendment", "agreement"]/>
+<#assign showDataAccessEventsInComments = ["request", "preliminary", "feasibility", "amendment", "agreement"]/>
 
 
 <!-- Charts -->

@@ -3,13 +3,18 @@ package org.obiba.mica.web.controller.domain;
 import java.time.LocalDateTime;
 
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
+import org.obiba.mica.access.domain.DataAccessPreliminary;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.domain.StatusChange;
+
+import javax.xml.crypto.Data;
 
 public class DataAccessRequestBundle {
 
   private final String id;
   private final DataAccessRequest request;
+
+  private final DataAccessPreliminary preliminary;
   private final String title;
   private final int totalAmendments;
   private final int pendingAmendments;
@@ -17,9 +22,11 @@ public class DataAccessRequestBundle {
   private final int pendingFeasibilities;
   private StatusChange submission;
 
-  public DataAccessRequestBundle(DataAccessRequest request, String title, int totalAmendments, int pendingAmendments, int totalFeasibilities, int pendingFeasibilities) {
+  public DataAccessRequestBundle(DataAccessRequest request, DataAccessPreliminary preliminary,
+                                 String title, int totalAmendments, int pendingAmendments, int totalFeasibilities, int pendingFeasibilities) {
     this.id = request.getId();
     this.request = request;
+    this.preliminary = preliminary;
     this.title = title;
     this.submission = request.getLastSubmission();
     this.totalAmendments = totalAmendments;
@@ -40,6 +47,10 @@ public class DataAccessRequestBundle {
     return request;
   }
 
+  public DataAccessPreliminary getPreliminary() {
+    return preliminary;
+  }
+
   public String getTitle() {
     return title;
   }
@@ -53,6 +64,12 @@ public class DataAccessRequestBundle {
   }
 
   public DataAccessEntityStatus getStatus() {
+    return request.getStatus();
+  }
+
+  public DataAccessEntityStatus getFullStatus() {
+    if (preliminary != null && DataAccessEntityStatus.REJECTED.equals(preliminary.getStatus()))
+      return preliminary.getStatus();
     return request.getStatus();
   }
 

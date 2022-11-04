@@ -112,8 +112,8 @@ public class DataAccessController extends BaseController {
 
       List<DataAccessCollaborator> collaborators = dataAccessCollaboratorService.findByRequestId(id);
       params.put("collaborators", collaborators.stream()
-          .map(collaborator -> new DataAccessCollaboratorBundle(collaborator, userProfileService.getProfileMap(collaborator.hasPrincipal() ? collaborator.getPrincipal() : collaborator.getEmail(), true)))
-          .collect(Collectors.toList()));
+        .map(collaborator -> new DataAccessCollaboratorBundle(collaborator, userProfileService.getProfileMap(collaborator.hasPrincipal() ? collaborator.getPrincipal() : collaborator.getEmail(), true)))
+        .collect(Collectors.toList()));
       List<String> collaboratorEmails = collaborators.stream().map(DataAccessCollaborator::getEmail).collect(Collectors.toList());
       params.put("suggestedCollaborators", getConfig().isCollaboratorsEnabled() ? dataAccessRequestUtilService.getEmails(getDataAccessRequest(params)).stream()
         .filter(email -> !collaboratorEmails.contains(email))
@@ -162,7 +162,7 @@ public class DataAccessController extends BaseController {
       addDataAccessFormConfiguration(params, getDataAccessRequest(params), !edit, lg);
 
       DataAccessPreliminary preliminary = getDataAccessPreliminary(params);
-      if (preliminary != null && DataAccessEntityStatus.OPENED.equals(preliminary.getStatus())) {
+      if (preliminary != null && !DataAccessEntityStatus.APPROVED.equals(preliminary.getStatus())) {
         return new ModelAndView("redirect:/data-access-preliminary-form/" + id);
       }
 
@@ -293,9 +293,9 @@ public class DataAccessController extends BaseController {
 
   @GetMapping("/data-access-agreement-form/{id:.+}")
   public ModelAndView getAgreementForm(@PathVariable String id,
-                                         @RequestParam(value = "edit", defaultValue = "false") boolean edit,
-                                         @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
-                                         @RequestParam(value = "language", required = false) String language) {
+                                       @RequestParam(value = "edit", defaultValue = "false") boolean edit,
+                                       @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
+                                       @RequestParam(value = "language", required = false) String language) {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       Map<String, Object> params = newAgreementParameters(id);
@@ -470,6 +470,10 @@ public class DataAccessController extends BaseController {
       a.getStatusChangeHistory().stream().map(e -> new FormStatusChangeEvent(userProfileService, a, e))
         .forEach(events::add);
     });
+    DataAccessPreliminary preliminary = getDataAccessPreliminary(params);
+    if (preliminary != null) {
+      preliminary.getStatusChangeHistory().stream().map(e -> new FormStatusChangeEvent(userProfileService, preliminary, e)).forEach(events::add);
+    }
 
     // order change events
     return events.stream().sorted(Comparator.comparing(FormStatusChangeEvent::getDate)).collect(Collectors.toList());

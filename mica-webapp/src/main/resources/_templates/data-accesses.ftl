@@ -117,7 +117,7 @@
                         <#if accessConfig.amendmentsEnabled>
                           <td>${dar.pendingAmendments}/${dar.totalAmendments}</td>
                         </#if>
-                        <td><i class="fas fa-circle text-${statusColor(dar.status.toString())}"></i> <@message dar.status.toString()/></td>
+                        <td><i class="fas fa-circle text-${statusColor(dar.fullStatus.toString())}"></i> <@message dar.fullStatus.toString()/></td>
                         <#if dataAccessArchiveEnabled>
                           <td><#if dar.archived><i class="fas fa-check"></i></#if></td>
                         </#if>
