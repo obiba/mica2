@@ -160,8 +160,8 @@
                                 <span class="badge badge-info">${group}</span>
                               </#list>
                             </td>
-                            <td data-sort="${profile.attributes["createdDate"].toString(datetimeFormat)}" class="moment-datetime">${profile.attributes["createdDate"].toString(datetimeFormat)}</td>
-                            <td data-sort="<#if profile.attributes["lastLogin"]??>${profile.attributes["lastLogin"].toString(datetimeFormat)}</#if>" class="moment-datetime"><#if profile.attributes["lastLogin"]??>${profile.attributes["lastLogin"].toString(datetimeFormat)}</#if></td>
+                            <td data-sort="${profile.attributes["createdDate"].toString()}" class="moment-datetime">${profile.attributes["createdDate"].toString()}</td>
+                            <td data-sort="<#if profile.attributes["lastLogin"]??>${profile.attributes["lastLogin"].toString()}</#if>" class="moment-datetime"><#if profile.attributes["lastLogin"]??>${profile.attributes["lastLogin"].toString()}</#if></td>
                             <@userProfileTDs profile=profile/>
                           </tr>
                         </#list>

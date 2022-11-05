@@ -104,7 +104,7 @@
         <div class="modal-body">
           <p>
               <@message "form-diff-current-with-previous-submission"/>
-            (<span class="moment-datetime">${diffs.statusChange.changedOn.toString(datetimeFormat)}</span>)
+            (<span class="moment-datetime">${diffs.statusChange.changedOn.toString()}</span>)
           </p>
           <ul>
             <li class="diff">
