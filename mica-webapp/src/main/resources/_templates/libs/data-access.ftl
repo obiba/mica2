@@ -375,18 +375,155 @@
         <p><@message "archived-dao-text"/></p>
       </#if>
 
-  <#elseif preliminary?? && preliminary.status == "REJECTED">
+  <#elseif dar.status == "CONDITIONALLY_APPROVED">
 
-    <h4><@message "rejected-title"/></h4>
+    <h4><@message "conditionally-approved-title"/></h4>
+    <#if user.username == dar.applicant>
+      <p><@message "conditionally-approved-applicant-text"/></p>
+      <div>
+        <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
+          <i class="fas fa-pen"></i> <@message "application-form"/>
+        </a>
+      </div>
+    <#else>
+      <p><@message "conditionally-approved-dao-text"/></p>
+    </#if>
+
+  <#elseif dar.status == "SUBMITTED">
+
+    <h4><@message "submitted-title"/></h4>
+    <#if user.username == dar.applicant>
+      <p><@message "submitted-applicant-text"/></p>
+    <#else>
+      <p><@message "submitted-dao-text"/></p>
+      <div>
+        <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
+          <i class="fas fa-pen"></i> <@message "application-form"/>
+        </a>
+      </div>
+    </#if>
+
+  <#elseif dar.status == "REVIEWED">
+
+    <h4><@message "reviewed-title"/></h4>
+    <#if user.username == dar.applicant>
+      <p><@message "reviewed-applicant-text"/></p>
+    <#else>
+      <p><@message "reviewed-dao-text"/></p>
+      <div>
+        <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
+          <i class="fas fa-pen"></i> <@message "application-form"/>
+        </a>
+      </div>
+    </#if>
+
+  <#elseif dar.status == "APPROVED">
+    <#if accessConfig.agreementEnabled>
+      <h4><@message "agreements-title"/></h4>
+      <p><@message "agreements-text"/></p>
+        <@dataAccessAgreementsNote/>
+    </#if>
+
+    <#if dataAccessReportTimelineEnabled && reportTimeline.endDate??>
+      <h4><@message "report-timeline-title"/></h4>
+      <p><@message "report-timeline-text"/></p>
+      <@dataAccessTimeline dar=dar reportTimeline=reportTimeline/>
+    <#else>
+      <h4><@message "approved-title"/></h4>
       <#if user.username == dar.applicant>
-        <p><@message "rejected-applicant-text"/></p>
+        <p><@message "approved-applicant-text"/></p>
       <#else>
-        <p><@message "rejected-dao-text"/></p>
+        <p><@message "approved-dao-text"/></p>
         <div>
-          <a href="${contextPath}/data-access-preliminary-form/${preliminary.id}" class="btn btn-primary" >
+          <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
             <i class="fas fa-eye"></i> <@message "application-form"/>
           </a>
         </div>
+      </#if>
+    </#if>
+
+  <#elseif dar.status == "REJECTED">
+
+    <h4><@message "rejected-title"/></h4>
+    <#if user.username == dar.applicant>
+      <p><@message "rejected-applicant-text"/></p>
+    <#else>
+      <p><@message "rejected-dao-text"/></p>
+      <div>
+        <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
+          <i class="fas fa-eye"></i> <@message "application-form"/>
+        </a>
+      </div>
+    </#if>
+
+  <#elseif preliminary?? && preliminary.status == "CONDITIONALLY_APPROVED">
+
+    <h4><@message "conditionally-approved-preliminary-title"/></h4>
+      <#if user.username == dar.applicant>
+        <p><@message "conditionally-approved-preliminary-applicant-text"/></p>
+        <div>
+          <a href="${contextPath}/data-access-preliminary-form/${dar.id}" class="btn btn-primary" >
+            <i class="fas fa-pen"></i> <@message "application-form"/>
+          </a>
+        </div>
+      <#else>
+        <p><@message "conditionally-approved-preliminary-dao-text"/></p>
+      </#if>
+
+  <#elseif preliminary?? && preliminary.status == "SUBMITTED">
+
+    <h4><@message "submitted-preliminary-title"/></h4>
+      <#if user.username == dar.applicant>
+        <p><@message "submitted-preliminary-applicant-text"/></p>
+      <#else>
+        <p><@message "submitted-preliminary-dao-text"/></p>
+        <div>
+          <a href="${contextPath}/data-access-preliminary-form/${dar.id}" class="btn btn-primary" >
+            <i class="fas fa-pen"></i> <@message "preliminary-application-form"/>
+          </a>
+        </div>
+      </#if>
+
+  <#elseif preliminary?? && preliminary.status == "REVIEWED">
+
+    <h4><@message "reviewed-preliminary-title"/></h4>
+      <#if user.username == dar.applicant>
+        <p><@message "reviewed-preliminary-applicant-text"/></p>
+      <#else>
+        <p><@message "reviewed-preliminary-dao-text"/></p>
+        <div>
+          <a href="${contextPath}/data-access-preliminary-form/${dar.id}" class="btn btn-primary" >
+            <i class="fas fa-pen"></i> <@message "preliminary-application-form"/>
+          </a>
+        </div>
+      </#if>
+
+  <#elseif preliminary?? && preliminary.status == "REJECTED">
+
+    <h4><@message "rejected-preliminary-title"/></h4>
+      <#if user.username == dar.applicant>
+        <p><@message "rejected-preliminary-applicant-text"/></p>
+      <#else>
+        <p><@message "rejected-preliminary-dao-text"/></p>
+        <div>
+          <a href="${contextPath}/data-access-preliminary-form/${preliminary.id}" class="btn btn-primary" >
+            <i class="fas fa-eye"></i> <@message "preliminary-application-form"/>
+          </a>
+        </div>
+      </#if>
+
+  <#elseif preliminary?? && preliminary.status == "OPENED">
+
+    <h4><@message "opened-preliminary-title"/></h4>
+      <#if user.username == dar.applicant>
+        <p><@message "opened-preliminary-applicant-text"/></p>
+        <div>
+          <a href="${contextPath}/data-access-preliminary-form/${dar.id}" class="btn btn-primary" >
+            <i class="fas fa-pen"></i> <@message "preliminary-application-form"/>
+          </a>
+        </div>
+      <#else>
+        <p><@message "opened-dao-text"/></p>
       </#if>
 
   <#elseif dar.status == "OPENED">
@@ -403,89 +540,6 @@
         <p><@message "opened-dao-text"/></p>
       </#if>
 
-  <#elseif dar.status == "CONDITIONALLY_APPROVED">
-
-    <h4><@message "conditionally-approved-title"/></h4>
-      <#if user.username == dar.applicant>
-        <p><@message "conditionally-approved-applicant-text"/></p>
-        <div>
-          <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
-            <i class="fas fa-pen"></i> <@message "application-form"/>
-          </a>
-        </div>
-      <#else>
-        <p><@message "conditionally-approved-dao-text"/></p>
-      </#if>
-
-  <#elseif dar.status == "SUBMITTED">
-
-    <h4><@message "submitted-title"/></h4>
-      <#if user.username == dar.applicant>
-        <p><@message "submitted-applicant-text"/></p>
-      <#else>
-        <p><@message "submitted-dao-text"/></p>
-        <div>
-          <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
-            <i class="fas fa-pen"></i> <@message "application-form"/>
-          </a>
-        </div>
-      </#if>
-
-  <#elseif dar.status == "REVIEWED">
-
-    <h4><@message "reviewed-title"/></h4>
-      <#if user.username == dar.applicant>
-        <p><@message "reviewed-applicant-text"/></p>
-      <#else>
-        <p><@message "reviewed-dao-text"/></p>
-        <div>
-          <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
-            <i class="fas fa-pen"></i> <@message "application-form"/>
-          </a>
-        </div>
-      </#if>
-
-  <#elseif dar.status == "APPROVED">
-    <#if accessConfig.agreementEnabled>
-      <h4><@message "agreements-title"/></h4>
-      <p><@message "agreements-text"/></p>
-
-        <@dataAccessAgreementsNote/>
-    </#if>
-
-    <#if dataAccessReportTimelineEnabled && reportTimeline.endDate??>
-
-      <h4><@message "report-timeline-title"/></h4>
-      <p><@message "report-timeline-text"/></p>
-
-        <@dataAccessTimeline dar=dar reportTimeline=reportTimeline/>
-    <#else>
-      <h4><@message "approved-title"/></h4>
-        <#if user.username == dar.applicant>
-          <p><@message "approved-applicant-text"/></p>
-        <#else>
-          <p><@message "approved-dao-text"/></p>
-          <div>
-            <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
-              <i class="fas fa-eye"></i> <@message "application-form"/>
-            </a>
-          </div>
-        </#if>
-    </#if>
-
-  <#elseif dar.status == "REJECTED">
-
-    <h4><@message "rejected-title"/></h4>
-      <#if user.username == dar.applicant>
-        <p><@message "rejected-applicant-text"/></p>
-      <#else>
-        <p><@message "rejected-dao-text"/></p>
-        <div>
-          <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
-            <i class="fas fa-eye"></i> <@message "application-form"/>
-          </a>
-        </div>
-      </#if>
 
   </#if>
 </#macro>
