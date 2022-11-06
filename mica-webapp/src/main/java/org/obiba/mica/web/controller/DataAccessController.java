@@ -159,10 +159,11 @@ public class DataAccessController extends BaseController {
     if (subject.isAuthenticated()) {
       Map<String, Object> params = newParameters(id);
       String lg = getLang(locale, language);
-      addDataAccessFormConfiguration(params, getDataAccessRequest(params), !edit, lg);
+      DataAccessRequest dar = getDataAccessRequest(params);
+      addDataAccessFormConfiguration(params, dar, !edit, lg);
 
       DataAccessPreliminary preliminary = getDataAccessPreliminary(params);
-      if (preliminary != null && !DataAccessEntityStatus.APPROVED.equals(preliminary.getStatus())) {
+      if (DataAccessEntityStatus.OPENED.equals(dar.getStatus()) && preliminary != null && !DataAccessEntityStatus.APPROVED.equals(preliminary.getStatus())) {
         return new ModelAndView("redirect:/data-access-preliminary-form/" + id);
       }
 
@@ -174,11 +175,11 @@ public class DataAccessController extends BaseController {
 
       // show differences with previous submission (if any)
       if (subject.hasRole(Roles.MICA_ADMIN) || subject.hasRole(Roles.MICA_DAO)) {
-        List<StatusChange> submissions = getDataAccessRequest(params).getSubmissions();
-        if (!DataAccessEntityStatus.OPENED.equals(getDataAccessRequest(params).getStatus())) {
+        List<StatusChange> submissions = dar.getSubmissions();
+        if (!DataAccessEntityStatus.OPENED.equals(dar.getStatus())) {
           submissions = submissions.subList(0, submissions.size() - 1); // compare with previous submission, not with itself
         }
-        String content = getDataAccessRequest(params).getContent();
+        String content = dar.getContent();
         params.put("diffs", submissions.stream()
           .reduce((first, second) -> second)
           .map(change -> new DataAccessEntityDiff(change, dataAccessRequestUtilService.getContentDiff("data-access-form", change.getContent(), content, lg)))

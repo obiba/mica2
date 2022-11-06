@@ -105,7 +105,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <#if preliminary.status.toString() == "APPROVED">
+                <#if preliminary.status.toString() == "APPROVED" || dar.status.toString() != "OPENED">
                   <a id="form-menu" href="${contextPath}/data-access-form/${dar.id}" class="nav-link">
                     <i class="fas fa-circle nav-icon text-${statusColor(dar.status.toString())}"></i>
                     <p>
