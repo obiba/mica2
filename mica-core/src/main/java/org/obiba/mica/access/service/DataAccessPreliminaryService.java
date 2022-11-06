@@ -176,4 +176,9 @@ public class DataAccessPreliminaryService extends DataAccessEntityService<DataAc
         throw NoSuchDataAccessRequestException.withId(id);
     }
   }
+
+  @Override
+  protected void sendCreatedNotificationEmail(DataAccessPreliminary request) {
+    // automatically created, do not notify
+  }
 }

@@ -400,6 +400,8 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
       return "dataAccessFeasibility";
     if (isDataAccessAgreementContext(ctx))
       return "dataAccessAgreement";
+    if (isDataAccessPreliminaryContext(ctx))
+      return "dataAccessPreliminary";
     return "dataAccessRequest";
   }
 
@@ -446,5 +448,9 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
 
   private boolean isDataAccessAgreementContext(Map<String, String> ctx) {
     return ctx.containsKey("type") && ctx.get("type").equals(DataAccessAgreement.class.getSimpleName());
+  }
+
+  private boolean isDataAccessPreliminaryContext(Map<String, String> ctx) {
+    return ctx.containsKey("type") && ctx.get("type").equals(DataAccessPreliminary.class.getSimpleName());
   }
 }

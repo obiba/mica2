@@ -249,6 +249,8 @@ public class DataAccessRequestUtilService {
       ctx.put("parentId", ((DataAccessAmendment) request).getParentId());
     if (request instanceof DataAccessFeasibility)
       ctx.put("parentId", ((DataAccessFeasibility) request).getParentId());
+    if (request instanceof DataAccessPreliminary)
+      ctx.put("parentId", ((DataAccessPreliminary) request).getParentId());
     if (Strings.isNullOrEmpty(title)) title = id;
     ctx.put("title", title);
     ctx.put("applicant", request.getApplicant());
