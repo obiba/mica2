@@ -215,21 +215,25 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
    * @param id
    */
   protected void applyApplicantNotEditablePermissions(String id) {
-    removeApplicantPermissions(id);
-    restoreDaoActions(id);
+    applyApplicantNotEditablePermissions(getResourcePath(), id);
   }
 
-  protected void restoreDaoActions(String id) {
+  protected void applyApplicantNotEditablePermissions(String resourcePath, String id) {
+    removeApplicantPermissions(resourcePath, id);
+    restoreDaoActions(resourcePath, id);
+  }
+
+  private void restoreDaoActions(String resourcePath, String id) {
     // data access officers can change the status of this request
-    subjectAclService.addGroupPermission(Roles.MICA_DAO, getResourcePath() + "/" + id, "EDIT", "_status");
+    subjectAclService.addGroupPermission(Roles.MICA_DAO, resourcePath + "/" + id, "EDIT", "_status");
 
     if (dataAccessConfigService.getOrCreateConfig().isDaoCanEdit()) {
-      subjectAclService.addGroupPermission(Roles.MICA_DAO, getResourcePath(), "EDIT", id);
+      subjectAclService.addGroupPermission(Roles.MICA_DAO, resourcePath, "EDIT", id);
     }
   }
 
-  protected void removeApplicantPermissions(String id) {
-    subjectAclService.removePermission(getResourcePath(), "EDIT,DELETE", id);
-    subjectAclService.removePermission(getResourcePath() + "/" + id, "EDIT", "_status");
+  private void removeApplicantPermissions(String resourcePath, String id) {
+    subjectAclService.removePermission(resourcePath, "EDIT,DELETE", id);
+    subjectAclService.removePermission(resourcePath + "/" + id, "EDIT", "_status");
   }
 }

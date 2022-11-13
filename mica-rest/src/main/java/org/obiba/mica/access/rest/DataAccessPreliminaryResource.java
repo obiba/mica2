@@ -15,6 +15,7 @@ import com.codahale.metrics.annotation.Timed;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
+import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessPreliminary;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.domain.StatusChange;
@@ -86,7 +87,7 @@ public class DataAccessPreliminaryResource extends DataAccessEntityResource<Data
   @GET
   @Timed
   public Mica.DataAccessRequestDto getPreliminary() {
-    subjectAclService.checkPermission(getParentResourcePath(), "VIEW", parentId);
+    subjectAclService.checkPermission(getParentResourcePath(), "VIEW", id);
     DataAccessPreliminary preliminary = dataAccessPreliminaryService.getOrCreate(id);
     return dtos.asPreliminaryDto(preliminary);
   }
@@ -220,5 +221,15 @@ public class DataAccessPreliminaryResource extends DataAccessEntityResource<Data
   @Override
   String getResourcePath() {
     return String.format("/data-access-request/%s/preliminary", parentId);
+  }
+
+  @Override
+  protected Response reject(String id) {
+    Response response = super.reject(id);
+    if (response.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL)) {
+      dataAccessRequestService.updateStatus(parentId, DataAccessEntityStatus.REJECTED);
+      applyApplicantNotEditablePermissions("/data-access-request", parentId);
+    }
+    return response;
   }
 }

@@ -373,7 +373,13 @@ public class DataAccessRequestUtilService {
     return request instanceof DataAccessAgreement;
   }
 
+  private boolean isDataAccessRequest(DataAccessEntity request) {
+    return request instanceof DataAccessRequest;
+  }
+
   private void checkOpenedStatusTransition(DataAccessEntity request, DataAccessEntityStatus to) {
+    // special case when a preliminary form is rejected, it automatically propagates to parent request
+    if (isDataAccessRequest(request) && to == DataAccessEntityStatus.REJECTED) return;
     if (to != DataAccessEntityStatus.SUBMITTED && !isDataAccessAgreement(request))
       throw new IllegalArgumentException("Opened data access form can only be submitted");
   }

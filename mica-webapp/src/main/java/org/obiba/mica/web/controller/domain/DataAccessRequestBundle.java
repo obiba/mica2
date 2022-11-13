@@ -67,12 +67,6 @@ public class DataAccessRequestBundle {
     return request.getStatus();
   }
 
-  public DataAccessEntityStatus getFullStatus() {
-    if (preliminary != null && DataAccessEntityStatus.REJECTED.equals(preliminary.getStatus()))
-      return preliminary.getStatus();
-    return request.getStatus();
-  }
-
   public int getTotalAmendments() {
     return totalAmendments;
   }

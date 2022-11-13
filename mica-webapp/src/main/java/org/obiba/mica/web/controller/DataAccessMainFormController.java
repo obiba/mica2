@@ -76,7 +76,7 @@ public class DataAccessMainFormController extends BaseDataAccessController {
       // show differences with previous submission (if any)
       if (subject.hasRole(Roles.MICA_ADMIN) || subject.hasRole(Roles.MICA_DAO)) {
         List<StatusChange> submissions = dar.getSubmissions();
-        if (!DataAccessEntityStatus.OPENED.equals(dar.getStatus())) {
+        if (!DataAccessEntityStatus.OPENED.equals(dar.getStatus()) && submissions.size() > 0) {
           submissions = submissions.subList(0, submissions.size() - 1); // compare with previous submission, not with itself
         }
         String content = dar.getContent();
