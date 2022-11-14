@@ -108,7 +108,7 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
     }
     getService().updateStatus(id, DataAccessEntityStatus.SUBMITTED);
     if (fromOpened || fromConditionallyApproved) {
-      applyApplicantNotEditablePermissions(id);
+      applyApplicantNotEditablePermissions(request.getApplicant(), id);
     }
     if (request.hasVariablesSet()) {
       DocumentSet set = request.getVariablesSet();
@@ -135,20 +135,22 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
     DataAccessEntity request = getService().findById(id);
     boolean fromConditionallyApproved = request.getStatus() == DataAccessEntityStatus.CONDITIONALLY_APPROVED;
     if (fromConditionallyApproved) {
-      applyApplicantNotEditablePermissions(id);
+      applyApplicantNotEditablePermissions(request.getApplicant(), id);
     }
     return updateStatus(id, DataAccessEntityStatus.REVIEWED);
   }
 
   protected Response approve(String id) {
+    DataAccessEntity request = getService().findById(id);
     Response response = updateStatus(id, DataAccessEntityStatus.APPROVED);
-    applyApplicantNotEditablePermissions(id);
+    applyApplicantNotEditablePermissions(request.getApplicant(), id);
     return response;
   }
 
   protected Response reject(String id) {
+    DataAccessEntity request = getService().findById(id);
     Response response = updateStatus(id, DataAccessEntityStatus.REJECTED);
-    applyApplicantNotEditablePermissions(id);
+    applyApplicantNotEditablePermissions(request.getApplicant(), id);
     return response;
   }
 
@@ -214,12 +216,12 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
    *
    * @param id
    */
-  protected void applyApplicantNotEditablePermissions(String id) {
-    applyApplicantNotEditablePermissions(getResourcePath(), id);
+  protected void applyApplicantNotEditablePermissions(String applicant, String id) {
+    applyApplicantNotEditablePermissions(applicant, getResourcePath(), id);
   }
 
-  protected void applyApplicantNotEditablePermissions(String resourcePath, String id) {
-    removeApplicantPermissions(resourcePath, id);
+  protected void applyApplicantNotEditablePermissions(String applicant, String resourcePath, String id) {
+    removeApplicantPermissions(applicant, resourcePath, id);
     restoreDaoActions(resourcePath, id);
   }
 
@@ -232,8 +234,8 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
     }
   }
 
-  private void removeApplicantPermissions(String resourcePath, String id) {
-    subjectAclService.removePermission(resourcePath, "EDIT,DELETE", id);
-    subjectAclService.removePermission(resourcePath + "/" + id, "EDIT", "_status");
+  private void removeApplicantPermissions(String applicant, String resourcePath, String id) {
+    subjectAclService.removeUserPermission(applicant, resourcePath, "EDIT,DELETE", id);
+    subjectAclService.removeUserPermission(applicant, resourcePath + "/" + id, "EDIT", "_status");
   }
 }

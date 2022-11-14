@@ -227,8 +227,9 @@ public class DataAccessPreliminaryResource extends DataAccessEntityResource<Data
   protected Response reject(String id) {
     Response response = super.reject(id);
     if (response.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL)) {
+      DataAccessRequest request = dataAccessRequestService.findById(parentId);
       dataAccessRequestService.updateStatus(parentId, DataAccessEntityStatus.REJECTED);
-      applyApplicantNotEditablePermissions("/data-access-request", parentId);
+      applyApplicantNotEditablePermissions(request.getApplicant(), "/data-access-request", parentId);
     }
     return response;
   }
