@@ -139,6 +139,34 @@ class DataAccessService {
       });
   }
 
+  static lock(id, type, aId) {
+    let url = '/ws/data-access-request/' + id + '/_lock';
+    let redirect = '/data-access/' + id;
+    axios.put(MicaService.normalizeUrl(url))
+      .then(() => {
+        //console.dir(response);
+        MicaService.redirect(MicaService.normalizeUrl(redirect));
+      })
+      .catch(response => {
+        console.dir(response);
+        MicaService.toastError('Lock failed.');
+      });
+  }
+
+  static unlock(id, type, aId) {
+    let url = '/ws/data-access-request/' + id + '/_unlock';
+    let redirect = '/data-access/' + id;
+    axios.delete(MicaService.normalizeUrl(url))
+      .then(() => {
+        //console.dir(response);
+        MicaService.redirect(MicaService.normalizeUrl(redirect));
+      })
+      .catch(response => {
+        console.dir(response);
+        MicaService.toastError('Unlock failed.');
+      });
+  }
+
   static linkVariables(id, type, aId) {
     let url = '/ws/data-access-request/' + id;
     let redirect = '/data-access-form/' + id;

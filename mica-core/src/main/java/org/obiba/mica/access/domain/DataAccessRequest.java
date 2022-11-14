@@ -41,6 +41,8 @@ public class DataAccessRequest extends DataAccessEntity implements AttachmentAwa
 
   private boolean archived;
 
+  private boolean lockedByPreliminary = true;
+
   private List<String> acceptedCollaboratorInvitations = Lists.newArrayList();
 
   public boolean hasStartDate() {
@@ -74,6 +76,21 @@ public class DataAccessRequest extends DataAccessEntity implements AttachmentAwa
   public Date getStartDateOrDefault() {
     if (!DataAccessEntityStatus.APPROVED.equals(getStatus())) return null;
     return hasStartDate() ? getStartDate() : getDefaultStartDate();
+  }
+
+  /**
+   * When preliminary form is enabled, the main form is locked by default until the preliminary form is in a final state
+   * (approved or rejected=). This setting bypass this rule so that applicant can fill-in the main form without waiting for
+   * the preliminary form to be completed.
+   *
+   * @param lockedByPreliminary
+   */
+  public void setLockedByPreliminary(boolean lockedByPreliminary) {
+    this.lockedByPreliminary = lockedByPreliminary;
+  }
+
+  public boolean isLockedByPreliminary() {
+    return lockedByPreliminary;
   }
 
   public void setArchived(boolean archived) {

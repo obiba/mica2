@@ -63,7 +63,7 @@ public class DataAccessMainFormController extends BaseDataAccessController {
       addDataAccessFormConfiguration(params, dar, !edit, lg);
 
       DataAccessPreliminary preliminary = getDataAccessPreliminary(params);
-      if (DataAccessEntityStatus.OPENED.equals(dar.getStatus()) && preliminary != null && !DataAccessEntityStatus.APPROVED.equals(preliminary.getStatus())) {
+      if (DataAccessEntityStatus.OPENED.equals(dar.getStatus()) && preliminary != null && !DataAccessEntityStatus.APPROVED.equals(preliminary.getStatus()) && dar.isLockedByPreliminary()) {
         return new ModelAndView("redirect:/data-access-preliminary-form/" + id);
       }
 

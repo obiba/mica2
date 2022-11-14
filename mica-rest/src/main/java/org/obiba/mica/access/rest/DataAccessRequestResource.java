@@ -245,6 +245,28 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     return Response.noContent().build();
   }
 
+  @PUT
+  @Path("/_lock")
+  public Response lockedByPreliminary(@PathParam("id") String id) {
+    if (!SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) && !SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN)) {
+      throw new AuthorizationException();
+    }
+    DataAccessRequest request = dataAccessRequestService.findById(id);
+    dataAccessRequestService.lockedByPreliminary(request, true);
+    return Response.noContent().build();
+  }
+
+  @DELETE
+  @Path("/_unlock")
+  public Response unlockedByPreliminary(@PathParam("id") String id) {
+    if (!SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) && !SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN)) {
+      throw new AuthorizationException();
+    }
+    DataAccessRequest request = dataAccessRequestService.findById(id);
+    dataAccessRequestService.lockedByPreliminary(request, false);
+    return Response.noContent().build();
+  }
+
   @GET
   @Path("/_diff")
   public Response diffStatusChanges(@PathParam("id") String id, @QueryParam("locale") @DefaultValue("en") String locale) {

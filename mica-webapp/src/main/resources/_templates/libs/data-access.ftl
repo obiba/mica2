@@ -482,6 +482,18 @@
             <i class="fas fa-pen"></i> <@message "preliminary-application-form"/>
           </a>
         </div>
+        <div class="mt-md-3">
+          <p><@message "lock-main-form-dao-text"/></p>
+            <#if dar.lockedByPreliminary>
+              <button type="button" class="btn btn-primary"
+                      onclick="DataAccessService.unlock('${dar.id}')"><@message "unlock-main-form"/>
+              </button>
+            <#else>
+              <button type="button" class="btn btn-primary"
+                      onclick="DataAccessService.lock('${dar.id}')"><@message "lock-main-form"/>
+              </button>
+            </#if>
+        </div>
       </#if>
 
   <#elseif preliminary?? && preliminary.status == "REVIEWED">
@@ -495,6 +507,18 @@
           <a href="${contextPath}/data-access-preliminary-form/${dar.id}" class="btn btn-primary" >
             <i class="fas fa-pen"></i> <@message "preliminary-application-form"/>
           </a>
+        </div>
+        <div class="mt-md-3">
+          <p><@message "lock-main-form-dao-text"/></p>
+            <#if dar.lockedByPreliminary>
+              <button type="button" class="btn btn-primary"
+                      onclick="DataAccessService.unlock('${dar.id}')"><@message "unlock-main-form"/>
+              </button>
+            <#else>
+              <button type="button" class="btn btn-primary"
+                      onclick="DataAccessService.lock('${dar.id}')"><@message "lock-main-form"/>
+              </button>
+            </#if>
         </div>
       </#if>
 
@@ -523,7 +547,19 @@
           </a>
         </div>
       <#else>
-        <p><@message "opened-dao-text"/></p>
+        <p><@message "opened-preliminary-dao-text"/></p>
+        <div>
+          <p><@message "lock-main-form-dao-text"/></p>
+          <#if dar.lockedByPreliminary>
+            <button type="button" class="btn btn-primary"
+                    onclick="DataAccessService.unlock('${dar.id}')"><@message "unlock-main-form"/>
+            </button>
+          <#else>
+            <button type="button" class="btn btn-primary"
+                    onclick="DataAccessService.lock('${dar.id}')"><@message "lock-main-form"/>
+            </button>
+          </#if>
+        </div>
       </#if>
 
   <#elseif dar.status == "OPENED">

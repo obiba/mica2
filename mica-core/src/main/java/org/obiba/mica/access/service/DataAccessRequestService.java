@@ -110,6 +110,14 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
     return save(request, null);
   }
 
+  public DataAccessRequest lockedByPreliminary(@NotNull DataAccessRequest request, boolean locked) {
+    request.setLockedByPreliminary(locked);
+    request.getActionLogHistory().add(ActionLog.newBuilder().action(locked ? "LockedByPreliminary" : "UnlockedByPreliminary")
+      .changedOn(LocalDateTime.now())
+      .author(SecurityUtils.getSubject().getPrincipal().toString()).build());
+    return save(request, null);
+  }
+
   public DataAccessRequest saveActionsLogs(@NotNull DataAccessRequest request) {
     DataAccessRequest saved = findById(request.getId());
     saved.setActionLogHistory(request.getActionLogHistory());
