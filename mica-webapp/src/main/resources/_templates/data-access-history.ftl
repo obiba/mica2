@@ -10,11 +10,11 @@
 <div class="wrapper">
 
   <!-- Navbar -->
-    <#include "libs/aside-navbar.ftl">
+  <#include "libs/aside-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Sidebar -->
-    <#include "libs/data-access-sidebar.ftl">
+  <#include "libs/data-access-sidebar.ftl">
   <!-- /.sidebar -->
 
   <!-- Content Wrapper. Contains page content -->
@@ -82,19 +82,19 @@
                   <tbody>
                   <#list statusChangeEvents?reverse as event>
                     <tr>
-                      <#if accessConfig.amendmentsEnabled>
-                        <td>
-                          <#if event.amendment>
-                            <a href="${contextPath}/data-access-amendment-form/${event.form.id}"><i class="fas fa-file-import"></i> ${event.form.id}</a>
-                          <#elseif event.feasibility>
-                            <a href="${contextPath}/data-access-feasibility-form/${event.form.id}"><i class="far fa-question-circle"></i> ${event.form.id}</a>
-                          <#elseif event.agreement>
-                            <a href="${contextPath}/data-access-agreement-form/${event.form.id}"><i class="fa fa-gavel"></i> ${event.form.id}</a>
-                          <#else>
-                            <a href="${contextPath}/data-access-form/${event.form.id}"><i class="fas fa-book"></i> ${event.form.id}</a>
-                          </#if>
-                        </td>
-                      </#if>
+                      <td>
+                        <#if event.amendment>
+                          <a href="${contextPath}/data-access-amendment-form/${event.form.id}"><i class="fas fa-file-import"></i> ${event.form.id}</a>
+                        <#elseif event.feasibility>
+                          <a href="${contextPath}/data-access-feasibility-form/${event.form.id}"><i class="far fa-question-circle"></i> ${event.form.id}</a>
+                        <#elseif event.preliminary>
+                          <a href="${contextPath}/data-access-preliminary-form/${event.form.id}"><i class="far fa-play-circle"></i> ${event.form.id}</a>
+                        <#elseif event.agreement>
+                          <a href="${contextPath}/data-access-agreement-form/${event.form.id}"><i class="fa fa-gavel"></i> ${event.form.id}</a>
+                        <#else>
+                          <a href="${contextPath}/data-access-form/${event.form.id}"><i class="fas fa-book"></i> ${event.form.id}</a>
+                        </#if>
+                      </td>
                       <td><i class="fas fa-circle text-${statusColor(event.status.toString())}"></i> <@message event.status.toString()/></td>
                       <td>${event.profile.fullName}</td>
                       <td data-sort="${event.date.toString()}" class="moment-datetime">${event.date.toString()}</td>

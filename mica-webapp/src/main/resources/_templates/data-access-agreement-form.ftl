@@ -5,7 +5,8 @@
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
-    <#include "libs/head.ftl">
+  <#include "libs/head.ftl">
+  <#include "libs/data-access-form-head.ftl">
   <title>${config.name!""} | <@message "data-access-agreement"/> ${agreement.id}</title>
 </head>
 <body id="data-access-agreement-page" ng-app="formModule" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">

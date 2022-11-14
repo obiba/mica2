@@ -141,11 +141,17 @@
   text-decoration: none;
   background-color: #abf2bc;
 }
-.st-tree {
-  /*border: solid 1px #ddd;*/
+
+.form-card li.list-group-item {
+  border: 2px solid #cecece !important;
+  border-radius: 20px !important;
+  margin-bottom: 20px;
 }
-.st-description {
-  border: solid 1px #ddd;
-  padding: 15px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+
+.form-card.form-card-grey li.list-group-item {
+  background-color: #efefef;
+}
+
+.form-card.form-card-white li.list-group-item {
+  background-color: #ffffff;
 }

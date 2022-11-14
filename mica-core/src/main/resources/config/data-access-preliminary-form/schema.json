@@ -1,0 +1,98 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "title": "t(data-access-request.default.name)",
+      "type": "string"
+    },
+    "title": {
+      "title": "t(data-access-request.default.title)",
+      "type": "string"
+    },
+    "position": {
+      "title": "t(data-access-request.default.position)",
+      "type": "string"
+    },
+    "institution": {
+      "title": "t(data-access-request.default.institution)",
+      "type": "string"
+    },
+    "email": {
+      "title": "t(data-access-request.default.institution-email)",
+      "type": "string",
+      "pattern": "^\\S+@\\S+$"
+    },
+    "emailAlt": {
+      "title": "t(data-access-request.default.email-alt)",
+      "type": "string",
+      "pattern": "^\\S+@\\S+$"
+    },
+    "mailingAddress": {
+      "title": "t(data-access-request.default.address)",
+      "type": "string"
+    },
+    "phone": {
+      "title": "t(data-access-request.default.phone)",
+      "type": "string"
+    },
+    "repName": {
+      "title": "t(data-access-request.default.name)",
+      "type": "string"
+    },
+    "repTitle": {
+      "title": "t(data-access-request.default.title)",
+      "type": "string"
+    },
+    "repPosition": {
+      "title": "t(data-access-request.default.position)",
+      "type": "string"
+    },
+    "repInstitution": {
+      "title": "t(data-access-request.default.institution)",
+      "type": "string"
+    },
+    "repEmail": {
+      "title": "t(data-access-request.default.institution-email)",
+      "type": "string",
+      "pattern": "^\\S+@\\S+$"
+    },
+    "repMailingAddress": {
+      "title": "t(data-access-request.default.address)",
+      "type": "string"
+    },
+    "repPhone": {
+      "title": "t(data-access-request.default.phone)",
+      "type": "string"
+    },
+    "projectTitle": {
+      "type": "string"
+    },
+    "projectWebsite": {
+      "title": "t(data-access-request.default.I.C.website)",
+      "type": "string",
+      "pattern": "^https?://\\S+$"
+    },
+    "abstract": {
+      "type": "string"
+    },
+    "rdCV": {
+      "type": "object",
+      "format": "obibaFiles",
+      "title": "t(data-access-request.default.documents.cv)"
+    },
+    "rdPeerReview": {
+      "type": "object",
+      "format": "obibaFiles",
+      "title": "t(data-access-request.default.documents.peer-review)"
+    }
+  },
+  "required": [
+    "name",
+    "email",
+    "repName",
+    "repEmail",
+    "projectTitle",
+    "abstract",
+    "rdCV"
+  ]
+}

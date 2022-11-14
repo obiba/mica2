@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 OBiBa. All rights reserved.
+ * Copyright (c) 2022 OBiBa. All rights reserved.
  *
  * This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0.
@@ -86,6 +86,8 @@ public class DataAccessConfig extends AbstractAuditableDocument {
 
   private List<String> predefinedActions = null;
 
+  private boolean preliminaryEnabled = false;
+
   private boolean feasibilityEnabled = false;
 
   private boolean agreementEnabled = false;
@@ -98,6 +100,8 @@ public class DataAccessConfig extends AbstractAuditableDocument {
 
   private boolean variablesEnabled = true;
 
+  private boolean preliminaryVariablesEnabled = false;
+
   private boolean feasibilityVariablesEnabled = false;
 
   private boolean amendmentVariablesEnabled = false;
@@ -107,6 +111,8 @@ public class DataAccessConfig extends AbstractAuditableDocument {
   private int nbOfDaysBeforeReport = 7;
 
   private String csvExportFormat;
+
+  private String preliminaryCsvExportFormat;
 
   private String feasibilityCsvExportFormat;
 
@@ -320,6 +326,14 @@ public class DataAccessConfig extends AbstractAuditableDocument {
     this.predefinedActions = predefinedActions;
   }
 
+  public boolean isPreliminaryEnabled() {
+    return preliminaryEnabled;
+  }
+
+  public void setPreliminaryEnabled(boolean preliminaryEnabled) {
+    this.preliminaryEnabled = preliminaryEnabled;
+  }
+
   public boolean isFeasibilityEnabled() {
     return feasibilityEnabled;
   }
@@ -366,6 +380,14 @@ public class DataAccessConfig extends AbstractAuditableDocument {
 
   public boolean isVariablesEnabled() {
     return variablesEnabled;
+  }
+
+  public void setPreliminaryVariablesEnabled(boolean preliminaryVariablesEnabled) {
+    this.preliminaryVariablesEnabled = preliminaryVariablesEnabled;
+  }
+
+  public boolean isPreliminaryVariablesEnabled() {
+    return preliminaryVariablesEnabled;
   }
 
   public void setFeasibilityVariablesEnabled(boolean feasibilityVariablesEnabled) {
@@ -446,6 +468,14 @@ public class DataAccessConfig extends AbstractAuditableDocument {
 
   public void setCsvExportFormat(String csvExportFormat) {
     this.csvExportFormat = csvExportFormat;
+  }
+
+  public String getPreliminaryCsvExportFormat() {
+    return preliminaryCsvExportFormat;
+  }
+
+  public void setPreliminaryCsvExportFormat(String preliminaryCsvExportFormat) {
+    this.preliminaryCsvExportFormat = preliminaryCsvExportFormat;
   }
 
   public String getFeasibilityCsvExportFormat() {

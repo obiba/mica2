@@ -2063,6 +2063,8 @@
     "saved": "Formulaire d'accès aux données a été mis à jour avec succès.",
     "amendments-enabled": "Activer les amendements.",
     "amendments-enabled-help":"Permet d'amender des modifications à une demande d'accès aux données approuvée.",
+    "preliminary-enabled": "Activer la demande préliminaire.",
+    "preliminary-enabled-help":"Permet d'obtenir un approbation préliminaire d'une demande d'accès aux données.",
     "feasibility-enabled": "Activer la demande de faisabilité.",
     "feasibility-enabled-help":"Permet d'investiguer la faisabilité d'une demande d'accès aux données.",
     "agreement-enabled": "Activer le contrat d'utilisateur final.",
@@ -2071,6 +2073,8 @@
     "variables-enabled-help":"Une liste de variables peut-être associée au formulaire principal.",
     "amendment-variables-enabled": "Activer l'association de variables à un amandement.",
     "amendment-variables-enabled-help":"Une liste de variables peut-être associée à un amendement.",
+    "preliminary-variables-enabled": "Activer l'association de variables à la demande préliminaire.",
+    "preliminary-variables-enabled-help":"Une liste de variables peut-être associée à une demande préliminaire.",
     "feasibility-variables-enabled": "Activer l'association de variables à la demande de faisabilité.",
     "feasibility-variables-enabled-help":"Une liste de variables peut-être associée à une demande de faisabilité.",
     "pdf-download": {
@@ -2218,6 +2222,12 @@
       "end-date-field": "Champ Date de fin",
       "end-date-field-help": "La date de fin déclarée dans l'amendement."
     },
+    "preliminary": {
+      "schema-form": {
+        "title": "Formulaire préliminaire",
+        "info": "Le formulaire préliminaire peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du Schema Form</a> pour plus de détails."
+      }
+    },
     "feasibility": {
       "schema-form": {
         "title": "Formulaire de faisabilité",
@@ -2247,6 +2257,7 @@
   "entity-config": {
     "save-alert": {
       "data-access-form-success": "Le formulaire a été sauvegardé. Assurez-vous de le publier pour le rendre visible dans les demandes d'accès aux données.",
+      "data-access-preliminary-form-success": "Le formulaire préliminaire a été sauvegardé. Assurez-vous de le publier pour le rendre visible dans les demandes d'accès aux données.",
       "data-access-feasibility-form-success": "Le formulaire de faisabilité a été sauvegardé. Assurez-vous de le publier pour le rendre visible dans les demandes d'accès aux données.",
       "data-access-amendment-form-success": "Le formulaire d'amendement a été sauvegardé. Assurez-vous de le publier pour le rendre visible dans les demandes d'accès aux données.",
       "data-access-agreement-form-success": "Le formulaire de contrat d'utilisateur final a été sauvegardé. Assurez-vous de le publier pour le rendre visible dans les demandes d'accès aux données.",
@@ -2255,6 +2266,7 @@
     },
     "publish-alert": {
       "data-access-form-success": "Le formulaire a été publié.",
+      "data-access-preliminary-form-success": "Le formulaire préliminaire a été publié.",
       "data-access-feasibility-form-success": "Le formulaire de faisabilité a été publié.",
       "data-access-amendment-form-success": "Le formulaire d'amendement a été publié.",
       "data-access-agreement-form-success": "Le formulaire de contrat d'utilisateur final a été publié."

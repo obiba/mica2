@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import javax.ws.rs.BadRequestException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -59,6 +60,12 @@ public class DataAccessRequestUtilService {
   private DataAccessFormService dataAccessFormService;
 
   @Inject
+  private DataAccessPreliminaryFormService dataAccessPreliminaryFormService;
+
+  @Inject
+  private DataAccessFeasibilityFormService dataAccessFeasibilityFormService;
+
+  @Inject
   private DataAccessAmendmentFormService dataAccessAmendmentFormService;
 
   @Inject
@@ -72,9 +79,15 @@ public class DataAccessRequestUtilService {
 
   public AbstractDataAccessEntityForm getDataAccessForm(DataAccessEntity dataAccessEntity) {
     String formRevision = dataAccessEntity.hasFormRevision() ? dataAccessEntity.getFormRevision().toString() : "latest";
-    return dataAccessEntity instanceof DataAccessRequest ?
-      dataAccessFormService.findByRevision(formRevision).get() :
-      dataAccessAmendmentFormService.findByRevision(formRevision).get();
+    if (dataAccessEntity instanceof DataAccessRequest)
+      return dataAccessFormService.findByRevision(formRevision).get();
+    if (dataAccessEntity instanceof DataAccessPreliminary)
+      return dataAccessPreliminaryFormService.findByRevision(formRevision).get();
+    if (dataAccessEntity instanceof DataAccessFeasibility)
+      return dataAccessFeasibilityFormService.findByRevision(formRevision).get();
+    if (dataAccessEntity instanceof DataAccessAmendment)
+      return dataAccessAmendmentFormService.findByRevision(formRevision).get();
+    throw new BadRequestException("Unknown data access request entity class: " + dataAccessEntity.getClass().getSimpleName());
   }
 
   public Map<String, Map<String, List<Object>>> getContentDiff(String formType, String left, String right, String locale) {
@@ -236,6 +249,8 @@ public class DataAccessRequestUtilService {
       ctx.put("parentId", ((DataAccessAmendment) request).getParentId());
     if (request instanceof DataAccessFeasibility)
       ctx.put("parentId", ((DataAccessFeasibility) request).getParentId());
+    if (request instanceof DataAccessPreliminary)
+      ctx.put("parentId", ((DataAccessPreliminary) request).getParentId());
     if (Strings.isNullOrEmpty(title)) title = id;
     ctx.put("title", title);
     ctx.put("applicant", request.getApplicant());
@@ -358,7 +373,13 @@ public class DataAccessRequestUtilService {
     return request instanceof DataAccessAgreement;
   }
 
+  private boolean isDataAccessRequest(DataAccessEntity request) {
+    return request instanceof DataAccessRequest;
+  }
+
   private void checkOpenedStatusTransition(DataAccessEntity request, DataAccessEntityStatus to) {
+    // special case when a preliminary form is rejected, it automatically propagates to parent request
+    if (isDataAccessRequest(request) && to == DataAccessEntityStatus.REJECTED) return;
     if (to != DataAccessEntityStatus.SUBMITTED && !isDataAccessAgreement(request))
       throw new IllegalArgumentException("Opened data access form can only be submitted");
   }
@@ -433,11 +454,11 @@ public class DataAccessRequestUtilService {
         if (dataAccessConfig.isWithReview() && to != DataAccessEntityStatus.REVIEWED) {
           throw new IllegalArgumentException("Rejected data access form can only be put under review");
         }
-  
+
         if (!dataAccessConfig.isWithReview() && to != DataAccessEntityStatus.SUBMITTED) {
           throw new IllegalArgumentException("Rejected data access form can only go to submitted state");
         }
-      }      
+      }
     }
   }
 }

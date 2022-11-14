@@ -1,10 +1,19 @@
+/*
+ * Copyright (c) 2022 OBiBa. All rights reserved.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.obiba.mica.micaConfig.rest;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.micaConfig.NoSuchDataAccessFormException;
 import org.obiba.mica.micaConfig.domain.DataAccessFeasibilityForm;
-import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.DataAccessFeasibilityFormService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.web.model.Dtos;
@@ -24,17 +33,14 @@ import java.util.Optional;
 @RequiresAuthentication
 public class DataAccessFeasibilityFormResource {
 
-  private DataAccessConfigService dataAccessConfigService;
   private DataAccessFeasibilityFormService dataAccessFeasibilityFormService;
 
   private Dtos dtos;
 
   @Inject
   public DataAccessFeasibilityFormResource(DataAccessFeasibilityFormService dataAccessFeasibilityFormService,
-                                           DataAccessConfigService dataAccessConfigService,
                                            Dtos dtos) {
     this.dataAccessFeasibilityFormService = dataAccessFeasibilityFormService;
-    this.dataAccessConfigService = dataAccessConfigService;
     this.dtos = dtos;
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 OBiBa. All rights reserved.
+ * Copyright (c) 2022 OBiBa. All rights reserved.
  *
  * This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0.
@@ -10,6 +10,7 @@
 
 package org.obiba.mica.micaConfig.service;
 
+import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import org.obiba.mica.micaConfig.domain.DataAccessConfig;
 import org.obiba.mica.micaConfig.event.DataAccessConfigUpdatedEvent;
@@ -31,6 +32,8 @@ public class DataAccessConfigService {
 
   private final DataAccessFormService dataAccessFormService;
 
+  private final DataAccessPreliminaryFormService dataAccessPreliminaryFormService;
+
   private final DataAccessFeasibilityFormService dataAccessFeasibilityFormService;
 
   private final DataAccessAmendmentFormService dataAccessAmendmentFormService;
@@ -41,11 +44,13 @@ public class DataAccessConfigService {
   public DataAccessConfigService(
     DataAccessConfigRepository dataAccessConfigRepository,
     DataAccessFormService dataAccessFormService,
+    DataAccessPreliminaryFormService dataAccessPreliminaryFormService,
     DataAccessFeasibilityFormService dataAccessFeasibilityFormService,
     DataAccessAmendmentFormService dataAccessAmendmentFormService,
     EventBus eventBus) {
     this.dataAccessConfigRepository = dataAccessConfigRepository;
     this.dataAccessFormService = dataAccessFormService;
+    this.dataAccessPreliminaryFormService = dataAccessPreliminaryFormService;
     this.dataAccessFeasibilityFormService = dataAccessFeasibilityFormService;
     this.dataAccessAmendmentFormService = dataAccessAmendmentFormService;
     this.eventBus = eventBus;
@@ -58,15 +63,19 @@ public class DataAccessConfigService {
     }
     DataAccessConfig config = dataAccessConfigRepository.findAll().get(0);
     boolean modified = false;
-    if (StringUtils.isEmpty(config.getCsvExportFormat())) {
+    if (Strings.isNullOrEmpty(config.getCsvExportFormat())) {
       config.setCsvExportFormat(dataAccessFormService.getDefaultDataAccessFormResourceAsString("export-csv-schema.json"));
       modified = true;
     }
-    if (StringUtils.isEmpty(config.getFeasibilityCsvExportFormat())) {
+    if (Strings.isNullOrEmpty(config.getPreliminaryCsvExportFormat())) {
+      config.setPreliminaryCsvExportFormat(dataAccessPreliminaryFormService.getDefaultDataAccessFormResourceAsString("export-csv-schema.json"));
+      modified = true;
+    }
+    if (Strings.isNullOrEmpty(config.getFeasibilityCsvExportFormat())) {
       config.setFeasibilityCsvExportFormat(dataAccessFeasibilityFormService.getDefaultDataAccessFormResourceAsString("export-csv-schema.json"));
       modified = true;
     }
-    if (StringUtils.isEmpty(config.getAmendmentCsvExportFormat())) {
+    if (Strings.isNullOrEmpty(config.getAmendmentCsvExportFormat())) {
       config.setAmendmentCsvExportFormat(dataAccessAmendmentFormService.getDefaultDataAccessFormResourceAsString("export-csv-schema.json"));
       modified = true;
     }

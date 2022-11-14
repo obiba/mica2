@@ -160,7 +160,11 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
     delete(findById(id));
   }
 
-  void changeApplicantAndSave(DataAccessAmendment amendment, String applicant) {
+  void changeApplicantAndSave(DataAccessRequest request) {
+    findByParentId(request.getId()).forEach(amendment -> changeApplicantAndSave(amendment, request.getApplicant()));
+  }
+
+  private void changeApplicantAndSave(DataAccessAmendment amendment, String applicant) {
     amendment.setApplicant(applicant);
     save(amendment);
   }

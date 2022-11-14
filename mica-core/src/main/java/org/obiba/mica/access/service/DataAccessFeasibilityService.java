@@ -15,6 +15,7 @@ import org.obiba.mica.access.DataAccessFeasibilityRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessFeasibility;
+import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.event.DataAccessFeasibilityDeletedEvent;
 import org.obiba.mica.access.event.DataAccessFeasibilityUpdatedEvent;
 import org.slf4j.Logger;
@@ -137,7 +138,11 @@ public class DataAccessFeasibilityService extends DataAccessEntityService<DataAc
     delete(findById(id));
   }
 
-  void changeApplicantAndSave(DataAccessFeasibility feasibility, String applicant) {
+  void changeApplicantAndSave(DataAccessRequest request) {
+    findByParentId(request.getId()).forEach(feasibility -> changeApplicantAndSave(feasibility, request.getApplicant()));
+  }
+
+  private void changeApplicantAndSave(DataAccessFeasibility feasibility, String applicant) {
     feasibility.setApplicant(applicant);
     save(feasibility);
   }

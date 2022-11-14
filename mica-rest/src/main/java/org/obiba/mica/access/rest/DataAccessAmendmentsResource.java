@@ -1,16 +1,6 @@
 package org.obiba.mica.access.rest;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-
-import org.apache.shiro.SecurityUtils;
+import com.codahale.metrics.annotation.Timed;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
@@ -24,7 +14,14 @@ import org.obiba.mica.web.model.Mica.DataAccessRequestDto.StatusChangeDto;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.codahale.metrics.annotation.Timed;
+import javax.inject.Inject;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Scope("request")
@@ -67,17 +64,16 @@ public class DataAccessAmendmentsResource {
     if (request.isArchived()) throw new BadRequestException("Data access request is archived");
 
     // force applicant and make sure it is a new request
-    String applicant = SecurityUtils.getSubject().getPrincipal().toString();
-    amendment.setApplicant(applicant);
+    amendment.setApplicant(request.getApplicant());
     amendment.setId(null);
     amendment.setParentId(parentId);
     amendment.setStatus(DataAccessEntityStatus.OPENED);
 
+    // set permissions
     dataAccessAmendmentService.save(amendment);
     resource = String.format("/data-access-request/%s/amendment", parentId);
-
-    subjectAclService.addPermission(resource, "VIEW,EDIT,DELETE", amendment.getId());
-    subjectAclService.addPermission(resource + "/" + amendment.getId(), "EDIT", "_status");
+    subjectAclService.addUserPermission(amendment.getApplicant(), resource, "VIEW,EDIT,DELETE", amendment.getId());
+    subjectAclService.addUserPermission(amendment.getApplicant(), resource + "/" + amendment.getId(), "EDIT", "_status");
 
     return Response.created(uriInfo.getBaseUriBuilder().segment("data-access-request", parentId, "amendment", amendment.getId()).build()).build();
   }

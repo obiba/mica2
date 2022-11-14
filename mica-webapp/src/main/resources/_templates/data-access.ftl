@@ -14,11 +14,11 @@
 <div class="wrapper">
 
   <!-- Navbar -->
-    <#include "libs/aside-navbar.ftl">
+  <#include "libs/aside-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Sidebar -->
-    <#include "libs/data-access-sidebar.ftl">
+  <#include "libs/data-access-sidebar.ftl">
   <!-- /.sidebar -->
 
   <!-- Content Wrapper. Contains page content -->
@@ -50,7 +50,7 @@
               </#if>
           </div>
           <div class="col-sm-6">
-              <#include "libs/data-access-breadcrumb.ftl">
+            <#include "libs/data-access-breadcrumb.ftl">
           </div>
         </div>
       </div><!-- /.container-fluid -->
@@ -171,8 +171,8 @@
     </div>
     <!-- /.modal -->
 
+    <!-- Confirm collaborator removal modal -->
     <#if permissions?seq_contains("DELETE_COLLABORATORS")>
-      <!-- Confirm collaborator removal modal -->
       <div class="modal fade" id="modal-collaborator-delete">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -215,154 +215,20 @@
 
       <div class="row">
         <div class="col-md-3 col-sm-6">
-
-            <#if dar.status.toString() == "OPENED">
-                <#assign boxIcon = "fa fa-pen"/>
-                <#assign boxProgress = "10"/>
-                <#assign boxText = "data-access-progress-opened"/>
-            <#elseif dar.status.toString() == "APPROVED">
-                <#assign boxIcon = "fa fa-check"/>
-                <#assign boxProgress = "100"/>
-                <#assign boxText = "data-access-progress-approved"/>
-            <#elseif dar.status.toString() == "REJECTED">
-                <#assign boxIcon = "fa fa-ban"/>
-                <#assign boxProgress = "100"/>
-                <#assign boxText = "data-access-progress-rejected"/>
-            <#elseif dar.status.toString() == "SUBMITTED">
-                <#assign boxIcon = "far fa-clock"/>
-                <#assign boxProgress = "30"/>
-                <#assign boxText = "data-access-progress-submitted"/>
-            <#elseif dar.status.toString() == "REVIEWED">
-                <#assign boxIcon = "far fa-clock"/>
-                <#assign boxProgress = "50"/>
-                <#assign boxText = "data-access-progress-reviewed"/>
-            <#elseif dar.status.toString() == "CONDITIONALLY_APPROVED">
-                <#assign boxIcon = "fa fa-pen"/>
-                <#assign boxProgress = "80"/>
-                <#assign boxText = "data-access-progress-conditionally-approved"/>
-            <#else>
-                <#assign boxIcon = "far fa-clock"/>
-                <#assign boxProgress = "50"/>
-                <#assign boxText = ""/>
-            </#if>
-
-          <div class="info-box bg-${statusColor(dar.status.toString())}">
-            <span class="info-box-icon"><i class="${boxIcon}"></i></span>
-
-            <div class="info-box-content">
-              <span class="info-box-text"><@message "status"/></span>
-              <span class="info-box-number"><@message dar.status.toString()/></span>
-
-              <div class="progress">
-                <div class="progress-bar" style="width: ${boxProgress}%"></div>
-              </div>
-              <span class="progress-description">
-                <small><@message boxText/></small>
-              </span>
-            </div>
-            <!-- /.info-box-content -->
-          </div>
-          <!-- /.info-box -->
+          <@dataAccessInfoBox/>
         </div>
 
         <#if lastFeasibility??>
-
           <div class="col-md-3 col-sm-6">
-            <#if lastFeasibility.status.toString() == "OPENED">
-              <#assign boxIcon = "fa fa-pen"/>
-              <#assign boxProgress = "10"/>
-              <#assign boxText = "data-access-feasibility-progress-opened"/>
-            <#elseif lastFeasibility.status.toString() == "APPROVED">
-              <#assign boxIcon = "fa fa-check"/>
-              <#assign boxProgress = "100"/>
-              <#assign boxText = "data-access-feasibility-progress-approved"/>
-            <#elseif lastFeasibility.status.toString() == "REJECTED">
-              <#assign boxIcon = "fa fa-ban"/>
-              <#assign boxProgress = "100"/>
-              <#assign boxText = "data-access-feasibility-progress-rejected"/>
-            <#elseif lastFeasibility.status.toString() == "SUBMITTED">
-              <#assign boxIcon = "far fa-clock"/>
-              <#assign boxProgress = "30"/>
-              <#assign boxText = "data-access-feasibility-progress-submitted"/>
-            <#else>
-              <#assign boxIcon = "far fa-clock"/>
-              <#assign boxProgress = "50"/>
-              <#assign boxText = ""/>
-            </#if>
-
-            <div class="info-box bg-${statusColor(lastFeasibility.status.toString())}">
-              <span class="info-box-icon"><i class="${boxIcon}"></i></span>
-
-              <div class="info-box-content">
-                <span class="info-box-text"><@message "last-feasibility-status"/> - <a class="text-white" href="${contextPath}/data-access-feasibility-form/${lastFeasibility.id}">${lastFeasibility.id}</a></span>
-                <span class="info-box-number"><@message lastFeasibility.status.toString()/></span>
-
-                <div class="progress">
-                  <div class="progress-bar" style="width: ${boxProgress}%"></div>
-                </div>
-                <span class="progress-description">
-                  <small><@message boxText/></small>
-                </span>
-              </div>
-              <!-- /.info-box-content -->
-            </div>
-            <!-- /.info-box -->
+            <@dataAccessLastFeasibilityInfoBox/>
           </div>
         </#if>
 
         <#if lastAmendment??>
-
           <div class="col-md-3 col-sm-6">
-            <#if lastAmendment.status.toString() == "OPENED">
-              <#assign boxIcon = "fa fa-pen"/>
-              <#assign boxProgress = "10"/>
-              <#assign boxText = "data-access-amendment-progress-opened"/>
-            <#elseif lastAmendment.status.toString() == "APPROVED">
-              <#assign boxIcon = "fa fa-check"/>
-              <#assign boxProgress = "100"/>
-              <#assign boxText = "data-access-amendment-progress-approved"/>
-            <#elseif lastAmendment.status.toString() == "REJECTED">
-              <#assign boxIcon = "fa fa-ban"/>
-              <#assign boxProgress = "100"/>
-              <#assign boxText = "data-access-amendment-progress-rejected"/>
-            <#elseif lastAmendment.status.toString() == "SUBMITTED">
-              <#assign boxIcon = "far fa-clock"/>
-              <#assign boxProgress = "30"/>
-              <#assign boxText = "data-access-amendment-progress-submitted"/>
-            <#elseif lastAmendment.status.toString() == "REVIEWED">
-              <#assign boxIcon = "far fa-clock"/>
-              <#assign boxProgress = "50"/>
-              <#assign boxText = "data-access-amendment-progress-reviewed"/>
-            <#elseif lastAmendment.status.toString() == "CONDITIONALLY_APPROVED">
-              <#assign boxIcon = "fa fa-pen"/>
-              <#assign boxProgress = "80"/>
-              <#assign boxText = "data-access-amendment-progress-conditionally-approved"/>
-            <#else>
-              <#assign boxIcon = "far fa-clock"/>
-              <#assign boxProgress = "50"/>
-              <#assign boxText = ""/>
-            </#if>
-
-            <div class="info-box bg-${statusColor(lastAmendment.status.toString())}">
-              <span class="info-box-icon"><i class="${boxIcon}"></i></span>
-
-              <div class="info-box-content">
-                <span class="info-box-text"><@message "last-amendment-status"/> - <a class="text-white" href="${contextPath}/data-access-amendment-form/${lastAmendment.id}">${lastAmendment.id}</a></span>
-                <span class="info-box-number"><@message lastAmendment.status.toString()/></span>
-
-                <div class="progress">
-                  <div class="progress-bar" style="width: ${boxProgress}%"></div>
-                </div>
-                <span class="progress-description">
-                  <small><@message boxText/></small>
-                </span>
-              </div>
-              <!-- /.info-box-content -->
-            </div>
-            <!-- /.info-box -->
+            <@dataAccessLastAmendmentInfoBox/>
           </div>
         </#if>
-
       </div>
 
       <#if dataAccessCalloutsEnabled>
@@ -386,112 +252,7 @@
               <h3 class="card-title"><@message "notes-title"/></h3>
             </div>
             <div class="card-body">
-              <#if dar.archived>
-                <h4><@message "archived-title"/></h4>
-                <#if user.username == dar.applicant>
-                  <p><@message "archived-applicant-text"/></p>
-                <#else>
-                  <p><@message "archived-dao-text"/></p>
-                </#if>
-              <#elseif dar.status == "OPENED">
-
-                <h4><@message "opened-title"/></h4>
-                <#if user.username == dar.applicant>
-                  <p><@message "opened-applicant-text"/></p>
-                  <div>
-                    <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
-                      <i class="fas fa-pen"></i> <@message "application-form"/>
-                    </a>
-                  </div>
-                <#else>
-                  <p><@message "opened-dao-text"/></p>
-                </#if>
-
-              <#elseif dar.status == "CONDITIONALLY_APPROVED">
-
-                <h4><@message "conditionally-approved-title"/></h4>
-                <#if user.username == dar.applicant>
-                  <p><@message "conditionally-approved-applicant-text"/></p>
-                  <div>
-                    <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
-                      <i class="fas fa-pen"></i> <@message "application-form"/>
-                    </a>
-                  </div>
-                <#else>
-                  <p><@message "conditionally-approved-dao-text"/></p>
-                </#if>
-
-              <#elseif dar.status == "SUBMITTED">
-
-                <h4><@message "submitted-title"/></h4>
-                <#if user.username == dar.applicant>
-                  <p><@message "submitted-applicant-text"/></p>
-                <#else>
-                  <p><@message "submitted-dao-text"/></p>
-                  <div>
-                    <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
-                      <i class="fas fa-pen"></i> <@message "application-form"/>
-                    </a>
-                  </div>
-                </#if>
-
-              <#elseif dar.status == "REVIEWED">
-
-                <h4><@message "reviewed-title"/></h4>
-                <#if user.username == dar.applicant>
-                  <p><@message "reviewed-applicant-text"/></p>
-                <#else>
-                  <p><@message "reviewed-dao-text"/></p>
-                  <div>
-                    <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
-                      <i class="fas fa-pen"></i> <@message "application-form"/>
-                    </a>
-                  </div>
-                </#if>
-
-              <#elseif dar.status == "APPROVED">
-                <#if accessConfig.agreementEnabled>
-                  <h4><@message "agreements-title"/></h4>
-                  <p><@message "agreements-text"/></p>
-
-                  <@dataAccessAgreementsNote/>
-                </#if>
-
-                <#if dataAccessReportTimelineEnabled && reportTimeline.endDate??>
-
-                  <h4><@message "report-timeline-title"/></h4>
-                  <p><@message "report-timeline-text"/></p>
-
-                  <@dataAccessTimeline dar=dar reportTimeline=reportTimeline/>
-                <#else>
-                  <h4><@message "approved-title"/></h4>
-                  <#if user.username == dar.applicant>
-                    <p><@message "approved-applicant-text"/></p>
-                  <#else>
-                    <p><@message "approved-dao-text"/></p>
-                    <div>
-                      <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
-                        <i class="fas fa-eye"></i> <@message "application-form"/>
-                      </a>
-                    </div>
-                  </#if>
-                </#if>
-
-              <#elseif dar.status == "REJECTED">
-
-                <h4><@message "rejected-title"/></h4>
-                <#if user.username == dar.applicant>
-                  <p><@message "rejected-applicant-text"/></p>
-                <#else>
-                  <p><@message "rejected-dao-text"/></p>
-                  <div>
-                    <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
-                      <i class="fas fa-eye"></i> <@message "application-form"/>
-                    </a>
-                  </div>
-                </#if>
-
-              </#if>
+              <@dataAccessNotes/>
             </div>
           </div>
 

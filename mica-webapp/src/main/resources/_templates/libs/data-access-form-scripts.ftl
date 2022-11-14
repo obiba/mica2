@@ -13,7 +13,6 @@
 <script src="${contextPath}/bower_components/angular-moment/angular-moment.js"></script>
 <script src="${contextPath}/bower_components/angular-resource/angular-resource.js"></script>
 <script src="${contextPath}/bower_components/angular-schema-form/dist/schema-form.js"></script>
-<script src="${contextPath}/bower_components/angular-schema-form/dist/bootstrap-decorator.js"></script>
 <script src="${contextPath}/bower_components/angular-schema-form-bootstrap/bootstrap-decorator.min.js"></script>
 <script src="${contextPath}/bower_components/angular-schema-form-ui-ace/bootstrap-ui-ace.min.js"></script>
 <script src="${contextPath}/bower_components/angular-schema-form-datetimepicker/schema-form-date-time-picker.min.js"></script>

@@ -24,6 +24,9 @@
       <li ng-class="{'active': tab.name === 'form'}">
         <a href ng-click="tab.name = 'form'" title="{{'form' | translate}}"><i class="fa fa-list"></i></a>
       </li>
+      <li ng-class="{'active': tab.name === 'preliminary'}">
+        <a href ng-click="tab.name = 'preliminary'" title="{{'data-access-config.preliminary.schema-form.title' | translate}}"><i class="fa fa-play-circle"></i></a>
+      </li>
       <li ng-class="{'active': tab.name === 'feasibility'}">
         <a href ng-click="tab.name = 'feasibility'" title="{{'data-access-config.feasibility.schema-form.title' | translate}}"><i class="fa fa-question-circle"></i></a>
       </li>
@@ -94,6 +97,12 @@
 
   </div>
 
+  <div ng-show="tab.name === 'preliminary'">
+    <span class="config-navigation"><h3 class="config-navigation-item" ng-class="{'active': tab.name === 'preliminary'}" translate>data-access-config.preliminary.schema-form.title</h3></span>
+    <p class="help-block" translate>data-access-config.preliminary.schema-form.info</p>
+    <entity-sf-config form="formPreliminary" alert-id="DataAccessConfigController" dirty-observable="preliminaryState.getDirtyObservable()"></entity-sf-config>
+  </div>
+
   <div ng-show="tab.name === 'feasibility'">
     <span class="config-navigation"><h3 class="config-navigation-item" ng-class="{'active': tab.name === 'feasibility'}" translate>data-access-config.feasibility.schema-form.title</h3></span>
     <p class="help-block" translate>data-access-config.feasibility.schema-form.info</p>
@@ -145,12 +154,14 @@
           <div form-input type="number" model="config.collaboratorInvitationDays" label="data-access-config.collaborator-invitation-days" help="data-access-config.collaborator-invitation-days-help" disabled="!config.collaboratorsEnabled"></div>
 
           <h4 translate>data-access-config.settings.other-forms-title</h4>
+          <div form-checkbox name="preliminaryEnabled" model="config.preliminaryEnabled" label="data-access-config.preliminary-enabled" help="data-access-config.preliminary-enabled-help"></div>
           <div form-checkbox name="feasibilityEnabled" model="config.feasibilityEnabled" label="data-access-config.feasibility-enabled" help="data-access-config.feasibility-enabled-help"></div>
           <div form-checkbox name="amendmentsEnabled" model="config.amendmentsEnabled" label="data-access-config.amendments-enabled" help="data-access-config.amendments-enabled-help"></div>
           <div form-checkbox name="agreementEnabled" model="config.agreementEnabled" label="data-access-config.agreement-enabled" help="data-access-config.agreement-enabled-help"></div>
 
           <h4 translate>data-access-config.settings.variables-title</h4>
           <div form-checkbox name="variablesEnabled" model="config.variablesEnabled" label="data-access-config.variables-enabled" help="data-access-config.variables-enabled-help"></div>
+          <div form-checkbox name="preliminaryVariablesEnabled" model="config.preliminaryVariablesEnabled" label="data-access-config.preliminary-variables-enabled" help="data-access-config.preliminary-variables-enabled-help"></div>
           <div form-checkbox name="feasibilityVariablesEnabled" model="config.feasibilityVariablesEnabled" label="data-access-config.feasibility-variables-enabled" help="data-access-config.feasibility-variables-enabled-help"></div>
           <div form-checkbox name="amendmentVariablesEnabled" model="config.amendmentVariablesEnabled" label="data-access-config.amendment-variables-enabled" help="data-access-config.amendment-variables-enabled-help"></div>
         </form>
@@ -270,6 +281,15 @@
       </button>
       <button ng-disabled="dataAccessForm.lastUpdateDate === dataAccessFormLatestDate" ng-click="publishForm()" class="btn btn-info">
         <span title="{{dataAccessFormLatestDate | amDateFormat : 'lll'}}" translate>publish.label</span>
+      </button>
+    </span>
+
+    <span ng-show="tab.name === 'preliminary'">
+      <button ng-click="savePreliminaryForm()" class="btn btn-primary">
+        <span translate>save</span>
+      </button>
+      <button ng-disabled="preliminaryForm.lastUpdateDate === dataAccessPreliminaryFormLatestDate" ng-click="publishPreliminaryForm()" class="btn btn-info">
+        <span title="{{dataAccessPreliminaryFormLatestDate | amDateFormat : 'lll'}}" translate>publish.label</span>
       </button>
     </span>
 

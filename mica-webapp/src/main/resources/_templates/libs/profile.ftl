@@ -40,7 +40,7 @@
             </dt>
             <dd class="col-sm-8">
               <#if key == "createdDate" || key == "lastLogin">
-                <span class="moment-datetime">${profile.attributes[key].toString(datetimeFormat)}</span>
+                <span class="moment-datetime">${profile.attributes[key].toString()}</span>
               <#elseif key == "email">
                 <a href="mailto:${profile.attributes[key]}">${profile.attributes[key]}</a>
               <#elseif key == "locale">

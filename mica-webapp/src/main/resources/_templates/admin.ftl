@@ -42,6 +42,7 @@
   <link rel="stylesheet" href="${contextPath}/bower_components/ng-obiba/dist/css/ng-obiba.css" />
   <link rel="stylesheet" href="${contextPath}/bower_components/ng-obiba-mica/dist/css/ng-obiba-mica.css" />
   <link rel="stylesheet" href="${contextPath}/bower_components/angular-xeditable/dist/css/xeditable.css" />
+  <link rel="stylesheet" href="${contextPath}/bower_components/sf-obiba-selection-tree/dist/sf-obiba-selection-tree.css" />
   <!-- endbower -->
   <!-- do not change location due to fonts dependency on ng-obiba-mica -->
   <link rel="stylesheet" href="${contextPath}/styles/mica.css">
@@ -230,7 +231,6 @@
 <script src="${contextPath}/bower_components/tv4/tv4.js"></script>
 <script src="${contextPath}/bower_components/objectpath/lib/ObjectPath.js"></script>
 <script src="${contextPath}/bower_components/angular-schema-form/dist/schema-form.js"></script>
-<script src="${contextPath}/bower_components/angular-schema-form/dist/bootstrap-decorator.js"></script>
 <script src="${contextPath}/bower_components/angular-schema-form-bootstrap/bootstrap-decorator.min.js"></script>
 <script src="${contextPath}/bower_components/ace-builds/src-noconflict/ace.js"></script>
 <script src="${contextPath}/bower_components/angular-ui-ace/ui-ace.js"></script>

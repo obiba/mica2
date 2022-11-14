@@ -206,8 +206,27 @@ class DataAccessRequestDtos {
   }
 
   @NotNull
+  public Mica.DataAccessRequestDto asPreliminaryDto(@NotNull DataAccessPreliminary preliminary) {
+    return asDtoBuilder(preliminary).build();
+  }
+
+  @NotNull
   public Mica.DataAccessRequestDto asFeasibilityDto(@NotNull DataAccessFeasibility feasibility) {
     return asDtoBuilder(feasibility).build();
+  }
+
+  @NotNull
+  public DataAccessPreliminary fromPreliminaryDto(@NotNull Mica.DataAccessRequestDto dto) {
+    DataAccessPreliminary.Builder builder = DataAccessPreliminary.newBuilder();
+    Mica.DataAccessPreliminaryDto extension = dto.getExtension(Mica.DataAccessPreliminaryDto.preliminary);
+    builder.parentId(extension.getParentId());
+
+    fromDto(dto, builder);
+    DataAccessPreliminary preliminary = (DataAccessPreliminary) builder.build();
+    if (dto.hasId()) preliminary.setId(dto.getId());
+    TimestampsDtos.fromDto(dto.getTimestamps(), preliminary);
+
+    return (DataAccessPreliminary) builder.build();
   }
 
   @NotNull

@@ -4,7 +4,8 @@
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
-    <#include "libs/head.ftl">
+  <#include "libs/head.ftl">
+  <#include "libs/data-access-form-head.ftl">
   <title>${config.name!""} | <@message "data-access-feasibility"/> ${feasibility.id}</title>
 </head>
 <body id="data-access-feasibility-page" ng-app="formModule" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">

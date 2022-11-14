@@ -1,0 +1,161 @@
+[
+  {
+    "type": "help",
+    "helpvalue": "<h2>I - t(data-access-request.default.I.title)</h2>"
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "<h3>A. t(data-access-request.default.I.A.title)</h3><p class='help-block'>t(data-access-request.default.I.A.info)</p>"
+      },
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "name",
+              "title",
+              "position",
+              "institution"
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "email",
+              "emailAlt",
+              "phone",
+              {
+                "key": "mailingAddress",
+                "type": "textarea"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "<h3>B. t(data-access-request.default.I.B.title)</h3><p class='help-block'>t(data-access-request.default.I.B.info)</p>"
+      },
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "repName",
+              "repTitle",
+              "repPosition",
+              "repInstitution"
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "repEmail",
+              "repPhone",
+              {
+                "key": "repMailingAddress",
+                "type": "textarea"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "<h3>C. t(data-access-request.default.I.C.title)</h3>"
+      },
+      {
+        "key": "projectTitle",
+        "notitle": true,
+        "type": "textarea"
+      },
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              {
+                "key": "projectWebsite",
+                "description": "t(data-access-request.default.I.C.website-help)"
+              }
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "<h3>F. t(data-access-request.default.I.F.title)</h3><p class='help-block'>t(data-access-request.default.I.F.info)</p>"
+      },
+      {
+        "key": "abstract",
+        "notitle": true,
+        "type": "textarea",
+        "wordLimit": 500,
+        "validationMessage": {
+          "wordLimitError": "The 500 words limit has been exceeded."
+        }
+      }
+    ]
+  },
+  {
+    "type": "help",
+    "helpvalue": "<h2>II - t(data-access-request.default.documents.title)</h2>"
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "key": "rdCV",
+        "type": "obibaFileUpload",
+        "validationMessage": {
+          "missingFiles": "t(missing-files)",
+          "minItems": "t(min-items)"
+        },
+        "emptyMessage": "t(data-access-request.no-documents)"
+      },
+      {
+        "key": "rdPeerReview",
+        "type": "obibaFileUpload",
+        "validationMessage": {
+          "missingFiles": "t(missing-files)",
+          "minItems": "t(min-items)"
+        },
+        "emptyMessage": "t(data-access-request.no-documents)"
+      }
+    ]
+  }
+]
