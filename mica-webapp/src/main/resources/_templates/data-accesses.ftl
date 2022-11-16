@@ -93,6 +93,12 @@
                       <#if accessConfig.amendmentsEnabled>
                         <th><@message "amendments-pending-total"/></th>
                       </#if>
+                      <#if accessConfig.agreementEnabled>
+                        <th><@message "agreements-pending-total"/></th>
+                      </#if>
+                      <#if accessConfig.preliminaryEnabled>
+                        <th><@message "preliminary-status"/></th>
+                      </#if>
                       <th><@message "status"/></th>
                       <#if dataAccessArchiveEnabled>
                         <th><@message "archived"/></th>
@@ -116,6 +122,12 @@
                         </#if>
                         <#if accessConfig.amendmentsEnabled>
                           <td>${dar.pendingAmendments}/${dar.totalAmendments}</td>
+                        </#if>
+                        <#if accessConfig.agreementEnabled>
+                          <td>${dar.pendingAgreements}/${dar.totalAgreements}</td>
+                        </#if>
+                        <#if accessConfig.preliminaryEnabled>
+                          <td><i class="fas fa-circle text-${statusColor(dar.preliminary.status.toString())}"></i> <@message dar.preliminary.status.toString()/></td>
                         </#if>
                         <td><i class="fas fa-circle text-${statusColor(dar.status.toString())}"></i> <@message dar.status.toString()/></td>
                         <#if dataAccessArchiveEnabled>

@@ -51,7 +51,7 @@ public abstract class AbstractDataAccessEntityForm extends EntityConfig {
   }
 
   public String getTitleFieldPath() {
-    return titleFieldPath;
+    return Strings.isNullOrEmpty(titleFieldPath) ? "projectTitle" : titleFieldPath;
   }
 
   public void setTitleFieldPath(String titleFieldPath) {

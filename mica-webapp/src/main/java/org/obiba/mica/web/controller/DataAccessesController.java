@@ -1,5 +1,6 @@
 package org.obiba.mica.web.controller;
 
+import com.google.common.base.Strings;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.obiba.mica.access.domain.DataAccessPreliminary;
@@ -33,6 +34,9 @@ public class DataAccessesController extends BaseController {
 
   @Inject
   private DataAccessRequestUtilService dataAccessRequestUtilService;
+
+  @Inject
+  private DataAccessAgreementService dataAccessAgreementService;
 
   @Inject
   private DataAccessAmendmentService dataAccessAmendmentService;
@@ -80,10 +84,15 @@ public class DataAccessesController extends BaseController {
       .filter(req -> isPermitted("/data-access-request", "VIEW", req.getId()))
       .map(req -> {
         DataAccessPreliminary preliminary = preliminaryEnabled ? dataAccessPreliminaryService.getOrCreate(req.getId()) : null;
+        String title = dataAccessRequestUtilService.getRequestTitle(req);
+        if (Strings.isNullOrEmpty(title) && preliminary != null) {
+          title = dataAccessRequestUtilService.getRequestTitle(preliminary);
+        }
         return new DataAccessRequestBundle(req, preliminary,
-          ESAPI.encoder().encodeForHTML(dataAccessRequestUtilService.getRequestTitle(req)),
+          ESAPI.encoder().encodeForHTML(title),
           dataAccessAmendmentService.countByParentId(req.getId()), dataAccessAmendmentService.countPendingByParentId(req.getId()),
-          dataAccessFeasibilityService.countByParentId(req.getId()), dataAccessFeasibilityService.countPendingByParentId(req.getId()));
+          dataAccessFeasibilityService.countByParentId(req.getId()), dataAccessFeasibilityService.countPendingByParentId(req.getId()),
+          dataAccessAgreementService.countByParentId(req.getId()),dataAccessAgreementService.countPendingByParentId(req.getId()));
       })
       .collect(Collectors.toList());
   }

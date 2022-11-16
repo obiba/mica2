@@ -20,10 +20,15 @@ public class DataAccessRequestBundle {
   private final int pendingAmendments;
   private final int totalFeasibilities;
   private final int pendingFeasibilities;
+  private final int totalAgreements;
+  private final int pendingAgreements;
   private StatusChange submission;
 
   public DataAccessRequestBundle(DataAccessRequest request, DataAccessPreliminary preliminary,
-                                 String title, int totalAmendments, int pendingAmendments, int totalFeasibilities, int pendingFeasibilities) {
+                                 String title,
+                                 int totalAmendments, int pendingAmendments,
+                                 int totalFeasibilities, int pendingFeasibilities,
+                                 int totalAgreements, int pendingAgreements) {
     this.id = request.getId();
     this.request = request;
     this.preliminary = preliminary;
@@ -33,6 +38,8 @@ public class DataAccessRequestBundle {
     this.pendingAmendments = pendingAmendments;
     this.totalFeasibilities = totalFeasibilities;
     this.pendingFeasibilities = pendingFeasibilities;
+    this.totalAgreements = totalAgreements;
+    this.pendingAgreements = pendingAgreements;
   }
 
   public String getId() {
@@ -81,6 +88,14 @@ public class DataAccessRequestBundle {
 
   public int getPendingFeasibilities() {
     return pendingFeasibilities;
+  }
+
+  public int getTotalAgreements() {
+    return totalAgreements;
+  }
+
+  public int getPendingAgreements() {
+    return pendingAgreements;
   }
 
   public boolean isArchived() {
