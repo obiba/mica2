@@ -155,3 +155,10 @@
 .form-card.form-card-white li.list-group-item {
   background-color: #ffffff;
 }
+
+fieldset.quote {
+  background: #fff;
+  border-left: 0.7rem solid #007bff;
+  margin: 1.5em 0.7rem;
+  padding: 0.5em 0.7rem;
+}
