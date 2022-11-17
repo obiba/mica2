@@ -80,11 +80,20 @@ public class DataAccessMainFormController extends BaseDataAccessController {
           submissions = submissions.subList(0, submissions.size() - 1); // compare with previous submission, not with itself
         }
         String content = dar.getContent();
-        params.put("diffs", submissions.stream()
-          .reduce((first, second) -> second)
-          .map(change -> new DataAccessEntityDiff(change, dataAccessRequestUtilService.getContentDiff("data-access-form", change.getContent(), content, lg)))
-          .filter(DataAccessEntityDiff::hasDifferences)
-          .orElse(null));
+        if (!submissions.isEmpty()) {
+          params.put("diffs", submissions.stream()
+            .reduce((first, second) -> second)
+            .map(change -> new DataAccessEntityDiff(change, dataAccessRequestUtilService.getContentDiff("data-access-form", change.getContent(), content, lg)))
+            .filter(DataAccessEntityDiff::hasDifferences)
+            .orElse(null));
+        } else if (preliminary != null && DataAccessEntityStatus.APPROVED.equals(preliminary.getStatus()) && getConfig().isMergePreliminaryContentEnabled()) {
+          // previous submission is the one of the preliminary, which content was merged
+          StatusChange change = preliminary.getStatusChangeHistory().get(preliminary.getStatusChangeHistory().size() - 1);
+          DataAccessEntityDiff diffs = new DataAccessEntityDiff(change, dataAccessRequestUtilService.getContentDiff("data-access-form", preliminary.getContent(), content, lg));
+          if (diffs.hasDifferences()) {
+            params.put("diffs", diffs);
+          }
+        }
       }
 
       return new ModelAndView("data-access-form", params);

@@ -2065,6 +2065,8 @@
     "amendments-enabled-help":"Enable the capability of requesting amendments to an approved data access request.",
     "preliminary-enabled": "Enable Preliminary request.",
     "preliminary-enabled-help":"Enable the capability of getting a preliminary approval of a data access request.",
+    "merge-preliminary-content-enabled": "Enable preliminary request content merge.",
+    "merge-preliminary-content-enabled-help":"On preliminary application approval, the preliminary application content is copied into the main application so that changes between the two can be tracked. Note that this does not apply to the attached files and associated variables (if any).",
     "feasibility-enabled": "Enable Feasibility Inquiry.",
     "feasibility-enabled-help":"Enable the capability of inquiring for feasibility of a data access request.",
     "agreement-enabled": "Enable End User Agreement.",

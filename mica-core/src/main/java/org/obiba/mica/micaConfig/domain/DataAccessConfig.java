@@ -88,6 +88,8 @@ public class DataAccessConfig extends AbstractAuditableDocument {
 
   private boolean preliminaryEnabled = false;
 
+  private boolean mergePreliminaryContentEnabled = false;
+
   private boolean feasibilityEnabled = false;
 
   private boolean agreementEnabled = false;
@@ -332,6 +334,14 @@ public class DataAccessConfig extends AbstractAuditableDocument {
 
   public void setPreliminaryEnabled(boolean preliminaryEnabled) {
     this.preliminaryEnabled = preliminaryEnabled;
+  }
+
+  public boolean isMergePreliminaryContentEnabled() {
+    return mergePreliminaryContentEnabled;
+  }
+
+  public void setMergePreliminaryContentEnabled(boolean mergePreliminaryContentEnabled) {
+    this.mergePreliminaryContentEnabled = mergePreliminaryContentEnabled;
   }
 
   public boolean isFeasibilityEnabled() {

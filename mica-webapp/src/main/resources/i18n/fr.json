@@ -2065,6 +2065,8 @@
     "amendments-enabled-help":"Permet d'amender des modifications à une demande d'accès aux données approuvée.",
     "preliminary-enabled": "Activer la demande préliminaire.",
     "preliminary-enabled-help":"Permet d'obtenir un approbation préliminaire d'une demande d'accès aux données.",
+    "merge-preliminary-content-enabled": "Activer l'insertion de la demenade préliminaire dans la demande principale.",
+    "merge-preliminary-content-enabled-help":"Lors de l'approbation de la demande préliminaire, le contenu de la demande préliminaire peut être copié dans celui de la demande principale afin de suivre les changements entre les deux. Noter que ceci ne s'applique pas aux fichiers attachés et ni aux variables associées.",
     "feasibility-enabled": "Activer la demande de faisabilité.",
     "feasibility-enabled-help":"Permet d'investiguer la faisabilité d'une demande d'accès aux données.",
     "agreement-enabled": "Activer le contrat d'utilisateur final.",

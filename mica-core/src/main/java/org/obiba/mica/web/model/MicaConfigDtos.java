@@ -376,6 +376,8 @@ class MicaConfigDtos {
     builder.setFeasibilityVariablesEnabled(dataAccessConfig.isFeasibilityVariablesEnabled());
     builder.setAmendmentVariablesEnabled(dataAccessConfig.isAmendmentVariablesEnabled());
 
+    builder.setMergePreliminaryContentEnabled(dataAccessConfig.isMergePreliminaryContentEnabled());
+
     return builder.build();
   }
 
@@ -447,6 +449,8 @@ class MicaConfigDtos {
     dataAccessConfig.setPreliminaryVariablesEnabled(dto.getPreliminaryVariablesEnabled());
     dataAccessConfig.setFeasibilityVariablesEnabled(dto.getFeasibilityVariablesEnabled());
     dataAccessConfig.setAmendmentVariablesEnabled(dto.getAmendmentVariablesEnabled());
+
+    dataAccessConfig.setMergePreliminaryContentEnabled(dto.getMergePreliminaryContentEnabled());
 
     if (dto.hasCsvExportFormat()) dataAccessConfig.setCsvExportFormat(dto.getCsvExportFormat());
     if (dto.hasPreliminaryCsvExportFormat()) dataAccessConfig.setPreliminaryCsvExportFormat(dto.getPreliminaryCsvExportFormat());

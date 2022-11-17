@@ -969,6 +969,7 @@ message DataAccessConfigDto {
   required bool preliminaryEnabled = 56;
   required bool preliminaryVariablesEnabled = 57;
   optional string preliminaryCsvExportFormat = 58;
+  required bool mergePreliminaryContentEnabled = 59;
 }
 
 message DataAccessFormDto {
