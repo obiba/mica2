@@ -12,6 +12,8 @@ package org.obiba.mica.access.rest;
 
 
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.collect.Maps;
+import org.apache.commons.compress.utils.Lists;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
@@ -224,6 +226,20 @@ public class DataAccessPreliminaryResource extends DataAccessEntityResource<Data
   }
 
   @Override
+  protected Response approve(String id) {
+    Response response =  super.approve(id);
+    if (response.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL)) {
+      DataAccessPreliminary preliminary = dataAccessPreliminaryService.findById(id);
+      DataAccessRequest request = dataAccessRequestService.findById(parentId);
+      // inject preliminary data into main's content, for prefilling
+      Map<String, Object> map = JSONUtils.toMap(preliminary.getContent());
+      request.setContent(JSONUtils.toJSON(removeObibaFilesValues(map)));
+      dataAccessRequestService.save(request);
+    }
+    return response;
+  }
+
+  @Override
   protected Response reject(String id) {
     Response response = super.reject(id);
     if (response.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL)) {
@@ -232,5 +248,36 @@ public class DataAccessPreliminaryResource extends DataAccessEntityResource<Data
       applyApplicantNotEditablePermissions(request.getApplicant(), "/data-access-request", parentId);
     }
     return response;
+  }
+
+  /**
+   * File attachments cannot be transfered. Then remove them from the pre-fill data.
+   *
+   * @param map
+   * @return
+   */
+  private Map<String, Object> removeObibaFilesValues(Map<String, Object> map) {
+    Map<String, Object> cleanMap = Maps.newLinkedHashMap();
+    for (String key : map.keySet()) {
+      Object valueObj = map.get(key);
+      cleanMap.put(key, removeObibaFilesValues(valueObj));
+    }
+    return cleanMap;
+  }
+
+  private Object removeObibaFilesValues(Object valueObj) {
+    if (valueObj instanceof Map) {
+      Map<String, Object> values = (Map<String, Object>) valueObj;
+      values.remove("obibaFiles");
+      return values;
+    } else if (valueObj instanceof List) {
+      List<Object> values = (List<Object>) valueObj;
+      List<Object> cleanValues = Lists.newArrayList();
+      for (Object value : values) {
+        cleanValues.add(removeObibaFilesValues(value));
+      }
+      return cleanValues;
+    }
+    return valueObj;
   }
 }
