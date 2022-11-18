@@ -142,23 +142,27 @@
   background-color: #abf2bc;
 }
 
-.form-card li.list-group-item {
+.form-card li.list-group-item, fieldset.form-card {
   border: 2px solid #cecece !important;
   border-radius: 20px !important;
   margin-bottom: 20px;
 }
 
-.form-card.form-card-grey li.list-group-item {
-  background-color: #efefef;
+fieldset.form-card {
+  padding: 20px;
 }
 
-.form-card.form-card-white li.list-group-item {
+.form-card.form-card-grey li.list-group-item, fieldset.form-card.form-card-grey {
+  background-color: #f4f6f9;
+}
+
+.form-card.form-card-white li.list-group-item, fieldset.form-card.form-card-white {
   background-color: #ffffff;
 }
 
 fieldset.quote {
   background: #fff;
   border-left: 0.7rem solid #007bff;
-  margin: 1.5em 0.7rem;
-  padding: 0.5em 0.7rem;
+  margin: 1.5em 0;
+  padding-left: 1.5rem;
 }
