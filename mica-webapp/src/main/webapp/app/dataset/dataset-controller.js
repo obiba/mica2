@@ -482,6 +482,7 @@ mica.dataset
           .open({
             templateUrl: 'app/dataset/views/opal-table-modal-form.html',
             controller: 'StudyTableModalController',
+            size: 'lg',
             resolve: {
               isCommentsRequiredOnDocumentSave: $scope.isCommentsRequiredOnDocumentSave,
               table: function() {
