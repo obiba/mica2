@@ -12,6 +12,7 @@ package org.obiba.mica.web.controller;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.obiba.mica.access.domain.DataAccessCollaborator;
@@ -35,6 +36,7 @@ import java.net.URLEncoder;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller
@@ -65,9 +67,20 @@ public class DataAccessController extends BaseDataAccessController {
         .map(collaborator -> new DataAccessCollaboratorBundle(collaborator, getUserProfileMap(collaborator.hasPrincipal() ? collaborator.getPrincipal() : collaborator.getEmail())))
         .collect(Collectors.toList()));
       List<String> collaboratorEmails = collaborators.stream().map(DataAccessCollaborator::getEmail).collect(Collectors.toList());
-      params.put("suggestedCollaborators", getConfig().isCollaboratorsEnabled() ? dataAccessRequestUtilService.getEmails(getDataAccessRequest(params)).stream()
-        .filter(email -> !collaboratorEmails.contains(email))
-        .collect(Collectors.toList()) : Lists.newArrayList());
+      Set<String> suggestedCollaborators = Sets.newTreeSet();
+      if (getConfig().isCollaboratorsEnabled()) {
+        if (getDataAccessPreliminary(params) != null) {
+          // suggest emails found in preliminary form
+          suggestedCollaborators.addAll(dataAccessRequestUtilService.getEmails(getDataAccessPreliminary(params)).stream()
+            .filter(email -> !collaboratorEmails.contains(email))
+            .collect(Collectors.toSet()));
+        }
+        // suggest emails found in main form
+        suggestedCollaborators.addAll(dataAccessRequestUtilService.getEmails(getDataAccessRequest(params)).stream()
+          .filter(email -> !collaboratorEmails.contains(email))
+          .collect(Collectors.toList()));
+      }
+      params.put("suggestedCollaborators", suggestedCollaborators);
 
       List<String> permissions = getPermissions(params);
       if (isArchivePermitted(getDataAccessRequest(params), timeline))
