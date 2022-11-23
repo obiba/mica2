@@ -294,8 +294,10 @@ const GraphicResult = {
             <tfoot v-if="totals">
               <tr class="row">
                   <th class="col">{{ 'graphics.total' | translate }}</th>
-                  <th class="col">{{totals.countTotal.toLocaleString()}}
-                    <small class="ml-1" v-if="chartDataset.options.withTotals && chartDataset.options.withPercentages">({{(100).toFixed(2) + '%'}})</small></th>
+                  <th class="col">
+                    <span>{{totals.countTotal.toLocaleString()}}</span>
+                    <small class="ml-1" v-if="chartDataset.options.withTotals && chartDataset.options.withPercentages">({{(100).toFixed(2) + '%'}})</small>
+                  </th>
                   <th class="col" v-if="totals.subAggTotal !== undefined">{{totals.subAggTotal.toLocaleString()}}</th>
                 </tr>
             </tfoot>
