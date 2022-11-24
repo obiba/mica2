@@ -67,7 +67,9 @@
         <div class="col-sm-12 <#if dataAccessInstructionsEnabled || (dar.variablesSet?? || variablesEnabled)>col-lg-8<#else>col-lg-12</#if>">
           <div class="card card-primary card-outline">
             <div class="card-header d-print-none">
-              <h3 class="card-title"><@message "application-form"/></h3>
+              <h3 class="card-title">
+                <#if accessConfig.preliminaryEnabled><@message "main-form"/><#else><@message "application-form"/></#if>
+              </h3>
               <div ng-cloak>
                 <#if permissions?seq_contains("EDIT")>
                   <span class="float-right border-left ml-2 pl-2" ng-if="schema.readOnly">

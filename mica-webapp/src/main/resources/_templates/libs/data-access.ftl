@@ -382,7 +382,7 @@
       <p><@message "conditionally-approved-applicant-text"/></p>
       <div>
         <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
-          <i class="fas fa-pen"></i> <@message "application-form"/>
+          <i class="fas fa-pen"></i> <#if accessConfig.preliminaryEnabled><@message "main-form"/><#else><@message "application-form"/></#if>
         </a>
       </div>
     <#else>
@@ -398,7 +398,7 @@
       <p><@message "submitted-dao-text"/></p>
       <div>
         <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
-          <i class="fas fa-pen"></i> <@message "application-form"/>
+          <i class="fas fa-pen"></i> <#if accessConfig.preliminaryEnabled><@message "main-form"/><#else><@message "application-form"/></#if>
         </a>
       </div>
     </#if>
@@ -412,7 +412,7 @@
       <p><@message "reviewed-dao-text"/></p>
       <div>
         <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
-          <i class="fas fa-pen"></i> <@message "application-form"/>
+          <i class="fas fa-pen"></i> <#if accessConfig.preliminaryEnabled><@message "main-form"/><#else><@message "application-form"/></#if>
         </a>
       </div>
     </#if>
@@ -436,7 +436,7 @@
         <p><@message "approved-dao-text"/></p>
         <div>
           <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
-            <i class="fas fa-eye"></i> <@message "application-form"/>
+            <i class="fas fa-eye"></i> <#if accessConfig.preliminaryEnabled><@message "main-form"/><#else><@message "application-form"/></#if>
           </a>
         </div>
       </#if>
@@ -451,7 +451,7 @@
       <p><@message "rejected-dao-text"/></p>
       <div>
         <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
-          <i class="fas fa-eye"></i> <@message "application-form"/>
+          <i class="fas fa-eye"></i> <#if accessConfig.preliminaryEnabled><@message "main-form"/><#else><@message "application-form"/></#if>
         </a>
       </div>
     </#if>
@@ -463,7 +463,7 @@
         <p><@message "conditionally-approved-preliminary-applicant-text"/></p>
         <div>
           <a href="${contextPath}/data-access-preliminary-form/${dar.id}" class="btn btn-primary" >
-            <i class="fas fa-pen"></i> <@message "application-form"/>
+            <i class="fas fa-pen"></i> <#if accessConfig.preliminaryEnabled><@message "main-form"/><#else><@message "application-form"/></#if>
           </a>
         </div>
       <#else>
@@ -479,7 +479,7 @@
         <p><@message "submitted-preliminary-dao-text"/></p>
         <div>
           <a href="${contextPath}/data-access-preliminary-form/${dar.id}" class="btn btn-primary" >
-            <i class="fas fa-pen"></i> <@message "preliminary-application-form"/>
+            <i class="fas fa-pen"></i> <@message "preliminary-form"/>
           </a>
         </div>
         <div class="mt-md-3">
@@ -505,7 +505,7 @@
         <p><@message "reviewed-preliminary-dao-text"/></p>
         <div>
           <a href="${contextPath}/data-access-preliminary-form/${dar.id}" class="btn btn-primary" >
-            <i class="fas fa-pen"></i> <@message "preliminary-application-form"/>
+            <i class="fas fa-pen"></i> <@message "preliminary-form"/>
           </a>
         </div>
         <div class="mt-md-3">
@@ -531,7 +531,7 @@
         <p><@message "rejected-preliminary-dao-text"/></p>
         <div>
           <a href="${contextPath}/data-access-preliminary-form/${preliminary.id}" class="btn btn-primary" >
-            <i class="fas fa-eye"></i> <@message "preliminary-application-form"/>
+            <i class="fas fa-eye"></i> <@message "preliminary-form"/>
           </a>
         </div>
       </#if>
@@ -543,7 +543,7 @@
         <p><@message "opened-preliminary-applicant-text"/></p>
         <div>
           <a href="${contextPath}/data-access-preliminary-form/${dar.id}" class="btn btn-primary" >
-            <i class="fas fa-pen"></i> <@message "preliminary-application-form"/>
+            <i class="fas fa-pen"></i> <@message "preliminary-form"/>
           </a>
         </div>
       <#else>
@@ -569,7 +569,7 @@
         <p><@message "opened-applicant-text"/></p>
         <div>
           <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
-            <i class="fas fa-pen"></i> <@message "application-form"/>
+            <i class="fas fa-pen"></i> <#if accessConfig.preliminaryEnabled><@message "main-form"/><#else><@message "application-form"/></#if>
           </a>
         </div>
       <#else>
