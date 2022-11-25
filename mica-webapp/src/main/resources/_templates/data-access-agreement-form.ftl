@@ -82,17 +82,12 @@
                   <#if agreementPermissions?seq_contains("EDIT_STATUS")>
                     <span class="float-right">
                       <#if agreement.status == "OPENED">
-                        <button type="button" class="btn btn-success" ng-if="schema.readOnly" data-toggle="modal"
-                                data-target="#modal-approve"><@message "approve"/></button>
-                        <button type="button" class="btn btn-danger" ng-if="schema.readOnly" data-toggle="modal"
-                                data-target="#modal-reject"><@message "reject"/></button>
+                        <button type="button" class="btn btn-info" ng-if="schema.readOnly" data-toggle="modal"
+                                data-target="#modal-submit"><@message "submit"/></button>
                         <button type="button" class="btn btn-success"
                                 ng-click="validate()"><@message "validate"/></button>
                       <#elseif agreement.status == "APPROVED" && !accessConfig.approvedFinal>
-                        <button type="button" class="btn btn-primary" data-toggle="modal"
-                                data-target="#modal-reopen"><@message "reopen"/></button>
-                      <#elseif agreement.status == "REJECTED" && !accessConfig.rejectedFinal>
-                        <button type="button" class="btn btn-primary" data-toggle="modal"
+                        <button type="button" class="btn btn-primary border-left ml-2 pl-2" data-toggle="modal"
                                 data-target="#modal-reopen"><@message "reopen"/></button>
                       </#if>
                     </span>
@@ -125,18 +120,18 @@
               </#if>
             </div>
 
-            <!-- Confirm approval modal -->
-            <div class="modal fade" id="modal-approve">
+            <!-- Confirm submission modal -->
+            <div class="modal fade" id="modal-submit">
               <div class="modal-dialog">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h4 class="modal-title"><@message "confirm-approval-title"/></h4>
+                    <h4 class="modal-title"><@message "confirm-submission-title"/></h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
                   </div>
                   <div class="modal-body">
-                    <p><@message "confirm-agreement-approval-text"/></p>
+                    <p><@message "confirm-agreement-submission-text"/></p>
                   </div>
                   <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
