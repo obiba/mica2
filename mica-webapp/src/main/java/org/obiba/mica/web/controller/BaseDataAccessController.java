@@ -15,6 +15,7 @@ import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.*;
 import org.obiba.mica.access.service.*;
 import org.obiba.mica.core.service.CommentsService;
+import org.obiba.mica.micaConfig.domain.AgreementOpenedPolicy;
 import org.obiba.mica.micaConfig.domain.DataAccessConfig;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.user.UserProfileService;
@@ -104,8 +105,15 @@ public class BaseDataAccessController extends BaseController {
       params.put("preliminaryPermissions", preliminaryPermissions);
     }
 
-    List<DataAccessAgreement> agreements = dataAccessRequestUtilService.getDataAccessConfig().isAgreementEnabled() && dar.getStatus().equals(DataAccessEntityStatus.APPROVED) ?
-      dataAccessAgreementService.getOrCreate(dar) : Lists.newArrayList();
+    List<DataAccessAgreement> agreements = Lists.newArrayList();
+
+    if (getConfig().isAgreementEnabled()) {
+      if (AgreementOpenedPolicy.ALWAYS.equals(getConfig().getAgreementOpenedPolicy())
+        || dar.getStatus().equals(DataAccessEntityStatus.APPROVED)
+        || (AgreementOpenedPolicy.PRELIMINARY_APPROVED.equals(getConfig().getAgreementOpenedPolicy()) && getConfig().isPreliminaryEnabled() && getDataAccessPreliminary(params).getStatus().equals(DataAccessEntityStatus.APPROVED))) {
+        agreements = dataAccessAgreementService.getOrCreate(dar);
+      }
+    }
     params.put("agreements", agreements);
     params.put("agreementsOpened", agreements.stream().filter(agreement -> agreement.getStatus().equals(DataAccessEntityStatus.OPENED)).collect(Collectors.toList()));
     params.put("agreementsApproved", agreements.stream().filter(agreement -> agreement.getStatus().equals(DataAccessEntityStatus.APPROVED)).collect(Collectors.toList()));

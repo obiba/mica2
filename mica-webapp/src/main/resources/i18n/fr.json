@@ -2071,6 +2071,13 @@
     "feasibility-enabled-help":"Permet d'investiguer la faisabilité d'une demande d'accès aux données.",
     "agreement-enabled": "Activer le contrat d'utilisateur final.",
     "agreement-enabled-help":"Active le contrat d'utilisateur final d'une demande d'accès aux données. Ce formulaire est à remplir par le demandeur principal ainsi que par chaque collaborateur",
+    "agreement-opened-policy": "Ouverture des contrats d'utilisateur final",
+    "agreement-opened-policy-help":"Quand ces formulaires sont ouverts à l'édition.",
+    "agreement-opened-policy-label": {
+      "ALWAYS": "Toujours",
+      "PRELIMINARY_APPROVED": "Dès que la demande préliminaire est approuvée",
+      "MAIN_APPROVED": "Dès que la demande principale est approuvée"
+    },
     "variables-enabled": "Activer l'association de variables.",
     "variables-enabled-help":"Une liste de variables peut-être associée au formulaire principal.",
     "amendment-variables-enabled": "Activer l'association de variables à un amandement.",

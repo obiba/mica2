@@ -503,6 +503,12 @@ mica.dataAccessConfig
         text: 'data-access-config.private-comment-permission'
       }];
 
+      $scope.agreementOpenedPolicyOptions = [
+        'ALWAYS',
+        'PRELIMINARY_APPROVED',
+        'MAIN_APPROVED'
+      ];
+
       $scope.loadPermissions();
       $scope.tab = {name: 'form'};
       $scope.saveForm = saveForm;

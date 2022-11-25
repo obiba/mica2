@@ -2071,6 +2071,13 @@
     "feasibility-enabled-help":"Enable the capability of inquiring for feasibility of a data access request.",
     "agreement-enabled": "Enable End User Agreement.",
     "agreement-enabled-help":"Enable the end user agreement of a data access request. This form is to be filled in by the applicant and each of the collaborators.",
+    "agreement-opened-policy": "End User Agreement opening",
+    "agreement-opened-policy-help":"When the End User Agreements will be opened for edition.",
+    "agreement-opened-policy-label": {
+      "ALWAYS": "Always",
+      "PRELIMINARY_APPROVED": "After the preliminary form is approved",
+      "MAIN_APPROVED": "After the main form is approved"
+    },
     "variables-enabled": "Enable Variables attachment.",
     "variables-enabled-help":"Enable attaching a variable list to the main form.",
     "amendment-variables-enabled": "Enable Variables attachment to an Amendment.",

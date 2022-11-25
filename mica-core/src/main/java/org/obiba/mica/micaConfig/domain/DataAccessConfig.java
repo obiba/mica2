@@ -94,6 +94,8 @@ public class DataAccessConfig extends AbstractAuditableDocument {
 
   private boolean agreementEnabled = false;
 
+  private AgreementOpenedPolicy agreementOpenedPolicy = AgreementOpenedPolicy.ALWAYS;
+
   private boolean amendmentsEnabled = false;
 
   private boolean collaboratorsEnabled = true;
@@ -358,6 +360,14 @@ public class DataAccessConfig extends AbstractAuditableDocument {
 
   public void setAgreementEnabled(boolean agreementEnabled) {
     this.agreementEnabled = agreementEnabled;
+  }
+
+  public AgreementOpenedPolicy getAgreementOpenedPolicy() {
+    return agreementOpenedPolicy;
+  }
+
+  public void setAgreementOpenedPolicy(AgreementOpenedPolicy agreementOpenedPolicy) {
+    this.agreementOpenedPolicy = agreementOpenedPolicy;
   }
 
   public boolean isAmendmentsEnabled() {

@@ -174,7 +174,7 @@
 
         <!-- Agreements -->
         <#if accessConfig.agreementEnabled>
-          <#if dar.status == "APPROVED">
+          <#if agreements?size != 0>
             <li class="nav-item has-treeview <#if agreement??>menu-open</#if>">
               <a id="agreement-form-menu" href="#" class="nav-link">
                 <i class="nav-icon fa fa-gavel"></i>

@@ -151,14 +151,26 @@
 
           <h4 translate>data-access-config.settings.collaborators</h4>
           <div form-checkbox name="collaboratorsEnabled" model="config.collaboratorsEnabled" label="data-access-config.collaborators-enabled" help="data-access-config.collaborators-enabled-help"></div>
-          <div form-input type="number" model="config.collaboratorInvitationDays" label="data-access-config.collaborator-invitation-days" help="data-access-config.collaborator-invitation-days-help" disabled="!config.collaboratorsEnabled"></div>
+          <div form-input type="number" model="config.collaboratorInvitationDays" label="data-access-config.collaborator-invitation-days" help="data-access-config.collaborator-invitation-days-help" disabled="!config.collaboratorsEnabled" class="hoffset3"></div>
 
           <h4 translate>data-access-config.settings.other-forms-title</h4>
           <div form-checkbox name="preliminaryEnabled" model="config.preliminaryEnabled" label="data-access-config.preliminary-enabled" help="data-access-config.preliminary-enabled-help"></div>
-          <div form-checkbox name="mergePreliminaryContentEnabled" model="config.mergePreliminaryContentEnabled" label="data-access-config.merge-preliminary-content-enabled" help="data-access-config.merge-preliminary-content-enabled-help" disabled="!config.preliminaryEnabled"></div>
+          <div form-checkbox name="mergePreliminaryContentEnabled" model="config.mergePreliminaryContentEnabled" label="data-access-config.merge-preliminary-content-enabled" help="data-access-config.merge-preliminary-content-enabled-help" disabled="!config.preliminaryEnabled" class="hoffset3"></div>
           <div form-checkbox name="feasibilityEnabled" model="config.feasibilityEnabled" label="data-access-config.feasibility-enabled" help="data-access-config.feasibility-enabled-help"></div>
           <div form-checkbox name="amendmentsEnabled" model="config.amendmentsEnabled" label="data-access-config.amendments-enabled" help="data-access-config.amendments-enabled-help"></div>
           <div form-checkbox name="agreementEnabled" model="config.agreementEnabled" label="data-access-config.agreement-enabled" help="data-access-config.agreement-enabled-help"></div>
+          <div class="form-group hoffset3">
+            <label for="agreementOpenedPolicy" class="control-label">
+              <span translate>data-access-config.agreement-opened-policy</span>
+            </label>
+            <select id="agreementOpenedPolicy" name="agreementOpenedPolicy" ng-model="config.agreementOpenedPolicy"
+                    ng-disabled="!config.agreementEnabled"
+                    ng-options="'data-access-config.agreement-opened-policy-label.' + policyOption | translate for policyOption in agreementOpenedPolicyOptions"
+                    class="form-control">
+            </select>
+            <p class="help-block">{{'data-access-config.agreement-opened-policy-help' | translate}}</p>
+          </div>
+
 
           <h4 translate>data-access-config.settings.variables-title</h4>
           <div form-checkbox name="variablesEnabled" model="config.variablesEnabled" label="data-access-config.variables-enabled" help="data-access-config.variables-enabled-help"></div>

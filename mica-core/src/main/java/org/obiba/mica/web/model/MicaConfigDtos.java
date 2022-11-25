@@ -371,6 +371,8 @@ class MicaConfigDtos {
     builder.setCollaboratorsEnabled(dataAccessConfig.isCollaboratorsEnabled());
     builder.setCollaboratorInvitationDays(dataAccessConfig.getCollaboratorInvitationDays());
 
+    builder.setAgreementOpenedPolicy(dataAccessConfig.getAgreementOpenedPolicy().name());
+
     builder.setVariablesEnabled(dataAccessConfig.isVariablesEnabled());
     builder.setPreliminaryVariablesEnabled(dataAccessConfig.isPreliminaryVariablesEnabled());
     builder.setFeasibilityVariablesEnabled(dataAccessConfig.isFeasibilityVariablesEnabled());
@@ -444,6 +446,8 @@ class MicaConfigDtos {
     dataAccessConfig.setAmendmentsEnabled(dto.getAmendmentsEnabled());
     dataAccessConfig.setCollaboratorsEnabled(dto.getCollaboratorsEnabled());
     dataAccessConfig.setCollaboratorInvitationDays(dto.getCollaboratorInvitationDays());
+
+    dataAccessConfig.setAgreementOpenedPolicy(AgreementOpenedPolicy.valueOf(dto.getAgreementOpenedPolicy().toUpperCase()));
 
     dataAccessConfig.setVariablesEnabled(dto.getVariablesEnabled());
     dataAccessConfig.setPreliminaryVariablesEnabled(dto.getPreliminaryVariablesEnabled());
