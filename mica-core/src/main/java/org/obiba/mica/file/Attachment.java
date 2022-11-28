@@ -13,6 +13,7 @@ package org.obiba.mica.file;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.Objects;
@@ -31,7 +32,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
 
 @Document
-public class Attachment extends AbstractAuditableDocument implements AttributeAware, Comparable<Attachment> {
+public class Attachment extends AbstractAuditableDocument implements AttributeAware, Comparable<Attachment>, Serializable {
 
   private static final long serialVersionUID = 3L;
 
