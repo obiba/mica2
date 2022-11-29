@@ -10,29 +10,15 @@
 
 package org.obiba.mica.web.model;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.obiba.magma.type.BooleanType;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.*;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
 import org.obiba.mica.dataset.StudyDatasetStateRepository;
-import org.obiba.mica.dataset.domain.Dataset;
-import org.obiba.mica.dataset.domain.DatasetCategory;
-import org.obiba.mica.dataset.domain.DatasetVariable;
-import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
-import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.dataset.domain.StudyDatasetState;
+import org.obiba.mica.dataset.domain.*;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -45,9 +31,11 @@ import org.obiba.opal.web.model.Search;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 class DatasetDtos {
@@ -194,11 +182,13 @@ class DatasetDtos {
     if(resolver.hasStudyId()) {
       builder.setStudyId(resolver.getStudyId());
     }
-    if(resolver.hasProject()) {
-      builder.setProject(resolver.getProject());
-    }
-    if(resolver.hasTable()) {
-      builder.setTable(resolver.getTable());
+    if(resolver.hasSourceURN()) {
+      builder.setSourceURN(resolver.getSourceURN());
+      if (OpalTableSource.isFor(resolver.getSourceURN())) {
+        OpalTableSource source = OpalTableSource.fromURN(resolver.getSourceURN());
+        builder.setProject(source.getProject());
+        builder.setTable(source.getTable());
+      }
     }
 
     return builder;
@@ -314,8 +304,8 @@ class DatasetDtos {
   }
 
   @NotNull
-  Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable, OpalTable opalTable) {
-    return asSummaryDto(variable, opalTable, false);
+  Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable, BaseStudyTable studyTable) {
+    return asSummaryDto(variable, studyTable, false);
   }
 
   @NotNull
@@ -339,7 +329,7 @@ class DatasetDtos {
   }
 
   @NotNull
-  Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable, OpalTable opalTable,
+  Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable, BaseStudyTable studyTable,
     boolean includeSummaries) {
     Mica.DatasetVariableSummaryDto.Builder builder = Mica.DatasetVariableSummaryDto.newBuilder() //
       .setResolver(asDto(DatasetVariable.IdResolver.from(variable.getId())));
@@ -349,9 +339,9 @@ class DatasetDtos {
         .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
 
-    if(opalTable instanceof StudyTable) builder.setStudyTable(asDto((StudyTable) opalTable, includeSummaries));
-    else if(opalTable instanceof HarmonizationStudyTable) {
-      builder.setHarmonizationStudyTable(asDto((HarmonizationStudyTable) opalTable, includeSummaries));
+    if(studyTable instanceof StudyTable) builder.setStudyTable(asDto((StudyTable) studyTable, includeSummaries));
+    else if(studyTable instanceof HarmonizationStudyTable) {
+      builder.setHarmonizationStudyTable(asDto((HarmonizationStudyTable) studyTable, includeSummaries));
     }
 
     return builder.build();
@@ -411,12 +401,17 @@ class DatasetDtos {
   }
 
   public Mica.DatasetDto.StudyTableDto.Builder asDto(StudyTable studyTable, boolean includeSummary) {
-    Mica.DatasetDto.StudyTableDto.Builder sbuilder = Mica.DatasetDto.StudyTableDto.newBuilder() //
-      .setProject(studyTable.getProject())//
-      .setTable(studyTable.getTable()) //
-      .setWeight(studyTable.getWeight()) //
-      .setStudyId(studyTable.getStudyId()) //
+    Mica.DatasetDto.StudyTableDto.Builder sbuilder = Mica.DatasetDto.StudyTableDto.newBuilder()
+      .setSourceURN(studyTable.getSourceURN())
+      .setWeight(studyTable.getWeight())
+      .setStudyId(studyTable.getStudyId())
       .setDceId(studyTable.getDataCollectionEventUId());
+
+    if (OpalTableSource.isFor(studyTable.getSourceURN())) {
+      OpalTableSource source = OpalTableSource.fromURN(studyTable.getSourceURN());
+      sbuilder.setProject(source.getProject());
+      sbuilder.setTable(source.getTable());
+    }
 
     String populationId = studyTable.getPopulationId();
     if (!Strings.isNullOrEmpty(populationId)) {
@@ -444,10 +439,15 @@ class DatasetDtos {
   public Mica.DatasetDto.HarmonizationTableDto.Builder asDto(HarmonizationStudyTable harmonizationTable,
     boolean includeSummary) {
     Mica.DatasetDto.HarmonizationTableDto.Builder hBuilder = Mica.DatasetDto.HarmonizationTableDto.newBuilder()
-      .setProject(harmonizationTable.getProject())
-      .setTable(harmonizationTable.getTable())
+      .setSourceURN(harmonizationTable.getSourceURN())
       .setWeight(harmonizationTable.getWeight())
       .setStudyId(harmonizationTable.getStudyId());
+
+    if (OpalTableSource.isFor(harmonizationTable.getSourceURN())) {
+      OpalTableSource source = OpalTableSource.fromURN(harmonizationTable.getSourceURN());
+      hBuilder.setProject(source.getProject());
+      hBuilder.setTable(source.getTable());
+    }
 
     if(includeSummary) hBuilder.setStudySummary(studySummaryDtos.asDto(harmonizationTable.getStudyId()));
 
@@ -458,16 +458,16 @@ class DatasetDtos {
     return hBuilder;
   }
 
-  public Mica.DatasetVariableAggregationDto.Builder asDto(@NotNull OpalTable opalTable,
+  public Mica.DatasetVariableAggregationDto.Builder asDto(@NotNull BaseStudyTable studyTable,
     @Nullable Math.SummaryStatisticsDto summary, boolean withStudySummary) {
     Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder();
 
     aggDto = simpleAggregationDto(aggDto, summary);
 
-    if(opalTable instanceof StudyTable)
-      aggDto.setStudyTable(asDto((StudyTable) opalTable, withStudySummary));
-    else if (opalTable instanceof HarmonizationStudyTable)
-      aggDto.setHarmonizationStudyTable(asDto((HarmonizationStudyTable) opalTable, withStudySummary));
+    if(studyTable instanceof StudyTable)
+      aggDto.setStudyTable(asDto((StudyTable) studyTable, withStudySummary));
+    else if (studyTable instanceof HarmonizationStudyTable)
+      aggDto.setHarmonizationStudyTable(asDto((HarmonizationStudyTable) studyTable, withStudySummary));
 
     return aggDto;
   }
@@ -493,14 +493,14 @@ class DatasetDtos {
     return aggDto;
   }
 
-  public Mica.DatasetVariableContingencyDto.Builder asContingencyDto(@NotNull OpalTable opalTable,
+  public Mica.DatasetVariableContingencyDto.Builder asContingencyDto(@NotNull BaseStudyTable studyTable,
     DatasetVariable variable, DatasetVariable crossVariable, @Nullable Search.QueryResultDto results) {
     Mica.DatasetVariableContingencyDto.Builder crossDto = Mica.DatasetVariableContingencyDto.newBuilder();
 
-    if(opalTable instanceof StudyTable)
-      crossDto.setStudyTable(asDto((StudyTable) opalTable, true));
-    else if (opalTable instanceof HarmonizationStudyTable)
-      crossDto.setHarmonizationStudyTable(asDto((HarmonizationStudyTable) opalTable));
+    if(studyTable instanceof StudyTable)
+      crossDto.setStudyTable(asDto((StudyTable) studyTable, true));
+    else if (studyTable instanceof HarmonizationStudyTable)
+      crossDto.setHarmonizationStudyTable(asDto((HarmonizationStudyTable) studyTable));
 
     Mica.DatasetVariableAggregationDto.Builder allAggBuilder = Mica.DatasetVariableAggregationDto.newBuilder();
 
@@ -783,8 +783,12 @@ class DatasetDtos {
 
     if(dto.hasHarmonizationTable()) {
       HarmonizationStudyTable harmonizationLink = new HarmonizationStudyTable();
-      harmonizationLink.setProject(dto.getHarmonizationTable().getProject());
-      harmonizationLink.setTable(dto.getHarmonizationTable().getTable());
+      // legacy
+      if (dto.getHarmonizationTable().hasProject() && dto.getHarmonizationTable().hasTable()) {
+        harmonizationLink.setSourceURN(makeSourceURN(dto.getHarmonizationTable().getProject(), dto.getHarmonizationTable().getTable()));
+      } else {
+        harmonizationLink.setSourceURN(dto.getHarmonizationTable().getSourceURN());
+      }
       harmonizationLink.setStudyId(dto.getHarmonizationTable().getStudyId());
       harmonizationDataset.setHarmonizationTable(harmonizationLink);
     }
@@ -807,13 +811,16 @@ class DatasetDtos {
     if (dto.hasDataCollectionEventId()) {
       table.setDataCollectionEventId(dto.getDataCollectionEventId());
     }
-    table.setProject(dto.getProject());
-    table.setTable(dto.getTable());
     table.setWeight(dto.getWeight());
-
     table.setName(localizedStringDtos.fromDto(dto.getNameList()));
     table.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
     table.setAdditionalInformation(localizedStringDtos.fromDto(dto.getAdditionalInformationList()));
+
+    if (dto.hasProject() && dto.hasTable()) {
+      table.setSourceURN(makeSourceURN(dto.getProject(), dto.getTable()));
+    } else {
+      table.setSourceURN(dto.getSourceURN());
+    }
 
     return table;
   }
@@ -821,15 +828,24 @@ class DatasetDtos {
   private HarmonizationStudyTable fromDto(Mica.DatasetDto.HarmonizationTableDto dto) {
     HarmonizationStudyTable table = new HarmonizationStudyTable();
     table.setStudyId(dto.getStudyId());
-    table.setProject(dto.getProject());
-    table.setTable(dto.getTable());
     table.setWeight(dto.getWeight());
-
     table.setName(localizedStringDtos.fromDto(dto.getNameList()));
     table.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
     table.setAdditionalInformation(localizedStringDtos.fromDto(dto.getAdditionalInformationList()));
 
+    // legacy
+    if (dto.hasProject() && dto.hasTable()) {
+      table.setSourceURN(makeSourceURN(dto.getProject(), dto.getTable()));
+    } else {
+      table.setSourceURN(dto.getSourceURN());
+    }
+
     return table;
+  }
+
+  // legacy
+  private String makeSourceURN(String project, String table) {
+    return OpalTableSource.newSource(project, table).getURN();
   }
 
   private Mica.DatasetDto.HarmonizationTableDto.Builder createHarmonizationLinkDtoFromHarmonizationTable(
@@ -837,11 +853,14 @@ class DatasetDtos {
     Mica.DatasetDto.HarmonizationTableDto.Builder harmonizationLinkBuilder = Mica.DatasetDto.HarmonizationTableDto
       .newBuilder();
 
-    if(!Strings.isNullOrEmpty(harmonizationLink.getProject()))
-      harmonizationLinkBuilder.setProject(harmonizationLink.getProject());
-
-    if(!Strings.isNullOrEmpty(harmonizationLink.getTable()))
-      harmonizationLinkBuilder.setTable(harmonizationLink.getTable());
+    if(!Strings.isNullOrEmpty(harmonizationLink.getSourceURN())) {
+      harmonizationLinkBuilder.setSourceURN(harmonizationLink.getSourceURN());
+      if (OpalTableSource.isFor(harmonizationLink.getSourceURN())) {
+        OpalTableSource source = OpalTableSource.fromURN(harmonizationLink.getSourceURN());
+        harmonizationLinkBuilder.setProject(source.getProject());
+        harmonizationLinkBuilder.setTable(source.getTable());
+      }
+    }
 
     String studyId = harmonizationLink.getStudyId();
 

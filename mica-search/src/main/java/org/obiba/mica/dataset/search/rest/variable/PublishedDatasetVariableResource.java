@@ -64,8 +64,7 @@ public class PublishedDatasetVariableResource {
         if (!harmonizedDatasetService.isPublished(resolver.getDatasetId())) throw NoSuchDatasetException.withId(resolver.getDatasetId());
         resource = applicationContext.getBean(PublishedHarmonizedDatasetVariableResource.class);
         ((PublishedHarmonizedDatasetVariableResource)resource).setStudyId(resolver.getStudyId());
-        ((PublishedHarmonizedDatasetVariableResource)resource).setProject(resolver.getProject());
-        ((PublishedHarmonizedDatasetVariableResource)resource).setTable(resolver.getTable());
+        ((PublishedHarmonizedDatasetVariableResource)resource).setSourceURN(resolver.getSourceURN());
         ((PublishedHarmonizedDatasetVariableResource)resource).setTableType(resolver.getTableType());
         ((PublishedHarmonizedDatasetVariableResource)resource).setLocale(locale);
         break;

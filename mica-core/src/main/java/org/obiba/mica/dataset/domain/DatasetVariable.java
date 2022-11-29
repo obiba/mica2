@@ -89,9 +89,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   private int index;
 
-  private String project;
-
-  private String table;
+  private String sourceURN;
 
   private OpalTableType opalTableType;
 
@@ -132,25 +130,17 @@ public class DatasetVariable implements Indexable, AttributeAware {
     setContainerId(table.getStudyId());
   }
 
-  public DatasetVariable(HarmonizationDataset dataset, Variable variable, OpalTable opalTable) {
+  public DatasetVariable(HarmonizationDataset dataset, Variable variable, BaseStudyTable studyTable) {
     this(dataset, Type.Harmonized, variable);
 
-    if (opalTable instanceof BaseStudyTable) {
-      studyId = ((BaseStudyTable)opalTable).getStudyId();
-      setContainerId(studyId);
-      opalTableType = opalTable instanceof StudyTable ? OpalTableType.Study : OpalTableType.Harmonization;
+    studyId = studyTable.getStudyId();
+    setContainerId(studyId);
+    opalTableType = studyTable instanceof StudyTable ? OpalTableType.Study : OpalTableType.Harmonization;
 
-      if (opalTable instanceof HarmonizationStudyTable) {
-        populationId = ((HarmonizationStudyTable) opalTable).getPopulationUId();
-        dceId = ((HarmonizationStudyTable) opalTable).getDataCollectionEventUId();
-      } else {
-        populationId = ((BaseStudyTable) opalTable).getPopulationUId();
-        dceId = ((BaseStudyTable) opalTable).getDataCollectionEventUId();
-      }
-    }
+    populationId = studyTable.getPopulationUId();
+    dceId = studyTable.getDataCollectionEventUId();
 
-    project = opalTable.getProject();
-    table = opalTable.getTable();
+    sourceURN = studyTable.getSourceURN();
   }
 
   private DatasetVariable(Dataset dataset, Type type, Variable variable) {
@@ -187,7 +177,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
     if (Type.Harmonized == variableType) {
       String entityId = studyId;
       String tableType = opalTableType == OpalTableType.Study ? OPAL_STUDY_TABLE_PREFIX : OPAL_HARMONIZATION_TABLE_PREFIX;
-      id = id + ID_SEPARATOR + tableType + ID_SEPARATOR + entityId + ID_SEPARATOR + project + ID_SEPARATOR + table;
+      id = id + ID_SEPARATOR + tableType + ID_SEPARATOR + entityId + ID_SEPARATOR + sourceURN;
     }
 
     return id;
@@ -202,8 +192,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
     opalTableType = Strings.isNullOrEmpty(tableType) ? null : OpalTableType.valueOf(tableType);
 
     if (resolver.hasStudyId()) studyId = resolver.getStudyId();
-    if (resolver.hasProject()) project = resolver.getProject();
-    if (resolver.hasTable()) table = resolver.getTable();
+    if (resolver.hasSourceURN()) sourceURN = resolver.getSourceURN();
   }
 
   public String getDatasetId() {
@@ -327,12 +316,8 @@ public class DatasetVariable implements Indexable, AttributeAware {
     return index;
   }
 
-  public String getProject() {
-    return project;
-  }
-
-  public String getTable() {
-    return table;
+  public String getSourceURN() {
+    return sourceURN;
   }
 
   public OpalTableType getOpalTableType() {
@@ -483,7 +468,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   public static class IdResolver {
 
-    private final String id;
+    private String id;
 
     private final Type type;
 
@@ -493,11 +478,9 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
     private final String studyId;
 
-    private final String project;
-
-    private final String table;
-
     private final String tableType;
+
+    private final String sourceURN;
 
     public static IdResolver from(String id) {
       return new IdResolver(id);
@@ -507,31 +490,33 @@ public class DatasetVariable implements Indexable, AttributeAware {
       return from(encode(datasetId, variableName, variableType, null));
     }
 
+    public static String encode(String datasetId, String variableName, Type variableType) {
+      return encode(datasetId, variableName, variableType, null, null, null);
+    }
+
     public static String encode(String datasetId, String variableName, Type variableType, String studyId,
-                                String project, String table, String tableType) {
+                                String sourceURN, String tableType) {
       String id = datasetId + ID_SEPARATOR + IdEncoderDecoder.encode(variableName) + ID_SEPARATOR + variableType;
 
       String entityId;
 
       if (Type.Harmonized == variableType) {
         entityId = studyId;
-        id = id + ID_SEPARATOR + tableType + ID_SEPARATOR + entityId + ID_SEPARATOR + project + ID_SEPARATOR + table;
+        id = id + ID_SEPARATOR + tableType + ID_SEPARATOR + entityId + ID_SEPARATOR + sourceURN;
       }
 
       return id;
     }
 
-    public static String encode(String datasetId, String variableName, Type variableType, OpalTable opalTable) {
-      String tableType = opalTable instanceof StudyTable ? OPAL_STUDY_TABLE_PREFIX : OPAL_HARMONIZATION_TABLE_PREFIX;
-      BaseStudyTable studyTable = (BaseStudyTable)opalTable;
+    public static String encode(String datasetId, String variableName, Type variableType, BaseStudyTable studyTable) {
+      String tableType = studyTable instanceof StudyTable ? OPAL_STUDY_TABLE_PREFIX : OPAL_HARMONIZATION_TABLE_PREFIX;
       return studyTable == null
-          ? encode(datasetId, variableName, variableType, null, null, null, null)
+          ? encode(datasetId, variableName, variableType)
           : encode(datasetId,
             variableName,
             variableType,
             studyTable.getStudyId(),
-            opalTable.getProject(),
-            opalTable.getTable(),
+            studyTable.getSourceURN(),
             tableType);
     }
 
@@ -540,7 +525,9 @@ public class DatasetVariable implements Indexable, AttributeAware {
       this.id = IdEncoderDecoder.encode(id);
       boolean encoded = !this.id.equals(id);
 
-      String[] tokens = id.split(ID_SEPARATOR);
+      String[] parts = id.split(":urn:");
+
+      String[] tokens = parts[0].split(ID_SEPARATOR);
       if (tokens.length < 3) throw new IllegalArgumentException("Not a valid dataset variable ID: " + id);
 
       datasetId = tokens[0];
@@ -550,8 +537,16 @@ public class DatasetVariable implements Indexable, AttributeAware {
       tableType = tokens.length > 3 ? tokens[3] : null;
       studyId = tokens.length > 4 ? tokens[4] : null;
 
-      project = tokens.length > 5 ? tokens[5] : null;
-      table = tokens.length > 6 ? tokens[6] : null;
+      if (parts.length>1) {
+        sourceURN = "urn:" + parts[1];
+      } else if (tokens.length > 6) {
+        // legacy
+        sourceURN = String.format("urn:opal:%s.%s", tokens[5], tokens[6]);
+        // need to rewrite id
+        this.id = IdEncoderDecoder.encode(encode(datasetId, name, type,studyId, sourceURN, tableType));
+      } else {
+        sourceURN = null;
+      }
     }
 
     public String getId() {
@@ -578,26 +573,18 @@ public class DatasetVariable implements Indexable, AttributeAware {
       return !Strings.isNullOrEmpty(studyId);
     }
 
-    public String getProject() {
-      return project;
+    public boolean hasSourceURN() {
+      return !Strings.isNullOrEmpty(sourceURN);
     }
 
-    public boolean hasProject() {
-      return !Strings.isNullOrEmpty(project);
-    }
-
-    public String getTable() {
-      return table;
-    }
-
-    public boolean hasTable() {
-      return !Strings.isNullOrEmpty(table);
+    public String getSourceURN() {
+      return sourceURN;
     }
 
     @Override
     public String toString() {
       String tableType = type == Type.Dataschema ? OPAL_HARMONIZATION_TABLE_PREFIX : OPAL_STUDY_TABLE_PREFIX;
-      return "[" + datasetId + "," + name + "," + type + ", " + tableType + ", " + studyId + ", " + project + ", " + table + "]";
+      return "[" + datasetId + "," + name + "," + type + ", " + tableType + ", " + studyId + ", " + sourceURN + "]";
     }
 
     public String getTableType() {

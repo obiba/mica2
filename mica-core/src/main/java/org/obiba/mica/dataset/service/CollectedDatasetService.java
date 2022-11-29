@@ -15,9 +15,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.joda.time.DateTime;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
+import org.obiba.magma.ValueTable;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.domain.PublishCascadingScope;
@@ -50,7 +50,6 @@ import org.obiba.mica.study.event.DraftStudyPopulationDceWeightChangedEvent;
 import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
-import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,14 +66,13 @@ import org.springframework.validation.annotation.Validated;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
-
-import java.time.LocalDateTime;
 
 @Service
 @Validated
@@ -410,10 +408,8 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
   }
 
   @Override
-  @NotNull
-  protected RestValueTable getTable(@NotNull StudyDataset dataset) throws NoSuchValueTableException {
-    StudyTable studyTable = dataset.getSafeStudyTable();
-    return execute(studyTable, datasource -> (RestValueTable) datasource.getValueTable(studyTable.getTable()));
+  protected ValueTable getValueTable(@NotNull StudyDataset dataset) throws NoSuchValueTableException {
+    return getStudyTableSource(dataset.getSafeStudyTable()).getValueTable();
   }
 
   @Override
@@ -428,25 +424,19 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
   @Override
   public DatasetVariable getDatasetVariable(StudyDataset dataset, String variableName)
     throws NoSuchValueTableException, NoSuchVariableException {
-    return new DatasetVariable(dataset, getVariableValueSource(dataset, variableName).getVariable());
+    return new DatasetVariable(dataset, getValueTable(dataset).getVariable(variableName));
   }
 
   @Cacheable(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver", key = "#variableName")
   public SummaryStatisticsWrapper getVariableSummary(@NotNull StudyDataset dataset, String variableName)
     throws NoSuchValueTableException, NoSuchVariableException {
     log.info("Caching variable summary {} {}", dataset.getId(), variableName);
-    return new SummaryStatisticsWrapper(getVariableValueSource(dataset, variableName).getSummary());
-  }
-
-  public Search.QueryResultDto getVariableFacet(@NotNull StudyDataset dataset, String variableName)
-    throws NoSuchValueTableException, NoSuchVariableException {
-    log.debug("Getting variable facet {} {}", dataset.getId(), variableName);
-    return getVariableValueSource(dataset, variableName).getFacet();
+    return new SummaryStatisticsWrapper(getStudyTableSource(dataset.getSafeStudyTable()).getVariableSummary(variableName));
   }
 
   public Search.QueryResultDto getFacets(@NotNull StudyDataset dataset, Search.QueryTermsDto query)
     throws NoSuchValueTableException, NoSuchVariableException {
-    return getTable(dataset).getFacets(query);
+    return getStudyTableSource(dataset.getSafeStudyTable()).getFacets(query);
   }
 
   public Search.QueryResultDto getContingencyTable(@NotNull StudyDataset dataset, DatasetVariable variable,
@@ -514,18 +504,6 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
   //
   // Private methods
   //
-
-  /**
-   * Build or reuse the {@link org.obiba.opal.rest.client.magma.RestDatasource} and execute the callback with it.
-   *
-   * @param studyTable
-   * @param callback
-   * @param <T>
-   * @return
-   */
-  private <T> T execute(StudyTable studyTable, DatasourceCallback<T> callback) {
-    return execute(getDatasource(studyTable), callback);
-  }
 
   private void saveInternal(StudyDataset dataset, String comment) {
     if (!Strings.isNullOrEmpty(dataset.getId()) && micaConfigService.getConfig().isCommentsRequiredOnDocumentSave() && Strings.isNullOrEmpty(comment)) {

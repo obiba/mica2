@@ -83,7 +83,17 @@ public class VariableController extends BaseController {
         break;
     }
 
-    DatasetVariable variable = resolver.getType().equals(DatasetVariable.Type.Harmonized) ? getHarmonizedDatasetVariable(resolver.getDatasetId(), id, variableName) : getDatasetVariable(id, variableName);
+    DatasetVariable variable;
+    if (resolver.getType().equals(DatasetVariable.Type.Harmonized)) {
+      try {
+        variable = getHarmonizedDatasetVariable(resolver.getDatasetId(), resolver.getId(), variableName);
+      } catch (NoSuchVariableException e) {
+        // legacy variable id format
+        variable = getHarmonizedDatasetVariable(resolver.getDatasetId(), id, variableName);
+      }
+    } else
+      variable = getDatasetVariable(resolver.getId(), variableName);
+
     params.put("variable", variable);
     params.put("type", resolver.getType().toString());
 
@@ -163,10 +173,11 @@ public class VariableController extends BaseController {
   }
 
   private DatasetVariable getHarmonizedDatasetVariable(String datasetId, String variableId, String variableName) {
-    String dataSchemaVariableId = DatasetVariable.IdResolver
-      .encode(datasetId, variableName, DatasetVariable.Type.Dataschema, null, null, null, null);
     DatasetVariable harmonizedDatasetVariable = getDatasetVariableInternal(Indexer.PUBLISHED_HVARIABLE_INDEX, Indexer.HARMONIZED_VARIABLE_TYPE,
       variableId, variableName);
+
+    String dataSchemaVariableId = DatasetVariable.IdResolver
+      .encode(datasetId, variableName, DatasetVariable.Type.Dataschema);
     DatasetVariable dataSchemaVariable = getDatasetVariableInternal(Indexer.PUBLISHED_VARIABLE_INDEX, Indexer.VARIABLE_TYPE,
       dataSchemaVariableId, variableName);
 
@@ -208,13 +219,13 @@ public class VariableController extends BaseController {
 
         if (DatasetVariable.OpalTableType.Study.equals(variable.getOpalTableType())) {
           Optional<StudyTable> studyTable = dataset.getStudyTables().stream().filter(st ->
-            variable.getStudyId().equals(st.getStudyId()) && variable.getProject().equals(st.getProject()) && variable.getTable().equals(st.getTable()))
+            variable.getStudyId().equals(st.getStudyId()) && variable.getSourceURN().equals(st.getSourceURN()))
             .findFirst();
           if (studyTable.isPresent())
             params.put("opalTable", studyTable.get());
         } else {
           Optional<HarmonizationStudyTable> harmoStudyTable = dataset.getHarmonizationTables().stream().filter(st ->
-            variable.getStudyId().equals(st.getStudyId()) && variable.getProject().equals(st.getProject()) && variable.getTable().equals(st.getTable()))
+            variable.getStudyId().equals(st.getStudyId()) && variable.getSourceURN().equals(st.getSourceURN()))
             .findFirst();
           if (harmoStudyTable.isPresent())
             params.put("opalTable", harmoStudyTable.get());

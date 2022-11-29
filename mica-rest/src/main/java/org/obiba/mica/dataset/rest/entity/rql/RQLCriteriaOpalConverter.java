@@ -182,8 +182,7 @@ public class RQLCriteriaOpalConverter {
     } else if (DatasetVariable.Type.Harmonized.equals(resolver.getType())) {
       HarmonizationDataset ds = harmonizedDatasetService.findById(resolver.getDatasetId());
       Optional<BaseStudyTable> studyTable = ds.getBaseStudyTables().stream().filter(st -> st.getStudyId().equals(resolver.getStudyId())
-        && st.getProject().equals(resolver.getProject())
-        && st.getTable().equals(resolver.getTable())).findFirst();
+        && st.getSourceURN().equals(resolver.getSourceURN())).findFirst();
       if (!studyTable.isPresent()) throw new IllegalArgumentException("Not a valid variable: " + path);
       BaseStudy study = studyService.findStudy(studyTable.get().getStudyId());
       return new RQLFieldReferences(path, ds, studyTable.get(), study, getDatasetVariableInternal(Indexer.PUBLISHED_HVARIABLE_INDEX, Indexer.HARMONIZED_VARIABLE_TYPE, path));

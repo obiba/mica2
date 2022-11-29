@@ -64,15 +64,6 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
   }
 
   @GET
-  @Path("/facet")
-  @Timed
-  public Search.QueryResultDto getVariableFacet() {
-    checkDatasetAccess();
-    checkVariableSummaryAccess();
-    return datasetService.getVariableFacet(getDataset(StudyDataset.class, datasetId), variableName);
-  }
-
-  @GET
   @Path("/aggregation")
   @Timed
   public Mica.DatasetVariableAggregationDto getVariableAggregations(@QueryParam("study") @DefaultValue("true") boolean withStudySummary) {

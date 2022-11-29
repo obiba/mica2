@@ -17,6 +17,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.apache.shiro.SecurityUtils;
+import org.obiba.mica.core.domain.OpalTableSource;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
@@ -88,8 +89,7 @@ public class PublishedDatasetResource {
     if (!(dataset instanceof StudyDataset)) throw NoSuchDatasetException.withId(id);
 
     StudyDataset asStudyDataset = (StudyDataset) dataset;
-    asStudyDataset.getStudyTable().setProject(project);
-    asStudyDataset.getStudyTable().setTable(table);
+    asStudyDataset.getStudyTable().setSourceURN(OpalTableSource.newSource(project, table).getURN());
 
     return asStudyDataset;
   }

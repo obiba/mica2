@@ -138,13 +138,6 @@ public class DraftHarmonizedDatasetResource extends
   }
 
   @GET
-  @Path("/table")
-  public Magma.TableDto getTable() {
-    checkPermission("/draft/harmonized-dataset", "VIEW");
-    return datasetService.getTableDto(getDataset());
-  }
-
-  @GET
   @Path("/variables")
   public List<Mica.DatasetVariableDto> getVariables() {
     checkPermission("/draft/harmonized-dataset", "VIEW");

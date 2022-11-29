@@ -28,7 +28,7 @@ import com.google.common.base.MoreObjects;
 import java.util.Map;
 
 /**
- * Proxy to Opal tables.
+ * Proxy to value tables.
  */
 public abstract class Dataset extends AbstractModelAware implements AttributeAware, Indexable {
 

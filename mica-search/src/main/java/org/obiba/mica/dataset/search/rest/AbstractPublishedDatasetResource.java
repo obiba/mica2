@@ -10,23 +10,11 @@
 
 package org.obiba.mica.dataset.search.rest;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.ForbiddenException;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 import org.apache.shiro.SecurityUtils;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.core.domain.BaseStudyTable;
-import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
@@ -44,8 +32,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import javax.ws.rs.ForbiddenException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Retrieve the {@link org.obiba.mica.dataset.domain.Dataset} from the published dataset index.
@@ -211,22 +208,21 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   }
 
   protected DatasetVariable getDatasetVariable(@NotNull String datasetId, @NotNull String variableName,
-                                               DatasetVariable.Type variableType, OpalTable opalTable) {
+                                               DatasetVariable.Type variableType, BaseStudyTable studyTable) {
 
-    if (opalTable != null) {
+    if (studyTable != null) {
       return getDatasetVariable(datasetId,
           variableName,
           variableType,
-          opalTable instanceof BaseStudyTable ? ((BaseStudyTable) opalTable).getStudyId() : null,
-          opalTable.getProject(),
-          opalTable.getTable(),
-          opalTable instanceof StudyTable
+          studyTable.getStudyId(),
+          studyTable.getSourceURN(),
+          studyTable instanceof StudyTable
               ? DatasetVariable.OPAL_STUDY_TABLE_PREFIX
               : DatasetVariable.OPAL_HARMONIZATION_TABLE_PREFIX);
 
     }
 
-    return getDatasetVariable(datasetId, variableName, variableType, null, null, null, null);
+    return getDatasetVariable(datasetId, variableName, variableType, null, null, null);
   }
 
   /**
@@ -236,18 +232,18 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
    * @param datasetId
    * @param variableName
    * @param studyId
-   * @param project
-   * @param table
+   * @param sourceURN
+   * @param tableType
    * @return
    * @throws NoSuchVariableException
    */
   protected DatasetVariable getDatasetVariable(@NotNull String datasetId, @NotNull String variableName,
-                                               DatasetVariable.Type variableType, @Nullable String studyId, @Nullable String project, @Nullable String table,
+                                               DatasetVariable.Type variableType, @Nullable String studyId, @Nullable String sourceURN,
                                                @Nullable String tableType)
       throws NoSuchVariableException {
 
     String variableId = DatasetVariable.IdResolver
-        .encode(datasetId, variableName, variableType, studyId, project, table, tableType);
+        .encode(datasetId, variableName, variableType, studyId, sourceURN, tableType);
 
     if (variableType.equals(DatasetVariable.Type.Harmonized)) {
       return getHarmonizedDatasetVariable(datasetId, variableId, variableName);
@@ -262,23 +258,23 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   }
 
   protected Mica.DatasetVariableDto getDatasetVariableDto(@NotNull String datasetId, @NotNull String variableName,
-                                                          DatasetVariable.Type variableType, @Nullable OpalTable opalTable) {
+                                                          DatasetVariable.Type variableType, @Nullable BaseStudyTable studyTable) {
     return dtos
-        .asDto(getDatasetVariable(datasetId, variableName, variableType, opalTable), getTaxonomies(),
+        .asDto(getDatasetVariable(datasetId, variableName, variableType, studyTable), getTaxonomies(),
             getLocale());
   }
 
   protected Mica.DatasetVariableDto getDatasetVariableDto(@NotNull String datasetId, @NotNull String variableName,
-                                                          DatasetVariable.Type variableType, @Nullable String studyId, @Nullable String project, @Nullable String table,
+                                                          DatasetVariable.Type variableType, @Nullable String studyId, @Nullable String sourceURN,
                                                           @Nullable String tableType) {
-    return dtos.asDto(getDatasetVariable(datasetId, variableName, variableType, studyId, project, table, tableType),
+    return dtos.asDto(getDatasetVariable(datasetId, variableName, variableType, studyId, sourceURN, tableType),
         getTaxonomies(), getLocale());
   }
 
   protected Mica.DatasetHarmonizedVariableSummaryDto getDatasetHarmonizedVariableSummaryDto(@NotNull String datasetId,
-                                                                        @NotNull String variableName, DatasetVariable.Type variableType, @Nullable OpalTable opalTable) {
+                                                                        @NotNull String variableName, DatasetVariable.Type variableType, @Nullable BaseStudyTable studyTable) {
     try {
-      DatasetVariable variable = getDatasetVariable(datasetId, variableName, variableType, opalTable);
+      DatasetVariable variable = getDatasetVariable(datasetId, variableName, variableType, studyTable);
       return dtos.asHarmonizedSummaryDto(variable);
     } catch (NoSuchVariableException e) {
       return Mica.DatasetHarmonizedVariableSummaryDto.newBuilder().setStatus("").build();
@@ -287,18 +283,18 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
 
 
   protected Mica.DatasetVariableSummaryDto getDatasetVariableSummaryDto(@NotNull String datasetId,
-                                                                        @NotNull String variableName, DatasetVariable.Type variableType, @Nullable OpalTable opalTable) {
-    DatasetVariable variable = getDatasetVariable(datasetId, variableName, variableType, opalTable);
-    return dtos.asSummaryDto(variable, opalTable, true);
+                                                                        @NotNull String variableName, DatasetVariable.Type variableType, @Nullable BaseStudyTable studyTable) {
+    DatasetVariable variable = getDatasetVariable(datasetId, variableName, variableType, studyTable);
+    return dtos.asSummaryDto(variable, studyTable, true);
   }
 
   protected Mica.DatasetVariableSummaryDto getDatasetVariableSummaryDto(@NotNull String datasetId,
                                                                         @NotNull String variableName,
                                                                         DatasetVariable.Type variableType,
-                                                                        @Nullable OpalTable opalTable,
+                                                                        @Nullable BaseStudyTable studyTable,
                                                                         boolean includeSummaries) {
-    DatasetVariable variable = getDatasetVariable(datasetId, variableName, variableType, opalTable);
-    return dtos.asSummaryDto(variable, opalTable, includeSummaries);
+    DatasetVariable variable = getDatasetVariable(datasetId, variableName, variableType, studyTable);
+    return dtos.asSummaryDto(variable, studyTable, includeSummaries);
   }
 
   @NotNull
@@ -324,7 +320,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
 
   private DatasetVariable getHarmonizedDatasetVariable(String datasetId, String variableId, String variableName) {
     String dataSchemaVariableId = DatasetVariable.IdResolver
-        .encode(datasetId, variableName, DatasetVariable.Type.Dataschema, null, null, null, null);
+        .encode(datasetId, variableName, DatasetVariable.Type.Dataschema);
     DatasetVariable harmonizedDatasetVariable = getDatasetVariableInternal(Indexer.PUBLISHED_HVARIABLE_INDEX, Indexer.HARMONIZED_VARIABLE_TYPE,
         variableId, variableName);
     DatasetVariable dataSchemaVariable = getDatasetVariableInternal(Indexer.PUBLISHED_VARIABLE_INDEX, Indexer.VARIABLE_TYPE,

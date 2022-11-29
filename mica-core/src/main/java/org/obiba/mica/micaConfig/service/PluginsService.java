@@ -16,6 +16,8 @@ import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import org.obiba.core.util.FileUtil;
 import org.obiba.mica.core.upgrade.RuntimeVersionProvider;
+import org.obiba.mica.spi.dataset.StudyTableSourceService;
+import org.obiba.mica.spi.dataset.StudyTableSourceServiceLoader;
 import org.obiba.mica.spi.search.ConfigurationProvider;
 import org.obiba.mica.spi.search.SearchEngineService;
 import org.obiba.mica.spi.search.SearchEngineServiceLoader;
@@ -86,12 +88,17 @@ public class PluginsService implements EnvironmentAware {
     return (SearchEngineService) getServicePlugins(SearchEngineService.class).iterator().next();
   }
 
+  public Collection<StudyTableSourceService> getStudyTableSourceServices() {
+    return getServicePlugins(StudyTableSourceService.class).stream()
+      .map(service -> (StudyTableSourceService)service)
+      .collect(Collectors.toList());
+  }
+
   //
   // Private methods
   //
 
   private Collection<ServicePlugin> getServicePlugins(Class clazz) {
-    //init();
     return servicePlugins.stream().filter(s -> clazz.isAssignableFrom(s.getClass())).collect(Collectors.toList());
   }
 
@@ -153,6 +160,13 @@ public class PluginsService implements EnvironmentAware {
     service.setConfigurationProvider(configurationProvider);
     service.start();
     servicePlugins.add(service);
+  }
+
+  private void initStudyTableSourceServicePlugins(PluginResources plugin) {
+    StudyTableSourceServiceLoader.get(plugin.getURLClassLoader(false)).forEach(service -> {
+      service.start();
+      servicePlugins.add(service);
+    });
   }
 
   private synchronized Collection<PluginResources> getPlugins(boolean extract) {

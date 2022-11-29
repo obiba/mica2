@@ -108,7 +108,7 @@ public class CacheService {
             String studyId = st.getStudyId();
             try {
               harmonizedDatasetService
-                .getVariableSummary(dataset, v.getName(), studyId, st.getProject(), st.getTable());
+                .getVariableSummary(dataset, v.getName(), studyId, st.getSourceURN());
             } catch(NoSuchVariableException ex) {
               //ignore
             } catch(Exception e) {

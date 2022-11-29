@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.obiba.magma.MagmaRuntimeException;
 import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.domain.OpalTableSource;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.dataset.StudyDatasetRepository;
@@ -98,8 +99,7 @@ public class CollectedDatasetServiceTest {
   private StudyDataset buildStudyDataset() {
     StudyDataset ds = new StudyDataset();
     StudyTable st = new StudyTable();
-    st.setProject("proj");
-    st.setTable("tab");
+    st.setSourceURN(OpalTableSource.newSource("proj", "tab").getURN());
     st.setPopulationId("1");
     st.setDataCollectionEventId("1");
     ds.setStudyTable(st);

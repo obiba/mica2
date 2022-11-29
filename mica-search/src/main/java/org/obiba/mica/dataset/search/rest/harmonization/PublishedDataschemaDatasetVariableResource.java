@@ -20,9 +20,6 @@ import org.apache.commons.math3.util.Pair;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.core.domain.BaseStudyTable;
-import org.obiba.mica.core.domain.HarmonizationStudyTable;
-import org.obiba.mica.core.domain.OpalTable;
-import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -85,32 +82,11 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
       try {
         String studyId = table.getStudyId();
         builder.add(datasetService
-          .getVariableSummary(dataset, variableName, studyId, table.getProject(), table.getTable())
+          .getVariableSummary(dataset, variableName, studyId, table.getSourceURN())
           .getWrappedDto());
       } catch (NoSuchVariableException | NoSuchValueTableException e) {
         // case the study has not implemented this dataschema variable
         builder.add(Math.SummaryStatisticsDto.newBuilder().setResource(variableName).build());
-      }
-    });
-    return builder.build();
-  }
-
-  @GET
-  @Path("/facet")
-  @Timed
-  public List<Search.QueryResultDto> getVariableFacets() {
-    checkDatasetAccess();
-    checkVariableSummaryAccess();
-    ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
-    HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
-    dataset.getBaseStudyTables().forEach(table -> {
-      try {
-        String studyId = table.getStudyId();
-        builder.add(datasetService
-          .getVariableFacet(dataset, variableName, studyId, table.getProject(), table.getTable()));
-      } catch (NoSuchVariableException | NoSuchValueTableException e) {
-        // case the study has not implemented this dataschema variable
-        builder.add(Search.QueryResultDto.newBuilder().setTotalHits(0).build());
       }
     });
     return builder.build();
@@ -288,18 +264,11 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
 
     @Async
     protected Future<Math.SummaryStatisticsDto> getVariableFacet(HarmonizationDataset dataset, String variableName,
-                                                                 OpalTable table) {
+                                                                 BaseStudyTable table) {
       try {
-        String studyId = null;
-
-        if (table instanceof StudyTable) {
-          studyId = ((StudyTable) table).getStudyId();
-        } else if (table instanceof HarmonizationStudyTable) {
-          studyId = ((HarmonizationStudyTable) table).getStudyId();
-        }
-
+        String studyId = table.getStudyId();
         return new AsyncResult<>(datasetService
-          .getVariableSummary(dataset, variableName, studyId, table.getProject(), table.getTable())
+          .getVariableSummary(dataset, variableName, studyId, table.getSourceURN())
           .getWrappedDto());
       } catch (Exception e) {
         log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
@@ -309,9 +278,9 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
 
     @Async
     protected Future<Search.QueryResultDto> getContingencyTable(HarmonizationDataset dataset, DatasetVariable var,
-                                                                DatasetVariable crossVar, OpalTable table) {
+                                                                DatasetVariable crossVar, BaseStudyTable studyTable) {
       try {
-        return new AsyncResult<>(datasetService.getContingencyTable(table, var, crossVar));
+        return new AsyncResult<>(datasetService.getContingencyTable(studyTable, var, crossVar));
       } catch (Exception e) {
         log.warn("Unable to retrieve contingency statistics: " + e.getMessage(), e);
         return new AsyncResult<>(null);

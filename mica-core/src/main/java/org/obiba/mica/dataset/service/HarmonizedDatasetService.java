@@ -10,33 +10,14 @@
 
 package org.obiba.mica.dataset.service;
 
-import static java.util.stream.Collectors.toList;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-import org.obiba.magma.MagmaRuntimeException;
-import org.obiba.magma.NoSuchValueTableException;
-import org.obiba.magma.NoSuchVariableException;
-import org.obiba.magma.ValueTable;
-import org.obiba.magma.Variable;
+import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
+import org.obiba.magma.*;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.BaseStudyTable;
-import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.core.service.MissingCommentException;
@@ -62,7 +43,6 @@ import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
-import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,11 +56,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 
-import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.common.eventbus.EventBus;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @Validated
@@ -313,8 +301,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
   private void checkIsPublishable(HarmonizationDataset dataset) {
     if (dataset == null
       || dataset.getHarmonizationTable() == null
-      || dataset.getHarmonizationTable().getProject() == null
-      || dataset.getHarmonizationTable().getTable() == null
+      || dataset.getHarmonizationTable().getSourceURN() == null
       || dataset.getHarmonizationTable().getStudyId() == null) {
       throw new IllegalArgumentException("dataset.harmonization.missing-attributes");
     }
@@ -357,10 +344,8 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
   }
 
   @Override
-  @NotNull
-  protected RestValueTable getTable(@NotNull HarmonizationDataset dataset) throws NoSuchValueTableException {
-    return execute(dataset.getSafeHarmonizationTable().getProject(),
-      datasource -> (RestValueTable) datasource.getValueTable(dataset.getSafeHarmonizationTable().getTable()));
+  protected ValueTable getValueTable(@NotNull HarmonizationDataset dataset) throws NoSuchValueTableException {
+    return getStudyTableSource(dataset.getSafeHarmonizationTable()).getValueTable();
   }
 
   @Override
@@ -372,52 +357,48 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
   @Override
   public DatasetVariable getDatasetVariable(HarmonizationDataset dataset, String variableName)
     throws NoSuchValueTableException, NoSuchVariableException {
-    return new DatasetVariable(dataset, getVariableValueSource(dataset, variableName).getVariable());
+    return new DatasetVariable(dataset, getStudyTableSource(dataset.getSafeHarmonizationTable()).getValueTable().getVariable(variableName));
   }
 
-  public Iterable<DatasetVariable> getDatasetVariables(HarmonizationDataset dataset, OpalTable opalTable)
+  public Iterable<DatasetVariable> getDatasetVariables(HarmonizationDataset dataset, BaseStudyTable studyTable)
     throws NoSuchStudyException, NoSuchValueTableException {
-    return StreamSupport.stream(getVariables(opalTable).spliterator(), false)
-      .map(input -> new DatasetVariable(dataset, input, opalTable)).collect(toList());
+    return StreamSupport.stream(getVariables(studyTable).spliterator(), false)
+      .map(input -> new DatasetVariable(dataset, input, studyTable)).collect(toList());
   }
 
-  public DatasetVariable getDatasetVariable(HarmonizationDataset dataset, String variableName, OpalTable opalTable)
+  public DatasetVariable getDatasetVariable(HarmonizationDataset dataset, String variableName, BaseStudyTable studyTable)
     throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
-    return new DatasetVariable(dataset, getTable(opalTable).getVariableValueSource(variableName).getVariable());
+    return new DatasetVariable(dataset, getStudyTableSource(studyTable).getValueTable().getVariable(variableName));
   }
 
   public DatasetVariable getDatasetVariable(HarmonizationDataset dataset, String variableName, String studyId,
-    String project, String table) throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
+    String sourceURN) throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
     return new DatasetVariable(dataset,
-      getTable(dataset, studyId, project, table).getVariableValueSource(variableName).getVariable());
+      getTable(dataset, studyId, sourceURN).getVariableValueSource(variableName).getVariable());
   }
 
   @Cacheable(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver",
-    key = "#variableName + ':' + #studyId + ':' + #project + ':' + #table")
-  public SummaryStatisticsWrapper getVariableSummary(@NotNull HarmonizationDataset dataset, String variableName,
-    String studyId, String project, String table)
+    key = "#variableName + ':' + #studyId + ':' + #sourceURN")
+  public SummaryStatisticsWrapper getVariableSummary(@NotNull HarmonizationDataset dataset, String variableName, String studyId, String sourceURN)
     throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
-    log.info("Caching variable summary {} {} {} {} {}", dataset.getId(), variableName, studyId, project, table);
+    log.info("Caching variable summary {} {} {} {} {}", dataset.getId(), variableName, studyId, sourceURN);
+    for(BaseStudyTable baseTable : dataset.getBaseStudyTables()) {
+      if(baseTable.isFor(studyId, sourceURN)) {
+        return new SummaryStatisticsWrapper(getStudyTableSource(baseTable).getVariableSummary(variableName));
+      }
+    }
 
-    return new SummaryStatisticsWrapper(
-      getVariableValueSource(dataset, variableName, studyId, project, table).getSummary());
+    throw NoSuchStudyException.withId(studyId);
   }
 
-  public Search.QueryResultDto getVariableFacet(@NotNull HarmonizationDataset dataset, String variableName,
-    String studyId, String project, String table)
-    throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
-    log.debug("Getting variable facet {} {}", dataset.getId(), variableName);
-    return getVariableValueSource(dataset, variableName, studyId, project, table).getFacet();
-  }
-
-  public Search.QueryResultDto getFacets(Search.QueryTermsDto query, OpalTable opalTable)
+  public Search.QueryResultDto getFacets(Search.QueryTermsDto query, BaseStudyTable studyTable)
     throws NoSuchStudyException, NoSuchValueTableException {
-    return getTable(opalTable).getFacets(query);
+    return getStudyTableSource(studyTable).getFacets(query);
   }
 
-  public Search.QueryResultDto getContingencyTable(@NotNull OpalTable opalTable, DatasetVariable variable,
+  public Search.QueryResultDto getContingencyTable(@NotNull BaseStudyTable studyTable, DatasetVariable variable,
                                                    DatasetVariable crossVariable) throws NoSuchStudyException, NoSuchValueTableException {
-    return getFacets(QueryTermsUtil.getContingencyQuery(variable, crossVariable), opalTable);
+    return getFacets(QueryTermsUtil.getContingencyQuery(variable, crossVariable), studyTable);
   }
 
   @Override
@@ -487,69 +468,21 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
     }
   }
 
-  private Iterable<Variable> getVariables(OpalTable opalTable)
+  private Iterable<Variable> getVariables(BaseStudyTable studyTable)
     throws NoSuchDatasetException, NoSuchStudyException, NoSuchValueTableException {
-    return getTable(opalTable).getVariables();
+    return getStudyTableSource(studyTable).getValueTable().getVariables();
   }
 
-  private RestValueTable getTable(@NotNull OpalTable opalTable)
-    throws NoSuchStudyException, NoSuchValueTableException {
-    return execute(opalTable, ds -> (RestValueTable) ds.getValueTable(opalTable.getTable()));
-  }
-
-  private ValueTable getTable(@NotNull HarmonizationDataset dataset, String studyId, String project, String table)
+  private ValueTable getTable(@NotNull HarmonizationDataset dataset, String studyId, String sourceURN)
     throws NoSuchStudyException, NoSuchValueTableException {
 
-    for(BaseStudyTable opalTable : dataset.getBaseStudyTables()) {
-      String opalTableId = studyId;
-      if(opalTable.isFor(opalTableId, project, table)) {
-        return getTable(opalTable);
+    for(BaseStudyTable baseTable : dataset.getBaseStudyTables()) {
+      if(baseTable.isFor(studyId, sourceURN)) {
+        return getStudyTableSource(baseTable).getValueTable();
       }
     }
 
     throw NoSuchStudyException.withId(studyId);
-  }
-
-  private RestValueTable.RestVariableValueSource getVariableValueSource(@NotNull HarmonizationDataset dataset,
-    String variableName, String studyId, String project, String table)
-    throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
-    for(BaseStudyTable opalTable : dataset.getBaseStudyTables()) {
-      String opalTableId = studyId;
-      if(opalTable.isFor(opalTableId, project, table)) {
-        return getVariableValueSource(variableName, opalTable);
-      }
-    }
-
-    throw NoSuchStudyException.withId(studyId);
-  }
-
-  private RestValueTable.RestVariableValueSource getVariableValueSource(String variableName, OpalTable opalTable)
-    throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
-    return (RestValueTable.RestVariableValueSource) getTable(opalTable).getVariableValueSource(variableName);
-  }
-
-  /**
-   * Build or reuse the {@link org.obiba.opal.rest.client.magma.RestDatasource} and execute the callback with it.
-   *
-   * @param project
-   * @param callback
-   * @param <T>
-   * @return
-   */
-  private <T> T execute(String project, DatasourceCallback<T> callback) {
-    return execute(getDatasource(project), callback);
-  }
-
-  /**
-   * Build or reuse the {@link org.obiba.opal.rest.client.magma.RestDatasource} and execute the callback with it.
-   *
-   * @param opalTable
-   * @param callback
-   * @param <T>
-   * @return
-   */
-  private <T> T execute(OpalTable opalTable, DatasourceCallback<T> callback) {
-    return execute(getDatasource(opalTable), callback);
   }
 
   @Override
@@ -609,7 +542,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
       dataset.getBaseStudyTables().forEach(st -> harmonizationVariables.forEach((k, v) -> v.forEach(var -> {
         try {
           String studyId = st.getStudyId();
-          service.getVariableSummary(dataset, var.getName(), studyId, st.getProject(), st.getTable());
+          service.getVariableSummary(dataset, var.getName(), studyId, st.getSourceURN());
         } catch(Exception e) {
           //ignoring
         }

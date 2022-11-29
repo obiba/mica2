@@ -21,7 +21,6 @@ import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
 import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.web.model.Mica;
-import org.obiba.opal.web.model.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -49,9 +48,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
 
   private String studyId;
 
-  private String project;
-
-  private String table;
+  private String sourceURN;
 
   private String tableType;
 
@@ -62,8 +59,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @Timed
   public Mica.DatasetVariableDto getVariable() {
     checkDatasetAccess();
-    return getDatasetVariableDto(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId, project, table,
-      tableType);
+    return getDatasetVariableDto(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId, sourceURN, tableType);
   }
 
   @GET
@@ -73,18 +69,8 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
     checkDatasetAccess();
     checkVariableSummaryAccess();
     return datasetService
-      .getVariableSummary(getDataset(HarmonizationDataset.class, datasetId), variableName, studyId, project, table)
+      .getVariableSummary(getDataset(HarmonizationDataset.class, datasetId), variableName, studyId, sourceURN)
       .getWrappedDto();
-  }
-
-  @GET
-  @Path("/facet")
-  @Timed
-  public Search.QueryResultDto getVariableFacet() {
-    checkDatasetAccess();
-    checkVariableSummaryAccess();
-    return datasetService
-      .getVariableFacet(getDataset(HarmonizationDataset.class, datasetId), variableName, studyId, project, table);
   }
 
   @GET
@@ -94,20 +80,19 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
     checkDatasetAccess();
     checkVariableSummaryAccess();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
-    for (BaseStudyTable opalTable : dataset.getBaseStudyTables()) {
-      String opalTableId = studyId;
-      if (opalTable.isFor(opalTableId, project, table)) {
+    for (BaseStudyTable baseTable : dataset.getBaseStudyTables()) {
+      if (baseTable.isFor(studyId, sourceURN)) {
         try {
-          return dtos.asDto(opalTable,
-            datasetService.getVariableSummary(dataset, variableName, studyId, project, table).getWrappedDto(), withStudySummary).build();
+          return dtos.asDto(baseTable,
+            datasetService.getVariableSummary(dataset, variableName, studyId, sourceURN).getWrappedDto(), withStudySummary).build();
         } catch (Exception e) {
           log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
-          return dtos.asDto(opalTable, null, withStudySummary).build();
+          return dtos.asDto(baseTable, null, withStudySummary).build();
         }
       }
     }
 
-    throw new NoSuchValueTableException(project, table);
+    throw new NoSuchValueTableException(sourceURN);
   }
 
   @GET
@@ -123,20 +108,19 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   private Mica.DatasetVariableContingencyDto getContingencyDto(DatasetVariable var, DatasetVariable crossVar) {
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
 
-    for (BaseStudyTable opalTable : dataset.getBaseStudyTables()) {
-      String opalTableId = studyId;
-      if (opalTable.isFor(opalTableId, project, table)) {
+    for (BaseStudyTable baseTable : dataset.getBaseStudyTables()) {
+      if (baseTable.isFor(studyId, sourceURN)) {
         try {
-          return dtos.asContingencyDto(opalTable, var, crossVar,
-            datasetService.getContingencyTable(opalTable, var, crossVar)).build();
+          return dtos.asContingencyDto(baseTable, var, crossVar,
+            datasetService.getContingencyTable(baseTable, var, crossVar)).build();
         } catch (Exception e) {
           log.warn("Unable to retrieve contingency table: " + e.getMessage(), e);
-          return dtos.asContingencyDto(opalTable, var, crossVar, null).build();
+          return dtos.asContingencyDto(baseTable, var, crossVar, null).build();
         }
       }
     }
 
-    throw new NoSuchValueTableException(project, table);
+    throw new NoSuchValueTableException(sourceURN);
   }
 
   @GET
@@ -183,12 +167,8 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
     this.studyId = studyId;
   }
 
-  public void setProject(String project) {
-    this.project = project;
-  }
-
-  public void setTable(String table) {
-    this.table = table;
+  public void setSourceURN(String sourceURN) {
+    this.sourceURN = sourceURN;
   }
 
   public void setTableType(String tableType) {
@@ -199,10 +179,8 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
     if (Strings.isNullOrEmpty(crossVariable))
       throw new BadRequestException("Cross variable name is required for the contingency table");
 
-    DatasetVariable var = getDatasetVariable(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId, project,
-      table, tableType);
-    DatasetVariable crossVar = getDatasetVariable(datasetId, crossVariable, DatasetVariable.Type.Harmonized, studyId,
-      project, table, tableType);
+    DatasetVariable var = getDatasetVariable(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId, sourceURN, tableType);
+    DatasetVariable crossVar = getDatasetVariable(datasetId, crossVariable, DatasetVariable.Type.Harmonized, studyId, sourceURN, tableType);
 
     return Pair.create(var, crossVar);
   }

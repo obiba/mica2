@@ -58,24 +58,8 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
       try {
         String studyId = table.getStudyId();
         builder.add(datasetService
-          .getVariableSummary(dataset, variableName, studyId, table.getProject(), table.getTable())
+          .getVariableSummary(dataset, variableName, studyId, table.getSourceURN())
           .getWrappedDto());
-      } catch(NoSuchVariableException | NoSuchValueTableException e) {
-        // ignore (case the study has not implemented this dataschema variable)
-      }
-    });
-    return builder.build();
-  }
-
-  @GET
-  @Path("/facet")
-  public List<Search.QueryResultDto> getVariableFacets() {
-    ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
-    HarmonizationDataset dataset = getDataset();
-    dataset.getBaseStudyTables().forEach(table -> {
-      try {
-        String studyId = table.getStudyId();
-        builder.add(datasetService.getVariableFacet(dataset, variableName, studyId, table.getProject(), table.getTable()));
       } catch(NoSuchVariableException | NoSuchValueTableException e) {
         // ignore (case the study has not implemented this dataschema variable)
       }

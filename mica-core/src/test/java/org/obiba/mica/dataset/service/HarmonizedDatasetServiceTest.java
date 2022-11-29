@@ -24,6 +24,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.obiba.mica.core.domain.OpalTableSource;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.magma.Variable;
 import org.obiba.magma.type.BooleanType;
@@ -98,8 +99,7 @@ public class HarmonizedDatasetServiceTest {
 
   private StudyTable buildStudyTable(String project, String table, String studyId) {
     StudyTable st = new StudyTable();
-    st.setProject(project);
-    st.setTable(table);
+    st.setSourceURN(OpalTableSource.newSource(project, table).getURN());
     st.setStudyId(studyId);
     st.setPopulationId("pop");
     st.setDataCollectionEventId("ev");

@@ -13,15 +13,29 @@ package org.obiba.mica.core.domain;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 
-import java.io.Serializable;
-
-public class BaseStudyTable extends OpalTable {
+public class BaseStudyTable {
 
   protected String studyId;
 
   protected String populationId;
 
   protected int populationWeight;
+
+  private LocalizedString name;
+
+  private LocalizedString description;
+
+  private LocalizedString additionalInformation;
+
+  private int weight;
+
+  private String sourceURN;
+
+  // legacy
+  private String project;
+
+  // legacy
+  private String table;
 
   public String getStudyId() {
     return studyId;
@@ -72,13 +86,66 @@ public class BaseStudyTable extends OpalTable {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this).add("project", getProject()).add("table", getTable())
+    return MoreObjects.toStringHelper(this).add("source", getSourceURN())
       .add("studyId", getStudyId()).add("populationId", getPopulationId())
       .toString();
   }
 
-  @Override
-  protected String getEntityId() {
-    return studyId;
+  public void setName(LocalizedString name) {
+    this.name = name;
+  }
+
+  public LocalizedString getName() {
+    return name;
+  }
+
+  public void setDescription(LocalizedString description) {
+    this.description = description;
+  }
+
+  public LocalizedString getDescription() {
+    return description;
+  }
+
+  public LocalizedString getAdditionalInformation() {
+    return additionalInformation;
+  }
+
+  public void setAdditionalInformation(LocalizedString additionalInformation) {
+    this.additionalInformation = additionalInformation;
+  }
+
+  public int getWeight() {
+    return weight;
+  }
+
+  public void setWeight(int weight) {
+    this.weight = weight;
+  }
+
+  public boolean isFor(String studyId, String sourceURN) {
+    return this.studyId.equals(studyId) && getSourceURN().equals(sourceURN);
+  }
+
+  public void setSourceURN(String sourceURN) {
+    this.sourceURN = sourceURN;
+  }
+
+  public String getSourceURN() {
+    // legacy
+    if (Strings.isNullOrEmpty(sourceURN)) {
+      this.sourceURN = OpalTableSource.newSource(project, table).getURN();
+    }
+    return sourceURN;
+  }
+
+  @Deprecated
+  public void setProject(String project) {
+    this.project = project;
+  }
+
+  @Deprecated
+  public void setTable(String table) {
+    this.table = table;
   }
 }

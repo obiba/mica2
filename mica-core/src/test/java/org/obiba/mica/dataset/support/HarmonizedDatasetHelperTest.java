@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.HarmonizationStudyTable;
+import org.obiba.mica.core.domain.OpalTableSource;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import static org.obiba.mica.assertj.Assertions.assertThat;
@@ -107,8 +108,9 @@ public class HarmonizedDatasetHelperTest {
 
   private void initTable(String studyId, BaseStudyTable table) {
     table.setStudyId(studyId);
-    table.setProject(RandomStringUtils.random(10, true, false));
-    table.setTable(RandomStringUtils.random(10, true, false));
+    String project = RandomStringUtils.random(10, true, false);
+    String tbl = RandomStringUtils.random(10, true, false);
+    table.setSourceURN(OpalTableSource.newSource(project, tbl).getURN());
     table.setPopulationId(RandomStringUtils.random(10, true, true));
   }
 }

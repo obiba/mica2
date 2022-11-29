@@ -49,12 +49,6 @@ public class DraftCollectedDatasetVariableResource implements DatasetVariableRes
     return datasetService.getVariableSummary(getDataset(), variableName).getWrappedDto();
   }
 
-  @GET
-  @Path("/facet")
-  public Search.QueryResultDto getVariableFacet() {
-    return datasetService.getVariableFacet(getDataset(), variableName);
-  }
-
   private StudyDataset getDataset() {
     return datasetService.findById(datasetId);
   }

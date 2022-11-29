@@ -52,8 +52,7 @@ public class DraftDatasetVariableResource {
         subjectAclService.isPermitted("/draft/harmonized-dataset", "VIEW", resolver.getDatasetId());
         resource = applicationContext.getBean(DraftHarmonizedDatasetVariableResource.class);
         ((DraftHarmonizedDatasetVariableResource) resource).setStudyId(resolver.getStudyId());
-        ((DraftHarmonizedDatasetVariableResource) resource).setProject(resolver.getProject());
-        ((DraftHarmonizedDatasetVariableResource) resource).setTable(resolver.getTable());
+        ((DraftHarmonizedDatasetVariableResource) resource).setSourceURN(resolver.getSourceURN());
         break;
     }
 

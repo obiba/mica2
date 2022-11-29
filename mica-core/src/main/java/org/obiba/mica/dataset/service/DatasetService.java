@@ -10,42 +10,34 @@
 
 package org.obiba.mica.dataset.service;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
-import java.util.List;
-
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-
+import com.google.common.base.Strings;
+import com.google.common.eventbus.EventBus;
+import com.google.protobuf.GeneratedMessage;
 import net.sf.ehcache.pool.sizeof.annotations.IgnoreSizeOf;
-
-import org.obiba.magma.MagmaRuntimeException;
-import org.obiba.magma.NoSuchValueTableException;
-import org.obiba.magma.NoSuchVariableException;
-import org.obiba.magma.Variable;
+import org.obiba.magma.*;
+import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.EntityState;
-import org.obiba.mica.core.domain.HarmonizationStudyTable;
 import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.core.domain.OpalTable;
-import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
+import org.obiba.mica.core.service.StudyTableSourceServiceRegistry;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.service.NetworkService;
+import org.obiba.mica.spi.dataset.StudyTableSource;
 import org.obiba.mica.study.service.StudyService;
-import org.obiba.opal.rest.client.magma.RestDatasource;
-import org.obiba.opal.rest.client.magma.RestValueTable;
-import org.obiba.opal.web.model.Magma;
 import org.obiba.opal.web.model.Math;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
-import com.google.common.eventbus.EventBus;
-import com.google.protobuf.GeneratedMessage;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * {@link org.obiba.mica.dataset.domain.Dataset} management service.
@@ -54,6 +46,9 @@ import com.google.protobuf.GeneratedMessage;
 public abstract class DatasetService<T extends Dataset, T1 extends EntityState> extends AbstractGitPersistableService<T1, T> {
 
   private static final Logger log = LoggerFactory.getLogger(DatasetService.class);
+
+  @Inject
+  private StudyTableSourceServiceRegistry studyTableSourceServiceRegistry;
 
   /**
    * Get all {@link org.obiba.mica.dataset.domain.DatasetVariable}s from a {@link org.obiba.mica.dataset.domain.Dataset}.
@@ -73,18 +68,7 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
   public abstract DatasetVariable getDatasetVariable(T dataset, String name)
       throws NoSuchValueTableException, NoSuchVariableException;
 
-  /**
-   * Get the {@link org.obiba.opal.web.model.Magma.TableDto} of the {@link org.obiba.mica.dataset.domain.Dataset} identified by its id.
-   *
-   * @param dataset
-   * @return
-   */
-  @NotNull
-  protected abstract RestValueTable getTable(@NotNull T dataset) throws NoSuchValueTableException;
-
-  protected RestValueTable getTable(@NotNull String project, @NotNull String table) throws NoSuchValueTableException {
-    return execute(getDatasource(project), datasource -> (RestValueTable) datasource.getValueTable(table));
-  }
+  protected abstract ValueTable getValueTable(@NotNull T dataset) throws NoSuchValueTableException;
 
   protected abstract StudyService getStudyService();
 
@@ -150,71 +134,11 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
    */
   protected Iterable<Variable> getVariables(@NotNull T dataset)
       throws NoSuchDatasetException, NoSuchValueTableException {
-    return getTable(dataset).getVariables();
+    return getValueTable(dataset).getVariables();
   }
 
-  /**
-   * Get the {@link org.obiba.magma.VariableValueSource} (proxy to the {@link org.obiba.magma.Variable} of
-   * the {@link org.obiba.mica.dataset.domain.Dataset} identified by its id.
-   *
-   * @param dataset
-   * @param variableName
-   * @return
-   * @throws NoSuchDatasetException
-   */
-  protected RestValueTable.RestVariableValueSource getVariableValueSource(@NotNull T dataset, String variableName)
-      throws NoSuchValueTableException, NoSuchVariableException {
-    return (RestValueTable.RestVariableValueSource) getTable(dataset).getVariableValueSource(variableName);
-  }
-
-  protected RestValueTable.RestVariableValueSource getVariableValueSource(String project, String table, String variableName)
-    throws NoSuchValueTableException, NoSuchVariableException {
-    return (RestValueTable.RestVariableValueSource) getTable(project, table).getVariableValueSource(variableName);
-  }
-
-  public Magma.TableDto getTableDto(@NotNull T dataset) {
-    return getTable(dataset).getTableDto();
-  }
-
-  public Magma.VariableDto getVariable(@NotNull T dataset, String variableName) {
-    return getVariableValueSource(dataset, variableName).getVariableDto();
-  }
-
-  /**
-   * Callback that can be used to make any operations on a {@link org.obiba.opal.rest.client.magma.RestDatasource}
-   *
-   * @param <R>
-   */
-  public interface DatasourceCallback<R> {
-    R doWithDatasource(RestDatasource datasource);
-  }
-
-  /**
-   * Execute the callback on the given datasource.
-   *
-   * @param datasource
-   * @param callback
-   * @param <R>
-   * @return
-   */
-  protected <R> R execute(RestDatasource datasource, DatasourceCallback<R> callback) {
-    return callback.doWithDatasource(datasource);
-  }
-
-  protected RestDatasource getDatasource(@NotNull OpalTable opalTable) {
-    String opalUrl = null;
-
-    if (opalTable instanceof StudyTable) {
-      opalUrl = getStudyService().findDraft(((StudyTable) opalTable).getStudyId()).getOpal();
-    } else if (opalTable instanceof HarmonizationStudyTable) {
-      opalUrl = getStudyService().findDraft(((HarmonizationStudyTable) opalTable).getStudyId()).getOpal();
-    }
-
-    return getOpalService().getDatasource(opalUrl, opalTable.getProject());
-  }
-
-  protected RestDatasource getDatasource(@NotNull String project) {
-    return getOpalService().getDatasource(project);
+  protected StudyTableSource getStudyTableSource(@NotNull BaseStudyTable studyTable) {
+    return studyTableSourceServiceRegistry.makeSource(getStudyService().findDraft(studyTable.getStudyId()), studyTable.getSourceURN());
   }
 
   protected Iterable<DatasetVariable> wrappedGetDatasetVariables(T dataset) {
