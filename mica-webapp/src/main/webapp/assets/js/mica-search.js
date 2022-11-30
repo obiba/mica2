@@ -1254,9 +1254,12 @@ class TableFixedHeaderUtility {
         }
       },
       onZeroColumnsToggle() {
+        let updates = [];
         this.queriesWithZeroHitsToUpdate.forEach(query => {
-          EventBus.$emit(EVENTS.QUERY_TYPE_UPDATES_SELECTION, {updates: [{target: fromBucketToTarget(this.selectedBucket), query, display: DISPLAYS.COVERAGE}]});
+          updates.push({target: TARGETS.VARIABLE, query, display: DISPLAYS.COVERAGE});
         });
+
+        EventBus.$emit(EVENTS.QUERY_TYPE_UPDATES_SELECTION, {updates});
       },
       onFullCoverage() {
         EventBus.$emit(EVENTS.QUERY_TYPE_UPDATES_SELECTION, {updates: [{target: fromBucketToTarget(this.selectedBucket), query: this.queryForFullCoverage, display: DISPLAYS.COVERAGE}]});
