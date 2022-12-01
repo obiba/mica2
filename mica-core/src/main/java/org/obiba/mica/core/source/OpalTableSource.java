@@ -44,6 +44,7 @@ public class OpalTableSource implements StudyTableSource {
     this.project = project;
   }
 
+  @Override
   public String getTable() {
     return table;
   }
@@ -98,7 +99,7 @@ public class OpalTableSource implements StudyTableSource {
     return source.replace("urn:opal:", "");
   }
 
-  public void init(OpalService opalService, String opalUrl) {
+  public void initialise(OpalService opalService, String opalUrl) {
     this.opalService = opalService;
     this.opalUrl = opalUrl;
   }

@@ -21,6 +21,13 @@ import org.obiba.opal.web.model.Search;
 public interface StudyTableSource {
 
   /**
+   * Get the associated table name.
+   *
+   * @return
+   */
+  String getTable();
+
+  /**
    * Get the {@link ValueTable} implementing the data dictionary and the data values.
    *
    * @return
