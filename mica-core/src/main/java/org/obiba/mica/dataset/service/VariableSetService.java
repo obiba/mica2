@@ -314,15 +314,15 @@ public class VariableSetService extends DocumentSetService {
   private List<String> toOpalTableFullName(Dataset dataset) {
     if (dataset instanceof StudyDataset) {
       StudyTable studyTable = ((StudyDataset) dataset).getSafeStudyTable();
-      return Lists.newArrayList(OpalTableSource.toTableName(studyTable.getSourceURN()));
+      return Lists.newArrayList(OpalTableSource.toTableName(studyTable.getSource()));
     } else {
       HarmonizationDataset harmoDataset = (HarmonizationDataset) dataset;
       // one for each study and harmo tables
       List<String> tableNames = Lists.newArrayList();
       tableNames.addAll(harmoDataset.getStudyTables().stream()
-        .map(st -> OpalTableSource.toTableName(st.getSourceURN())).collect(Collectors.toList()));
+        .map(st -> OpalTableSource.toTableName(st.getSource())).collect(Collectors.toList()));
       tableNames.addAll(harmoDataset.getHarmonizationTables().stream()
-        .map(ht -> OpalTableSource.toTableName(ht.getSourceURN())).collect(Collectors.toList()));
+        .map(ht -> OpalTableSource.toTableName(ht.getSource())).collect(Collectors.toList()));
       return tableNames;
     }
   }

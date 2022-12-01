@@ -109,7 +109,7 @@ public class DatasetDtosTest {
     HarmonizationDataset harmonizationDataset = new HarmonizationDataset();
     harmonizationDataset.setId("123");
     HarmonizationStudyTable harmonizationLink = new HarmonizationStudyTable();
-    harmonizationLink.setSourceURN(OpalTableSource.newSource("project123", "table123").getURN());
+    harmonizationLink.setSource(OpalTableSource.newSource("project123", "table123").getURN());
     harmonizationLink.setStudyId("study123");
     harmonizationLink.setPopulationId("population123");
     harmonizationDataset.setHarmonizationTable(harmonizationLink);

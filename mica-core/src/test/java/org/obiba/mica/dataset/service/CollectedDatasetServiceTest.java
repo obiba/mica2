@@ -99,7 +99,7 @@ public class CollectedDatasetServiceTest {
   private StudyDataset buildStudyDataset() {
     StudyDataset ds = new StudyDataset();
     StudyTable st = new StudyTable();
-    st.setSourceURN(OpalTableSource.newSource("proj", "tab").getURN());
+    st.setSource(OpalTableSource.newSource("proj", "tab").getURN());
     st.setPopulationId("1");
     st.setDataCollectionEventId("1");
     ds.setStudyTable(st);

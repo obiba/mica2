@@ -138,7 +138,7 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
   }
 
   protected StudyTableSource getStudyTableSource(@NotNull BaseStudyTable studyTable) {
-    return studyTableSourceServiceRegistry.makeSource(getStudyService().findDraft(studyTable.getStudyId()), studyTable.getSourceURN());
+    return studyTableSourceServiceRegistry.makeStudyTableSource(getStudyService().findDraft(studyTable.getStudyId()), studyTable.getSource());
   }
 
   protected Iterable<DatasetVariable> wrappedGetDatasetVariables(T dataset) {

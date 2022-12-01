@@ -63,7 +63,7 @@ public class StudyTable extends BaseStudyTable implements Serializable {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this).add("source", getSourceURN())
+    return MoreObjects.toStringHelper(this).add("source", getSource())
       .add("dceId", getDataCollectionEventUId()).toString();
   }
 

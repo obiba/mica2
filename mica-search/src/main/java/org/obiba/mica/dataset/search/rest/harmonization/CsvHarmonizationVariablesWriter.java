@@ -86,7 +86,7 @@ public class CsvHarmonizationVariablesWriter {
                   String id = table.getStudyId();
                   Mica.DatasetVariableResolverDto resolver = summary.getResolver();
                   if ((resolver.getStudyId().equals(id)
-                      && resolver.getSourceURN().equals(table.getSourceURN()))) {
+                      && resolver.getSource().equals(table.getSource()))) {
 
                     String statusDetail = getAttributeByName(summary, "status_detail", locale);
 

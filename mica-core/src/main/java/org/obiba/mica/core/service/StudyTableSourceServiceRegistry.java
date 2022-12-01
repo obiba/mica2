@@ -10,7 +10,6 @@
 
 package org.obiba.mica.core.service;
 
-import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.OpalTableSource;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.micaConfig.service.PluginsService;
@@ -32,19 +31,19 @@ public class StudyTableSourceServiceRegistry {
   @Inject
   private OpalService opalService;
 
-  public StudyTableSource makeSource(BaseStudy study, String sourceURN) {
-    if (OpalTableSource.isFor(sourceURN)) {
-      OpalTableSource source = OpalTableSource.fromURN(sourceURN);
-      source.init(opalService, study.getOpal());
-      return source;
+  public StudyTableSource makeStudyTableSource(BaseStudy study, String source) {
+    if (OpalTableSource.isFor(source)) {
+      OpalTableSource tableSource = OpalTableSource.fromURN(source);
+      tableSource.init(opalService, study.getOpal());
+      return tableSource;
     }
     Optional<StudyTableSourceService> serviceOptional = pluginsService.getStudyTableSourceServices().stream()
-      .filter(service -> service.isFor(sourceURN)).findFirst();
+      .filter(service -> service.isFor(source)).findFirst();
     if (serviceOptional.isPresent()) {
       // TODO add a context to the study table source
-      return serviceOptional.get().makeSource(sourceURN);
+      return serviceOptional.get().makeSource(source);
     }
-    throw new NoSuchElementException("Missing study-table-source plugin to handle source: " + sourceURN);
+    throw new NoSuchElementException("Missing study-table-source plugin to handle source: " + source);
   }
 
 }

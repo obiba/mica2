@@ -301,7 +301,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
   private void checkIsPublishable(HarmonizationDataset dataset) {
     if (dataset == null
       || dataset.getHarmonizationTable() == null
-      || dataset.getHarmonizationTable().getSourceURN() == null
+      || dataset.getHarmonizationTable().getSource() == null
       || dataset.getHarmonizationTable().getStudyId() == null) {
       throw new IllegalArgumentException("dataset.harmonization.missing-attributes");
     }
@@ -372,18 +372,18 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
   }
 
   public DatasetVariable getDatasetVariable(HarmonizationDataset dataset, String variableName, String studyId,
-    String sourceURN) throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
+    String source) throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
     return new DatasetVariable(dataset,
-      getTable(dataset, studyId, sourceURN).getVariableValueSource(variableName).getVariable());
+      getTable(dataset, studyId, source).getVariableValueSource(variableName).getVariable());
   }
 
   @Cacheable(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver",
-    key = "#variableName + ':' + #studyId + ':' + #sourceURN")
-  public SummaryStatisticsWrapper getVariableSummary(@NotNull HarmonizationDataset dataset, String variableName, String studyId, String sourceURN)
+    key = "#variableName + ':' + #studyId + ':' + #source")
+  public SummaryStatisticsWrapper getVariableSummary(@NotNull HarmonizationDataset dataset, String variableName, String studyId, String source)
     throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
-    log.info("Caching variable summary {} {} {} {} {}", dataset.getId(), variableName, studyId, sourceURN);
+    log.info("Caching variable summary {} {} {} {} {}", dataset.getId(), variableName, studyId, source);
     for(BaseStudyTable baseTable : dataset.getBaseStudyTables()) {
-      if(baseTable.isFor(studyId, sourceURN)) {
+      if(baseTable.isFor(studyId, source)) {
         return new SummaryStatisticsWrapper(getStudyTableSource(baseTable).getVariableSummary(variableName));
       }
     }
@@ -473,11 +473,11 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
     return getStudyTableSource(studyTable).getValueTable().getVariables();
   }
 
-  private ValueTable getTable(@NotNull HarmonizationDataset dataset, String studyId, String sourceURN)
+  private ValueTable getTable(@NotNull HarmonizationDataset dataset, String studyId, String source)
     throws NoSuchStudyException, NoSuchValueTableException {
 
     for(BaseStudyTable baseTable : dataset.getBaseStudyTables()) {
-      if(baseTable.isFor(studyId, sourceURN)) {
+      if(baseTable.isFor(studyId, source)) {
         return getStudyTableSource(baseTable).getValueTable();
       }
     }
@@ -542,7 +542,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
       dataset.getBaseStudyTables().forEach(st -> harmonizationVariables.forEach((k, v) -> v.forEach(var -> {
         try {
           String studyId = st.getStudyId();
-          service.getVariableSummary(dataset, var.getName(), studyId, st.getSourceURN());
+          service.getVariableSummary(dataset, var.getName(), studyId, st.getSource());
         } catch(Exception e) {
           //ignoring
         }

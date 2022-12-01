@@ -29,7 +29,7 @@ public class BaseStudyTable {
 
   private int weight;
 
-  private String sourceURN;
+  private String source;
 
   // legacy
   private String project;
@@ -86,7 +86,7 @@ public class BaseStudyTable {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this).add("source", getSourceURN())
+    return MoreObjects.toStringHelper(this).add("source", getSource())
       .add("studyId", getStudyId()).add("populationId", getPopulationId())
       .toString();
   }
@@ -123,20 +123,20 @@ public class BaseStudyTable {
     this.weight = weight;
   }
 
-  public boolean isFor(String studyId, String sourceURN) {
-    return this.studyId.equals(studyId) && getSourceURN().equals(sourceURN);
+  public boolean isFor(String studyId, String source) {
+    return this.studyId.equals(studyId) && getSource().equals(source);
   }
 
-  public void setSourceURN(String sourceURN) {
-    this.sourceURN = sourceURN;
+  public void setSource(String source) {
+    this.source = source;
   }
 
-  public String getSourceURN() {
+  public String getSource() {
     // legacy
-    if (Strings.isNullOrEmpty(sourceURN)) {
-      this.sourceURN = OpalTableSource.newSource(project, table).getURN();
+    if (Strings.isNullOrEmpty(source)) {
+      this.source = OpalTableSource.newSource(project, table).getURN();
     }
-    return sourceURN;
+    return source;
   }
 
   @Deprecated

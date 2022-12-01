@@ -182,10 +182,10 @@ class DatasetDtos {
     if(resolver.hasStudyId()) {
       builder.setStudyId(resolver.getStudyId());
     }
-    if(resolver.hasSourceURN()) {
-      builder.setSourceURN(resolver.getSourceURN());
-      if (OpalTableSource.isFor(resolver.getSourceURN())) {
-        OpalTableSource source = OpalTableSource.fromURN(resolver.getSourceURN());
+    if(resolver.hasSource()) {
+      builder.setSource(resolver.getSource());
+      if (OpalTableSource.isFor(resolver.getSource())) {
+        OpalTableSource source = OpalTableSource.fromURN(resolver.getSource());
         builder.setProject(source.getProject());
         builder.setTable(source.getTable());
       }
@@ -402,13 +402,13 @@ class DatasetDtos {
 
   public Mica.DatasetDto.StudyTableDto.Builder asDto(StudyTable studyTable, boolean includeSummary) {
     Mica.DatasetDto.StudyTableDto.Builder sbuilder = Mica.DatasetDto.StudyTableDto.newBuilder()
-      .setSourceURN(studyTable.getSourceURN())
+      .setSource(studyTable.getSource())
       .setWeight(studyTable.getWeight())
       .setStudyId(studyTable.getStudyId())
       .setDceId(studyTable.getDataCollectionEventUId());
 
-    if (OpalTableSource.isFor(studyTable.getSourceURN())) {
-      OpalTableSource source = OpalTableSource.fromURN(studyTable.getSourceURN());
+    if (OpalTableSource.isFor(studyTable.getSource())) {
+      OpalTableSource source = OpalTableSource.fromURN(studyTable.getSource());
       sbuilder.setProject(source.getProject());
       sbuilder.setTable(source.getTable());
     }
@@ -439,12 +439,12 @@ class DatasetDtos {
   public Mica.DatasetDto.HarmonizationTableDto.Builder asDto(HarmonizationStudyTable harmonizationTable,
     boolean includeSummary) {
     Mica.DatasetDto.HarmonizationTableDto.Builder hBuilder = Mica.DatasetDto.HarmonizationTableDto.newBuilder()
-      .setSourceURN(harmonizationTable.getSourceURN())
+      .setSource(harmonizationTable.getSource())
       .setWeight(harmonizationTable.getWeight())
       .setStudyId(harmonizationTable.getStudyId());
 
-    if (OpalTableSource.isFor(harmonizationTable.getSourceURN())) {
-      OpalTableSource source = OpalTableSource.fromURN(harmonizationTable.getSourceURN());
+    if (OpalTableSource.isFor(harmonizationTable.getSource())) {
+      OpalTableSource source = OpalTableSource.fromURN(harmonizationTable.getSource());
       hBuilder.setProject(source.getProject());
       hBuilder.setTable(source.getTable());
     }
@@ -785,9 +785,9 @@ class DatasetDtos {
       HarmonizationStudyTable harmonizationLink = new HarmonizationStudyTable();
       // legacy
       if (dto.getHarmonizationTable().hasProject() && dto.getHarmonizationTable().hasTable()) {
-        harmonizationLink.setSourceURN(makeSourceURN(dto.getHarmonizationTable().getProject(), dto.getHarmonizationTable().getTable()));
+        harmonizationLink.setSource(makesource(dto.getHarmonizationTable().getProject(), dto.getHarmonizationTable().getTable()));
       } else {
-        harmonizationLink.setSourceURN(dto.getHarmonizationTable().getSourceURN());
+        harmonizationLink.setSource(dto.getHarmonizationTable().getSource());
       }
       harmonizationLink.setStudyId(dto.getHarmonizationTable().getStudyId());
       harmonizationDataset.setHarmonizationTable(harmonizationLink);
@@ -817,9 +817,9 @@ class DatasetDtos {
     table.setAdditionalInformation(localizedStringDtos.fromDto(dto.getAdditionalInformationList()));
 
     if (dto.hasProject() && dto.hasTable()) {
-      table.setSourceURN(makeSourceURN(dto.getProject(), dto.getTable()));
+      table.setSource(makesource(dto.getProject(), dto.getTable()));
     } else {
-      table.setSourceURN(dto.getSourceURN());
+      table.setSource(dto.getSource());
     }
 
     return table;
@@ -835,16 +835,16 @@ class DatasetDtos {
 
     // legacy
     if (dto.hasProject() && dto.hasTable()) {
-      table.setSourceURN(makeSourceURN(dto.getProject(), dto.getTable()));
+      table.setSource(makesource(dto.getProject(), dto.getTable()));
     } else {
-      table.setSourceURN(dto.getSourceURN());
+      table.setSource(dto.getSource());
     }
 
     return table;
   }
 
   // legacy
-  private String makeSourceURN(String project, String table) {
+  private String makesource(String project, String table) {
     return OpalTableSource.newSource(project, table).getURN();
   }
 
@@ -853,10 +853,10 @@ class DatasetDtos {
     Mica.DatasetDto.HarmonizationTableDto.Builder harmonizationLinkBuilder = Mica.DatasetDto.HarmonizationTableDto
       .newBuilder();
 
-    if(!Strings.isNullOrEmpty(harmonizationLink.getSourceURN())) {
-      harmonizationLinkBuilder.setSourceURN(harmonizationLink.getSourceURN());
-      if (OpalTableSource.isFor(harmonizationLink.getSourceURN())) {
-        OpalTableSource source = OpalTableSource.fromURN(harmonizationLink.getSourceURN());
+    if(!Strings.isNullOrEmpty(harmonizationLink.getSource())) {
+      harmonizationLinkBuilder.setSource(harmonizationLink.getSource());
+      if (OpalTableSource.isFor(harmonizationLink.getSource())) {
+        OpalTableSource source = OpalTableSource.fromURN(harmonizationLink.getSource());
         harmonizationLinkBuilder.setProject(source.getProject());
         harmonizationLinkBuilder.setTable(source.getTable());
       }

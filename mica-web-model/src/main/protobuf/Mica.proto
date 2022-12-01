@@ -554,7 +554,7 @@ message DatasetDto {
     optional StudySummaryDto studySummary = 9;
     optional int32 weight = 10;
     repeated LocalizedStringDto additionalInformation = 11;
-    optional string sourceURN = 12;
+    optional string source = 12;
   }
 
   message HarmonizationTableDto {
@@ -567,7 +567,7 @@ message DatasetDto {
     optional StudySummaryDto studySummary = 7;
     optional int32 weight = 8;
     repeated LocalizedStringDto additionalInformation = 9;
-    optional string sourceURN = 10;
+    optional string source = 10;
   }
 }
 
@@ -667,7 +667,7 @@ message DatasetVariableResolverDto {
   repeated LocalizedStringDto populationName = 29;
   repeated LocalizedStringDto dceName = 30;
   optional string entityType = 31;
-  optional string sourceURN = 32;
+  optional string source = 32;
 }
 
 message DatasetVariableSummaryDto {

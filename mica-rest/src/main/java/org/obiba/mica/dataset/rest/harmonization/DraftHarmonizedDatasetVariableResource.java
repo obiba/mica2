@@ -19,7 +19,6 @@ import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
-import org.obiba.opal.web.model.Search;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -39,25 +38,25 @@ public class DraftHarmonizedDatasetVariableResource implements DatasetVariableRe
 
   private String studyId;
 
-  private String sourceURN;
+  private String source;
 
   @GET
   public Mica.DatasetVariableDto getVariable() {
-    return dtos.asDto(datasetService.getDatasetVariable(getDataset(), variableName, studyId, sourceURN));
+    return dtos.asDto(datasetService.getDatasetVariable(getDataset(), variableName, studyId, source));
   }
 
   @GET
   @Path("/summary")
   public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary() {
-    return datasetService.getVariableSummary(getDataset(), variableName, studyId, sourceURN).getWrappedDto();
+    return datasetService.getVariableSummary(getDataset(), variableName, studyId, source).getWrappedDto();
   }
 
   public void setStudyId(String studyId) {
     this.studyId = studyId;
   }
 
-  public void setSourceURN(String sourceURN) {
-    this.sourceURN = sourceURN;
+  public void setSource(String source) {
+    this.source = source;
   }
 
   private HarmonizationDataset getDataset() {

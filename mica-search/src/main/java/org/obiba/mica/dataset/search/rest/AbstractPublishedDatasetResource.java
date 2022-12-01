@@ -215,7 +215,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
           variableName,
           variableType,
           studyTable.getStudyId(),
-          studyTable.getSourceURN(),
+          studyTable.getSource(),
           studyTable instanceof StudyTable
               ? DatasetVariable.OPAL_STUDY_TABLE_PREFIX
               : DatasetVariable.OPAL_HARMONIZATION_TABLE_PREFIX);
@@ -232,18 +232,18 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
    * @param datasetId
    * @param variableName
    * @param studyId
-   * @param sourceURN
+   * @param source
    * @param tableType
    * @return
    * @throws NoSuchVariableException
    */
   protected DatasetVariable getDatasetVariable(@NotNull String datasetId, @NotNull String variableName,
-                                               DatasetVariable.Type variableType, @Nullable String studyId, @Nullable String sourceURN,
+                                               DatasetVariable.Type variableType, @Nullable String studyId, @Nullable String source,
                                                @Nullable String tableType)
       throws NoSuchVariableException {
 
     String variableId = DatasetVariable.IdResolver
-        .encode(datasetId, variableName, variableType, studyId, sourceURN, tableType);
+        .encode(datasetId, variableName, variableType, studyId, source, tableType);
 
     if (variableType.equals(DatasetVariable.Type.Harmonized)) {
       return getHarmonizedDatasetVariable(datasetId, variableId, variableName);
@@ -265,9 +265,9 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   }
 
   protected Mica.DatasetVariableDto getDatasetVariableDto(@NotNull String datasetId, @NotNull String variableName,
-                                                          DatasetVariable.Type variableType, @Nullable String studyId, @Nullable String sourceURN,
+                                                          DatasetVariable.Type variableType, @Nullable String studyId, @Nullable String source,
                                                           @Nullable String tableType) {
-    return dtos.asDto(getDatasetVariable(datasetId, variableName, variableType, studyId, sourceURN, tableType),
+    return dtos.asDto(getDatasetVariable(datasetId, variableName, variableType, studyId, source, tableType),
         getTaxonomies(), getLocale());
   }
 

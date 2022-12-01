@@ -89,7 +89,7 @@ public class PublishedDatasetResource {
     if (!(dataset instanceof StudyDataset)) throw NoSuchDatasetException.withId(id);
 
     StudyDataset asStudyDataset = (StudyDataset) dataset;
-    asStudyDataset.getStudyTable().setSourceURN(OpalTableSource.newSource(project, table).getURN());
+    asStudyDataset.getStudyTable().setSource(OpalTableSource.newSource(project, table).getURN());
 
     return asStudyDataset;
   }

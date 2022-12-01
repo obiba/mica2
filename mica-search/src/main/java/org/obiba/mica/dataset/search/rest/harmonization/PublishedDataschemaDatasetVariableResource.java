@@ -82,7 +82,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
       try {
         String studyId = table.getStudyId();
         builder.add(datasetService
-          .getVariableSummary(dataset, variableName, studyId, table.getSourceURN())
+          .getVariableSummary(dataset, variableName, studyId, table.getSource())
           .getWrappedDto());
       } catch (NoSuchVariableException | NoSuchValueTableException e) {
         // case the study has not implemented this dataschema variable
@@ -268,7 +268,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
       try {
         String studyId = table.getStudyId();
         return new AsyncResult<>(datasetService
-          .getVariableSummary(dataset, variableName, studyId, table.getSourceURN())
+          .getVariableSummary(dataset, variableName, studyId, table.getSource())
           .getWrappedDto());
       } catch (Exception e) {
         log.warn("Unable to retrieve statistics: " + e.getMessage(), e);

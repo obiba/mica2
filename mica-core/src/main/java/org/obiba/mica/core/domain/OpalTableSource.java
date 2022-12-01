@@ -72,8 +72,8 @@ public class OpalTableSource implements StudyTableSource {
     return String.format("urn:opal:%s.%s", project, table);
   }
 
-  public static boolean isFor(String sourceURN) {
-    return !Strings.isNullOrEmpty(sourceURN) && sourceURN.startsWith("urn:opal:");
+  public static boolean isFor(String source) {
+    return !Strings.isNullOrEmpty(source) && source.startsWith("urn:opal:");
   }
 
   public static OpalTableSource newSource(String project, String table) {
@@ -83,19 +83,19 @@ public class OpalTableSource implements StudyTableSource {
     return source;
   }
 
-  public static OpalTableSource fromURN(String sourceURN) {
-    if (Strings.isNullOrEmpty(sourceURN) || !sourceURN.startsWith("urn:opal:"))
-      throw new IllegalArgumentException("Not a valid Opal table source URN: " + sourceURN);
+  public static OpalTableSource fromURN(String source) {
+    if (Strings.isNullOrEmpty(source) || !source.startsWith("urn:opal:"))
+      throw new IllegalArgumentException("Not a valid Opal table source URN: " + source);
 
-    String fullName = toTableName(sourceURN);
+    String fullName = toTableName(source);
     int sep = fullName.indexOf(".");
     String project = fullName.substring(0, sep);
     String table = fullName.substring(sep + 1);
     return OpalTableSource.newSource(project, table);
   }
 
-  public static String toTableName(String sourceURN) {
-    return sourceURN.replace("urn:opal:", "");
+  public static String toTableName(String source) {
+    return source.replace("urn:opal:", "");
   }
 
   public void init(OpalService opalService, String opalUrl) {

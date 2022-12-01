@@ -24,7 +24,6 @@ import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Math;
-import org.obiba.opal.web.model.Search;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -58,7 +57,7 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
       try {
         String studyId = table.getStudyId();
         builder.add(datasetService
-          .getVariableSummary(dataset, variableName, studyId, table.getSourceURN())
+          .getVariableSummary(dataset, variableName, studyId, table.getSource())
           .getWrappedDto());
       } catch(NoSuchVariableException | NoSuchValueTableException e) {
         // ignore (case the study has not implemented this dataschema variable)

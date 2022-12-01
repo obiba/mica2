@@ -110,7 +110,7 @@ public class HarmonizedDatasetHelperTest {
     table.setStudyId(studyId);
     String project = RandomStringUtils.random(10, true, false);
     String tbl = RandomStringUtils.random(10, true, false);
-    table.setSourceURN(OpalTableSource.newSource(project, tbl).getURN());
+    table.setSource(OpalTableSource.newSource(project, tbl).getURN());
     table.setPopulationId(RandomStringUtils.random(10, true, true));
   }
 }

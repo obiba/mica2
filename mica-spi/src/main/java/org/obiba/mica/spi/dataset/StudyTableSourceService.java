@@ -17,8 +17,8 @@ import org.obiba.plugins.spi.ServicePlugin;
  */
 public interface StudyTableSourceService extends ServicePlugin {
 
-  boolean isFor(String sourceURN);
+  boolean isFor(String source);
 
-  StudyTableSource makeSource(String sourceURN);
+  StudyTableSource makeSource(String source);
 
 }

@@ -219,13 +219,13 @@ public class VariableController extends BaseController {
 
         if (DatasetVariable.OpalTableType.Study.equals(variable.getOpalTableType())) {
           Optional<StudyTable> studyTable = dataset.getStudyTables().stream().filter(st ->
-            variable.getStudyId().equals(st.getStudyId()) && variable.getSourceURN().equals(st.getSourceURN()))
+            variable.getStudyId().equals(st.getStudyId()) && variable.getSource().equals(st.getSource()))
             .findFirst();
           if (studyTable.isPresent())
             params.put("opalTable", studyTable.get());
         } else {
           Optional<HarmonizationStudyTable> harmoStudyTable = dataset.getHarmonizationTables().stream().filter(st ->
-            variable.getStudyId().equals(st.getStudyId()) && variable.getSourceURN().equals(st.getSourceURN()))
+            variable.getStudyId().equals(st.getStudyId()) && variable.getSource().equals(st.getSource()))
             .findFirst();
           if (harmoStudyTable.isPresent())
             params.put("opalTable", harmoStudyTable.get());

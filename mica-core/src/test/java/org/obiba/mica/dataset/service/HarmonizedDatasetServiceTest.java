@@ -13,7 +13,6 @@ package org.obiba.mica.dataset.service;
 import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 
 import org.junit.Before;
@@ -99,7 +98,7 @@ public class HarmonizedDatasetServiceTest {
 
   private StudyTable buildStudyTable(String project, String table, String studyId) {
     StudyTable st = new StudyTable();
-    st.setSourceURN(OpalTableSource.newSource(project, table).getURN());
+    st.setSource(OpalTableSource.newSource(project, table).getURN());
     st.setStudyId(studyId);
     st.setPopulationId("pop");
     st.setDataCollectionEventId("ev");

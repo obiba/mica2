@@ -48,7 +48,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
 
   private String studyId;
 
-  private String sourceURN;
+  private String source;
 
   private String tableType;
 
@@ -59,7 +59,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @Timed
   public Mica.DatasetVariableDto getVariable() {
     checkDatasetAccess();
-    return getDatasetVariableDto(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId, sourceURN, tableType);
+    return getDatasetVariableDto(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId, source, tableType);
   }
 
   @GET
@@ -69,7 +69,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
     checkDatasetAccess();
     checkVariableSummaryAccess();
     return datasetService
-      .getVariableSummary(getDataset(HarmonizationDataset.class, datasetId), variableName, studyId, sourceURN)
+      .getVariableSummary(getDataset(HarmonizationDataset.class, datasetId), variableName, studyId, source)
       .getWrappedDto();
   }
 
@@ -81,10 +81,10 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
     checkVariableSummaryAccess();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
     for (BaseStudyTable baseTable : dataset.getBaseStudyTables()) {
-      if (baseTable.isFor(studyId, sourceURN)) {
+      if (baseTable.isFor(studyId, source)) {
         try {
           return dtos.asDto(baseTable,
-            datasetService.getVariableSummary(dataset, variableName, studyId, sourceURN).getWrappedDto(), withStudySummary).build();
+            datasetService.getVariableSummary(dataset, variableName, studyId, source).getWrappedDto(), withStudySummary).build();
         } catch (Exception e) {
           log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
           return dtos.asDto(baseTable, null, withStudySummary).build();
@@ -92,7 +92,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
       }
     }
 
-    throw new NoSuchValueTableException(sourceURN);
+    throw new NoSuchValueTableException(source);
   }
 
   @GET
@@ -109,7 +109,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
 
     for (BaseStudyTable baseTable : dataset.getBaseStudyTables()) {
-      if (baseTable.isFor(studyId, sourceURN)) {
+      if (baseTable.isFor(studyId, source)) {
         try {
           return dtos.asContingencyDto(baseTable, var, crossVar,
             datasetService.getContingencyTable(baseTable, var, crossVar)).build();
@@ -120,7 +120,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
       }
     }
 
-    throw new NoSuchValueTableException(sourceURN);
+    throw new NoSuchValueTableException(source);
   }
 
   @GET
@@ -167,8 +167,8 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
     this.studyId = studyId;
   }
 
-  public void setSourceURN(String sourceURN) {
-    this.sourceURN = sourceURN;
+  public void setSource(String source) {
+    this.source = source;
   }
 
   public void setTableType(String tableType) {
@@ -179,8 +179,8 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
     if (Strings.isNullOrEmpty(crossVariable))
       throw new BadRequestException("Cross variable name is required for the contingency table");
 
-    DatasetVariable var = getDatasetVariable(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId, sourceURN, tableType);
-    DatasetVariable crossVar = getDatasetVariable(datasetId, crossVariable, DatasetVariable.Type.Harmonized, studyId, sourceURN, tableType);
+    DatasetVariable var = getDatasetVariable(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId, source, tableType);
+    DatasetVariable crossVar = getDatasetVariable(datasetId, crossVariable, DatasetVariable.Type.Harmonized, studyId, source, tableType);
 
     return Pair.create(var, crossVar);
   }
