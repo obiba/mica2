@@ -10,11 +10,11 @@
 
 package org.obiba.mica.core.service;
 
-import org.obiba.mica.core.domain.OpalTableSource;
+import org.obiba.mica.core.source.OpalTableSource;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.micaConfig.service.PluginsService;
-import org.obiba.mica.spi.dataset.StudyTableSource;
-import org.obiba.mica.spi.dataset.StudyTableSourceService;
+import org.obiba.mica.spi.source.StudyTableSource;
+import org.obiba.mica.spi.source.StudyTableSourceService;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.springframework.stereotype.Service;
 

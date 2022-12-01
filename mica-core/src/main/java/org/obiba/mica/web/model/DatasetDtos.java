@@ -16,6 +16,7 @@ import com.google.common.collect.Maps;
 import org.obiba.magma.type.BooleanType;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.*;
+import org.obiba.mica.core.source.OpalTableSource;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
 import org.obiba.mica.dataset.StudyDatasetStateRepository;
 import org.obiba.mica.dataset.domain.*;

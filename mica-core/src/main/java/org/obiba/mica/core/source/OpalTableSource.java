@@ -8,12 +8,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.core.domain;
+package org.obiba.mica.core.source;
 
 import com.google.common.base.Strings;
 import org.obiba.magma.ValueTable;
 import org.obiba.mica.micaConfig.service.OpalService;
-import org.obiba.mica.spi.dataset.StudyTableSource;
+import org.obiba.mica.spi.source.StudyTableSource;
 import org.obiba.opal.rest.client.magma.RestDatasource;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Math;

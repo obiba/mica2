@@ -18,7 +18,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.obiba.mica.core.domain.HarmonizationStudyTable;
-import org.obiba.mica.core.domain.OpalTableSource;
+import org.obiba.mica.core.source.OpalTableSource;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;

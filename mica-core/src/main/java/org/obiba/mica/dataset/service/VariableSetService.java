@@ -15,6 +15,7 @@ import com.google.common.collect.Maps;
 import com.googlecode.protobuf.format.JsonFormat;
 import org.obiba.mica.core.domain.*;
 import org.obiba.mica.core.service.DocumentSetService;
+import org.obiba.mica.core.source.OpalTableSource;
 import org.obiba.mica.dataset.domain.*;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;

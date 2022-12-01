@@ -12,6 +12,7 @@ package org.obiba.mica.core.domain;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
+import org.obiba.mica.core.source.OpalTableSource;
 
 public class BaseStudyTable {
 

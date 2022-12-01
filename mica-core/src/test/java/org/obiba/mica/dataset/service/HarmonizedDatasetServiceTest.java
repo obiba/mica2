@@ -23,7 +23,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.obiba.mica.core.domain.OpalTableSource;
+import org.obiba.mica.core.source.OpalTableSource;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.magma.Variable;
 import org.obiba.magma.type.BooleanType;

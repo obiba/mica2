@@ -19,7 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.HarmonizationStudyTable;
-import org.obiba.mica.core.domain.OpalTableSource;
+import org.obiba.mica.core.source.OpalTableSource;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import static org.obiba.mica.assertj.Assertions.assertThat;

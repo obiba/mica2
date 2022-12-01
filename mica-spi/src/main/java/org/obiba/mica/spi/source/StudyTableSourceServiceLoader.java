@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.spi.dataset;
+package org.obiba.mica.spi.source;
 
 import com.google.common.collect.Lists;
 
