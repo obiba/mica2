@@ -16,22 +16,50 @@
     <div class="col-md-6">
       <h3 translate ng-show="dataset['obiba.mica.HarmonizedDatasetDto.type']">dataset.data-schema.title</h3>
       <p class="help-block" translate>dataset.data-schema.info</p>
-      <table class="table table-bordered table-striped">
-        <tbody>
-        <tr>
-          <th translate>dataset.project</th>
-          <td>
-            <a ng-href="{{opal + '/ui/index.html#!project;name=' + datasetProject}}" target="_blank">{{datasetProject}}</a>
-          </td>
-        </tr>
-        <tr>
-          <th translate>dataset.table</th>
-          <td>
-            <a ng-href="{{opal + '/ui/index.html#!project;name=' + datasetProject + ';tab=TABLES;path=' + datasetProject + '.' + datasetTable}}" target="_blank">{{datasetTable}}</a>
-          </td>
-        </tr>
-        </tbody>
-      </table>
+
+
+      <div ng-show="dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.namespace === 'opal'">
+        <h4 translate>dataset.datasource.opal.title</h4>
+
+        <table class="table table-bordered table-striped">
+          <tbody>
+          <tr>
+            <th translate>dataset.project</th>
+            <td>
+              <a ng-href="{{opal + '/ui/index.html#!project;name=' + datasetProject}}" target="_blank">{{datasetProject}}</a>
+            </td>
+          </tr>
+          <tr>
+            <th translate>dataset.table</th>
+            <td>
+              <a ng-href="{{opal + '/ui/index.html#!project;name=' + datasetProject + ';tab=TABLES;path=' + datasetProject + '.' + datasetTable}}" target="_blank">{{datasetTable}}</a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div ng-show="dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.namespace === 'file'">
+        <h4 translate>dataset.datasource.file.title</h4>
+
+        <table class="table table-bordered table-striped">
+          <tbody>
+          <tr>
+            <th translate>path</th>
+            <td>
+              {{dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.path}}
+            </td>
+          </tr>
+          <tr>
+            <th translate>dataset.table</th>
+            <td>
+              {{dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.table}}
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
       <div>
         <h3 translate ng-show="datasetStudy">dataset.harmonization-study.title</h3>
         <p class="help-block" ng-show="harmonizedDatasetStudy" translate>dataset.harmonization-study.info</p>

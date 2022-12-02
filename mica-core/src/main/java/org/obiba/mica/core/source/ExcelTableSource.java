@@ -37,7 +37,7 @@ public class ExcelTableSource implements StudyTableFileSource {
     if (Strings.isNullOrEmpty(source) || !source.startsWith("urn:file:"))
       return false;
     List<String> tokens = Splitter.on(":").splitToList(source);
-    return tokens.size() == 4 && tokens.get(2).toLowerCase().endsWith(".xlsx");
+    return tokens.size() > 2 && tokens.get(2).toLowerCase().endsWith(".xlsx");
   }
 
   public static ExcelTableSource fromURN(String source) {
@@ -46,8 +46,8 @@ public class ExcelTableSource implements StudyTableFileSource {
 
     String fullName = source.replace("urn:file:", "");
     int sep = fullName.lastIndexOf(":");
-    String file = fullName.substring(0, sep);
-    String table = fullName.substring(sep + 1);
+    String file = sep > 0 ? fullName.substring(0, sep) : fullName;
+    String table = sep > 0 ? fullName.substring(sep + 1) : null;
     return ExcelTableSource.newSource(file, table);
   }
 
@@ -70,7 +70,9 @@ public class ExcelTableSource implements StudyTableFileSource {
 
   @Override
   public ValueTable getValueTable() {
-    return excelDatasource.getValueTable(table);
+    return Strings.isNullOrEmpty(table) ?
+      excelDatasource.getValueTables().stream().findFirst().get() :
+      excelDatasource.getValueTable(table);
   }
 
   @Override
@@ -85,7 +87,7 @@ public class ExcelTableSource implements StudyTableFileSource {
 
   @Override
   public String getURN() {
-    return String.format("urn:file:%s:%s", path, table);
+    return Strings.isNullOrEmpty(table) ? String.format("urn:file:%s", path) : String.format("urn:file:%s:%s", path, table);
   }
 
   @Override

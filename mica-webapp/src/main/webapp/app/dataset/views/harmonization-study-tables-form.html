@@ -21,7 +21,7 @@
           <th class="hidden-print"></th>
           <th translate>study.label</th>
           <th translate>type</th>
-          <th translate>dataset.project</th>
+          <th><span translate>dataset.project</span> / <span translate>path</span></th>
           <th translate>dataset.table</th>
           <th translate>dataset.table-name</th>
           <th translate>dataset.table-description</th>
@@ -46,7 +46,7 @@
             {{(wrapper.type === 'studyTable' ? 'search.study.individual' : 'search.study.harmonization') | translate}}
           </td>
           <td>
-            {{wrapper.table.project}}
+            {{wrapper.table.namespace === 'opal' ? wrapper.table.project : wrapper.table.path}}
           </td>
           <td>
             {{wrapper.table.table}}

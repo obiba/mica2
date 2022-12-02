@@ -317,20 +317,33 @@ mica.dataset
               return p.name === dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.project;
             }).pop();
 
-            if ($scope.selected.project) {
-              $scope.selected.project.table = $scope.selected.project.datasource.table.filter(function (t) {
-                return t === dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.table;
-              }).pop();
+            if (!$scope.selected.project) {
+              $scope.selected.project = $scope.projects.pop();
+            }
+
+            $scope.selected.project.table = $scope.selected.project.datasource.table.filter(function (t) {
+              return t === dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.table;
+            }).pop();
+
+            if (!$scope.selected.project.table) {
+              $scope.selected.project.table = $scope.selected.project.datasource.table.pop();
             }
           });
         });
       } else {
-        getOpalProjects();
         $scope.dataset = {
           published: false,
-          'obiba.mica.HarmonizedDatasetDto.type': {},
+          'obiba.mica.HarmonizedDatasetDto.type': {
+            harmonizationTable: {
+              namespace: 'opal'
+            }
+          },
           model: {}
         };
+        getOpalProjects().then(function() {
+          $scope.selected.project = $scope.projects.pop();
+          $scope.selected.project.table = $scope.selected.project.datasource.table.pop();
+        });
       }
 
       $scope.save = function () {
@@ -343,8 +356,10 @@ mica.dataset
         }
 
         $scope.dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable = $scope.dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable || {};
-        $scope.dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.project = $scope.selected.project.name;
-        $scope.dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.table = $scope.selected.project.table;
+        if ($scope.dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.namespace === 'opal') {
+          $scope.dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.project = $scope.selected.project.name;
+          $scope.dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.table = $scope.selected.project.table;
+        }
         $scope.dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.studyId = $scope.selected.study ? $scope.selected.study.id : null;
 
         if ($scope.dataset.id) {
@@ -387,6 +402,11 @@ mica.dataset
 
       initializeForm();
       FormDirtyStateObserver.observe($scope);
+
+      $scope.NAMESPACES = [
+        'opal',
+        'file'
+      ];
     }])
 
   .controller('DatasetViewController', ['$rootScope',
@@ -861,10 +881,13 @@ mica.dataset
       $scope.type = tableType;
       $scope.selected.isHarmonizationTable = tableType === mica.dataset.OPAL_TABLE_TYPES.HARMONIZATION_TABLE;
       $scope.table = $.extend(true, {}, table);
+      if (!$scope.table.namespace) {
+        $scope.table.namespace = 'opal';
+      }
       $scope.table.model = {
         name: LocalizedValues.arrayToObject(table.name),
         description: LocalizedValues.arrayToObject(table.description),
-        additionalInformation: LocalizedValues.arrayToObject(table.additionalInformation)
+        additionalInformation: LocalizedValues.arrayToObject(table.additionalInformation),
       };
 
       MicaConfigResource.get(function (micaConfig) {
@@ -941,6 +964,9 @@ mica.dataset
               if (selectedTable) {
                 $scope.selected.project.table = selectedTable;
               }
+            } else {
+              $scope.selected.project = $scope.projects.pop();
+              $scope.selected.project.table = $scope.selected.project.datasource.table.pop();
             }
 
           });
@@ -956,13 +982,21 @@ mica.dataset
             !$scope.selected.study.population ||
             !$scope.selected.study.population.dataCollectionEvent ? null : $scope.selected.study.population.dataCollectionEvent.id;
 
-          angular.extend($scope.table, {
-            studyId: $scope.selected.study.id,
-            populationId: populationId,
-            dataCollectionEventId: dceId,
-            project: $scope.selected.project.name,
-            table: $scope.selected.project.table
-          });
+          if ($scope.table.namespace === 'file') {
+            angular.extend($scope.table, {
+              studyId: $scope.selected.study.id,
+              populationId: populationId,
+              dataCollectionEventId: dceId
+            });
+          } else {
+            angular.extend($scope.table, {
+              studyId: $scope.selected.study.id,
+              populationId: populationId,
+              dataCollectionEventId: dceId,
+              project: $scope.selected.project.name,
+              table: $scope.selected.project.table
+            });
+          }
 
           $scope.table.name = LocalizedValues.objectToArray($scope.table.model.name);
           $scope.table.description = LocalizedValues.objectToArray($scope.table.model.description);
@@ -980,5 +1014,10 @@ mica.dataset
       $scope.cancel = function () {
         $uibModalInstance.dismiss('cancel');
       };
+
+      $scope.NAMESPACES = [
+        'opal',
+        'file'
+      ];
 
     }]);

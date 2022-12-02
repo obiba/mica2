@@ -372,6 +372,14 @@ mica.dataset
         serializeOpalTableForRestoringFields(datasetCopy);
       }
 
+      if (typeof dataset['obiba.mica.HarmonizedDatasetDto.type'] === 'object') {
+        datasetCopy['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTables = (dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTables || []).map(serializeTableSource);
+        datasetCopy['obiba.mica.HarmonizedDatasetDto.type'].studyTables = (dataset['obiba.mica.HarmonizedDatasetDto.type'].studyTables || []).map(serializeTableSource);
+        datasetCopy['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable = serializeTableSource(dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable || {});
+      } else if (typeof dataset['obiba.mica.CollectedDatasetDto.type'] === 'object') {
+        datasetCopy['obiba.mica.CollectedDatasetDto.type'].studyTable = serializeTableSource(dataset['obiba.mica.CollectedDatasetDto.type'].studyTable || {});
+      }
+
       datasetCopy.content = datasetCopy.model ? angular.toJson(datasetCopy.model) : null;
       delete datasetCopy.model; // NOTICE: must be removed to avoid protobuf exception in dto.
       return angular.toJson(datasetCopy);
@@ -392,6 +400,14 @@ mica.dataset
         dataset.description = LocalizedValues.arrayToObject(dataset.description);
 
         deserializeOpalTableForRestoringFields(dataset);
+      }
+
+      if (typeof dataset['obiba.mica.HarmonizedDatasetDto.type'] === 'object') {
+        dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTables = (dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTables || []).map(deserializeTableSource);
+        dataset['obiba.mica.HarmonizedDatasetDto.type'].studyTables = (dataset['obiba.mica.HarmonizedDatasetDto.type'].studyTables || []).map(deserializeTableSource);
+        dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable = deserializeTableSource(dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable || {});
+      } else if (typeof dataset['obiba.mica.CollectedDatasetDto.type'] === 'object') {
+        dataset['obiba.mica.CollectedDatasetDto.type'].studyTable = deserializeTableSource(dataset['obiba.mica.CollectedDatasetDto.type'].studyTable || {});
       }
 
       return dataset;
@@ -416,6 +432,22 @@ mica.dataset
       }
     }
 
+    function serializeTableSource(table) {
+      const result = JSON.parse(JSON.stringify(table));
+
+      if (result.namespace === 'file') {
+        result.source = 'urn:file:' + result.path + (result.table ? ':' + result.table : '');
+        delete result.path;
+      } else {
+        result.source = 'urn:opal:' + result.project + '.' + result.table;
+        delete result.project;
+      }
+      delete result.table;
+      delete result.namespace;
+
+      return result;
+    }
+
     function deserializeOpalTableForRestoringFields(dataset) {
       if (typeof dataset['obiba.mica.HarmonizedDatasetDto.type'] === 'object') {
         dataset.harmonizationTables = (dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTables || []).map(deserializeTable);
@@ -433,6 +465,28 @@ mica.dataset
 
         return result;
       }
+    }
+
+    function deserializeTableSource(table) {
+      const result = JSON.parse(JSON.stringify(table));
+
+      if (result.source) {
+        if (result.source.startsWith('urn:opal:')) {
+          const id = result.source.replace('urn:opal:', '');
+          result.namespace = 'opal';
+          result.project = id.substring(0, id.indexOf('.'));
+          result.table = id.substring(id.indexOf('.') + 1);
+        } else if (result.source.startsWith('urn:file:')) {
+          const id = result.source.replace('urn:file:', '');
+          result.namespace = 'file';
+          result.path = id.indexOf(':') > 0 ? id.substring(0, id.indexOf(':')) : id;
+          result.table = id.indexOf(':') > 0 ? id.substring(id.indexOf(':') + 1) : undefined;
+        }
+      } else {
+        result.namespace = 'opal';
+      }
+
+      return result;
     }
 
     return this;

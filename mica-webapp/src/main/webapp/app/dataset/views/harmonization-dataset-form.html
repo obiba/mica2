@@ -39,34 +39,72 @@
 
           <p class="help-block" translate>dataset.data-schema.info</p>
 
-          <div class="form-group"
-            ng-class="{'has-error': (form['project'].$dirty || form.saveAttempted) && form['project'].$invalid}">
-            <label class="control-label">
-              <span translate>dataset.project</span>
-              <span>*</span>
-            </label>
-            <ui-select theme="bootstrap" name="project" ng-model="selected.project" reset-search-input="true" required="true">
-              <ui-select-match>{{$select.selected.name}}</ui-select-match>
-              <ui-select-choices repeat="project in projects | filter: {name: $select.search}">
-                <span ng-bind-html="project.name | highlight: $select.search"></span>
-              </ui-select-choices>
-            </ui-select>
-            <p class="help-block" translate>dataset.project-dataschema-help</p>
+          <p class="help-block" translate>dataset.datasource.info-schema</p>
+
+          <select id="namespace" name="namespace" class="form-control" ng-model="dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.namespace" ng-options="'dataset.study-table.source.' + namespace | translate for namespace in NAMESPACES" required="true">
+          </select>
+
+          <div ng-show="dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.namespace === 'opal'">
+
+            <p class="help-block" translate>dataset.datasource.opal.info-schema</p>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group"
+                     ng-class="{'has-error': (form['project'].$dirty || form.saveAttempted) && form['project'].$invalid}">
+                  <label class="control-label">
+                    <span translate>dataset.project</span>
+                    <span>*</span>
+                  </label>
+                  <ui-select theme="bootstrap" name="project" ng-model="selected.project" reset-search-input="true">
+                    <ui-select-match>{{$select.selected.name}}</ui-select-match>
+                    <ui-select-choices repeat="project in projects | filter: {name: $select.search}">
+                      <span ng-bind-html="project.name | highlight: $select.search"></span>
+                    </ui-select-choices>
+                  </ui-select>
+                  <p class="help-block" translate>dataset.project-dataschema-help</p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group"
+                     ng-class="{'has-error': (form['table'].$dirty || form.saveAttempted) && form['table'].$invalid}">
+                  <label class="control-label">
+                    <span translate>dataset.table</span>
+                    <span>*</span>
+                  </label>
+                  <ui-select theme="bootstrap" name="table" ng-model="selected.project.table" reset-search-input="true">
+                    <ui-select-match>{{$select.selected}}</ui-select-match>
+                    <ui-select-choices repeat="table in selected.project.datasource.table | filter: $select.search">
+                      <span ng-bind-html="table | highlight: $select.search"></span>
+                    </ui-select-choices>
+                  </ui-select>
+                  <p class="help-block" translate>dataset.table-dataschema-help</p>
+                </div>
+              </div>
+            </div>
+
           </div>
 
-          <div class="form-group"
-            ng-class="{'has-error': (form['table'].$dirty || form.saveAttempted) && form['table'].$invalid}">
-            <label class="control-label">
-              <span translate>dataset.table</span>
-              <span>*</span>
-            </label>
-            <ui-select theme="bootstrap" name="table" ng-model="selected.project.table" reset-search-input="true" required="true">
-              <ui-select-match>{{$select.selected}}</ui-select-match>
-              <ui-select-choices repeat="table in selected.project.datasource.table | filter: $select.search">
-                <span ng-bind-html="table | highlight: $select.search"></span>
-              </ui-select-choices>
-            </ui-select>
-            <p class="help-block" translate>dataset.table-dataschema-help</p>
+          <div ng-show="dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.namespace === 'file'">
+            <p class="help-block" translate>dataset.datasource.file.info-schema</p>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group"
+                     ng-class="{'has-error': (form['path'].$dirty || form.saveAttempted) && form['path'].$invalid}">
+                  <label class="control-label">
+                    <span translate>path</span>
+                    <span>*</span>
+                  </label>
+                  <input type="text" class="form-control" ng-model="dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.path">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group"
+                     ng-class="{'has-error': (form['table'].$dirty || form.saveAttempted) && form['table'].$invalid}">
+                  <label class="control-label" translate>dataset.table</label>
+                  <input type="text" class="form-control" ng-model="dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.table">
+                </div>
+              </div>
+            </div>
           </div>
 
           <h3 translate>dataset.harmonization-study.title</h3>

@@ -19,6 +19,7 @@ public class ExcelTableSourceTest {
   @Test
   public void test_is_for() {
     assertThat(ExcelTableSource.isFor("urn:file:MyProject.xlsx:MyTable")).isTrue();
+    assertThat(ExcelTableSource.isFor("urn:file:MyProject.xlsx")).isTrue();
     assertThat(ExcelTableSource.isFor("urn:file:/path/to/MyProject.xlsx:MyTable")).isTrue();
     assertThat(ExcelTableSource.isFor("urn:file:MyProject.xls")).isFalse();
     assertThat(ExcelTableSource.isFor("urn:file:MyProject.spss")).isFalse();
@@ -29,6 +30,10 @@ public class ExcelTableSourceTest {
     ExcelTableSource source = ExcelTableSource.fromURN("urn:file:MyProject.xlsx:MyTable");
     assertThat(source.getPath()).isEqualTo("MyProject.xlsx");
     assertThat(source.getTable()).isEqualTo("MyTable");
+
+    source = ExcelTableSource.fromURN("urn:file:MyProject.xlsx");
+    assertThat(source.getPath()).isEqualTo("MyProject.xlsx");
+    assertThat(source.getTable()).isNullOrEmpty();
 
     source = ExcelTableSource.fromURN("urn:file:/path/to/MyProject.xlsx:MyTable");
     assertThat(source.getPath()).isEqualTo("/path/to/MyProject.xlsx");

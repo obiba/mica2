@@ -10,16 +10,25 @@
 
 package org.obiba.mica.spi.source;
 
+import java.io.InputStream;
+
 /**
  * Study table is to be extracted from a file which path applies to the Mica's internal file system.
  */
-public interface StudyTableFileSource extends StudyTableStreamSource {
+public interface StudyTableFileSource extends StudyTableSource {
 
   /**
-   * The path to the file in Mica's file system.
+   * The path to the file in Mica's file system, that can be absolute or relative the study's folder considered.
    *
    * @return
    */
   String getPath();
+
+  /**
+   * Initialise the source from the given input stream that represents the file content.
+   *
+   * @param in
+   */
+  void initialise(InputStream in);
 
 }

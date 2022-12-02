@@ -955,7 +955,15 @@
     },
     "datasource": {
       "title": "Source de données",
-      "info": "Référence vers la table Opal de laquelle les variables et les données sommaires seront extraites."
+      "info": "Source du dictionnaire de données et des statistiques sommaires.",
+      "opal": {
+        "title": "Source Opal",
+        "info": "Référence vers la table Opal de laquelle les variables et les données sommaires seront extraites."
+      },
+      "file": {
+        "title": "Fichier source",
+        "info": "Fichier duquel les variables de la table seront extraites. Le chemin du fichier peut-être relatif au dossier de l'étude associée. Le nom de la table est optionel si le fichier ne décrit qu'une table."
+      }
     },
     "delete-dialog": {
       "title": "Supprimer l'ensemble de données",
@@ -976,7 +984,11 @@
     },
     "study-table": {
       "title": "Table d'étude",
-      "info": "La table d'étude définie à quel événement de collecte elle s'applique et à partir de quelle table Opal il faut extraire les variables et les données sommaires."
+      "info": "La table d'étude définie à quel événement de collecte elle s'applique et à partir de quelle table Opal il faut extraire les variables et les données sommaires.",
+      "source": {
+        "opal": "Opal source",
+        "file": "Fichier source"
+      }
     },
     "harmonization-study-table": {
       "title": "Table d'initiative d'harmonisation",
@@ -1006,7 +1018,7 @@
     "table-additional-information": "Information additionnelle",
     "data-schema": {
       "title": "Protocole d'harmonisation",
-      "info": "Les variables du protocole d'harmonisation sont les variables de référence. Il s'agit d'un simple dictionnaire de données: aucun résumé de données ne sera extrait de la table Opal."
+      "info": "Les variables du protocole d'harmonisation sont les variables de référence. Il s'agit d'un simple dictionnaire de données: aucune statistique sommaires ne seront extraites."
     },
     "index": "Index",
     "add-study-table": "Ajouter une table d'étude",
