@@ -13,29 +13,28 @@ package org.obiba.mica.web.model;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.obiba.magma.type.BooleanType;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.*;
 import org.obiba.mica.core.source.OpalTableSource;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
 import org.obiba.mica.dataset.StudyDatasetStateRepository;
 import org.obiba.mica.dataset.domain.*;
-import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Term;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
-import org.obiba.opal.web.model.Math;
-import org.obiba.opal.web.model.Search;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -460,10 +459,12 @@ class DatasetDtos {
   }
 
   public Mica.DatasetVariableAggregationDto.Builder asDto(@NotNull BaseStudyTable studyTable,
-    @Nullable Math.SummaryStatisticsDto summary, boolean withStudySummary) {
-    Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder();
+    @Nullable Mica.DatasetVariableAggregationDto summary, boolean withStudySummary) {
+    Mica.DatasetVariableAggregationDto.Builder aggDto = summary == null ? Mica.DatasetVariableAggregationDto.newBuilder() : summary.toBuilder();
 
-    aggDto = simpleAggregationDto(aggDto, summary);
+    if (summary == null) {
+      aggDto.setTotal(0).setN(0);
+    }
 
     if(studyTable instanceof StudyTable)
       aggDto.setStudyTable(asDto((StudyTable) studyTable, withStudySummary));
@@ -473,255 +474,23 @@ class DatasetDtos {
     return aggDto;
   }
 
-  public Mica.DatasetVariableAggregationDto.Builder simpleAggregationDto(@NotNull Mica.DatasetVariableAggregationDto.Builder aggDto, @Nullable Math.SummaryStatisticsDto summary) {
-
-    if(summary == null) return aggDto.setTotal(0).setN(0);
-
-    if(summary.hasExtension(Math.CategoricalSummaryDto.categorical)) {
-      aggDto = asDto(summary.getExtension(Math.CategoricalSummaryDto.categorical));
-    } else if(summary.hasExtension(Math.ContinuousSummaryDto.continuous)) {
-      aggDto = asDto(summary.getExtension(Math.ContinuousSummaryDto.continuous));
-    } else if(summary.hasExtension(Math.DefaultSummaryDto.defaultSummary)) {
-      aggDto = asDto(summary.getExtension(Math.DefaultSummaryDto.defaultSummary));
-    } else if(summary.hasExtension(Math.TextSummaryDto.textSummary)) {
-      aggDto = asDto(summary.getExtension(Math.TextSummaryDto.textSummary));
-    } else if(summary.hasExtension(Math.GeoSummaryDto.geoSummary)) {
-      aggDto = asDto(summary.getExtension(Math.GeoSummaryDto.geoSummary));
-    } else if(summary.hasExtension(Math.BinarySummaryDto.binarySummary)) {
-      aggDto = asDto(summary.getExtension(Math.BinarySummaryDto.binarySummary));
-    }
-
-    return aggDto;
-  }
-
-  public Mica.DatasetVariableContingencyDto.Builder asContingencyDto(@NotNull BaseStudyTable studyTable,
-    DatasetVariable variable, DatasetVariable crossVariable, @Nullable Search.QueryResultDto results) {
-    Mica.DatasetVariableContingencyDto.Builder crossDto = Mica.DatasetVariableContingencyDto.newBuilder();
+  public Mica.DatasetVariableContingencyDto.Builder asContingencyDto(@NotNull BaseStudyTable studyTable, @Nullable Mica.DatasetVariableContingencyDto crossDto) {
+    Mica.DatasetVariableContingencyDto.Builder crossDtoBuilder = crossDto == null ? Mica.DatasetVariableContingencyDto.newBuilder() : crossDto.toBuilder();
 
     if(studyTable instanceof StudyTable)
-      crossDto.setStudyTable(asDto((StudyTable) studyTable, true));
+      crossDtoBuilder.setStudyTable(asDto((StudyTable) studyTable, true));
     else if (studyTable instanceof HarmonizationStudyTable)
-      crossDto.setHarmonizationStudyTable(asDto((HarmonizationStudyTable) studyTable));
+      crossDtoBuilder.setHarmonizationStudyTable(asDto((HarmonizationStudyTable) studyTable));
 
-    Mica.DatasetVariableAggregationDto.Builder allAggBuilder = Mica.DatasetVariableAggregationDto.newBuilder();
-
-    if(results == null) {
+    if(crossDto == null) {
+      Mica.DatasetVariableAggregationDto.Builder allAggBuilder = Mica.DatasetVariableAggregationDto.newBuilder();
       allAggBuilder.setN(0);
       allAggBuilder.setTotal(0);
-      crossDto.setAll(allAggBuilder);
-      return crossDto;
+      crossDtoBuilder.setAll(allAggBuilder);
+      return crossDtoBuilder;
     }
 
-    allAggBuilder.setTotal(results.getTotalHits());
-    MicaConfig micaConfig = micaConfigService.getConfig();
-    int privacyThreshold = micaConfig.getPrivacyThreshold();
-    crossDto.setPrivacyThreshold(privacyThreshold);
-    boolean privacyChecks = !crossVariable.hasCategories() || validatePrivacyThreshold(results, privacyThreshold);
-    boolean totalPrivacyChecks = validateTotalPrivacyThreshold(results, privacyThreshold);
-
-    // add facet results in the same order as the variable categories
-    List<String> catNames = variable.getValueType().equals(BooleanType.get().getName()) ?
-      Lists.newArrayList("true", "false") : variable.getCategories().stream().map(DatasetCategory::getName).collect(Collectors.toList());
-    catNames.forEach(catName -> results.getFacetsList().stream()
-      .filter(facet -> facet.hasFacet() && catName.equals(facet.getFacet())).forEach(facet -> {
-        boolean privacyCheck = privacyChecks && checkPrivacyThreshold(facet.getFilters(0).getCount(), privacyThreshold);
-        Mica.DatasetVariableAggregationDto.Builder aggBuilder = Mica.DatasetVariableAggregationDto.newBuilder();
-        aggBuilder.setTotal(totalPrivacyChecks ? results.getTotalHits() : 0);
-        aggBuilder.setTerm(facet.getFacet());
-        DatasetCategory category = variable.getCategory(facet.getFacet());
-        aggBuilder.setMissing(category != null && category.isMissing());
-        addSummaryStatistics(crossVariable, aggBuilder, facet, privacyCheck, totalPrivacyChecks);
-        crossDto.addAggregations(aggBuilder);
-      }));
-
-    // add total facet for all variable categories
-    results.getFacetsList().stream().filter(facet -> facet.hasFacet() && "_total".equals(facet.getFacet()))
-      .forEach(facet -> {
-        boolean privacyCheck = privacyChecks && facet.getFilters(0).getCount() >= micaConfig.getPrivacyThreshold();
-        addSummaryStatistics(crossVariable, allAggBuilder, facet, privacyCheck, totalPrivacyChecks);
-      });
-
-    crossDto.setAll(allAggBuilder);
-
-    return crossDto;
-  }
-
-  private boolean checkPrivacyThreshold(int count, int threshold) {
-    return count == 0 || count >= threshold;
-  }
-
-  private boolean validateTotalPrivacyThreshold(Search.QueryResultDtoOrBuilder results, int privacyThreshold) {
-    return results.getFacetsList().stream()
-      .allMatch(facet -> checkPrivacyThreshold(facet.getFilters(0).getCount(), privacyThreshold));
-  }
-
-  private boolean validatePrivacyThreshold(Search.QueryResultDtoOrBuilder results, int privacyThreshold) {
-    return results.getFacetsList().stream().map(Search.FacetResultDto::getFrequenciesList).flatMap(Collection::stream)
-      .allMatch(freq -> checkPrivacyThreshold(freq.getCount(), privacyThreshold));
-  }
-
-  private void addSummaryStatistics(DatasetVariable crossVariable,
-    Mica.DatasetVariableAggregationDto.Builder aggBuilder, Search.FacetResultDto facet, boolean privacyCheck,
-    boolean totalPrivacyCheck) {
-    aggBuilder.setN(totalPrivacyCheck ? facet.getFilters(0).getCount() : -1);
-    if(!privacyCheck) return;
-
-    List<String> catNames = crossVariable.getValueType().equals(BooleanType.get().getName()) ?
-      Lists.newArrayList("1", "0") :
-      (crossVariable.hasCategories() ? crossVariable.getCategories().stream().map(DatasetCategory::getName).collect(Collectors.toList()) : Lists.newArrayList());
-    // order results as the order of cross variable categories
-    catNames.forEach(catName -> facet.getFrequenciesList().stream().filter(freq -> catName.equals(freq.getTerm()))
-        .forEach(freq -> aggBuilder.addFrequencies(asDto(crossVariable, freq))));
-    // observed terms, not described by categories
-    facet.getFrequenciesList().stream().filter(freq -> !catNames.contains(freq.getTerm()))
-      .forEach(freq -> aggBuilder.addFrequencies(asDto(crossVariable, freq)));
-
-    if(facet.hasStatistics()) {
-      aggBuilder.setStatistics(asDto(facet.getStatistics()));
-    }
-  }
-
-  private Mica.FrequencyDto.Builder asDto(DatasetVariable crossVariable,
-    Search.FacetResultDto.TermFrequencyResultDto result) {
-    if (crossVariable.getValueType().equals(BooleanType.get().getName())) {
-      // for some reason 0/1 is returned instead of false/true
-      return Mica.FrequencyDto.newBuilder()
-        .setValue("1".equals(result.getTerm()) ? "true" : "false")
-        .setCount(result.getCount())
-        .setMissing(false);
-    } else if (crossVariable.getCategory(result.getTerm()) != null) {
-      DatasetCategory category = crossVariable.getCategory(result.getTerm());
-      return Mica.FrequencyDto.newBuilder()
-        .setValue(result.getTerm())
-        .setCount(result.getCount())
-        .setMissing(category != null && category.isMissing());
-    } else {
-      // observed value, not described by a category
-      return Mica.FrequencyDto.newBuilder()
-        .setValue(result.getTerm())
-        .setCount(result.getCount())
-        .setMissing(false);
-    }
-  }
-
-  private Mica.StatisticsDto.Builder asDto(Search.FacetResultDto.StatisticalResultDto result) {
-    return Mica.StatisticsDto.newBuilder() //
-      .setMin(result.getMin()) //
-      .setMax(result.getMax()) //
-      .setMean(result.getMean()) //
-      .setSum(result.getTotal()) //
-      .setSumOfSquares(result.getSumOfSquares()) //
-      .setVariance(result.getVariance()) //
-      .setStdDeviation(result.getStdDeviation());
-  }
-
-  private Mica.DatasetVariableAggregationDto.Builder asDto(Math.CategoricalSummaryDto summary) {
-    Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder();
-    aggDto.setTotal(Long.valueOf(summary.getN()).intValue());
-    addFrequenciesDto(aggDto, summary.getFrequenciesList(),
-      summary.hasOtherFrequency() ? Long.valueOf(summary.getOtherFrequency()).intValue() : 0);
-    return aggDto;
-  }
-
-  private Mica.DatasetVariableAggregationDto.Builder asDto(Math.DefaultSummaryDto summary) {
-    Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder();
-    aggDto.setTotal(Long.valueOf(summary.getN()).intValue());
-    addFrequenciesDto(aggDto, summary.getFrequenciesList());
-    return aggDto;
-  }
-
-  private Mica.DatasetVariableAggregationDto.Builder asDto(Math.TextSummaryDto summary) {
-    Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder();
-    aggDto.setTotal(Long.valueOf(summary.getN()).intValue());
-    addFrequenciesDto(aggDto, summary.getFrequenciesList(),
-      summary.hasOtherFrequency() ? Long.valueOf(summary.getOtherFrequency()).intValue() : 0);
-    return aggDto;
-  }
-
-  private Mica.DatasetVariableAggregationDto.Builder asDto(Math.GeoSummaryDto summary) {
-    Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder();
-    aggDto.setTotal(Long.valueOf(summary.getN()).intValue());
-    addFrequenciesDto(aggDto, summary.getFrequenciesList());
-    return aggDto;
-  }
-
-  private Mica.DatasetVariableAggregationDto.Builder asDto(Math.BinarySummaryDto summary) {
-    Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder();
-    aggDto.setTotal(Long.valueOf(summary.getN()).intValue());
-    addFrequenciesDto(aggDto, summary.getFrequenciesList());
-    return aggDto;
-  }
-
-  private Mica.FrequencyDto.Builder asDto(Math.FrequencyDto freq) {
-    return Mica.FrequencyDto.newBuilder().setValue(freq.getValue()).setCount(Long.valueOf(freq.getFreq()).intValue())
-      .setMissing(freq.getMissing());
-  }
-
-  private Mica.IntervalFrequencyDto.Builder asDto(Math.IntervalFrequencyDto inter) {
-    return Mica.IntervalFrequencyDto.newBuilder().setCount((int)inter.getFreq())
-      .setLower(inter.getLower()).setUpper(inter.getUpper());
-  }
-
-  private void addFrequenciesDto(Mica.DatasetVariableAggregationDto.Builder aggDto,
-    List<Math.FrequencyDto> frequencies) {
-    addFrequenciesDto(aggDto, frequencies, 0);
-  }
-
-  private void addFrequenciesDto(Mica.DatasetVariableAggregationDto.Builder aggDto, List<Math.FrequencyDto> frequencies,
-    int otherFrequency) {
-    int n = otherFrequency;
-    if(frequencies != null) {
-      for(Math.FrequencyDto freq : frequencies) {
-        aggDto.addFrequencies(asDto(freq));
-        if(!freq.getMissing()) n += freq.getFreq();
-      }
-    }
-    if (otherFrequency>0)
-      aggDto.addFrequencies(Mica.FrequencyDto.newBuilder().setValue("???").setCount(otherFrequency)
-        .setMissing(false));
-    aggDto.setN(n);
-  }
-
-  private Mica.DatasetVariableAggregationDto.Builder asDto(Math.ContinuousSummaryDto summary) {
-    Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder();
-    Math.DescriptiveStatsDto stats = summary.getSummary();
-
-    aggDto.setN(Long.valueOf(stats.getN()).intValue());
-
-    Mica.StatisticsDto.Builder builder = Mica.StatisticsDto.newBuilder();
-
-    if(stats.hasSum()) builder.setSum(Double.valueOf(stats.getSum()).floatValue());
-    if(stats.hasMin() && stats.getMin() != Double.POSITIVE_INFINITY)
-      builder.setMin(Double.valueOf(stats.getMin()).floatValue());
-    if(stats.hasMax() && stats.getMax() != Double.NEGATIVE_INFINITY)
-      builder.setMax(Double.valueOf(stats.getMax()).floatValue());
-    if(stats.hasMean() && !Double.isNaN(stats.getMean())) builder.setMean(Double.valueOf(stats.getMean()).floatValue());
-    if(stats.hasSumsq() && !Double.isNaN(stats.getSumsq()))
-      builder.setSumOfSquares(Double.valueOf(stats.getSumsq()).floatValue());
-    if(stats.hasVariance() && !Double.isNaN(stats.getVariance()))
-      builder.setVariance(Double.valueOf(stats.getVariance()).floatValue());
-    if(stats.hasStdDev() && !Double.isNaN(stats.getStdDev()))
-      builder.setStdDeviation(Double.valueOf(stats.getStdDev()).floatValue());
-
-    aggDto.setStatistics(builder);
-
-    if(summary.getFrequenciesCount() > 0) {
-      summary.getFrequenciesList().forEach(freq -> aggDto.addFrequencies(asDto(freq)));
-    }
-
-    if (summary.getIntervalFrequencyCount() > 0) {
-      summary.getIntervalFrequencyList().forEach(inter -> aggDto.addIntervalFrequencies(asDto(inter)));
-    }
-
-    int total = 0;
-    if(summary.getFrequenciesCount() > 0) {
-      for(Math.FrequencyDto freq : summary.getFrequenciesList()) {
-        total += freq.getFreq();
-      }
-    }
-    aggDto.setTotal(total);
-
-    return aggDto;
+    return crossDtoBuilder;
   }
 
   private Mica.DatasetDto.Builder asBuilder(Dataset dataset) {

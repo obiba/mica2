@@ -16,17 +16,14 @@ import org.apache.commons.math3.util.Pair;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.mica.core.source.ExcelTableSource;
 import org.obiba.mica.core.source.OpalTableSource;
-import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.service.FileSystemService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.micaConfig.service.PluginsService;
-import org.obiba.mica.spi.source.StudyTableFileSource;
-import org.obiba.mica.spi.source.StudyTableSource;
-import org.obiba.mica.spi.source.StudyTableSourceService;
-import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.spi.source.*;
 import org.obiba.mica.study.domain.Study;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +31,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.io.InputStream;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -44,6 +40,9 @@ import java.util.concurrent.TimeUnit;
 public class StudyTableSourceServiceRegistry {
 
   private static final Logger log = LoggerFactory.getLogger(StudyTableSourceServiceRegistry.class);
+
+  @Inject
+  private MicaConfigService micaConfigService;
 
   @Inject
   private PluginsService pluginsService;
@@ -59,23 +58,27 @@ public class StudyTableSourceServiceRegistry {
 
   private Cache<String, StudyTableSource> sourcesCache = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(1, TimeUnit.MINUTES).build();
 
-  public synchronized StudyTableSource makeStudyTableSource(Dataset dataset, BaseStudy study, String source) {
+  public synchronized StudyTableSource makeStudyTableSource(IDataset dataset, IStudy study, String source) {
+    StudyTableContext context = new StudyTableContext(dataset, study, micaConfigService.getConfig().getPrivacyThreshold());
+
     String cacheKey = String.format("%s::%s", study.getId(), source);
     try {
-      return sourcesCache.get(cacheKey, () -> makeStudyTableSourceInternal(dataset, study, source));
+      return sourcesCache.get(cacheKey, () -> makeStudyTableSourceInternal(context, source));
     } catch (ExecutionException e) {
       throw new RuntimeException(e.getCause());
     }
   }
-  private StudyTableSource makeStudyTableSourceInternal(Dataset dataset, BaseStudy study, String source) {
+  private StudyTableSource makeStudyTableSourceInternal(StudyTableContext context, String source) {
     if (OpalTableSource.isFor(source)) {
       OpalTableSource tableSource = OpalTableSource.fromURN(source);
-      tableSource.initialise(opalService, study.getOpal());
+      tableSource.setStudyTableContext(context);
+      tableSource.initialise(opalService);
       return tableSource;
     }
     if (ExcelTableSource.isFor(source)) {
       ExcelTableSource tableSource = ExcelTableSource.fromURN(source);
-      tableSource.initialise(getFileInputStream(dataset, study, tableSource.getPath()));
+      tableSource.setStudyTableContext(context);
+      tableSource.initialise(getFileInputStream(context, tableSource.getPath()));
       return tableSource;
     }
     Optional<StudyTableSourceService> serviceOptional = pluginsService.getStudyTableSourceServices().stream()
@@ -83,25 +86,26 @@ public class StudyTableSourceServiceRegistry {
     if (serviceOptional.isPresent()) {
       // TODO add a context to the study table source
       StudyTableSource tableSource = serviceOptional.get().makeSource(source);
+      tableSource.setStudyTableContext(context);
       if (tableSource instanceof StudyTableFileSource) {
         StudyTableFileSource fileSource = (StudyTableFileSource)tableSource;
-        fileSource.initialise(getFileInputStream(dataset, study, fileSource.getPath()));
+        fileSource.initialise(getFileInputStream(context, fileSource.getPath()));
       }
       return tableSource;
     }
     throw new NoSuchElementException("Missing study-table-source plugin to handle source: " + source);
   }
 
-  private InputStream getFileInputStream(Dataset dataset, BaseStudy study, String path) {
+  private InputStream getFileInputStream(StudyTableContext context, String path) {
     String fullPath = path;
-    Optional<AttachmentState> attachmentState = Optional.empty();
+    Optional<AttachmentState> attachmentState;
     if (!fullPath.startsWith("/")) {
       // not a full path, then it may be relative to the dataset's folder
-      fullPath = String.format("/%s-dataset/%s/%s", (dataset instanceof StudyDataset ? "collected" : "harmonized"), dataset.getId(), path);
+      fullPath = String.format("/%s-dataset/%s/%s", (context.getDataset() instanceof StudyDataset ? "collected" : "harmonized"), context.getDataset().getId(), path);
       attachmentState = getAttachmentState(fullPath);
       // not found, then try a path relative to the study's folder
       if (!attachmentState.isPresent()) {
-        fullPath = String.format("/%s-study/%s/%s", (study instanceof Study ? "individual" : "harmonization"), study.getId(), path);
+        fullPath = String.format("/%s-study/%s/%s", (context.getStudy() instanceof Study ? "individual" : "harmonization"), context.getStudy().getId(), path);
         attachmentState = getAttachmentState(fullPath);
       }
     } else {

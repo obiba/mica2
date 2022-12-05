@@ -35,7 +35,6 @@ import org.obiba.mica.dataset.event.DatasetDeletedEvent;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
-import org.obiba.mica.dataset.service.support.QueryTermsUtil;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
@@ -50,7 +49,7 @@ import org.obiba.mica.study.event.DraftStudyPopulationDceWeightChangedEvent;
 import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
-import org.obiba.opal.web.model.Search;
+import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -428,20 +427,14 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
   }
 
   @Cacheable(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver", key = "#variableName")
-  public SummaryStatisticsWrapper getVariableSummary(@NotNull StudyDataset dataset, String variableName)
-    throws NoSuchValueTableException, NoSuchVariableException {
+  public Mica.DatasetVariableAggregationDto getVariableSummary(@NotNull StudyDataset dataset, String variableName) {
     log.info("Caching variable summary {} {}", dataset.getId(), variableName);
-    return new SummaryStatisticsWrapper(getStudyTableSource(dataset, dataset.getSafeStudyTable()).getVariableSummary(variableName));
+    return getStudyTableSource(dataset, dataset.getSafeStudyTable()).getVariableSummary(variableName);
   }
 
-  public Search.QueryResultDto getFacets(@NotNull StudyDataset dataset, Search.QueryTermsDto query)
-    throws NoSuchValueTableException, NoSuchVariableException {
-    return getStudyTableSource(dataset, dataset.getSafeStudyTable()).getFacets(query);
-  }
-
-  public Search.QueryResultDto getContingencyTable(@NotNull StudyDataset dataset, DatasetVariable variable,
-    DatasetVariable crossVariable) throws NoSuchValueTableException, NoSuchVariableException {
-    return getFacets(dataset, QueryTermsUtil.getContingencyQuery(variable, crossVariable));
+  public Mica.DatasetVariableContingencyDto getContingencyTable(@NotNull StudyDataset dataset, DatasetVariable variable,
+                                                                DatasetVariable crossVariable) throws NoSuchValueTableException, NoSuchVariableException {
+    return getStudyTableSource(dataset, dataset.getSafeStudyTable()).getContingency(variable, crossVariable);
   }
 
   public void delete(String id) {

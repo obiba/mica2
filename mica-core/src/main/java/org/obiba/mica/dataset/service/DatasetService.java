@@ -12,8 +12,6 @@ package org.obiba.mica.dataset.service;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
-import com.google.protobuf.GeneratedMessage;
-import net.sf.ehcache.pool.sizeof.annotations.IgnoreSizeOf;
 import org.obiba.magma.*;
 import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.EntityState;
@@ -26,18 +24,13 @@ import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.spi.source.StudyTableSource;
-import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.service.StudyService;
-import org.obiba.opal.web.model.Math;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -152,73 +145,4 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
     }
   }
 
-  /**
-   * Helper class to serialize protobuf object extension.
-   */
-  public static class SummaryStatisticsWrapper implements Serializable {
-    @IgnoreSizeOf
-    private org.obiba.opal.web.model.Math.SummaryStatisticsDto summary;
-
-    public SummaryStatisticsWrapper(Math.SummaryStatisticsDto summary) {
-      this.summary = summary;
-    }
-
-    public Math.SummaryStatisticsDto getWrappedDto() {
-      return summary;
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-      summary = (Math.SummaryStatisticsDto)in.readObject();
-      GeneratedMessage ext = (GeneratedMessage)in.readObject();
-
-      if (ext == null) return;
-
-      Math.SummaryStatisticsDto.Builder builder = summary.toBuilder();
-
-      if(ext instanceof Math.CategoricalSummaryDto)
-        builder.setExtension(Math.CategoricalSummaryDto.categorical, (Math.CategoricalSummaryDto) ext);
-      else if(ext instanceof Math.ContinuousSummaryDto)
-        builder.setExtension(Math.ContinuousSummaryDto.continuous, (Math.ContinuousSummaryDto) ext);
-      else if(ext instanceof Math.DefaultSummaryDto)
-        builder.setExtension(Math.DefaultSummaryDto.defaultSummary, (Math.DefaultSummaryDto) ext);
-      else if(ext instanceof Math.TextSummaryDto)
-        builder.setExtension(Math.TextSummaryDto.textSummary, (Math.TextSummaryDto) ext);
-      else if(ext instanceof Math.GeoSummaryDto)
-        builder.setExtension(Math.GeoSummaryDto.geoSummary, (Math.GeoSummaryDto) ext);
-      else if(ext instanceof Math.BinarySummaryDto)
-        builder.setExtension(Math.BinarySummaryDto.binarySummary, (Math.BinarySummaryDto) ext);
-
-      summary = builder.build();
-    }
-
-    private void writeObject(java.io.ObjectOutputStream stream)
-      throws IOException {
-      GeneratedMessage ext = null;
-
-      Math.SummaryStatisticsDto.Builder builder = Math.SummaryStatisticsDto.newBuilder(summary);
-
-      if(summary.hasExtension(Math.CategoricalSummaryDto.categorical)) {
-        ext = summary.getExtension(Math.CategoricalSummaryDto.categorical);
-        builder.clearExtension(Math.CategoricalSummaryDto.categorical);
-      } else if(summary.hasExtension(Math.ContinuousSummaryDto.continuous)) {
-        ext = summary.getExtension(Math.ContinuousSummaryDto.continuous);
-        builder.clearExtension(Math.ContinuousSummaryDto.continuous);
-      } else if(summary.hasExtension(Math.DefaultSummaryDto.defaultSummary)) {
-        ext = summary.getExtension(Math.DefaultSummaryDto.defaultSummary);
-        builder.clearExtension(Math.DefaultSummaryDto.defaultSummary);
-      } else if(summary.hasExtension(Math.TextSummaryDto.textSummary)) {
-        ext = summary.getExtension(Math.TextSummaryDto.textSummary);
-        builder.clearExtension(Math.TextSummaryDto.textSummary);
-      } else if(summary.hasExtension(Math.GeoSummaryDto.geoSummary)) {
-        ext = summary.getExtension(Math.GeoSummaryDto.geoSummary);
-        builder.clearExtension(Math.GeoSummaryDto.geoSummary);
-      } else if(summary.hasExtension(Math.BinarySummaryDto.binarySummary)) {
-        ext = summary.getExtension(Math.BinarySummaryDto.binarySummary);
-        builder.clearExtension(Math.BinarySummaryDto.binarySummary);
-      }
-
-      stream.writeObject(builder.build());
-      stream.writeObject(ext);
-    }
-  }
 }

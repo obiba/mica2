@@ -24,13 +24,14 @@ import org.obiba.mica.core.domain.LocalizedString;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
+import org.obiba.mica.spi.source.IDataset;
 
 import java.util.Map;
 
 /**
  * Proxy to value tables.
  */
-public abstract class Dataset extends AbstractModelAware implements AttributeAware, Indexable {
+public abstract class Dataset extends AbstractModelAware implements AttributeAware, Indexable, IDataset {
 
   private static final long serialVersionUID = -3328963766855899217L;
 

@@ -10,19 +10,16 @@
 
 package org.obiba.mica.dataset.rest.collection;
 
-import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
-import org.obiba.opal.web.model.Math;
-import org.obiba.opal.web.model.Search;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
+import javax.ws.rs.GET;
 
 @Component
 @Scope("request")
@@ -41,12 +38,6 @@ public class DraftCollectedDatasetVariableResource implements DatasetVariableRes
   @GET
   public Mica.DatasetVariableDto getVariable() {
     return dtos.asDto(datasetService.getDatasetVariable(getDataset(), variableName));
-  }
-
-  @GET
-  @Path("/summary")
-  public Math.SummaryStatisticsDto getVariableSummary() {
-    return datasetService.getVariableSummary(getDataset(), variableName).getWrappedDto();
   }
 
   private StudyDataset getDataset() {

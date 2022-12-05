@@ -15,15 +15,16 @@ import com.google.common.base.Strings;
 import org.obiba.magma.ValueTable;
 import org.obiba.magma.datasource.excel.ExcelDatasource;
 import org.obiba.magma.support.Initialisables;
+import org.obiba.mica.spi.source.AbstractStudyTableSource;
+import org.obiba.mica.spi.source.IVariable;
 import org.obiba.mica.spi.source.StudyTableFileSource;
-import org.obiba.opal.web.model.Math;
-import org.obiba.opal.web.model.Search;
+import org.obiba.mica.web.model.Mica;
 
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
 import java.util.List;
 
-public class ExcelTableSource implements StudyTableFileSource {
+public class ExcelTableSource extends AbstractStudyTableSource implements StudyTableFileSource {
 
   @NotNull
   private String path;
@@ -76,12 +77,12 @@ public class ExcelTableSource implements StudyTableFileSource {
   }
 
   @Override
-  public Search.QueryResultDto getFacets(Search.QueryTermsDto query) {
-    throw new UnsupportedOperationException("Facet search not available from an Excel file");
+  public Mica.DatasetVariableContingencyDto getContingency(IVariable variable, IVariable crossVariable) {
+    throw new UnsupportedOperationException("Contingency search not available from an Excel file");
   }
 
   @Override
-  public Math.SummaryStatisticsDto getVariableSummary(String variableName) {
+  public Mica.DatasetVariableAggregationDto getVariableSummary(String variableName) {
     throw new UnsupportedOperationException("Summary statistics not available from an Excel file");
   }
 

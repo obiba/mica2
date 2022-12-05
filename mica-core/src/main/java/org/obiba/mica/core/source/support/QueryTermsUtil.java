@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 OBiBa. All rights reserved.
+ * Copyright (c) 2022 OBiBa. All rights reserved.
  *
  * This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0.
@@ -8,23 +8,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.service.support;
-
-import java.util.List;
-
-import org.obiba.magma.type.BooleanType;
-import org.obiba.mica.dataset.domain.DatasetVariable;
-import org.obiba.opal.web.model.Search;
+package org.obiba.mica.core.source.support;
 
 import com.google.common.collect.Lists;
+import org.obiba.magma.type.BooleanType;
+import org.obiba.mica.spi.source.IVariable;
+import org.obiba.opal.web.model.Search;
+
+import java.util.List;
 
 public class QueryTermsUtil {
 
   public static final String TOTAL_FACET = "_total";
 
-  private QueryTermsUtil() {}
+  private QueryTermsUtil() {
+  }
 
-  public static Search.QueryTermsDto getContingencyQuery(DatasetVariable variable, DatasetVariable crossVariable) {
+  public static Search.QueryTermsDto getContingencyQuery(IVariable variable, IVariable crossVariable) {
     Search.QueryTermsDto.Builder queries = Search.QueryTermsDto.newBuilder();
 
     // for each category, make a facet query
@@ -40,7 +40,7 @@ public class QueryTermsUtil {
   // Private methods
   //
 
-  private static Search.QueryTermDto getQueryTerm(DatasetVariable variable, DatasetVariable crossVariable, String facetName) {
+  private static Search.QueryTermDto getQueryTerm(IVariable variable, IVariable crossVariable, String facetName) {
     Search.QueryTermDto.Builder query = Search.QueryTermDto.newBuilder();
     query.setFacet(facetName);
 
@@ -51,7 +51,7 @@ public class QueryTermsUtil {
     return query.build();
   }
 
-  private static Search.QueryTermDto getTotalTerm(DatasetVariable variable, DatasetVariable crossVariable) {
+  private static Search.QueryTermDto getTotalTerm(IVariable variable, IVariable crossVariable) {
     Search.QueryTermDto.Builder query = Search.QueryTermDto.newBuilder();
     query.setFacet(TOTAL_FACET);
 
@@ -80,13 +80,13 @@ public class QueryTermsUtil {
     return term.build();
   }
 
-  private static List<String> getCategories(DatasetVariable variable) {
+  private static List<String> getCategories(IVariable variable) {
     List<String> categories = Lists.newArrayList();
-    if(variable.getValueType().equals(BooleanType.get().getName())) {
+    if (variable.getValueType().equals(BooleanType.get().getName())) {
       categories.add("true");
       categories.add("false");
-    } else if(variable.hasCategories()) {
-      variable.getCategories().forEach(c -> categories.add(c.getName()));
+    } else if (variable.hasCategories()) {
+      categories = variable.getCategoryNames();
     }
     return categories;
   }

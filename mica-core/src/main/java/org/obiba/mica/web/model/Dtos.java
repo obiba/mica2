@@ -428,19 +428,13 @@ public class Dtos {
 
   @NotNull
   public Mica.DatasetVariableAggregationDto.Builder asDto(@NotNull BaseStudyTable studyTable,
-    @Nullable Math.SummaryStatisticsDto summary, boolean withStudySummary) {
+    @Nullable Mica.DatasetVariableAggregationDto summary, boolean withStudySummary) {
     return datasetDtos.asDto(studyTable, summary, withStudySummary);
   }
 
   @NotNull
-  public Mica.DatasetVariableAggregationDto.Builder asDto(@NotNull Math.SummaryStatisticsDto summary) {
-    return datasetDtos.simpleAggregationDto(Mica.DatasetVariableAggregationDto.newBuilder(), summary);
-  }
-
-  @NotNull
-  public Mica.DatasetVariableContingencyDto.Builder asContingencyDto(BaseStudyTable studyTable, DatasetVariable variable,
-                                                                     DatasetVariable crossVariable, @Nullable Search.QueryResultDto results) {
-    return datasetDtos.asContingencyDto(studyTable, variable, crossVariable, results);
+  public Mica.DatasetVariableContingencyDto.Builder asContingencyDto(BaseStudyTable studyTable, @Nullable Mica.DatasetVariableContingencyDto results) {
+    return datasetDtos.asContingencyDto(studyTable, results);
   }
 
   @NotNull

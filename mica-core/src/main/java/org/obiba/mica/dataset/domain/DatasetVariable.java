@@ -13,10 +13,12 @@ package org.obiba.mica.dataset.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
+import org.apache.commons.compress.utils.Lists;
 import org.obiba.magma.Variable;
 import org.obiba.magma.support.VariableNature;
 import org.obiba.mica.core.domain.*;
 import org.obiba.mica.spi.search.Indexable;
+import org.obiba.mica.spi.source.IVariable;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
@@ -29,7 +31,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
-public class DatasetVariable implements Indexable, AttributeAware {
+public class DatasetVariable implements Indexable, AttributeAware, IVariable {
 
   private static final long serialVersionUID = -141834508275072637L;
 
@@ -239,6 +241,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
     return unit;
   }
 
+  @Override
   public String getValueType() {
     return valueType;
   }
@@ -259,6 +262,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
     return occurrenceGroup;
   }
 
+  @Override
   public boolean hasCategories() {
     return categories != null && !categories.isEmpty();
   }
@@ -267,6 +271,13 @@ public class DatasetVariable implements Indexable, AttributeAware {
     return categories;
   }
 
+  @Override
+  public List<String> getCategoryNames() {
+    if (!hasCategories()) return Lists.newArrayList();
+    return categories.stream().map(DatasetCategory::getName).collect(Collectors.toList());
+  }
+
+  @Override
   public DatasetCategory getCategory(String name) {
     if (!hasCategories()) return null;
 

@@ -63,17 +63,6 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   }
 
   @GET
-  @Path("/summary")
-  @Timed
-  public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary() {
-    checkDatasetAccess();
-    checkVariableSummaryAccess();
-    return datasetService
-      .getVariableSummary(getDataset(HarmonizationDataset.class, datasetId), variableName, studyId, source)
-      .getWrappedDto();
-  }
-
-  @GET
   @Path("/aggregation")
   @Timed
   public Mica.DatasetVariableAggregationDto getVariableAggregations(@QueryParam("study") @DefaultValue("true") boolean withStudySummary) {
@@ -84,7 +73,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
       if (baseTable.isFor(studyId, source)) {
         try {
           return dtos.asDto(baseTable,
-            datasetService.getVariableSummary(dataset, variableName, studyId, source).getWrappedDto(), withStudySummary).build();
+            datasetService.getVariableSummary(dataset, variableName, studyId, source), withStudySummary).build();
         } catch (Exception e) {
           log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
           return dtos.asDto(baseTable, null, withStudySummary).build();
@@ -111,11 +100,10 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
     for (BaseStudyTable baseTable : dataset.getBaseStudyTables()) {
       if (baseTable.isFor(studyId, source)) {
         try {
-          return dtos.asContingencyDto(baseTable, var, crossVar,
-            datasetService.getContingencyTable(dataset, baseTable, var, crossVar)).build();
+          return dtos.asContingencyDto(baseTable, datasetService.getContingencyTable(dataset, baseTable, var, crossVar)).build();
         } catch (Exception e) {
           log.warn("Unable to retrieve contingency table: " + e.getMessage(), e);
-          return dtos.asContingencyDto(baseTable, var, crossVar, null).build();
+          return dtos.asContingencyDto(baseTable, null).build();
         }
       }
     }

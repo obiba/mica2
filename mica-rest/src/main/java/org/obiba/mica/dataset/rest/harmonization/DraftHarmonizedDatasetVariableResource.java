@@ -10,10 +10,6 @@
 
 package org.obiba.mica.dataset.rest.harmonization;
 
-import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.service.HarmonizedDatasetService;
@@ -21,6 +17,9 @@ import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
+import javax.ws.rs.GET;
 
 @Component
 @Scope("request")
@@ -43,12 +42,6 @@ public class DraftHarmonizedDatasetVariableResource implements DatasetVariableRe
   @GET
   public Mica.DatasetVariableDto getVariable() {
     return dtos.asDto(datasetService.getDatasetVariable(getDataset(), variableName, studyId, source));
-  }
-
-  @GET
-  @Path("/summary")
-  public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary() {
-    return datasetService.getVariableSummary(getDataset(), variableName, studyId, source).getWrappedDto();
   }
 
   public void setStudyId(String studyId) {

@@ -49,24 +49,6 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
   }
 
   @GET
-  @Path("/summary")
-  public List<Math.SummaryStatisticsDto> getVariableSummaries() {
-    ImmutableList.Builder<Math.SummaryStatisticsDto> builder = ImmutableList.builder();
-    HarmonizationDataset dataset = getDataset();
-    dataset.getBaseStudyTables().forEach(table -> {
-      try {
-        String studyId = table.getStudyId();
-        builder.add(datasetService
-          .getVariableSummary(dataset, variableName, studyId, table.getSource())
-          .getWrappedDto());
-      } catch(NoSuchVariableException | NoSuchValueTableException e) {
-        // ignore (case the study has not implemented this dataschema variable)
-      }
-    });
-    return builder.build();
-  }
-
-  @GET
   @Path("/harmonizations")
   public List<Mica.DatasetVariableDto> getHarmonizedVariables() {
     ImmutableList.Builder<Mica.DatasetVariableDto> builder = ImmutableList.builder();

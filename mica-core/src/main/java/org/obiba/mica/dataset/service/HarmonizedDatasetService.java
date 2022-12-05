@@ -31,7 +31,6 @@ import org.obiba.mica.dataset.event.DatasetDeletedEvent;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
-import org.obiba.mica.dataset.service.support.QueryTermsUtil;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
@@ -43,7 +42,7 @@ import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
-import org.obiba.opal.web.model.Search;
+import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -377,28 +376,21 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
       getTable(dataset, studyId, source).getVariableValueSource(variableName).getVariable());
   }
 
-  @Cacheable(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver",
-    key = "#variableName + ':' + #studyId + ':' + #source")
-  public SummaryStatisticsWrapper getVariableSummary(@NotNull HarmonizationDataset dataset, String variableName, String studyId, String source)
-    throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
-    log.info("Caching variable summary {} {} {} {} {}", dataset.getId(), variableName, studyId, source);
+  @Cacheable(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver", key = "#variableName + ':' + #studyId + ':' + #source")
+  public Mica.DatasetVariableAggregationDto getVariableSummary(@NotNull HarmonizationDataset dataset, String variableName, String studyId, String source) {
     for(BaseStudyTable baseTable : dataset.getBaseStudyTables()) {
       if(baseTable.isFor(studyId, source)) {
-        return new SummaryStatisticsWrapper(getStudyTableSource(dataset, baseTable).getVariableSummary(variableName));
+        log.info("Caching variable summary {} {} {} {} {}", dataset.getId(), variableName, studyId, source);
+        return getStudyTableSource(dataset, baseTable).getVariableSummary(variableName);
       }
     }
 
     throw NoSuchStudyException.withId(studyId);
   }
 
-  public Search.QueryResultDto getFacets(@NotNull HarmonizationDataset dataset, Search.QueryTermsDto query, BaseStudyTable studyTable)
-    throws NoSuchStudyException, NoSuchValueTableException {
-    return getStudyTableSource(dataset, studyTable).getFacets(query);
-  }
-
-  public Search.QueryResultDto getContingencyTable(@NotNull HarmonizationDataset dataset, @NotNull BaseStudyTable studyTable, DatasetVariable variable,
-                                                   DatasetVariable crossVariable) throws NoSuchStudyException, NoSuchValueTableException {
-    return getFacets(dataset, QueryTermsUtil.getContingencyQuery(variable, crossVariable), studyTable);
+  public Mica.DatasetVariableContingencyDto getContingencyTable(@NotNull HarmonizationDataset dataset, @NotNull BaseStudyTable studyTable, DatasetVariable variable,
+                                                                DatasetVariable crossVariable) throws NoSuchStudyException, NoSuchValueTableException {
+    return getStudyTableSource(dataset, studyTable).getContingency(variable, crossVariable);
   }
 
   @Override

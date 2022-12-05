@@ -11,8 +11,7 @@
 package org.obiba.mica.spi.source;
 
 import org.obiba.magma.ValueTable;
-import org.obiba.opal.web.model.Math;
-import org.obiba.opal.web.model.Search;
+import org.obiba.mica.web.model.Mica;
 
 /**
  * Describes the parameters to establish a connection with a Datasource
@@ -35,12 +34,13 @@ public interface StudyTableSource {
   ValueTable getValueTable();
 
   /**
-   * Make a facet search, to retrieve contingency table results.
+   * Make a contingency query and return results.
    *
-   * @param query
+   * @param variable
+   * @param crossVariable
    * @return
    */
-  Search.QueryResultDto getFacets(Search.QueryTermsDto query);
+  Mica.DatasetVariableContingencyDto getContingency(IVariable variable, IVariable crossVariable);
 
   /**
    * Get a variable summary statistics.
@@ -48,7 +48,7 @@ public interface StudyTableSource {
    * @param variableName
    * @return
    */
-  Math.SummaryStatisticsDto getVariableSummary(String variableName);
+  Mica.DatasetVariableAggregationDto getVariableSummary(String variableName);
 
   /**
    * URN representation of a value table source, indicates the identifier of the value table, in the namespace of the source.
@@ -56,5 +56,7 @@ public interface StudyTableSource {
    * @return
    */
   String getURN();
+
+  void setStudyTableContext(StudyTableContext context);
 
 }

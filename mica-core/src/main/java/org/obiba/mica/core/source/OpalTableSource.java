@@ -12,8 +12,12 @@ package org.obiba.mica.core.source;
 
 import com.google.common.base.Strings;
 import org.obiba.magma.ValueTable;
+import org.obiba.mica.core.source.support.OpalDtos;
+import org.obiba.mica.core.source.support.QueryTermsUtil;
 import org.obiba.mica.micaConfig.service.OpalService;
-import org.obiba.mica.spi.source.StudyTableSource;
+import org.obiba.mica.spi.source.AbstractStudyTableSource;
+import org.obiba.mica.spi.source.IVariable;
+import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.rest.client.magma.RestDatasource;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Math;
@@ -24,7 +28,7 @@ import javax.validation.constraints.NotNull;
 /**
  * Connector to an Opal server, to retrieve value table and summary statistics.
  */
-public class OpalTableSource implements StudyTableSource {
+public class OpalTableSource extends AbstractStudyTableSource {
 
   private OpalService opalService;
 
@@ -59,13 +63,17 @@ public class OpalTableSource implements StudyTableSource {
   }
 
   @Override
-  public Search.QueryResultDto getFacets(Search.QueryTermsDto query) {
-    return getRestValueTable().getFacets(query);
+  public Mica.DatasetVariableContingencyDto getContingency(IVariable variable, IVariable crossVariable) {
+    Search.QueryTermsDto query = QueryTermsUtil.getContingencyQuery(variable, crossVariable);
+    Search.QueryResultDto results = getRestValueTable().getFacets(query);
+    return OpalDtos.asDto(variable, crossVariable, getContext().getPrivacyThreshold(), results);
   }
 
   @Override
-  public Math.SummaryStatisticsDto getVariableSummary(String variableName) {
-    return ((RestValueTable.RestVariableValueSource)getRestValueTable().getVariableValueSource(variableName)).getSummary();
+  public Mica.DatasetVariableAggregationDto getVariableSummary(String variableName) {
+    RestValueTable.RestVariableValueSource variableValueSource = (RestValueTable.RestVariableValueSource) getRestValueTable().getVariableValueSource(variableName);
+    Math.SummaryStatisticsDto results = variableValueSource.getSummary();
+    return OpalDtos.asDto(results);
   }
 
   @Override
@@ -99,9 +107,9 @@ public class OpalTableSource implements StudyTableSource {
     return source.replace("urn:opal:", "");
   }
 
-  public void initialise(OpalService opalService, String opalUrl) {
+  public void initialise(OpalService opalService) {
     this.opalService = opalService;
-    this.opalUrl = opalUrl;
+    this.opalUrl = getContext().getStudy().getOpal();
   }
 
   private RestDatasource getDatasource() {

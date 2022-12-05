@@ -17,8 +17,6 @@ import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import org.apache.commons.math3.util.Pair;
-import org.obiba.magma.NoSuchValueTableException;
-import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.DatasetVariable;
@@ -26,8 +24,6 @@ import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
 import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.web.model.Mica;
-import org.obiba.opal.web.model.Math;
-import org.obiba.opal.web.model.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -71,28 +67,6 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   }
 
   @GET
-  @Path("/summary")
-  @Timed
-  public List<Math.SummaryStatisticsDto> getVariableSummaries() {
-    checkDatasetAccess();
-    checkVariableSummaryAccess();
-    ImmutableList.Builder<Math.SummaryStatisticsDto> builder = ImmutableList.builder();
-    HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
-    dataset.getBaseStudyTables().forEach(table -> {
-      try {
-        String studyId = table.getStudyId();
-        builder.add(datasetService
-          .getVariableSummary(dataset, variableName, studyId, table.getSource())
-          .getWrappedDto());
-      } catch (NoSuchVariableException | NoSuchValueTableException e) {
-        // case the study has not implemented this dataschema variable
-        builder.add(Math.SummaryStatisticsDto.newBuilder().setResource(variableName).build());
-      }
-    });
-    return builder.build();
-  }
-
-  @GET
   @Path("/aggregation")
   @Timed
   public Mica.DatasetVariableAggregationsDto getVariableAggregations(@QueryParam("study") @DefaultValue("true") boolean withStudySummary) {
@@ -102,12 +76,12 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
     Mica.DatasetVariableAggregationsDto.Builder aggDto = Mica.DatasetVariableAggregationsDto.newBuilder();
 
-    List<Future<Math.SummaryStatisticsDto>> results = Lists.newArrayList();
+    List<Future<Mica.DatasetVariableAggregationDto>> results = Lists.newArrayList();
     dataset.getBaseStudyTables().forEach(table -> results.add(helper.getVariableFacet(dataset, variableName, table)));
 
     for (int i = 0; i < dataset.getBaseStudyTables().size(); i++) {
       BaseStudyTable opalTable = dataset.getBaseStudyTables().get(i);
-      Future<Math.SummaryStatisticsDto> futureResult = results.get(i);
+      Future<Mica.DatasetVariableAggregationDto> futureResult = results.get(i);
       try {
         builder.add(dtos.asDto(opalTable, futureResult.get(), withStudySummary).build());
       } catch (Exception e) {
@@ -204,25 +178,25 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
     Mica.DatasetVariableContingenciesDto.Builder crossDto = Mica.DatasetVariableContingenciesDto.newBuilder();
 
-    List<Future<Search.QueryResultDto>> results = Lists.newArrayList();
+    List<Future<Mica.DatasetVariableContingencyDto>> results = Lists.newArrayList();
     dataset.getBaseStudyTables().forEach(table -> results.add(helper.getContingencyTable(dataset, var, crossVar, table)));
 
     Multimap<String, Mica.DatasetVariableAggregationDto> termAggregations = LinkedListMultimap.create();
 
     for (int i = 0; i < dataset.getBaseStudyTables().size(); i++) {
-      BaseStudyTable opalTable = dataset.getBaseStudyTables().get(i);
-      Future<Search.QueryResultDto> futureResult = results.get(i);
+      BaseStudyTable studyTable = dataset.getBaseStudyTables().get(i);
+      Future<Mica.DatasetVariableContingencyDto> futureResult = results.get(i);
 
       try {
         Mica.DatasetVariableContingencyDto studyTableCrossDto = dtos
-          .asContingencyDto(opalTable, var, crossVar, futureResult.get()).build();
+          .asContingencyDto(studyTable, futureResult.get()).build();
         termAggregations.put(null, studyTableCrossDto.getAll());
         studyTableCrossDto.getAggregationsList()
           .forEach(termAggDto -> termAggregations.put(termAggDto.getTerm(), termAggDto));
         crossDto.addContingencies(studyTableCrossDto);
       } catch (Exception e) {
         log.warn("Unable to retrieve contingency table: " + e.getMessage(), e);
-        crossDto.addContingencies(dtos.asContingencyDto(opalTable, var, crossVar, null));
+        crossDto.addContingencies(dtos.asContingencyDto(studyTable, null));
       }
     }
 
@@ -263,13 +237,11 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     protected HarmonizedDatasetService datasetService;
 
     @Async
-    protected Future<Math.SummaryStatisticsDto> getVariableFacet(HarmonizationDataset dataset, String variableName,
+    protected Future<Mica.DatasetVariableAggregationDto> getVariableFacet(HarmonizationDataset dataset, String variableName,
                                                                  BaseStudyTable table) {
       try {
         String studyId = table.getStudyId();
-        return new AsyncResult<>(datasetService
-          .getVariableSummary(dataset, variableName, studyId, table.getSource())
-          .getWrappedDto());
+        return new AsyncResult<>(datasetService.getVariableSummary(dataset, variableName, studyId, table.getSource()));
       } catch (Exception e) {
         log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
         return new AsyncResult<>(null);
@@ -277,7 +249,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     }
 
     @Async
-    protected Future<Search.QueryResultDto> getContingencyTable(HarmonizationDataset dataset, DatasetVariable var,
+    protected Future<Mica.DatasetVariableContingencyDto> getContingencyTable(HarmonizationDataset dataset, DatasetVariable var,
                                                                 DatasetVariable crossVar, BaseStudyTable studyTable) {
       try {
         return new AsyncResult<>(datasetService.getContingencyTable(dataset, studyTable, var, crossVar));

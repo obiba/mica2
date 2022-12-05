@@ -16,8 +16,9 @@ import org.obiba.magma.Category;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.AttributeAware;
 import org.obiba.mica.core.domain.Attributes;
+import org.obiba.mica.spi.source.ICategory;
 
-public class DatasetCategory implements AttributeAware {
+public class DatasetCategory implements AttributeAware, ICategory {
 
   private String name;
 
@@ -37,10 +38,12 @@ public class DatasetCategory implements AttributeAware {
     }
   }
 
+  @Override
   public String getName() {
     return name;
   }
 
+  @Override
   public boolean isMissing() {
     return missing;
   }

@@ -74,7 +74,7 @@ public class PublishedDatasetResource {
   @Path("/collected/{project}/{table}/{variableName}/_summary")
   public Mica.DatasetVariableAggregationDto getVariableSummary(@PathParam("id") String id, @PathParam("project") String project, @PathParam("table") String table, @PathParam("variableName") String variableName) {
     checkVariableSummaryAccess();
-    return dtos.asDto(collectedDatasetService.getVariableSummary(alternativeStudyDataset(id, project, table), variableName).getWrappedDto()).build();
+    return collectedDatasetService.getVariableSummary(alternativeStudyDataset(id, project, table), variableName);
   }
 
   private Dataset getDataset(String id) {
