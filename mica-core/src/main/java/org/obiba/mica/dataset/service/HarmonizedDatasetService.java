@@ -345,7 +345,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
 
   @Override
   protected ValueTable getValueTable(@NotNull HarmonizationDataset dataset) throws NoSuchValueTableException {
-    return getStudyTableSource(dataset.getSafeHarmonizationTable()).getValueTable();
+    return getStudyTableSource(dataset, dataset.getSafeHarmonizationTable()).getValueTable();
   }
 
   @Override
@@ -357,18 +357,18 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
   @Override
   public DatasetVariable getDatasetVariable(HarmonizationDataset dataset, String variableName)
     throws NoSuchValueTableException, NoSuchVariableException {
-    return new DatasetVariable(dataset, getStudyTableSource(dataset.getSafeHarmonizationTable()).getValueTable().getVariable(variableName));
+    return new DatasetVariable(dataset, getStudyTableSource(dataset, dataset.getSafeHarmonizationTable()).getValueTable().getVariable(variableName));
   }
 
   public Iterable<DatasetVariable> getDatasetVariables(HarmonizationDataset dataset, BaseStudyTable studyTable)
     throws NoSuchStudyException, NoSuchValueTableException {
-    return StreamSupport.stream(getVariables(studyTable).spliterator(), false)
+    return StreamSupport.stream(getVariables(dataset, studyTable).spliterator(), false)
       .map(input -> new DatasetVariable(dataset, input, studyTable)).collect(toList());
   }
 
   public DatasetVariable getDatasetVariable(HarmonizationDataset dataset, String variableName, BaseStudyTable studyTable)
     throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
-    return new DatasetVariable(dataset, getStudyTableSource(studyTable).getValueTable().getVariable(variableName));
+    return new DatasetVariable(dataset, getStudyTableSource(dataset, studyTable).getValueTable().getVariable(variableName));
   }
 
   public DatasetVariable getDatasetVariable(HarmonizationDataset dataset, String variableName, String studyId,
@@ -384,21 +384,21 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
     log.info("Caching variable summary {} {} {} {} {}", dataset.getId(), variableName, studyId, source);
     for(BaseStudyTable baseTable : dataset.getBaseStudyTables()) {
       if(baseTable.isFor(studyId, source)) {
-        return new SummaryStatisticsWrapper(getStudyTableSource(baseTable).getVariableSummary(variableName));
+        return new SummaryStatisticsWrapper(getStudyTableSource(dataset, baseTable).getVariableSummary(variableName));
       }
     }
 
     throw NoSuchStudyException.withId(studyId);
   }
 
-  public Search.QueryResultDto getFacets(Search.QueryTermsDto query, BaseStudyTable studyTable)
+  public Search.QueryResultDto getFacets(@NotNull HarmonizationDataset dataset, Search.QueryTermsDto query, BaseStudyTable studyTable)
     throws NoSuchStudyException, NoSuchValueTableException {
-    return getStudyTableSource(studyTable).getFacets(query);
+    return getStudyTableSource(dataset, studyTable).getFacets(query);
   }
 
-  public Search.QueryResultDto getContingencyTable(@NotNull BaseStudyTable studyTable, DatasetVariable variable,
+  public Search.QueryResultDto getContingencyTable(@NotNull HarmonizationDataset dataset, @NotNull BaseStudyTable studyTable, DatasetVariable variable,
                                                    DatasetVariable crossVariable) throws NoSuchStudyException, NoSuchValueTableException {
-    return getFacets(QueryTermsUtil.getContingencyQuery(variable, crossVariable), studyTable);
+    return getFacets(dataset, QueryTermsUtil.getContingencyQuery(variable, crossVariable), studyTable);
   }
 
   @Override
@@ -468,9 +468,9 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
     }
   }
 
-  private Iterable<Variable> getVariables(BaseStudyTable studyTable)
+  private Iterable<Variable> getVariables(@NotNull HarmonizationDataset dataset, BaseStudyTable studyTable)
     throws NoSuchDatasetException, NoSuchStudyException, NoSuchValueTableException {
-    return getStudyTableSource(studyTable).getValueTable().getVariables();
+    return getStudyTableSource(dataset, studyTable).getValueTable().getVariables();
   }
 
   private ValueTable getTable(@NotNull HarmonizationDataset dataset, String studyId, String source)
@@ -478,7 +478,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
 
     for(BaseStudyTable baseTable : dataset.getBaseStudyTables()) {
       if(baseTable.isFor(studyId, source)) {
-        return getStudyTableSource(baseTable).getValueTable();
+        return getStudyTableSource(dataset, baseTable).getValueTable();
       }
     }
 

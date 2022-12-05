@@ -172,7 +172,7 @@ public class DraftHarmonizedDatasetResource extends
     ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset();
     for (BaseStudyTable table : dataset.getBaseStudyTables()) {
-      builder.add(datasetService.getFacets(query, table));
+      builder.add(datasetService.getFacets(dataset, query, table));
     }
     return builder.build();
   }

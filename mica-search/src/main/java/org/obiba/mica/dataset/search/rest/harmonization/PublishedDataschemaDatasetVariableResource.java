@@ -280,7 +280,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     protected Future<Search.QueryResultDto> getContingencyTable(HarmonizationDataset dataset, DatasetVariable var,
                                                                 DatasetVariable crossVar, BaseStudyTable studyTable) {
       try {
-        return new AsyncResult<>(datasetService.getContingencyTable(studyTable, var, crossVar));
+        return new AsyncResult<>(datasetService.getContingencyTable(dataset, studyTable, var, crossVar));
       } catch (Exception e) {
         log.warn("Unable to retrieve contingency statistics: " + e.getMessage(), e);
         return new AsyncResult<>(null);

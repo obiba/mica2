@@ -16,6 +16,8 @@ import org.apache.commons.math3.util.Pair;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.mica.core.source.ExcelTableSource;
 import org.obiba.mica.core.source.OpalTableSource;
+import org.obiba.mica.dataset.domain.Dataset;
+import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.service.FileSystemService;
@@ -57,15 +59,15 @@ public class StudyTableSourceServiceRegistry {
 
   private Cache<String, StudyTableSource> sourcesCache = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(1, TimeUnit.MINUTES).build();
 
-  public synchronized StudyTableSource makeStudyTableSource(BaseStudy study, String source) {
+  public synchronized StudyTableSource makeStudyTableSource(Dataset dataset, BaseStudy study, String source) {
     String cacheKey = String.format("%s::%s", study.getId(), source);
     try {
-      return sourcesCache.get(cacheKey, () -> makeStudyTableSourceInternal(study, source));
+      return sourcesCache.get(cacheKey, () -> makeStudyTableSourceInternal(dataset, study, source));
     } catch (ExecutionException e) {
       throw new RuntimeException(e.getCause());
     }
   }
-  private StudyTableSource makeStudyTableSourceInternal(BaseStudy study, String source) {
+  private StudyTableSource makeStudyTableSourceInternal(Dataset dataset, BaseStudy study, String source) {
     if (OpalTableSource.isFor(source)) {
       OpalTableSource tableSource = OpalTableSource.fromURN(source);
       tableSource.initialise(opalService, study.getOpal());
@@ -73,7 +75,7 @@ public class StudyTableSourceServiceRegistry {
     }
     if (ExcelTableSource.isFor(source)) {
       ExcelTableSource tableSource = ExcelTableSource.fromURN(source);
-      tableSource.initialise(getFileInputStream(study, tableSource.getPath()));
+      tableSource.initialise(getFileInputStream(dataset, study, tableSource.getPath()));
       return tableSource;
     }
     Optional<StudyTableSourceService> serviceOptional = pluginsService.getStudyTableSourceServices().stream()
@@ -83,27 +85,43 @@ public class StudyTableSourceServiceRegistry {
       StudyTableSource tableSource = serviceOptional.get().makeSource(source);
       if (tableSource instanceof StudyTableFileSource) {
         StudyTableFileSource fileSource = (StudyTableFileSource)tableSource;
-        fileSource.initialise(getFileInputStream(study, fileSource.getPath()));
+        fileSource.initialise(getFileInputStream(dataset, study, fileSource.getPath()));
       }
       return tableSource;
     }
     throw new NoSuchElementException("Missing study-table-source plugin to handle source: " + source);
   }
 
-  private InputStream getFileInputStream(BaseStudy study, String path) {
+  private InputStream getFileInputStream(Dataset dataset, BaseStudy study, String path) {
     String fullPath = path;
+    Optional<AttachmentState> attachmentState = Optional.empty();
     if (!fullPath.startsWith("/")) {
-      // not a full path, then it is relative to the study's folder
-      fullPath = String.format("/%s-study/%s/%s", (study instanceof Study ? "individual" : "harmonization"), study.getId(), path);
+      // not a full path, then it may be relative to the dataset's folder
+      fullPath = String.format("/%s-dataset/%s/%s", (dataset instanceof StudyDataset ? "collected" : "harmonized"), dataset.getId(), path);
+      attachmentState = getAttachmentState(fullPath);
+      // not found, then try a path relative to the study's folder
+      if (!attachmentState.isPresent()) {
+        fullPath = String.format("/%s-study/%s/%s", (study instanceof Study ? "individual" : "harmonization"), study.getId(), path);
+        attachmentState = getAttachmentState(fullPath);
+      }
+    } else {
+      attachmentState = getAttachmentState(fullPath);
     }
+    if (attachmentState.isPresent()) {
+      return fileStoreService.getFile(attachmentState.get().getAttachment().getFileReference());
+    } else {
+      throw new NoSuchValueTableException("No value table at " + fullPath);
+    }
+  }
+
+  private Optional<AttachmentState> getAttachmentState(String fullPath) {
     log.info("Reading study table from file: {}", fullPath);
     Pair<String, String> pathName = FileSystemService.extractPathName(fullPath);
     try {
       AttachmentState state = fileSystemService.getAttachmentState(pathName.getKey(), pathName.getValue(), false);
-      return fileStoreService.getFile(state.getAttachment().getFileReference());
+      return Optional.of(state);
     } catch (Exception e) {
-      log.error("Cannot read study table file: {}", fullPath , e);
-      throw new NoSuchValueTableException("No value table at " + fullPath);
+      return Optional.empty();
     }
   }
 

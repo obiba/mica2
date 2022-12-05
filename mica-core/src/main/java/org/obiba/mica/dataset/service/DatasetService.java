@@ -26,6 +26,7 @@ import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.spi.source.StudyTableSource;
+import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.opal.web.model.Math;
 import org.slf4j.Logger;
@@ -137,8 +138,8 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
     return getValueTable(dataset).getVariables();
   }
 
-  protected StudyTableSource getStudyTableSource(@NotNull BaseStudyTable studyTable) {
-    return studyTableSourceServiceRegistry.makeStudyTableSource(getStudyService().findDraft(studyTable.getStudyId()), studyTable.getSource());
+  protected StudyTableSource getStudyTableSource(@NotNull T dataset, @NotNull BaseStudyTable studyTable) {
+    return studyTableSourceServiceRegistry.makeStudyTableSource(dataset, getStudyService().findDraft(studyTable.getStudyId()), studyTable.getSource());
   }
 
   protected Iterable<DatasetVariable> wrappedGetDatasetVariables(T dataset) {

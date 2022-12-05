@@ -409,7 +409,7 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
 
   @Override
   protected ValueTable getValueTable(@NotNull StudyDataset dataset) throws NoSuchValueTableException {
-    return getStudyTableSource(dataset.getSafeStudyTable()).getValueTable();
+    return getStudyTableSource(dataset, dataset.getSafeStudyTable()).getValueTable();
   }
 
   @Override
@@ -431,12 +431,12 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
   public SummaryStatisticsWrapper getVariableSummary(@NotNull StudyDataset dataset, String variableName)
     throws NoSuchValueTableException, NoSuchVariableException {
     log.info("Caching variable summary {} {}", dataset.getId(), variableName);
-    return new SummaryStatisticsWrapper(getStudyTableSource(dataset.getSafeStudyTable()).getVariableSummary(variableName));
+    return new SummaryStatisticsWrapper(getStudyTableSource(dataset, dataset.getSafeStudyTable()).getVariableSummary(variableName));
   }
 
   public Search.QueryResultDto getFacets(@NotNull StudyDataset dataset, Search.QueryTermsDto query)
     throws NoSuchValueTableException, NoSuchVariableException {
-    return getStudyTableSource(dataset.getSafeStudyTable()).getFacets(query);
+    return getStudyTableSource(dataset, dataset.getSafeStudyTable()).getFacets(query);
   }
 
   public Search.QueryResultDto getContingencyTable(@NotNull StudyDataset dataset, DatasetVariable variable,

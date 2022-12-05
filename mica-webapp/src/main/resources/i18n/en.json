@@ -59,6 +59,7 @@
     "update-comment": "Add a comment to describe the changes.",
     "copied": "Copied",
     "copy-to-clipboard": "Copy to clipboard",
+    "copy-path-to-clipboard": "Copy file path to clipboard",
     "copy-query": "Copy query",
     "name": "Name",
     "default": "Default",
@@ -964,8 +965,8 @@
       },
       "file": {
         "title": "File Source",
-        "info": "Path to the file from which table's variables will be extracted from. The path may be relative to the associated study's folder. The table name is optional if there is only one described in the file.",
-        "info-schema": "Path to the file from which table's variables will be extracted from. The path may be relative to the associated harmonization initiative's folder. The table name is optional if there is only one described in the file."
+        "info": "Path to the file from which table's variables will be extracted from. If the path is relative, it is first looked up in the dataset's folder, then in the associated study's folder. The table name is optional if there is only one described in the file.",
+        "info-schema": "Path to the file from which table's variables will be extracted from. If the path is relative, it is first looked up in the harmonization protocol's folder, then in the associated harmonization initiative's folder. The table name is optional if there is only one described in the file."
       }
     },
     "delete-dialog": {

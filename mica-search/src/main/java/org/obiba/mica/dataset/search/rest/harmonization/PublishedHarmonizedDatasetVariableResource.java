@@ -112,7 +112,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
       if (baseTable.isFor(studyId, source)) {
         try {
           return dtos.asContingencyDto(baseTable, var, crossVar,
-            datasetService.getContingencyTable(baseTable, var, crossVar)).build();
+            datasetService.getContingencyTable(dataset, baseTable, var, crossVar)).build();
         } catch (Exception e) {
           log.warn("Unable to retrieve contingency table: " + e.getMessage(), e);
           return dtos.asContingencyDto(baseTable, var, crossVar, null).build();
