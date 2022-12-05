@@ -85,7 +85,10 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
       try {
         builder.add(dtos.asDto(opalTable, futureResult.get(), withStudySummary).build());
       } catch (Exception e) {
-        log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
+        if (log.isDebugEnabled())
+          log.warn("Unable to retrieve statistics: {}", e.getMessage(), e);
+        else
+          log.warn("Unable to retrieve statistics: {}", e.getMessage());
         builder.add(dtos.asDto(opalTable, null, withStudySummary).build());
       }
     }
@@ -243,7 +246,10 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
         String studyId = table.getStudyId();
         return new AsyncResult<>(datasetService.getVariableSummary(dataset, variableName, studyId, table.getSource()));
       } catch (Exception e) {
-        log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
+        if (log.isDebugEnabled())
+          log.warn("Unable to retrieve statistics: {}", e.getMessage(), e);
+        else
+          log.warn("Unable to retrieve statistics: {}", e.getMessage());
         return new AsyncResult<>(null);
       }
     }

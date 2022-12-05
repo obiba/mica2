@@ -75,7 +75,10 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
           return dtos.asDto(baseTable,
             datasetService.getVariableSummary(dataset, variableName, studyId, source), withStudySummary).build();
         } catch (Exception e) {
-          log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
+          if (log.isDebugEnabled())
+            log.warn("Unable to retrieve statistics: {}", e.getMessage(), e);
+          else
+            log.warn("Unable to retrieve statistics: {}", e.getMessage());
           return dtos.asDto(baseTable, null, withStudySummary).build();
         }
       }

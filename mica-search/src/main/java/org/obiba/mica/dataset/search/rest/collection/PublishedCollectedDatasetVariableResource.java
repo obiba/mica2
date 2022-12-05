@@ -64,7 +64,10 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
     try {
       return dtos.asDto(studyTable, datasetService.getVariableSummary(dataset, variableName), withStudySummary).build();
     } catch (Exception e) {
-      log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
+      if (log.isDebugEnabled())
+        log.warn("Unable to retrieve statistics: {}", e.getMessage(), e);
+      else
+        log.warn("Unable to retrieve statistics: {}", e.getMessage());
       return dtos.asDto(studyTable, null, withStudySummary).build();
     }
   }

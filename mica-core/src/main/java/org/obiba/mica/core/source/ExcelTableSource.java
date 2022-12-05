@@ -32,6 +32,8 @@ public class ExcelTableSource extends AbstractStudyTableSource implements StudyT
   @NotNull
   private String table;
 
+  private boolean initialized;
+
   private ExcelDatasource excelDatasource;
 
   public static boolean isFor(String source) {
@@ -71,6 +73,7 @@ public class ExcelTableSource extends AbstractStudyTableSource implements StudyT
 
   @Override
   public ValueTable getValueTable() {
+    ensureInitialzed();
     return Strings.isNullOrEmpty(table) ?
       excelDatasource.getValueTables().stream().findFirst().get() :
       excelDatasource.getValueTable(table);
@@ -94,6 +97,12 @@ public class ExcelTableSource extends AbstractStudyTableSource implements StudyT
   @Override
   public void initialise(InputStream in) {
     excelDatasource = new ExcelDatasource(path, in);
-    Initialisables.initialise(excelDatasource);
+  }
+
+  private void ensureInitialzed() {
+    if (!initialized) {
+      Initialisables.initialise(excelDatasource);
+      initialized = true;
+    }
   }
 }
