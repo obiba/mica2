@@ -29,7 +29,6 @@ public class ExcelTableSource extends AbstractStudyTableSource implements StudyT
   @NotNull
   private String path;
 
-  @NotNull
   private String table;
 
   private boolean initialized;
@@ -73,20 +72,10 @@ public class ExcelTableSource extends AbstractStudyTableSource implements StudyT
 
   @Override
   public ValueTable getValueTable() {
-    ensureInitialzed();
+    ensureInitialized();
     return Strings.isNullOrEmpty(table) ?
       excelDatasource.getValueTables().stream().findFirst().get() :
       excelDatasource.getValueTable(table);
-  }
-
-  @Override
-  public Mica.DatasetVariableContingencyDto getContingency(IVariable variable, IVariable crossVariable) {
-    throw new UnsupportedOperationException("Contingency search not available from an Excel file");
-  }
-
-  @Override
-  public Mica.DatasetVariableAggregationDto getVariableSummary(String variableName) {
-    throw new UnsupportedOperationException("Summary statistics not available from an Excel file");
   }
 
   @Override
@@ -99,7 +88,7 @@ public class ExcelTableSource extends AbstractStudyTableSource implements StudyT
     excelDatasource = new ExcelDatasource(path, in);
   }
 
-  private void ensureInitialzed() {
+  private void ensureInitialized() {
     if (!initialized) {
       Initialisables.initialise(excelDatasource);
       initialized = true;

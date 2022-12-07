@@ -63,10 +63,20 @@ public class OpalTableSource extends AbstractStudyTableSource {
   }
 
   @Override
+  public boolean providesContingency() {
+    return true;
+  }
+
+  @Override
   public Mica.DatasetVariableContingencyDto getContingency(IVariable variable, IVariable crossVariable) {
     Search.QueryTermsDto query = QueryTermsUtil.getContingencyQuery(variable, crossVariable);
     Search.QueryResultDto results = getRestValueTable().getFacets(query);
     return OpalDtos.asDto(variable, crossVariable, getContext().getPrivacyThreshold(), results);
+  }
+
+  @Override
+  public boolean providesVariableSummary() {
+    return true;
   }
 
   @Override

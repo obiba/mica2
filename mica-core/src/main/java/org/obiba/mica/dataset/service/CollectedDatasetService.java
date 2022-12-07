@@ -40,6 +40,7 @@ import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.service.NetworkService;
+import org.obiba.mica.spi.source.StudyTableSource;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.DataCollectionEvent;
@@ -429,12 +430,15 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
   @Cacheable(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver", key = "#variableName")
   public Mica.DatasetVariableAggregationDto getVariableSummary(@NotNull StudyDataset dataset, String variableName) {
     log.info("Caching variable summary {} {}", dataset.getId(), variableName);
-    return getStudyTableSource(dataset, dataset.getSafeStudyTable()).getVariableSummary(variableName);
+    StudyTableSource tableSource = getStudyTableSource(dataset, dataset.getSafeStudyTable());
+    return tableSource.providesVariableSummary() ? tableSource.getVariableSummary(variableName) : null;
   }
 
   public Mica.DatasetVariableContingencyDto getContingencyTable(@NotNull StudyDataset dataset, DatasetVariable variable,
                                                                 DatasetVariable crossVariable) throws NoSuchValueTableException, NoSuchVariableException {
-    return getStudyTableSource(dataset, dataset.getSafeStudyTable()).getContingency(variable, crossVariable);
+
+    StudyTableSource tableSource = getStudyTableSource(dataset, dataset.getSafeStudyTable());
+    return tableSource.providesContingency() ? tableSource.getContingency(variable, crossVariable) : null;
   }
 
   public void delete(String id) {

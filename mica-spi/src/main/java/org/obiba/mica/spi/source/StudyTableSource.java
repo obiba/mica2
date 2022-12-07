@@ -34,6 +34,13 @@ public interface StudyTableSource {
   ValueTable getValueTable();
 
   /**
+   * Whether crossing variables is supported.
+   *
+   * @return
+   */
+  boolean providesContingency();
+
+  /**
    * Make a contingency query and return results.
    *
    * @param variable
@@ -41,6 +48,13 @@ public interface StudyTableSource {
    * @return
    */
   Mica.DatasetVariableContingencyDto getContingency(IVariable variable, IVariable crossVariable);
+
+  /**
+   * Whether variable summaries are supported.
+   *
+   * @return
+   */
+  boolean providesVariableSummary();
 
   /**
    * Get a variable summary statistics.
@@ -57,6 +71,11 @@ public interface StudyTableSource {
    */
   String getURN();
 
+  /**
+   * Set context in which the study table is defined.
+   *
+   * @param context
+   */
   void setStudyTableContext(StudyTableContext context);
 
 }

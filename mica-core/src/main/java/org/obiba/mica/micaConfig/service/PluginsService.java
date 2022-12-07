@@ -118,16 +118,16 @@ public class PluginsService implements EnvironmentAware {
    */
   private void initPlugins() {
     Collection<PluginResources> plugins = getPlugins(true);
-    String pluginName = environment.getProperty(MICA_SEARCH_PLUGIN_NAME, DEFAULT_MICA_SEARCH_PLUGIN_NAME);
+    String searchPluginName = environment.getProperty(MICA_SEARCH_PLUGIN_NAME, DEFAULT_MICA_SEARCH_PLUGIN_NAME);
 
     try {
-      String pluginLatestVersion = getPluginRepositoryCache().getPluginLatestVersion(pluginName);
+      String pluginLatestVersion = getPluginRepositoryCache().getPluginLatestVersion(searchPluginName);
       // ensure there is a mica-search plugin installed
       if (plugins.stream().noneMatch(p -> "mica-search".equals(p.getType()))
         || plugins.stream()
-            .filter(plugin -> pluginName.equals(plugin.getName()))
+            .filter(plugin -> searchPluginName.equals(plugin.getName()))
             .filter(plugin -> plugin.getVersion().compareTo(new Version(pluginLatestVersion)) >= 0).count() == 0) {
-        installPlugin(pluginName, null);
+        installPlugin(searchPluginName, null);
         // rescan plugins
         plugins = getPlugins(true);
       }
@@ -137,7 +137,7 @@ public class PluginsService implements EnvironmentAware {
 
     boolean micaSearchFound = false; // mica-search plugin is a singleton
     List<PluginResources> filteredPlugins =
-      plugins.stream().filter(plugin -> pluginName.equals(plugin.getName()))
+      plugins.stream().filter(plugin -> searchPluginName.equals(plugin.getName()) || "mica-source".equals(plugin.getType()))
         .sorted(Comparator.comparing(PluginResources::getVersion))
         .collect(Collectors.toList());
 
@@ -145,6 +145,8 @@ public class PluginsService implements EnvironmentAware {
       if ("mica-search".equals(plugin.getType()) && !micaSearchFound) {
         initSearchEngineServicePlugin(plugin);
         micaSearchFound = true;
+      } else if ("mica-source".equals(plugin.getType())) {
+        initStudyTableSourceServicePlugin(plugin);
       }
     }
   }
@@ -162,8 +164,12 @@ public class PluginsService implements EnvironmentAware {
     servicePlugins.add(service);
   }
 
-  private void initStudyTableSourceServicePlugins(PluginResources plugin) {
+  private void initStudyTableSourceServicePlugin(PluginResources plugin) {
     StudyTableSourceServiceLoader.get(plugin.getURLClassLoader(false)).forEach(service -> {
+      Properties properties = plugin.getProperties();
+      properties.setProperty("MICA_HOME", properties.getProperty("OPAL_HOME"));
+      properties.remove("OPAL_HOME");
+      service.configure(properties);
       service.start();
       servicePlugins.add(service);
     });

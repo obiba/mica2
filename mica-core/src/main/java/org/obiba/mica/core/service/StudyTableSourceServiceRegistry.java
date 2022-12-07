@@ -84,7 +84,6 @@ public class StudyTableSourceServiceRegistry {
     Optional<StudyTableSourceService> serviceOptional = pluginsService.getStudyTableSourceServices().stream()
       .filter(service -> service.isFor(source)).findFirst();
     if (serviceOptional.isPresent()) {
-      // TODO add a context to the study table source
       StudyTableSource tableSource = serviceOptional.get().makeSource(source);
       tableSource.setStudyTableContext(context);
       if (tableSource instanceof StudyTableFileSource) {

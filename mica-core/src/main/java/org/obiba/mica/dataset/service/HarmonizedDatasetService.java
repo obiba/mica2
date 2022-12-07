@@ -36,6 +36,7 @@ import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.service.NetworkService;
+import org.obiba.mica.spi.source.StudyTableSource;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
@@ -380,8 +381,9 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
   public Mica.DatasetVariableAggregationDto getVariableSummary(@NotNull HarmonizationDataset dataset, String variableName, String studyId, String source) {
     for(BaseStudyTable baseTable : dataset.getBaseStudyTables()) {
       if(baseTable.isFor(studyId, source)) {
-        log.info("Caching variable summary {} {} {} {} {}", dataset.getId(), variableName, studyId, source);
-        return getStudyTableSource(dataset, baseTable).getVariableSummary(variableName);
+        log.info("Caching variable summary {} {} {} {}", dataset.getId(), variableName, studyId, source);
+        StudyTableSource tableSource = getStudyTableSource(dataset, baseTable);
+        return tableSource.providesVariableSummary() ? tableSource.getVariableSummary(variableName) : null;
       }
     }
 
@@ -390,7 +392,8 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
 
   public Mica.DatasetVariableContingencyDto getContingencyTable(@NotNull HarmonizationDataset dataset, @NotNull BaseStudyTable studyTable, DatasetVariable variable,
                                                                 DatasetVariable crossVariable) throws NoSuchStudyException, NoSuchValueTableException {
-    return getStudyTableSource(dataset, studyTable).getContingency(variable, crossVariable);
+    StudyTableSource tableSource = getStudyTableSource(dataset, studyTable);
+    return tableSource.providesContingency() ? tableSource.getContingency(variable, crossVariable) : null;
   }
 
   @Override

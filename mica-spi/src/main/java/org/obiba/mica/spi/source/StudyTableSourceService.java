@@ -17,8 +17,19 @@ import org.obiba.plugins.spi.ServicePlugin;
  */
 public interface StudyTableSourceService extends ServicePlugin {
 
+  /**
+   * Whether this service plugin can handle the study table source's URN.
+   * @param source
+   * @return
+   */
   boolean isFor(String source);
 
+  /**
+   * Make a {@link StudyTableSource} from the source URN.
+   *
+   * @param source
+   * @return
+   */
   StudyTableSource makeSource(String source);
 
 }
