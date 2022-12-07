@@ -29,6 +29,6 @@ public interface StudyTableFileSource extends StudyTableSource {
    *
    * @param in
    */
-  void initialise(InputStream in);
+  void initialise(StudyTableFileStream in);
 
 }

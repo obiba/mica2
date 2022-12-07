@@ -16,12 +16,10 @@ import org.obiba.magma.ValueTable;
 import org.obiba.magma.datasource.excel.ExcelDatasource;
 import org.obiba.magma.support.Initialisables;
 import org.obiba.mica.spi.source.AbstractStudyTableSource;
-import org.obiba.mica.spi.source.IVariable;
 import org.obiba.mica.spi.source.StudyTableFileSource;
-import org.obiba.mica.web.model.Mica;
+import org.obiba.mica.spi.source.StudyTableFileStream;
 
 import javax.validation.constraints.NotNull;
-import java.io.InputStream;
 import java.util.List;
 
 public class ExcelTableSource extends AbstractStudyTableSource implements StudyTableFileSource {
@@ -34,6 +32,8 @@ public class ExcelTableSource extends AbstractStudyTableSource implements StudyT
   private boolean initialized;
 
   private ExcelDatasource excelDatasource;
+
+  private StudyTableFileStream fileStream;
 
   public static boolean isFor(String source) {
     if (Strings.isNullOrEmpty(source) || !source.startsWith("urn:file:"))
@@ -84,12 +84,15 @@ public class ExcelTableSource extends AbstractStudyTableSource implements StudyT
   }
 
   @Override
-  public void initialise(InputStream in) {
-    excelDatasource = new ExcelDatasource(path, in);
+  public void initialise(StudyTableFileStream in) {
+    this.fileStream = in;
+    // deferred init
+    this.initialized = false;
   }
 
   private void ensureInitialized() {
     if (!initialized) {
+      excelDatasource = new ExcelDatasource(path, fileStream.getInputStream());
       Initialisables.initialise(excelDatasource);
       initialized = true;
     }

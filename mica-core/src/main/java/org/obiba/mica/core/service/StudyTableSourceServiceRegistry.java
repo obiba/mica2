@@ -78,7 +78,7 @@ public class StudyTableSourceServiceRegistry {
     if (ExcelTableSource.isFor(source)) {
       ExcelTableSource tableSource = ExcelTableSource.fromURN(source);
       tableSource.setStudyTableContext(context);
-      tableSource.initialise(getFileInputStream(context, tableSource.getPath()));
+      tableSource.initialise(new AttachmentStream(context, tableSource.getPath()));
       return tableSource;
     }
     Optional<StudyTableSourceService> serviceOptional = pluginsService.getStudyTableSourceServices().stream()
@@ -88,43 +88,56 @@ public class StudyTableSourceServiceRegistry {
       tableSource.setStudyTableContext(context);
       if (tableSource instanceof StudyTableFileSource) {
         StudyTableFileSource fileSource = (StudyTableFileSource)tableSource;
-        fileSource.initialise(getFileInputStream(context, fileSource.getPath()));
+        fileSource.initialise(new AttachmentStream(context, fileSource.getPath()));
       }
       return tableSource;
     }
     throw new NoSuchElementException("Missing study-table-source plugin to handle source: " + source);
   }
 
-  private InputStream getFileInputStream(StudyTableContext context, String path) {
-    String fullPath = path;
-    Optional<AttachmentState> attachmentState;
-    if (!fullPath.startsWith("/")) {
-      // not a full path, then it may be relative to the dataset's folder
-      fullPath = String.format("/%s-dataset/%s/%s", (context.getDataset() instanceof StudyDataset ? "collected" : "harmonized"), context.getDataset().getId(), path);
-      attachmentState = getAttachmentState(fullPath);
-      // not found, then try a path relative to the study's folder
-      if (!attachmentState.isPresent()) {
-        fullPath = String.format("/%s-study/%s/%s", (context.getStudy() instanceof Study ? "individual" : "harmonization"), context.getStudy().getId(), path);
+
+  private class AttachmentStream implements StudyTableFileStream {
+
+    private final StudyTableContext context;
+    private final String path;
+
+    private AttachmentStream(StudyTableContext context, String path) {
+      this.context = context;
+      this.path = path;
+    }
+
+    @Override
+    public InputStream getInputStream() {
+      String fullPath = path;
+      Optional<AttachmentState> attachmentState;
+      if (!fullPath.startsWith("/")) {
+        // not a full path, then it may be relative to the dataset's folder
+        fullPath = String.format("/%s-dataset/%s/%s", (context.getDataset() instanceof StudyDataset ? "collected" : "harmonized"), context.getDataset().getId(), path);
+        attachmentState = getAttachmentState(fullPath);
+        // not found, then try a path relative to the study's folder
+        if (!attachmentState.isPresent()) {
+          fullPath = String.format("/%s-study/%s/%s", (context.getStudy() instanceof Study ? "individual" : "harmonization"), context.getStudy().getId(), path);
+          attachmentState = getAttachmentState(fullPath);
+        }
+      } else {
         attachmentState = getAttachmentState(fullPath);
       }
-    } else {
-      attachmentState = getAttachmentState(fullPath);
+      if (attachmentState.isPresent()) {
+        return fileStoreService.getFile(attachmentState.get().getAttachment().getFileReference());
+      } else {
+        throw new NoSuchValueTableException("No value table at " + fullPath);
+      }
     }
-    if (attachmentState.isPresent()) {
-      return fileStoreService.getFile(attachmentState.get().getAttachment().getFileReference());
-    } else {
-      throw new NoSuchValueTableException("No value table at " + fullPath);
-    }
-  }
 
-  private Optional<AttachmentState> getAttachmentState(String fullPath) {
-    log.info("Reading study table from file: {}", fullPath);
-    Pair<String, String> pathName = FileSystemService.extractPathName(fullPath);
-    try {
-      AttachmentState state = fileSystemService.getAttachmentState(pathName.getKey(), pathName.getValue(), false);
-      return Optional.of(state);
-    } catch (Exception e) {
-      return Optional.empty();
+    private Optional<AttachmentState> getAttachmentState(String fullPath) {
+      log.info("Reading study table from file: {}", fullPath);
+      Pair<String, String> pathName = FileSystemService.extractPathName(fullPath);
+      try {
+        AttachmentState state = fileSystemService.getAttachmentState(pathName.getKey(), pathName.getValue(), false);
+        return Optional.of(state);
+      } catch (Exception e) {
+        return Optional.empty();
+      }
     }
   }
 
