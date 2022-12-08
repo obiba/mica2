@@ -12,8 +12,10 @@ package org.obiba.mica.core.service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.RemovalListener;
 import org.apache.commons.math3.util.Pair;
 import org.obiba.magma.NoSuchValueTableException;
+import org.obiba.magma.support.Disposables;
 import org.obiba.mica.core.source.ExcelTableSource;
 import org.obiba.mica.core.source.OpalTableSource;
 import org.obiba.mica.dataset.domain.StudyDataset;
@@ -29,6 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import java.io.InputStream;
 import java.util.NoSuchElementException;
@@ -56,12 +60,28 @@ public class StudyTableSourceServiceRegistry {
   @Inject
   private FileStoreService fileStoreService;
 
-  private Cache<String, StudyTableSource> sourcesCache = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(1, TimeUnit.MINUTES).build();
+  private Cache<String, StudyTableSource> sourcesCache;
+
+  @PostConstruct
+  public void initialize() {
+    sourcesCache = CacheBuilder.newBuilder()
+      .maximumSize(1000)
+      .expireAfterWrite(1, TimeUnit.MINUTES)
+      .removalListener((RemovalListener<String, StudyTableSource>) notification -> {
+        Disposables.silentlyDispose(notification.getValue());
+      })
+      .build();
+  }
+
+  @PreDestroy
+  public void close() {
+    sourcesCache.cleanUp();
+  }
 
   public synchronized StudyTableSource makeStudyTableSource(IDataset dataset, IStudy study, String source) {
     StudyTableContext context = new StudyTableContext(dataset, study, micaConfigService.getConfig().getPrivacyThreshold());
 
-    String cacheKey = String.format("%s::%s", study.getId(), source);
+    String cacheKey = String.format("%s::%s::%s", dataset.getId(), study.getId(), source);
     try {
       return sourcesCache.get(cacheKey, () -> makeStudyTableSourceInternal(context, source));
     } catch (ExecutionException e) {

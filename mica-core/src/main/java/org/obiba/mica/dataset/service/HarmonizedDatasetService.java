@@ -16,6 +16,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import org.obiba.magma.*;
+import org.obiba.magma.support.Disposables;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.PublishCascadingScope;
@@ -383,7 +384,9 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
       if(baseTable.isFor(studyId, source)) {
         log.info("Caching variable summary {} {} {} {}", dataset.getId(), variableName, studyId, source);
         StudyTableSource tableSource = getStudyTableSource(dataset, baseTable);
-        return tableSource.providesVariableSummary() ? tableSource.getVariableSummary(variableName) : null;
+        Mica.DatasetVariableAggregationDto summary = tableSource.providesVariableSummary() ? tableSource.getVariableSummary(variableName) : null;
+        Disposables.silentlyDispose(tableSource);
+        return summary;
       }
     }
 
@@ -393,7 +396,9 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
   public Mica.DatasetVariableContingencyDto getContingencyTable(@NotNull HarmonizationDataset dataset, @NotNull BaseStudyTable studyTable, DatasetVariable variable,
                                                                 DatasetVariable crossVariable) throws NoSuchStudyException, NoSuchValueTableException {
     StudyTableSource tableSource = getStudyTableSource(dataset, studyTable);
-    return tableSource.providesContingency() ? tableSource.getContingency(variable, crossVariable) : null;
+    Mica.DatasetVariableContingencyDto results = tableSource.providesContingency() ? tableSource.getContingency(variable, crossVariable) : null;
+    Disposables.silentlyDispose(tableSource);
+    return results;
   }
 
   @Override
