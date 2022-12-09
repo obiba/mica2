@@ -17,7 +17,7 @@ import org.obiba.magma.datasource.excel.ExcelDatasource;
 import org.obiba.magma.support.Initialisables;
 import org.obiba.mica.spi.source.AbstractStudyTableSource;
 import org.obiba.mica.spi.source.StudyTableFileSource;
-import org.obiba.mica.spi.source.StudyTableFileStream;
+import org.obiba.mica.spi.source.StudyTableFileStreamProvider;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -33,7 +33,7 @@ public class ExcelTableSource extends AbstractStudyTableSource implements StudyT
 
   private ExcelDatasource excelDatasource;
 
-  private StudyTableFileStream fileStream;
+  private StudyTableFileStreamProvider fileStreamProvider;
 
   public static boolean isFor(String source) {
     if (Strings.isNullOrEmpty(source) || !source.startsWith("urn:file:"))
@@ -84,15 +84,15 @@ public class ExcelTableSource extends AbstractStudyTableSource implements StudyT
   }
 
   @Override
-  public void initialise(StudyTableFileStream in) {
-    this.fileStream = in;
+  public void setStudyTableFileStreamProvider(StudyTableFileStreamProvider provider) {
+    this.fileStreamProvider = provider;
     // deferred init
     this.initialized = false;
   }
 
   private void ensureInitialized() {
     if (!initialized) {
-      excelDatasource = new ExcelDatasource(path, fileStream.getInputStream());
+      excelDatasource = new ExcelDatasource(path, fileStreamProvider.getInputStream());
       Initialisables.initialise(excelDatasource);
       initialized = true;
     }

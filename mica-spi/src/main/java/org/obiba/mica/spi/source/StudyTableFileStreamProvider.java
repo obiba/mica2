@@ -12,7 +12,10 @@ package org.obiba.mica.spi.source;
 
 import java.io.InputStream;
 
-public interface StudyTableFileStream {
+/**
+ * Define an accessor to a file stream.
+ */
+public interface StudyTableFileStreamProvider {
 
   /**
    * Get the Mica file input stream on demand.

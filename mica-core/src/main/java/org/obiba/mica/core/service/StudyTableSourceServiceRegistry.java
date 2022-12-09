@@ -16,6 +16,7 @@ import com.google.common.cache.RemovalListener;
 import org.apache.commons.math3.util.Pair;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.support.Disposables;
+import org.obiba.magma.support.Initialisables;
 import org.obiba.mica.core.source.ExcelTableSource;
 import org.obiba.mica.core.source.OpalTableSource;
 import org.obiba.mica.dataset.domain.StudyDataset;
@@ -92,13 +93,13 @@ public class StudyTableSourceServiceRegistry {
     if (OpalTableSource.isFor(source)) {
       OpalTableSource tableSource = OpalTableSource.fromURN(source);
       tableSource.setStudyTableContext(context);
-      tableSource.initialise(opalService);
+      tableSource.setOpalService(opalService);
       return tableSource;
     }
     if (ExcelTableSource.isFor(source)) {
       ExcelTableSource tableSource = ExcelTableSource.fromURN(source);
       tableSource.setStudyTableContext(context);
-      tableSource.initialise(new AttachmentStream(context, tableSource.getPath()));
+      tableSource.setStudyTableFileStreamProvider(new AttachmentStreamProvider(context, tableSource.getPath()));
       return tableSource;
     }
     Optional<StudyTableSourceService> serviceOptional = pluginsService.getStudyTableSourceServices().stream()
@@ -108,20 +109,24 @@ public class StudyTableSourceServiceRegistry {
       tableSource.setStudyTableContext(context);
       if (tableSource instanceof StudyTableFileSource) {
         StudyTableFileSource fileSource = (StudyTableFileSource)tableSource;
-        fileSource.initialise(new AttachmentStream(context, fileSource.getPath()));
+        fileSource.setStudyTableFileStreamProvider(new AttachmentStreamProvider(context, fileSource.getPath()));
       }
+      Initialisables.initialise(tableSource);
       return tableSource;
     }
     throw new NoSuchElementException("Missing study-table-source plugin to handle source: " + source);
   }
 
 
-  private class AttachmentStream implements StudyTableFileStream {
+  /**
+   * Get the input stream from an {@link AttachmentState} object.
+   */
+  private class AttachmentStreamProvider implements StudyTableFileStreamProvider {
 
     private final StudyTableContext context;
     private final String path;
 
-    private AttachmentStream(StudyTableContext context, String path) {
+    private AttachmentStreamProvider(StudyTableContext context, String path) {
       this.context = context;
       this.path = path;
     }

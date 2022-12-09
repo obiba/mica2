@@ -117,7 +117,7 @@ public class OpalTableSource extends AbstractStudyTableSource {
     return source.replace("urn:opal:", "");
   }
 
-  public void initialise(OpalService opalService) {
+  public void setOpalService(OpalService opalService) {
     this.opalService = opalService;
     this.opalUrl = getContext().getStudy().getOpal();
   }
