@@ -16,7 +16,7 @@ import org.obiba.magma.Category;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.AttributeAware;
 import org.obiba.mica.core.domain.Attributes;
-import org.obiba.mica.spi.source.ICategory;
+import org.obiba.mica.spi.tables.ICategory;
 
 public class DatasetCategory implements AttributeAware, ICategory {
 

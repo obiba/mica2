@@ -16,7 +16,7 @@ import org.hibernate.validator.constraints.URL;
 import org.obiba.mica.core.domain.*;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.spi.search.Indexable;
-import org.obiba.mica.spi.source.IStudy;
+import org.obiba.mica.spi.tables.IStudy;
 
 import javax.validation.constraints.NotNull;
 import java.beans.Transient;

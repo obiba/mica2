@@ -18,7 +18,7 @@ import org.obiba.magma.Variable;
 import org.obiba.magma.support.VariableNature;
 import org.obiba.mica.core.domain.*;
 import org.obiba.mica.spi.search.Indexable;
-import org.obiba.mica.spi.source.IVariable;
+import org.obiba.mica.spi.tables.IVariable;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;

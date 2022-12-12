@@ -8,22 +8,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.spi.source;
-
-import org.obiba.mica.spi.search.Identified;
-
-import java.util.Map;
+package org.obiba.mica.spi.tables;
 
 /**
- * Dataset as it is exposed to plugins.
+ * Category description, for summary statistics.
  */
-public interface IDataset extends Identified {
+public interface ICategory {
 
   /**
-   * Get the dataset model.
+   * Get the category name.
    *
    * @return
    */
-  Map<String, Object> getModel();
+  String getName();
+
+  /**
+   * Get whether this category represents a missing value.
+   *
+   * @return
+   */
+  boolean isMissing();
 
 }

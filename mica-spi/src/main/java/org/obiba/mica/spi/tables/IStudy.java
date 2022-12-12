@@ -8,25 +8,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.spi.source;
+package org.obiba.mica.spi.tables;
+
+import org.obiba.mica.spi.search.Identified;
+
+import java.util.Map;
 
 /**
- * Category description, for summary statistics.
+ * Study as it is exposed to plugins.
  */
-public interface ICategory {
+public interface IStudy extends Identified {
 
   /**
-   * Get the category name.
+   * Get the Opal URL, if any is defined specifically for this study.
    *
    * @return
    */
-  String getName();
+  String getOpal();
 
   /**
-   * Get whether this category represents a missing value.
+   * Get the study model.
    *
    * @return
    */
-  boolean isMissing();
-
+  Map<String, Object> getModel();
 }

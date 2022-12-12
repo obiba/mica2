@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.spi.source;
+package org.obiba.mica.spi.taxonomies;
 
 import com.google.common.collect.Lists;
 
@@ -17,12 +17,12 @@ import java.util.Collection;
 import java.util.ServiceLoader;
 
 /**
- * {@link StudyTableSourceService} loader.
+ * {@link TaxonomiesProviderService} loader.
  */
-public class StudyTableSourceServiceLoader {
+public class TaxonomiesProviderServiceLoader {
 
-  public static Collection<StudyTableSourceService> get(URLClassLoader classLoader) {
-    return Lists.newArrayList(ServiceLoader.load(StudyTableSourceService.class, classLoader).iterator());
+  public static Collection<TaxonomiesProviderService> get(URLClassLoader classLoader) {
+    return Lists.newArrayList(ServiceLoader.load(TaxonomiesProviderService.class, classLoader).iterator());
   }
 
 }

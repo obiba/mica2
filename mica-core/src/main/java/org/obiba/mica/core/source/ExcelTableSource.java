@@ -15,9 +15,9 @@ import com.google.common.base.Strings;
 import org.obiba.magma.ValueTable;
 import org.obiba.magma.datasource.excel.ExcelDatasource;
 import org.obiba.magma.support.Initialisables;
-import org.obiba.mica.spi.source.AbstractStudyTableSource;
-import org.obiba.mica.spi.source.StudyTableFileSource;
-import org.obiba.mica.spi.source.StudyTableFileStreamProvider;
+import org.obiba.mica.spi.tables.AbstractStudyTableSource;
+import org.obiba.mica.spi.tables.StudyTableFileSource;
+import org.obiba.mica.spi.tables.StudyTableFileStreamProvider;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;

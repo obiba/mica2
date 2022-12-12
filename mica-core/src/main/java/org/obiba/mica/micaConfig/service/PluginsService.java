@@ -16,11 +16,13 @@ import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import org.obiba.core.util.FileUtil;
 import org.obiba.mica.core.upgrade.RuntimeVersionProvider;
-import org.obiba.mica.spi.source.StudyTableSourceService;
-import org.obiba.mica.spi.source.StudyTableSourceServiceLoader;
+import org.obiba.mica.spi.tables.StudyTableSourceService;
+import org.obiba.mica.spi.tables.StudyTableSourceServiceLoader;
 import org.obiba.mica.spi.search.ConfigurationProvider;
 import org.obiba.mica.spi.search.SearchEngineService;
 import org.obiba.mica.spi.search.SearchEngineServiceLoader;
+import org.obiba.mica.spi.taxonomies.TaxonomiesProviderService;
+import org.obiba.mica.spi.taxonomies.TaxonomiesProviderServiceLoader;
 import org.obiba.plugins.PluginRepositoryCache;
 import org.obiba.plugins.PluginRepositoryException;
 import org.obiba.plugins.PluginResources;
@@ -50,6 +52,14 @@ public class PluginsService implements EnvironmentAware {
   private static final Logger log = LoggerFactory.getLogger(PluginsService.class);
 
   private static final String PLUGINS_PATH = "${MICA_HOME}/plugins";
+
+  private static final String MICA_SEARCH_PLUGIN_TYPE = "mica-search";
+
+  private static final String MICA_TABLES_PLUGIN_TYPE = "mica-tables";
+
+  private static final String MICA_TAXONOMIES_PLUGIN_TYPE = "mica-taxonomies";
+
+
 
   private static final String MICA_SEARCH_PLUGIN_NAME = "plugins.micaSearchPlugin";
 
@@ -94,6 +104,12 @@ public class PluginsService implements EnvironmentAware {
       .collect(Collectors.toList());
   }
 
+  public Collection<TaxonomiesProviderService> getTaxonomiesProviderServices() {
+    return getServicePlugins(TaxonomiesProviderService.class).stream()
+      .map(service -> (TaxonomiesProviderService)service)
+      .collect(Collectors.toList());
+  }
+
   //
   // Private methods
   //
@@ -123,7 +139,7 @@ public class PluginsService implements EnvironmentAware {
     try {
       String pluginLatestVersion = getPluginRepositoryCache().getPluginLatestVersion(searchPluginName);
       // ensure there is a mica-search plugin installed
-      if (plugins.stream().noneMatch(p -> "mica-search".equals(p.getType()))
+      if (plugins.stream().noneMatch(p -> MICA_SEARCH_PLUGIN_TYPE.equals(p.getType()))
         || plugins.stream()
             .filter(plugin -> searchPluginName.equals(plugin.getName()))
             .filter(plugin -> plugin.getVersion().compareTo(new Version(pluginLatestVersion)) >= 0).count() == 0) {
@@ -137,16 +153,20 @@ public class PluginsService implements EnvironmentAware {
 
     boolean micaSearchFound = false; // mica-search plugin is a singleton
     List<PluginResources> filteredPlugins =
-      plugins.stream().filter(plugin -> searchPluginName.equals(plugin.getName()) || "mica-source".equals(plugin.getType()))
+      plugins.stream().filter(plugin -> searchPluginName.equals(plugin.getName())
+          || MICA_TABLES_PLUGIN_TYPE.equals(plugin.getType())
+          || MICA_TAXONOMIES_PLUGIN_TYPE.equals(plugin.getType()))
         .sorted(Comparator.comparing(PluginResources::getVersion))
         .collect(Collectors.toList());
 
     for (PluginResources plugin : filteredPlugins) {
-      if ("mica-search".equals(plugin.getType()) && !micaSearchFound) {
+      if (MICA_SEARCH_PLUGIN_TYPE.equals(plugin.getType()) && !micaSearchFound) {
         initSearchEngineServicePlugin(plugin);
         micaSearchFound = true;
-      } else if ("mica-source".equals(plugin.getType())) {
+      } else if (MICA_TABLES_PLUGIN_TYPE.equals(plugin.getType())) {
         initStudyTableSourceServicePlugin(plugin);
+      } else if (MICA_TAXONOMIES_PLUGIN_TYPE.equals(plugin.getType())) {
+        initTaxonomiesProviderServicePlugin(plugin);
       }
     }
   }
@@ -166,6 +186,15 @@ public class PluginsService implements EnvironmentAware {
 
   private void initStudyTableSourceServicePlugin(PluginResources plugin) {
     StudyTableSourceServiceLoader.get(plugin.getURLClassLoader(false)).forEach(service -> {
+      Properties properties = cleanProperties(plugin.getProperties());
+      service.configure(properties);
+      service.start();
+      servicePlugins.add(service);
+    });
+  }
+
+  private void initTaxonomiesProviderServicePlugin(PluginResources plugin) {
+    TaxonomiesProviderServiceLoader.get(plugin.getURLClassLoader(false)).forEach(service -> {
       Properties properties = cleanProperties(plugin.getProperties());
       service.configure(properties);
       service.start();

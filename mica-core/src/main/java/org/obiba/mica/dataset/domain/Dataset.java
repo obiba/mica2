@@ -24,7 +24,7 @@ import org.obiba.mica.core.domain.LocalizedString;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
-import org.obiba.mica.spi.source.IDataset;
+import org.obiba.mica.spi.tables.IDataset;
 
 import java.util.Map;
 

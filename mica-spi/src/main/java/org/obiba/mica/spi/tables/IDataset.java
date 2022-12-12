@@ -8,28 +8,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.spi.source;
+package org.obiba.mica.spi.tables;
 
 import org.obiba.mica.spi.search.Identified;
 
 import java.util.Map;
 
 /**
- * Study as it is exposed to plugins.
+ * Dataset as it is exposed to plugins.
  */
-public interface IStudy extends Identified {
+public interface IDataset extends Identified {
 
   /**
-   * Get the Opal URL, if any is defined specifically for this study.
-   *
-   * @return
-   */
-  String getOpal();
-
-  /**
-   * Get the study model.
+   * Get the dataset model.
    *
    * @return
    */
   Map<String, Object> getModel();
+
 }

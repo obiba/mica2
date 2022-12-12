@@ -12,6 +12,9 @@ package org.obiba.mica.micaConfig.service;
 
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import org.obiba.mica.spi.search.TaxonomyTarget;
+import org.obiba.mica.spi.taxonomies.TaxonomiesProviderService;
 import org.obiba.opal.core.cfg.NoSuchTaxonomyException;
 import org.obiba.opal.core.cfg.NoSuchVocabularyException;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
@@ -19,6 +22,8 @@ import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.obiba.opal.web.model.Opal;
 import org.obiba.opal.web.taxonomy.Dtos;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -35,11 +40,35 @@ import java.util.stream.Collectors;
 @Component
 public class VariableTaxonomiesService {
 
+  private static final Logger log = LoggerFactory.getLogger(VariableTaxonomiesService.class);
+
   @Inject
   private OpalService opalService;
 
+  @Inject
+  private PluginsService pluginsService;
+
   public List<Taxonomy> getTaxonomies() {
-    Map<String, Taxonomy> taxonomies = opalService.getTaxonomiesInternal();
+    Map<String, Taxonomy> taxonomies;
+    try {
+      taxonomies = opalService.getTaxonomiesInternal();
+    } catch (Exception e) {
+      taxonomies = Maps.newHashMap();
+    }
+    for (TaxonomiesProviderService provider : pluginsService.getTaxonomiesProviderServices().stream()
+      .filter(provider -> provider.isFor(TaxonomyTarget.VARIABLE))
+      .collect(Collectors.toList())) {
+      try {
+        for (Taxonomy taxonomy : provider.getTaxonomies()) {
+          // override any duplicated taxonomy
+          if (taxonomies.containsKey(taxonomy.getName()))
+            log.warn("Taxonomy with name {} is duplicated ({} plugin)", provider.getName(), taxonomy.getName());
+          taxonomies.put(taxonomy.getName(), taxonomy);
+        }
+      } catch (Exception e) {
+        log.warn("Taxonomies retrieval from plugin {} failed", provider.getName(), e);
+      }
+    }
     List<Taxonomy> taxonomyList = Lists.newArrayList(taxonomies.values());
     Collections.sort(taxonomyList, Comparator.comparing(TaxonomyEntity::getName));
     return taxonomyList;
@@ -56,7 +85,7 @@ public class VariableTaxonomiesService {
 
     try {
       taxonomies = getTaxonomies();
-    } catch(Exception e) {
+    } catch (Exception e) {
       // ignore
     }
 

@@ -12,7 +12,7 @@ package org.obiba.mica.core.source.support;
 
 import com.google.common.collect.Lists;
 import org.obiba.magma.type.BooleanType;
-import org.obiba.mica.spi.source.IVariable;
+import org.obiba.mica.spi.tables.IVariable;
 import org.obiba.opal.web.model.Search;
 
 import java.util.List;

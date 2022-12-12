@@ -12,8 +12,8 @@ package org.obiba.mica.core.source.support;
 
 import com.google.common.collect.Lists;
 import org.obiba.magma.type.BooleanType;
-import org.obiba.mica.spi.source.ICategory;
-import org.obiba.mica.spi.source.IVariable;
+import org.obiba.mica.spi.tables.ICategory;
+import org.obiba.mica.spi.tables.IVariable;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Math;
 import org.obiba.opal.web.model.Search;
