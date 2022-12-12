@@ -18,6 +18,6 @@ public class DatasetTaxonomyMetaDataProvider extends ConfigurationTaxonomyMetaDa
 
   @Override
   protected Taxonomy getTaxonomy() {
-    return taxonomyService.getDatasetTaxonomy();
+    return taxonomiesService.getDatasetTaxonomy();
   }
 }

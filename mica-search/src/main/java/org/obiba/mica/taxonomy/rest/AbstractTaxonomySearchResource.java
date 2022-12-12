@@ -17,7 +17,7 @@ import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.TaxonomyNotFoundException;
-import org.obiba.mica.micaConfig.service.TaxonomyService;
+import org.obiba.mica.micaConfig.service.TaxonomiesService;
 import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.taxonomy.EsTaxonomyTermService;
 import org.obiba.mica.taxonomy.EsTaxonomyVocabularyService;
@@ -52,7 +52,7 @@ public class AbstractTaxonomySearchResource {
   private EsTaxonomyVocabularyService esTaxonomyVocabularyService;
 
   @Inject
-  private TaxonomyService taxonomyService;
+  private TaxonomiesService taxonomiesService;
 
   @Inject
   private MicaConfigService micaConfigService;
@@ -127,30 +127,30 @@ public class AbstractTaxonomySearchResource {
   protected List<Taxonomy> getTaxonomies(TaxonomyTarget target) {
     switch (target) {
       case NETWORK:
-        return Lists.newArrayList(taxonomyService.getNetworkTaxonomy());
+        return Lists.newArrayList(taxonomiesService.getNetworkTaxonomy());
       case STUDY:
-        return Lists.newArrayList(taxonomyService.getStudyTaxonomy());
+        return Lists.newArrayList(taxonomiesService.getStudyTaxonomy());
       case DATASET:
-        return Lists.newArrayList(taxonomyService.getDatasetTaxonomy());
+        return Lists.newArrayList(taxonomiesService.getDatasetTaxonomy());
       case TAXONOMY:
-        return Lists.newArrayList(taxonomyService.getTaxonomyTaxonomy());
+        return Lists.newArrayList(taxonomiesService.getTaxonomyTaxonomy());
       default:
-        return taxonomyService.getVariableTaxonomies();
+        return taxonomiesService.getAllVariableTaxonomies();
     }
   }
 
   protected Taxonomy getTaxonomy(TaxonomyTarget target, String name) {
     switch (target) {
       case NETWORK:
-        return taxonomyService.getNetworkTaxonomy();
+        return taxonomiesService.getNetworkTaxonomy();
       case STUDY:
-        return taxonomyService.getStudyTaxonomy();
+        return taxonomiesService.getStudyTaxonomy();
       case DATASET:
-        return taxonomyService.getDatasetTaxonomy();
+        return taxonomiesService.getDatasetTaxonomy();
       case TAXONOMY:
-        return taxonomyService.getTaxonomyTaxonomy();
+        return taxonomiesService.getTaxonomyTaxonomy();
       default:
-        Taxonomy foundTaxonomy = taxonomyService.getVariableTaxonomies().stream().filter(taxonomy -> taxonomy.getName().equals(name))
+        Taxonomy foundTaxonomy = taxonomiesService.getAllVariableTaxonomies().stream().filter(taxonomy -> taxonomy.getName().equals(name))
             .findFirst().orElse(null);
 
         if (foundTaxonomy == null) {
@@ -193,6 +193,6 @@ public class AbstractTaxonomySearchResource {
    * Populate taxonomies cache and trigger taxonomies indexing.
    */
   private void initTaxonomies() {
-    taxonomyService.getOpalTaxonomies();
+    taxonomiesService.getVariableTaxonomies();
   }
 }

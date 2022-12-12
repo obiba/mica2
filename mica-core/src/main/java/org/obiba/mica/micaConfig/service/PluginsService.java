@@ -153,7 +153,7 @@ public class PluginsService implements EnvironmentAware {
 
   private void initSearchEngineServicePlugin(PluginResources plugin) {
     SearchEngineService service = SearchEngineServiceLoader.get(plugin.getURLClassLoader(false)).iterator().next();
-    Properties properties = plugin.getProperties();
+    Properties properties = cleanProperties(plugin.getProperties());
     for (String key : ES_CONFIGURATION) {
       if (environment.containsProperty(key))
         properties.setProperty(key, environment.getProperty(key));
@@ -166,13 +166,17 @@ public class PluginsService implements EnvironmentAware {
 
   private void initStudyTableSourceServicePlugin(PluginResources plugin) {
     StudyTableSourceServiceLoader.get(plugin.getURLClassLoader(false)).forEach(service -> {
-      Properties properties = plugin.getProperties();
-      properties.setProperty("MICA_HOME", properties.getProperty("OPAL_HOME"));
-      properties.remove("OPAL_HOME");
+      Properties properties = cleanProperties(plugin.getProperties());
       service.configure(properties);
       service.start();
       servicePlugins.add(service);
     });
+  }
+
+  private Properties cleanProperties(Properties properties) {
+    properties.setProperty("MICA_HOME", properties.getProperty("OPAL_HOME"));
+    properties.remove("OPAL_HOME");
+    return properties;
   }
 
   private synchronized Collection<PluginResources> getPlugins(boolean extract) {

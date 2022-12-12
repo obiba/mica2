@@ -41,10 +41,6 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public static final String DEFAULT_CHARSET = Charsets.UTF_8.toString();
 
-  public static final String DEFAULT_OPAL = "https://localhost:8443";
-
-  public static final String DEFAULT_PUBLIC_URL = "http://localhost:8082";
-
   public static final String[] LAYOUT_OPTIONS = {"layout1", "layout2"};
 
   public static final long DEFAULT_MAX_ITEMS_PER_SET = 20000;
@@ -64,7 +60,7 @@ public class MicaConfig extends AbstractAuditableDocument {
   @NotBlank
   private String defaultCharacterSet = DEFAULT_CHARSET;
 
-  private String opal = DEFAULT_OPAL;
+  private String opal;
 
   private List<String> roles = Lists.newArrayList(Membership.CONTACT, Membership.INVESTIGATOR);
 
@@ -221,8 +217,12 @@ public class MicaConfig extends AbstractAuditableDocument {
     this.defaultCharacterSet = defaultCharacterSet;
   }
 
+  public boolean hasOpal() {
+    return !Strings.isNullOrEmpty(opal);
+  }
+
   public String getOpal() {
-    return opal == null ? "" : opal;
+    return opal;
   }
 
   public void setOpal(String opal) {

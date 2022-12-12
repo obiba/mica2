@@ -91,7 +91,7 @@ public class StudyQuery extends AbstractDocumentQuery {
 
   @Override
   protected Taxonomy getTaxonomy() {
-    return taxonomyService.getStudyTaxonomy();
+    return taxonomiesService.getStudyTaxonomy();
   }
 
   @Override
@@ -139,7 +139,7 @@ public class StudyQuery extends AbstractDocumentQuery {
   @Nullable
   @Override
   protected Properties getAggregationsProperties(List<String> filter) {
-    Properties properties = getAggregationsProperties(filter, taxonomyService.getStudyTaxonomy());
+    Properties properties = getAggregationsProperties(filter, taxonomiesService.getStudyTaxonomy());
     if (!properties.containsKey(JOIN_FIELD)) properties.put(JOIN_FIELD, "");
     return properties;
   }

@@ -10,31 +10,28 @@
 
 package org.obiba.mica.search.aggregations;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import javax.inject.Inject;
-
-import org.obiba.mica.spi.search.support.AttributeKey;
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.mica.micaConfig.service.VariableTaxonomiesService;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
+import org.obiba.mica.spi.search.support.AttributeKey;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Term;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
+import javax.inject.Inject;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Component
 public class TaxonomyAggregationMetaDataProvider implements AggregationMetaDataProvider {
 
   @Inject
-  OpalService opalService;
+  VariableTaxonomiesService variableTaxonomiesService;
 
   Map<String, Map<String, LocalizedMetaData>> cache;
 
@@ -105,7 +102,7 @@ public class TaxonomyAggregationMetaDataProvider implements AggregationMetaDataP
     String targetTaxonomy = attrKey.hasNamespace(null) ? "Default" : attrKey.getNamespace();
     String targetVocabulary = attrKey.getName();
 
-    return getTaxonomies().stream() //
+    return getVariableTaxonomies().stream() //
       .filter(taxonomy -> !Strings.isNullOrEmpty(targetTaxonomy) && taxonomy.getName().equals(targetTaxonomy)) //
       .map(Taxonomy::getVocabularies) //
       .flatMap(Collection::stream) //
@@ -113,12 +110,7 @@ public class TaxonomyAggregationMetaDataProvider implements AggregationMetaDataP
       .findFirst();
   }
 
-  protected List<Taxonomy> getTaxonomies() {
-    try {
-      return opalService.getTaxonomies();
-    } catch(Exception e) {
-      // ignore
-    }
-    return Collections.emptyList();
+  protected List<Taxonomy> getVariableTaxonomies() {
+    return variableTaxonomiesService.getSafeTaxonomies();
   }
 }

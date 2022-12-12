@@ -10,7 +10,6 @@
 
 package org.obiba.mica.micaConfig.service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,9 +36,9 @@ import org.springframework.stereotype.Service;
 import com.google.common.eventbus.Subscribe;
 
 @Service
-public class TaxonomyService {
+public class TaxonomiesService {
 
-  private final OpalService opalService;
+  private final VariableTaxonomiesService variableTaxonomiesService;
 
   private final MicaConfigService micaConfigService;
 
@@ -70,8 +69,8 @@ public class TaxonomyService {
   private Taxonomy networkTaxonomy;
 
   @Inject
-  public TaxonomyService(
-    OpalService opalService,
+  public TaxonomiesService(
+    VariableTaxonomiesService variableTaxonomiesService,
     MicaConfigService micaConfigService,
     StudyIdAggregationMetaDataHelper studyHelper,
     DatasetIdAggregationMetaDataHelper datasetHelper,
@@ -81,7 +80,7 @@ public class TaxonomyService {
     NetworksSetsAggregationMetaDataHelper networksSetsAggregationMetaDataHelper,
     StudiesSetsAggregationMetaDataHelper studiesSetsHelper,
     VariablesSetsAggregationMetaDataHelper variablesSetsHelper) {
-    this.opalService = opalService;
+    this.variableTaxonomiesService = variableTaxonomiesService;
     this.micaConfigService = micaConfigService;
     this.studyHelper = studyHelper;
     this.datasetHelper = datasetHelper;
@@ -106,48 +105,73 @@ public class TaxonomyService {
     return false;
   }
 
+  /**
+   * Get the taxonomy that describes the {@link org.obiba.mica.network.domain.Network} properties.
+   *
+   * @return
+   */
   @NotNull
   public Taxonomy getNetworkTaxonomy() {
     initialize();
     return networkTaxonomy;
   }
 
+  /**
+   * Get the taxonomy that describes the {@link org.obiba.mica.study.domain.BaseStudy} properties.
+   *
+   * @return
+   */
   @NotNull
   public Taxonomy getStudyTaxonomy() {
     initialize();
     return studyTaxonomy;
   }
 
+  /**
+   * Get the taxonomy that describes the {@link org.obiba.mica.dataset.domain.Dataset} properties.
+   *
+   * @return
+   */
   @NotNull
   public Taxonomy getDatasetTaxonomy() {
     initialize();
     return datasetTaxonomy;
   }
 
+  /**
+   * Get the taxonomy that describes the {@link org.obiba.mica.dataset.domain.DatasetVariable} properties.
+   *
+   * @return
+   */
   @NotNull
   public Taxonomy getVariableTaxonomy() {
     initialize();
     return variableTaxonomy;
   }
 
+  /**
+   * Get all taxonomies that apply to the variables, including the one about the built-in properties of the {@link org.obiba.mica.dataset.domain.DatasetVariable}.
+   *
+   * @return
+   */
   @NotNull
-  public List<Taxonomy> getVariableTaxonomies() {
-    return Stream.concat(getOpalTaxonomies().stream(), Stream.of(getVariableTaxonomy())).collect(Collectors.toList());
+  public List<Taxonomy> getAllVariableTaxonomies() {
+    return Stream.concat(getVariableTaxonomies().stream(), Stream.of(getVariableTaxonomy())).collect(Collectors.toList());
   }
 
+  /**
+   * Get the taxonomies that apply to the variables' annotations.
+   *
+   * @return
+   */
   @NotNull
-  public synchronized List<Taxonomy> getOpalTaxonomies() {
-    List<Taxonomy> taxonomies = null;
-
-    try {
-      taxonomies = opalService.getTaxonomies();
-    } catch(Exception e) {
-      // ignore
-    }
-
-    return taxonomies == null ? Collections.emptyList() : taxonomies;
+  public synchronized List<Taxonomy> getVariableTaxonomies() {
+    return variableTaxonomiesService.getSafeTaxonomies();
   }
 
+  /**
+   * Prepare taxonomies for being re-initialized.
+   */
   public synchronized void refresh() {
     taxonomyTaxonomy = null;
     networkTaxonomy = null;

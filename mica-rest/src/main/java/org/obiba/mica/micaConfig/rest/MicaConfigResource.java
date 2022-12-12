@@ -72,10 +72,12 @@ public class MicaConfigResource {
   private MicaConfigService micaConfigService;
 
   @Inject
-  private TaxonomyService taxonomyService;
+  private TaxonomiesService taxonomiesService;
 
   @Inject
   private OpalService opalService;
+
+  @Inject VariableTaxonomiesService variableTaxonomiesService;
 
   @Inject
   private OpalCredentialService opalCredentialService;
@@ -85,9 +87,6 @@ public class MicaConfigResource {
 
   @Inject
   private Dtos dtos;
-
-  @Inject
-  private CacheService cacheService;
 
   @Inject
   private EventBus eventBus;
@@ -119,7 +118,7 @@ public class MicaConfigResource {
   @RequiresRoles(Roles.MICA_ADMIN)
   public Response create(@SuppressWarnings("TypeMayBeWeakened") Mica.MicaConfigDto dto) {
     MicaConfig micaConfig = dtos.fromDto(dto);
-    taxonomyService.refreshTaxonomyTaxonomyIfNeeded(micaConfigService.getConfig(), micaConfig);
+    taxonomiesService.refreshTaxonomyTaxonomyIfNeeded(micaConfigService.getConfig(), micaConfig);
     micaConfigService.save(micaConfig);
     return Response.noContent().build();
   }
@@ -678,7 +677,7 @@ public class MicaConfigResource {
   @RequiresAuthentication
   @Deprecated
   public List<Opal.TaxonomyDto> getTaxonomies() {
-    return opalService.getTaxonomyDtos();
+    return variableTaxonomiesService.getTaxonomyDtos();
   }
 
   /**
@@ -690,7 +689,7 @@ public class MicaConfigResource {
   @RequiresAuthentication
   @Deprecated
   public Opal.TaxonomiesDto getTaxonomySummaries() {
-    return opalService.getTaxonomySummaryDtos();
+    return variableTaxonomiesService.getTaxonomySummaryDtos();
   }
 
   /**
@@ -702,7 +701,7 @@ public class MicaConfigResource {
   @RequiresAuthentication
   @Deprecated
   public Opal.TaxonomiesDto getTaxonomyVocabularySummaries() {
-    return opalService.getTaxonomyVocabularySummaryDtos();
+    return variableTaxonomiesService.getTaxonomyVocabularySummaryDtos();
   }
 
   /**
@@ -714,6 +713,6 @@ public class MicaConfigResource {
   @RequiresAuthentication
   @Deprecated
   public Opal.TaxonomyDto getStudyTaxonomy() {
-    return org.obiba.opal.web.taxonomy.Dtos.asDto(taxonomyService.getStudyTaxonomy());
+    return org.obiba.opal.web.taxonomy.Dtos.asDto(taxonomiesService.getStudyTaxonomy());
   }
 }

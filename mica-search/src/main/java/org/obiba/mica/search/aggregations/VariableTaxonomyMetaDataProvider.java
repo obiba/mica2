@@ -18,6 +18,6 @@ public class VariableTaxonomyMetaDataProvider extends ConfigurationTaxonomyMetaD
 
   @Override
   protected Taxonomy getTaxonomy() {
-    return taxonomyService.getVariableTaxonomy();
+    return taxonomiesService.getVariableTaxonomy();
   }
 }

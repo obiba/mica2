@@ -25,7 +25,7 @@ import javax.ws.rs.core.Context;
 
 import org.obiba.mica.security.SubjectUtils;
 import org.obiba.mica.spi.search.TaxonomyTarget;
-import org.obiba.mica.micaConfig.service.TaxonomyService;
+import org.obiba.mica.micaConfig.service.TaxonomiesService;
 import org.obiba.mica.taxonomy.TaxonomyResolver;
 import org.obiba.opal.web.model.Opal;
 import org.obiba.opal.web.taxonomy.Dtos;
@@ -45,7 +45,7 @@ public class TaxonomiesSearchResource extends AbstractTaxonomySearchResource {
   private static final Logger logger = LoggerFactory.getLogger(TaxonomiesSearchResource.class);
 
   @Inject
-  private TaxonomyService taxonomyService;
+  private TaxonomiesService taxonomiesService;
 
   @GET
   @Path("/_filter")
@@ -79,7 +79,7 @@ public class TaxonomiesSearchResource extends AbstractTaxonomySearchResource {
     List<Opal.TaxonomyBundleDto> results = Lists.newArrayList();
 
     List<TaxonomyTarget> targets = target == null
-      ? taxonomyService.getTaxonomyTaxonomy().getVocabularies().stream()
+      ? taxonomiesService.getTaxonomyTaxonomy().getVocabularies().stream()
       .map(t -> TaxonomyTarget.valueOf(t.getName().toUpperCase())).collect(Collectors.toList())
       : Lists.newArrayList(TaxonomyTarget.valueOf(target.toUpperCase()));
 

@@ -18,6 +18,6 @@ public class NetworkTaxonomyMetaDataProvider extends ConfigurationTaxonomyMetaDa
 
   @Override
   protected Taxonomy getTaxonomy() {
-    return taxonomyService.getNetworkTaxonomy();
+    return taxonomiesService.getNetworkTaxonomy();
   }
 }

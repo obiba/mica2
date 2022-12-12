@@ -18,7 +18,7 @@ import javax.inject.Inject;
 
 import com.google.common.base.Strings;
 import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.micaConfig.service.TaxonomyService;
+import org.obiba.mica.micaConfig.service.TaxonomiesService;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
@@ -32,7 +32,7 @@ public abstract class ConfigurationTaxonomyMetaDataProvider implements Aggregati
   private static final Logger log = LoggerFactory.getLogger(ConfigurationTaxonomyMetaDataProvider.class);
 
   @Inject
-  protected TaxonomyService taxonomyService;
+  protected TaxonomiesService taxonomiesService;
 
   Map<String, Map<String, LocalizedMetaData>> cache;
 

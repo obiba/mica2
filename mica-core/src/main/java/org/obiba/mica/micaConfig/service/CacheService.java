@@ -43,18 +43,18 @@ public class CacheService {
   private EventBus eventBus;
 
   @Inject
-  private TaxonomyService taxonomyService;
+  private TaxonomiesService taxonomiesService;
 
   @CacheEvict(value = "opal-taxonomies", allEntries = true, beforeInvocation = true)
   public void clearOpalTaxonomiesCache() {
     log.info("Clearing opal taxonomies cache");
-    taxonomyService.getOpalTaxonomies();
+    taxonomiesService.getVariableTaxonomies();
   }
 
   @CacheEvict(value = "micaConfig", allEntries = true)
   public void clearMicaConfigCache() {
     log.info("Clearing mica config cache");
-    taxonomyService.refresh();
+    taxonomiesService.refresh();
   }
 
   @CacheEvict(value = "aggregations-metadata", allEntries = true)

@@ -99,7 +99,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
 
   @Override
   protected Taxonomy getTaxonomy() {
-    return taxonomyService.getDatasetTaxonomy();
+    return taxonomiesService.getDatasetTaxonomy();
   }
 
   public void setDatasetIdProvider(DocumentQueryIdProvider provider) {
@@ -135,7 +135,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
   @Nullable
   @Override
   protected Properties getAggregationsProperties(List<String> filter) {
-    Properties properties = getAggregationsProperties(filter, taxonomyService.getDatasetTaxonomy());
+    Properties properties = getAggregationsProperties(filter, taxonomiesService.getDatasetTaxonomy());
     if (!properties.containsKey(STUDY_JOIN_FIELD)) properties.put(STUDY_JOIN_FIELD, "");
     if (!properties.containsKey(HARMONIZATION_STUDY_JOIN_FIELD)) properties.put(HARMONIZATION_STUDY_JOIN_FIELD, "");
     if (!properties.containsKey(ID)) properties.put(ID, "");

@@ -14,11 +14,10 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import javax.inject.Inject;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.dataset.service.HarmonizedDatasetService;
-import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.mica.micaConfig.service.VariableTaxonomiesService;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.search.DocumentQueryHelper;
@@ -40,6 +39,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.*;
@@ -63,7 +63,7 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   private static final String LANGUAGE_TAG_UNDETERMINED = "und";
 
-  private final OpalService opalService;
+  private final VariableTaxonomiesService variableTaxonomiesService;
 
   private final PublishedStudyService publishedStudyService;
 
@@ -91,7 +91,7 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   @Inject
   public VariableQuery(
-    OpalService opalService,
+    VariableTaxonomiesService variableTaxonomiesService,
     PublishedStudyService publishedStudyService,
     CollectedDatasetService collectedDatasetService,
     HarmonizedDatasetService harmonizedDatasetService,
@@ -103,7 +103,7 @@ public class VariableQuery extends AbstractDocumentQuery {
     PopulationAggregationMetaDataProvider populationAggregationMetaDataProvider,
     StudyAggregationMetaDataProvider studyAggregationMetaDataProvider,
     VariablesSetsAggregationMetaDataProvider variablesSetsAggregationMetaDataProvider) {
-    this.opalService = opalService;
+    this.variableTaxonomiesService = variableTaxonomiesService;
     this.publishedStudyService = publishedStudyService;
     this.dtos = dtos;
     this.datasetAggregationMetaDataProvider = datasetAggregationMetaDataProvider;
@@ -320,7 +320,7 @@ public class VariableQuery extends AbstractDocumentQuery {
     if (mode != QueryMode.LIST && filter != null && !filter.isEmpty()) {
       List<Pattern> patterns = filter.stream().map(Pattern::compile).collect(Collectors.toList());
 
-      getOpalTaxonomies().stream().filter(Taxonomy::hasVocabularies)
+      getVariableTaxonomies().stream().filter(Taxonomy::hasVocabularies)
           .forEach(taxonomy -> taxonomy.getVocabularies().stream().filter(Vocabulary::hasTerms).forEach(vocabulary -> {
             String field = vocabulary.getAttributes().containsKey("field")
                 ? vocabulary.getAttributeValue("field")
@@ -330,7 +330,7 @@ public class VariableQuery extends AbstractDocumentQuery {
               properties.put(field, "");
           }));
 
-      taxonomyService.getVariableTaxonomy().getVocabularies().forEach(vocabulary -> {
+      taxonomiesService.getVariableTaxonomy().getVocabularies().forEach(vocabulary -> {
         String field = vocabulary.getAttributes().containsKey("field")
             ? vocabulary.getAttributeValue("field")
             : vocabulary.getName().replace('-', '.');
@@ -357,19 +357,11 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   @Override
   protected Taxonomy getTaxonomy() {
-    return taxonomyService.getVariableTaxonomy();
+    return taxonomiesService.getVariableTaxonomy();
   }
 
   @NotNull
-  private List<Taxonomy> getOpalTaxonomies() {
-    List<Taxonomy> taxonomies = null;
-
-    try {
-      taxonomies = opalService.getTaxonomies();
-    } catch (Exception e) {
-      // ignore
-    }
-
-    return taxonomies == null ? Collections.emptyList() : taxonomies;
+  private List<Taxonomy> getVariableTaxonomies() {
+    return variableTaxonomiesService.getSafeTaxonomies();
   }
 }

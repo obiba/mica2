@@ -16,7 +16,7 @@ import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
-import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.mica.micaConfig.service.VariableTaxonomiesService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
@@ -49,7 +49,7 @@ public class DatasetAnalysisController extends BaseController {
   private Dtos dtos;
 
   @Inject
-  private OpalService opalService;
+  private VariableTaxonomiesService variableTaxonomiesService;
 
   @Inject
   private PublishedDatasetService publishedDatasetService;
@@ -133,17 +133,11 @@ public class DatasetAnalysisController extends BaseController {
     return dataset;
   }
 
-  private List<Taxonomy> getTaxonomies() {
-    List<Taxonomy> taxonomies = null;
-    try {
-      taxonomies = opalService.getTaxonomies();
-    } catch (Exception e) {
-      // ignore
-    }
-    return taxonomies == null ? Collections.emptyList() : taxonomies;
+  private List<Taxonomy> getVariableTaxonomies() {
+    return variableTaxonomiesService.getSafeTaxonomies();
   }
 
   private String getDatasetVariableJSON(DatasetVariable variable) {
-    return JsonFormat.printToString(dtos.asDto(variable, getTaxonomies()));
+    return JsonFormat.printToString(dtos.asDto(variable, getVariableTaxonomies()));
   }
 }

@@ -10,7 +10,7 @@ import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.dataset.service.HarmonizedDatasetService;
-import org.obiba.mica.micaConfig.service.TaxonomyService;
+import org.obiba.mica.micaConfig.service.TaxonomiesService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.study.NoSuchStudyException;
@@ -63,7 +63,7 @@ public class VariableController extends BaseController {
   private ObjectMapper objectMapper;
 
   @Inject
-  private TaxonomyService taxonomyService;
+  private TaxonomiesService taxonomiesService;
 
   @GetMapping("/variable/{id:.+}")
   public ModelAndView variable(@PathVariable String id) {
@@ -99,7 +99,7 @@ public class VariableController extends BaseController {
 
     addStudyTableParameters(params, variable);
 
-    Map<String, Taxonomy> taxonomies = taxonomyService.getVariableTaxonomies().stream()
+    Map<String, Taxonomy> taxonomies = taxonomiesService.getAllVariableTaxonomies().stream()
       .collect(Collectors.toMap(TaxonomyEntity::getName, e -> e));
 
     // annotations are attributes described by some taxonomies

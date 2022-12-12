@@ -409,7 +409,7 @@ message MicaConfigDto {
   repeated string languages = 2;
   required string defaultCharSet = 3;
   optional string publicUrl = 4;
-  required string opal = 5;
+  optional string opal = 5;
   optional string version = 6;
   optional int32 privacyThreshold = 7;
   repeated string roles = 8;

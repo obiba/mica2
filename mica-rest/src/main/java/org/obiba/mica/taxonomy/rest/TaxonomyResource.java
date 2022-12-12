@@ -10,31 +10,25 @@
 
 package org.obiba.mica.taxonomy.rest;
 
-import javax.inject.Inject;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.micaConfig.service.OpalService;
+import com.codahale.metrics.annotation.Timed;
+import org.obiba.mica.micaConfig.service.VariableTaxonomiesService;
 import org.obiba.opal.web.model.Opal;
 import org.springframework.stereotype.Component;
 
-import com.codahale.metrics.annotation.Timed;
+import javax.inject.Inject;
+import javax.ws.rs.*;
 
 @Component
 @Path("/taxonomy/{name}")
 public class TaxonomyResource {
 
   @Inject
-  private OpalService opalService;
+  private VariableTaxonomiesService variableTaxonomiesService;
 
   @GET
   @Timed
   public Opal.TaxonomyDto getTaxonomy(@PathParam("name") String name) {
-    return opalService.getTaxonomyDto(name);
+    return variableTaxonomiesService.getTaxonomyDto(name);
   }
 
   @GET
@@ -42,8 +36,8 @@ public class TaxonomyResource {
   @Timed
   public Opal.TaxonomiesDto.TaxonomySummaryDto getTaxonomySummary(@PathParam("name") String name,
     @QueryParam("vocabularies") @DefaultValue("false") boolean withVocabularies) {
-    if(withVocabularies) return opalService.getTaxonomyVocabularySummaryDto(name);
-    return opalService.getTaxonomySummaryDto(name);
+    if(withVocabularies) return variableTaxonomiesService.getTaxonomyVocabularySummaryDto(name);
+    return variableTaxonomiesService.getTaxonomySummaryDto(name);
   }
 
   @GET
@@ -51,7 +45,7 @@ public class TaxonomyResource {
   @Timed
   public Opal.VocabularyDto getVocabulary(@PathParam("name") String name,
     @PathParam("vocabulary") String vocabularyName) {
-    return opalService.getTaxonomyVocabularyDto(name, vocabularyName);
+    return variableTaxonomiesService.getTaxonomyVocabularyDto(name, vocabularyName);
   }
 
   @GET
@@ -59,7 +53,7 @@ public class TaxonomyResource {
   @Timed
   public Opal.TaxonomiesDto.TaxonomySummaryDto.VocabularySummaryDto getVocabularySummary(@PathParam("name") String name,
     @PathParam("vocabulary") String vocabularyName) {
-    return opalService.getTaxonomyVocabularySummaryDto(name, vocabularyName);
+    return variableTaxonomiesService.getTaxonomyVocabularySummaryDto(name, vocabularyName);
   }
 
 }
