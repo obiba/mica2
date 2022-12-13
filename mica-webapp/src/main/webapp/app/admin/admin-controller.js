@@ -152,9 +152,9 @@ mica.admin
         });
       };
 
-      $scope.clearOpalTaxonomies = function () {
+      $scope.clearVariableTaxonomies = function () {
         withConfirm(function () {
-          CacheService.cache.clear({id: 'opalTaxonomies'});
+          CacheService.cache.clear({id: 'variableTaxonomies'});
         });
       };
 

@@ -51,6 +51,12 @@ public class CacheService {
     taxonomiesService.getVariableTaxonomies();
   }
 
+  @CacheEvict(value = "variable-taxonomies", allEntries = true, beforeInvocation = true)
+  public void clearTaxonomiesCache() {
+    log.info("Clearing variable taxonomies cache");
+    clearOpalTaxonomiesCache();
+  }
+
   @CacheEvict(value = "micaConfig", allEntries = true)
   public void clearMicaConfigCache() {
     log.info("Clearing mica config cache");
@@ -77,7 +83,7 @@ public class CacheService {
 
   public void clearAllCaches() {
     log.info("Clearing all caches");
-    clearOpalTaxonomiesCache();
+    clearTaxonomiesCache();
     clearMicaConfigCache();
     clearAggregationsMetadataCache();
     clearDatasetVariablesCache();

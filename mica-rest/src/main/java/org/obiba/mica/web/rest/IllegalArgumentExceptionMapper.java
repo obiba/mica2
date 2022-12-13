@@ -24,7 +24,7 @@ public class IllegalArgumentExceptionMapper implements ExceptionMapper<IllegalAr
 
   @Override
   public Response toResponse(IllegalArgumentException exception) {
-    logger.warn("IllegalArgumentException catched in IllegalArgumentExceptionMapper", exception);
+    logger.warn("IllegalArgumentException caught in IllegalArgumentExceptionMapper", exception);
     return Response.status(Response.Status.BAD_REQUEST).entity(exception.getMessage()).build();
   }
 }

@@ -25,6 +25,7 @@ import org.obiba.opal.web.model.Opal;
 import org.obiba.opal.web.taxonomy.Dtos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -62,7 +63,12 @@ public class VariableTaxonomiesService {
     }
   }
 
+  @Cacheable(value = "variable-taxonomies", key = "'variable'")
   public List<Taxonomy> getTaxonomies() {
+    return getInternalTaxonomies();
+  }
+
+  public List<Taxonomy> getInternalTaxonomies() {
     Map<String, Taxonomy> taxonomies;
     // init with the ones from opal
     try {
@@ -74,6 +80,7 @@ public class VariableTaxonomiesService {
     if (variableTaxonomiesDir.exists()) {
       File[] yamlFiles = variableTaxonomiesDir.listFiles(file -> !file.isDirectory() && file.getName().endsWith(".yml"));
       if (yamlFiles != null) {
+        log.info("Fetching local taxonomies");
         for (File yamlFile : yamlFiles) {
           try {
             Taxonomy taxonomy = YamlResourceReader.readFile(yamlFile.getAbsolutePath(), Taxonomy.class);
@@ -88,6 +95,7 @@ public class VariableTaxonomiesService {
     for (TaxonomiesProviderService provider : pluginsService.getTaxonomiesProviderServices().stream()
       .filter(provider -> provider.isFor(TaxonomyTarget.VARIABLE))
       .collect(Collectors.toList())) {
+      log.info("Fetching taxonomies from plugin: {}", provider.getName());
       try {
         for (Taxonomy taxonomy : provider.getTaxonomies()) {
           // override any duplicated taxonomy
