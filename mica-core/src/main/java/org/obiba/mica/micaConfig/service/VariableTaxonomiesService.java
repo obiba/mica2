@@ -13,6 +13,7 @@ package org.obiba.mica.micaConfig.service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.obiba.mica.core.support.YamlResourceReader;
 import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.spi.taxonomies.TaxonomiesProviderService;
 import org.obiba.opal.core.cfg.NoSuchTaxonomyException;
@@ -26,8 +27,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
+import java.io.File;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -42,19 +45,46 @@ public class VariableTaxonomiesService {
 
   private static final Logger log = LoggerFactory.getLogger(VariableTaxonomiesService.class);
 
+  private static final String VARIABLE_TAXONOMIES_PATH = "${MICA_HOME}/conf/taxonomies/variable";
+
   @Inject
   private OpalService opalService;
 
   @Inject
   private PluginsService pluginsService;
 
+  private File variableTaxonomiesDir;
+
+  @PostConstruct
+  public void init() {
+    if (variableTaxonomiesDir == null) {
+      variableTaxonomiesDir = new File(VARIABLE_TAXONOMIES_PATH.replace("${MICA_HOME}", System.getProperty("MICA_HOME")));
+    }
+  }
+
   public List<Taxonomy> getTaxonomies() {
     Map<String, Taxonomy> taxonomies;
+    // init with the ones from opal
     try {
       taxonomies = opalService.getTaxonomiesInternal();
     } catch (Exception e) {
       taxonomies = Maps.newHashMap();
     }
+    // read local files
+    if (variableTaxonomiesDir.exists()) {
+      File[] yamlFiles = variableTaxonomiesDir.listFiles(file -> !file.isDirectory() && file.getName().endsWith(".yml"));
+      if (yamlFiles != null) {
+        for (File yamlFile : yamlFiles) {
+          try {
+            Taxonomy taxonomy = YamlResourceReader.readFile(yamlFile.getAbsolutePath(), Taxonomy.class);
+            taxonomies.put(taxonomy.getName(), taxonomy);
+          } catch (Exception e) {
+            log.error("Taxonomy file could not be read: {}", yamlFile.getAbsolutePath(), e);
+          }
+        }
+      }
+    }
+    // get the ones from plugins
     for (TaxonomiesProviderService provider : pluginsService.getTaxonomiesProviderServices().stream()
       .filter(provider -> provider.isFor(TaxonomyTarget.VARIABLE))
       .collect(Collectors.toList())) {
