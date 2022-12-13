@@ -10,13 +10,8 @@
 
 package org.obiba.mica.micaConfig.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-
+import com.google.common.base.Strings;
+import com.google.common.eventbus.Subscribe;
 import org.obiba.mica.core.event.DocumentSetUpdatedEvent;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
@@ -24,6 +19,7 @@ import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.helper.*;
 import org.obiba.mica.network.event.NetworkPublishedEvent;
 import org.obiba.mica.network.event.NetworkUnpublishedEvent;
+import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.study.event.StudyPublishedEvent;
 import org.obiba.mica.study.event.StudyUnpublishedEvent;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
@@ -33,7 +29,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import com.google.common.eventbus.Subscribe;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class TaxonomiesService {
@@ -58,6 +59,8 @@ public class TaxonomiesService {
 
   private final VariablesSetsAggregationMetaDataHelper variablesSetsHelper;
 
+  private final TaxonomyConfigService taxonomyConfigService;
+
   private Taxonomy taxonomyTaxonomy;
 
   private Taxonomy variableTaxonomy;
@@ -79,7 +82,8 @@ public class TaxonomiesService {
     DceIdAggregationMetaDataHelper dceHelper,
     NetworksSetsAggregationMetaDataHelper networksSetsAggregationMetaDataHelper,
     StudiesSetsAggregationMetaDataHelper studiesSetsHelper,
-    VariablesSetsAggregationMetaDataHelper variablesSetsHelper) {
+    VariablesSetsAggregationMetaDataHelper variablesSetsHelper,
+    TaxonomyConfigService taxonomyConfigService) {
     this.variableTaxonomiesService = variableTaxonomiesService;
     this.micaConfigService = micaConfigService;
     this.studyHelper = studyHelper;
@@ -90,6 +94,7 @@ public class TaxonomiesService {
     this.networksSetsAggregationMetaDataHelper = networksSetsAggregationMetaDataHelper;
     this.studiesSetsHelper = studiesSetsHelper;
     this.variablesSetsHelper = variablesSetsHelper;
+    this.taxonomyConfigService = taxonomyConfigService;
   }
 
   @NotNull
@@ -99,8 +104,20 @@ public class TaxonomiesService {
   }
 
   public boolean metaTaxonomyContains(String taxonomy) {
-    for(Vocabulary target : getTaxonomyTaxonomy().getVocabularies()) {
-      if(hasTerm(target, taxonomy)) return true;
+    for (Vocabulary targetVocabulary : getTaxonomyTaxonomy().getVocabularies()) {
+      Optional<Term> termOpt = getTerm(targetVocabulary, taxonomy);
+      if (termOpt.isPresent()) {
+        Term term = termOpt.get();
+        String visibility = term.getAttributeValue("visible");
+        // visible by default
+        if (Strings.isNullOrEmpty(visibility)) return true;
+        // check visible attribute value
+        try {
+          return Boolean.parseBoolean(visibility.toLowerCase());
+        } catch (Exception e) {
+          return false;
+        }
+      }
     }
     return false;
   }
@@ -193,45 +210,45 @@ public class TaxonomiesService {
   }
 
   private void initializeTaxonomyTaxonomy() {
-    if(taxonomyTaxonomy != null) return;
-    taxonomyTaxonomy = copy(micaConfigService.getTaxonomyTaxonomy());
+    if (taxonomyTaxonomy != null) return;
+    taxonomyTaxonomy = copy(findTaxonomy(TaxonomyTarget.TAXONOMY));
     MicaConfig config = micaConfigService.getConfig();
-    if(!config.isNetworkEnabled() || config.isSingleNetworkEnabled()) {
+    if (!config.isNetworkEnabled() || config.isSingleNetworkEnabled()) {
       taxonomyTaxonomy.removeVocabulary("network");
     }
-    if(!config.isStudyDatasetEnabled() && !config.isHarmonizationDatasetEnabled()) {
+    if (!config.isStudyDatasetEnabled() && !config.isHarmonizationDatasetEnabled()) {
       taxonomyTaxonomy.removeVocabulary("dataset");
       taxonomyTaxonomy.removeVocabulary("variable");
     }
-    if(config.isSingleStudyEnabled() && !config.isHarmonizationDatasetEnabled()) {
+    if (config.isSingleStudyEnabled() && !config.isHarmonizationDatasetEnabled()) {
       taxonomyTaxonomy.removeVocabulary("study");
     }
   }
 
   private void initializeNetworkTaxonomy() {
-    if(networkTaxonomy != null) return;
-    networkTaxonomy = copy(micaConfigService.getNetworkTaxonomy());
+    if (networkTaxonomy != null) return;
+    networkTaxonomy = copy(findTaxonomy(TaxonomyTarget.NETWORK));
     networkHelper.applyIdTerms(networkTaxonomy, "id");
     networksSetsAggregationMetaDataHelper.applyIdTerms(networkTaxonomy, "sets");
     studyHelper.applyIdTerms(networkTaxonomy, "studyIds");
   }
 
   private void initializeStudyTaxonomy() {
-    if(studyTaxonomy != null) return;
-    studyTaxonomy = copy(micaConfigService.getStudyTaxonomy());
+    if (studyTaxonomy != null) return;
+    studyTaxonomy = copy(findTaxonomy(TaxonomyTarget.STUDY));
     studyHelper.applyIdTerms(studyTaxonomy, "id");
     studiesSetsHelper.applyIdTerms(studyTaxonomy, "sets");
   }
 
   private void initializeDatasetTaxonomy() {
-    if(datasetTaxonomy != null) return;
-    datasetTaxonomy = copy(micaConfigService.getDatasetTaxonomy());
+    if (datasetTaxonomy != null) return;
+    datasetTaxonomy = copy(findTaxonomy(TaxonomyTarget.STUDY));
     datasetHelper.applyIdTerms(datasetTaxonomy, "id");
   }
 
   private void initializeVariableTaxonomy() {
-    if(variableTaxonomy != null) return;
-    variableTaxonomy = copy(micaConfigService.getVariableTaxonomy());
+    if (variableTaxonomy != null) return;
+    variableTaxonomy = copy(findTaxonomy(TaxonomyTarget.VARIABLE));
     studyHelper.applyIdTerms(variableTaxonomy, "studyId");
     datasetHelper.applyIdTerms(variableTaxonomy, "datasetId");
     populationHelper.applyIdTerms(variableTaxonomy, "populationId");
@@ -242,11 +259,11 @@ public class TaxonomiesService {
   private Taxonomy copy(Taxonomy source) {
     Taxonomy target = new Taxonomy();
     BeanUtils.copyProperties(source, target, "vocabularies");
-    if(source.hasVocabularies()) {
+    if (source.hasVocabularies()) {
       source.getVocabularies().forEach(sourceVoc -> {
         Vocabulary targetVoc = new Vocabulary();
         BeanUtils.copyProperties(sourceVoc, targetVoc, "terms");
-        if(sourceVoc.hasTerms()) {
+        if (sourceVoc.hasTerms()) {
           sourceVoc.getTerms().forEach(sourceTerm -> {
             Term targetTerm = new Term();
             BeanUtils.copyProperties(sourceTerm, targetTerm);
@@ -267,29 +284,35 @@ public class TaxonomiesService {
    * @param name
    * @return
    */
-  private boolean hasTerm(Vocabulary vocabulary, String name) {
-    if(!vocabulary.hasTerms()) return false;
-    if(vocabulary.hasTerm(name)) return true;
-    for(Term t : vocabulary.getTerms()) {
-      if(hasTerm(t, name)) return true;
+  private Optional<Term> getTerm(Vocabulary vocabulary, String name) {
+    if (!vocabulary.hasTerms()) return Optional.empty();
+    if (vocabulary.hasTerm(name)) return Optional.of(vocabulary.getTerm(name));
+    for (Term t : vocabulary.getTerms()) {
+      Optional<Term> res = getTerm(t, name);
+      if (res.isPresent()) return res;
     }
-    return false;
+    return Optional.empty();
   }
 
   /**
-   * Check if term has a term with the givane name.
+   * Check if term has a term with the given name.
    *
    * @param term
    * @param name
    * @return
    */
-  private boolean hasTerm(Term term, String name) {
-    if(!term.hasTerms()) return false;
-    if(term.hasTerm(name)) return true;
-    for(Term t : term.getTerms()) {
-      if(hasTerm(t, name)) return true;
+  private Optional<Term> getTerm(Term term, String name) {
+    if (!term.hasTerms()) return Optional.empty();
+    if (term.hasTerm(name)) return Optional.of(term.getTerm(name));
+    for (Term t : term.getTerms()) {
+      Optional<Term> res = getTerm(t, name);
+      if (res.isPresent()) return res;
     }
-    return false;
+    return Optional.empty();
+  }
+
+  private Taxonomy findTaxonomy(TaxonomyTarget target) {
+    return taxonomyConfigService.findByTarget(target);
   }
 
   //
