@@ -13,7 +13,7 @@ package org.obiba.mica.search.aggregations;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.micaConfig.service.VariableTaxonomiesService;
+import org.obiba.mica.micaConfig.service.TaxonomiesService;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.spi.search.support.AttributeKey;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
@@ -31,7 +31,7 @@ import java.util.Optional;
 public class TaxonomyAggregationMetaDataProvider implements AggregationMetaDataProvider {
 
   @Inject
-  VariableTaxonomiesService variableTaxonomiesService;
+  TaxonomiesService taxonomiesService;
 
   Map<String, Map<String, LocalizedMetaData>> cache;
 
@@ -111,6 +111,6 @@ public class TaxonomyAggregationMetaDataProvider implements AggregationMetaDataP
   }
 
   protected List<Taxonomy> getVariableTaxonomies() {
-    return variableTaxonomiesService.getSafeTaxonomies();
+    return taxonomiesService.getVariableTaxonomies();
   }
 }

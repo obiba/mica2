@@ -16,13 +16,8 @@ import com.google.common.collect.Maps;
 import org.obiba.mica.core.support.YamlResourceReader;
 import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.spi.taxonomies.TaxonomiesProviderService;
-import org.obiba.opal.core.cfg.NoSuchTaxonomyException;
-import org.obiba.opal.core.cfg.NoSuchVocabularyException;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
-import org.obiba.opal.core.domain.taxonomy.Vocabulary;
-import org.obiba.opal.web.model.Opal;
-import org.obiba.opal.web.taxonomy.Dtos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -30,7 +25,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.util.Collections;
 import java.util.Comparator;
@@ -65,16 +59,22 @@ public class VariableTaxonomiesService {
 
   @Cacheable(value = "variable-taxonomies", key = "'variable'")
   public List<Taxonomy> getTaxonomies() {
-    return getInternalTaxonomies();
+    List<Taxonomy> taxonomyList = Lists.newArrayList(getTaxonomiesMap().values());
+    Collections.sort(taxonomyList, Comparator.comparing(TaxonomyEntity::getName));
+    return taxonomyList;
   }
 
-  public List<Taxonomy> getInternalTaxonomies() {
-    Map<String, Taxonomy> taxonomies;
+  //
+  // Private methods
+  //
+
+  private Map<String, Taxonomy> getTaxonomiesMap() {
+    Map<String, Taxonomy> taxonomies = Maps.newHashMap();
     // init with the ones from opal
     try {
-      taxonomies = opalService.getTaxonomiesInternal();
+      taxonomies.putAll(opalService.getTaxonomiesInternal());
     } catch (Exception e) {
-      taxonomies = Maps.newHashMap();
+      // ignore
     }
     // read local files
     if (variableTaxonomiesDir.exists()) {
@@ -107,137 +107,7 @@ public class VariableTaxonomiesService {
         log.warn("Taxonomies retrieval from plugin {} failed", provider.getName(), e);
       }
     }
-    List<Taxonomy> taxonomyList = Lists.newArrayList(taxonomies.values());
-    Collections.sort(taxonomyList, Comparator.comparing(TaxonomyEntity::getName));
-    return taxonomyList;
-  }
-
-  /**
-   * Get a not-null list of taxonomies.
-   *
-   * @return
-   */
-  @NotNull
-  public List<Taxonomy> getSafeTaxonomies() {
-    List<Taxonomy> taxonomies = null;
-
-    try {
-      taxonomies = getTaxonomies();
-    } catch (Exception e) {
-      // ignore
-    }
-
-    return taxonomies == null ? Collections.emptyList() : taxonomies;
-  }
-
-  public List<Opal.TaxonomyDto> getTaxonomyDtos() {
-    return getTaxonomies().stream().map(Dtos::asDto).collect(Collectors.toList());
-  }
-
-  /**
-   * Get a summary of all the {@link Taxonomy}s available from Opal master.
-   *
-   * @return
-   */
-  public Opal.TaxonomiesDto getTaxonomySummaryDtos() {
-    List<Opal.TaxonomiesDto.TaxonomySummaryDto> summaries = getTaxonomies().stream().map(Dtos::asSummaryDto)
-      .collect(Collectors.toList());
-
-    return Opal.TaxonomiesDto.newBuilder().addAllSummaries(summaries).build();
-  }
-
-  /**
-   * Get a summary of the {@link Taxonomy} available from Opal master.
-   *
-   * @param name the taxonomy name
-   * @return
-   */
-  public Opal.TaxonomiesDto.TaxonomySummaryDto getTaxonomySummaryDto(String name) {
-    return Dtos.asSummaryDto(getTaxonomy(name));
-  }
-
-  /**
-   * Get a summary of all the {@link Taxonomy}s with their
-   * {@link Vocabulary}s from Opal master.
-   *
-   * @return
-   */
-  public Opal.TaxonomiesDto getTaxonomyVocabularySummaryDtos() {
-    List<Opal.TaxonomiesDto.TaxonomySummaryDto> summaries = getTaxonomies().stream().map(Dtos::asVocabularySummaryDto)
-      .collect(Collectors.toList());
-
-    return Opal.TaxonomiesDto.newBuilder().addAllSummaries(summaries).build();
-  }
-
-  /**
-   * Get a summary of the {@link Taxonomy} with its
-   * {@link Vocabulary}s from Opal master.
-   *
-   * @param name the taxonomy name
-   * @return
-   */
-  public Opal.TaxonomiesDto.TaxonomySummaryDto getTaxonomyVocabularySummaryDto(String name) {
-    return Dtos.asVocabularySummaryDto(getTaxonomy(name));
-  }
-
-  /**
-   * Get a summary of the {@link Vocabulary} from Opal master.
-   *
-   * @param name
-   * @param vocabularyName
-   * @return
-   */
-  public Opal.TaxonomiesDto.TaxonomySummaryDto.VocabularySummaryDto getTaxonomyVocabularySummaryDto(String name,
-                                                                                                    String vocabularyName) {
-    for (Vocabulary voc : getTaxonomy(name).getVocabularies()) {
-      if (voc.getName().equals(vocabularyName)) return Dtos.asSummaryDto(voc);
-    }
-    throw new NoSuchVocabularyException(name, vocabularyName);
-  }
-
-  /**
-   * Get the {@link Taxonomy} from Opal master.
-   *
-   * @param name
-   * @return
-   * @throws NoSuchTaxonomyException
-   */
-  public Taxonomy getTaxonomy(String name) {
-    return Dtos.fromDto(getTaxonomyDto(name));
-  }
-
-  /**
-   * Get the {@link Taxonomy} as a Dto from Opal master.
-   *
-   * @param name
-   * @return
-   * @throws NoSuchTaxonomyException
-   */
-  public Opal.TaxonomyDto getTaxonomyDto(String name) {
-    Map<String, Taxonomy> taxonomies = opalService.getTaxonomiesInternal();
-
-    if (!taxonomies.containsKey(name)) {
-      throw new NoSuchTaxonomyException(name);
-    }
-
-    return Dtos.asDto(taxonomies.get(name));
-  }
-
-  /**
-   * Get the {@link Vocabulary} as a Dto from Opal master.
-   *
-   * @param name
-   * @param vocabularyName
-   * @return
-   */
-  public Opal.VocabularyDto getTaxonomyVocabularyDto(String name, String vocabularyName) {
-    Map<String, Taxonomy> taxonomies = opalService.getTaxonomiesInternal();
-
-    if (!taxonomies.containsKey(name)) {
-      throw new NoSuchTaxonomyException(name);
-    }
-
-    return Dtos.asDto(taxonomies.get(name).getVocabulary(vocabularyName));
+    return taxonomies;
   }
 
 }

@@ -14,7 +14,6 @@ import com.codahale.metrics.annotation.Timed;
 import com.google.common.eventbus.EventBus;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
-import org.obiba.mica.micaConfig.service.VariableTaxonomiesService;
 import org.obiba.mica.security.Roles;
 import org.obiba.opal.web.model.Opal;
 import org.slf4j.Logger;
@@ -28,12 +27,9 @@ import java.util.List;
 
 @Component
 @Path("/taxonomies")
-public class TaxonomiesResource {
+public class TaxonomiesResource extends AbstractTaxonomyResource {
 
   private static final Logger logger = LoggerFactory.getLogger(TaxonomiesResource.class);
-
-  @Inject
-  private VariableTaxonomiesService variableTaxonomiesService;
 
   @Inject
   private EventBus eventBus;
@@ -41,7 +37,7 @@ public class TaxonomiesResource {
   @GET
   @Timed
   public List<Opal.TaxonomyDto> getTaxonomies() {
-    return variableTaxonomiesService.getTaxonomyDtos();
+    return getTaxonomyDtos();
   }
 
   @GET
@@ -49,8 +45,8 @@ public class TaxonomiesResource {
   @Timed
   public Opal.TaxonomiesDto getTaxonomySummaries(
     @QueryParam("vocabularies") @DefaultValue("false") boolean withVocabularies) {
-    if(withVocabularies) return variableTaxonomiesService.getTaxonomyVocabularySummaryDtos();
-    return variableTaxonomiesService.getTaxonomySummaryDtos();
+    if(withVocabularies) return getTaxonomyVocabularySummaryDtos();
+    return getTaxonomySummaryDtos();
   }
 
   @PUT

@@ -77,8 +77,6 @@ public class MicaConfigResource {
   @Inject
   private OpalService opalService;
 
-  @Inject VariableTaxonomiesService variableTaxonomiesService;
-
   @Inject
   private OpalCredentialService opalCredentialService;
 
@@ -666,42 +664,6 @@ public class MicaConfigResource {
     Locale locale = Locale.forLanguageTag(languageTag);
     return Arrays.stream(Locale.getISOLanguages())
       .collect(Collectors.toMap(lang -> lang, lang -> new Locale(lang).getDisplayLanguage(locale)));
-  }
-
-  /**
-   * @deprecated kept for backward compatibility.
-   * @return
-     */
-  @GET
-  @Path("/taxonomies")
-  @RequiresAuthentication
-  @Deprecated
-  public List<Opal.TaxonomyDto> getTaxonomies() {
-    return variableTaxonomiesService.getTaxonomyDtos();
-  }
-
-  /**
-   * @deprecated kept for backward compatibility.
-   * @return
-     */
-  @GET
-  @Path("/taxonomies/summaries")
-  @RequiresAuthentication
-  @Deprecated
-  public Opal.TaxonomiesDto getTaxonomySummaries() {
-    return variableTaxonomiesService.getTaxonomySummaryDtos();
-  }
-
-  /**
-   * @deprecated kept for backward compatibility.
-   * @return
-     */
-  @GET
-  @Path("/taxonomies/vocabularies/summaries")
-  @RequiresAuthentication
-  @Deprecated
-  public Opal.TaxonomiesDto getTaxonomyVocabularySummaries() {
-    return variableTaxonomiesService.getTaxonomyVocabularySummaryDtos();
   }
 
   /**

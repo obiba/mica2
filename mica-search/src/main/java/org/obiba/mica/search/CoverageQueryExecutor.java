@@ -12,7 +12,7 @@ package org.obiba.mica.search;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.obiba.mica.micaConfig.service.VariableTaxonomiesService;
+import org.obiba.mica.micaConfig.service.TaxonomiesService;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.spi.search.support.AttributeKey;
 import org.obiba.mica.spi.search.support.JoinQuery;
@@ -42,7 +42,7 @@ public class CoverageQueryExecutor {
   private static final String LANGUAGE_TAG_UNDETERMINED = "und";
 
   @Inject
-  private VariableTaxonomiesService variableTaxonomiesService;
+  private TaxonomiesService taxonomiesService;
 
   @Inject
   private JoinQueryExecutor joinQueryExecutor;
@@ -329,13 +329,7 @@ public class CoverageQueryExecutor {
 
   @NotNull
   private List<Taxonomy> getTaxonomies() {
-    List<Taxonomy> taxonomies = null;
-    try {
-      taxonomies = variableTaxonomiesService.getTaxonomies();
-    } catch (Exception e) {
-      // ignore
-    }
-    return taxonomies == null ? Collections.emptyList() : taxonomies;
+    return taxonomiesService.getVariableTaxonomies();
   }
 
   @Nullable

@@ -11,24 +11,19 @@
 package org.obiba.mica.taxonomy.rest;
 
 import com.codahale.metrics.annotation.Timed;
-import org.obiba.mica.micaConfig.service.VariableTaxonomiesService;
 import org.obiba.opal.web.model.Opal;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import javax.ws.rs.*;
 
 @Component
 @Path("/taxonomy/{name}")
-public class TaxonomyResource {
-
-  @Inject
-  private VariableTaxonomiesService variableTaxonomiesService;
+public class TaxonomyResource extends AbstractTaxonomyResource {
 
   @GET
   @Timed
   public Opal.TaxonomyDto getTaxonomy(@PathParam("name") String name) {
-    return variableTaxonomiesService.getTaxonomyDto(name);
+    return getTaxonomyDto(name);
   }
 
   @GET
@@ -36,8 +31,8 @@ public class TaxonomyResource {
   @Timed
   public Opal.TaxonomiesDto.TaxonomySummaryDto getTaxonomySummary(@PathParam("name") String name,
     @QueryParam("vocabularies") @DefaultValue("false") boolean withVocabularies) {
-    if(withVocabularies) return variableTaxonomiesService.getTaxonomyVocabularySummaryDto(name);
-    return variableTaxonomiesService.getTaxonomySummaryDto(name);
+    if(withVocabularies) return getTaxonomyVocabularySummaryDto(name);
+    return getTaxonomySummaryDto(name);
   }
 
   @GET
@@ -45,7 +40,7 @@ public class TaxonomyResource {
   @Timed
   public Opal.VocabularyDto getVocabulary(@PathParam("name") String name,
     @PathParam("vocabulary") String vocabularyName) {
-    return variableTaxonomiesService.getTaxonomyVocabularyDto(name, vocabularyName);
+    return getTaxonomyVocabularyDto(name, vocabularyName);
   }
 
   @GET
@@ -53,7 +48,7 @@ public class TaxonomyResource {
   @Timed
   public Opal.TaxonomiesDto.TaxonomySummaryDto.VocabularySummaryDto getVocabularySummary(@PathParam("name") String name,
     @PathParam("vocabulary") String vocabularyName) {
-    return variableTaxonomiesService.getTaxonomyVocabularySummaryDto(name, vocabularyName);
+    return getTaxonomyVocabularySummaryDto(name, vocabularyName);
   }
 
 }

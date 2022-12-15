@@ -63,8 +63,6 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   private static final String LANGUAGE_TAG_UNDETERMINED = "und";
 
-  private final VariableTaxonomiesService variableTaxonomiesService;
-
   private final PublishedStudyService publishedStudyService;
 
   private final Dtos dtos;
@@ -91,7 +89,6 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   @Inject
   public VariableQuery(
-    VariableTaxonomiesService variableTaxonomiesService,
     PublishedStudyService publishedStudyService,
     CollectedDatasetService collectedDatasetService,
     HarmonizedDatasetService harmonizedDatasetService,
@@ -103,7 +100,6 @@ public class VariableQuery extends AbstractDocumentQuery {
     PopulationAggregationMetaDataProvider populationAggregationMetaDataProvider,
     StudyAggregationMetaDataProvider studyAggregationMetaDataProvider,
     VariablesSetsAggregationMetaDataProvider variablesSetsAggregationMetaDataProvider) {
-    this.variableTaxonomiesService = variableTaxonomiesService;
     this.publishedStudyService = publishedStudyService;
     this.dtos = dtos;
     this.datasetAggregationMetaDataProvider = datasetAggregationMetaDataProvider;
@@ -362,6 +358,6 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   @NotNull
   private List<Taxonomy> getVariableTaxonomies() {
-    return variableTaxonomiesService.getSafeTaxonomies();
+    return taxonomiesService.getVariableTaxonomies();
   }
 }

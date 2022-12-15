@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -108,12 +109,12 @@ public class TaxonomiesService {
       Optional<Term> termOpt = getTerm(targetVocabulary, taxonomy);
       if (termOpt.isPresent()) {
         Term term = termOpt.get();
-        String visibility = term.getAttributeValue("visible");
+        String hidden = term.getAttributeValue("hidden");
         // visible by default
-        if (Strings.isNullOrEmpty(visibility)) return true;
+        if (Strings.isNullOrEmpty(hidden)) return true;
         // check visible attribute value
         try {
-          return Boolean.parseBoolean(visibility.toLowerCase());
+          return !Boolean.parseBoolean(hidden.toLowerCase());
         } catch (Exception e) {
           return false;
         }
@@ -183,7 +184,13 @@ public class TaxonomiesService {
    */
   @NotNull
   public synchronized List<Taxonomy> getVariableTaxonomies() {
-    return variableTaxonomiesService.getSafeTaxonomies();
+    List<Taxonomy> taxonomies = null;
+    try {
+      taxonomies = variableTaxonomiesService.getTaxonomies();
+    } catch (Exception e) {
+      // ignore
+    }
+    return taxonomies == null ? Collections.emptyList() : taxonomies;
   }
 
   /**

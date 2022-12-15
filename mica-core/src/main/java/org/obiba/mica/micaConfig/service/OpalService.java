@@ -11,6 +11,7 @@
 package org.obiba.mica.micaConfig.service;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.util.Pair;
 import org.obiba.magma.support.Initialisables;
@@ -76,7 +77,7 @@ public class OpalService implements EnvironmentAware {
    */
   public synchronized RestDatasource getDatasource(@Nullable String opalUrl, String project) {
     final String projectUrl = getOpalProjectUrl(opalUrl, project);
-    opalUrl = Strings.isNullOrEmpty(opalUrl) ? getDefaultOpal() : opalUrl;
+    opalUrl = Strings.isNullOrEmpty(opalUrl) ? getPrimaryOpal() : opalUrl;
 
     OpalCredential opalCredential = getOpalCredential(opalUrl);
 
@@ -107,10 +108,15 @@ public class OpalService implements EnvironmentAware {
    *
    * @return
    */
-  public String getDefaultOpal() {
+  private String getPrimaryOpal() {
     String opalConf = micaConfigService.getConfig().getOpal();
     String opalDefault = environment.getProperty("opal.url");
     return Strings.isNullOrEmpty(opalConf) ? opalDefault : opalConf;
+  }
+
+  public boolean hasPrimaryOpal() {
+    String primaryOpal = getPrimaryOpal();
+    return !Strings.isNullOrEmpty(primaryOpal) && primaryOpal.toLowerCase().startsWith("http");
   }
 
   //
@@ -118,7 +124,7 @@ public class OpalService implements EnvironmentAware {
   //
 
   public List<Projects.ProjectDto> getProjectDtos(String opalUrl) throws URISyntaxException {
-    if (Strings.isNullOrEmpty(opalUrl)) opalUrl = getDefaultOpal();
+    if (Strings.isNullOrEmpty(opalUrl)) opalUrl = getPrimaryOpal();
 
     OpalJavaClient opalJavaClient = getOpalJavaClient(opalUrl);
     URI uri = opalJavaClient.newUri().segment("projects").build();
@@ -144,11 +150,15 @@ public class OpalService implements EnvironmentAware {
   //
 
   synchronized Map<String, Taxonomy> getTaxonomiesInternal() {
-    try {
-      return opalServiceHelper.getTaxonomies(getOpalJavaClient());
-    } catch (URISyntaxException e) {
-      log.error("Malformed opal URI", e);
-      throw new NoSuchElementException();
+    if (hasPrimaryOpal()) {
+      try {
+        return opalServiceHelper.getTaxonomies(getOpalJavaClient());
+      } catch (Exception e) {
+        log.error("Cannot retrieve Opal taxonomies", e);
+        throw new NoSuchElementException();
+      }
+    } else {
+      return Maps.newHashMap();
     }
   }
 
@@ -170,7 +180,7 @@ public class OpalService implements EnvironmentAware {
   }
 
   private String getOpalProjectUrl(String opalUrl, String project) {
-    String baseUrl = opalUrl == null ? getDefaultOpal() : opalUrl;
+    String baseUrl = opalUrl == null ? getPrimaryOpal() : opalUrl;
 
     return String.format("%s/ws/datasource/%s", StringUtils.stripEnd(baseUrl, "/"), project);
   }
@@ -191,9 +201,9 @@ public class OpalService implements EnvironmentAware {
     if (opalJavaClient != null) return opalJavaClient;
 
     if (Strings.isNullOrEmpty(getOpalToken()))
-      opalJavaClient = new OpalJavaClient(cleanupOpalUrl(getDefaultOpal()), getOpalUsername(), getOpalPassword());
+      opalJavaClient = new OpalJavaClient(cleanupOpalUrl(getPrimaryOpal()), getOpalUsername(), getOpalPassword());
     else
-      opalJavaClient = new OpalJavaClient(cleanupOpalUrl(getDefaultOpal()), getOpalToken());
+      opalJavaClient = new OpalJavaClient(cleanupOpalUrl(getPrimaryOpal()), getOpalToken());
 
     return opalJavaClient;
   }
@@ -221,9 +231,9 @@ public class OpalService implements EnvironmentAware {
     if (opalCredential.isPresent()) return opalCredential.get();
 
     if (Strings.isNullOrEmpty(getOpalToken()))
-      return new OpalCredential(getDefaultOpal(), AuthType.USERNAME, getOpalUsername(), getOpalPassword());
+      return new OpalCredential(getPrimaryOpal(), AuthType.USERNAME, getOpalUsername(), getOpalPassword());
     else
-      return new OpalCredential(getDefaultOpal(), AuthType.TOKEN, getOpalToken());
+      return new OpalCredential(getPrimaryOpal(), AuthType.TOKEN, getOpalToken());
   }
 
   private String cleanupOpalUrl(String opalUrl) {

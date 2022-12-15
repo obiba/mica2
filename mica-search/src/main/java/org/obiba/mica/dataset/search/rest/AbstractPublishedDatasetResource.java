@@ -21,6 +21,7 @@ import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.micaConfig.service.TaxonomiesService;
 import org.obiba.mica.micaConfig.service.VariableTaxonomiesService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.spi.search.Indexer;
@@ -66,7 +67,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   protected ObjectMapper objectMapper;
 
   @Inject
-  protected VariableTaxonomiesService variableTaxonomiesService;
+  protected TaxonomiesService taxonomiesService;
 
   @Inject
   protected MicaConfigService micaConfigService;
@@ -299,13 +300,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
 
   @NotNull
   protected List<Taxonomy> getTaxonomies() {
-    List<Taxonomy> taxonomies = null;
-    try {
-      taxonomies = variableTaxonomiesService.getTaxonomies();
-    } catch (Exception e) {
-      // ignore
-    }
-    return taxonomies == null ? Collections.emptyList() : taxonomies;
+    return taxonomiesService.getVariableTaxonomies();
   }
 
   protected void checkContingencyAccess() {
