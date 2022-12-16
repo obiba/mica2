@@ -851,7 +851,7 @@ class ObibaDatasetsApp {
 
 class ObibaStudiesApp {
 
-  static build(element, type, locale, sortOptionsTranslations) {
+  static build(element, type, locale, sortOptionsTranslations, initialSort) {
     return new Vue({
       el: element,
       extends: ObibaEntitiesApp,
@@ -859,7 +859,7 @@ class ObibaStudiesApp {
         return {
           locale,
           sortOptionsTranslations,
-          initialSort: type === 'harmonization-studies' ? '-lastModifiedDate' : 'name'
+          initialSort: initialSort ? initialSort : type === 'harmonization-studies' ? '-lastModifiedDate' : 'name'
         };
       },
       components: {
