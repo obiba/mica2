@@ -18,13 +18,15 @@ import org.obiba.magma.support.Initialisables;
 import org.obiba.mica.dataset.service.KeyStoreService;
 import org.obiba.mica.micaConfig.AuthType;
 import org.obiba.mica.micaConfig.domain.OpalCredential;
-import org.obiba.mica.micaConfig.service.helper.OpalServiceHelper;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
+import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
 import org.obiba.opal.rest.client.magma.OpalJavaClient;
 import org.obiba.opal.rest.client.magma.RestDatasource;
 import org.obiba.opal.rest.client.magma.RestDatasourceFactory;
+import org.obiba.opal.web.model.Opal;
 import org.obiba.opal.web.model.Projects;
 import org.obiba.opal.web.model.Search;
+import org.obiba.opal.web.taxonomy.Dtos;
 import org.obiba.security.KeyStoreManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +39,7 @@ import javax.inject.Inject;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class OpalService implements EnvironmentAware {
@@ -59,9 +62,6 @@ public class OpalService implements EnvironmentAware {
 
   @Inject
   private OpalCredentialService opalCredentialService;
-
-  @Inject
-  private OpalServiceHelper opalServiceHelper;
 
   @Override
   public void setEnvironment(Environment environment) {
@@ -138,7 +138,7 @@ public class OpalService implements EnvironmentAware {
 
   public Search.EntitiesResultDto getEntitiesCount(String opalUrl, String query, String entityType) {
     try {
-      return opalServiceHelper.getEntitiesCount(getOpalJavaClient(opalUrl), query, entityType);
+      return getEntitiesCount(getOpalJavaClient(opalUrl), query, entityType);
     } catch (URISyntaxException e) {
       log.error("Malformed opal URI", e);
       throw new NoSuchElementException();
@@ -152,7 +152,7 @@ public class OpalService implements EnvironmentAware {
   synchronized Map<String, Taxonomy> getTaxonomiesInternal() {
     if (hasPrimaryOpal()) {
       try {
-        return opalServiceHelper.getTaxonomies(getOpalJavaClient());
+        return getTaxonomies(getOpalJavaClient());
       } catch (Exception e) {
         log.error("Cannot retrieve Opal taxonomies", e);
         throw new NoSuchElementException();
@@ -160,6 +160,25 @@ public class OpalService implements EnvironmentAware {
     } else {
       return Maps.newHashMap();
     }
+  }
+
+  private Map<String, Taxonomy> getTaxonomies(OpalJavaClient opalJavaClient) {
+    log.info("Fetching opal taxonomies");
+    URI uri = opalJavaClient.newUri().segment("system", "conf", "taxonomies").build();
+    List<Opal.TaxonomyDto> taxonomies = opalJavaClient
+      .getResources(Opal.TaxonomyDto.class, uri, Opal.TaxonomyDto.newBuilder());
+    return taxonomies.stream()
+      .map(Dtos::fromDto).collect(Collectors.toConcurrentMap(TaxonomyEntity::getName, taxonomy -> taxonomy));
+  }
+
+  private Search.EntitiesResultDto getEntitiesCount(OpalJavaClient opalJavaClient, String query, String entityType) {
+    log.info("Fetching opal entities count");
+    log.debug("  Entities query: {}", query);
+    URI uri = opalJavaClient.newUri().segment("datasources", "entities", "_count")
+      .query("query", query)
+      .query("type", Strings.isNullOrEmpty(entityType) ? "Participant" : entityType).build();
+    Search.EntitiesResultDto result = opalJavaClient.getResource(Search.EntitiesResultDto.class, uri, Search.EntitiesResultDto.newBuilder());
+    return result;
   }
 
   private RestDatasource createRestDatasource(OpalCredential opalCredential, String projectUrl, String opalUrl,
