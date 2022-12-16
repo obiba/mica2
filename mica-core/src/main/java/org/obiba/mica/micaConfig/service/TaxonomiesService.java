@@ -249,7 +249,7 @@ public class TaxonomiesService {
 
   private void initializeDatasetTaxonomy() {
     if (datasetTaxonomy != null) return;
-    datasetTaxonomy = copy(findTaxonomy(TaxonomyTarget.STUDY));
+    datasetTaxonomy = copy(findTaxonomy(TaxonomyTarget.DATASET));
     datasetHelper.applyIdTerms(datasetTaxonomy, "id");
   }
 
