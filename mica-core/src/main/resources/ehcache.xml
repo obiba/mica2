@@ -64,14 +64,6 @@
       timeToLiveSeconds="0"
       timeToIdleSeconds="0"/>
 
-  <cache name="opal-taxonomies"
-    maxBytesLocalHeap="1M"
-    diskPersistent="true"
-    overflowToDisk="true"
-    eternal="true">
-    <sizeOfPolicy maxDepth="100000"/>
-  </cache>
-
   <cache name="variable-taxonomies"
          maxBytesLocalHeap="1M"
          diskPersistent="true"

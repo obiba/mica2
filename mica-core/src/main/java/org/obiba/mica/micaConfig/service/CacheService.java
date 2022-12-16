@@ -10,8 +10,7 @@
 
 package org.obiba.mica.micaConfig.service;
 
-import javax.inject.Inject;
-
+import com.google.common.eventbus.EventBus;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.service.CollectedDatasetService;
@@ -23,7 +22,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.google.common.eventbus.EventBus;
+import javax.inject.Inject;
 
 @Component
 public class CacheService {
@@ -45,16 +44,10 @@ public class CacheService {
   @Inject
   private TaxonomiesService taxonomiesService;
 
-  @CacheEvict(value = "opal-taxonomies", allEntries = true, beforeInvocation = true)
-  public void clearOpalTaxonomiesCache() {
-    log.info("Clearing opal taxonomies cache");
-    taxonomiesService.getVariableTaxonomies();
-  }
-
   @CacheEvict(value = "variable-taxonomies", allEntries = true, beforeInvocation = true)
   public void clearTaxonomiesCache() {
     log.info("Clearing variable taxonomies cache");
-    clearOpalTaxonomiesCache();
+    taxonomiesService.getVariableTaxonomies();
   }
 
   @CacheEvict(value = "micaConfig", allEntries = true)
@@ -115,9 +108,9 @@ public class CacheService {
             try {
               harmonizedDatasetService
                 .getVariableSummary(dataset, v.getName(), studyId, st.getSource());
-            } catch(NoSuchVariableException ex) {
+            } catch (NoSuchVariableException ex) {
               //ignore
-            } catch(Exception e) {
+            } catch (Exception e) {
               log.warn("Error building dataset variable cache of harmonization dataset {}: {} {}", dataset.getId(), st,
                 v, e);
             }
@@ -127,9 +120,9 @@ public class CacheService {
         .forEach(dataset -> collectedDatasetService.getDatasetVariables(dataset).forEach(v -> {
           try {
             collectedDatasetService.getVariableSummary(dataset, v.getName());
-          } catch(NoSuchVariableException ex) {
+          } catch (NoSuchVariableException ex) {
             //ignore
-          } catch(Exception e) {
+          } catch (Exception e) {
             log.warn("Error building dataset variable cache of study dataset {}: {}", dataset.getId(), v, e);
           }
         }));

@@ -15,21 +15,17 @@ import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentMap;
+import java.util.Map;
 
-public class OpalTaxonomiesUpdatedEvent {
+public class VariableTaxonomiesUpdatedEvent {
 
-  private ConcurrentMap<String, Taxonomy> opalTaxonomies;
+  private Map<String, Taxonomy> taxonomies;
 
-  public OpalTaxonomiesUpdatedEvent(ConcurrentMap<String, Taxonomy> opalTaxonomies) {
-    this.opalTaxonomies = opalTaxonomies;
+  public VariableTaxonomiesUpdatedEvent(Map<String, Taxonomy> taxonomies) {
+    this.taxonomies = taxonomies;
   }
 
-  public List<Taxonomy> extractOpalTaxonomies() {
-    return new ArrayList<>(opalTaxonomies.values());
-  }
-
-  public boolean hasOpalTaxonomies() {
-    return opalTaxonomies != null;
+  public List<Taxonomy> getTaxonomies() {
+    return new ArrayList<>(taxonomies.values());
   }
 }

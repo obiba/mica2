@@ -96,7 +96,7 @@ public class AbstractTaxonomySearchResource {
 
   protected List<String> filterVocabularies(TaxonomyTarget target, String query, String locale) {
     try {
-      return esTaxonomyVocabularyService.find(0, MAX_SIZE, DEFAULT_SORT, "asc", null, getTargettedQuery(target, query),
+      return esTaxonomyVocabularyService.find(0, MAX_SIZE, DEFAULT_SORT, "asc", null, getTargetedQuery(target, query),
         getFields(locale, VOCABULARY_FIELDS), null, null).getList();
     } catch (Exception e) {
       initTaxonomies();
@@ -116,7 +116,7 @@ public class AbstractTaxonomySearchResource {
       }
 
       return esTaxonomyTermService
-        .find(0, MAX_SIZE, DEFAULT_SORT, "asc", null, getTargettedQuery(target, query), getFields(locale, TERM_FIELDS))
+        .find(0, MAX_SIZE, DEFAULT_SORT, "asc", null, getTargetedQuery(target, query), getFields(locale, TERM_FIELDS))
         .getList();
     } catch (Exception e) {
       initTaxonomies();
@@ -170,7 +170,7 @@ public class AbstractTaxonomySearchResource {
     }
   }
 
-  private String getTargettedQuery(TaxonomyTarget target, String query) {
+  private String getTargetedQuery(TaxonomyTarget target, String query) {
     return String.format(Strings.isNullOrEmpty(query) ? "target:%s" : "target:%s AND (%s)", target.name(), query);
   }
 
