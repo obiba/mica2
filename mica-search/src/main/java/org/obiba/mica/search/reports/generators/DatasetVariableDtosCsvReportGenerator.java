@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import org.obiba.core.translator.Translator;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
+import org.obiba.mica.web.model.Mica.LocalizedStringDto;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
@@ -29,12 +30,14 @@ public class DatasetVariableDtosCsvReportGenerator extends CsvReportGenerator {
   private List<Mica.DatasetVariableResolverDto> datasetVariableDtos;
   private Translator translator;
   private final boolean forHarmonization;
+  private final String locale;
 
-  public DatasetVariableDtosCsvReportGenerator(boolean forHarmonization, MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, Translator translator) {
+  public DatasetVariableDtosCsvReportGenerator(boolean forHarmonization, MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, String locale, Translator translator) {
     this.forHarmonization = forHarmonization;
     this.columnsToHide = columnsToHide;
     this.datasetVariableDtos = queryResult.getVariableResultDto().getExtension(MicaSearch.DatasetVariableResultDto.result).getSummariesList();
     this.translator = translator;
+    this.locale = locale;
   }
 
   @Override
@@ -86,7 +89,7 @@ public class DatasetVariableDtosCsvReportGenerator extends CsvReportGenerator {
     List<String> line = new ArrayList<>();
 
     line.add(datasetVariableDto.getName());
-    line.add(datasetVariableDto.getVariableLabelCount()>0 ? datasetVariableDto.getVariableLabel(0).getValue() : "");
+    line.add(datasetVariableDto.getVariableLabelCount()>0 ? getLocalizedStringFor(datasetVariableDto.getVariableLabelList(), locale, datasetVariableDto.getVariableLabel(0)).getValue() : "");
     if (mustShow("showVariablesAnnotationsColumn"))
       line.add(datasetVariableDto.getAnnotationsList().stream().map(annotationDto -> annotationDto.getTaxonomy() + "::" + annotationDto.getVocabulary() + "::" + annotationDto.getValue()).collect(Collectors.joining(" | ")));
     if (mustShow("showVariablesUnitColumn"))
@@ -103,7 +106,8 @@ public class DatasetVariableDtosCsvReportGenerator extends CsvReportGenerator {
           String rval = cat.getName();
           Optional<Mica.AttributeDto> lblAttrOpt = cat.getAttributesList().stream().filter(attr -> attr.getName().equals("label")).findFirst();
           if (lblAttrOpt.isPresent() && !lblAttrOpt.get().getValuesList().isEmpty()) {
-            rval = rval + " __=__ " + lblAttrOpt.get().getValuesList().get(0).getValue();
+            List<LocalizedStringDto> labelValuesList = lblAttrOpt.get().getValuesList();
+            rval = rval + " __=__ " + getLocalizedStringFor(labelValuesList, locale, labelValuesList.get(0)).getValue();
           }
           return rval;
         }).collect(Collectors.joining(" __|__ ")));
@@ -117,24 +121,24 @@ public class DatasetVariableDtosCsvReportGenerator extends CsvReportGenerator {
       line.add(getStudyOrNetworkName(datasetVariableDto));
     }
     if (mustShow("showVariablesPopulationsColumn")) {
-      if (datasetVariableDto.getPopulationNameCount() > 0) line.add(datasetVariableDto.getPopulationName(0).getValue());
+      if (datasetVariableDto.getPopulationNameCount() > 0) line.add(getLocalizedStringFor(datasetVariableDto.getPopulationNameList(), locale, datasetVariableDto.getPopulationName(0)).getValue());
       else line.add(datasetVariableDto.getPopulationId());
     }
     if (mustShow("showVariablesDataCollectionEventsColumn")) {
-      if (datasetVariableDto.getDceNameCount() > 0) line.add(datasetVariableDto.getDceName(0).getValue());
+      if (datasetVariableDto.getDceNameCount() > 0) line.add(getLocalizedStringFor(datasetVariableDto.getDceNameList(), locale, datasetVariableDto.getDceName(0)).getValue());
       else line.add("");
     }
     if (mustShow("showVariablesDatasetsColumn"))
-      line.add(datasetVariableDto.getDatasetAcronym(0).getValue());
+      line.add(getLocalizedStringFor(datasetVariableDto.getDatasetAcronymList(), locale, datasetVariableDto.getDatasetAcronym(0)).getValue());
 
     return line;
   }
 
   private String getStudyOrNetworkName(Mica.DatasetVariableResolverDto datasetVariableDto) {
     if (datasetVariableDto.getStudyAcronymCount() > 0)
-      return datasetVariableDto.getStudyAcronym(0).getValue();
+      return getLocalizedStringFor(datasetVariableDto.getStudyAcronymList(), locale, datasetVariableDto.getStudyAcronym(0)).getValue();
     else if (datasetVariableDto.getNetworkAcronymCount() > 0)
-      return datasetVariableDto.getNetworkAcronym(0).getValue();
+      return getLocalizedStringFor(datasetVariableDto.getNetworkAcronymList(), locale, datasetVariableDto.getNetworkAcronym(0)).getValue();
     else
       return NOT_EXISTS;
   }
