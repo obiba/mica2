@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.obiba.core.translator.Translator;
 import org.obiba.mica.web.model.Mica;
+import org.obiba.mica.web.model.Mica.StudySummaryDto;
 import org.obiba.mica.web.model.MicaSearch;
 
 import au.com.bytecode.opencsv.CSVWriter;
@@ -27,12 +28,14 @@ public class DatasetDtosCsvReportGenerator extends CsvReportGenerator {
   private List<Mica.DatasetDto> datasetDtos;
   private Translator translator;
   private final boolean forHarmonization;
+  private final String locale;
 
-  public DatasetDtosCsvReportGenerator(boolean forHarmonization, MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, Translator translator) {
+  public DatasetDtosCsvReportGenerator(boolean forHarmonization, MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, String locale, Translator translator) {
     this.forHarmonization = forHarmonization;
     this.columnsToHide = columnsToHide;
     this.datasetDtos = queryResult.getDatasetResultDto().getExtension(MicaSearch.DatasetResultDto.result).getDatasetsList();
     this.translator = translator;
+    this.locale = locale;
   }
 
   @Override
@@ -74,8 +77,8 @@ public class DatasetDtosCsvReportGenerator extends CsvReportGenerator {
     MicaSearch.CountStatsDto stats = datasetDto.getExtension(MicaSearch.CountStatsDto.datasetCountStats);
 
     if (mustShow("showDatasetsAcronymColumn"))
-      line.add(datasetDto.getAcronym(0).getValue());
-    line.add(datasetDto.getName(0).getValue());
+      line.add(getLocalizedStringFor(datasetDto.getAcronymList(), locale, datasetDto.getAcronym(0)).getValue());
+    line.add(getLocalizedStringFor(datasetDto.getNameList(), locale, datasetDto.getName(0)).getValue());
     if (mustShow("showDatasetsTypeColumn"))
       line.add(findType(datasetDto));
 
@@ -100,9 +103,11 @@ public class DatasetDtosCsvReportGenerator extends CsvReportGenerator {
 
   private String findOpalTableStudyAcronym(Mica.DatasetDto datasetDto) {
     if (datasetDto.hasExtension(Mica.HarmonizedDatasetDto.type)) {
-      return datasetDto.getExtension(Mica.HarmonizedDatasetDto.type).getHarmonizationTable().getStudySummary().getAcronym(0).getValue();
+      StudySummaryDto harmoStudySummary = datasetDto.getExtension(Mica.HarmonizedDatasetDto.type).getHarmonizationTable().getStudySummary();
+      return getLocalizedStringFor(harmoStudySummary.getAcronymList(), locale, harmoStudySummary.getAcronym(0)).getValue();
     } else if (datasetDto.hasExtension(Mica.CollectedDatasetDto.type)) {
-      return datasetDto.getExtension(Mica.CollectedDatasetDto.type).getStudyTable().getStudySummary().getAcronym(0).getValue();
+      StudySummaryDto studySummary = datasetDto.getExtension(Mica.CollectedDatasetDto.type).getStudyTable().getStudySummary();
+      return getLocalizedStringFor(studySummary.getAcronymList(), locale, studySummary.getAcronym(0)).getValue();
     } else
       return NOT_EXISTS;
   }

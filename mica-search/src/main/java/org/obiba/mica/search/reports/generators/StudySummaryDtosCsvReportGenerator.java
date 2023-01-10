@@ -29,11 +29,13 @@ public class StudySummaryDtosCsvReportGenerator extends CsvReportGenerator {
   private List<String> columnsToHide;
   private List<Mica.StudySummaryDto> studySummaryDtos;
   private Translator translator;
+  private final String locale;
 
-  public StudySummaryDtosCsvReportGenerator(MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, Translator translator) {
+  public StudySummaryDtosCsvReportGenerator(MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, String locale, Translator translator) {
     this.columnsToHide = columnsToHide;
     this.studySummaryDtos = queryResult.getStudyResultDto().getExtension(MicaSearch.StudyResultDto.result).getSummariesList();
     this.translator = translator;
+    this.locale = locale;
   }
 
   @Override
@@ -100,8 +102,8 @@ public class StudySummaryDtosCsvReportGenerator extends CsvReportGenerator {
   private List<String> generateHarmonizationStudyLineContent(Mica.StudySummaryDto studySummaryDto) {
     List<String> line = new ArrayList<>();
 
-    line.add(studySummaryDto.getAcronym(0).getValue());
-    line.add(studySummaryDto.getName(0).getValue());
+    line.add(getLocalizedStringFor(studySummaryDto.getAcronymList(), locale, studySummaryDto.getAcronym(0)).getValue());
+    line.add(getLocalizedStringFor(studySummaryDto.getNameList(), locale, studySummaryDto.getName(0)).getValue());
     if (mustShow("showStudiesTypeColumn"))
       line.add(translator.translate("search.study.harmonization"));
 
@@ -140,8 +142,8 @@ public class StudySummaryDtosCsvReportGenerator extends CsvReportGenerator {
 
     List<String> line = new ArrayList<>();
 
-    line.add(studySummaryDto.getAcronym(0).getValue());
-    line.add(studySummaryDto.getName(0).getValue());
+    line.add(getLocalizedStringFor(studySummaryDto.getAcronymList(), locale, studySummaryDto.getAcronym(0)).getValue());
+    line.add(getLocalizedStringFor(studySummaryDto.getNameList(), locale, studySummaryDto.getName(0)).getValue());
     if (mustShow("showStudiesTypeColumn"))
       line.add(translator.translate("search.study.individual"));
 

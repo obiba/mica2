@@ -27,12 +27,14 @@ public class NetworkDtosCsvReportGenerator extends CsvReportGenerator {
   private List<Mica.NetworkDto> networkDtos;
   private Translator translator;
   private final boolean forHarmonization;
+  private final String locale;
 
-  public NetworkDtosCsvReportGenerator(boolean forHarmonization, MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, Translator translator) {
+  public NetworkDtosCsvReportGenerator(boolean forHarmonization, MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, String locale, Translator translator) {
     this.forHarmonization = forHarmonization;
     this.columnsToHide = columnsToHide;
     this.networkDtos = queryResult.getNetworkResultDto().getExtension(MicaSearch.NetworkResultDto.result).getNetworksList();
     this.translator = translator;
+    this.locale = locale;
   }
 
   @Override
@@ -80,8 +82,8 @@ public class NetworkDtosCsvReportGenerator extends CsvReportGenerator {
 
     MicaSearch.CountStatsDto networkCountStats = networkDto.getExtension(MicaSearch.CountStatsDto.networkCountStats);
 
-    line.add(networkDto.getAcronym(0).getValue());
-    line.add(networkDto.getName(0).getValue());
+    line.add(getLocalizedStringFor(networkDto.getAcronymList(), locale, networkDto.getAcronym(0)).getValue());
+    line.add(getLocalizedStringFor(networkDto.getNameList(), locale, networkDto.getName(0)).getValue());
 
     if (mustShow("showNetworksStudiesColumn"))
       line.add(getNot0ValueOrDefault(networkCountStats.getStudies()));

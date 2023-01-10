@@ -35,13 +35,13 @@ public class DtosCsvReportGeneratorFactory {
 
     switch (type) {
       case STUDY:
-        return new StudySummaryDtosCsvReportGenerator(queryResult, columnsToHide, translator);
+        return new StudySummaryDtosCsvReportGenerator(queryResult, columnsToHide, locale, translator);
       case NETWORK:
-        return new NetworkDtosCsvReportGenerator(forHarmonization, queryResult, columnsToHide, translator);
+        return new NetworkDtosCsvReportGenerator(forHarmonization, queryResult, columnsToHide, locale, translator);
       case DATASET:
-        return new DatasetDtosCsvReportGenerator(forHarmonization, queryResult, columnsToHide, translator);
+        return new DatasetDtosCsvReportGenerator(forHarmonization, queryResult, columnsToHide, locale, translator);
       case VARIABLE:
-        return new DatasetVariableDtosCsvReportGenerator(forHarmonization, queryResult, columnsToHide, translator);
+        return new DatasetVariableDtosCsvReportGenerator(forHarmonization, queryResult, columnsToHide, locale, translator);
       default:
         throw new IllegalStateException("No CsvReportGenerator available for type " + type);
     }

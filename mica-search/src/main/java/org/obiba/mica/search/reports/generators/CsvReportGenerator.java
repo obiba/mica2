@@ -12,10 +12,12 @@ package org.obiba.mica.search.reports.generators;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import org.obiba.mica.search.reports.ReportGenerator;
+import org.obiba.mica.web.model.Mica.LocalizedStringDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.util.List;
 
 /**
  * Report is in CSV format.
@@ -40,6 +42,10 @@ public abstract class CsvReportGenerator implements ReportGenerator {
 
   public void write(OutputStream outputStream) {
     write(outputStream, false);
+  }
+
+  protected LocalizedStringDto getLocalizedStringFor(List<LocalizedStringDto> list, String locale, LocalizedStringDto defaultVal) {
+    return list.stream().filter(ls -> locale.equals(ls.getLang())).findFirst().orElse(defaultVal);
   }
 
   protected abstract void writeHeader(CSVWriter writer);
