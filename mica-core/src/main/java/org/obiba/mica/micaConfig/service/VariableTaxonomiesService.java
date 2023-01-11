@@ -89,6 +89,8 @@ public class VariableTaxonomiesService implements EnvironmentAware {
     // init with the ones from opal
     try {
       taxonomies.putAll(opalService.getTaxonomiesInternal());
+      if (log.isDebugEnabled())
+        taxonomies.keySet().forEach(name -> log.debug("Taxonomy from opal: {}", name));
     } catch (Exception e) {
       // ignore
     }
@@ -96,10 +98,14 @@ public class VariableTaxonomiesService implements EnvironmentAware {
     if (variableTaxonomiesDir.exists()) {
       File[] yamlFiles = variableTaxonomiesDir.listFiles(file -> !file.isDirectory() && file.getName().endsWith(".yml"));
       if (yamlFiles != null) {
-        log.info("Fetching local taxonomies");
+        log.info("Fetching local taxonomies: {}", VARIABLE_TAXONOMIES_PATH);
         for (File yamlFile : yamlFiles) {
           try {
             Taxonomy taxonomy = YamlResourceReader.readFile(yamlFile.getAbsolutePath(), Taxonomy.class);
+            log.debug("Taxonomy from folder {}: {}", variableTaxonomiesDir.getAbsolutePath(), taxonomy.getName());
+            // override any duplicated taxonomy
+            if (taxonomies.containsKey(taxonomy.getName()))
+              log.warn("Taxonomy is duplicated and will be overridden: {}", taxonomy.getName());
             taxonomies.put(taxonomy.getName(), taxonomy);
           } catch (Exception e) {
             log.error("Taxonomy file could not be read: {}", yamlFile.getAbsolutePath(), e);
@@ -114,9 +120,10 @@ public class VariableTaxonomiesService implements EnvironmentAware {
       log.info("Fetching taxonomies from plugin: {}", provider.getName());
       try {
         for (Taxonomy taxonomy : provider.getTaxonomies()) {
+          log.debug("Taxonomy from plugin {}: {}", provider.getName(), taxonomy.getName());
           // override any duplicated taxonomy
           if (taxonomies.containsKey(taxonomy.getName()))
-            log.warn("Taxonomy with name {} is duplicated ({} plugin)", provider.getName(), taxonomy.getName());
+            log.warn("Taxonomy is duplicated and will be overridden: {}", taxonomy.getName());
           taxonomies.put(taxonomy.getName(), taxonomy);
         }
       } catch (Exception e) {

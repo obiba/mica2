@@ -1481,7 +1481,7 @@
   "variables": "Variables",
   "classifications": {
     "title": "Classifications",
-    "help": "Naviguer dans le système de classification et sélectionner les critères de recherche."
+    "help": "Naviguer dans le système de classification et gérer les critères de recherche."
   },
   "all-null-classifications": "",
   "all-variable-classifications": "Toutes les classifications de variables",
@@ -1539,6 +1539,10 @@
       "message": "Êtes-vous sûr de vouloir supprimer l'accès de {{arg0}} {{arg1}}"
     }
   },
+  "up": "Monter",
+  "down": "Descendre",
+  "hide": "Cacher",
+  "show": "Montrer",
   "draft": "Brouillon",
   "published": "Publié",
   "role": "Rôle",
@@ -1591,7 +1595,7 @@
   "security": "Sécurité",
   "system": "Système",
   "content": "Contenu",
-  "data-management": "Gestion de données",
+  "search-management": "Recherche",
   "data-access": "Accès aux données",
   "research": "Recherche",
   "properties": "Propriétés",
@@ -1629,7 +1633,7 @@
       "project-config": "Configurer le formulaire de projet de recherche.",
       "file-system": "Gérer le système de fichiers.",
       "search": "Chercher dans le catalogue publié.",
-      "classifications": "Parcourir les taxonomies.",
+      "classifications": "Gérer les taxonomies servant à bâtir les critères de recherche.",
       "translations": "Gérer les traductions des libellés.",
       "cart": "Panier de variables.",
       "sets": "Listes de variables.",

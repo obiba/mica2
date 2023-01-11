@@ -13,10 +13,3 @@
 mica.search = angular.module('mica.search', [
     'obiba.mica.search'
   ]);
-
-mica.search
-    .config(['ngObibaMicaSearchTemplateUrlProvider',
-    function (ngObibaMicaSearchTemplateUrlProvider) {
-      ngObibaMicaSearchTemplateUrlProvider.setHeaderUrl('search', 'app/search/views/search-view-header.html');
-      ngObibaMicaSearchTemplateUrlProvider.setHeaderUrl('classifications', 'app/search/views/classifications-view-header.html');
-    }]);

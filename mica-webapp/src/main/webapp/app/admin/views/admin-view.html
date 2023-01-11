@@ -49,18 +49,12 @@
               <small translate>admin-page.help.caching</small>
             </p>
           </li>
-          <li>
-            <a href="#/admin/indexing"><span><i class="fa fa-cog"></i> {{'indexing.title' | translate}}</span></a>
-            <p class="help-block">
-              <small translate>admin-page.help.indexing</small>
-            </p>
-          </li>
-          <li>
+          <!--li>
             <a href="#/admin/metrics"><span><i class="fa fa-cog"></i> {{'metrics.title' | translate}}</span></a>
             <p class="help-block">
               <small translate>admin-page.help.metrics</small>
             </p>
-          </li>
+          </li-->
           <li>
             <a href="#/admin/logs"><span><i
               class="fa fa-cog"></i> {{'logs.title' | translate}}</span></a>
@@ -128,24 +122,20 @@
     </div>
     <div class="col-md-4">
       <ul class="nav nav-list">
-        <li class="nav-header" translate>data-management</li>
+        <li class="nav-header" translate>search-management</li>
         <div>
-          <li ng-if="!micaConfig.isSingleStudyEnabled ||
-                (micaConfig.isNetworkEnabled && !micaConfig.isSingleNetworkEnabled) ||
-                micaConfig.isCollectedDatasetEnabled || micaConfig.isHarmonizedDatasetEnabled">
-            <a href="#/search">
-              <span><i class="fa fa-cog"></i> {{'search.title' | translate}}</span>
-            </a>
-            <p class="help-block">
-              <small translate>admin-page.help.search</small>
-            </p>
-          </li>
           <li>
-            <a href="#/classifications">
+            <a href="#/admin/classifications">
               <span><i class="fa fa-cog"></i> {{'classifications.title' | translate}}</span>
             </a>
             <p class="help-block">
               <small translate>admin-page.help.classifications</small>
+            </p>
+          </li>
+          <li>
+            <a href="#/admin/indexing"><span><i class="fa fa-cog"></i> {{'indexing.title' | translate}}</span></a>
+            <p class="help-block">
+              <small translate>admin-page.help.indexing</small>
             </p>
           </li>
         </div>

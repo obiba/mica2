@@ -194,7 +194,7 @@ mica.service('AuthenticationSharedService', ['$rootScope', '$q', '$http', '$cook
 
 mica.factory('MetricsService', ['$resource',
   function ($resource) {
-    return $resource('jvm', {}, {
+    return $resource('/jvm', {}, {
       'get': { method: 'GET'}
     });
   }]);

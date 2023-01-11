@@ -12,6 +12,7 @@ package org.obiba.mica.micaConfig.service;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
+import org.apache.commons.compress.utils.Lists;
 import org.obiba.mica.core.event.DocumentSetUpdatedEvent;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
@@ -23,8 +24,11 @@ import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.study.event.StudyPublishedEvent;
 import org.obiba.mica.study.event.StudyUnpublishedEvent;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
+import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
 import org.obiba.opal.core.domain.taxonomy.Term;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -39,6 +43,8 @@ import java.util.stream.Stream;
 
 @Service
 public class TaxonomiesService {
+
+  private static final Logger log = LoggerFactory.getLogger(TaxonomiesService.class);
 
   private final VariableTaxonomiesService variableTaxonomiesService;
 
@@ -101,6 +107,40 @@ public class TaxonomiesService {
   @NotNull
   public Taxonomy getTaxonomyTaxonomy() {
     initialize();
+    boolean modified = false;
+    List<Taxonomy> variableTaxonomies = getAllVariableTaxonomies();
+    for (Vocabulary vocabulary : taxonomyTaxonomy.getVocabularies()) {
+      if (vocabulary.getName().equals("variable")) {
+        Term variableChars = vocabulary.getTerm("Variable_chars");
+        // check variable taxonomies to be added to meta
+        List<String> variableTaxonomiesNames = variableChars.getTerms().stream()
+          .map(TaxonomyEntity::getName).collect(Collectors.toList());
+        for (Taxonomy variableTaxonomy : variableTaxonomies) {
+          if (!variableTaxonomiesNames.contains(variableTaxonomy.getName())) {
+            Term newTerm = new Term(variableTaxonomy.getName());
+            newTerm.addAttribute("hidden", "true");
+            newTerm.setTitle(variableTaxonomy.getTitle());
+            newTerm.setDescription(variableTaxonomy.getDescription());
+            variableChars.getTerms().add(newTerm);
+            modified = true;
+          }
+        }
+        // check variable taxonomies to be removed from meta
+        List<String> reverseVariableTaxonomiesNames = variableTaxonomies.stream()
+          .map(TaxonomyEntity::getName).collect(Collectors.toList());
+        List<Term> newTerms = variableChars.getTerms().stream()
+          .filter(term -> "Mica_variable".equals(term.getName()) || reverseVariableTaxonomiesNames.contains(term.getName()))
+          .collect(Collectors.toList());
+        if (newTerms.size() < variableChars.getTerms().size()) {
+          variableChars.setTerms(newTerms);
+          modified = true;
+        }
+      }
+    }
+    if (modified) {
+      log.debug("Taxonomy of taxonomies was modified");
+      taxonomyConfigService.update(TaxonomyTarget.TAXONOMY, taxonomyTaxonomy);
+    }
     return taxonomyTaxonomy;
   }
 
@@ -121,6 +161,94 @@ public class TaxonomiesService {
       }
     }
     return false;
+  }
+
+  /**
+   * Change described taxonomy position when there are several for the target considered.
+   *
+   * @param target
+   * @param name
+   * @param up
+   */
+  public void moveTaxonomy(TaxonomyTarget target, String name, boolean up) {
+    Taxonomy metaTaxonomy = getTaxonomyTaxonomy();
+    boolean modified = false;
+    for (Vocabulary vocabulary : taxonomyTaxonomy.getVocabularies()) {
+      if (vocabulary.getName().equals(target.asId())) {
+        if (TaxonomyTarget.VARIABLE.equals(target)) {
+          Term variableChars = vocabulary.getTerm("Variable_chars");
+          modified = moveTerm(variableChars.getTerms(), name, up);
+        } else if (vocabulary.hasTerm(name) && vocabulary.getTerms().size() > 1) {
+          modified = moveTerm(vocabulary.getTerms(), name, up);
+        }
+      }
+    }
+    if (modified) {
+      this.taxonomyTaxonomy = metaTaxonomy;
+      taxonomyConfigService.update(TaxonomyTarget.TAXONOMY, metaTaxonomy);
+    }
+  }
+
+  /**
+   * Modify term list by moving up/down the term with provided name.
+   *
+   * @param terms
+   * @param taxonomyName
+   * @param up
+   * @return Whether the list was modified
+   */
+  private boolean moveTerm(List<Term> terms, String taxonomyName, boolean up) {
+    int idx = -1;
+    for (Term term : terms) {
+      idx++;
+      if (term.getName().equals(taxonomyName)) {
+        break;
+      }
+    }
+    if (idx > -1) {
+      int newIdx = up ? idx - 1 : idx + 1;
+      if (newIdx > -1 && newIdx < terms.size()) {
+        Term term = terms.remove(idx);
+        terms.add(newIdx, term);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Hide/show the described taxonomy for the target considered.
+   *
+   * @param target
+   * @param taxonomyName
+   * @param name
+   * @param value
+   */
+  public void setTaxonomyAttribute(TaxonomyTarget target, String taxonomyName, String name, String value) {
+    if (Strings.isNullOrEmpty(name)) return;
+    Taxonomy metaTaxonomy = getTaxonomyTaxonomy();
+    boolean modified = false;
+    for (Vocabulary vocabulary : taxonomyTaxonomy.getVocabularies()) {
+      if (vocabulary.getName().equals(target.asId())) {
+        if (TaxonomyTarget.VARIABLE.equals(target)) {
+          Term variableChars = vocabulary.getTerm("Variable_chars");
+          Optional<Term> found = variableChars.getTerms().stream().filter(term -> term.getName().equals(taxonomyName)).findFirst();
+          if (found.isPresent()) {
+            Term term = found.get();
+            term.getAttributes().put(name, value);
+            modified = true;
+          }
+        } else if (vocabulary.hasTerm(taxonomyName)) {
+          Term term = vocabulary.getTerm(taxonomyName);
+          term.getAttributes().put(name, value);
+          modified = true;
+        }
+      }
+    }
+    if (modified) {
+      this.taxonomyTaxonomy = metaTaxonomy;
+      taxonomyConfigService.update(TaxonomyTarget.TAXONOMY, metaTaxonomy);
+    }
   }
 
   /**
@@ -378,4 +506,5 @@ public class TaxonomiesService {
       taxonomyTaxonomy = null;
     }
   }
+
 }

@@ -1481,7 +1481,7 @@
   "variables": "Variables",
   "classifications": {
     "title": "Classifications",
-    "help": "Navigate the classification system and select the search criteria."
+    "help": "Navigate the classification system and manage the search criteria."
   },
   "all-null-classifications": "",
   "all-variable-classifications": "All variable classifications",
@@ -1539,6 +1539,10 @@
       "message": "Are you sure you want to delete the access of {{arg0}} {{arg1}}"
     }
   },
+  "up": "Up",
+  "down": "Down",
+  "hide": "Hide",
+  "show": "Show",
   "draft": "Draft",
   "published": "Published",
   "role": "Role",
@@ -1591,7 +1595,7 @@
   "security": "Security",
   "system": "System",
   "content": "Content",
-  "data-management": "Data Management",
+  "search-management": "Search",
   "data-access": "Data Access",
   "research": "Research",
   "properties": "Properties",
@@ -1629,7 +1633,7 @@
       "project-config": "Configure Research Project form.",
       "file-system": "Manage file system.",
       "search": "Search in the published repository.",
-      "classifications": "Browse taxonomies.",
+      "classifications": "Manage the taxonomies that are used as search criteria.",
       "translations": "Manage labels translations.",
       "cart": "Cart of variables.",
       "sets": "Lists of variables.",

@@ -261,4 +261,105 @@ mica.admin
         });
       };
 
+    }])
+
+  .controller('ClassificationsController', ['$timeout',
+    '$scope',
+    '$location',
+    '$translate',
+    function ($timeout, $scope,
+              $location,
+              $translate) {
+
+      //$scope.options = options;
+
+      $scope.taxonomyTypeMap = { //backwards compatibility for pluralized naming in configs.
+        variable: 'variables',
+        study: 'studies',
+        network: 'networks',
+        dataset: 'datasets'
+      };
+
+      $translate(['search.classifications-title', 'search.classifications-link', 'search.faceted-navigation-help'])
+        .then(function (translation) {
+          $scope.hasClassificationsTitle = translation['search.classifications-title'];
+          $scope.hasClassificationsLinkLabel = translation['search.classifications-link'];
+          $scope.hasFacetedNavigationHelp = translation['search.faceted-navigation-help'];
+        });
+
+      var searchTaxonomyDisplay = {
+        variable: true, //$scope.options.variables.showSearchTab,
+        dataset: true, //$scope.options.datasets.showSearchTab,
+        study: true, //$scope.options.studies.showSearchTab,
+        network: true, //$scope.options.networks.showSearchTab
+      };
+
+      $scope.lang = $translate.use();
+
+      function initSearchTabs() {
+        function getTabsOrderParam(arg) {
+          var value = $location.search()[arg];
+
+          return value && value.split(',')
+            .filter(function (t) {
+              return t;
+            })
+            .map(function (t) {
+              return t.trim();
+            });
+        }
+
+        const defaultTargetTabsOrderParam = ['variable', 'dataset', 'study', 'network'];
+        var targetTabsOrderParam = getTabsOrderParam('targetTabsOrder');
+        $scope.targetTabsOrder = (targetTabsOrderParam || defaultTargetTabsOrderParam).filter(function (t) {
+          return searchTaxonomyDisplay[t];
+        });
+
+        if ($location.search().target) {
+          $scope.target = $location.search().target;
+        } else if (!$scope.target) {
+          $scope.target = $scope.targetTabsOrder[0];
+        }
+      }
+
+      var onSelectTerm = function (target, taxonomy, vocabulary, args) {
+        args = args || {};
+
+        if (args.text) {
+          args.text = args.text.replace(/[^a-zA-Z0-9*" _-]/g, '');
+        }
+
+        if (angular.isString(args)) {
+          args = { term: args };
+        }
+
+        console.log('onSelectTerm');
+      };
+
+      $scope.navigateToTarget = function (target) {
+        $location.search('target', target);
+        $location.search('taxonomy', null);
+        $location.search('vocabulary', null);
+        $scope.target = target;
+      };
+
+      $scope.onSelectTerm = onSelectTerm;
+
+      $scope.toggleFullscreen = function (fullscreen) {
+        if ($scope.isFullscreen && $scope.isFullscreen !== fullscreen) {
+          // in case the ESC key was pressed
+          $timeout(function() {$scope.isFullscreen = fullscreen;});
+        } else {
+          $scope.isFullscreen = fullscreen;
+        }
+      };
+
+      $scope.isFullscreen = false;
+
+      function init() {
+        $scope.lang = $translate.use();
+        initSearchTabs();
+      }
+
+      init();
     }]);
