@@ -260,6 +260,18 @@ public class PluginsService implements EnvironmentAware {
     }
   }
 
+  public boolean isInstalledPluginRunning(String name) {
+    return getServicePlugin(name).isRunning();
+  }
+
+  public void startInstalledPlugin(String name) {
+    getServicePlugin(name).start();
+  }
+
+  public void stopInstalledPlugin(String name) {
+    getServicePlugin(name).stop();
+  }
+
   //
   // Private methods
   //

@@ -11,6 +11,7 @@
 package org.obiba.mica.micaConfig.rest;
 
 
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.micaConfig.service.PluginsService;
 import org.obiba.mica.web.model.MicaPlugins;
 import org.obiba.mica.web.model.PluginDtos;
@@ -24,27 +25,25 @@ import javax.ws.rs.core.Response;
 @Component
 @Scope("request")
 @Path("/config/plugin/{name}")
+@RequiresAuthentication
 public class PluginResource {
-
-  @PathParam("name")
-  private String name;
 
   @Inject
   private PluginsService pluginsService;
 
   @GET
-  public MicaPlugins.PluginDto get() {
+  public MicaPlugins.PluginDto get(@PathParam("name") String name) {
     return PluginDtos.asDto(pluginsService.getInstalledPlugin(name));
   }
 
   @DELETE
-  public Response uninstall() {
+  public Response uninstall(@PathParam("name") String name) {
     pluginsService.prepareUninstallPlugin(name);
     return Response.noContent().build();
   }
 
   @PUT
-  public Response cancelUninstallation() {
+  public Response cancelUninstallation(@PathParam("name") String name) {
     pluginsService.cancelUninstallPlugin(name);
     return Response.noContent().build();
   }
@@ -52,8 +51,31 @@ public class PluginResource {
   @PUT
   @Path("/cfg")
   @Consumes("text/plain")
-  public Response saveConfig(String properties) {
+  public Response saveConfig(@PathParam("name") String name, String properties) {
     pluginsService.setInstalledPluginSiteProperties(name, properties);
+    return Response.ok().build();
+  }
+
+  @GET
+  @Path("/service")
+  public MicaPlugins.ServicePluginDto getServiceStatus(@PathParam("name") String name) {
+    return MicaPlugins.ServicePluginDto.newBuilder()
+      .setName(name)
+      .setStatus(pluginsService.isInstalledPluginRunning(name) ? MicaPlugins.ServicePluginStatus.RUNNING : MicaPlugins.ServicePluginStatus.STOPPED)
+      .build();
+  }
+
+  @PUT
+  @Path("/service")
+  public Response startService(@PathParam("name") String name) {
+    pluginsService.startInstalledPlugin(name);
+    return Response.ok().build();
+  }
+
+  @DELETE
+  @Path("/service")
+  public Response stopService(@PathParam("name") String name) {
+    pluginsService.stopInstalledPlugin(name);
     return Response.ok().build();
   }
 }

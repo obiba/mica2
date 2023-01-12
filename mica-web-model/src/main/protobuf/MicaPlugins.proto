@@ -37,3 +37,13 @@ message PluginDto {
     required string type = 10;
     required string siteProperties = 11;
 }
+
+enum ServicePluginStatus {
+  RUNNING = 1;
+  STOPPED = 2;
+}
+
+message ServicePluginDto {
+  required string name = 1;
+  required ServicePluginStatus status = 2;
+}
