@@ -1481,7 +1481,7 @@
   "variables": "Variables",
   "classifications": {
     "title": "Classifications",
-    "help": "Naviguer dans le système de classification et gérer les critères de recherche."
+    "help": "Naviguer dans le système de classification et gérer l'ordre et la visibilité des critères de recherche."
   },
   "all-null-classifications": "",
   "all-variable-classifications": "Toutes les classifications de variables",

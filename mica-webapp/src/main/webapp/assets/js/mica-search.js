@@ -163,7 +163,7 @@ Vue.component('search-criteria', {
           case 'dataset':
           case 'study':
           case 'network':
-            this.criteriaMenu.items[target.name].menus = target.terms;
+            this.criteriaMenu.items[target.name].menus = target.terms ? target.terms.filter(t => !isTermHidden(t)) : [];
             break;
         }
         if (this.criteriaMenu.items[target.name].menus && this.criteriaMenu.items[target.name].menus.length > 0) {

@@ -11,6 +11,8 @@
 package org.obiba.mica.micaConfig.service;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.MapDifference;
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import org.apache.commons.compress.utils.Lists;
 import org.obiba.mica.core.event.DocumentSetUpdatedEvent;
@@ -123,6 +125,19 @@ public class TaxonomiesService {
             newTerm.setDescription(variableTaxonomy.getDescription());
             variableChars.getTerms().add(newTerm);
             modified = true;
+          } else {
+            // check any title/description modifications
+            Term term = variableChars.getTerm(variableTaxonomy.getName());
+            MapDifference<String, String> diff = Maps.difference(term.getTitle(), variableTaxonomy.getTitle());
+            if (!diff.areEqual()) {
+              term.setTitle(variableTaxonomy.getTitle());
+              modified = true;
+            }
+            diff = Maps.difference(term.getDescription(), variableTaxonomy.getDescription());
+            if (!diff.areEqual()) {
+              term.setDescription(variableTaxonomy.getDescription());
+              modified = true;
+            }
           }
         }
         // check variable taxonomies to be removed from meta
