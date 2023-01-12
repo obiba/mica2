@@ -360,18 +360,32 @@ public class TaxonomiesService {
   }
 
   private void initializeTaxonomyTaxonomy() {
-    if (taxonomyTaxonomy != null) return;
-    taxonomyTaxonomy = copy(findTaxonomy(TaxonomyTarget.TAXONOMY));
+    if (taxonomyTaxonomy == null)
+      taxonomyTaxonomy = copy(findTaxonomy(TaxonomyTarget.TAXONOMY));
     MicaConfig config = micaConfigService.getConfig();
     if (!config.isNetworkEnabled() || config.isSingleNetworkEnabled()) {
-      taxonomyTaxonomy.removeVocabulary("network");
+      hideMetaVocabularyTerms("network");
     }
     if (!config.isStudyDatasetEnabled() && !config.isHarmonizationDatasetEnabled()) {
-      taxonomyTaxonomy.removeVocabulary("dataset");
-      taxonomyTaxonomy.removeVocabulary("variable");
+      hideMetaVocabularyTerms("dataset");
+      hideMetaVocabularyTerms("variable");
     }
     if (config.isSingleStudyEnabled() && !config.isHarmonizationDatasetEnabled()) {
-      taxonomyTaxonomy.removeVocabulary("study");
+      hideMetaVocabularyTerms("study");
+    }
+  }
+
+  private void hideMetaVocabularyTerms(String vocabularyName) {
+    if (taxonomyTaxonomy.hasVocabulary(vocabularyName)) {
+      Vocabulary vocabulary = taxonomyTaxonomy.getVocabulary(vocabularyName);
+      if (TaxonomyTarget.VARIABLE.asId().equals(vocabularyName)) {
+        Term variableChars = vocabulary.getTerm("Variable_chars");
+        if (variableChars.hasTerms())
+          variableChars.getTerms().forEach(term -> term.addAttribute("hidden", "true"));
+      }
+      else if (vocabulary.hasTerms()) {
+        vocabulary.getTerms().forEach(term -> term.addAttribute("hidden", "true"));
+      }
     }
   }
 
