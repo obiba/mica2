@@ -1,0 +1,39 @@
+package obiba.mica;
+option java_package = "org.obiba.mica.web.model";
+
+message PluginPackageDto {
+    required string name = 1;
+    required string title = 2;
+    required string description = 3;
+    required string author = 4;
+    required string maintainer = 5;
+    required string license = 6;
+    optional string website = 7;
+    required string version = 8;
+    required string micaVersion = 9;
+    required string type = 10;
+    optional string file = 11;
+    optional bool uninstalled = 12;
+    extensions 1000 to max;
+}
+
+message PluginPackagesDto {
+    required string site = 1;
+    optional string updated = 2;
+    required bool restart = 3;
+    repeated PluginPackageDto packages = 4;
+}
+
+message PluginDto {
+    required string name = 1;
+    required string title = 2;
+    required string description = 3;
+    required string author = 4;
+    required string maintainer = 5;
+    required string license = 6;
+    optional string website = 7;
+    required string version = 8;
+    required string micaVersion = 9;
+    required string type = 10;
+    required string siteProperties = 11;
+}

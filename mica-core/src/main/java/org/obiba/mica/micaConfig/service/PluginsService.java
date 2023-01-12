@@ -16,17 +16,14 @@ import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import org.obiba.core.util.FileUtil;
 import org.obiba.mica.core.upgrade.RuntimeVersionProvider;
-import org.obiba.mica.spi.tables.StudyTableSourceService;
-import org.obiba.mica.spi.tables.StudyTableSourceServiceLoader;
 import org.obiba.mica.spi.search.ConfigurationProvider;
 import org.obiba.mica.spi.search.SearchEngineService;
 import org.obiba.mica.spi.search.SearchEngineServiceLoader;
+import org.obiba.mica.spi.tables.StudyTableSourceService;
+import org.obiba.mica.spi.tables.StudyTableSourceServiceLoader;
 import org.obiba.mica.spi.taxonomies.TaxonomiesProviderService;
 import org.obiba.mica.spi.taxonomies.TaxonomiesProviderServiceLoader;
-import org.obiba.plugins.PluginRepositoryCache;
-import org.obiba.plugins.PluginRepositoryException;
-import org.obiba.plugins.PluginResources;
-import org.obiba.plugins.PluginsManagerHelper;
+import org.obiba.plugins.*;
 import org.obiba.plugins.spi.ServicePlugin;
 import org.obiba.runtime.Version;
 import org.slf4j.Logger;
@@ -39,11 +36,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -108,6 +101,115 @@ public class PluginsService implements EnvironmentAware {
     return getServicePlugins(TaxonomiesProviderService.class).stream()
       .map(service -> (TaxonomiesProviderService)service)
       .collect(Collectors.toList());
+  }
+
+  /**
+   * Get the location of the plugin packages repository.
+   *
+   * @return
+   */
+  public String getUpdateSite() {
+    return environment.getProperty("plugins.updateSite", DEFAULT_PLUGINS_UPDATE_SITE);
+  }
+
+  /**
+   * Get the last time at which the update site was successfully.
+   *
+   * @return
+   */
+  public Date getLastUpdate() {
+    return getPluginRepositoryCache().getLastUpdate();
+  }
+
+  /**
+   * Reports if system restart is required to finalize plugin installation.
+   *
+   * @return
+   */
+  public boolean restartRequired() {
+    File[] children = pluginsDir.listFiles(pathname -> !pathname.getName().startsWith("."));
+    if (children == null || children.length == 0) return false;
+    for (File child : children) {
+      if (child.isFile() && child.getName().endsWith(PluginResources.PLUGIN_DIST_SUFFIX)) return true;
+      if (child.isDirectory() && new File(child, PluginResources.UNINSTALL_FILE).exists()) return true;
+    }
+    return false;
+  }
+
+  /**
+   * Get the plugins registered in the system.
+   *
+   * @return
+   */
+  public List<PluginPackage> getInstalledPlugins() {
+    return registeredPlugins.stream()
+      .map(PluginPackage::new)
+      .collect(Collectors.toList());
+  }
+
+  /**
+   * Get the list of plugins that are marked to uninstallation.
+   *
+   * @return
+   */
+  public Collection<String> getUninstalledPluginNames() {
+    List<String> names = Lists.newArrayList();
+    File[] children = pluginsDir.listFiles(pathname -> pathname.isDirectory() && !pathname.getName().startsWith("."));
+    if (children == null || children.length == 0) return names;
+    for (File child : children) {
+      PluginResources plugin = new MicaPlugin(child);
+      if (plugin.isToUninstall()) names.add(plugin.getName());
+    }
+    return names;
+  }
+
+  /**
+   * Get the plugins registered in the system that can be updated according to the update site registry.
+   *
+   * @return
+   */
+  public List<PluginPackage> getUpdatablePlugins() {
+    // exclude already installed plugin packages whatever the version is
+    return getPluginRepositoryCache().getOrUpdatePluginRepository().getPlugins().stream()
+      .filter(PluginPackage::hasMicaVersion)
+      .filter(pp -> registeredPlugins.stream().anyMatch(rp -> pp.isNewerThan(rp.getName(), rp.getVersion())))
+      .filter(pp -> runtimeVersionProvider.getVersion().compareTo(pp.getMicaVersion()) >= 0)
+      .collect(Collectors.toList());
+  }
+
+  /**
+   * Get the plugins that are not installed and that are available from the update site registry.
+   *
+   * @return
+   */
+  public List<PluginPackage> getAvailablePlugins() {
+    // exclude already installed plugin packages whatever the version is
+    return getPluginRepositoryCache().getOrUpdatePluginRepository().getPlugins().stream()
+      .filter(PluginPackage::hasMicaVersion)
+      .filter(pp -> registeredPlugins.stream().noneMatch(rp -> pp.isSameAs(rp.getName())))
+      .filter(pp -> runtimeVersionProvider.getVersion().compareTo(pp.getMicaVersion()) >= 0)
+      .collect(Collectors.toList());
+  }
+
+  /**
+   * Perform the plugin installation by retrieving the plugin package from the update site.
+   *
+   * @param name
+   * @param version
+   */
+  public void installPlugin(String name, String version) {
+    String pVersion = version;
+    if (Strings.isNullOrEmpty(version)) {
+      // no version specified: get the latest
+      pVersion = getPluginRepositoryCache().getPluginLatestVersion(name);
+    }
+    try {
+      File tmpDir = Files.createTempDir();
+      installPlugin(getPluginRepositoryCache().downloadPlugin(name, pVersion, tmpDir), true);
+      FileUtil.delete(tmpDir);
+    } catch (IOException e) {
+      throw new PluginRepositoryException("Failed to install plugin " + name + ":" + version + " : " + e.getMessage(), e);
+    }
   }
 
   //
@@ -234,21 +336,6 @@ public class PluginsService implements EnvironmentAware {
     }
   }
 
-  private void installPlugin(String name, String version) {
-    String pVersion = version;
-    if (Strings.isNullOrEmpty(version)) {
-      // no version specified: get the latest
-      pVersion = getPluginRepositoryCache().getPluginLatestVersion(name);
-    }
-    try {
-      File tmpDir = Files.createTempDir();
-      installPlugin(getPluginRepositoryCache().downloadPlugin(name, pVersion, tmpDir), true);
-      FileUtil.delete(tmpDir);
-    } catch (IOException e) {
-      throw new PluginRepositoryException("Failed to install plugin " + name + ":" + version + " : " + e.getMessage(), e);
-    }
-  }
-
   private void installPlugin(File pluginFile, boolean rmAfterInstall) {
     try {
       if (!pluginsDir.exists()) pluginsDir.mkdirs();
@@ -261,7 +348,7 @@ public class PluginsService implements EnvironmentAware {
 
   private PluginRepositoryCache getPluginRepositoryCache() {
     if (pluginRepositoryCache == null)
-      pluginRepositoryCache = new PluginRepositoryCache(runtimeVersionProvider, environment.getProperty("plugins.updateSite", DEFAULT_PLUGINS_UPDATE_SITE));
+      pluginRepositoryCache = new PluginRepositoryCache(runtimeVersionProvider, getUpdateSite());
     return pluginRepositoryCache;
   }
 }

@@ -6,6 +6,7 @@ import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.json.JSONException;
 import org.obiba.mica.micaConfig.service.CacheService;
+import org.obiba.mica.micaConfig.service.PluginsService;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
@@ -18,14 +19,17 @@ public class Mica510upgrade implements UpgradeStep {
 
   private static final Logger logger = LoggerFactory.getLogger(Mica510upgrade.class);
 
-  private CacheService cacheService;
+  private final CacheService cacheService;
 
   private final MongoTemplate mongoTemplate;
 
+  private final PluginsService pluginsService;
+
   @Inject
-  public Mica510upgrade(CacheService cacheService, MongoTemplate mongoTemplate) {
+  public Mica510upgrade(CacheService cacheService, MongoTemplate mongoTemplate, PluginsService pluginsService) {
     this.cacheService = cacheService;
     this.mongoTemplate = mongoTemplate;
+    this.pluginsService = pluginsService;
   }
 
   @Override
@@ -53,6 +57,8 @@ public class Mica510upgrade implements UpgradeStep {
     cacheService.clearAllCaches();
 
     // TODO get updated search plugin and rebuild search index
+    logger.info("Updating search plugin...");
+
   }
 
   private void updateMicaConfig() throws JSONException {
