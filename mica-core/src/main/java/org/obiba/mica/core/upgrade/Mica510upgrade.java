@@ -7,12 +7,15 @@ import org.bson.Document;
 import org.json.JSONException;
 import org.obiba.mica.micaConfig.service.CacheService;
 import org.obiba.mica.micaConfig.service.PluginsService;
+import org.obiba.plugins.PluginResources;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.NoSuchElementException;
 
 @Component
 public class Mica510upgrade implements UpgradeStep {
@@ -56,9 +59,22 @@ public class Mica510upgrade implements UpgradeStep {
     logger.info("Clearing all caches...");
     cacheService.clearAllCaches();
 
-    // TODO get updated search plugin and rebuild search index
     logger.info("Updating search plugin...");
-
+    try {
+      String searchPluginName = pluginsService.getSearchPluginName();
+      // check it is installed
+      pluginsService.getInstalledPlugin(searchPluginName);
+      // check it is updatable
+      if (pluginsService.getUpdatablePlugins().stream().anyMatch(pkg -> pkg.getName().equals(searchPluginName))) {
+        // install latest version
+        pluginsService.installPlugin(searchPluginName, null);
+      }
+      // TODO rebuild search index?
+    } catch (Exception e) {
+      // not installed, not to be upgraded
+      // OR upgrade failed for unknown reason
+      logger.error("Error occurred while Updating 'Search Plugin'", e);
+    }
   }
 
   private void updateMicaConfig() throws JSONException {

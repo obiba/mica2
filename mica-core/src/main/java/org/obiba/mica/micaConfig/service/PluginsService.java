@@ -304,12 +304,16 @@ public class PluginsService implements EnvironmentAware {
     initPlugins();
   }
 
+  public String getSearchPluginName() {
+    return environment.getProperty(MICA_SEARCH_PLUGIN_NAME, DEFAULT_MICA_SEARCH_PLUGIN_NAME);
+  }
+
   /**
    * Initialize plugin resources.
    */
   private void initPlugins() {
     Collection<PluginResources> plugins = getPlugins(true);
-    String searchPluginName = environment.getProperty(MICA_SEARCH_PLUGIN_NAME, DEFAULT_MICA_SEARCH_PLUGIN_NAME);
+    String searchPluginName = getSearchPluginName();
 
     try {
       String pluginLatestVersion = getPluginRepositoryCache().getPluginLatestVersion(searchPluginName);
