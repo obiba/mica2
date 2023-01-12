@@ -13,6 +13,7 @@ package org.obiba.mica.web.model;
 import com.google.common.base.Strings;
 import org.obiba.magma.type.DateTimeType;
 import org.obiba.plugins.PluginPackage;
+import org.obiba.plugins.PluginResources;
 
 import java.util.Collection;
 import java.util.Date;
@@ -57,6 +58,21 @@ public class PluginDtos {
       buider.setFile(pluginPackage.getFileName());
     if (uninstalled != null) buider.setUninstalled(uninstalled);
     return buider.build();
+  }
+
+  public static MicaPlugins.PluginDto asDto(PluginResources plugin) {
+    MicaPlugins.PluginDto.Builder builder = MicaPlugins.PluginDto.newBuilder()
+      .setName(plugin.getName())
+      .setTitle(plugin.getTitle())
+      .setDescription(plugin.getDescription())
+      .setAuthor(plugin.getAuthor())
+      .setMaintainer(plugin.getMaintainer())
+      .setLicense(plugin.getLicense())
+      .setVersion(plugin.getVersion().toString())
+      .setMicaVersion(plugin.getHostVersion().toString())
+      .setType(plugin.getType())
+      .setSiteProperties(plugin.getSitePropertiesString());
+    return builder.build();
   }
 
 }

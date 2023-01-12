@@ -212,9 +212,70 @@ public class PluginsService implements EnvironmentAware {
     }
   }
 
+  /**
+   * Get the installed plugin with the given name.
+   *
+   * @param name
+   * @return
+   */
+  public PluginResources getInstalledPlugin(String name) {
+    Optional<PluginResources> plugin = registeredPlugins.stream().filter(p -> p.getName().equals(name)).findFirst();
+    if (!plugin.isPresent()) throw new NoSuchElementException("No such plugin with name: " + name);
+    return plugin.get();
+  }
+
+  /**
+   * Uninstall a plugin.
+   *
+   * @param name
+   */
+  public void prepareUninstallPlugin(String name) {
+    PluginResources plugin = getInstalledPlugin(name);
+    plugin.prepareForUninstall();
+  }
+
+  /**
+   * Cancel plugin uninstallation before it is effective.
+   *
+   * @param name
+   */
+  public void cancelUninstallPlugin(String name) {
+    PluginResources plugin = getInstalledPlugin(name);
+    plugin.cancelUninstall();
+  }
+
+  /**
+   * Set the site properties of the installed plugin with the given name.
+   *
+   * @param name
+   * @param properties
+   */
+  public void setInstalledPluginSiteProperties(String name, String properties) {
+    try {
+      PluginResources thePlugin = getInstalledPlugin(name);
+      thePlugin.writeSiteProperties(properties);
+      updateServiceProperties(name, thePlugin.getProperties());
+    } catch (IOException e) {
+      throw new PluginRepositoryException("Failed to save plugin " + name + " site properties: " + e.getMessage(), e);
+    }
+  }
+
   //
   // Private methods
   //
+
+  private void updateServiceProperties(String name, Properties properties) {
+    ServicePlugin servicePlugin = getServicePlugin(name);
+    if (servicePlugin != null) {
+      servicePlugin.configure(properties);
+    }
+  }
+
+  ServicePlugin getServicePlugin(String name) {
+    Optional<ServicePlugin> service = servicePlugins.stream().filter(s -> name.equals(s.getName())).findFirst();
+    if (!service.isPresent()) throw new NoSuchElementException(name);
+    return service.get();
+  }
 
   private Collection<ServicePlugin> getServicePlugins(Class clazz) {
     return servicePlugins.stream().filter(s -> clazz.isAssignableFrom(s.getClass())).collect(Collectors.toList());
