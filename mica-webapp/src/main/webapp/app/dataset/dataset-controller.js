@@ -175,20 +175,26 @@ mica.dataset
 
       $scope.$watch('selected.study', function () {
         if ($scope.selected.study && $scope.selected.study.id) {
-          StudyStateProjectsResource.query({id: $scope.selected.study.id}).$promise.then(function (projects) {
-            $scope.projects = projects;
-            var selectedTable, selectedProject = $scope.projects.filter(function (p) {return p.name === $scope.studyTable.project; })[0];
+          StudyStateProjectsResource.query({id: $scope.selected.study.id}).$promise
+            .then(function (projects) {
+              $scope.projects = projects;
+              var selectedTable, selectedProject = $scope.projects.filter(function (p) {return p.name === $scope.studyTable.project; })[0];
 
-            if (selectedProject) {
-              $scope.selected.project = selectedProject;
+              if (selectedProject) {
+                $scope.selected.project = selectedProject;
 
-              selectedTable = selectedProject.datasource.table.filter(function (t) {return t === $scope.studyTable.table; })[0];
+                selectedTable = selectedProject.datasource.table.filter(function (t) {return t === $scope.studyTable.table; })[0];
 
-              if (selectedTable) {
-                $scope.selected.project.table = selectedTable;
+                if (selectedTable) {
+                  $scope.selected.project.table = selectedTable;
+                }
               }
-            }
-          });
+            })
+            .catch(function (err) {
+              console.log(err);
+              $scope.projects = [];
+              $scope.selected.project = undefined;
+            });
         }
       });
 
@@ -952,24 +958,32 @@ mica.dataset
 
       $scope.$watch('selected.study', function () {
         if ($scope.selected.study && $scope.selected.study.id) {
-          StudyStateProjectsResource.query({id: $scope.selected.study.id}).$promise.then(function (projects) {
-            $scope.projects = projects;
-            var selectedTable, selectedProject = $scope.projects.filter(function (p) {return p.name === table.project; })[0];
+          StudyStateProjectsResource.query({id: $scope.selected.study.id}).$promise
+            .then(function (projects) {
+              $scope.projects = projects;
+              var selectedTable, selectedProject = $scope.projects.filter(function (p) {return p.name === table.project; })[0];
 
-            if (selectedProject) {
-              $scope.selected.project = selectedProject;
+              if (selectedProject) {
+                $scope.selected.project = selectedProject;
 
-              selectedTable = selectedProject.datasource.table.filter(function (t) {return t === table.table; })[0];
+                selectedTable = selectedProject.datasource.table.filter(function (t) {return t === table.table; })[0];
 
-              if (selectedTable) {
-                $scope.selected.project.table = selectedTable;
+                if (selectedTable) {
+                  $scope.selected.project.table = selectedTable;
+                }
+              } else {
+                $scope.selected.project = $scope.projects.pop();
+                if ($scope.selected.project) {
+                  $scope.selected.project.table = $scope.selected.project.datasource.table.pop();
+                }
               }
-            } else {
-              $scope.selected.project = $scope.projects.pop();
-              $scope.selected.project.table = $scope.selected.project.datasource.table.pop();
-            }
 
-          });
+            })
+            .catch(function (err) {
+              console.log(err);
+              $scope.projects = [];
+              $scope.selected.project = undefined;
+            });
         }
       });
 

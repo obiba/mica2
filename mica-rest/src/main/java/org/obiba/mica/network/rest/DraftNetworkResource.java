@@ -12,6 +12,7 @@ package org.obiba.mica.network.rest;
 
 import com.google.common.base.Strings;
 
+import org.apache.commons.compress.utils.Lists;
 import org.obiba.mica.AbstractGitPersistableResource;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
@@ -29,6 +30,8 @@ import org.obiba.mica.security.rest.SubjectAclResource;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Projects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -51,6 +54,8 @@ import java.util.Map;
 @Component
 @Scope("request")
 public class DraftNetworkResource extends AbstractGitPersistableResource<NetworkState, Network> {
+
+  private static final Logger log = LoggerFactory.getLogger(DraftNetworkResource.class);
 
   @Inject
   private NetworkService networkService;
@@ -191,7 +196,12 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   @Path("/projects")
   public List<Projects.ProjectDto> projects() throws URISyntaxException {
     checkPermission("/draft/network", "VIEW");
-    return opalService.getProjectDtos(networkService.findById(id).getOpal());
+    try {
+      return opalService.getProjectDtos(networkService.findById(id).getOpal());
+    } catch (Exception e) {
+      log.warn("Failed at retrieving opal projects: {}", e.getMessage());
+      return Lists.newArrayList();
+    }
   }
 
   @Override

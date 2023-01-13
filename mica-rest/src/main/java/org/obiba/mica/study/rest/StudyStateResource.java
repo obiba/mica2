@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
+import org.apache.commons.compress.utils.Lists;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.BaseStudy;
@@ -25,6 +26,8 @@ import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Projects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -36,6 +39,8 @@ import com.codahale.metrics.annotation.Timed;
 @Component
 @Scope("request")
 public class StudyStateResource {
+
+  private static final Logger log = LoggerFactory.getLogger(StudyStateResource.class);
 
   @Inject
   private StudyService studyService;
@@ -69,7 +74,11 @@ public class StudyStateResource {
   public List<Projects.ProjectDto> projects() throws URISyntaxException {
     subjectAclService.checkPermission(resource, "VIEW", id);
     String opalUrl = Optional.ofNullable(studyService.findStudy(id)).map(BaseStudy::getOpal).orElse(null);
-
-    return opalService.getProjectDtos(opalUrl);
+    try {
+      return opalService.getProjectDtos(opalUrl);
+    } catch (Exception e) {
+      log.warn("Failed at retrieving opal projects: {}", e.getMessage());
+      return Lists.newArrayList();
+    }
   }
 }
