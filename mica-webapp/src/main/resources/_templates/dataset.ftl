@@ -118,7 +118,7 @@
                     <a class="btn btn-success ml-2" href="${contextPath}/study/${study.id}">
                       <i class="<#if type == "Harmonized">${initiativeIcon}<#else>${studyIcon}</#if>"></i> ${localize(study.acronym)}
                     </a>
-                    <#if showDatasetContingencyLink>
+                    <#if showVariableStatistics && showDatasetContingencyLink>
                       <a class="btn btn-primary float-right ml-2" href="${contextPath}/dataset-crosstab/${dataset.id}">
                         <i class="fas fa-cog"></i> <@message "dataset.crosstab.title"/>
                       </a>

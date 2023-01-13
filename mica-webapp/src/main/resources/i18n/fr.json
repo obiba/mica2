@@ -559,12 +559,12 @@
         "help": "Les traductions complètes seront exportées au format Gettext."
       }
     },
-    "variables-count-enabled": "Statistiques des variables activées",
-    "variables-count-enabled-help": "Afficher le résumé des statistiques des variables dans la section d'administration.",
-    "projects-count-enabled": "Statistiques des projets activées",
-    "projects-count-enabled-help": "Afficher le résumé des statistiques des projets dans la section d'administration.",
-    "data-access-requests-count-enabled": "Statistiques des demandes d'accès aux données activées",
-    "data-access-requests-count-enabled-help": "Afficher le résumé des statistiques des demandes d'accès aux données dans la section d'administration."
+    "variables-count-enabled": "Métriques des variables activées",
+    "variables-count-enabled-help": "Afficher les nombres de variables dans la section d'administration.",
+    "projects-count-enabled": "Métriques des projets activées",
+    "projects-count-enabled-help": "Afficher les nombres de projets dans la section d'administration.",
+    "data-access-requests-count-enabled": "Métriques de demandes d'accès aux données activées",
+    "data-access-requests-count-enabled-help": "Afficher les nombres de demandes d'accès aux données dans la section d'administration."
   },
   "publish": {
     "label": "Publier",
@@ -2582,7 +2582,7 @@
   },
   "entity-statistics-summary": {
     "title": "Résumé des statistiques",
-    "full-title": "Résumé des statistiques de contenu",
+    "full-title": "Métriques du contenu",
     "Study": "Étude individuelles",
     "HarmonizationStudy": "Initiatives d'harmonisation",
     "StudyDataset": "Ensemble de données de collecte",

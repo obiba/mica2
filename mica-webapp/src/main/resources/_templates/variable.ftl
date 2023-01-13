@@ -289,34 +289,36 @@
           </div>
         </div>
 
-        <div class="row">
-          <div class="col-12">
-            <div class="card card-info card-outline">
-              <div class="card-header">
-                <h3 class="card-title"><@message "summary-statistics"/></h3>
-                <#if showDatasetContingencyLink>
-                  <#if variable.nature == "CATEGORICAL">
-                    <a class="btn btn-primary float-right" href="${contextPath}/dataset-crosstab/${variable.datasetId}?var1=${variable.name}">
-                      <i class="fas fa-cog"></i> <@message "dataset.crosstab.title"/>
-                    </a>
-                  <#elseif variable.nature == "CONTINUOUS">
-                    <a class="btn btn-primary float-right" href="${contextPath}/dataset-crosstab/${variable.datasetId}?var2=${variable.name}">
-                      <i class="fas fa-cog"></i> <@message "dataset.crosstab.title"/>
-                    </a>
+        <#if showVariableStatistics>
+          <div class="row">
+            <div class="col-12">
+              <div class="card card-info card-outline">
+                <div class="card-header">
+                  <h3 class="card-title"><@message "summary-statistics"/></h3>
+                  <#if showDatasetContingencyLink>
+                    <#if variable.nature == "CATEGORICAL">
+                      <a class="btn btn-primary float-right" href="${contextPath}/dataset-crosstab/${variable.datasetId}?var1=${variable.name}">
+                        <i class="fas fa-cog"></i> <@message "dataset.crosstab.title"/>
+                      </a>
+                    <#elseif variable.nature == "CONTINUOUS">
+                      <a class="btn btn-primary float-right" href="${contextPath}/dataset-crosstab/${variable.datasetId}?var2=${variable.name}">
+                        <i class="fas fa-cog"></i> <@message "dataset.crosstab.title"/>
+                      </a>
+                    </#if>
                   </#if>
-                </#if>
-              </div>
-              <div class="card-body">
-                <#if user?? || !config.variableSummaryRequiresAuthentication>
-                  <@variableSummary variable=variable/>
-                <#else>
-                  <@message "sign-in-for-variable-statistics"/>
-                  <a href="${contextPath}/signin?redirect=${contextPath}/variable/${variable.id}" class="btn btn-info"><@message "sign-in"/></a>
-                </#if>
+                </div>
+                <div class="card-body">
+                  <#if user?? || !config.variableSummaryRequiresAuthentication>
+                    <@variableSummary variable=variable/>
+                  <#else>
+                    <@message "sign-in-for-variable-statistics"/>
+                    <a href="${contextPath}/signin?redirect=${contextPath}/variable/${variable.id}" class="btn btn-info"><@message "sign-in"/></a>
+                  </#if>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </#if>
 
         <#if type == "Dataschema">
           <div class="row">

@@ -140,6 +140,7 @@
 <#assign searchCriteriaMenus = ["variable", "dataset", "study", "network"]/>
 
 <!-- Variable -->
+<#assign showVariableStatistics = true/>
 <#assign showHarmonizedVariableSummarySelector = true/>
 
 <!-- Data Access pages -->

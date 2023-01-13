@@ -559,12 +559,12 @@
         "help": "The complete translations will be exported in the Gettext format."
       }
     },
-    "variables-count-enabled": "Variables statistics enabled",
-    "variables-count-enabled-help": "Show variables statistics summary in the administration section.",
-    "projects-count-enabled": "Projects statistics enabled",
-    "projects-count-enabled-help": "Show projects statistics summary in the administration section.",
-    "data-access-requests-count-enabled": "Data Access Requests statistics enabled",
-    "data-access-requests-count-enabled-help": "Show data access requests statistics summary in the administration section."
+    "variables-count-enabled": "Variables metrics enabled",
+    "variables-count-enabled-help": "Show variables counts in the administration section and the home page.",
+    "projects-count-enabled": "Projects metrics enabled",
+    "projects-count-enabled-help": "Show projects counts in the administration section.",
+    "data-access-requests-count-enabled": "Data Access Requests metrics enabled",
+    "data-access-requests-count-enabled-help": "Show data access requests counts in the administration section."
   },
   "publish": {
     "label": "Publish",
@@ -2582,7 +2582,7 @@
   },
   "entity-statistics-summary": {
     "title": "Statistics Summary",
-    "full-title": "Content Statistics Summary",
+    "full-title": "Content Metrics Summary",
     "Study": "Individual Studies",
     "HarmonizationStudy": "Harmonization Initiatives",
     "StudyDataset": "Collected Datasets",
