@@ -425,7 +425,7 @@ public class DatasetVariable implements Indexable, AttributeAware, IVariable {
   }
 
   public static class IdEncoderDecoder {
-    private static Pattern encodePattern = Pattern.compile("&|\\||\\(|\\)|=|<|>|,");
+    private static Pattern encodePattern = Pattern.compile("&|\\||\\(|\\)|=|<|>|,|/");
     // Use underscore to make sure the RQLParser does not try to decode
     private static final Map<String, String> encodeMap = Stream.of(new String[][] {
       { "&", "_26" },
@@ -435,10 +435,11 @@ public class DatasetVariable implements Indexable, AttributeAware, IVariable {
       { "=", "_3d" },
       { "<", "_3c" },
       { ">", "_3e" },
-      { ",", "_2c" }
+      { ",", "_2c" },
+      { "/", "_2f" }
     }).collect(Collectors.toMap(data -> data[0], data -> data[1]));
 
-    private static Pattern decodePattern = Pattern.compile("(_26|_7c|_28|_29|_3d|_3c|_3e|_2c)");
+    private static Pattern decodePattern = Pattern.compile("(_26|_7c|_28|_29|_3d|_3c|_3e|_2c|_2f)");
     private static final Map<String, String> decodeMap = Stream.of(new String[][] {
       { "_26", "&" },
       { "_7c" , "|"},
@@ -447,7 +448,8 @@ public class DatasetVariable implements Indexable, AttributeAware, IVariable {
       { "_3d" , "="},
       { "_3c" , "<"},
       { "_3e" , ">"},
-      { "_2c" , ","}
+      { "_2c" , ","},
+      { "_2f" , "/"}
     }).collect(Collectors.toMap(data -> data[0], data -> data[1]));
 
     public static String encode(String value) {

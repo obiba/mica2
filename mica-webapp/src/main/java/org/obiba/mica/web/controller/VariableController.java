@@ -69,7 +69,9 @@ public class VariableController extends BaseController {
   public ModelAndView variable(@PathVariable String id) {
     Map<String, Object> params = newParameters();
 
-    DatasetVariable.IdResolver resolver = DatasetVariable.IdResolver.from(id);
+    String decodedId = DatasetVariable.IdEncoderDecoder.decode(id);
+
+    DatasetVariable.IdResolver resolver = DatasetVariable.IdResolver.from(decodedId);
     String datasetId = resolver.getDatasetId();
     String variableName = resolver.getName();
 
@@ -89,7 +91,7 @@ public class VariableController extends BaseController {
         variable = getHarmonizedDatasetVariable(resolver.getDatasetId(), resolver.getId(), variableName);
       } catch (NoSuchVariableException e) {
         // legacy variable id format
-        variable = getHarmonizedDatasetVariable(resolver.getDatasetId(), id, variableName);
+        variable = getHarmonizedDatasetVariable(resolver.getDatasetId(), decodedId, variableName);
       }
     } else
       variable = getDatasetVariable(resolver.getId(), variableName);
