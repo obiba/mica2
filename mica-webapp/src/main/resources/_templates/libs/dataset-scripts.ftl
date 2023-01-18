@@ -106,7 +106,7 @@
                   if (!harmonizedVariable.status || harmonizedVariable.status.length === 0) {
                     row.push('<i class="' + iconClass + '"></i>');
                   } else {
-                    const url = harmonizedVariable.harmonizedVariableRef ? '../variable/' + harmonizedVariable.harmonizedVariableRef.id : '#';
+                    const url = harmonizedVariable.harmonizedVariableRef ? '../variable/' + encodeURIComponent(harmonizedVariable.harmonizedVariableRef.id) : '#';
                     row.push('<a href="' + url + '"><i class="' + iconClass + '"></i></a>');
                   }
                 }
