@@ -266,7 +266,7 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
           DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "SubmittedDAOEmail", ctx,
         Roles.MICA_DAO);
 
-      sendNotificationToReaders(dataAccessConfig, request, ctx, "SubmittedDAOEmail");
+      sendNotificationToReaders(dataAccessConfig, request, ctx, prefix + "SubmittedDAOEmail");
     }
   }
 
