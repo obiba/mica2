@@ -139,7 +139,7 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
     try {
       return getDatasetVariables(dataset);
     } catch (NoSuchValueTableException e) {
-      throw new InvalidDatasetException(e);
+      throw e;
     } catch (MagmaRuntimeException e) {
       throw new DatasourceNotAvailableException(e);
     }

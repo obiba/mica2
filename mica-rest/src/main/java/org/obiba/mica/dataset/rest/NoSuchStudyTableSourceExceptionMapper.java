@@ -10,17 +10,19 @@
 
 package org.obiba.mica.dataset.rest;
 
+import org.obiba.mica.spi.tables.NoSuchStudyTableSourceException;
+
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import org.obiba.mica.dataset.service.InvalidDatasetException;
-
 @Provider
-public class InvalidDatasetExceptionMapper implements ExceptionMapper<InvalidDatasetException> {
+public class NoSuchStudyTableSourceExceptionMapper implements ExceptionMapper<NoSuchStudyTableSourceException> {
+
   @Override
-  public Response toResponse(InvalidDatasetException e) {
-    return Response.status(Status.CONFLICT).entity(e.getMessage()).build();
+  public Response toResponse(NoSuchStudyTableSourceException exception) {
+    return Response.status(Status.NOT_FOUND).entity(exception.getMessage()).build();
   }
+
 }

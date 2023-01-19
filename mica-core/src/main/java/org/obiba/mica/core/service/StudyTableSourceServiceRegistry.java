@@ -150,7 +150,7 @@ public class StudyTableSourceServiceRegistry {
       if (attachmentState.isPresent()) {
         return fileStoreService.getFile(attachmentState.get().getAttachment().getFileReference());
       } else {
-        throw new NoSuchValueTableException("No value table at " + fullPath);
+        throw new NoSuchStudyTableFileSourceException("No such file at " + fullPath);
       }
     }
 
