@@ -496,8 +496,15 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
     excludedPrincipals.add(Roles.MICA_ADMIN);
     excludedPrincipals.add(Roles.MICA_DAO);
 
+    String darId = getTemplatePrefix(ctx).equals("dataAccessRequest") ? ctx.get("id") : ctx.get("parentId");
+
     List<SubjectAcl> foundAcls = subjectAclService.findByResourceInstance("/data-access-request", "*");
     foundAcls.stream().filter(acl -> acl.hasAction("VIEW")).filter(acl -> !excludedPrincipals.contains(acl.getPrincipal()))
+      .forEach(acl -> map.get(acl.getType().equals(Type.GROUP) ? "groups" : "users").add(acl.getPrincipal()));
+
+    List<SubjectAcl> specificFoundAcls = subjectAclService.findByResourceInstance("/data-access-request", darId);
+
+    specificFoundAcls.stream().filter(acl -> acl.hasAction("VIEW")).filter(acl -> !excludedPrincipals.contains(acl.getPrincipal()))
       .forEach(acl -> map.get(acl.getType().equals(Type.GROUP) ? "groups" : "users").add(acl.getPrincipal()));
 
     return map;
