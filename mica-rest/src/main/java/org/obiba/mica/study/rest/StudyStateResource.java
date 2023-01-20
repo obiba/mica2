@@ -70,7 +70,7 @@ public class StudyStateResource {
   }
 
   @GET
-  @Path("/projects")
+  @Path("/opal-projects")
   public List<Projects.ProjectDto> projects() throws URISyntaxException {
     subjectAclService.checkPermission(resource, "VIEW", id);
     String opalUrl = Optional.ofNullable(studyService.findStudy(id)).map(BaseStudy::getOpal).orElse(null);

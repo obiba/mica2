@@ -37,7 +37,7 @@ mica.dataset
     'MicaConfigResource',
     'FormServerValidation',
     'StudyStatesResource',
-    'StudyStateProjectsResource',
+    'StudyStateOpalProjectsResource',
     'FormDirtyStateObserver',
     'EntityFormResource',
     'SfOptionsService',
@@ -57,7 +57,7 @@ mica.dataset
               MicaConfigResource,
               FormServerValidation,
               StudyStatesResource,
-              StudyStateProjectsResource,
+              StudyStateOpalProjectsResource,
               FormDirtyStateObserver,
               EntityFormResource,
               SfOptionsService,
@@ -175,7 +175,7 @@ mica.dataset
 
       $scope.$watch('selected.study', function () {
         if ($scope.selected.study && $scope.selected.study.id) {
-          StudyStateProjectsResource.query({id: $scope.selected.study.id}).$promise
+          StudyStateOpalProjectsResource.query({id: $scope.selected.study.id}).$promise
             .then(function (projects) {
               $scope.projects = projects;
               var selectedTable, selectedProject = $scope.projects.filter(function (p) {return p.name === $scope.studyTable.project; })[0];
@@ -849,7 +849,7 @@ mica.dataset
     '$filter',
     'MicaConfigResource',
     'StudyStatesResource',
-    'StudyStateProjectsResource',
+    'StudyStateOpalProjectsResource',
     'LocalizedValues',
     'LocalizedSchemaFormService',
     'isCommentsRequiredOnDocumentSave',
@@ -862,7 +862,7 @@ mica.dataset
               $filter,
               MicaConfigResource,
               StudyStatesResource,
-              StudyStateProjectsResource,
+              StudyStateOpalProjectsResource,
               LocalizedValues,
               LocalizedSchemaFormService,
               isCommentsRequiredOnDocumentSave,
@@ -958,7 +958,7 @@ mica.dataset
 
       $scope.$watch('selected.study', function () {
         if ($scope.selected.study && $scope.selected.study.id) {
-          StudyStateProjectsResource.query({id: $scope.selected.study.id}).$promise
+          StudyStateOpalProjectsResource.query({id: $scope.selected.study.id}).$promise
             .then(function (projects) {
               $scope.projects = projects;
               var selectedTable, selectedProject = $scope.projects.filter(function (p) {return p.name === table.project; })[0];

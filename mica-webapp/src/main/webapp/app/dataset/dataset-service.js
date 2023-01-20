@@ -48,9 +48,9 @@ mica.dataset
       });
     }])
 
-  .factory('StudyStateProjectsResource', ['$resource',
+  .factory('StudyStateOpalProjectsResource', ['$resource',
     function ($resource) {
-      return $resource(contextPath + '/ws/draft/study-state/:id/projects', {}, {
+      return $resource(contextPath + '/ws/draft/study-state/:id/opal-projects', {}, {
         'get': {method: 'GET', params: {id: '@id'}}
       });
     }])

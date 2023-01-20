@@ -11,8 +11,6 @@
 package org.obiba.mica.network.rest;
 
 import com.google.common.base.Strings;
-
-import org.apache.commons.compress.utils.Lists;
 import org.obiba.mica.AbstractGitPersistableResource;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
@@ -21,7 +19,6 @@ import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.rest.FileResource;
-import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.domain.NetworkState;
@@ -29,7 +26,6 @@ import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.security.rest.SubjectAclResource;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
-import org.obiba.opal.web.model.Projects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -43,13 +39,11 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
- * REST controller for managing draft Study.
+ * REST controller for managing draft Network.
  */
 @Component
 @Scope("request")
@@ -65,9 +59,6 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
 
   @Inject
   private ApplicationContext applicationContext;
-
-  @Inject
-  private OpalService opalService;
 
   private String id;
 
@@ -190,18 +181,6 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
     subjectAclResource.setResourceInstance("/network", id);
     subjectAclResource.setFileResourceInstance("/file", "/network/" + id);
     return subjectAclResource;
-  }
-
-  @GET
-  @Path("/projects")
-  public List<Projects.ProjectDto> projects() throws URISyntaxException {
-    checkPermission("/draft/network", "VIEW");
-    try {
-      return opalService.getProjectDtos(networkService.findById(id).getOpal());
-    } catch (Exception e) {
-      log.warn("Failed at retrieving opal projects: {}", e.getMessage());
-      return Lists.newArrayList();
-    }
   }
 
   @Override
