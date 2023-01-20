@@ -247,7 +247,8 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
             DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestCreatedDAOEmail", ctx,
           Roles.MICA_DAO);
 
-          sendNotificationToReaders(dataAccessConfig, request, ctx, "dataAccessRequestCreatedDAOEmail");
+        sendNotificationToReaders(mailService.getSubject(dataAccessConfig.getCreatedSubject(), ctx,
+          DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), request, ctx, "dataAccessRequestCreatedDAOEmail");
       }
     }
   }
@@ -266,7 +267,8 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
           DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "SubmittedDAOEmail", ctx,
         Roles.MICA_DAO);
 
-      sendNotificationToReaders(dataAccessConfig, request, ctx, prefix + "SubmittedDAOEmail");
+      sendNotificationToReaders(mailService.getSubject(dataAccessConfig.getSubmittedSubject(), ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), request, ctx, prefix + "SubmittedDAOEmail");
     }
   }
 
@@ -348,7 +350,8 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
           DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestAttachmentsUpdated", ctx,
         Roles.MICA_DAO);
 
-      sendNotificationToReaders(dataAccessConfig, request, ctx, "dataAccessRequestAttachmentsUpdated");
+      sendNotificationToReaders(mailService.getSubject(dataAccessConfig.getAttachmentSubject(), ctx,
+      DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), request, ctx, "dataAccessRequestAttachmentsUpdated");
     }
   }
 
@@ -510,12 +513,10 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
     return map;
   }
 
-  private void sendNotificationToReaders(DataAccessConfig dataAccessConfig, T request, Map<String, String> ctx, String template) {
+  private void sendNotificationToReaders(String subject, T request, Map<String, String> ctx, String template) {
     Map<String, List<String>> requestReaders = getRequestReaders(ctx, getApplicantAndCollaborators(request));
     List<String> readerUsers = requestReaders.get("users");
     List<String> readerGroups = requestReaders.get("groups");
-
-    String subject = mailService.getSubject(dataAccessConfig.getCreatedSubject(), ctx, DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT);
 
     if (readerUsers.size() > 0 && readerGroups.size() > 0) {
       mailService.sendEmailToGroupsAndUsers(subject, template, ctx, readerGroups, readerUsers);
