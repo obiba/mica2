@@ -13,7 +13,9 @@ package org.obiba.mica.micaConfig.rest;
 
 import com.google.common.base.Strings;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.micaConfig.service.PluginsService;
+import org.obiba.mica.security.Roles;
 import org.obiba.mica.web.model.MicaPlugins;
 import org.obiba.mica.web.model.PluginDtos;
 import org.springframework.stereotype.Component;
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
 @Component
 @Path("/config/plugins")
 @RequiresAuthentication
+@RequiresRoles(Roles.MICA_ADMIN)
 public class PluginsResource {
 
   @Inject
