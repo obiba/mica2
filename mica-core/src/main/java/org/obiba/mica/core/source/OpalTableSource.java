@@ -48,7 +48,6 @@ public class OpalTableSource extends AbstractStudyTableSource {
     this.project = project;
   }
 
-  @Override
   public String getTable() {
     return table;
   }

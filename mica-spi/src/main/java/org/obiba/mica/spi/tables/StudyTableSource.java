@@ -20,13 +20,6 @@ import org.obiba.mica.web.model.Mica;
 public interface StudyTableSource {
 
   /**
-   * Get the associated table name.
-   *
-   * @return
-   */
-  String getTable();
-
-  /**
    * Get the {@link ValueTable} implementing the data dictionary and the data values.
    *
    * @return

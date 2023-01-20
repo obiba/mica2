@@ -66,11 +66,6 @@ public class ExcelTableSource extends AbstractStudyTableSource implements StudyT
   }
 
   @Override
-  public String getTable() {
-    return table;
-  }
-
-  @Override
   public ValueTable getValueTable() {
     ensureInitialized();
     return Strings.isNullOrEmpty(table) ?

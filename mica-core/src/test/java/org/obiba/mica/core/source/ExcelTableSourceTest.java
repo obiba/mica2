@@ -29,14 +29,11 @@ public class ExcelTableSourceTest {
   public void test_urn_parse() {
     ExcelTableSource source = ExcelTableSource.fromURN("urn:file:MyProject.xlsx:MyTable");
     assertThat(source.getPath()).isEqualTo("MyProject.xlsx");
-    assertThat(source.getTable()).isEqualTo("MyTable");
 
     source = ExcelTableSource.fromURN("urn:file:MyProject.xlsx");
     assertThat(source.getPath()).isEqualTo("MyProject.xlsx");
-    assertThat(source.getTable()).isNullOrEmpty();
 
     source = ExcelTableSource.fromURN("urn:file:/path/to/MyProject.xlsx:MyTable");
     assertThat(source.getPath()).isEqualTo("/path/to/MyProject.xlsx");
-    assertThat(source.getTable()).isEqualTo("MyTable");
   }
 }
