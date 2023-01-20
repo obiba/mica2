@@ -12,7 +12,9 @@ package org.obiba.mica.taxonomy.rest;
 
 
 import com.codahale.metrics.annotation.Timed;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.micaConfig.service.TaxonomiesService;
+import org.obiba.mica.security.Roles;
 import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.opal.web.model.Opal;
 import org.obiba.opal.web.taxonomy.Dtos;
@@ -37,6 +39,7 @@ public class MetaTaxonomyResource {
 
   @PUT
   @Path("/{target}/{taxonomy}/_move")
+  @RequiresRoles(Roles.MICA_ADMIN)
   public Response up(@PathParam("target") @DefaultValue("variable") String target, @PathParam("taxonomy") String taxonomy, @QueryParam("dir") String dir) {
     taxonomiesService.moveTaxonomy(TaxonomyTarget.fromId(target), taxonomy, "up".equals(dir));
     return Response.ok().build();
@@ -44,6 +47,7 @@ public class MetaTaxonomyResource {
 
   @PUT
   @Path("/{target}/{taxonomy}/_attribute")
+  @RequiresRoles(Roles.MICA_ADMIN)
   public Response hide(@PathParam("target") @DefaultValue("variable") String target, @PathParam("taxonomy") String taxonomy, @QueryParam("name") String name, @QueryParam("value") String value) {
     taxonomiesService.setTaxonomyAttribute(TaxonomyTarget.fromId(target), taxonomy, name, value);
     return Response.ok().build();
