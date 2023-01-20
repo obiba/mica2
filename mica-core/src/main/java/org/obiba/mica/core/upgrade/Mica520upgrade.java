@@ -39,7 +39,7 @@ public class Mica520upgrade implements UpgradeStep {
 
   @Override
   public Version getAppliesTo() {
-    return new Version(5, 1, 0);
+    return new Version(5, 2, 0);
   }
 
   @Override
