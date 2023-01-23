@@ -64,7 +64,6 @@ public class MicaConfig extends AbstractAuditableDocument {
   @NotBlank
   private String defaultCharacterSet = DEFAULT_CHARSET;
 
-  @NotBlank
   private String opal = DEFAULT_OPAL;
 
   private List<String> roles = Lists.newArrayList(Membership.CONTACT, Membership.INVESTIGATOR);
@@ -223,7 +222,7 @@ public class MicaConfig extends AbstractAuditableDocument {
   }
 
   public String getOpal() {
-    return opal;
+    return opal == null ? "" : opal;
   }
 
   public void setOpal(String opal) {
