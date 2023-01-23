@@ -50,7 +50,7 @@ public class LocaleConfiguration extends WebMvcConfigurerAdapter implements Envi
 
   @Bean(name = "localeResolver")
   public LocaleResolver localeResolver() {
-    AngularCookieLocaleResolver cookieLocaleResolver = new AngularCookieLocaleResolver();
+    AngularCookieLocaleResolver cookieLocaleResolver = new AngularCookieLocaleResolver(micaConfigService);
     cookieLocaleResolver.setCookieName("NG_TRANSLATE_LANG_KEY");
     return cookieLocaleResolver;
   }

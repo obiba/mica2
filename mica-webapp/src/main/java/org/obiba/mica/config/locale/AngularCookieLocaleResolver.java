@@ -17,6 +17,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.springframework.context.i18n.LocaleContext;
 import org.springframework.context.i18n.TimeZoneAwareLocaleContext;
 import org.springframework.util.StringUtils;
@@ -31,6 +32,17 @@ import org.springframework.web.util.WebUtils;
  * This class will check if a double quote has been added, if so it will remove it.
  */
 public class AngularCookieLocaleResolver extends CookieLocaleResolver {
+
+  private final MicaConfigService micaConfigService;
+
+  public AngularCookieLocaleResolver(MicaConfigService micaConfigService) {
+    this.micaConfigService = micaConfigService;
+  }
+
+  @Override
+  protected Locale getDefaultLocale() {
+    return micaConfigService.getConfig().getLocales().stream().findFirst().orElse(Locale.ENGLISH);
+  }
 
   @Override
   public Locale resolveLocale(HttpServletRequest request) {
