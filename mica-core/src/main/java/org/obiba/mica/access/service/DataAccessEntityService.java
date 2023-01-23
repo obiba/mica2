@@ -10,17 +10,39 @@
 
 package org.obiba.mica.access.service;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
-import com.google.common.eventbus.EventBus;
-import com.itextpdf.text.DocumentException;
-import com.jayway.jsonpath.*;
+import static com.jayway.jsonpath.Configuration.defaultConfiguration;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+
 import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.PdfUtils;
 import org.obiba.mica.access.DataAccessEntityRepository;
 import org.obiba.mica.access.DataAccessRequestGenerationException;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
-import org.obiba.mica.access.domain.*;
+import org.obiba.mica.access.domain.DataAccessAgreement;
+import org.obiba.mica.access.domain.DataAccessAmendment;
+import org.obiba.mica.access.domain.DataAccessCollaborator;
+import org.obiba.mica.access.domain.DataAccessEntity;
+import org.obiba.mica.access.domain.DataAccessEntityStatus;
+import org.obiba.mica.access.domain.DataAccessFeasibility;
+import org.obiba.mica.access.domain.DataAccessPreliminary;
+import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.domain.StatusChange;
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.core.service.SchemaFormContentFileService;
@@ -31,23 +53,21 @@ import org.obiba.mica.micaConfig.domain.DataAccessConfig;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.Roles;
+import org.obiba.mica.security.domain.SubjectAcl;
+import org.obiba.mica.security.domain.SubjectAcl.Type;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
-
-import static com.jayway.jsonpath.Configuration.defaultConfiguration;
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+import com.google.common.eventbus.EventBus;
+import com.itextpdf.text.DocumentException;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.InvalidPathException;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.PathNotFoundException;
 
 public abstract class DataAccessEntityService<T extends DataAccessEntity> {
   private static final Logger log = LoggerFactory.getLogger(DataAccessEntityService.class);
@@ -78,6 +98,9 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
 
   @Inject
   protected VariableSetService variableSetService;
+
+  @Inject
+  protected SubjectAclService subjectAclService;
 
   private static final String EXCLUSION_IDS_YAML_RESOURCE_PATH = "config/data-access-form/data-access-request-exclusion-ids-list.yml";
 
@@ -223,6 +246,9 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
         mailService.sendEmailToGroups(mailService.getSubject(dataAccessConfig.getCreatedSubject(), ctx,
             DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestCreatedDAOEmail", ctx,
           Roles.MICA_DAO);
+
+        sendNotificationToReaders(mailService.getSubject(dataAccessConfig.getCreatedSubject(), ctx,
+          DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), request, ctx, "dataAccessRequestCreatedDAOEmail");
       }
     }
   }
@@ -240,6 +266,9 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
       mailService.sendEmailToGroups(mailService.getSubject(dataAccessConfig.getSubmittedSubject(), ctx,
           DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "SubmittedDAOEmail", ctx,
         Roles.MICA_DAO);
+
+      sendNotificationToReaders(mailService.getSubject(dataAccessConfig.getSubmittedSubject(), ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), request, ctx, prefix + "SubmittedDAOEmail");
     }
   }
 
@@ -320,6 +349,9 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
       mailService.sendEmailToGroups(mailService.getSubject(dataAccessConfig.getAttachmentSubject(), ctx,
           DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestAttachmentsUpdated", ctx,
         Roles.MICA_DAO);
+
+      sendNotificationToReaders(mailService.getSubject(dataAccessConfig.getAttachmentSubject(), ctx,
+      DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), request, ctx, "dataAccessRequestAttachmentsUpdated");
     }
   }
 
@@ -452,5 +484,46 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
 
   private boolean isDataAccessPreliminaryContext(Map<String, String> ctx) {
     return ctx.containsKey("type") && ctx.get("type").equals(DataAccessPreliminary.class.getSimpleName());
+  }
+
+  /**
+   * @return principals with READER permission (VIEW action) excluding applicant, collaborators, MICA_ADMIN and MICA_DAO
+   */
+  private Map<String, List<String>> getRequestReaders(Map<String, String> ctx, String[] applicantsAndCollaborators) {
+    Map<String, List<String>> map = new HashMap<>();
+    map.put("users", new ArrayList<>());
+    map.put("groups", new ArrayList<>());
+
+    List<String> excludedPrincipals = new ArrayList<>();
+    excludedPrincipals.addAll(Arrays.asList(applicantsAndCollaborators).stream().map(principal -> SubjectAcl.Type.USER + ":" + principal).collect(Collectors.toList()));
+    excludedPrincipals.add(SubjectAcl.Type.GROUP + ":" + Roles.MICA_ADMIN);
+    excludedPrincipals.add(SubjectAcl.Type.GROUP + ":" + Roles.MICA_DAO);
+
+    String darId = getTemplatePrefix(ctx).equals("dataAccessRequest") ? ctx.get("id") : ctx.get("parentId");
+
+    List<SubjectAcl> foundAcls = subjectAclService.findByResourceInstance("/data-access-request", "*");
+    foundAcls.stream().filter(acl -> acl.hasAction("VIEW")).filter(acl -> !excludedPrincipals.contains(acl.getType() + ":" + acl.getPrincipal()))
+      .forEach(acl -> map.get(acl.getType().equals(Type.GROUP) ? "groups" : "users").add(acl.getPrincipal()));
+
+    List<SubjectAcl> specificFoundAcls = subjectAclService.findByResourceInstance("/data-access-request", darId);
+
+    specificFoundAcls.stream().filter(acl -> acl.hasAction("VIEW")).filter(acl -> !excludedPrincipals.contains(acl.getType() + ":" + acl.getPrincipal()))
+      .forEach(acl -> map.get(acl.getType().equals(Type.GROUP) ? "groups" : "users").add(acl.getPrincipal()));
+
+    return map;
+  }
+
+  private void sendNotificationToReaders(String subject, T request, Map<String, String> ctx, String template) {
+    Map<String, List<String>> requestReaders = getRequestReaders(ctx, getApplicantAndCollaborators(request));
+    List<String> readerUsers = requestReaders.get("users");
+    List<String> readerGroups = requestReaders.get("groups");
+
+    if (readerUsers.size() > 0 && readerGroups.size() > 0) {
+      mailService.sendEmailToGroupsAndUsers(subject, template, ctx, readerGroups, readerUsers);
+    } else if(readerUsers.size() > 0) {
+      mailService.sendEmailToUsers(subject, template, ctx, readerUsers.stream().toArray(String[]::new));
+    } else if(readerGroups.size() > 0) {
+      mailService.sendEmailToGroups(subject, template, ctx, readerGroups.stream().toArray(String[]::new));
+    }
   }
 }
