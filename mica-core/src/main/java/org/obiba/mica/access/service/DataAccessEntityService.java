@@ -21,6 +21,9 @@ import org.obiba.mica.micaConfig.domain.DataAccessConfig;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.Roles;
+import org.obiba.mica.security.domain.SubjectAcl;
+import org.obiba.mica.security.domain.SubjectAcl.Type;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +32,9 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -63,6 +68,9 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
 
   @Inject
   protected VariableSetService variableSetService;
+
+  @Inject
+  protected SubjectAclService subjectAclService;
 
   private static final String EXCLUSION_IDS_YAML_RESOURCE_PATH = "config/data-access-form/data-access-request-exclusion-ids-list.yml";
 
@@ -230,6 +238,9 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
         mailService.sendEmailToGroups(mailService.getSubject(dataAccessConfig.getCreatedSubject(), ctx,
             DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestCreatedDAOEmail", ctx,
           Roles.MICA_DAO);
+
+        sendNotificationToReaders(mailService.getSubject(dataAccessConfig.getCreatedSubject(), ctx,
+          DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), request, ctx, "dataAccessRequestCreatedDAOEmail");
       }
     }
   }
@@ -247,6 +258,9 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
       mailService.sendEmailToGroups(mailService.getSubject(dataAccessConfig.getSubmittedSubject(), ctx,
           DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "SubmittedDAOEmail", ctx,
         Roles.MICA_DAO);
+
+      sendNotificationToReaders(mailService.getSubject(dataAccessConfig.getSubmittedSubject(), ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), request, ctx, prefix + "SubmittedDAOEmail");
     }
   }
 
@@ -327,6 +341,9 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
       mailService.sendEmailToGroups(mailService.getSubject(dataAccessConfig.getAttachmentSubject(), ctx,
           DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestAttachmentsUpdated", ctx,
         Roles.MICA_DAO);
+
+        sendNotificationToReaders(mailService.getSubject(dataAccessConfig.getAttachmentSubject(), ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), request, ctx, "dataAccessRequestAttachmentsUpdated");
     }
   }
 
@@ -424,5 +441,42 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
 
   private boolean isDataAccessFeasibilityContext(Map<String, String> ctx) {
     return ctx.containsKey("type") && ctx.get("type").equals(DataAccessFeasibility.class.getSimpleName());
+  }
+
+  private Map<String, List<String>> getRequestReaders(Map<String, String> ctx) {
+    Map<String, List<String>> map = new HashMap<>();
+    map.put("users", new ArrayList<>());
+    map.put("groups", new ArrayList<>());
+
+    List<String> excludedPrincipals = new ArrayList<>();
+    excludedPrincipals.add(SubjectAcl.Type.GROUP + ":" + Roles.MICA_ADMIN);
+    excludedPrincipals.add(SubjectAcl.Type.GROUP + ":" + Roles.MICA_DAO);
+
+    String darId = getTemplatePrefix(ctx).equals("dataAccessRequest") ? ctx.get("id") : ctx.get("parentId");
+
+    List<SubjectAcl> foundAcls = subjectAclService.findByResourceInstance("/data-access-request", "*");
+    foundAcls.stream().filter(acl -> acl.hasAction("VIEW")).filter(acl -> !excludedPrincipals.contains(acl.getType() + ":" + acl.getPrincipal()))
+      .forEach(acl -> map.get(acl.getType().equals(Type.GROUP) ? "groups" : "users").add(acl.getPrincipal()));
+
+    List<SubjectAcl> specificFoundAcls = subjectAclService.findByResourceInstance("/data-access-request", darId);
+
+    specificFoundAcls.stream().filter(acl -> acl.hasAction("VIEW")).filter(acl -> !excludedPrincipals.contains(acl.getType() + ":" + acl.getPrincipal()))
+      .forEach(acl -> map.get(acl.getType().equals(Type.GROUP) ? "groups" : "users").add(acl.getPrincipal()));
+
+    return map;
+  }
+
+  private void sendNotificationToReaders(String subject, T request, Map<String, String> ctx, String template) {
+    Map<String, List<String>> requestReaders = getRequestReaders(ctx);
+    List<String> readerUsers = requestReaders.get("users");
+    List<String> readerGroups = requestReaders.get("groups");
+
+    if (readerUsers.size() > 0 && readerGroups.size() > 0) {
+      mailService.sendEmailToGroupsAndUsers(subject, template, ctx, readerGroups, readerUsers);
+    } else if(readerUsers.size() > 0) {
+      mailService.sendEmailToUsers(subject, template, ctx, readerUsers.stream().toArray(String[]::new));
+    } else if(readerGroups.size() > 0) {
+      mailService.sendEmailToGroups(subject, template, ctx, readerGroups.stream().toArray(String[]::new));
+    }
   }
 }
