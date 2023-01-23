@@ -2,23 +2,10 @@ package org.obiba.mica.access.domain;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.validation.constraints.NotNull;
-
 @Document
-public class DataAccessAmendment extends DataAccessEntity {
+public class DataAccessAmendment extends DataAccessEntityWithParent {
 
   private static final long serialVersionUID = 1990378967038884329L;
-
-  @NotNull
-  private String parentId;
-
-  public String getParentId() {
-    return parentId;
-  }
-
-  public void setParentId(String parentId) {
-    this.parentId = parentId;
-  }
 
   public static DataAccessAmendment.Builder newBuilder() {
     return new DataAccessAmendment.Builder();

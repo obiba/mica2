@@ -1,21 +1,16 @@
 package org.obiba.mica.access.service;
 
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.ForbiddenException;
-
+import com.google.common.base.Strings;
+import com.google.common.eventbus.EventBus;
 import org.apache.shiro.SecurityUtils;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.obiba.mica.access.DataAccessCollaboratorRepository;
+import org.obiba.mica.access.DataAccessPreliminaryRepository;
 import org.obiba.mica.access.domain.DataAccessCollaborator;
+import org.obiba.mica.access.domain.DataAccessPreliminary;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.event.DataAccessCollaboratorAcceptedEvent;
 import org.obiba.mica.access.event.DataAccessCollaboratorDeletedEvent;
@@ -31,7 +26,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.google.common.eventbus.EventBus;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import javax.ws.rs.ForbiddenException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Validated
@@ -67,6 +68,9 @@ public class DataAccessCollaboratorService {
 
   @Inject
   private DataAccessRequestUtilService dataAccessRequestUtilService;
+
+  @Inject
+  private DataAccessPreliminaryRepository dataAccessPreliminaryRepository;
 
   @Inject
   private EventBus eventBus;
@@ -178,7 +182,7 @@ public class DataAccessCollaboratorService {
    * @param key
    */
   private void sendCollaboratorInvitation(DataAccessRequest dar, String email, String key) {
-    Map<String, String> context = dataAccessRequestUtilService.getNotificationEmailContext(dar);
+    Map<String, String> context = getCollaboratorNotificationEmailContext(dar);
     context.put("key", key);
     mailService.sendEmailToUsers(
       mailService.getSubject(dataAccessConfigService.getOrCreateConfig().getCollaboratorInvitationSubject(),
@@ -195,12 +199,32 @@ public class DataAccessCollaboratorService {
   private void sendCollaboratorAcceptedNotification(DataAccessRequest dar, String email) {
     if (!dataAccessConfigService.getOrCreateConfig().isNotifyCollaboratorAccepted()) return;
 
-    Map<String, String> context = dataAccessRequestUtilService.getNotificationEmailContext(dar);
+    Map<String, String> context = getCollaboratorNotificationEmailContext(dar);
     context.put("email", email);
     mailService.sendEmailToUsers(
       mailService.getSubject(dataAccessConfigService.getOrCreateConfig().getCollaboratorAcceptedSubject(),
         context, DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT),
       "dataAccessRequestCollaboratorAccepted", context, dar.getApplicant());
+  }
+
+  private Map<String, String> getCollaboratorNotificationEmailContext(DataAccessRequest dar) {
+    Map<String, String> context = dataAccessRequestUtilService.getNotificationEmailContext(dar);
+    if (context.get("id").equals(context.get("title"))) {
+      // if title is not found in the main form, look for it in the preliminary one
+      String title = getDataAccessPreliminaryTitle(dar);
+      if (!Strings.isNullOrEmpty(title)) context.put("title", title);
+    }
+    return context;
+  }
+
+  private String getDataAccessPreliminaryTitle(DataAccessRequest dar) {
+    if (dataAccessConfigService.getOrCreateConfig().isPreliminaryEnabled()) {
+      Optional<DataAccessPreliminary> preliminaryOpt = dataAccessPreliminaryRepository.findByParentId(dar.getId()).stream().findFirst();
+      if (preliminaryOpt.isPresent()) {
+        return dataAccessRequestUtilService.getRequestTitle(preliminaryOpt.get());
+      }
+    }
+    return null;
   }
 
   private String makeInvitationKey(@NotNull DataAccessRequest dar, String email) {
