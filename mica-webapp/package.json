@@ -12,6 +12,7 @@
     "jquery.redirect": "^1.1.4",
     "js-cookie": "^2.2.1",
     "moment": "^2.29.4",
+    "moment-timezone": "^0.5.40",
     "plotly.js-dist-min": "^2.5.1",
     "rql": "github:epigeny/rql#1.1.0",
     "simplemde": "^1.11.2",
