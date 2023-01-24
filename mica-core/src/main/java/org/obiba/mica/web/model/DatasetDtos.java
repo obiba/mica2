@@ -329,6 +329,9 @@ class DatasetDtos {
         .forEach(attribute -> {
           if ("Mlstr_harmo".equals(attribute.getNamespace()) && "status".equals(attribute.getName()))
             builder.setStatus(attribute.getValues().getUndetermined());
+
+          if ("Mlstr_harmo".equals(attribute.getNamespace()) && "status_detail".equals(attribute.getName()))
+            builder.setStatusDetail(attribute.getValues().getUndetermined());
         });
     }
 
