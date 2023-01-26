@@ -10,6 +10,13 @@
 
 package org.obiba.mica.spi.taxonomies;
 
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
+import org.obiba.opal.core.support.yaml.TaxonomyYaml;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Properties;
 
 public abstract class AbstractTaxonomiesProviderService implements TaxonomiesProviderService {
@@ -41,5 +48,32 @@ public abstract class AbstractTaxonomiesProviderService implements TaxonomiesPro
   @Override
   public void stop() {
     this.running = false;
+  }
+
+  /**
+   * Read a taxonomy in YAML format from a URL stream.
+   *
+   * @param uri
+   * @return
+   * @throws TaxonomyImportException
+   */
+  protected Taxonomy readTaxonomy(URL uri) throws TaxonomyImportException {
+    try (InputStream input = uri.openStream()) {
+      return readTaxonomy(input);
+    } catch (Exception e) {
+      throw new TaxonomyImportException(e);
+    }
+  }
+
+  /**
+   * Read a taxonomy in YAML format from a stream.
+   *
+   * @param input
+   * @return
+   * @throws TaxonomyImportException
+   */
+  protected Taxonomy readTaxonomy(InputStream input) {
+    TaxonomyYaml yaml = new TaxonomyYaml();
+    return yaml.load(input);
   }
 }
