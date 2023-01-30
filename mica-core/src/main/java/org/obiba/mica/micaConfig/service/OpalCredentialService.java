@@ -94,7 +94,8 @@ public class OpalCredentialService {
       })
       .orElse(new OpalCredential(opalUrl, AuthType.USERNAME, username, micaConfigService.encrypt(password)));
 
-    repository.save(credential);
+    if (credential.getVersion() == null) repository.insert(credential);
+    else repository.save(credential);
   }
 
   public void createOrUpdateOpalCredential(String opalUrl, String token) {
@@ -111,7 +112,8 @@ public class OpalCredentialService {
       })
       .orElse(new OpalCredential(opalUrl, AuthType.TOKEN, micaConfigService.encrypt(token)));
 
-    repository.save(credential);
+    if (credential.getVersion() == null) repository.insert(credential);
+    else repository.save(credential);
   }
 
   public void deleteOpalCredential(String opalUrl) {
@@ -138,7 +140,8 @@ public class OpalCredentialService {
       })
       .orElse(new OpalCredential(opalUrl, AuthType.CERTIFICATE));
 
-    repository.save(credential);
+    if (credential.getVersion() == null) repository.insert(credential);
+    else repository.save(credential);
   }
 
   public String getCertificate(String opalUrl) {
