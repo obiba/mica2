@@ -90,6 +90,32 @@
         </div>
       </div>
 
+      <div ng-show="table.namespace === 'other'">
+        <p class="help-block" translate>dataset.datasource.other.info</p>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group"
+                 ng-class="{'has-error': (form['path'].$dirty || form.saveAttempted) && form['path'].$invalid}">
+              <label class="control-label">
+                <span translate>dataset.datasource.other.nid</span>
+                <span>*</span>
+              </label>
+              <input type="text" class="form-control" ng-model="table.nid">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group"
+                 ng-class="{'has-error': (form['table'].$dirty || form.saveAttempted) && form['table'].$invalid}">
+              <label class="control-label">
+                <span translate>dataset.datasource.other.nss</span>
+                <span>*</span>
+              </label>
+              <input type="text" class="form-control" ng-model="table.nss">
+            </div>
+          </div>
+        </div>
+      </div>
+
       <h4 translate>dataset.options</h4>
       <div sf-model="table.model" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions"></div>
 

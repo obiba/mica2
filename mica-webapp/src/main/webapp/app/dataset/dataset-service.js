@@ -437,12 +437,16 @@ mica.dataset
 
       if (result.namespace === 'file') {
         result.source = 'urn:file:' + result.path + (result.table ? ':' + result.table : '');
-        delete result.path;
-      } else {
+      } else if (result.namespace === 'opal') {
         result.source = 'urn:opal:' + result.project + '.' + result.table;
-        delete result.project;
+      } else {
+        result.source = 'urn:' + result.nid + ':' + result.nss;
       }
+      delete result.path;
+      delete result.project;
       delete result.table;
+      delete result.nid;
+      delete result.nss;
       delete result.namespace;
 
       return result;
@@ -481,7 +485,13 @@ mica.dataset
           result.namespace = 'file';
           result.path = id.indexOf(':') > 0 ? id.substring(0, id.indexOf(':')) : id;
           result.table = id.indexOf(':') > 0 ? id.substring(id.indexOf(':') + 1) : undefined;
+        } else {
+          result.namespace = 'other';
         }
+        const id = result.source.replace('urn:', '');
+        const sepIdx = id.indexOf(':');
+        result.nid = id.substring(0, sepIdx);
+        result.nss = id.substring(sepIdx + 1);
       } else {
         result.namespace = 'opal';
       }

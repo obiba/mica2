@@ -967,6 +967,13 @@
         "title": "File Source",
         "info": "Path to the file from which table's variables will be extracted. If the path is relative, it is first looked up in the dataset's folder, then in the associated study's folder. The table name is optional if there is only one described in the file.",
         "info-schema": "Path to the file from which table's variables will be extracted. If the path is relative, it is first looked up in the harmonization protocol's folder, then in the associated harmonization initiative's folder. The table name is optional if there is only one described in the file."
+      },
+      "other": {
+        "title": "Other Source",
+        "info": "Generic study table source definition.",
+        "info-schema": "Generic data schema source definition.",
+        "nid": "Namespace identifier",
+        "nss": "Specific source name in the namespace"
       }
     },
     "delete-dialog": {
@@ -991,7 +998,8 @@
       "info": "A study table defines which study data collection event it applies to and which Opal table the variables and data summaries are to be extracted from.",
       "source": {
         "opal": "Opal source",
-        "file": "File source"
+        "file": "File source",
+        "other": "Other source"
       }
     },
     "harmonization-study-table": {

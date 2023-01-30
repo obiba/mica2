@@ -60,6 +60,27 @@
         </table>
       </div>
 
+      <div ng-show="dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.namespace === 'other'">
+        <h4 translate>dataset.datasource.other.title</h4>
+
+        <table class="table table-bordered table-striped">
+          <tbody>
+          <tr>
+            <th translate>dataset.datasource.other.nid</th>
+            <td>
+              {{dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.nid}}
+            </td>
+          </tr>
+          <tr>
+            <th translate>dataset.datasource.other.nss</th>
+            <td>
+              {{dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.nss}}
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
       <div>
         <h3 translate ng-show="datasetStudy">dataset.harmonization-study.title</h3>
         <p class="help-block" ng-show="harmonizedDatasetStudy" translate>dataset.harmonization-study.info</p>

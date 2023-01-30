@@ -967,6 +967,13 @@
         "title": "Fichier source",
         "info": "Fichier duquel les variables de la table seront extraites. Si le chemin est relatif, le fichier est d'abord cherché dans le dossier de l'ensemble de données, puis dans celui de l'étude associée. Le nom de la table est optionel si le fichier ne décrit qu'une table.",
         "info-schema": "Fichier duquel les variables de la table seront extraites. Le chemin du fichier peut-être relatif, le fichier est d'abord cherché dans le dossier du protocole d'harmonisation, puis dans celui de l'initiative d'harmonisation associée. Le nom de la table est optionel si le fichier ne décrit qu'une table."
+      },
+      "other": {
+        "title": "Autre source",
+        "info": "Définition générique de la source de la table.",
+        "info-schema": "Définition générique de la source du schéma de données.",
+        "nid": "Identifiant de l'espace de nommage",
+        "nss": "Nom spécifique de la source dans l'espace de nommage"
       }
     },
     "delete-dialog": {
@@ -991,7 +998,8 @@
       "info": "La table d'étude définie à quel événement de collecte elle s'applique et à partir de quelle table Opal il faut extraire les variables et les données sommaires.",
       "source": {
         "opal": "Opal source",
-        "file": "Fichier source"
+        "file": "Fichier source",
+        "other": "Autre source"
       }
     },
     "harmonization-study-table": {

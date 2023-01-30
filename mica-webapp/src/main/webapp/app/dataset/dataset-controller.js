@@ -411,7 +411,8 @@ mica.dataset
 
       $scope.NAMESPACES = [
         'opal',
-        'file'
+        'file',
+        'other'
       ];
     }])
 
@@ -1002,13 +1003,19 @@ mica.dataset
               populationId: populationId,
               dataCollectionEventId: dceId
             });
-          } else {
+          } else if ($scope.table.namespace === 'opal') {
             angular.extend($scope.table, {
               studyId: $scope.selected.study.id,
               populationId: populationId,
               dataCollectionEventId: dceId,
               project: $scope.selected.project.name,
               table: $scope.selected.project.table
+            });
+          } else {
+            angular.extend($scope.table, {
+              studyId: $scope.selected.study.id,
+              populationId: populationId,
+              dataCollectionEventId: dceId
             });
           }
 
@@ -1031,7 +1038,8 @@ mica.dataset
 
       $scope.NAMESPACES = [
         'opal',
-        'file'
+        'file',
+        'other'
       ];
 
     }]);

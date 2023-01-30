@@ -107,6 +107,29 @@
             </div>
           </div>
 
+          <div ng-show="dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.namespace === 'other'">
+            <p class="help-block" translate>dataset.datasource.other.info-schema</p>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group"
+                     ng-class="{'has-error': (form['path'].$dirty || form.saveAttempted) && form['path'].$invalid}">
+                  <label class="control-label">
+                    <span translate>dataset.datasource.other.nid</span>
+                    <span>*</span>
+                  </label>
+                  <input type="text" class="form-control" ng-model="dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.nid">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group"
+                     ng-class="{'has-error': (form['table'].$dirty || form.saveAttempted) && form['table'].$invalid}">
+                  <label class="control-label" translate>dataset.datasource.other.nss</label>
+                  <input type="text" class="form-control" ng-model="dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.nss">
+                </div>
+              </div>
+            </div>
+          </div>
+
           <h3 translate>dataset.harmonization-study.title</h3>
 
           <div class="form-group"
