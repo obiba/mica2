@@ -10,8 +10,10 @@
 
 package org.obiba.mica.config.locale;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -40,8 +42,16 @@ public class AngularCookieLocaleResolver extends CookieLocaleResolver {
   }
 
   @Override
-  protected Locale getDefaultLocale() {
-    return micaConfigService.getConfig().getLocales().stream().findFirst().orElse(Locale.ENGLISH);
+  protected Locale determineDefaultLocale(HttpServletRequest request) {
+    Locale defaultLocale = super.determineDefaultLocale(request);
+    // validate default locale, which could come from the Accept-Language header
+    List<Locale> configLocales = micaConfigService.getConfig().getLocales();
+    List<Locale> languageLocales = configLocales.stream()
+      .filter(locale -> locale.getLanguage().equalsIgnoreCase(defaultLocale.getLanguage()))
+      .collect(Collectors.toList());
+    if (languageLocales.isEmpty())
+      return configLocales.stream().findFirst().orElse(Locale.ENGLISH);
+    return languageLocales.get(0);
   }
 
   @Override
