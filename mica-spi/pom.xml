@@ -15,7 +15,7 @@
   <parent>
     <groupId>org.obiba.mica</groupId>
     <artifactId>mica</artifactId>
-    <version>5.1-SNAPSHOT</version>
+    <version>5.1.0</version>
     <relativePath>../</relativePath>
   </parent>
 
