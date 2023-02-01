@@ -56,6 +56,8 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
 
   private SortedSet<Population> populations = Sets.newTreeSet();
 
+  private Set<Attribute> inferredAttributes = new HashSet<>();
+
   //
   // Accessors
   //
@@ -271,5 +273,10 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
   // for JSON deserial
   public void setClassName(String className) {}
 
-
+  public Set<Attribute> getInferredAttributes() {
+    return inferredAttributes;
+  }
+  public void setInferredAttributes(Set<Attribute> inferredAttributes) {
+    this.inferredAttributes = inferredAttributes == null ? new HashSet<>() : inferredAttributes;
+  }
 }

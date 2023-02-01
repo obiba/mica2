@@ -31,6 +31,7 @@ message StudySummaryDto {
   optional PermissionsDto permissions = 14;
   optional string studyResourcePath = 15;
   optional string content = 16;
+  repeated AttributeDto inferredAttributes = 17;
   extensions 1000 to max;
 }
 

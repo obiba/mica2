@@ -26,7 +26,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
 import org.obiba.mica.spi.tables.IDataset;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Proxy to value tables.
@@ -51,6 +53,8 @@ public abstract class Dataset extends AbstractModelAware implements AttributeAwa
   private boolean published = false;
 
   private Attributes attributes;
+
+  private Set<Attribute> inferredAttributes = new HashSet<>();
 
   public LocalizedString getName() {
     return name;
@@ -163,5 +167,13 @@ public abstract class Dataset extends AbstractModelAware implements AttributeAwa
   @Override
   protected MoreObjects.ToStringHelper toStringHelper() {
     return super.toStringHelper().add("name", name);
+  }
+
+  public Set<Attribute> getInferredAttributes() {
+    return inferredAttributes;
+  }
+
+  public void setInferredAttributes(Set<Attribute> inferredAttributes) {
+    this.inferredAttributes = inferredAttributes == null ? new HashSet<>() : inferredAttributes;
   }
 }

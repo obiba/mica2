@@ -138,7 +138,7 @@ public class DraftHarmonizedDatasetResource extends
   public List<Mica.DatasetVariableDto> getVariables() {
     checkPermission("/draft/harmonized-dataset", "VIEW");
     ImmutableList.Builder<Mica.DatasetVariableDto> builder = ImmutableList.builder();
-    datasetService.getDatasetVariables(getDataset()).forEach(variable -> builder.add(dtos.asDto(variable)));
+    datasetService.getDatasetVariables(getDataset(), null).forEach(variable -> builder.add(dtos.asDto(variable)));
     return builder.build();
   }
 

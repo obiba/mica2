@@ -22,6 +22,7 @@ import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.core.service.MissingCommentException;
+import org.obiba.mica.core.support.DatasetInferredAttributesCollector;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
 import org.obiba.mica.dataset.NoSuchDatasetException;
@@ -254,7 +255,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
     if(!dataset.getBaseStudyTables().isEmpty()) {
       dataset.getBaseStudyTables()
         .forEach(studyTable -> {
-          Future<Iterable<DatasetVariable>> future = helper.asyncGetDatasetVariables(() -> getDatasetVariables(dataset, studyTable));
+          Future<Iterable<DatasetVariable>> future = helper.asyncGetDatasetVariables(() -> getDatasetVariablesFromStudyTable(dataset, studyTable));
           try {
             Iterable<DatasetVariable> harmonizationVariables = future.get();
             eventBus.post(new DatasetPublishedEvent(dataset, null, harmonizationVariables, getCurrentUsername()));
@@ -350,9 +351,21 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
   }
 
   @Override
-  public Iterable<DatasetVariable> getDatasetVariables(HarmonizationDataset dataset) throws NoSuchValueTableException {
-    return StreamSupport.stream(getVariables(dataset).spliterator(), false)
-      .map(input -> new DatasetVariable(dataset, input)).collect(toList());
+  public Iterable<DatasetVariable> getDatasetVariables(HarmonizationDataset dataset, @Nullable DatasetInferredAttributesCollector collector) throws NoSuchValueTableException {
+    List<DatasetVariable> variables = StreamSupport.stream(getVariables(dataset).spliterator(), false)
+      .map(input -> {
+        DatasetVariable datasetVariable = new DatasetVariable(dataset, input);
+        if (collector != null) {
+          collector.collect(datasetVariable);
+        }
+        return datasetVariable;
+      }).collect(toList());
+
+    if (collector != null) {
+      log.debug("Variable Attributes Collector: {}", collector.getAttributes().size());
+      dataset.setInferredAttributes(collector.getAttributes());
+    }
+    return variables;
   }
 
   @Override
@@ -361,7 +374,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
     return new DatasetVariable(dataset, getStudyTableSource(dataset, dataset.getSafeHarmonizationTable()).getValueTable().getVariable(variableName));
   }
 
-  public Iterable<DatasetVariable> getDatasetVariables(HarmonizationDataset dataset, BaseStudyTable studyTable)
+  public Iterable<DatasetVariable> getDatasetVariablesFromStudyTable(HarmonizationDataset dataset, BaseStudyTable studyTable)
     throws NoSuchStudyException, NoSuchValueTableException {
     return StreamSupport.stream(getVariables(dataset, studyTable).spliterator(), false)
       .map(input -> new DatasetVariable(dataset, input, studyTable)).collect(toList());

@@ -65,6 +65,9 @@ class StudySummaryDtos {
   private PublishedDatasetVariableService datasetVariableService;
 
   @Inject
+  private AttributeDtos attributeDtos;
+
+  @Inject
   private StudyService studyService;
 
   @NotNull
@@ -87,6 +90,8 @@ class StudySummaryDtos {
     } else {
       builder = asHarmonizationStudyDtoBuilder((HarmonizationStudy) study, isPublished, variablesCount);
     }
+
+    study.getInferredAttributes().forEach(attribute -> builder.addInferredAttributes(attributeDtos.asDto(attribute)));
 
     if(study.hasModel()) builder.setContent(JSONUtils.toJSON(study.getModel()));
     builder.setStudyResourcePath(study.getResourcePath());

@@ -1,7 +1,12 @@
 package org.obiba.mica.web.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.base.Strings;
 import com.googlecode.protobuf.format.JsonFormat;
+import org.obiba.mica.core.domain.Attribute;
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.date.PersistableYearMonth;
@@ -23,7 +28,9 @@ import javax.inject.Inject;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 public class StudyController extends BaseController {
@@ -40,6 +47,9 @@ public class StudyController extends BaseController {
   @Inject
   private LocalizedStringDtos localizedStringDtos;
 
+  @Inject
+  private ObjectMapper objectMapper;
+
   @GetMapping("/study/{id:.+}")
   public ModelAndView study(@PathVariable String id, @RequestParam(value = "draft", required = false) String shareKey) {
     Map<String, Object> params = newParameters();
@@ -52,6 +62,12 @@ public class StudyController extends BaseController {
       String timelineData = asJSONTimelineData((Study) study);
       params.put("timelineData", timelineData);
     }
+
+    // Extract inferred attributes (variable based attributes)
+    Map<String, Map<String, List<LocalizedString>>> collect = study.getInferredAttributes().stream()
+      .collect(
+        Collectors.groupingBy(Attribute::getNamespace,
+          Collectors.groupingBy(Attribute::getName, Collectors.mapping(Attribute::getValues, Collectors.toList()))));
 
     return new ModelAndView("study", params);
   }

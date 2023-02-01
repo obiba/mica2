@@ -21,10 +21,12 @@ import org.obiba.magma.ValueTable;
 import org.obiba.magma.support.Disposables;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
+import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.core.service.MissingCommentException;
+import org.obiba.mica.core.support.DatasetInferredAttributesCollector;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetStateRepository;
@@ -64,6 +66,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -414,10 +417,22 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
   }
 
   @Override
-  public Iterable<DatasetVariable> getDatasetVariables(StudyDataset dataset) {
+  public Iterable<DatasetVariable> getDatasetVariables(StudyDataset dataset, @Nullable DatasetInferredAttributesCollector collector) {
     if (dataset.hasStudyTable()) {
-      return StreamSupport.stream(getVariables(dataset).spliterator(), false)
-        .map(input -> new DatasetVariable(dataset, input)).collect(toList());
+      List<DatasetVariable> collect = StreamSupport.stream(getVariables(dataset).spliterator(), false)
+        .map(input -> {
+          DatasetVariable datasetVariable = new DatasetVariable(dataset, input);
+          if (collector != null) {
+            collector.collect(datasetVariable);
+          }
+          return datasetVariable;
+        }).collect(toList());
+
+      if (collector != null) {
+        log.debug("Variable Attributes Collector: {}", collector.getAttributes().size());
+        dataset.setInferredAttributes(collector.getAttributes());
+      }
+      return collect;
     }
     return Lists.newArrayList();
   }
