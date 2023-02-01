@@ -186,6 +186,8 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private boolean commentsRequiredOnDocumentSave = false;
 
+  private List<String> usableVariableTaxonomiesForConceptTagging = new ArrayList<String>();
+
   @Transient
   private String contextPath;
 
@@ -762,5 +764,17 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setImportStudiesFeatureEnabled(boolean isImportStudiesFeatureEnabled) {
 	this.isImportStudiesFeatureEnabled = isImportStudiesFeatureEnabled;
+  }
+
+  public List<String> getUsableVariableTaxonomiesForConceptTagging() {
+    return usableVariableTaxonomiesForConceptTagging;
+  }
+
+  public void setUsableVariableTaxonomiesForConceptTagging(List<String> usableVaraibleTaxonomiesForConceptTagging) {
+    this.usableVariableTaxonomiesForConceptTagging = usableVaraibleTaxonomiesForConceptTagging;
+  }
+
+  public boolean hasUsableVariableTaxonomiesForConceptTagging() {
+    return usableVariableTaxonomiesForConceptTagging != null && usableVariableTaxonomiesForConceptTagging.size() > 0;
   }
 }
