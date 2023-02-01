@@ -131,11 +131,21 @@ Vue.component('search-criteria', {
         return ai - bi;
       });
 
+      const isTermHidden = function(term) {
+        if (term.attributes) {
+          const hiddenAttr = term.attributes.filter(attr => attr.key === 'hidden').pop();
+          if (hiddenAttr) {
+            return hiddenAttr.value === 'true';
+          }
+        }
+        return false;
+      }
+
       for (let target of filteredTargets) {
         this.criteriaMenu.items[target.name].title = StringLocalizer.localize(target.title);
         switch (target.name) {
           case 'variable':
-            let level = target.terms[0].terms;
+            let level = target.terms[0].terms.filter(t => !isTermHidden(t));
             const theRest = target.terms.slice(1);
 
             if (theRest.length > 0) {
@@ -153,7 +163,7 @@ Vue.component('search-criteria', {
           case 'dataset':
           case 'study':
           case 'network':
-            this.criteriaMenu.items[target.name].menus = target.terms;
+            this.criteriaMenu.items[target.name].menus = target.terms ? target.terms.filter(t => !isTermHidden(t)) : [];
             break;
         }
         if (this.criteriaMenu.items[target.name].menus && this.criteriaMenu.items[target.name].menus.length > 0) {

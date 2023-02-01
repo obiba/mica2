@@ -22,7 +22,6 @@ import org.obiba.mica.dataset.search.rest.harmonization.CsvContingencyWriter;
 import org.obiba.mica.dataset.search.rest.harmonization.ExcelContingencyWriter;
 import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.web.model.Mica;
-import org.obiba.opal.web.model.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -55,24 +54,6 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
   }
 
   @GET
-  @Path("/summary")
-  @Timed
-  public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary() {
-    checkDatasetAccess();
-    checkVariableSummaryAccess();
-    return datasetService.getVariableSummary(getDataset(StudyDataset.class, datasetId), variableName).getWrappedDto();
-  }
-
-  @GET
-  @Path("/facet")
-  @Timed
-  public Search.QueryResultDto getVariableFacet() {
-    checkDatasetAccess();
-    checkVariableSummaryAccess();
-    return datasetService.getVariableFacet(getDataset(StudyDataset.class, datasetId), variableName);
-  }
-
-  @GET
   @Path("/aggregation")
   @Timed
   public Mica.DatasetVariableAggregationDto getVariableAggregations(@QueryParam("study") @DefaultValue("true") boolean withStudySummary) {
@@ -80,11 +61,13 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
     checkVariableSummaryAccess();
     StudyDataset dataset = getDataset(StudyDataset.class, datasetId);
     StudyTable studyTable = dataset.getSafeStudyTable();
-    Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder();
     try {
-      return dtos.asDto(studyTable, datasetService.getVariableSummary(dataset, variableName).getWrappedDto(), withStudySummary).build();
+      return dtos.asDto(studyTable, datasetService.getVariableSummary(dataset, variableName), withStudySummary).build();
     } catch (Exception e) {
-      log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
+      if (log.isDebugEnabled())
+        log.warn("Unable to retrieve statistics: {}", e.getMessage(), e);
+      else
+        log.warn("Unable to retrieve statistics: {}", e.getMessage());
       return dtos.asDto(studyTable, null, withStudySummary).build();
     }
   }
@@ -106,11 +89,11 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
 
     try {
       return dtos
-        .asContingencyDto(studyTable, var, crossVar, datasetService.getContingencyTable(dataset, var, crossVar))
+        .asContingencyDto(studyTable, datasetService.getContingencyTable(dataset, var, crossVar))
         .build();
     } catch (Exception e) {
       log.warn("Unable to retrieve contingency table: " + e.getMessage(), e);
-      return dtos.asContingencyDto(studyTable, var, crossVar, null).build();
+      return dtos.asContingencyDto(studyTable, null).build();
     }
   }
 

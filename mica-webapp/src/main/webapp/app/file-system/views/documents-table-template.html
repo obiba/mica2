@@ -77,6 +77,11 @@
             <li ng-if="document.permissions.view">
               <a target="_self" ng-href="ws/draft/file-dl/{{document.path}}"><i class="fa fa-download"></i></a>
             </li>
+            <li ng-if="document.type === 'FILE'">
+              <a href ng-click="showCopiedTooltip()" ngclipboard data-clipboard-text="{{document.path}}"  uib-tooltip="{{showCopiedTooltipStatus ? 'global.copied' : 'global.copy-path-to-clipboard' | translate}}">
+                <i class="fa fa-copy"></i>
+              </a>
+            </li>
             <li ng-if="document.permissions.delete && document.revisionStatus === 'DELETED'">
               <a href ng-click="deleteDocument(document)"><i class="fa fa-trash"></i></a>
             </li>

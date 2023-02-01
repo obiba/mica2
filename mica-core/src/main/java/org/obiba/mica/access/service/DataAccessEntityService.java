@@ -47,7 +47,7 @@ import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.core.service.SchemaFormContentFileService;
 import org.obiba.mica.core.support.IdentifierGenerator;
-import org.obiba.mica.core.support.YamlClassPathResourceReader;
+import org.obiba.mica.core.support.YamlResourceReader;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.micaConfig.domain.DataAccessConfig;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
@@ -396,7 +396,7 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
   protected String generateId() {
     DataAccessConfig dataAccessConfig = dataAccessConfigService.getOrCreateConfig();
 
-    Object exclusions = YamlClassPathResourceReader.read(EXCLUSION_IDS_YAML_RESOURCE_PATH, Map.class).get("exclusions");
+    Object exclusions = YamlResourceReader.readClassPath(EXCLUSION_IDS_YAML_RESOURCE_PATH, Map.class).get("exclusions");
 
     IdentifierGenerator.Builder builder = IdentifierGenerator.newBuilder().prefix(dataAccessConfig.getIdPrefix())
       .size(dataAccessConfig.getIdLength());

@@ -60,6 +60,7 @@
     <jsr305.version>3.0.0</jsr305.version>
     <logback.version>1.2.9</logback.version>
     <logstash-logback.version>6.6</logstash-logback.version>
+    <magma.version>4.0.1</magma.version>
     <metrics-spring.version>3.0.0</metrics-spring.version>
     <mongodb-driver.version>4.7.2</mongodb-driver.version>
     <nosqlunit.version>0.7.9</nosqlunit.version>
@@ -420,6 +421,12 @@
         <artifactId>obiba-password-hasher</artifactId>
         <version>${obiba-commons.version}</version>
         <classifier>cli</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.obiba.magma</groupId>
+        <artifactId>magma-datasource-excel</artifactId>
+        <version>${magma.version}</version>
       </dependency>
 
       <dependency>

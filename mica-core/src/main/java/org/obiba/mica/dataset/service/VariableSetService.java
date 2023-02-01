@@ -10,26 +10,14 @@
 
 package org.obiba.mica.dataset.service;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.googlecode.protobuf.format.JsonFormat;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-import org.obiba.mica.core.domain.Attributes;
-import org.obiba.mica.core.domain.DocumentSet;
-import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.core.domain.OpalTable;
+import org.obiba.mica.core.domain.*;
 import org.obiba.mica.core.service.DocumentSetService;
-import org.obiba.mica.dataset.domain.Dataset;
-import org.obiba.mica.dataset.domain.DatasetCategory;
-import org.obiba.mica.dataset.domain.DatasetVariable;
-import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.core.source.OpalTableSource;
+import org.obiba.mica.dataset.domain.*;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.opal.web.model.Magma;
@@ -37,6 +25,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import javax.inject.Inject;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service
 @Validated
@@ -262,11 +257,11 @@ public class VariableSetService extends DocumentSetService {
 
     builder.setName(datasetVariable.getName());
     builder.setIndex(datasetVariable.getIndex());
-    builder.setReferencedEntityType(datasetVariable.getReferencedEntityType());
+    builder.setReferencedEntityType(toNonNullString(datasetVariable.getReferencedEntityType()));
     builder.setUnit(datasetVariable.getUnit());
-    builder.setMimeType(datasetVariable.getMimeType());
+    builder.setMimeType(toNonNullString(datasetVariable.getMimeType()));
     builder.setIsRepeatable(datasetVariable.isRepeatable());
-    builder.setOccurrenceGroup(datasetVariable.getOccurrenceGroup());
+    builder.setOccurrenceGroup(toNonNullString(datasetVariable.getOccurrenceGroup()));
     builder.setValueType(datasetVariable.getValueType());
     builder.setEntityType(datasetVariable.getEntityType());
 
@@ -281,6 +276,10 @@ public class VariableSetService extends DocumentSetService {
     builder.addAttributes(Magma.AttributeDto.newBuilder().setName("script").setValue("$('" + datasetVariable.getName() + "')").build());
 
     return builder.build();
+  }
+
+  private String toNonNullString(String value) {
+    return value == null ? "" : value;
   }
 
   private List<Magma.AttributeDto> toAttributeDtoList(Attributes attributes) {
@@ -320,16 +319,18 @@ public class VariableSetService extends DocumentSetService {
 
   private List<String> toOpalTableFullName(Dataset dataset) {
     if (dataset instanceof StudyDataset) {
-      OpalTable opalTable = ((StudyDataset) dataset).getSafeStudyTable();
-      return Lists.newArrayList(opalTable.getProject() + "." + opalTable.getTable());
+      StudyTable studyTable = ((StudyDataset) dataset).getSafeStudyTable();
+      return OpalTableSource.isFor(studyTable.getSource()) ? Lists.newArrayList(OpalTableSource.toTableName(studyTable.getSource())) : Lists.newArrayList();
     } else {
       HarmonizationDataset harmoDataset = (HarmonizationDataset) dataset;
       // one for each study and harmo tables
       List<String> tableNames = Lists.newArrayList();
       tableNames.addAll(harmoDataset.getStudyTables().stream()
-        .map(st -> st.getProject() + "." + st.getTable()).collect(Collectors.toList()));
+          .filter(st -> OpalTableSource.isFor(st.getSource()))
+        .map(st -> OpalTableSource.toTableName(st.getSource())).collect(Collectors.toList()));
       tableNames.addAll(harmoDataset.getHarmonizationTables().stream()
-        .map(ht -> ht.getProject() + "." + ht.getTable()).collect(Collectors.toList()));
+        .filter(st -> OpalTableSource.isFor(st.getSource()))
+        .map(ht -> OpalTableSource.toTableName(ht.getSource())).collect(Collectors.toList()));
       return tableNames;
     }
   }

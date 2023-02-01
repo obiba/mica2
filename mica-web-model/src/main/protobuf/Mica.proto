@@ -409,7 +409,7 @@ message MicaConfigDto {
   repeated string languages = 2;
   required string defaultCharSet = 3;
   optional string publicUrl = 4;
-  required string opal = 5;
+  optional string opal = 5;
   optional string version = 6;
   optional int32 privacyThreshold = 7;
   repeated string roles = 8;
@@ -542,8 +542,8 @@ message DatasetDto {
   extensions 1000 to max;
 
   message StudyTableDto {
-    required string project = 1;
-    required string table = 2;
+    optional string project = 1;
+    optional string table = 2;
     repeated LocalizedStringDto name = 3;
     repeated LocalizedStringDto description = 4;
 
@@ -554,11 +554,12 @@ message DatasetDto {
     optional StudySummaryDto studySummary = 9;
     optional int32 weight = 10;
     repeated LocalizedStringDto additionalInformation = 11;
+    optional string source = 12;
   }
 
   message HarmonizationTableDto {
-    required string project = 1;
-    required string table = 2;
+    optional string project = 1;
+    optional string table = 2;
     repeated LocalizedStringDto name = 3;
     repeated LocalizedStringDto description = 4;
 
@@ -566,6 +567,7 @@ message DatasetDto {
     optional StudySummaryDto studySummary = 7;
     optional int32 weight = 8;
     repeated LocalizedStringDto additionalInformation = 9;
+    optional string source = 10;
   }
 }
 
@@ -665,6 +667,7 @@ message DatasetVariableResolverDto {
   repeated LocalizedStringDto populationName = 29;
   repeated LocalizedStringDto dceName = 30;
   optional string entityType = 31;
+  optional string source = 32;
 }
 
 message DatasetVariableSummaryDto {

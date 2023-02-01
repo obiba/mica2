@@ -27,7 +27,7 @@ public class MicaConfigurationProvider implements ConfigurationProvider {
 
   @Inject
   @Lazy
-  private TaxonomyService taxonomyService;
+  private TaxonomiesService taxonomiesService;
 
   @Override
   public List<String> getLocales() {
@@ -46,26 +46,26 @@ public class MicaConfigurationProvider implements ConfigurationProvider {
 
   @Override
   public Taxonomy getNetworkTaxonomy() {
-    return taxonomyService.getNetworkTaxonomy();
+    return taxonomiesService.getNetworkTaxonomy();
   }
 
   @Override
   public Taxonomy getStudyTaxonomy() {
-    return taxonomyService.getStudyTaxonomy();
+    return taxonomiesService.getStudyTaxonomy();
   }
 
   @Override
   public Taxonomy getVariableTaxonomy() {
-    return taxonomyService.getVariableTaxonomy();
+    return taxonomiesService.getVariableTaxonomy();
   }
 
   @Override
   public Taxonomy getDatasetTaxonomy() {
-    return taxonomyService.getDatasetTaxonomy();
+    return taxonomiesService.getDatasetTaxonomy();
   }
 
   @Override
   public List<Taxonomy> getVariableTaxonomies() {
-    return taxonomyService.getVariableTaxonomies();
+    return taxonomiesService.getAllVariableTaxonomies();
   }
 }

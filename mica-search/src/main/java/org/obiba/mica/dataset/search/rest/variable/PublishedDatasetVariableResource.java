@@ -16,7 +16,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.DatasetVariable;
@@ -64,8 +63,7 @@ public class PublishedDatasetVariableResource {
         if (!harmonizedDatasetService.isPublished(resolver.getDatasetId())) throw NoSuchDatasetException.withId(resolver.getDatasetId());
         resource = applicationContext.getBean(PublishedHarmonizedDatasetVariableResource.class);
         ((PublishedHarmonizedDatasetVariableResource)resource).setStudyId(resolver.getStudyId());
-        ((PublishedHarmonizedDatasetVariableResource)resource).setProject(resolver.getProject());
-        ((PublishedHarmonizedDatasetVariableResource)resource).setTable(resolver.getTable());
+        ((PublishedHarmonizedDatasetVariableResource)resource).setSource(resolver.getSource());
         ((PublishedHarmonizedDatasetVariableResource)resource).setTableType(resolver.getTableType());
         ((PublishedHarmonizedDatasetVariableResource)resource).setLocale(locale);
         break;

@@ -21,8 +21,7 @@
           <th class="hidden-print"></th>
           <th translate>study.label</th>
           <th translate>type</th>
-          <th translate>dataset.project</th>
-          <th translate>dataset.table</th>
+          <th translate>dataset.datasource.title</th>
           <th translate>dataset.table-name</th>
           <th translate>dataset.table-description</th>
           <th class="hidden-print" ng-hide="viewMode == Mode.Revision" translate>actions</th>
@@ -46,10 +45,8 @@
             {{(wrapper.type === 'studyTable' ? 'search.study.individual' : 'search.study.harmonization') | translate}}
           </td>
           <td>
-            {{wrapper.table.project}}
-          </td>
-          <td>
-            {{wrapper.table.table}}
+            <span class="badge">{{wrapper.table.nid}}</span>
+            {{wrapper.table.nss}}
           </td>
           <td>
             <ul class="list-unstyled">

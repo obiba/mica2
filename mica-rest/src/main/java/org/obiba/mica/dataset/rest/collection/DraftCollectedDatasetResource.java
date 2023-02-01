@@ -12,7 +12,6 @@ package org.obiba.mica.dataset.rest.collection;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-
 import org.obiba.mica.AbstractGitPersistableResource;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.PublishCascadingScope;
@@ -25,8 +24,6 @@ import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.security.rest.SubjectAclResource;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
-import org.obiba.opal.web.model.Magma;
-import org.obiba.opal.web.model.Search;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -133,13 +130,6 @@ public class DraftCollectedDatasetResource extends
   }
 
   @GET
-  @Path("/table")
-  public Magma.TableDto getTable() {
-    checkPermission("/draft/collected-dataset", "VIEW");
-    return datasetService.getTableDto(getDataset());
-  }
-
-  @GET
   @Path("/variables")
   public List<Mica.DatasetVariableDto> getVariables() {
     checkPermission("/draft/collected-dataset", "VIEW");
@@ -155,13 +145,6 @@ public class DraftCollectedDatasetResource extends
     resource.setDatasetId(id);
     resource.setVariableName(variable);
     return resource;
-  }
-
-  @POST
-  @Path("/facets")
-  public Search.QueryResultDto getFacets(Search.QueryTermsDto query) {
-    checkPermission("/draft/collected-dataset", "VIEW");
-    return datasetService.getFacets(getDataset(), query);
   }
 
   @PUT

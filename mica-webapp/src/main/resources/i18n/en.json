@@ -59,6 +59,7 @@
     "update-comment": "Add a comment to describe the changes.",
     "copied": "Copied",
     "copy-to-clipboard": "Copy to clipboard",
+    "copy-path-to-clipboard": "Copy file path to clipboard",
     "copy-query": "Copy query",
     "name": "Name",
     "default": "Default",
@@ -229,8 +230,8 @@
     "all-help": "All caches.",
     "clear": "Clear",
     "run": "Run",
-    "opal-taxonomies": "Opal taxonomies",
-    "opal-taxonomies-help": "Taxonomies from primary Opal server. To be cleared after taxonomies have been updated in Opal.",
+    "variable-taxonomies": "Variable taxonomies",
+    "variable-taxonomies-help": "Taxonomies from the primary Opal server (if enabled) and other sources (plugins). To be cleared after taxonomies have been updated.",
     "mica-config": "Mica configuration",
     "mica-config-help": "Mica system various settings. Cache is automatically cleared each time the configuration is updated.",
     "aggregations-metadata": "Aggregations metadata",
@@ -558,12 +559,12 @@
         "help": "The complete translations will be exported in the Gettext format."
       }
     },
-    "variables-count-enabled": "Variables statistics enabled",
-    "variables-count-enabled-help": "Show variables statistics summary in the administration section.",
-    "projects-count-enabled": "Projects statistics enabled",
-    "projects-count-enabled-help": "Show projects statistics summary in the administration section.",
-    "data-access-requests-count-enabled": "Data Access Requests statistics enabled",
-    "data-access-requests-count-enabled-help": "Show data access requests statistics summary in the administration section."
+    "variables-count-enabled": "Variables metrics enabled",
+    "variables-count-enabled-help": "Show variables counts in the administration section and the home page.",
+    "projects-count-enabled": "Projects metrics enabled",
+    "projects-count-enabled-help": "Show projects counts in the administration section.",
+    "data-access-requests-count-enabled": "Data Access Requests metrics enabled",
+    "data-access-requests-count-enabled-help": "Show data access requests counts in the administration section."
   },
   "publish": {
     "label": "Publish",
@@ -955,7 +956,25 @@
     },
     "datasource": {
       "title": "Data Source",
-      "info": "Reference to the Opal table from which variables and data summaries will be extracted from."
+      "info": "Source of the data dictionary and summary statistics.",
+      "info-schema": "Source of the data dictionary.",
+      "opal": {
+        "title": "Opal Source",
+        "info": "Reference to the Opal table from which variables and data summaries will be extracted from.",
+        "info-schema": "Reference to the Opal table from which variables will be extracted from."
+      },
+      "file": {
+        "title": "File Source",
+        "info": "Path to the file from which table's variables will be extracted. If the path is relative, it is first looked up in the dataset's folder, then in the associated study's folder. The table name is optional if there is only one described in the file.",
+        "info-schema": "Path to the file from which table's variables will be extracted. If the path is relative, it is first looked up in the harmonization protocol's folder, then in the associated harmonization initiative's folder. The table name is optional if there is only one described in the file."
+      },
+      "other": {
+        "title": "Other Source",
+        "info": "Generic study table source definition.",
+        "info-schema": "Generic data schema source definition.",
+        "nid": "Namespace identifier",
+        "nss": "Specific source name in the namespace"
+      }
     },
     "delete-dialog": {
       "title": "Delete Dataset",
@@ -976,7 +995,12 @@
     },
     "study-table": {
       "title": "Study Table",
-      "info": "A study table defines which study data collection event it applies to and which Opal table the variables and data summaries are to be extracted from."
+      "info": "A study table defines which study data collection event it applies to and which Opal table the variables and data summaries are to be extracted from.",
+      "source": {
+        "opal": "Opal source",
+        "file": "File source",
+        "other": "Other source"
+      }
     },
     "harmonization-study-table": {
       "title": "Harmonization Initiative Table",
@@ -1006,7 +1030,7 @@
     "table-additional-information": "Additional Information",
     "data-schema": {
       "title": "Harmonization Protocol",
-      "info": "The variables of the harmonization protocol are the reference variables. This is a simple data dictionary: no data summaries will be extracted from the Opal table."
+      "info": "The variables of the harmonization protocol are the reference variables. This is a simple data dictionary: no data summary statistics will be extracted."
     },
     "index": "Index",
     "add-study-table": "Add Table",
@@ -1465,7 +1489,7 @@
   "variables": "Variables",
   "classifications": {
     "title": "Classifications",
-    "help": "Navigate the classification system and select the search criteria."
+    "help": "Navigate the classification system and manage order and visibility of the search criteria."
   },
   "all-null-classifications": "",
   "all-variable-classifications": "All variable classifications",
@@ -1523,6 +1547,10 @@
       "message": "Are you sure you want to delete the access of {{arg0}} {{arg1}}"
     }
   },
+  "up": "Up",
+  "down": "Down",
+  "hide": "Hide",
+  "show": "Show",
   "draft": "Draft",
   "published": "Published",
   "role": "Role",
@@ -1575,7 +1603,7 @@
   "security": "Security",
   "system": "System",
   "content": "Content",
-  "data-management": "Data Management",
+  "search-management": "Search",
   "data-access": "Data Access",
   "research": "Research",
   "properties": "Properties",
@@ -1613,7 +1641,7 @@
       "project-config": "Configure Research Project form.",
       "file-system": "Manage file system.",
       "search": "Search in the published repository.",
-      "classifications": "Browse taxonomies.",
+      "classifications": "Manage the taxonomies that are used as search criteria.",
       "translations": "Manage labels translations.",
       "cart": "Cart of variables.",
       "sets": "Lists of variables.",
@@ -2562,7 +2590,7 @@
   },
   "entity-statistics-summary": {
     "title": "Statistics Summary",
-    "full-title": "Content Statistics Summary",
+    "full-title": "Content Metrics Summary",
     "Study": "Individual Studies",
     "HarmonizationStudy": "Harmonization Initiatives",
     "StudyDataset": "Collected Datasets",

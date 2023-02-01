@@ -4,8 +4,9 @@ import org.springframework.beans.factory.config.YamlMapFactoryBean;
 import org.springframework.core.io.ClassPathResource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.core.io.FileSystemResource;
 
-public class YamlClassPathResourceReader {
+public class YamlResourceReader {
 
   private static ObjectMapper mapper;
 
@@ -13,9 +14,16 @@ public class YamlClassPathResourceReader {
     mapper = new ObjectMapper();
   }
 
-  public static <T> T read(String resourcePath, Class<T> resultClass) {
+  public static <T> T readClassPath(String resourcePath, Class<T> resultClass) {
     YamlMapFactoryBean factory = new YamlMapFactoryBean();
     factory.setResources(new ClassPathResource(resourcePath));
+
+    return mapper.convertValue(factory.getObject(), resultClass);
+  }
+
+  public static <T> T readFile(String resourcePath, Class<T> resultClass) {
+    YamlMapFactoryBean factory = new YamlMapFactoryBean();
+    factory.setResources(new FileSystemResource(resourcePath));
 
     return mapper.convertValue(factory.getObject(), resultClass);
   }

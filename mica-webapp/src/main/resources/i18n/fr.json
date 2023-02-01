@@ -59,6 +59,7 @@
     "update-comment": "Ajoutez un commentaire pour décrire les modifications.",
     "copied": "Copié",
     "copy-to-clipboard": "Copier dans le presse-papier",
+    "copy-path-to-clipboard": "Copier le chemin du fichier dans le presse-papier",
     "copy-query": "Copier la requête",
     "name": "Nom",
     "default": "Par défaut",
@@ -229,8 +230,8 @@
     "all-help": "Tous les caches.",
     "clear": "Effacer",
     "run": "Exécuter",
-    "opal-taxonomies": "Taxonomies de Opal",
-    "opal-taxonomies-help": "Taxonomies du serveur Opal primaire. Doit être effacé après que les taxonomies aient été mises à jour dans Opal.",
+    "variable-taxonomies": "Taxonomies de variables",
+    "variable-taxonomies-help": "Taxonomies du serveur Opal primaire (si activé) ainsi que d'autres sources (plugins). Doit être effacé après que les taxonomies aient été mises à jour.",
     "mica-config": "Configuration de Mica",
     "mica-config-help": "Divers paramètres de Mica. Ce cache est automatiquement effacé chaque fois que la configuration est mise à jour.",
     "aggregations-metadata": "Aggregations des meta-données",
@@ -558,12 +559,12 @@
         "help": "Les traductions complètes seront exportées au format Gettext."
       }
     },
-    "variables-count-enabled": "Statistiques des variables activées",
-    "variables-count-enabled-help": "Afficher le résumé des statistiques des variables dans la section d'administration.",
-    "projects-count-enabled": "Statistiques des projets activées",
-    "projects-count-enabled-help": "Afficher le résumé des statistiques des projets dans la section d'administration.",
-    "data-access-requests-count-enabled": "Statistiques des demandes d'accès aux données activées",
-    "data-access-requests-count-enabled-help": "Afficher le résumé des statistiques des demandes d'accès aux données dans la section d'administration."
+    "variables-count-enabled": "Métriques des variables activées",
+    "variables-count-enabled-help": "Afficher les nombres de variables dans la section d'administration.",
+    "projects-count-enabled": "Métriques des projets activées",
+    "projects-count-enabled-help": "Afficher les nombres de projets dans la section d'administration.",
+    "data-access-requests-count-enabled": "Métriques de demandes d'accès aux données activées",
+    "data-access-requests-count-enabled-help": "Afficher les nombres de demandes d'accès aux données dans la section d'administration."
   },
   "publish": {
     "label": "Publier",
@@ -955,7 +956,25 @@
     },
     "datasource": {
       "title": "Source de données",
-      "info": "Référence vers la table Opal de laquelle les variables et les données sommaires seront extraites."
+      "info": "Source du dictionnaire de données et des statistiques sommaires.",
+      "info-schema": "Source du dictionnaire de données.",
+      "opal": {
+        "title": "Source Opal",
+        "info": "Référence vers la table Opal de laquelle les variables et les données sommaires seront extraites.",
+        "info-schema": "Référence vers la table Opal de laquelle les variables seront extraites."
+      },
+      "file": {
+        "title": "Fichier source",
+        "info": "Fichier duquel les variables de la table seront extraites. Si le chemin est relatif, le fichier est d'abord cherché dans le dossier de l'ensemble de données, puis dans celui de l'étude associée. Le nom de la table est optionel si le fichier ne décrit qu'une table.",
+        "info-schema": "Fichier duquel les variables de la table seront extraites. Le chemin du fichier peut-être relatif, le fichier est d'abord cherché dans le dossier du protocole d'harmonisation, puis dans celui de l'initiative d'harmonisation associée. Le nom de la table est optionel si le fichier ne décrit qu'une table."
+      },
+      "other": {
+        "title": "Autre source",
+        "info": "Définition générique de la source de la table.",
+        "info-schema": "Définition générique de la source du schéma de données.",
+        "nid": "Identifiant de l'espace de nommage",
+        "nss": "Nom spécifique de la source dans l'espace de nommage"
+      }
     },
     "delete-dialog": {
       "title": "Supprimer l'ensemble de données",
@@ -976,7 +995,12 @@
     },
     "study-table": {
       "title": "Table d'étude",
-      "info": "La table d'étude définie à quel événement de collecte elle s'applique et à partir de quelle table Opal il faut extraire les variables et les données sommaires."
+      "info": "La table d'étude définie à quel événement de collecte elle s'applique et à partir de quelle table Opal il faut extraire les variables et les données sommaires.",
+      "source": {
+        "opal": "Opal source",
+        "file": "Fichier source",
+        "other": "Autre source"
+      }
     },
     "harmonization-study-table": {
       "title": "Table d'initiative d'harmonisation",
@@ -1006,7 +1030,7 @@
     "table-additional-information": "Information additionnelle",
     "data-schema": {
       "title": "Protocole d'harmonisation",
-      "info": "Les variables du protocole d'harmonisation sont les variables de référence. Il s'agit d'un simple dictionnaire de données: aucun résumé de données ne sera extrait de la table Opal."
+      "info": "Les variables du protocole d'harmonisation sont les variables de référence. Il s'agit d'un simple dictionnaire de données: aucune statistique sommaires ne seront extraites."
     },
     "index": "Index",
     "add-study-table": "Ajouter une table d'étude",
@@ -1465,7 +1489,7 @@
   "variables": "Variables",
   "classifications": {
     "title": "Classifications",
-    "help": "Naviguer dans le système de classification et sélectionner les critères de recherche."
+    "help": "Naviguer dans le système de classification et gérer l'ordre et la visibilité des critères de recherche."
   },
   "all-null-classifications": "",
   "all-variable-classifications": "Toutes les classifications de variables",
@@ -1523,6 +1547,10 @@
       "message": "Êtes-vous sûr de vouloir supprimer l'accès de {{arg0}} {{arg1}}"
     }
   },
+  "up": "Monter",
+  "down": "Descendre",
+  "hide": "Cacher",
+  "show": "Montrer",
   "draft": "Brouillon",
   "published": "Publié",
   "role": "Rôle",
@@ -1575,7 +1603,7 @@
   "security": "Sécurité",
   "system": "Système",
   "content": "Contenu",
-  "data-management": "Gestion de données",
+  "search-management": "Recherche",
   "data-access": "Accès aux données",
   "research": "Recherche",
   "properties": "Propriétés",
@@ -1613,7 +1641,7 @@
       "project-config": "Configurer le formulaire de projet de recherche.",
       "file-system": "Gérer le système de fichiers.",
       "search": "Chercher dans le catalogue publié.",
-      "classifications": "Parcourir les taxonomies.",
+      "classifications": "Gérer les taxonomies servant à bâtir les critères de recherche.",
       "translations": "Gérer les traductions des libellés.",
       "cart": "Panier de variables.",
       "sets": "Listes de variables.",
@@ -2562,7 +2590,7 @@
   },
   "entity-statistics-summary": {
     "title": "Résumé des statistiques",
-    "full-title": "Résumé des statistiques de contenu",
+    "full-title": "Métriques du contenu",
     "Study": "Étude individuelles",
     "HarmonizationStudy": "Initiatives d'harmonisation",
     "StudyDataset": "Ensemble de données de collecte",

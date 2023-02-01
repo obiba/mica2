@@ -17,7 +17,7 @@ import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.TaxonomyNotFoundException;
-import org.obiba.mica.micaConfig.service.TaxonomyService;
+import org.obiba.mica.micaConfig.service.TaxonomiesService;
 import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.taxonomy.EsTaxonomyTermService;
 import org.obiba.mica.taxonomy.EsTaxonomyVocabularyService;
@@ -52,7 +52,7 @@ public class AbstractTaxonomySearchResource {
   private EsTaxonomyVocabularyService esTaxonomyVocabularyService;
 
   @Inject
-  private TaxonomyService taxonomyService;
+  private TaxonomiesService taxonomiesService;
 
   @Inject
   private MicaConfigService micaConfigService;
@@ -63,40 +63,41 @@ public class AbstractTaxonomySearchResource {
   protected void populate(Opal.TaxonomyDto.Builder tBuilder, Taxonomy taxonomy,
                           Map<String, Map<String, List<String>>> taxoNamesMap, String anonymousUserId) {
 
-    taxonomy.getVocabularies().stream().filter(v -> taxoNamesMap.get(taxonomy.getName()).containsKey(v.getName()))
-        .forEach(voc -> {
-          Opal.VocabularyDto.Builder vBuilder = Dtos.asDto(voc, false).toBuilder();
-          List<String> termNames = taxoNamesMap.get(taxonomy.getName()).get(voc.getName());
-          if (voc.hasTerms()) {
-            List<Term> terms = voc.getTerms();
+    taxonomy.getVocabularies().stream()
+      .filter(v -> taxoNamesMap.get(taxonomy.getName()).containsKey(v.getName()))
+      .forEach(voc -> {
+        Opal.VocabularyDto.Builder vBuilder = Dtos.asDto(voc, false).toBuilder();
+        List<String> termNames = taxoNamesMap.get(taxonomy.getName()).get(voc.getName());
+        if (voc.hasTerms()) {
+          List<Term> terms = voc.getTerms();
 
-            // for now, sets are available for variable documents only
-            if (taxonomy.getName().equals("Mica_" + TaxonomyTarget.VARIABLE.asId()) && voc.getName().equals("sets")) {
-              List<DocumentSet> sets = SecurityUtils.getSubject().isAuthenticated() ?
-                variableSetService.getAllCurrentUser() :
-                variableSetService.getAllAnonymousUser(anonymousUserId);
-              List<String> allSetsCurrentUser = sets.stream().map(DocumentSet::getId).collect(Collectors.toList());
+          // for now, sets are available for variable documents only
+          if (taxonomy.getName().equals("Mica_" + TaxonomyTarget.VARIABLE.asId()) && voc.getName().equals("sets")) {
+            List<DocumentSet> sets = SecurityUtils.getSubject().isAuthenticated() ?
+              variableSetService.getAllCurrentUser() :
+              variableSetService.getAllAnonymousUser(anonymousUserId);
+            List<String> allSetsCurrentUser = sets.stream().map(DocumentSet::getId).collect(Collectors.toList());
 
-              if (allSetsCurrentUser.size() > 0) {
-                terms = voc.getTerms().stream().filter(term -> allSetsCurrentUser.contains(term.getName())).collect(Collectors.toList());
-              } else {
-                terms = Lists.newArrayList();
-              }
+            if (allSetsCurrentUser.size() > 0) {
+              terms = voc.getTerms().stream().filter(term -> allSetsCurrentUser.contains(term.getName())).collect(Collectors.toList());
+            } else {
+              terms = Lists.newArrayList();
             }
-
-            if (termNames.isEmpty())
-              vBuilder.addAllTerms(terms.stream().map(Dtos::asDto).collect(Collectors.toList()));
-            else terms.stream().filter(t -> termNames.contains(t.getName()))
-                .forEach(term -> vBuilder.addTerms(Dtos.asDto(term)));
           }
-          tBuilder.addVocabularies(vBuilder);
-        });
+
+          if (termNames.isEmpty())
+            vBuilder.addAllTerms(terms.stream().map(Dtos::asDto).collect(Collectors.toList()));
+          else terms.stream().filter(t -> termNames.contains(t.getName()))
+            .forEach(term -> vBuilder.addTerms(Dtos.asDto(term)));
+        }
+        tBuilder.addVocabularies(vBuilder);
+      });
   }
 
   protected List<String> filterVocabularies(TaxonomyTarget target, String query, String locale) {
     try {
-      return esTaxonomyVocabularyService.find(0, MAX_SIZE, DEFAULT_SORT, "asc", null, getTargettedQuery(target, query),
-          getFields(locale, VOCABULARY_FIELDS), null, null).getList();
+      return esTaxonomyVocabularyService.find(0, MAX_SIZE, DEFAULT_SORT, "asc", null, getTargetedQuery(target, query),
+        getFields(locale, VOCABULARY_FIELDS), null, null).getList();
     } catch (Exception e) {
       initTaxonomies();
       // for a 404 response
@@ -109,14 +110,14 @@ public class AbstractTaxonomySearchResource {
       if (vocabularies != null && vocabularies.size() > 0) {
         // filter on vocabulary names; remove taxonomy prefixes ('Mica_study:')
         String vocabulariesQuery = vocabularies.stream()
-            .map(v -> String.format("vocabularyName:%s", v.replaceAll("^([^\\:]+):", "")))
-            .collect(Collectors.joining(" AND "));
+          .map(v -> String.format("vocabularyName:%s", v.replaceAll("^([^\\:]+):", "")))
+          .collect(Collectors.joining(" AND "));
         query = Strings.isNullOrEmpty(query) ? vocabulariesQuery : query + " " + vocabulariesQuery;
       }
 
       return esTaxonomyTermService
-          .find(0, MAX_SIZE, DEFAULT_SORT, "asc", null, getTargettedQuery(target, query), getFields(locale, TERM_FIELDS))
-          .getList();
+        .find(0, MAX_SIZE, DEFAULT_SORT, "asc", null, getTargetedQuery(target, query), getFields(locale, TERM_FIELDS))
+        .getList();
     } catch (Exception e) {
       initTaxonomies();
       // for a 404 response
@@ -127,31 +128,31 @@ public class AbstractTaxonomySearchResource {
   protected List<Taxonomy> getTaxonomies(TaxonomyTarget target) {
     switch (target) {
       case NETWORK:
-        return Lists.newArrayList(taxonomyService.getNetworkTaxonomy());
+        return Lists.newArrayList(taxonomiesService.getNetworkTaxonomy());
       case STUDY:
-        return Lists.newArrayList(taxonomyService.getStudyTaxonomy());
+        return Lists.newArrayList(taxonomiesService.getStudyTaxonomy());
       case DATASET:
-        return Lists.newArrayList(taxonomyService.getDatasetTaxonomy());
+        return Lists.newArrayList(taxonomiesService.getDatasetTaxonomy());
       case TAXONOMY:
-        return Lists.newArrayList(taxonomyService.getTaxonomyTaxonomy());
+        return Lists.newArrayList(taxonomiesService.getTaxonomyTaxonomy());
       default:
-        return taxonomyService.getVariableTaxonomies();
+        return taxonomiesService.getAllVariableTaxonomies();
     }
   }
 
   protected Taxonomy getTaxonomy(TaxonomyTarget target, String name) {
     switch (target) {
       case NETWORK:
-        return taxonomyService.getNetworkTaxonomy();
+        return taxonomiesService.getNetworkTaxonomy();
       case STUDY:
-        return taxonomyService.getStudyTaxonomy();
+        return taxonomiesService.getStudyTaxonomy();
       case DATASET:
-        return taxonomyService.getDatasetTaxonomy();
+        return taxonomiesService.getDatasetTaxonomy();
       case TAXONOMY:
-        return taxonomyService.getTaxonomyTaxonomy();
+        return taxonomiesService.getTaxonomyTaxonomy();
       default:
-        Taxonomy foundTaxonomy = taxonomyService.getVariableTaxonomies().stream().filter(taxonomy -> taxonomy.getName().equals(name))
-            .findFirst().orElse(null);
+        Taxonomy foundTaxonomy = taxonomiesService.getAllVariableTaxonomies().stream().filter(taxonomy -> taxonomy.getName().equals(name))
+          .findFirst().orElse(null);
 
         if (foundTaxonomy == null) {
           throw new TaxonomyNotFoundException(name);
@@ -169,7 +170,7 @@ public class AbstractTaxonomySearchResource {
     }
   }
 
-  private String getTargettedQuery(TaxonomyTarget target, String query) {
+  private String getTargetedQuery(TaxonomyTarget target, String query) {
     return String.format(Strings.isNullOrEmpty(query) ? "target:%s" : "target:%s AND (%s)", target.name(), query);
   }
 
@@ -193,6 +194,6 @@ public class AbstractTaxonomySearchResource {
    * Populate taxonomies cache and trigger taxonomies indexing.
    */
   private void initTaxonomies() {
-    taxonomyService.getOpalTaxonomies();
+    taxonomiesService.getVariableTaxonomies();
   }
 }

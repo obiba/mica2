@@ -89,6 +89,6 @@ public class RQLFieldReferences {
    * @return
    */
   private String getOpalTablePath(BaseStudyTable studyTable) {
-    return studyTable.getProject() + "." + studyTable.getTable();
+    return studyTable.getSource().replace("urn:opal:", "");
   }
 }

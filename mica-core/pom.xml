@@ -35,6 +35,10 @@
       <artifactId>mica-web-model</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.obiba.magma</groupId>
+      <artifactId>magma-datasource-excel</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.codahale.metrics</groupId>
       <artifactId>metrics-core</artifactId>
     </dependency>

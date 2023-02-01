@@ -21,6 +21,11 @@
               <i class="fa fa-pencil"></i>
             </a>
           </span>
+          <span ng-if="data.isFile">
+            <a href ng-click="showCopiedTooltip()" ngclipboard data-clipboard-text="{{data.document.path}}"  uib-tooltip="{{showCopiedTooltipStatus ? 'global.copied' : 'global.copy-path-to-clipboard' | translate}}">
+              <i class="fa fa-copy"></i>
+            </a>
+          </span>
         </span>
       </li>
       <li ng-if="!data.isFile && !data.isRoot && data.document.permissions.edit && data.document.revisionStatus === 'DRAFT'">

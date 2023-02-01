@@ -16,6 +16,7 @@ import org.hibernate.validator.constraints.URL;
 import org.obiba.mica.core.domain.*;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.spi.search.Indexable;
+import org.obiba.mica.spi.tables.IStudy;
 
 import javax.validation.constraints.NotNull;
 import java.beans.Transient;
@@ -26,7 +27,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Base class for representing all type of studies.
  */
-public abstract class BaseStudy extends AbstractModelAware implements PersonAware, Indexable {
+public abstract class BaseStudy extends AbstractModelAware implements PersonAware, Indexable, IStudy {
 
   private Attachment logo;
 
@@ -97,6 +98,7 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
     this.objectives = objectives;
   }
 
+  @Override
   public String getOpal() {
     return opal;
   }

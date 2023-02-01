@@ -10,18 +10,16 @@
 
 package org.obiba.mica.dataset.rest.harmonization;
 
-import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
-import org.obiba.opal.web.model.Search;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
+import javax.ws.rs.GET;
 
 @Component
 @Scope("request")
@@ -39,37 +37,19 @@ public class DraftHarmonizedDatasetVariableResource implements DatasetVariableRe
 
   private String studyId;
 
-  private String project;
-
-  private String table;
+  private String source;
 
   @GET
   public Mica.DatasetVariableDto getVariable() {
-    return dtos.asDto(datasetService.getDatasetVariable(getDataset(), variableName, studyId, project, table));
-  }
-
-  @GET
-  @Path("/summary")
-  public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary() {
-    return datasetService.getVariableSummary(getDataset(), variableName, studyId, project, table).getWrappedDto();
-  }
-
-  @GET
-  @Path("/facet")
-  public Search.QueryResultDto getVariableFacet() {
-    return datasetService.getVariableFacet(getDataset(), variableName, studyId, project, table);
+    return dtos.asDto(datasetService.getDatasetVariable(getDataset(), variableName, studyId, source));
   }
 
   public void setStudyId(String studyId) {
     this.studyId = studyId;
   }
 
-  public void setProject(String project) {
-    this.project = project;
-  }
-
-  public void setTable(String table) {
-    this.table = table;
+  public void setSource(String source) {
+    this.source = source;
   }
 
   private HarmonizationDataset getDataset() {

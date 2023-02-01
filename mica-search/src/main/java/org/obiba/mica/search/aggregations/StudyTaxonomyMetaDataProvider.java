@@ -18,6 +18,6 @@ public class StudyTaxonomyMetaDataProvider extends ConfigurationTaxonomyMetaData
 
   @Override
   protected Taxonomy getTaxonomy() {
-    return taxonomyService.getStudyTaxonomy();
+    return taxonomiesService.getStudyTaxonomy();
   }
 }

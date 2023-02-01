@@ -84,10 +84,9 @@ public class CsvContingencyWriter {
 
   private void writeHeaders(CSVWriter writer, Mica.DatasetVariableContingencyDto c, List<String> terms) {
     if(c.hasStudyTable()) writer.writeNext(new String[] { String
-      .format("%s - %s - %s", c.getStudyTable().getProject(), c.getStudyTable().getTable(),
-        c.getStudyTable().getDceId()) });
+      .format("%s - %s", c.getStudyTable().getSource(), c.getStudyTable().getDceId()) });
     else if(c.hasHarmonizationStudyTable()) writer.writeNext(new String[] { String
-      .format("%s - %s", c.getHarmonizationStudyTable().getProject(), c.getHarmonizationStudyTable().getTable())});
+      .format("%s", c.getHarmonizationStudyTable().getSource())});
     writer.writeNext(concat(concat(Stream.of(""), terms.stream()), Stream.of("Total")).toArray(String[]::new));
   }
 

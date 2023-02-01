@@ -15,9 +15,9 @@ import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.obiba.mica.micaConfig.event.DeleteTaxonomiesEvent;
-import org.obiba.mica.micaConfig.event.OpalTaxonomiesUpdatedEvent;
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
-import org.obiba.mica.micaConfig.service.TaxonomyService;
+import org.obiba.mica.micaConfig.event.VariableTaxonomiesUpdatedEvent;
+import org.obiba.mica.micaConfig.service.TaxonomiesService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
@@ -38,20 +38,20 @@ public class TaxonomyIndexer {
   private static final Logger log = LoggerFactory.getLogger(TaxonomyIndexer.class);
 
   @Inject
-  private TaxonomyService taxonomyService;
+  private TaxonomiesService taxonomiesService;
 
   @Inject
   private Indexer indexer;
 
   @Async
   @Subscribe
-  public void opalTaxonomiesUpdatedEvent(OpalTaxonomiesUpdatedEvent event) {
-    log.info("Reindex all opal taxonomies");
+  public void variableTaxonomiesUpdatedEvent(VariableTaxonomiesUpdatedEvent event) {
+    log.info("Reindex all variable taxonomies");
     index(
       TaxonomyTarget.VARIABLE,
-      event.extractOpalTaxonomies()
+      event.getTaxonomies()
         .stream()
-        .filter(t -> taxonomyService.metaTaxonomyContains(t.getName()))
+        .filter(t -> taxonomiesService.metaTaxonomyContains(t.getName()))
         .collect(Collectors.toList()));
   }
 
@@ -73,13 +73,13 @@ public class TaxonomyIndexer {
       if(indexer.hasIndex(Indexer.TERM_INDEX)) indexer.dropIndex(Indexer.TERM_INDEX);
 
       index(TaxonomyTarget.VARIABLE,
-        ImmutableList.<Taxonomy>builder().addAll(taxonomyService.getOpalTaxonomies().stream() //
-          .filter(t -> taxonomyService.metaTaxonomyContains(t.getName())).collect(Collectors.toList())) //
-          .add(taxonomyService.getVariableTaxonomy()) //
+        ImmutableList.<Taxonomy>builder().addAll(taxonomiesService.getVariableTaxonomies().stream()
+          .filter(t -> taxonomiesService.metaTaxonomyContains(t.getName())).collect(Collectors.toList()))
+          .add(taxonomiesService.getVariableTaxonomy())
           .build());
-      index(TaxonomyTarget.STUDY, Lists.newArrayList(taxonomyService.getStudyTaxonomy()));
-      index(TaxonomyTarget.DATASET, Lists.newArrayList(taxonomyService.getDatasetTaxonomy()));
-      index(TaxonomyTarget.NETWORK, Lists.newArrayList(taxonomyService.getNetworkTaxonomy()));
+      index(TaxonomyTarget.STUDY, Lists.newArrayList(taxonomiesService.getStudyTaxonomy()));
+      index(TaxonomyTarget.DATASET, Lists.newArrayList(taxonomiesService.getDatasetTaxonomy()));
+      index(TaxonomyTarget.NETWORK, Lists.newArrayList(taxonomiesService.getNetworkTaxonomy()));
     } else {
       indexer.delete(Indexer.TAXONOMY_INDEX, new String[] {}, ImmutablePair.of("name", event.getTaxonomyName()));
       Map.Entry<String, String> termQuery = ImmutablePair.of("taxonomyName", event.getTaxonomyName());
@@ -92,19 +92,19 @@ public class TaxonomyIndexer {
       switch (taxonomyTarget) {
         case STUDY:
           log.info("Study taxonomies were updated");
-          taxonomy = taxonomyService.getStudyTaxonomy();
+          taxonomy = taxonomiesService.getStudyTaxonomy();
           break;
         case NETWORK:
           log.info("Network taxonomies were updated");
-          taxonomy = taxonomyService.getNetworkTaxonomy();
+          taxonomy = taxonomiesService.getNetworkTaxonomy();
           break;
         case DATASET:
           log.info("Dataset taxonomies were updated");
-          taxonomy = taxonomyService.getDatasetTaxonomy();
+          taxonomy = taxonomiesService.getDatasetTaxonomy();
           break;
         case VARIABLE:
           log.info("Variable taxonomies were updated");
-          taxonomy = taxonomyService.getVariableTaxonomy();
+          taxonomy = taxonomiesService.getVariableTaxonomy();
           break;
       }
 

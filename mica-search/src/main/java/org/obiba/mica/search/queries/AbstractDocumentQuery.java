@@ -16,7 +16,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
-import org.obiba.mica.micaConfig.service.TaxonomyService;
+import org.obiba.mica.micaConfig.service.TaxonomiesService;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.search.DocumentQueryHelper;
 import org.obiba.mica.search.aggregations.AggregationMetaDataResolver;
@@ -55,7 +55,7 @@ public abstract class AbstractDocumentQuery implements DocumentQueryInterface {
   protected MicaConfigService micaConfigService;
 
   @Inject
-  protected TaxonomyService taxonomyService;
+  protected TaxonomiesService taxonomiesService;
 
   @Inject
   protected SubjectAclService subjectAclService;

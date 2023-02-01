@@ -55,18 +55,6 @@
           </td>
         </tr>
         <tr>
-          <th translate>dataset.project</th>
-          <td>
-            {{dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.project}}
-          </td>
-        </tr>
-        <tr>
-          <th translate>dataset.table</th>
-          <td>
-            {{dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.table}}
-          </td>
-        </tr>
-        <tr>
           <th translate>dataset.table-name</th>
           <td>
             <ul class="list-unstyled">
@@ -100,6 +88,72 @@
         </tr>
         </tbody>
       </table>
+
+      <div ng-show="dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.namespace === 'opal'">
+        <h4 translate>dataset.datasource.opal.title</h4>
+        <p class="help-block" translate>dataset.datasource.opal.info</p>
+
+        <table class="table table-bordered table-striped" ng-show="dataset['obiba.mica.CollectedDatasetDto.type']">
+          <tbody>
+          <tr>
+            <th translate>dataset.project</th>
+            <td>
+              {{dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.project}}
+            </td>
+          </tr>
+          <tr>
+            <th translate>dataset.table</th>
+            <td>
+              {{dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.table}}
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div ng-show="dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.namespace === 'file'">
+        <h4 translate>dataset.datasource.file.title</h4>
+        <p class="help-block" translate>dataset.datasource.file.info</p>
+
+        <table class="table table-bordered table-striped" ng-show="dataset['obiba.mica.CollectedDatasetDto.type']">
+          <tbody>
+          <tr>
+            <th translate>path</th>
+            <td>
+              {{dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.path}}
+            </td>
+          </tr>
+          <tr>
+            <th translate>dataset.table</th>
+            <td>
+              {{dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.table}}
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div ng-show="dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.namespace === 'other'">
+        <h4 translate>dataset.datasource.other.title</h4>
+        <p class="help-block" translate>dataset.datasource.other.info</p>
+
+        <table class="table table-bordered table-striped" ng-show="dataset['obiba.mica.CollectedDatasetDto.type']">
+          <tbody>
+          <tr>
+            <th translate>dataset.datasource.other.nid</th>
+            <td>
+              {{dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.nid}}
+            </td>
+          </tr>
+          <tr>
+            <th translate>dataset.datasource.other.nss</th>
+            <td>
+              {{dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.nss}}
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
 
     </div>
   </div>

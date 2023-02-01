@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.obiba.mica.core.domain.HarmonizationStudyTable;
+import org.obiba.mica.core.source.OpalTableSource;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
@@ -108,8 +109,7 @@ public class DatasetDtosTest {
     HarmonizationDataset harmonizationDataset = new HarmonizationDataset();
     harmonizationDataset.setId("123");
     HarmonizationStudyTable harmonizationLink = new HarmonizationStudyTable();
-    harmonizationLink.setProject("project123");
-    harmonizationLink.setTable("table123");
+    harmonizationLink.setSource(OpalTableSource.newSource("project123", "table123").getURN());
     harmonizationLink.setStudyId("study123");
     harmonizationLink.setPopulationId("population123");
     harmonizationDataset.setHarmonizationTable(harmonizationLink);

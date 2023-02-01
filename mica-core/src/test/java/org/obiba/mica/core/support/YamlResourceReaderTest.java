@@ -11,11 +11,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(JUnit4.class)
-public class YamlClassPathResourceReaderTest {
+public class YamlResourceReaderTest {
 
   @Test
   public void readEmptyExclusionsListYamlTest() {
-    Map read = YamlClassPathResourceReader.read("/empty-exclusions-list.yml", Map.class);
+    Map read = YamlResourceReader.readClassPath("/empty-exclusions-list.yml", Map.class);
 
     assertTrue(read.containsKey("exclusions"));
     assertTrue(((List) read.get("exclusions")).isEmpty());
@@ -23,7 +23,7 @@ public class YamlClassPathResourceReaderTest {
 
   @Test
   public void readExclusionsListYamlTest() {
-    Map read = YamlClassPathResourceReader.read("/exclusions-list.yml", Map.class);
+    Map read = YamlResourceReader.readClassPath("/exclusions-list.yml", Map.class);
 
     assertTrue(read.containsKey("exclusions"));
     assertNotNull(read.get("exclusions"));

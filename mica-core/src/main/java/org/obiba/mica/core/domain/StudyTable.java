@@ -10,9 +10,9 @@
 
 package org.obiba.mica.core.domain;
 
-import java.io.Serializable;
-
 import com.google.common.base.MoreObjects;
+
+import java.io.Serializable;
 
 /**
  * Represents a opal table that is associated to a {@link org.obiba.mica.study.domain.Study}
@@ -63,7 +63,7 @@ public class StudyTable extends BaseStudyTable implements Serializable {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this).add("project", getProject()).add("table", getTable())
+    return MoreObjects.toStringHelper(this).add("source", getSource())
       .add("dceId", getDataCollectionEventUId()).toString();
   }
 

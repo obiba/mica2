@@ -103,7 +103,8 @@ class MicaConfigDtos {
     }
     builder.setIsUsePublicUrlForSharedLink(config.isUsePublicUrlForSharedLink());
 
-    builder.setOpal(config.getOpal());
+    if (config.hasOpal())
+      builder.setOpal(config.getOpal());
     builder.setPrivacyThreshold(config.getPrivacyThreshold());
 
     if(config.getMicaVersion() != null) {

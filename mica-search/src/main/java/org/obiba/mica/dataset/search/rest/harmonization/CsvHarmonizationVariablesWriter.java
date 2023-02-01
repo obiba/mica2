@@ -83,11 +83,10 @@ public class CsvHarmonizationVariablesWriter {
               final boolean[] found = { false };
               variableHarmonization.getDatasetVariableSummariesList().forEach(
                 summary -> {
-                  String id = table instanceof StudyTable ? ((StudyTable) table).getStudyId() : ((HarmonizationStudyTable) table).getStudyId();
+                  String id = table.getStudyId();
                   Mica.DatasetVariableResolverDto resolver = summary.getResolver();
                   if ((resolver.getStudyId().equals(id)
-                      && resolver.getProject().equals(table.getProject())
-                      && resolver.getTable().equals(table.getTable()))) {
+                      && resolver.getSource().equals(table.getSource()))) {
 
                     String statusDetail = getAttributeByName(summary, "status_detail", locale);
 

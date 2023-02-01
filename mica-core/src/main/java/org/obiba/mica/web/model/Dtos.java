@@ -397,8 +397,8 @@ public class Dtos {
   }
 
   @NotNull
-  public Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable, OpalTable opalTable, boolean includeSummaries) {
-    return datasetDtos.asSummaryDto(variable, opalTable, includeSummaries);
+  public Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable, BaseStudyTable studyTable, boolean includeSummaries) {
+    return datasetDtos.asSummaryDto(variable, studyTable, includeSummaries);
   }
 
   @NotNull
@@ -427,20 +427,14 @@ public class Dtos {
   }
 
   @NotNull
-  public Mica.DatasetVariableAggregationDto.Builder asDto(@NotNull OpalTable opalTable,
-    @Nullable Math.SummaryStatisticsDto summary, boolean withStudySummary) {
-    return datasetDtos.asDto(opalTable, summary, withStudySummary);
+  public Mica.DatasetVariableAggregationDto.Builder asDto(@NotNull BaseStudyTable studyTable,
+    @Nullable Mica.DatasetVariableAggregationDto summary, boolean withStudySummary) {
+    return datasetDtos.asDto(studyTable, summary, withStudySummary);
   }
 
   @NotNull
-  public Mica.DatasetVariableAggregationDto.Builder asDto(@NotNull Math.SummaryStatisticsDto summary) {
-    return datasetDtos.simpleAggregationDto(Mica.DatasetVariableAggregationDto.newBuilder(), summary);
-  }
-
-  @NotNull
-  public Mica.DatasetVariableContingencyDto.Builder asContingencyDto(OpalTable opalTable, DatasetVariable variable,
-                                                                     DatasetVariable crossVariable, @Nullable Search.QueryResultDto results) {
-    return datasetDtos.asContingencyDto(opalTable, variable, crossVariable, results);
+  public Mica.DatasetVariableContingencyDto.Builder asContingencyDto(BaseStudyTable studyTable, @Nullable Mica.DatasetVariableContingencyDto results) {
+    return datasetDtos.asContingencyDto(studyTable, results);
   }
 
   @NotNull

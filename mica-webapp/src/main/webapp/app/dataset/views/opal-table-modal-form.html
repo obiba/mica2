@@ -26,38 +26,92 @@
       <study-table-modal-form-section></study-table-modal-form-section>
 
       <h4 translate>dataset.datasource.title</h4>
-
       <p class="help-block" translate>dataset.datasource.info</p>
 
-      <div class="row">
-        <div class="col-md-6">
-          <div class="form-group"
-            ng-class="{'has-error': (form['project'].$dirty || form.saveAttempted) && form['project'].$invalid}">
-            <label class="control-label">
-              <span translate>dataset.project</span>
-              <span>*</span>
-            </label>
-            <ui-select theme="bootstrap" name="project" ng-model="selected.project" reset-search-input="true" required="true">
-              <ui-select-match>{{$select.selected.name}}</ui-select-match>
-              <ui-select-choices repeat="project in projects | filter: {name: $select.search}">
-                <span ng-bind-html="project.name | highlight: $select.search"></span>
-              </ui-select-choices>
-            </ui-select>
+      <select id="namespace" name="namespace" class="form-control" ng-model="table.namespace" ng-options="'dataset.study-table.source.' + namespace | translate for namespace in NAMESPACES" required="true">
+      </select>
+
+      <div ng-show="table.namespace === 'opal'">
+        <p class="help-block" translate>dataset.datasource.opal.info</p>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group"
+                 ng-class="{'has-error': (form['project'].$dirty || form.saveAttempted) && form['project'].$invalid}">
+              <label class="control-label">
+                <span translate>dataset.project</span>
+                <span>*</span>
+              </label>
+              <ui-select theme="bootstrap" name="project" ng-model="selected.project" reset-search-input="true">
+                <ui-select-match>{{$select.selected.name}}</ui-select-match>
+                <ui-select-choices repeat="project in projects | filter: {name: $select.search}">
+                  <span ng-bind-html="project.name | highlight: $select.search"></span>
+                </ui-select-choices>
+              </ui-select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group"
+                 ng-class="{'has-error': (form['table'].$dirty || form.saveAttempted) && form['table'].$invalid}">
+              <label class="control-label">
+                <span translate>dataset.table</span>
+                <span>*</span>
+              </label>
+              <ui-select theme="bootstrap" name="table" ng-model="selected.project.table" reset-search-input="true">
+                <ui-select-match>{{$select.selected}}</ui-select-match>
+                <ui-select-choices repeat="table in selected.project.datasource.table | filter: $select.search">
+                  <span ng-bind-html="table | highlight: $select.search"></span>
+                </ui-select-choices>
+              </ui-select>
+            </div>
           </div>
         </div>
-        <div class="col-md-6">
-          <div class="form-group"
-            ng-class="{'has-error': (form['table'].$dirty || form.saveAttempted) && form['table'].$invalid}">
-            <label class="control-label">
-              <span translate>dataset.table</span>
-              <span>*</span>
-            </label>
-            <ui-select theme="bootstrap" name="table" ng-model="selected.project.table" reset-search-input="true" required="true">
-              <ui-select-match>{{$select.selected}}</ui-select-match>
-              <ui-select-choices repeat="table in selected.project.datasource.table | filter: $select.search">
-                <span ng-bind-html="table | highlight: $select.search"></span>
-              </ui-select-choices>
-            </ui-select>
+      </div>
+
+      <div ng-show="table.namespace === 'file'">
+        <p class="help-block" translate>dataset.datasource.file.info</p>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group"
+                 ng-class="{'has-error': (form['path'].$dirty || form.saveAttempted) && form['path'].$invalid}">
+              <label class="control-label">
+                <span translate>path</span>
+                <span>*</span>
+              </label>
+              <input type="text" class="form-control" ng-model="table.path">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group"
+                 ng-class="{'has-error': (form['table'].$dirty || form.saveAttempted) && form['table'].$invalid}">
+              <label class="control-label" translate>dataset.table</label>
+              <input type="text" class="form-control" ng-model="table.table">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div ng-show="table.namespace === 'other'">
+        <p class="help-block" translate>dataset.datasource.other.info</p>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group"
+                 ng-class="{'has-error': (form['path'].$dirty || form.saveAttempted) && form['path'].$invalid}">
+              <label class="control-label">
+                <span translate>dataset.datasource.other.nid</span>
+                <span>*</span>
+              </label>
+              <input type="text" class="form-control" ng-model="table.nid">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group"
+                 ng-class="{'has-error': (form['table'].$dirty || form.saveAttempted) && form['table'].$invalid}">
+              <label class="control-label">
+                <span translate>dataset.datasource.other.nss</span>
+                <span>*</span>
+              </label>
+              <input type="text" class="form-control" ng-model="table.nss">
+            </div>
           </div>
         </div>
       </div>

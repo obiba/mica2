@@ -12,7 +12,7 @@ package org.obiba.mica.search;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.mica.micaConfig.service.TaxonomiesService;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.spi.search.support.AttributeKey;
 import org.obiba.mica.spi.search.support.JoinQuery;
@@ -24,7 +24,6 @@ import org.obiba.opal.core.domain.taxonomy.Term;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import sun.util.locale.LanguageTag;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -43,7 +42,7 @@ public class CoverageQueryExecutor {
   private static final String LANGUAGE_TAG_UNDETERMINED = "und";
 
   @Inject
-  private OpalService opalService;
+  private TaxonomiesService taxonomiesService;
 
   @Inject
   private JoinQueryExecutor joinQueryExecutor;
@@ -330,13 +329,7 @@ public class CoverageQueryExecutor {
 
   @NotNull
   private List<Taxonomy> getTaxonomies() {
-    List<Taxonomy> taxonomies = null;
-    try {
-      taxonomies = opalService.getTaxonomies();
-    } catch (Exception e) {
-      // ignore
-    }
-    return taxonomies == null ? Collections.emptyList() : taxonomies;
+    return taxonomiesService.getVariableTaxonomies();
   }
 
   @Nullable

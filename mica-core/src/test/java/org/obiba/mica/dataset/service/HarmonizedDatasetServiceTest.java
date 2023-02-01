@@ -13,7 +13,6 @@ package org.obiba.mica.dataset.service;
 import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 
 import org.junit.Before;
@@ -24,6 +23,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.obiba.mica.core.source.OpalTableSource;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.magma.Variable;
 import org.obiba.magma.type.BooleanType;
@@ -98,8 +98,7 @@ public class HarmonizedDatasetServiceTest {
 
   private StudyTable buildStudyTable(String project, String table, String studyId) {
     StudyTable st = new StudyTable();
-    st.setProject(project);
-    st.setTable(table);
+    st.setSource(OpalTableSource.newSource(project, table).getURN());
     st.setStudyId(studyId);
     st.setPopulationId("pop");
     st.setDataCollectionEventId("ev");

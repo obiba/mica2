@@ -215,16 +215,17 @@ public class PublishedHarmonizedDatasetResource extends AbstractPublishedDataset
     // harmonized variables, extract one column per study table
     List<Map<String, DatasetVariable>> harmonizedVariables = Lists.newArrayList();
     builder.setTotal(variablesDto.getTotal()).setLimit(variablesDto.getLimit()).setFrom(variablesDto.getFrom());
-    String query = "and(%s,eq(datasetId,%s),eq(studyId,%s),eq(populationId,%s),eq(dceId,%s),eq(opalTableType,%s),eq(project,%s),eq(table,%s))";
+
+    String query = "and(%s,eq(datasetId,%s),eq(studyId,%s),eq(populationId,%s),eq(dceId,%s),eq(opalTableType,%s),eq(source,%s))";
     dataset.getStudyTables().forEach(st -> {
       builder.addStudyTable(dtos.asDto(st, includeSummaries));
-      String rql = String.format(query, namesQuery, id, st.getStudyId(), st.getPopulationUId(), st.getDataCollectionEventUId(), DatasetVariable.OpalTableType.Study, st.getProject(), st.getTable());
+      String rql = String.format(query, namesQuery, id, st.getStudyId(), st.getPopulationUId(), st.getDataCollectionEventUId(), DatasetVariable.OpalTableType.Study, st.getSource());
       List<DatasetVariable> datasetVariablesInternal = getDatasetVariablesInternal(rql, 0, hvariablesLimit, sort, order, true);
       harmonizedVariables.add(datasetVariablesInternal.stream().collect(Collectors.toMap(DatasetVariable::getName, v -> v)));
     });
     dataset.getHarmonizationTables().forEach(st -> {
       builder.addHarmonizationStudyTable(dtos.asDto(st, includeSummaries));
-      String rql = String.format(query, namesQuery, id, st.getStudyId(), st.getPopulationUId(), st.getDataCollectionEventUId(), DatasetVariable.OpalTableType.Harmonization, st.getProject(), st.getTable());
+      String rql = String.format(query, namesQuery, id, st.getStudyId(), st.getPopulationUId(), st.getDataCollectionEventUId(), DatasetVariable.OpalTableType.Harmonization, st.getSource());
       harmonizedVariables.add(getDatasetVariablesInternal(rql, 0, hvariablesLimit, sort, order, true).stream().collect(Collectors.toMap(DatasetVariable::getName, v -> v)));
     });
 

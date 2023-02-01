@@ -17,6 +17,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.apache.shiro.SecurityUtils;
+import org.obiba.mica.core.source.OpalTableSource;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
@@ -73,7 +74,7 @@ public class PublishedDatasetResource {
   @Path("/collected/{project}/{table}/{variableName}/_summary")
   public Mica.DatasetVariableAggregationDto getVariableSummary(@PathParam("id") String id, @PathParam("project") String project, @PathParam("table") String table, @PathParam("variableName") String variableName) {
     checkVariableSummaryAccess();
-    return dtos.asDto(collectedDatasetService.getVariableSummary(alternativeStudyDataset(id, project, table), variableName).getWrappedDto()).build();
+    return collectedDatasetService.getVariableSummary(alternativeStudyDataset(id, project, table), variableName);
   }
 
   private Dataset getDataset(String id) {
@@ -88,8 +89,7 @@ public class PublishedDatasetResource {
     if (!(dataset instanceof StudyDataset)) throw NoSuchDatasetException.withId(id);
 
     StudyDataset asStudyDataset = (StudyDataset) dataset;
-    asStudyDataset.getStudyTable().setProject(project);
-    asStudyDataset.getStudyTable().setTable(table);
+    asStudyDataset.getStudyTable().setSource(OpalTableSource.newSource(project, table).getURN());
 
     return asStudyDataset;
   }

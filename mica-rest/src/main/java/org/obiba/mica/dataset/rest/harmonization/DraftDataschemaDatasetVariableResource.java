@@ -24,7 +24,6 @@ import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Math;
-import org.obiba.opal.web.model.Search;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -47,40 +46,6 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
   @GET
   public Mica.DatasetVariableDto getVariable() {
     return dtos.asDto(datasetService.getDatasetVariable(getDataset(), variableName));
-  }
-
-  @GET
-  @Path("/summary")
-  public List<Math.SummaryStatisticsDto> getVariableSummaries() {
-    ImmutableList.Builder<Math.SummaryStatisticsDto> builder = ImmutableList.builder();
-    HarmonizationDataset dataset = getDataset();
-    dataset.getBaseStudyTables().forEach(table -> {
-      try {
-        String studyId = table.getStudyId();
-        builder.add(datasetService
-          .getVariableSummary(dataset, variableName, studyId, table.getProject(), table.getTable())
-          .getWrappedDto());
-      } catch(NoSuchVariableException | NoSuchValueTableException e) {
-        // ignore (case the study has not implemented this dataschema variable)
-      }
-    });
-    return builder.build();
-  }
-
-  @GET
-  @Path("/facet")
-  public List<Search.QueryResultDto> getVariableFacets() {
-    ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
-    HarmonizationDataset dataset = getDataset();
-    dataset.getBaseStudyTables().forEach(table -> {
-      try {
-        String studyId = table.getStudyId();
-        builder.add(datasetService.getVariableFacet(dataset, variableName, studyId, table.getProject(), table.getTable()));
-      } catch(NoSuchVariableException | NoSuchValueTableException e) {
-        // ignore (case the study has not implemented this dataschema variable)
-      }
-    });
-    return builder.build();
   }
 
   @GET

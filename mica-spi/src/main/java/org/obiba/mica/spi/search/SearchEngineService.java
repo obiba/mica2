@@ -15,7 +15,7 @@ import org.obiba.plugins.spi.ServicePlugin;
 public interface SearchEngineService extends ServicePlugin {
 
   /**
-   * Provides some Mica configurations usefull for the search engine.
+   * Provides some Mica configurations useful for the search engine.
    *
    * @param configurationProvider
    */

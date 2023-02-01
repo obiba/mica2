@@ -29,6 +29,7 @@ mica.fileSystem
     'DraftFileSystemSearchResource',
     'MicaConfigResource',
     '$q',
+    '$timeout',
 
     function ($rootScope,
               $scope,
@@ -45,7 +46,8 @@ mica.fileSystem
               DraftFileAccessResource,
               DraftFileSystemSearchResource,
               MicaConfigResource,
-              $q) {
+              $q,
+              $timeout) {
 
       function buildClipboardCommand(command, origin, items) {
         return {
@@ -497,6 +499,15 @@ mica.fileSystem
           $scope.clipboard = buildClipboardCommand(null, null, []);
           navigateTo($scope.data.document);
         });
+      };
+
+      $scope.showCopiedTooltipStatus = false;
+
+      $scope.showCopiedTooltip = function () {
+        $scope.showCopiedTooltipStatus = true;
+        $timeout(function () {
+          $scope.showCopiedTooltipStatus = false;
+        }, 1000);
       };
 
       $scope.loadPermissions = function (document) {

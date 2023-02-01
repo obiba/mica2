@@ -94,35 +94,6 @@ public class MicaConfigService {
     return objectMapper;
   }
 
-  public Taxonomy getTaxonomy(TaxonomyTarget target) {
-    return taxonomyConfigService.findByTarget(target);
-  }
-
-  @NotNull
-  Taxonomy getNetworkTaxonomy() {
-    return taxonomyConfigService.findByTarget(TaxonomyTarget.NETWORK);
-  }
-
-  @NotNull
-  Taxonomy getStudyTaxonomy() {
-    return taxonomyConfigService.findByTarget(TaxonomyTarget.STUDY);
-  }
-
-  @NotNull
-  Taxonomy getDatasetTaxonomy() {
-    return taxonomyConfigService.findByTarget(TaxonomyTarget.DATASET);
-  }
-
-  @NotNull
-  Taxonomy getVariableTaxonomy() {
-    return taxonomyConfigService.findByTarget(TaxonomyTarget.VARIABLE);
-  }
-
-  @NotNull
-  Taxonomy getTaxonomyTaxonomy() {
-    return taxonomyConfigService.findByTarget(TaxonomyTarget.TAXONOMY);
-  }
-
   @Cacheable(value = "micaConfig", key = "#root.methodName")
   public MicaConfig getConfig() {
     return getOrCreateMicaConfig();

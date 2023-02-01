@@ -1,13 +1,8 @@
 package org.obiba.mica.web.controller;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
+import com.googlecode.protobuf.format.JsonFormat;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.obiba.magma.NoSuchVariableException;
@@ -16,7 +11,7 @@ import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
-import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.mica.micaConfig.service.TaxonomiesService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
@@ -30,9 +25,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
-import com.googlecode.protobuf.format.JsonFormat;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 
 @Controller
 public class DatasetAnalysisController extends BaseController {
@@ -49,7 +46,7 @@ public class DatasetAnalysisController extends BaseController {
   private Dtos dtos;
 
   @Inject
-  private OpalService opalService;
+  private TaxonomiesService taxonomiesService;
 
   @Inject
   private PublishedDatasetService publishedDatasetService;
@@ -133,17 +130,11 @@ public class DatasetAnalysisController extends BaseController {
     return dataset;
   }
 
-  private List<Taxonomy> getTaxonomies() {
-    List<Taxonomy> taxonomies = null;
-    try {
-      taxonomies = opalService.getTaxonomies();
-    } catch (Exception e) {
-      // ignore
-    }
-    return taxonomies == null ? Collections.emptyList() : taxonomies;
+  private List<Taxonomy> getVariableTaxonomies() {
+    return taxonomiesService.getVariableTaxonomies();
   }
 
   private String getDatasetVariableJSON(DatasetVariable variable) {
-    return JsonFormat.printToString(dtos.asDto(variable, getTaxonomies()));
+    return JsonFormat.printToString(dtos.asDto(variable, getVariableTaxonomies()));
   }
 }

@@ -10,31 +10,20 @@
 
 package org.obiba.mica.taxonomy.rest;
 
-import javax.inject.Inject;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.micaConfig.service.OpalService;
+import com.codahale.metrics.annotation.Timed;
 import org.obiba.opal.web.model.Opal;
 import org.springframework.stereotype.Component;
 
-import com.codahale.metrics.annotation.Timed;
+import javax.ws.rs.*;
 
 @Component
 @Path("/taxonomy/{name}")
-public class TaxonomyResource {
-
-  @Inject
-  private OpalService opalService;
+public class TaxonomyResource extends AbstractTaxonomyResource {
 
   @GET
   @Timed
   public Opal.TaxonomyDto getTaxonomy(@PathParam("name") String name) {
-    return opalService.getTaxonomyDto(name);
+    return getTaxonomyDto(name);
   }
 
   @GET
@@ -42,8 +31,8 @@ public class TaxonomyResource {
   @Timed
   public Opal.TaxonomiesDto.TaxonomySummaryDto getTaxonomySummary(@PathParam("name") String name,
     @QueryParam("vocabularies") @DefaultValue("false") boolean withVocabularies) {
-    if(withVocabularies) return opalService.getTaxonomyVocabularySummaryDto(name);
-    return opalService.getTaxonomySummaryDto(name);
+    if(withVocabularies) return getTaxonomyVocabularySummaryDto(name);
+    return getTaxonomySummaryDto(name);
   }
 
   @GET
@@ -51,7 +40,7 @@ public class TaxonomyResource {
   @Timed
   public Opal.VocabularyDto getVocabulary(@PathParam("name") String name,
     @PathParam("vocabulary") String vocabularyName) {
-    return opalService.getTaxonomyVocabularyDto(name, vocabularyName);
+    return getTaxonomyVocabularyDto(name, vocabularyName);
   }
 
   @GET
@@ -59,7 +48,7 @@ public class TaxonomyResource {
   @Timed
   public Opal.TaxonomiesDto.TaxonomySummaryDto.VocabularySummaryDto getVocabularySummary(@PathParam("name") String name,
     @PathParam("vocabulary") String vocabularyName) {
-    return opalService.getTaxonomyVocabularySummaryDto(name, vocabularyName);
+    return getTaxonomyVocabularySummaryDto(name, vocabularyName);
   }
 
 }

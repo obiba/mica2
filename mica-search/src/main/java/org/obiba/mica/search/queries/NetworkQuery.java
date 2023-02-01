@@ -103,13 +103,13 @@ public class NetworkQuery extends AbstractDocumentQuery {
 
   @Override
   protected Taxonomy getTaxonomy() {
-    return taxonomyService.getNetworkTaxonomy();
+    return taxonomiesService.getNetworkTaxonomy();
   }
 
   @Nullable
   @Override
   protected Properties getAggregationsProperties(List<String> filter) {
-    Properties properties = getAggregationsProperties(filter, taxonomyService.getNetworkTaxonomy());
+    Properties properties = getAggregationsProperties(filter, taxonomiesService.getNetworkTaxonomy());
     if (!properties.containsKey(JOIN_FIELD)) properties.put(JOIN_FIELD, "");
     return properties;
   }

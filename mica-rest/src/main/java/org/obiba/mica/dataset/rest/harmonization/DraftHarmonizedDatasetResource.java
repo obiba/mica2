@@ -13,10 +13,8 @@ package org.obiba.mica.dataset.rest.harmonization;
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-
 import org.obiba.mica.AbstractGitPersistableResource;
 import org.obiba.mica.JSONUtils;
-import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
@@ -27,8 +25,6 @@ import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.security.rest.SubjectAclResource;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
-import org.obiba.opal.web.model.Magma;
-import org.obiba.opal.web.model.Search;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -138,13 +134,6 @@ public class DraftHarmonizedDatasetResource extends
   }
 
   @GET
-  @Path("/table")
-  public Magma.TableDto getTable() {
-    checkPermission("/draft/harmonized-dataset", "VIEW");
-    return datasetService.getTableDto(getDataset());
-  }
-
-  @GET
   @Path("/variables")
   public List<Mica.DatasetVariableDto> getVariables() {
     checkPermission("/draft/harmonized-dataset", "VIEW");
@@ -170,18 +159,6 @@ public class DraftHarmonizedDatasetResource extends
     resource.setVariableName(variable);
     resource.setStudyId(studyId);
     return resource;
-  }
-
-  @POST
-  @Path("/facets")
-  public List<Search.QueryResultDto> getFacets(Search.QueryTermsDto query) {
-    checkPermission("/draft/harmonized-dataset", "VIEW");
-    ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
-    HarmonizationDataset dataset = getDataset();
-    for (BaseStudyTable table : dataset.getBaseStudyTables()) {
-      builder.add(datasetService.getFacets(query, table));
-    }
-    return builder.build();
   }
 
   @PUT

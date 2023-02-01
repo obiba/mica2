@@ -10,20 +10,17 @@
 
 package org.obiba.mica.dataset.domain;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-
 import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.HarmonizationStudyTable;
-import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.StudyTable;
+
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Dataset that relies on Study Opal servers summaries.
@@ -106,6 +103,6 @@ public class HarmonizationDataset extends Dataset {
   @JsonIgnore
   public List<BaseStudyTable> getBaseStudyTables() {
     return Lists.newArrayList(Iterables.concat(getStudyTables(), getHarmonizationTables())).stream()//
-      .sorted(Comparator.comparingInt(OpalTable::getWeight)).collect(Collectors.toList());
+      .sorted(Comparator.comparingInt(BaseStudyTable::getWeight)).collect(Collectors.toList());
   }
 }

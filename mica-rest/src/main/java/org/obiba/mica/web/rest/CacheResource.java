@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 @RequiresRoles(Roles.MICA_ADMIN)
 public class CacheResource {
 
-  private static final Logger logger = LoggerFactory.getLogger(IllegalArgumentExceptionMapper.class);
+  private static final Logger logger = LoggerFactory.getLogger(CacheResource.class);
 
   @Inject
   private CacheService cacheService;
@@ -43,14 +43,15 @@ public class CacheResource {
   @DELETE
   public Response deleteCache(@PathParam("id") String id) {
 
-    logger.info("clear cache [{}]", id);
+    logger.info("Clear cache [{}]", id);
 
     switch(id) {
       case "micaConfig" :
         cacheService.clearMicaConfigCache();
         break;
       case "opalTaxonomies":
-        cacheService.clearOpalTaxonomiesCache();
+      case "variableTaxonomies":
+        cacheService.clearTaxonomiesCache();
         break;
       case "aggregationsMetadata":
         cacheService.clearAggregationsMetadataCache();

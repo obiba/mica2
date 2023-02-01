@@ -21,6 +21,6 @@ import org.obiba.mica.dataset.service.DatasourceNotAvailableException;
 public class DatasourceNotAvailableExceptionMapper implements ExceptionMapper<DatasourceNotAvailableException> {
   @Override
   public Response toResponse(DatasourceNotAvailableException e) {
-    return Response.status(Status.SERVICE_UNAVAILABLE).entity("Verify the datasource is available.").build();
+    return Response.status(Status.SERVICE_UNAVAILABLE).entity("Verify the datasource is available. " + e.getMessage()).build();
   }
 }

@@ -17,7 +17,7 @@ import javax.inject.Inject;
 
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.TaxonomyEntityWrapper;
-import org.obiba.mica.core.support.YamlClassPathResourceReader;
+import org.obiba.mica.core.support.YamlResourceReader;
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.mica.micaConfig.repository.TaxonomyConfigRepository;
 import org.obiba.mica.spi.search.TaxonomyTarget;
@@ -75,12 +75,10 @@ public class TaxonomyConfigService {
   }
 
   private Taxonomy readTaxonomyFromYaml(String yamlResourcePath) {
-    return YamlClassPathResourceReader.read(yamlResourcePath, Taxonomy.class);
+    return YamlResourceReader.readClassPath(yamlResourcePath, Taxonomy.class);
   }
 
   private Taxonomy findByTargetInternal(TaxonomyTarget target) {
-    // taxonomy of taxonomies is not editable so fall back to the one that comes from the classpath
-    if(TaxonomyTarget.TAXONOMY.equals(target)) return defaultTaxonomyTaxonomy;
     String id = target.asId();
     Optional<TaxonomyEntityWrapper> taxonomyEntityWrapper = taxonomyConfigRepository.findById(id);
 
