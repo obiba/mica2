@@ -1,13 +1,13 @@
 package org.obiba.mica.web.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.base.Strings;
 import com.googlecode.protobuf.format.JsonFormat;
+import org.apache.commons.collections.map.HashedMap;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.service.PersonService;
+import org.obiba.mica.micaConfig.service.TaxonomiesService;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.date.PersistableYearMonth;
 import org.obiba.mica.study.domain.BaseStudy;
@@ -16,8 +16,13 @@ import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.web.controller.domain.Annotation;
 import org.obiba.mica.web.model.LocalizedStringDtos;
 import org.obiba.mica.web.model.Mica;
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
+import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
+import org.obiba.opal.core.domain.taxonomy.Term;
+import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,11 +30,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.inject.Inject;
-
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -50,6 +52,9 @@ public class StudyController extends BaseController {
   @Inject
   private ObjectMapper objectMapper;
 
+  @Inject
+  private TaxonomiesService taxonomiesService;
+
   @GetMapping("/study/{id:.+}")
   public ModelAndView study(@PathVariable String id, @RequestParam(value = "draft", required = false) String shareKey) {
     Map<String, Object> params = newParameters();
@@ -63,11 +68,41 @@ public class StudyController extends BaseController {
       params.put("timelineData", timelineData);
     }
 
+    List<String> exclusions = new ArrayList<String>() {{
+      add("Mlstr_harmo");
+      add("Mlstr_dataschema");
+    }};
+    Map<String, Taxonomy> taxonomies = taxonomiesService.getAllVariableTaxonomies().stream()
+      .filter(taxonomy -> !exclusions.contains(taxonomy.getName()))
+      .collect(Collectors.toMap(TaxonomyEntity::getName, e -> e));
+
     // Extract inferred attributes (variable based attributes)
-    Map<String, Map<String, List<LocalizedString>>> collect = study.getInferredAttributes().stream()
+    Map<String, Map<String, List<LocalizedString>>> inferredAttributes = study.getInferredAttributes().stream()
       .collect(
         Collectors.groupingBy(Attribute::getNamespace,
           Collectors.groupingBy(Attribute::getName, Collectors.mapping(Attribute::getValues, Collectors.toList()))));
+
+    // Convert attributes to taxonomy entities to facilitate client translation and rendering
+    Map<LocalizedString, Map<LocalizedString, List<LocalizedString>>> annotations = new HashMap<>();
+    inferredAttributes.forEach((ns, names) -> {
+      if (taxonomies.containsKey(ns)) {
+        Taxonomy taxonomy = taxonomies.get(ns);
+        Map<LocalizedString, List<LocalizedString>> vocTranslations = new HashMap();
+        annotations.put(LocalizedString.from(taxonomy.getTitle()), vocTranslations);
+        names.forEach((name, values) -> {
+          if (taxonomy.hasVocabulary(name)) {
+            Vocabulary vocabulary = taxonomy.getVocabulary(name);
+            List<LocalizedString> terms = values.stream()
+              .filter(v -> vocabulary.hasTerm(v.getUndetermined()))
+              .map(v -> LocalizedString.from(vocabulary.getTerm(v.getUndetermined()).getTitle()))
+              .collect(Collectors.toList());
+            vocTranslations.put(LocalizedString.from(vocabulary.getTitle()), terms);
+          }
+        });
+      }
+    });
+
+    params.put("annotations", annotations);
 
     return new ModelAndView("study", params);
   }

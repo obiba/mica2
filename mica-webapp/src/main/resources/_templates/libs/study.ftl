@@ -687,3 +687,31 @@
     </div>
   </div>
 </#macro>
+
+<!-- Study Inferred Attributes - classifications -->
+<#macro studyClassifications taxonomy={} vocabularies={}>
+
+  <div class="accordion" id="annoationsAccordion">
+    <div class="card mb-0">
+        <#assign taxonomyLocalized = localize(taxonomy) />
+        <#assign taxonomyId = taxonomyLocalized?replace(" ", "_") />
+      <div class="card-header">
+        <button type="button" class="btn btn-link btn-block text-navy text-left" data-toggle="collapse"
+                data-target="#${taxonomyId}">${taxonomyLocalized}</button>
+      </div>
+      <div id="${taxonomyId}" class="collapse" data-parent="#annoationsAccordion">
+        <div class="card-body">
+            <#list vocabularies as vocabulary, terms>
+              <p class="mb-0 font-weight-bold mt-2">${localize(vocabulary)}</p>
+              <div class="row">
+                  <#list terms as term>
+                    <div class="col-6 font-weight-normal">${localize(term)}</div>
+                  </#list>
+              </div>
+
+            </#list>
+        </div>
+      </div>
+    </div>
+  </div>
+</#macro>
