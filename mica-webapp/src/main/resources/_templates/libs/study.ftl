@@ -437,83 +437,83 @@
                     </tbody>
                   </table>
 
-                    <#if study.model.access_special_conditions_to_leave??>
-                      <p class="text-muted">${localize(study.model.access_special_conditions_to_leave)}</p>
-                    </#if>
-                </div>
-              </#if>
-              <#if study.model.access_fees?? && study.model.access_fees == true>
-                <div class="tab-pane fade" id="access-fees" role="tabpanel" aria-labelledby="access-fees-tab">
-
-                  <p><b><@message "study.access.access_data_sharing_cost.cost-title"/></b></p>
-
-                  <table class="table table-sm table-striped">
-                    <tbody>
-                    <tr>
-                      <td><@message "study_taxonomy.vocabulary.access_data.title"/></td>
-                      <td class="w-50">
-                        <#if (study.model.access_data_sharing_cost.data)??>
-                          <@costToLabel value=study.model.access_data_sharing_cost.data/>
+                        <#if study.model.access_special_conditions_to_leave??>
+                          <p class="text-muted">${localize(study.model.access_special_conditions_to_leave)}</p>
                         </#if>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><@message "study_taxonomy.vocabulary.access_bio_samples.title"/></td>
-                      <td>
-                        <#if (study.model.access_data_sharing_cost.biological_samples)??>
-                          <@costToLabel value=study.model.access_data_sharing_cost.biological_samples/>
+                    </div>
+                  </#if>
+                  <#if study.model.access_fees?? && study.model.access_fees == true>
+                    <div class="tab-pane fade" id="access-fees" role="tabpanel" aria-labelledby="access-fees-tab">
+
+                      <p><b><@message "study.access.access_data_sharing_cost.cost-title"/></b></p>
+
+                      <table class="table table-sm table-striped">
+                        <tbody>
+                        <tr>
+                          <td><@message "study_taxonomy.vocabulary.access_data.title"/></td>
+                          <td class="w-50">
+                              <#if (study.model.access_data_sharing_cost.data)??>
+                                  <@costToLabel value=study.model.access_data_sharing_cost.data/>
+                              </#if>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><@message "study_taxonomy.vocabulary.access_bio_samples.title"/></td>
+                          <td>
+                              <#if (study.model.access_data_sharing_cost.biological_samples)??>
+                                  <@costToLabel value=study.model.access_data_sharing_cost.biological_samples/>
+                              </#if>
+                          </td>
+                        </tr>
+                        </tbody>
+                      </table>
+
+                        <#if study.model.access_cost_additional_information??>
+                          <p class="text-muted">${localize(study.model.access_cost_additional_information)}</p>
                         </#if>
-                      </td>
-                    </tr>
-                    </tbody>
-                  </table>
 
-                    <#if study.model.access_cost_additional_information??>
-                      <p class="text-muted">${localize(study.model.access_cost_additional_information)}</p>
-                    </#if>
+                      <p><b><@message "study.access.access_data_sharing_cost.cost-reduction-title"/></b></p>
 
-                  <p><b><@message "study.access.access_data_sharing_cost.cost-reduction-title"/></b></p>
+                      <table class="table table-sm table-striped">
+                        <tbody>
+                        <tr>
+                          <td><@message "study_taxonomy.vocabulary.access_data.title"/></td>
+                          <td class="w-50">
+                              <#if (study.model.access_cost_reduction_consideration.data)??>
+                                  <@yesnoToIcon value=study.model.access_cost_reduction_consideration.data/>
+                              </#if>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><@message "study_taxonomy.vocabulary.access_bio_samples.title"/></td>
+                          <td>
+                              <#if (study.model.access_cost_reduction_consideration.bio_samples)??>
+                                  <@yesnoToIcon value=study.model.access_cost_reduction_consideration.bio_samples/>
+                              </#if>
+                          </td>
+                        </tr>
+                        </tbody>
+                      </table>
 
-                  <table class="table table-sm table-striped">
-                    <tbody>
-                    <tr>
-                      <td><@message "study_taxonomy.vocabulary.access_data.title"/></td>
-                      <td class="w-50">
-                        <#if (study.model.access_cost_reduction_consideration.data)??>
-                          <@yesnoToIcon value=study.model.access_cost_reduction_consideration.data/>
+                        <#if study.model.access_cost_reduction_consideration_specification??>
+                          <p class="text-muted">${localize(study.model.access_cost_reduction_consideration_specification)}</p>
                         </#if>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><@message "study_taxonomy.vocabulary.access_bio_samples.title"/></td>
-                      <td>
-                        <#if (study.model.access_cost_reduction_consideration.bio_samples)??>
-                          <@yesnoToIcon value=study.model.access_cost_reduction_consideration.bio_samples/>
-                        </#if>
-                      </td>
-                    </tr>
-                    </tbody>
-                  </table>
-
-                    <#if study.model.access_cost_reduction_consideration_specification??>
-                      <p class="text-muted">${localize(study.model.access_cost_reduction_consideration_specification)}</p>
-                    </#if>
-                </div>
-              </#if>
+                    </div>
+                  </#if>
+              </div>
             </div>
+            <!-- /.card -->
           </div>
-          <!-- /.card -->
-        </div>
-      <#else>
-        <@studyAccessInfo study=study/>
-      </#if>
+        <#else>
+            <@studyAccessInfo study=study/>
+        </#if>
 
-      <#if study.model.access_supplementary_info??>
-        <p><b><@message "suppl-info"/></b></p>
-        <div>
-            ${localize(study.model.access_supplementary_info)}
-        </div>
-      </#if>
+        <#if study.model.access_supplementary_info??>
+          <p><b><@message "suppl-info"/></b></p>
+          <div>
+              ${localize(study.model.access_supplementary_info)}
+          </div>
+        </#if>
     </div>
     <div class="card-footer">
       <div class="row">
@@ -688,30 +688,77 @@
   </div>
 </#macro>
 
-<!-- Study Inferred Attributes - classifications -->
-<#macro studyClassifications taxonomy={} vocabularies={}>
-
-  <div class="accordion" id="annoationsAccordion">
-    <div class="card mb-0">
-        <#assign taxonomyLocalized = localize(taxonomy) />
-        <#assign taxonomyId = taxonomyLocalized?replace(" ", "_") />
-      <div class="card-header">
-        <button type="button" class="btn btn-link btn-block text-navy text-left" data-toggle="collapse"
-                data-target="#${taxonomyId}">${taxonomyLocalized}</button>
-      </div>
-      <div id="${taxonomyId}" class="collapse" data-parent="#annoationsAccordion">
+<#macro studyClassifications annotations={} detail=false>
+  <div class="row">
+    <div class="col-12">
+      <div class="card card-primary card-outline">
+        <div class="card-header">
+          <h3 class="card-title pt-2"><@message "classifications" /></h3>
+        </div>
         <div class="card-body">
-            <#list vocabularies as vocabulary, terms>
-              <p class="mb-0 font-weight-bold mt-2">${localize(vocabulary)}</p>
-              <div class="row">
-                  <#list terms as term>
-                    <div class="col-6 font-weight-normal">${localize(term)}</div>
-                  </#list>
-              </div>
-
+            <#list annotations as taxonomy, vocabularies>
+                <@studyClassificationsAccordion taxonomy=taxonomy vocabularies=vocabularies index=taxonomy?index detailed=true />
             </#list>
         </div>
       </div>
     </div>
   </div>
+</#macro>
+
+<#macro studyClassificationsAccordion taxonomy={} vocabularies={} index=0 detailed=true>
+  <div class="accordion my-2" id="annoationsAccordion">
+    <div class="card mb-0">
+      <#assign taxonomyLocalized = localize(taxonomy) />
+      <#assign taxonomyId = taxonomyLocalized?replace(" ", "_") />
+      <#assign collapsedClass = (index == 0)?then('collapsed', '') />
+      <#assign showClass = (index == 0)?then('show', '') />
+
+      <div class="card-header">
+        <button type="button" class="${'btn btn-link btn-block text-navy text-left pl-0 ' + collapsedClass}" data-toggle="collapse"
+                data-target="#${taxonomyId}">${taxonomyLocalized}</button>
+      </div>
+      <div id="${taxonomyId}" class="${'collapse ' + showClass}" data-parent="#annoationsAccordion">
+        <div class="card-body">
+          <#if detailed>
+              <@studySlassificationsDetail taxonomyId=taxonomyId vocabularies=vocabularies />
+          <#else>
+              <@studyClassificationsSummary vocabularies=vocabularies />
+          </#if>
+        </div>
+      </div>
+    </div>
+  </div>
+</#macro>
+
+<#macro studySlassificationsDetail taxonomyId="" vocabularies={}>
+  <#list vocabularies as vocabulary, terms>
+      <#assign vocabularyId = taxonomyId + 'vocabulary' + vocabulary?index />
+    <p class="mb-1">
+      <a class="btn btn-link btn-block mb-0 font-weight-bold mt-2 bg-light p-2 text-left"
+         data-toggle="collapse"
+         href="#${vocabularyId}"
+         role="button"
+         aria-expanded="false"
+         aria-controls="${vocabularyId}">${localize(vocabulary)}</a>
+    </p>
+    <div class="collapse" id="${vocabularyId}">
+      <div class="card card-body card-body pt-1 pb-1">
+        <div class="row ">
+            <#list terms as term>
+              <div class="col-6 font-weight-normal">${localize(term)}</div>
+            </#list>
+        </div>
+      </div>
+    </div>
+  </#list>
+</#macro>
+
+<#macro studyClassificationsSummary vocabularies={}>
+  <dl class="row striped mt-0 mb-1 " style="columns: 2">
+    <#list vocabularies as vocabulary, terms>
+      <dt class="col-sm-10" style="border-left: #36A2EB solid 10px; margin-bottom: 3px">
+          ${localize(vocabulary)}
+      </dt>
+    </#list>
+  </dl>
 </#macro>

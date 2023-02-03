@@ -72,33 +72,36 @@ public class StudyController extends BaseController {
       add("Mlstr_harmo");
       add("Mlstr_dataschema");
     }};
-    Map<String, Taxonomy> taxonomies = taxonomiesService.getAllVariableTaxonomies().stream()
+    List<Taxonomy> taxonomies = taxonomiesService.getAllVariableTaxonomies().stream()
       .filter(taxonomy -> !exclusions.contains(taxonomy.getName()))
-      .collect(Collectors.toMap(TaxonomyEntity::getName, e -> e));
+      .collect(Collectors.toList());
 
     // Extract inferred attributes (variable based attributes)
     Map<String, Map<String, List<LocalizedString>>> inferredAttributes = study.getInferredAttributes().stream()
       .collect(
         Collectors.groupingBy(Attribute::getNamespace,
-          Collectors.groupingBy(Attribute::getName, Collectors.mapping(Attribute::getValues, Collectors.toList()))));
+          LinkedHashMap::new, Collectors.groupingBy(Attribute::getName, Collectors.mapping(Attribute::getValues, Collectors.toList()))));
 
     // Convert attributes to taxonomy entities to facilitate client translation and rendering
-    Map<LocalizedString, Map<LocalizedString, List<LocalizedString>>> annotations = new HashMap<>();
-    inferredAttributes.forEach((ns, names) -> {
-      if (taxonomies.containsKey(ns)) {
-        Taxonomy taxonomy = taxonomies.get(ns);
-        Map<LocalizedString, List<LocalizedString>> vocTranslations = new HashMap();
-        annotations.put(LocalizedString.from(taxonomy.getTitle()), vocTranslations);
-        names.forEach((name, values) -> {
-          if (taxonomy.hasVocabulary(name)) {
-            Vocabulary vocabulary = taxonomy.getVocabulary(name);
-            List<LocalizedString> terms = values.stream()
-              .filter(v -> vocabulary.hasTerm(v.getUndetermined()))
-              .map(v -> LocalizedString.from(vocabulary.getTerm(v.getUndetermined()).getTitle()))
+    Map<LocalizedString, Map<LocalizedString, List<LocalizedString>>> annotations = new LinkedHashMap<>();
+    taxonomies.forEach(taxonomy -> {
+      if (inferredAttributes.containsKey(taxonomy.getName())) {
+        Map<String, List<LocalizedString>> inferredVocNames = inferredAttributes.get(taxonomy.getName());
+        Map<LocalizedString, List<LocalizedString>> vocTranslations = new LinkedHashMap();
+        taxonomy.getVocabularies().forEach(vocabulary -> {
+          if (inferredVocNames.containsKey(vocabulary.getName())) {
+            List<String> inferredTermValues = inferredVocNames.get(vocabulary.getName()).stream()
+              .map(LocalizedString::getUndetermined)
               .collect(Collectors.toList());
-            vocTranslations.put(LocalizedString.from(vocabulary.getTitle()), terms);
+            List<LocalizedString> terms = vocabulary.getTerms().stream()
+              .filter(term -> inferredTermValues.contains(term.getName()))
+              .map(term -> LocalizedString.from(term.getTitle()))
+              .collect(Collectors.toList());
+            if (terms.size() > 0) vocTranslations.put(LocalizedString.from(vocabulary.getTitle()), terms);
           }
         });
+
+        if (vocTranslations.size() > 0) annotations.put(LocalizedString.from(taxonomy.getTitle()), vocTranslations);
       }
     });
 

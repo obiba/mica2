@@ -265,9 +265,9 @@
           <@studyFilesBrowser study=study/>
         </#if>
 
-        <#list annotations as taxonomy, vocabularies>
-            <@studyClassifications taxonomy=taxonomy vocabularies=vocabularies/>
-        </#list>
+        <#if annotations?size gt 0>
+            <@studyClassifications annotations=annotations detail=true/>
+        </#if>
 
         <!-- Variables classifications -->
         <#if studyVariablesClassificationsTaxonomies?? && studyVariablesClassificationsTaxonomies?size gt 0>
