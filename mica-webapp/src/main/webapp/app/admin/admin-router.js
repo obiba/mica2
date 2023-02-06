@@ -36,8 +36,15 @@ mica.admin
             authorizedRoles: ['mica-administrator']
           }
         })
-        .when('/admin/classifications', {
-          templateUrl: 'app/admin/views/classifications.html',
+        .when('/admin/taxonomies', {
+          templateUrl: 'app/admin/views/taxonomies-view-classifications.html',
+          controller: 'ClassificationsController',
+          access: {
+            authorizedRoles: ['mica-administrator']
+          }
+        })
+        .when('/admin/taxonomies/files', {
+          templateUrl: 'app/admin/views/taxonomies-view-files.html',
           controller: 'ClassificationsController',
           access: {
             authorizedRoles: ['mica-administrator']

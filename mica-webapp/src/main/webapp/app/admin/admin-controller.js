@@ -355,6 +355,7 @@ mica.admin
       };
 
       $scope.isFullscreen = false;
+      $scope.tab = {name: 'view'};
 
       function init() {
         $scope.lang = $translate.use();

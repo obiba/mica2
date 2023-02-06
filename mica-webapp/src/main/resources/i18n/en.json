@@ -1641,7 +1641,7 @@
       "project-config": "Configure Research Project form.",
       "file-system": "Manage file system.",
       "search": "Search in the published repository.",
-      "classifications": "Manage the taxonomies that are used as search criteria.",
+      "taxonomies": "Manage the taxonomies that are used as search criteria.",
       "translations": "Manage labels translations.",
       "cart": "Cart of variables.",
       "sets": "Lists of variables.",

@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2023 OBiBa. All rights reserved.
+  ~ Copyright (c) 2018 OBiBa. All rights reserved.
   ~
   ~ This program and the accompanying materials
   ~ are made available under the terms of the GNU Public License v3.0.
@@ -8,23 +8,10 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<div id="classification-browser-region">
-
-  <h2>
-    <ol class="breadcrumb mica-breadcrumb">
-      <li><a href="#/admin" translate>global.menu.admin</a></li>
-      <li class="active" translate>classifications.title</li>
-    </ol>
-  </h2>
+<div>
+  <div ng-include="'app/admin/views/taxonomies-view-header.html'" ng-init="tab.name='view'"></div>
+  <h3 translate>classifications.title</h3>
   <p class="help-block" translate>classifications.help</p>
-
-  <!-- Lang tabs -->
-  <ul class="nav nav-tabs voffset2" role="tablist" ng-if="tabs && tabs.length>1">
-    <li ng-repeat="tab in tabs" role="presentation" ng-class="{ active: tab === lang }">
-      <a href role="tab" ng-click="setLocale(tab)">{{'language.' + tab | translate}}</a></li>
-  </ul>
-
-  <!-- Classifications region -->
   <div class="{{tabs && tabs.length>1 ? 'tab-content voffset4' : ''}}">
     <ul class="nav nav-pills voffset2" role="tablist" ng-if="targetTabsOrder.length > 1">
       <li ng-repeat="target in targetTabsOrder" role="presentation" ng-class="{ active: target === $parent.target }" class="{{target}}">

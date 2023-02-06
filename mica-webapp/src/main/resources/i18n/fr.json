@@ -1641,7 +1641,7 @@
       "project-config": "Configurer le formulaire de projet de recherche.",
       "file-system": "Gérer le système de fichiers.",
       "search": "Chercher dans le catalogue publié.",
-      "classifications": "Gérer les taxonomies servant à bâtir les critères de recherche.",
+      "taxonomies": "Gérer les taxonomies servant à bâtir les critères de recherche.",
       "translations": "Gérer les traductions des libellés.",
       "cart": "Panier de variables.",
       "sets": "Listes de variables.",

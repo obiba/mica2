@@ -16,12 +16,18 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import org.obiba.mica.core.support.YamlResourceReader;
+import org.obiba.mica.file.Attachment;
+import org.obiba.mica.file.AttachmentState;
+import org.obiba.mica.file.FileStoreService;
+import org.obiba.mica.file.FileUtils;
+import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.micaConfig.event.VariableTaxonomiesUpdatedEvent;
 import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.spi.search.support.AttributeKey;
 import org.obiba.mica.spi.taxonomies.TaxonomiesProviderService;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
+import org.obiba.opal.core.support.yaml.TaxonomyYaml;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -32,6 +38,8 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -51,6 +59,9 @@ public class VariableTaxonomiesService implements EnvironmentAware {
   private Environment environment;
 
   @Inject
+  private MicaConfigService micaConfigService;
+
+  @Inject
   private EventBus eventBus;
 
   @Inject
@@ -59,12 +70,19 @@ public class VariableTaxonomiesService implements EnvironmentAware {
   @Inject
   private PluginsService pluginsService;
 
+  @Inject
+  private FileSystemService fileSystemService;
+
+  @Inject
+  private FileStoreService fileStoreService;
+
   private File variableTaxonomiesDir;
 
   @PostConstruct
   public void init() {
     if (variableTaxonomiesDir == null) {
       variableTaxonomiesDir = new File(VARIABLE_TAXONOMIES_PATH.replace("${MICA_HOME}", System.getProperty("MICA_HOME")));
+      fileSystemService.mkdirs("/taxonomies/variable");
     }
   }
 
@@ -100,8 +118,8 @@ public class VariableTaxonomiesService implements EnvironmentAware {
       if (yamlFiles != null) {
         log.info("Fetching local taxonomies: {}", VARIABLE_TAXONOMIES_PATH);
         for (File yamlFile : yamlFiles) {
-          try {
-            Taxonomy taxonomy = YamlResourceReader.readFile(yamlFile.getAbsolutePath(), Taxonomy.class);
+          try (FileInputStream in = new FileInputStream(yamlFile.getAbsolutePath())) {
+            Taxonomy taxonomy = readTaxonomy(in);
             log.debug("Taxonomy from folder {}: {}", variableTaxonomiesDir.getAbsolutePath(), taxonomy.getName());
             // override any duplicated taxonomy
             if (taxonomies.containsKey(taxonomy.getName()))
@@ -111,6 +129,22 @@ public class VariableTaxonomiesService implements EnvironmentAware {
             log.error("Taxonomy file could not be read: {}", yamlFile.getAbsolutePath(), e);
           }
         }
+      }
+    }
+    // read database files
+    for (AttachmentState attachmentState : fileSystemService.findAttachmentStates("^/taxonomies/variable$", false)
+      .stream()
+      .filter(s -> !FileUtils.isDirectory(s))
+      .filter(s -> s.getName().endsWith(".yml"))
+      .collect(Collectors.toList())) {
+      try (InputStream in = fileStoreService.getFile(attachmentState.getAttachment().getId())) {
+        Taxonomy taxonomy = readTaxonomy(in);
+        // override any duplicated taxonomy
+        if (taxonomies.containsKey(taxonomy.getName()))
+          log.warn("Taxonomy is duplicated and will be overridden: {}", taxonomy.getName());
+        taxonomies.put(taxonomy.getName(), taxonomy);
+      } catch (Exception e) {
+        log.error("Taxonomy attachment file could not be read: {}/{}", attachmentState.getPath(), attachmentState.getName(), e);
       }
     }
     // get the ones from plugins
@@ -145,6 +179,15 @@ public class VariableTaxonomiesService implements EnvironmentAware {
   private Taxonomy applyAttributes(Taxonomy taxonomy) {
     String defaultTermsSortOrder = environment.getProperty("opalTaxonomies.defaultTermsSortOrder");
 
+    // make sure there is a title
+    if (taxonomy.getTitle().isEmpty()) {
+      Map<String, String> title = Maps.newLinkedHashMap();
+      for (String locale : micaConfigService.getLocales()) {
+        title.put(locale, taxonomy.getName());
+      }
+      taxonomy.setTitle(title);
+    }
+
     taxonomy.getVocabularies().forEach(vocabulary -> {
       String field = vocabulary.getAttributeValue("field");
       if (Strings.isNullOrEmpty(field)) {
@@ -163,4 +206,8 @@ public class VariableTaxonomiesService implements EnvironmentAware {
     return taxonomy;
   }
 
+  private Taxonomy readTaxonomy(InputStream input) {
+    TaxonomyYaml yaml = new TaxonomyYaml();
+    return yaml.load(input);
+  }
 }
