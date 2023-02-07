@@ -12,7 +12,11 @@ package org.obiba.mica.dataset.service;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
-import org.obiba.magma.*;
+import org.obiba.magma.MagmaRuntimeException;
+import org.obiba.magma.NoSuchValueTableException;
+import org.obiba.magma.NoSuchVariableException;
+import org.obiba.magma.ValueTable;
+import org.obiba.magma.Variable;
 import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.domain.LocalizedString;
@@ -22,6 +26,7 @@ import org.obiba.mica.core.support.DatasetInferredAttributesCollector;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.spi.tables.StudyTableSource;
@@ -33,9 +38,6 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.stream.StreamSupport;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * {@link org.obiba.mica.dataset.domain.Dataset} management service.
@@ -47,6 +49,9 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
 
   @Inject
   private StudyTableSourceServiceRegistry studyTableSourceServiceRegistry;
+
+  @Inject
+  private MicaConfigService micaConfigService;
 
   /**
    * Get all {@link org.obiba.mica.dataset.domain.DatasetVariable}s from a {@link org.obiba.mica.dataset.domain.Dataset}.
@@ -140,8 +145,10 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
   }
 
   protected Iterable<DatasetVariable> wrappedGetDatasetVariables(T dataset) {
+    List<String> usableVariableTaxonomiesForConceptTagging = micaConfigService.getConfig().getUsableVariableTaxonomiesForConceptTagging();
+
     try {
-      return getDatasetVariables(dataset, new DatasetInferredAttributesCollector());
+      return getDatasetVariables(dataset, new DatasetInferredAttributesCollector(usableVariableTaxonomiesForConceptTagging));
     } catch (NoSuchValueTableException e) {
       throw e;
     } catch (MagmaRuntimeException e) {
