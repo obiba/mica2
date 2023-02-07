@@ -18,6 +18,7 @@ import com.google.common.collect.Maps;
 import org.obiba.mica.AbstractGitPersistableResource;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
@@ -47,6 +48,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -104,6 +106,25 @@ public class DraftHarmonizationStudyResource extends AbstractGitPersistableResou
     checkPermission("/draft/harmonization-study", "EDIT");
     HarmonizationStudy study = studyService.findDraft(id);
     study.setModel(Strings.isNullOrEmpty(body) ? new HashMap<>() : JSONUtils.toMap(body));
+    studyService.save(study);
+    return Response.ok().build();
+  }
+
+  @GET
+  @Path("/attributes")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Set<Attribute> getAttributes() {
+    checkPermission("/draft/harmonization-study", "VIEW");
+    return studyService.findDraft(id).getAttributes();
+  }
+
+  @PUT
+  @Path("/attributes")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response updateAttributes(Set<Attribute> attributes) {
+    checkPermission("/draft/harmonization-study", "EDIT");
+    HarmonizationStudy study = studyService.findDraft(id);
+    study.setAttributes(attributes);
     studyService.save(study);
     return Response.ok().build();
   }

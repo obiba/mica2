@@ -66,6 +66,9 @@ class StudyDtos {
   @Inject
   private MicaConfigService micaConfigService;
 
+  @Inject 
+  private AttributeDtos attributeDtos;
+
   @Inject
   private IndividualStudyService individualStudyService;
 
@@ -119,6 +122,8 @@ class StudyDtos {
       .addAllObjectives(localizedStringDtos.asDto(study.getObjectives()));
 
     if(study.hasModel()) builder.setContent(JSONUtils.toJSON(study.getModel()));
+
+    builder.addAllAttributes(study.getAttributes().stream().map(attributeDtos::asDto).collect(Collectors.toList()));
 
     if(asDraft) {
       builder.setTimestamps(TimestampsDtos.asDto(study));
@@ -174,6 +179,8 @@ class StudyDtos {
       study.setPopulations(dto.getPopulationsList().stream().map(populationDtos::fromDto)
         .collect(Collectors.toCollection(TreeSet<org.obiba.mica.study.domain.Population>::new)));
     }
+
+    study.setAttributes(dto.getAttributesList().stream().map(attributeDtos::fromDto).collect(Collectors.toSet()));
 
     if (dto.getMembershipSortOrderCount() > 0) {
       Map<String, List<String>> membershipSortOrder = new HashMap<>();

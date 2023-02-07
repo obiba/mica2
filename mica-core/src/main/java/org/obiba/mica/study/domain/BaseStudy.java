@@ -58,6 +58,8 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
 
   private Set<Attribute> inferredAttributes = new HashSet<>();
 
+  private Set<Attribute> attributes = new HashSet<>();
+
   //
   // Accessors
   //
@@ -278,5 +280,13 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
   }
   public void setInferredAttributes(Set<Attribute> inferredAttributes) {
     this.inferredAttributes = inferredAttributes == null ? new HashSet<>() : inferredAttributes;
+  }
+
+  public Set<Attribute> getAttributes() {
+    return attributes;
+  }
+
+  public void setAttributes(Set<Attribute> attributes) {
+    this.attributes = attributes == null ? new HashSet<>() : attributes;
   }
 }

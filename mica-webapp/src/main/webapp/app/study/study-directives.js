@@ -96,7 +96,7 @@ mica.study
 
           if (Array.isArray(self.chosenTerms)) {
             self.chosenTerms.forEach(term => {
-              attributes.push({namespace: namespace, name: name, values: [{lang: 'und', value: term}]});
+              attributes.push({namespace: namespace, name: name, values: {und: term}});
             });
           } else {
             attributes.push({namespace: namespace, name: name});

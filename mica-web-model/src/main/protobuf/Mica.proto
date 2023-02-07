@@ -168,6 +168,7 @@ message StudyDto {
   optional bool published = 31;
   optional string studyResourcePath = 32;
   repeated MembershipSortOrderDto membershipSortOrder = 33;
+  repeated AttributeDto attributes = 34;
 
   extensions 1000 to max;
 }
