@@ -279,6 +279,8 @@ mica.study.ViewController = function (
         formLanguages[loc] = $filter('translate')('language.' + loc);
       });
 
+      self.usableVariableTaxonomiesForConceptTagging = micaConfig.usableVariableTaxonomiesForConceptTagging;
+
       self.languages = micaConfig.languages;
       self.roles = micaConfig.roles;
       self.openAccess = micaConfig.openAccess;
@@ -336,7 +338,9 @@ mica.study.ViewController = function (
     }
 
     $timeout(function () {
-      $scope.timeline.reset().create('#timeline', study).addLegend();
+      if (document.getElementById('timeline')) {
+        $scope.timeline.reset().create('#timeline', study).addLegend();
+      }      
       $scope.sfForm = angular.copy(self.sfForm);
     }, 250);
   }

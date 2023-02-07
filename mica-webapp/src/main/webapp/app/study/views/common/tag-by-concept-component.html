@@ -1,0 +1,21 @@
+<div>
+  <span ng-if="!$ctrl.taxos || $ctrl.taxos.length == 0" translate>taxonomy-for-tagging-by-concept-not-configured</span>
+
+  <p>
+    <select chosen class="chosen-select" ng-options="taxo.name as (taxo.title | localizedString) for taxo in $ctrl.taxoChoices" ng-change="$ctrl.taxoSelected()" ng-model="$ctrl.chosenTaxo">
+      <option value="">-- {{'choose-taxonomy' | translate}} --</option>
+    </select>
+  </p>
+
+  <p ng-show="$ctrl.chosenTaxo">
+    <select chosen multiple class="chosen-select" ng-options="vocab.name as (vocab.title | localizedString) for vocab in $ctrl.vocabChoices" ng-change="$ctrl.vocabsSelected()" ng-model="$ctrl.chosenVocabs"></select>
+  </p>
+
+  <p ng-show="$ctrl.chosenVocabs && $ctrl.chosenVocabs.length === 1">
+    <select chosen multiple class="chosen-select" ng-options="term.name as (term.title | localizedString) for term in $ctrl.termChoices" ng-model="$ctrl.chosenTerms"></select>
+  </p>
+
+  <p ng-show="$ctrl.readyToTag">
+    <button class="btn btn-primary btn-responsive" type="button" ng-click="$ctrl.addTags()" translate>tag-it</button>
+  </p>
+</div>

@@ -646,4 +646,8 @@ mica.study
       return $resource(contextPath + '/ws/draft/harmonization-studies/summaries?', {}, {
         'summaries': {method: 'GET', isArray: true, params: {id: '@id'}}
       });
-    }]);
+    }])
+    
+  .factory('TaxonomyFilterResource', ['$resource', function ($resource) {
+    return $resource(contextPath + 'ws/taxonomies/_filter', {target: 'variable'});
+  }]);
