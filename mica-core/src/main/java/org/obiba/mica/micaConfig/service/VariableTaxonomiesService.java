@@ -18,6 +18,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.support.YamlResourceReader;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
@@ -175,6 +176,7 @@ public class VariableTaxonomiesService implements EnvironmentAware {
     // read database files
     for (AttachmentState attachmentState : fileSystemService.findAttachmentStates("^/taxonomies/variable$", false)
       .stream()
+      .filter(s -> !RevisionStatus.DELETED.equals(s.getRevisionStatus()))
       .filter(s -> !FileUtils.isDirectory(s))
       .filter(s -> s.getName().endsWith(".yml"))
       .collect(Collectors.toList())) {
