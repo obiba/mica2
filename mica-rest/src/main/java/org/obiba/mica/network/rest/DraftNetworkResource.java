@@ -47,7 +47,7 @@ import java.util.Map;
  */
 @Component
 @Scope("request")
-public class DraftNetworkResource extends AbstractGitPersistableResource<NetworkState, Network> {
+public class  DraftNetworkResource extends AbstractGitPersistableResource<NetworkState, Network> {
 
   private static final Logger log = LoggerFactory.getLogger(DraftNetworkResource.class);
 

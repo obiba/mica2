@@ -101,19 +101,17 @@ public class DraftIndividualStudyResource extends AbstractGitPersistableResource
 
   @GET
   @Path("/attributes")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Set<Attribute> getAttributes() {
+  public List<Mica.AttributeDto> getAttributes() {
     checkPermission("/draft/individual-study", "VIEW");
-    return individualStudyService.findDraft(id).getAttributes();
+    return dtos.asDto(individualStudyService.findDraft(id).getAttributes());
   }
 
   @PUT
   @Path("/attributes")
-  @Consumes(MediaType.APPLICATION_JSON)
-  public Response updateAttributes(Set<Attribute> attributes) {
+  public Response updateAttributes(List<Mica.AttributeDto> attributeDtos) {
     checkPermission("/draft/individual-study", "EDIT");
     Study study = individualStudyService.findDraft(id);
-    study.setAttributes(attributes);
+    study.setAttributes(dtos.fromDto(attributeDtos));
     individualStudyService.save(study);
     return Response.ok().build();
   }
