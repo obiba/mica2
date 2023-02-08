@@ -1489,7 +1489,8 @@
   "variables": "Variables",
   "classifications": {
     "title": "Classifications",
-    "help": "Naviguer dans le système de classification et gérer l'ordre et la visibilité des critères de recherche."
+    "help": "Naviguer dans le système de classification et gérer l'ordre et la visibilité des critères de recherche.",
+    "files-help": "Les fichiers de taxonomie sont au format YAML (.yml). Les fichiers de taxonomie déposés dans le répertoire 'variable' seront automatiquement chargés."
   },
   "all-null-classifications": "",
   "all-variable-classifications": "Toutes les classifications de variables",

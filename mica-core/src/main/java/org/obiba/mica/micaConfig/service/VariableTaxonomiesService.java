@@ -12,15 +12,21 @@ package org.obiba.mica.micaConfig.service;
 
 
 import com.google.common.base.Strings;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import org.obiba.mica.core.support.YamlResourceReader;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.FileUtils;
+import org.obiba.mica.file.event.FileDeletedEvent;
+import org.obiba.mica.file.event.FileUpdatedEvent;
 import org.obiba.mica.file.service.FileSystemService;
+import org.obiba.mica.micaConfig.event.CacheClearEvent;
 import org.obiba.mica.micaConfig.event.VariableTaxonomiesUpdatedEvent;
 import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.spi.search.support.AttributeKey;
@@ -33,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -44,6 +51,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -78,6 +87,12 @@ public class VariableTaxonomiesService implements EnvironmentAware {
 
   private File variableTaxonomiesDir;
 
+  // Buffer to avoid caching loop
+  private Cache<String, Map<String, Taxonomy>> taxonomiesCache = CacheBuilder.newBuilder()
+    .maximumSize(1)
+    .expireAfterWrite(1, TimeUnit.MINUTES)
+    .build();
+
   @PostConstruct
   public void init() {
     if (variableTaxonomiesDir == null) {
@@ -87,8 +102,14 @@ public class VariableTaxonomiesService implements EnvironmentAware {
   }
 
   @Cacheable(value = "variable-taxonomies", key = "'variable'")
-  public List<Taxonomy> getTaxonomies() {
-    List<Taxonomy> taxonomyList = Lists.newArrayList(getTaxonomiesMap().values());
+  public synchronized List<Taxonomy> getTaxonomies() {
+    Map<String, Taxonomy> taxonomiesMap = null;
+    try {
+      taxonomiesMap = taxonomiesCache.get("variable-taxonomies", this::getTaxonomiesMap);
+    } catch (ExecutionException e) {
+      taxonomiesMap = getTaxonomiesMap();
+    }
+    List<Taxonomy> taxonomyList = Lists.newArrayList(taxonomiesMap.values());
     Collections.sort(taxonomyList, Comparator.comparing(TaxonomyEntity::getName));
     return taxonomyList;
   }
@@ -96,6 +117,26 @@ public class VariableTaxonomiesService implements EnvironmentAware {
   @Override
   public void setEnvironment(Environment environment) {
     this.environment = environment;
+  }
+
+  @Async
+  @Subscribe
+  public void onFileUpdated(FileUpdatedEvent event) {
+    AttachmentState attachmentState = event.getPersistable();
+    if ("/taxonomies/variable".equals(attachmentState.getPath()) && attachmentState.getName().endsWith(".yml")) {
+      taxonomiesCache.invalidateAll();
+      eventBus.post(new CacheClearEvent("variable-taxonomies"));
+    }
+  }
+
+  @Async
+  @Subscribe
+  public void onFileDeleted(FileDeletedEvent event) {
+    AttachmentState attachmentState = event.getPersistable();
+    if ("/taxonomies/variable".equals(attachmentState.getPath()) && attachmentState.getName().endsWith(".yml")) {
+      taxonomiesCache.invalidateAll();
+      eventBus.post(new CacheClearEvent("variable-taxonomies"));
+    }
   }
 
   //
