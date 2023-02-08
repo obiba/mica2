@@ -64,7 +64,9 @@ mica.study.BaseViewController = function (
 
   self.updateTags = function (newTags) {
     DraftStudyResource.tag({id: $routeParams.id}, newTags, function () {
-      self.emitStudyUpdated();
+      $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, self.initializeState);
+      $scope.study = self.fetchStudy($routeParams.id);
+      $scope.studyId = $routeParams.id;
     });
   }
 

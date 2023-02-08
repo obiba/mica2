@@ -64,6 +64,10 @@ mica.study
           if (found.values && tag.values && found.values.und !== tag.values.und) {
             res.push(tag);
           }
+
+          if (!found || (Array.isArray(found) && found.length === 0)) {
+            res.push(tag);
+          }
         });
 
         return res;
@@ -129,7 +133,9 @@ mica.study
           }
         }
 
-        self.onUpdate({newTags: processNewtagsWithCurrent(attributes)});
+        var processed = processNewtagsWithCurrent(attributes);
+        self.current = processed;
+        self.onUpdate({newTags: processed});
         reset();
       };
     }]
