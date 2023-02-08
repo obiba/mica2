@@ -68,7 +68,7 @@ mica.study.BaseViewController = function (
       $scope.study = self.fetchStudy($routeParams.id);
       $scope.studyId = $routeParams.id;
     });
-  }
+  };
 
   /* jshint unused:vars */
   self.delete = function (study) { };
