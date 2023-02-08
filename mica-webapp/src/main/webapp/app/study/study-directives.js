@@ -37,7 +37,8 @@ mica.study
   .component('tagByConcept', {
     bindings: {
       taxos: '<', // taxonomies allowed through mica config
-      current: '<' // current tags for study/initiative
+      current: '<', // current tags for study/initiative
+      onUpdate: '&'
     },
     templateUrl: 'app/study/views/common/tag-by-concept-component.html',
     controllerAs: '$ctrl',
@@ -128,7 +129,7 @@ mica.study
           }
         }
 
-        console.log('addTags... send to server:', processNewtagsWithCurrent(attributes));
+        self.onUpdate({newTags: processNewtagsWithCurrent(attributes)});
         reset();
       };
     }]

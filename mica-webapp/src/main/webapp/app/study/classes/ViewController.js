@@ -62,6 +62,12 @@ mica.study.BaseViewController = function (
     });
   };
 
+  self.updateTags = function (newTags) {
+    DraftStudyResource.tag({id: $routeParams.id}, newTags, function () {
+      self.emitStudyUpdated();
+    });
+  }
+
   /* jshint unused:vars */
   self.delete = function (study) { };
 
