@@ -160,7 +160,7 @@ public class FileSystemService {
       saved.setJustUploaded(false);
     }
 
-    attachmentRepository.insert(saved);  
+    attachmentRepository.insert(saved);
 
     state.setAttachment(saved);
     state.setLastModifiedDate(LocalDateTime.now());
@@ -173,11 +173,10 @@ public class FileSystemService {
       }
     }
 
-    if (attachmentisNew) {
+    if (states.isEmpty())
       attachmentStateRepository.insert(state);
-    } else {
+    else
       attachmentStateRepository.save(state);
-    }    
 
     eventBus.post(new FileUpdatedEvent(state));
   }
