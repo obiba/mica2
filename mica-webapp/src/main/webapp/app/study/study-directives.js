@@ -36,25 +36,49 @@ mica.study
   }])
   .component('tagByConcept', {
     bindings: {
-      taxos: '<'
+      taxos: '<', // taxonomies allowed through mica config
+      current: '<' // current tags for study/initiative
     },
     templateUrl: 'app/study/views/common/tag-by-concept-component.html',
     controllerAs: '$ctrl',
     controller: ['TaxonomyFilterResource', function (TaxonomyFilterResource) {
       var self = this;
 
+      self.tags = [];
+
       function reset() {
         self.chosenTaxo = null;
         self.vocabChoices = [];
         self.termChoices = [];
         self.readyToTag = false;
-      }      
+      }
+
+      function processNewtagsWithCurrent(attributes) {
+        var res = attributes.filter(a => a);
+
+        // should not add if new tag has the same namespace and name but no value
+        // do not repeat tags with same namespace, name and value
+        self.tags.forEach(tag => {
+          var found = res.filter(r => r.namespace === tag.namespace && r.name === tag.name);
+          if (found.values && tag.values && found.values.und !== tag.values.und) {
+            res.push(tag);
+          }
+        });
+
+        return res;
+      }
 
       reset();
 
       TaxonomyFilterResource.query().$promise.then(function (res) {
         if (res && res.length > 0) {
           self.taxoChoices = res.filter(r => self.taxos.indexOf(r.name) > -1);
+        }
+
+        // process tags
+        // dto attribute has array of values
+        if (Array.isArray(self.current)) {
+          self.current.forEach(i => self.tags.push({namespace: i.namespace, name: i.name, values: Array.isArray(i.values) ? {und: (i.values.filter(v => v.lang === 'und')[0] || {value: null}).value} : i.values}));
         }
 
         return res;
@@ -87,6 +111,7 @@ mica.study
 
         var namespace = Array.isArray(self.chosenTaxo) ? self.chosenTaxo[0] : self.chosenTaxo;
 
+        // more than one vocab forgoes the value
         if (Array.isArray(self.chosenVocabs) && self.chosenVocabs.length > 1) {
           self.chosenVocabs.forEach(vocab => {
             attributes.push({namespace: namespace, name: vocab});
@@ -94,7 +119,7 @@ mica.study
         } else if (Array.isArray(self.chosenVocabs) && self.chosenVocabs.length === 1) {
           var name = Array.isArray(self.chosenVocabs) ? self.chosenVocabs[0] : self.chosenVocabs;
 
-          if (Array.isArray(self.chosenTerms)) {
+          if (Array.isArray(self.chosenTerms) && self.chosenTerms.length > 0) {
             self.chosenTerms.forEach(term => {
               attributes.push({namespace: namespace, name: name, values: {und: term}});
             });
@@ -103,6 +128,7 @@ mica.study
           }
         }
 
+        console.log('addTags... send to server:', processNewtagsWithCurrent(attributes));
         reset();
       };
     }]
