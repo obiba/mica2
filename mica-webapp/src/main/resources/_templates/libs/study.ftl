@@ -694,11 +694,28 @@
       <div class="card card-primary card-outline">
         <div class="card-header">
           <h3 class="card-title pt-2"><@message "classifications" /></h3>
+          <ul class="nav nav-pills ml-auto float-right">
+            <li class="nav-item"><a class="nav-link active" href="#summary" data-toggle="tab">
+                <i class="fas fa-grip-lines"></i></a>
+            </li>
+            <li class="nav-item"><a class="nav-link " href="#detail" data-toggle="tab">
+                <i class="fas fa-grip-horizontal"></i></a>
+            </li>
+          </ul>
         </div>
         <div class="card-body">
-            <#list annotations as taxonomy, vocabularies>
-                <@studyClassificationsAccordion taxonomy=taxonomy vocabularies=vocabularies index=taxonomy?index detailed=true />
-            </#list>
+          <div class="tab-content">
+            <div class="tab-pane active" id="summary">
+                <#list annotations as taxonomy, vocabularies>
+                    <@studyClassificationsAccordion taxonomy=taxonomy vocabularies=vocabularies index=taxonomy?index detailed=false />
+                </#list>
+            </div>
+            <div class="tab-pane" id="detail">
+                <#list annotations as taxonomy, vocabularies>
+                    <@studyClassificationsAccordion taxonomy=taxonomy vocabularies=vocabularies index=taxonomy?index detailed=true />
+                </#list>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -714,15 +731,16 @@
       <#assign showClass = (index == 0)?then('show', '') />
 
       <div class="card-header">
-        <button type="button" class="${'btn btn-link btn-block text-navy text-left pl-0 ' + collapsedClass}" data-toggle="collapse"
+        <button type="button" class="${'btn btn-link btn-block text-navy text-left pl-0 ' + collapsedClass}"
+                data-toggle="collapse"
                 data-target="#${taxonomyId}">${taxonomyLocalized}</button>
       </div>
       <div id="${taxonomyId}" class="${'collapse ' + showClass}" data-parent="#annoationsAccordion">
         <div class="card-body">
           <#if detailed>
-              <@studySlassificationsDetail taxonomyId=taxonomyId vocabularies=vocabularies />
+            <@studySlassificationsDetail taxonomyId=taxonomyId vocabularies=vocabularies />
           <#else>
-              <@studyClassificationsSummary vocabularies=vocabularies />
+            <@studyClassificationsSummary vocabularies=vocabularies />
           </#if>
         </div>
       </div>
@@ -733,21 +751,12 @@
 <#macro studySlassificationsDetail taxonomyId="" vocabularies={}>
   <#list vocabularies as vocabulary, terms>
       <#assign vocabularyId = taxonomyId + 'vocabulary' + vocabulary?index />
-    <p class="mb-1">
-      <a class="btn btn-link btn-block mb-0 font-weight-bold mt-2 bg-light p-2 text-left"
-         data-toggle="collapse"
-         href="#${vocabularyId}"
-         role="button"
-         aria-expanded="false"
-         aria-controls="${vocabularyId}">${localize(vocabulary)}</a>
-    </p>
-    <div class="collapse" id="${vocabularyId}">
-      <div class="card card-body card-body pt-1 pb-1">
-        <div class="row ">
-            <#list terms as term>
-              <div class="col-6 font-weight-normal">${localize(term)}</div>
-            </#list>
-        </div>
+    <p class="mb-1 pl-1 py-2 bg-light font-weight-bold">${localize(vocabulary)}</p>
+    <div class="pt-1 pb-1 pl-1">
+      <div class="row ">
+          <#list terms as term>
+            <div class="col-6 font-weight-normal">${localize(term)}</div>
+          </#list>
       </div>
     </div>
   </#list>

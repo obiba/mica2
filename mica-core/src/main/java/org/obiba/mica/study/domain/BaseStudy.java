@@ -21,6 +21,8 @@ import org.obiba.mica.spi.tables.IStudy;
 import javax.validation.constraints.NotNull;
 import java.beans.Transient;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -288,5 +290,17 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
 
   public void setAttributes(Set<Attribute> attributes) {
     this.attributes = attributes == null ? new HashSet<>() : attributes;
+  }
+
+  /**
+   * Merges the inferred and manually added attributes, the former having precedence.
+   *
+   * @return Set of attributes
+   */
+  public Set<Attribute> getMergedAttributes() {
+    return Stream.concat(
+      inferredAttributes.stream(),
+      attributes.stream().filter(attribute -> !inferredAttributes.contains(attribute)))
+      .collect(Collectors.toSet());
   }
 }

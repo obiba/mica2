@@ -348,7 +348,7 @@ mica.study.ViewController = function (
     $timeout(function () {
       if (document.getElementById('timeline')) {
         $scope.timeline.reset().create('#timeline', study).addLegend();
-      }      
+      }
       $scope.sfForm = angular.copy(self.sfForm);
     }, 250);
   }

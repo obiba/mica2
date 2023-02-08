@@ -77,27 +77,29 @@ public class StudyController extends BaseController {
       .collect(Collectors.toList());
 
     // Extract inferred attributes (variable based attributes)
-    Map<String, Map<String, List<LocalizedString>>> inferredAttributes = study.getInferredAttributes().stream()
+    Map<String, Map<String, List<LocalizedString>>> inferredAttributes = study.getMergedAttributes().stream()
       .collect(
         Collectors.groupingBy(Attribute::getNamespace,
-          LinkedHashMap::new, Collectors.groupingBy(Attribute::getName, Collectors.mapping(Attribute::getValues, Collectors.toList()))));
+          LinkedHashMap::new, Collectors.groupingBy(Attribute::getName, Collectors.mapping(attribute -> Optional.ofNullable(attribute.getValues()).orElse(new LocalizedString()), Collectors.toList()))));
 
     // Convert attributes to taxonomy entities to facilitate client translation and rendering
     Map<LocalizedString, Map<LocalizedString, List<LocalizedString>>> annotations = new LinkedHashMap<>();
     taxonomies.forEach(taxonomy -> {
       if (inferredAttributes.containsKey(taxonomy.getName())) {
         Map<String, List<LocalizedString>> inferredVocNames = inferredAttributes.get(taxonomy.getName());
-        Map<LocalizedString, List<LocalizedString>> vocTranslations = new LinkedHashMap();
+        Map<LocalizedString, List<LocalizedString>> vocTranslations = new LinkedHashMap<>();
         taxonomy.getVocabularies().forEach(vocabulary -> {
           if (inferredVocNames.containsKey(vocabulary.getName())) {
             List<String> inferredTermValues = inferredVocNames.get(vocabulary.getName()).stream()
-              .map(LocalizedString::getUndetermined)
-              .collect(Collectors.toList());
+            .filter(localizedString -> !localizedString.isEmpty())
+            .map(LocalizedString::getUndetermined)
+            .collect(Collectors.toList());
             List<LocalizedString> terms = vocabulary.getTerms().stream()
               .filter(term -> inferredTermValues.contains(term.getName()))
               .map(term -> LocalizedString.from(term.getTitle()))
               .collect(Collectors.toList());
-            if (terms.size() > 0) vocTranslations.put(LocalizedString.from(vocabulary.getTitle()), terms);
+
+            vocTranslations.put(LocalizedString.from(vocabulary.getTitle()), terms.isEmpty() ? new ArrayList<>() : terms);
           }
         });
 
