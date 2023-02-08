@@ -367,8 +367,8 @@
           <td>
             <ul ng-class="{'list-unstyled': micaConfig.usableVariableTaxonomiesForConceptTagging.length == 1}">
               <li ng-repeat="taxo in micaConfig.usableVariableTaxonomiesForConceptTagging" title="{{taxo}}">
-                <span ng-if="!availableOpalTaxonomies[taxo]">{{availableOpalTaxonomies[taxo] | localizedString}}</span>
-                <span class="text-nowrap" ng-if="availableOpalTaxonomies[taxo]">{{taxo}} <i class="fa fa-exclamation-triangle" title="{{'config.taxonomies-for-tag-by-concept-missing' | translate}}"></i></span>
+                <span ng-if="availableOpalTaxonomies[taxo]">{{availableOpalTaxonomies[taxo] | localizedString}}</span>
+                <span class="text-nowrap" ng-if="!availableOpalTaxonomies[taxo]">{{taxo}} <i class="fa fa-exclamation-triangle" title="{{'config.taxonomies-for-tag-by-concept-missing' | translate}}"></i></span>
               </li>
             </ul>
           </td>
