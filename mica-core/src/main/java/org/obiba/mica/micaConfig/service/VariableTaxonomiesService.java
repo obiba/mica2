@@ -162,7 +162,7 @@ public class VariableTaxonomiesService implements EnvironmentAware {
         for (File yamlFile : yamlFiles) {
           try (FileInputStream in = new FileInputStream(yamlFile.getAbsolutePath())) {
             Taxonomy taxonomy = readTaxonomy(in);
-            log.debug("Taxonomy from folder {}: {}", variableTaxonomiesDir.getAbsolutePath(), taxonomy.getName());
+            log.debug("Taxonomy from file: {}", yamlFile.getAbsolutePath());
             // override any duplicated taxonomy
             if (taxonomies.containsKey(taxonomy.getName()))
               log.warn("Taxonomy is duplicated and will be overridden: {}", taxonomy.getName());
@@ -180,7 +180,9 @@ public class VariableTaxonomiesService implements EnvironmentAware {
       .filter(s -> !FileUtils.isDirectory(s))
       .filter(s -> s.getName().endsWith(".yml"))
       .collect(Collectors.toList())) {
-      try (InputStream in = fileStoreService.getFile(attachmentState.getAttachment().getId())) {
+      Attachment attachment = attachmentState.getAttachment();
+      try (InputStream in = fileStoreService.getFile(attachment.getFileReference())) {
+        log.debug("Taxonomy from attachment: {}/{}", attachment.getPath(), attachment.getName());
         Taxonomy taxonomy = readTaxonomy(in);
         // override any duplicated taxonomy
         if (taxonomies.containsKey(taxonomy.getName()))
