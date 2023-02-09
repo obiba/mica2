@@ -38,7 +38,7 @@ public interface AttachmentAwareRepository<T extends AttachmentAware> {
   default void deleteAttachments(T obj) {
     getAttachmentRepository().findByPath(String.format("^%s", getAttachmentPath(obj))).forEach(a -> {
       getAttachmentRepository().delete(a);
-      getFileStoreService().delete(a.getId());
+      getFileStoreService().delete(a.getFileReference());
     });
   }
 }
