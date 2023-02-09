@@ -298,9 +298,24 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
    * @return Set of attributes
    */
   public Set<Attribute> getMergedAttributes() {
-    return Stream.concat(
-      inferredAttributes.stream(),
-      attributes.stream().filter(attribute -> !inferredAttributes.contains(attribute)))
-      .collect(Collectors.toSet());
+    Set<Attribute> clone = new HashSet<Attribute>() {{
+      addAll(inferredAttributes);
+    }};
+
+    attributes.forEach(attribute -> {
+      String attributeNamespace = attribute.getNamespace();
+      String attributeName = attribute.getName();
+      LocalizedString attributeValues = Optional.ofNullable(attribute.getValues()).orElse(new LocalizedString());
+
+      inferredAttributes.forEach(att -> {
+        if (attributeNamespace.equals(att.getNamespace()) && attributeName.equals(att.getName())) {
+          if (!attributeValues.isEmpty() && !attributeValues.equals(att.getValues())) {
+            clone.add(attribute);
+          }
+        }
+      });
+    });
+
+    return clone;
   }
 }
