@@ -11,26 +11,8 @@
 package org.obiba.mica.web.model;
 
 import org.obiba.git.CommitInfo;
-import org.obiba.mica.access.domain.ActionLog;
-import org.obiba.mica.access.domain.DataAccessAgreement;
-import org.obiba.mica.access.domain.DataAccessAmendment;
-import org.obiba.mica.access.domain.DataAccessCollaborator;
-import org.obiba.mica.access.domain.DataAccessEntity;
-import org.obiba.mica.access.domain.DataAccessFeasibility;
-import org.obiba.mica.access.domain.DataAccessPreliminary;
-import org.obiba.mica.access.domain.DataAccessRequest;
-import org.obiba.mica.access.domain.StatusChange;
-import org.obiba.mica.core.domain.Attribute;
-import org.obiba.mica.core.domain.BaseStudyTable;
-import org.obiba.mica.core.domain.Comment;
-import org.obiba.mica.core.domain.DocumentSet;
-import org.obiba.mica.core.domain.EntityState;
-import org.obiba.mica.core.domain.HarmonizationStudyTable;
-import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.core.domain.Person;
-import org.obiba.mica.core.domain.SetOperation;
-import org.obiba.mica.core.domain.StudyTable;
-import org.obiba.mica.core.domain.Timestamped;
+import org.obiba.mica.access.domain.*;
+import org.obiba.mica.core.domain.*;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -38,33 +20,16 @@ import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.TempFile;
-import org.obiba.mica.micaConfig.domain.DataAccessAgreementForm;
-import org.obiba.mica.micaConfig.domain.DataAccessAmendmentForm;
-import org.obiba.mica.micaConfig.domain.DataAccessConfig;
-import org.obiba.mica.micaConfig.domain.DataAccessFeasibilityForm;
-import org.obiba.mica.micaConfig.domain.DataAccessForm;
-import org.obiba.mica.micaConfig.domain.DataAccessPreliminaryForm;
-import org.obiba.mica.micaConfig.domain.DataCollectionEventConfig;
-import org.obiba.mica.micaConfig.domain.DatasetConfig;
-import org.obiba.mica.micaConfig.domain.EntityConfig;
-import org.obiba.mica.micaConfig.domain.HarmonizationStudyConfig;
-import org.obiba.mica.micaConfig.domain.MicaConfig;
-import org.obiba.mica.micaConfig.domain.NetworkConfig;
-import org.obiba.mica.micaConfig.domain.OpalCredential;
-import org.obiba.mica.micaConfig.domain.PopulationConfig;
-import org.obiba.mica.micaConfig.domain.ProjectConfig;
-import org.obiba.mica.micaConfig.domain.StudyConfig;
+import org.obiba.mica.micaConfig.domain.*;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.project.domain.Project;
-import org.obiba.mica.study.domain.BaseStudy;
-import org.obiba.mica.study.domain.HarmonizationStudy;
-import org.obiba.mica.study.domain.HarmonizationStudyState;
-import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.domain.StudyState;
+import org.obiba.mica.study.domain.*;
 import org.obiba.oidc.OIDCAuthProviderSummary;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Term;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
+import org.obiba.opal.web.model.Math;
+import org.obiba.opal.web.model.Search;
 import org.obiba.shiro.realm.ObibaRealm.Subject;
 import org.obiba.web.model.OIDCDtos;
 import org.springframework.stereotype.Component;
@@ -74,8 +39,6 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.obiba.mica.web.model.Mica.*;
 
@@ -119,8 +82,6 @@ public class Dtos {
 
   private final SetDtos setDtos;
 
-  private final AttributeDtos attributeDtos;
-
   private final OidcAuthProviderSummaryDtos oidcAuthProviderSummaryDtos;
 
   @Inject
@@ -142,7 +103,7 @@ public class Dtos {
               GitCommitInfoDtos gitCommitInfoDtos,
               CommentDtos commentDtos,
               UserProfileDtos userProfileDtos,
-              DataAccessRequestDtos dataAccessRequestDtos, AttributeDtos attributeDtos) {
+              DataAccessRequestDtos dataAccessRequestDtos) {
     this.oidcAuthProviderSummaryDtos = oidcAuthProviderSummaryDtos;
     this.datasetDtos = datasetDtos;
     this.studyDtos = studyDtos;
@@ -162,7 +123,6 @@ public class Dtos {
     this.commentDtos = commentDtos;
     this.userProfileDtos = userProfileDtos;
     this.dataAccessRequestDtos = dataAccessRequestDtos;
-    this.attributeDtos = attributeDtos;
   }
 
   public Mica.DocumentSetDto asDto(DocumentSet documentSet) {
@@ -735,15 +695,4 @@ public class Dtos {
   public OIDCDtos.OIDCAuthProviderSummaryDto asSummaryDto(OIDCAuthProviderSummary summary) {
     return oidcAuthProviderSummaryDtos.asSummaryDto(summary);
   }
-
-  @NotNull
-  public Set<Attribute> fromDto(List<Mica.AttributeDto> dtos) {
-    return dtos.stream().map(attributeDtos::fromDto).collect(Collectors.toSet());
-  }
-
-  @NotNull
-  public List<Mica.AttributeDto> asDto(Set<Attribute> attributes) {
-    return attributes.stream().map(attributeDtos::asDto).collect(Collectors.toList());
-  }
-
 }
