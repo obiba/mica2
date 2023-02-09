@@ -80,14 +80,18 @@ mica.study
           self.taxoChoices = res.filter(r => self.taxos.indexOf(r.name) > -1);
         }
 
+        return res;
+      });
+
+      self.$onChanges = function(changeObj) {
+        if (changeObj.current && changeObj.current.currentValue) {
         // process tags
         // dto attribute has array of values
         if (Array.isArray(self.current)) {
           self.current.forEach(i => self.tags.push({namespace: i.namespace, name: i.name, values: Array.isArray(i.values) ? {und: (i.values.filter(v => v.lang === 'und')[0] || {value: null}).value} : i.values}));
         }
-
-        return res;
-      });
+        }
+      };
 
       self.taxoSelected = function() {
         if (self.chosenTaxo) {
