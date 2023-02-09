@@ -170,7 +170,8 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
     dataAccessPreliminaryService.findByParentId(id).forEach(dataAccessPreliminaryService::delete);
     dataAccessCollaboratorService.deleteAll(id);
 
-    attachments.forEach(a -> fileStoreService.delete(a.getId()));
+    attachments.forEach(a -> fileStoreService.delete(a.getFileReference()));
+    attachmentRepository.deleteAll(attachments);
     eventBus.post(new DataAccessRequestDeletedEvent(dataAccessRequest));
   }
 
@@ -320,7 +321,10 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
       dataAccessRequestRepository.saveWithReferences(saved);
     }
 
-    if (attachmentsToDelete != null) attachmentsToDelete.forEach(a -> fileStoreService.delete(a.getId()));
+    if (attachmentsToDelete != null) {
+      attachmentsToDelete.forEach(a -> fileStoreService.delete(a.getFileReference()));
+      attachmentRepository.deleteAll(attachmentsToDelete);
+    }
 
     if (saved.hasVariablesSet() && DataAccessEntityStatus.OPENED.equals(saved.getStatus())) {
       variableSetService.setLock(saved.getVariablesSet(), false);
