@@ -361,14 +361,14 @@
 
         <tr>
           <td>
-            <span translate>config.taxonomies-for-tag-by-concept</span>
-            <span class="help-block" translate>config.taxonomies-for-tag-by-concept-help</span>
+            <span translate>config.taxonomies-for-annotation-by-concept</span>
+            <span class="help-block" translate>config.taxonomies-for-annotation-by-concept-help</span>
           </td>
           <td>
             <ul ng-class="{'list-unstyled': micaConfig.usableVariableTaxonomiesForConceptTagging.length == 1}">
               <li ng-repeat="taxo in micaConfig.usableVariableTaxonomiesForConceptTagging" title="{{taxo}}">
                 <span ng-if="availableOpalTaxonomies[taxo]">{{availableOpalTaxonomies[taxo] | localizedString}}</span>
-                <span class="text-nowrap" ng-if="!availableOpalTaxonomies[taxo]">{{taxo}} <i class="fa fa-exclamation-triangle" title="{{'config.taxonomies-for-tag-by-concept-missing' | translate}}"></i></span>
+                <span class="text-nowrap" ng-if="!availableOpalTaxonomies[taxo]">{{taxo}} <i class="fa fa-exclamation-triangle" title="{{'config.taxonomies-for-annotation-by-concept-missing' | translate}}"></i></span>
               </li>
             </ul>
           </td>

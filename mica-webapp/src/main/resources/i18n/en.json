@@ -564,7 +564,9 @@
     "projects-count-enabled": "Projects metrics enabled",
     "projects-count-enabled-help": "Show projects counts in the administration section.",
     "data-access-requests-count-enabled": "Data Access Requests metrics enabled",
-    "data-access-requests-count-enabled-help": "Show data access requests counts in the administration section."
+    "data-access-requests-count-enabled-help": "Show data access requests counts in the administration section.",
+    "taxonomies-for-annotation-by-concept": "Annotation by Concept Taxonomies",
+    "taxonomies-for-annotation-by-concept-help": "List of taxonomies that will be used when annotating a study by concept"
   },
   "publish": {
     "label": "Publish",
@@ -2631,5 +2633,15 @@
     "UNDER_REVIEW": "Under Review",
     "TO_DELETE": "To Delete",
     "IN_EDITION": "In Edition"
+  },
+  "annotation-by-concept": {
+    "title": "Annotations by Concept",
+    "description": "Annotate the study by concept using the configured set of taxonomies defined in the Administration page.",
+    "annotate": "Annotate",
+    "taxonomies": "Taxonomies",
+    "vocabularies": "Vocabularies",
+    "terms": "Terms",
+    "annotations-list": "Annotations",
+    "no-annotations": "There are no annotions."
   }
 }

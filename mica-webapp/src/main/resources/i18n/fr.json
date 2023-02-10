@@ -564,7 +564,9 @@
     "projects-count-enabled": "Métriques des projets activées",
     "projects-count-enabled-help": "Afficher les nombres de projets dans la section d'administration.",
     "data-access-requests-count-enabled": "Métriques de demandes d'accès aux données activées",
-    "data-access-requests-count-enabled-help": "Afficher les nombres de demandes d'accès aux données dans la section d'administration."
+    "data-access-requests-count-enabled-help": "Afficher les nombres de demandes d'accès aux données dans la section d'administration.",
+    "taxonomies-for-annotation-by-concept": "Annotation by Concept Taxonomies",
+    "taxonomies-for-annotation-by-concept-help": "List of taxonomies that will be used when annotating a study by concept"
   },
   "publish": {
     "label": "Publier",
@@ -2631,5 +2633,16 @@
     "UNDER_REVIEW": "En révision",
     "TO_DELETE": "À supprimer",
     "IN_EDITION": "En édition"
+  },
+  "annotation-by-concept": {
+    "title": "Annotations by Concept",
+    "description": "Annotate this study using one of the taxonomies defined in the administration page. The primary use-case for this type of annotation is when a study does not have any corresponding variables.",
+    "annotate": "Annotate",
+    "taxonomies": "Taxonomies",
+    "vocabularies": "Vocabularies",
+    "terms": "Terms",
+    "annotations-list": "Annotations",
+    "no-annotations": "There are no annotions."
   }
+
 }

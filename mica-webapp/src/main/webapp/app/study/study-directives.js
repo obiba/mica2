@@ -34,13 +34,13 @@ mica.study
       }
     };
   }])
-  .component('tagByConcept', {
+  .component('annotationSelector', {
     bindings: {
       taxos: '<', // taxonomies allowed through mica config
       current: '<', // current tags for study/initiative
       onUpdate: '&'
     },
-    templateUrl: 'app/study/views/common/tag-by-concept-component.html',
+    templateUrl: 'app/study/views/common/annotation-selector-component.html',
     controllerAs: '$ctrl',
     controller: ['TaxonomyFilterResource', function (TaxonomyFilterResource) {
       var self = this;
@@ -142,5 +142,79 @@ mica.study
         self.onUpdate({newTags: processed});
         reset();
       };
+    }]
+  })
+  .component('annotationList', {
+    bindings: {
+      taxonomyNames: '<',
+      attributes: '<',
+      onUpdate: '&'
+    },
+    templateUrl: 'app/study/views/common/annotation-list-component.html',
+    controllerAs: '$ctrl',
+    controller: ['TaxonomyFilterResource', class AnnotationList {
+      constructor(TaxonomyFilterResource) {
+        this.TaxonomyFilterResource = TaxonomyFilterResource;
+        this.attributesMap = {};
+      }
+
+      $onChanges() {
+        if (this.attributes && this.taxonomyNames) {
+          this.TaxonomyFilterResource.query().$promise
+            .then(response => {
+              this.taxonomies = (response || [])
+                .filter(r => this.taxonomyNames.indexOf(r.name) > -1)
+                .reduce((acc, tax) => {
+                  acc[tax.name] = tax;
+                  return acc;
+                }, {});
+
+              this.attributesMap = this.attributes.reduce((acc, att) => {
+                const taxonomy = this.taxonomies[att.namespace];
+                let namespaceMap = acc[att.namespace]
+                if (!namespaceMap) {
+                  namespaceMap = acc[att.namespace] = {title: taxonomy.title, description: taxonomy.description, names: {}}
+                }
+                const vocabulary = taxonomy.vocabularies.filter(vocabulary => vocabulary.name === att.name).pop();
+                const terms = vocabulary.terms;
+                let nameMap = namespaceMap.names[att.name]
+                if (!nameMap) {
+                  nameMap = namespaceMap.names[att.name] = {title: vocabulary.title, description: vocabulary.description, values: []}
+                }
+                nameMap.values = nameMap.values.concat(
+                  terms.filter(term => term.name === (att.values || [{value:''}])[0].value)
+                    .map(term => ({name: term.name, title: term.title, description: term.description}))
+                )
+
+                return acc;
+              }, {});
+            });
+        }
+      }
+
+      removeAttribute(taxName, vocName, termName) {
+        let keep = [];
+
+        if (termName) {
+          keep = this.attributes.filter(attribute => attribute.namespace !== taxName || attribute.name !== vocName || attribute.values[0].value !== termName)
+        } else if (vocName) {
+          keep = this.attributes.filter(attribute => attribute.namespace !== taxName || attribute.name !== vocName)
+        } else {
+          keep = this.attributes.filter(attribute => attribute.namespace !== taxName)
+        }
+
+        keep = keep.map(attribute => {
+          const clone = {...attribute};
+
+          clone.values = (attribute.values || []).reduce((acc, value) => {
+            acc[value.lang] = value.value;
+            return acc;
+            }, {}
+          );
+
+          return clone;
+        });
+        this.onUpdate({newTags: keep});
+      }
     }]
   });

@@ -1,0 +1,36 @@
+<div class="voffset5 " xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+  <h3>{{ 'annotation-by-concept.annotations-list' | translate }}</h3>
+  <p ng-if="!$ctrl.attributes || $ctrl.attributes.length < 1" class="help-block">{{'annotation-by-concept.no-annotations' | translate}}</p>
+  <div ng-if="$ctrl.attributes.length > 0" class="voffset3" ng-repeat="(taxName, namespace) in $ctrl.attributesMap">
+    <h4>
+      {{ namespace.title | localizedString }}
+      <button class="btn-link" type="button" ng-click="$ctrl.removeAttribute(taxName)"><i class="fa fa-times"></i></button>
+    </h4>
+    <div class="row">
+      <div class="col-sm-12 col-md-6" ng-repeat="(vocName, name) in namespace.names">
+        <div class="panel panel-default" >
+          <div class="panel-heading">
+            <span uib-popover="{{ name.description | localizedString}}"
+                  popover-trigger="'mouseenter'"
+                  popover-popup-delay="1000"
+                  popover-placement="top">{{ name.title | localizedString }}
+              <button class="btn-link" type="button" ng-click="$ctrl.removeAttribute(taxName, vocName)"><i class="fa fa-times"></i></button>
+            </span>
+          </div>
+          <div class="panel-body" ng-show="name.values.length > 0" >
+            <div ng-repeat="value in name.values">
+              <span uib-popover="{{ value.description | localizedString}}"
+                    popover-trigger="'mouseenter'"
+                    popover-popup-delay="1000"
+                    popover-placement="right">{{ value.title | localizedString }}
+                <button class="btn-link" type="button" ng-click="$ctrl.removeAttribute(taxName, vocName, value.name)"><i class="fa fa-times"></i></button>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
