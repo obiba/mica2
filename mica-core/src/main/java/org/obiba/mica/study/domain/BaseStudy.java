@@ -312,6 +312,8 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
           if (!attributeValues.isEmpty() && !attributeValues.equals(att.getValues())) {
             clone.add(attribute);
           }
+        } else {
+          clone.add(attribute);
         }
       });
     });
