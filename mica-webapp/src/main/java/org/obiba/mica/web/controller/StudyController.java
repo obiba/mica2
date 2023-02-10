@@ -15,6 +15,7 @@ import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.web.controller.support.AnnotationsCollector;
 import org.obiba.mica.web.model.LocalizedStringDtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
@@ -63,46 +64,9 @@ public class StudyController extends BaseController {
       params.put("timelineData", timelineData);
     }
 
-    List<String> exclusions = new ArrayList<String>() {{
-      add("Mlstr_harmo");
-      add("Mlstr_dataschema");
-    }};
-    List<Taxonomy> taxonomies = taxonomiesService.getAllVariableTaxonomies().stream()
-      .filter(taxonomy -> !exclusions.contains(taxonomy.getName()))
-      .collect(Collectors.toList());
-
-    // Extract inferred attributes (variable based attributes)
-    Map<String, Map<String, List<LocalizedString>>> inferredAttributes = study.getMergedAttributes().stream()
-      .collect(
-        Collectors.groupingBy(Attribute::getNamespace,
-          LinkedHashMap::new, Collectors.groupingBy(Attribute::getName, Collectors.mapping(attribute -> Optional.ofNullable(attribute.getValues()).orElse(new LocalizedString()), Collectors.toList()))));
-
-    // Convert attributes to taxonomy entities to facilitate client translation and rendering
-    Map<LocalizedString, Map<LocalizedString, List<LocalizedString>>> annotations = new LinkedHashMap<>();
-    taxonomies.forEach(taxonomy -> {
-      if (inferredAttributes.containsKey(taxonomy.getName())) {
-        Map<String, List<LocalizedString>> inferredVocNames = inferredAttributes.get(taxonomy.getName());
-        Map<LocalizedString, List<LocalizedString>> vocTranslations = new LinkedHashMap<>();
-        taxonomy.getVocabularies().forEach(vocabulary -> {
-          if (inferredVocNames.containsKey(vocabulary.getName())) {
-            List<String> inferredTermValues = inferredVocNames.get(vocabulary.getName()).stream()
-            .filter(localizedString -> !localizedString.isEmpty())
-            .map(LocalizedString::getUndetermined)
-            .collect(Collectors.toList());
-            List<LocalizedString> terms = vocabulary.getTerms().stream()
-              .filter(term -> inferredTermValues.contains(term.getName()))
-              .map(term -> LocalizedString.from(term.getTitle()))
-              .collect(Collectors.toList());
-
-            vocTranslations.put(LocalizedString.from(vocabulary.getTitle()), terms.isEmpty() ? new ArrayList<>() : terms);
-          }
-        });
-
-        if (vocTranslations.size() > 0) annotations.put(LocalizedString.from(taxonomy.getTitle()), vocTranslations);
-      }
-    });
-
-    params.put("annotations", annotations);
+    ArrayList<BaseStudy> studies = new ArrayList<>();
+    studies.add(study);
+    params.put("annotations", AnnotationsCollector.collect(studies, taxonomiesService));
 
     return new ModelAndView("study", params);
   }

@@ -2,11 +2,12 @@ package org.obiba.mica.web.controller;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
+import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.service.PersonService;
+import org.obiba.mica.micaConfig.service.TaxonomiesService;
 import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.NetworkService;
@@ -16,6 +17,7 @@ import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
+import org.obiba.mica.web.controller.support.AnnotationsCollector;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,9 +25,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.inject.Inject;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Controller
 public class NetworkController extends BaseController {
@@ -45,6 +50,9 @@ public class NetworkController extends BaseController {
   @Inject
   private PersonService personService;
 
+  @Inject
+  private TaxonomiesService taxonomiesService;
+
   @GetMapping("/network/{id:.+}")
   public ModelAndView network(@PathVariable String id, @RequestParam(value = "draft", required = false) String shareKey) {
 
@@ -59,6 +67,8 @@ public class NetworkController extends BaseController {
       .collect(Collectors.toList()));
 
     List<BaseStudy> studies = publishedStudyService.findByIds(network.getStudyIds());
+    params.put("annotations", AnnotationsCollector.collectAndCount(studies, taxonomiesService));
+
     List<BaseStudy> individualStudies = studies.stream()
       .filter(s -> (s instanceof Study) && subjectAclService.isAccessible("/individual-study", s.getId()))
       .collect(Collectors.toList());

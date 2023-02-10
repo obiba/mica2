@@ -5,6 +5,7 @@
 <#include "models/population.ftl">
 <#include "models/dce.ftl">
 <#include "models/files.ftl">
+<#include "models/annotations.ftl">
 
 <#if !type??>
     <#assign title = "studies">
@@ -266,7 +267,7 @@
         </#if>
 
         <#if annotations?size gt 0>
-            <@studyClassifications annotations=annotations detail=true/>
+            <@entityAnnotations annotations=annotations/>
         </#if>
 
         <!-- Variables classifications -->
