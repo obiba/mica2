@@ -11,14 +11,19 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class AnnotationsCollector {
-  public static Map<LocalizedString, Map<LocalizedString, List<LocalizedString>>> collectAndCount(List<BaseStudy> studies, TaxonomiesService taxonomiesService) {
+
+  private static final String TAXONOMY_COUNTS = "taxonomyCounts";
+  private static final String VOCABULARY_COUNTS = "vocabularyCounts";
+  private static final String TERM_COUNTS = "termCounts";
+
+  public static Map<LocalizedString, TaxonomyAnnotationItem> collectAndCount(List<BaseStudy> studies, TaxonomiesService taxonomiesService) {
     return collectInternal(studies, true, taxonomiesService);
   }
-  public static Map<LocalizedString, Map<LocalizedString, List<LocalizedString>>> collect(List<BaseStudy> studies, TaxonomiesService taxonomiesService) {
+  public static Map<LocalizedString, TaxonomyAnnotationItem> collect(List<BaseStudy> studies, TaxonomiesService taxonomiesService) {
     return collectInternal(studies, false, taxonomiesService);
   }
 
-  private static Map<LocalizedString, Map<LocalizedString, List<LocalizedString>>> collectInternal(List<BaseStudy> studies,
+  private static Map<LocalizedString, TaxonomyAnnotationItem> collectInternal(List<BaseStudy> studies,
                                                                                                    boolean addCounts,
                                                                                                    TaxonomiesService taxonomiesService) {
     // Exclude irrelevant taxonomies
@@ -32,7 +37,12 @@ public class AnnotationsCollector {
       .collect(Collectors.toList());
 
     // Extract inferred attributes (variable based attributes)
-    Map<String, Map<String, Integer>> counts = new HashMap<>();
+    Map<String, Map<String, Integer>> counts = new HashMap<String, Map<String, Integer>>() {{
+      put(TAXONOMY_COUNTS, new HashMap<>());
+      put(VOCABULARY_COUNTS, new HashMap<>());
+      put(TERM_COUNTS, new HashMap<>());
+    }};
+
     List<Set<Attribute>> mergedAttributesList = studies.stream().map(BaseStudy::getMergedAttributes).collect(Collectors.toList());
 
     // TODO separate the study and Initiative counts
@@ -54,27 +64,46 @@ public class AnnotationsCollector {
       );
 
     // Convert attributes to taxonomy entities to facilitate client translation and rendering as well as preserving their order
-    Map<LocalizedString, Map<LocalizedString, List<LocalizedString>>> annotations = new LinkedHashMap<>();
+    Map<LocalizedString, TaxonomyAnnotationItem> annotations = new LinkedHashMap<>();
     taxonomies.forEach(taxonomy -> {
-      if (groupedAttributes.containsKey(taxonomy.getName())) {
-        Map<String, List<LocalizedString>> inferredVocNames = groupedAttributes.get(taxonomy.getName());
-        Map<LocalizedString, List<LocalizedString>> vocTranslations = new LinkedHashMap<>();
+      String taxonomyName = taxonomy.getName();
+
+      if (groupedAttributes.containsKey(taxonomyName)) {
+        Map<String, List<LocalizedString>> attVocabularyNames = groupedAttributes.get(taxonomyName);
+        Map<LocalizedString, VocabularyAnnotationItem> vocTranslations = new LinkedHashMap<>();
         taxonomy.getVocabularies().forEach(vocabulary -> {
-          if (inferredVocNames.containsKey(vocabulary.getName())) {
-            List<String> inferredTermValues = inferredVocNames.get(vocabulary.getName()).stream()
+          String vocabularyName = vocabulary.getName();
+
+          if (attVocabularyNames.containsKey(vocabularyName)) {
+            List<String> attTermValues = attVocabularyNames.get(vocabularyName).stream()
               .filter(localizedString -> !localizedString.isEmpty())
               .map(LocalizedString::getUndetermined)
               .collect(Collectors.toList());
-            List<LocalizedString> terms = vocabulary.getTerms().stream()
-              .filter(term -> inferredTermValues.contains(term.getName()))
-              .map(term -> LocalizedString.from(term.getTitle()))
+
+            List<TermItem> terms = vocabulary.getTerms().stream()
+              .filter(term -> attTermValues.contains(term.getName()))
+              .map(term ->
+                new TermItem(
+                  LocalizedString.from(term.getTitle()),
+                  addCounts ? counts.get(TERM_COUNTS).get(taxonomyName+"."+vocabularyName+"."+term.getName()) : -1)
+              )
               .collect(Collectors.toList());
 
-            vocTranslations.put(LocalizedString.from(vocabulary.getTitle()), terms.isEmpty() ? new ArrayList<>() : terms);
+            vocTranslations.put(
+              LocalizedString.from(vocabulary.getTitle()),
+              new VocabularyAnnotationItem(
+                terms.isEmpty() ? new ArrayList<>() : terms,
+                addCounts ? counts.get(VOCABULARY_COUNTS).get(taxonomyName+"."+vocabularyName) : -1
+              )
+            );
           }
         });
 
-        if (vocTranslations.size() > 0) annotations.put(LocalizedString.from(taxonomy.getTitle()), vocTranslations);
+        if (vocTranslations.size() > 0) {
+          annotations.put(
+            LocalizedString.from(taxonomy.getTitle()),
+            new TaxonomyAnnotationItem(vocTranslations, addCounts ? counts.get(TAXONOMY_COUNTS).get(taxonomyName) : -1));
+        }
       }
     });
 
@@ -82,9 +111,9 @@ public class AnnotationsCollector {
   }
 
   private static void calculateCounts(Map<String, Map<String, Integer>> counts, List<Set<Attribute>> attributesList) {
-    Map<String, Integer> taxMap = new HashMap<>();
-    Map<String, Integer> vocMap = new HashMap<>();
-    Map<String, Integer> termMap = new HashMap<>();
+    Map<String, Integer> taxMap = counts.get(TAXONOMY_COUNTS);
+    Map<String, Integer> vocMap = counts.get(VOCABULARY_COUNTS);
+    Map<String, Integer> termMap = counts.get(TERM_COUNTS);
 
     IntStream.range(0, attributesList.size()).forEach(i -> {
       Set<Attribute> inferredAttributes = attributesList.get(i);
@@ -94,9 +123,52 @@ public class AnnotationsCollector {
         termMap.put(attribute.getNamespace()+"."+attribute.getName()+"."+attribute.getValues().getUndetermined(), i + 1);
       });
     });
+  }
 
-    counts.put("taxonomyCounts", taxMap);
-    counts.put("vocabularyCounts", vocMap);
-    counts.put("termCounts", termMap);
+  private static abstract class AnnotationItem {
+    protected final int count;
+
+    AnnotationItem(int count) {
+      this.count = count;
+    }
+
+    public int getCount() {
+      return count;
+    }
+  }
+
+  public static class TaxonomyAnnotationItem extends AnnotationItem {
+    private final Map<LocalizedString, VocabularyAnnotationItem> vocabularies;
+     public TaxonomyAnnotationItem(Map<LocalizedString, VocabularyAnnotationItem> vocabularies, int count) {
+       super(count);
+       this.vocabularies = vocabularies;
+     }
+    public Map<LocalizedString, VocabularyAnnotationItem> getVocabularies() {
+      return vocabularies;
+    }
+  }
+
+  public static class VocabularyAnnotationItem extends AnnotationItem{
+    private final List<TermItem> terms;
+     public VocabularyAnnotationItem(List<TermItem> terms, int count) {
+       super(count);
+       this.terms = terms;
+     }
+
+    public List<TermItem> getTerms() {
+      return terms;
+    }
+  }
+  public static class TermItem extends AnnotationItem{
+    private final LocalizedString term;
+
+    public TermItem(LocalizedString term, int count) {
+      super(count);
+      this.term = term;
+    }
+
+    public LocalizedString getTerm() {
+      return term;
+    }
   }
 }
