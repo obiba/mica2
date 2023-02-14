@@ -36,7 +36,7 @@
 <#macro entityAnnotationsAccordion taxonomy={} taxonomyItem={} index=0 detailed=true>
   <div class="accordion my-2" id="annoationsAccordion">
     <div class="card mb-0">
-        <#assign taxonomyLocalized = localize(taxonomy) />
+        <#assign taxonomyLocalized = localize(taxonomyItem.title) />
         <#assign taxonomyId = taxonomyLocalized?replace(" ", "_") />
         <#assign collapsedClass = (index == 0)?then('collapsed', '') />
         <#assign showClass = (index == 0)?then('show', '') />
@@ -62,11 +62,11 @@
 <#macro entityAnnotationsDetail taxonomyId="" vocabularies={}>
     <#list vocabularies as vocabulary, vocabularyItem>
         <#assign vocabularyId = taxonomyId + 'vocabulary' + vocabulary?index />
-      <p class="mb-1 pl-1 py-2 bg-light font-weight-bold">${localize(vocabulary)} <@itemCount item=vocabularyItem/></p>
+      <p class="mb-1 pl-1 py-2 bg-light font-weight-bold">${localize(vocabularyItem.title)} <@itemCount item=vocabularyItem/></p>
       <div class="pt-1 pb-1 pl-1">
         <div class="row ">
             <#list vocabularyItem.terms as termItem>
-              <div class="col-6 font-weight-normal">${localize(termItem.term)} <@itemCount item=termItem/></div>
+              <div class="col-6 font-weight-normal">${localize(termItem.title)} <@itemCount item=termItem/></div>
             </#list>
         </div>
       </div>
@@ -76,8 +76,8 @@
 <#macro entityAnnotationsSummary vocabularies={}>
   <dl class="row striped mt-0 mb-1 " style="columns: 2">
       <#list vocabularies as vocabulary, vocabularyItem>
-        <dt class="col-sm-10" style="border-left: #36A2EB solid 10px; margin-bottom: 3px">
-          <span></span>${localize(vocabulary)} <@itemCount item=vocabularyItem/></span>
+        <dt class="col-12" style="border-left: #36A2EB solid 10px; margin-bottom: 3px">
+          <span></span>${localize(vocabularyItem.title)} <@itemCount item=vocabularyItem/></span>
         </dt>
       </#list>
   </dl>

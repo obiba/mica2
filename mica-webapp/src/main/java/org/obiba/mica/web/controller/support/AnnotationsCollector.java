@@ -16,16 +16,16 @@ public class AnnotationsCollector {
   private static final String VOCABULARY_COUNTS = "vocabularyCounts";
   private static final String TERM_COUNTS = "termCounts";
 
-  public static Map<LocalizedString, TaxonomyAnnotationItem> collectAndCount(List<BaseStudy> studies, TaxonomiesService taxonomiesService) {
+  public static Map<String, TaxonomyAnnotationItem> collectAndCount(List<BaseStudy> studies, TaxonomiesService taxonomiesService) {
     return collectInternal(studies, true, taxonomiesService);
   }
-  public static Map<LocalizedString, TaxonomyAnnotationItem> collect(List<BaseStudy> studies, TaxonomiesService taxonomiesService) {
+  public static Map<String, TaxonomyAnnotationItem> collect(List<BaseStudy> studies, TaxonomiesService taxonomiesService) {
     return collectInternal(studies, false, taxonomiesService);
   }
 
-  private static Map<LocalizedString, TaxonomyAnnotationItem> collectInternal(List<BaseStudy> studies,
-                                                                                                   boolean addCounts,
-                                                                                                   TaxonomiesService taxonomiesService) {
+  private static Map<String, TaxonomyAnnotationItem> collectInternal(List<BaseStudy> studies,
+                                                                     boolean addCounts,
+                                                                     TaxonomiesService taxonomiesService) {
     // Exclude irrelevant taxonomies
     List<String> exclusions = new ArrayList<String>() {{
       add("Mlstr_harmo");
@@ -64,13 +64,13 @@ public class AnnotationsCollector {
       );
 
     // Convert attributes to taxonomy entities to facilitate client translation and rendering as well as preserving their order
-    Map<LocalizedString, TaxonomyAnnotationItem> annotations = new LinkedHashMap<>();
+    Map<String, TaxonomyAnnotationItem> annotations = new LinkedHashMap<>();
     taxonomies.forEach(taxonomy -> {
       String taxonomyName = taxonomy.getName();
 
       if (groupedAttributes.containsKey(taxonomyName)) {
         Map<String, List<LocalizedString>> attVocabularyNames = groupedAttributes.get(taxonomyName);
-        Map<LocalizedString, VocabularyAnnotationItem> vocTranslations = new LinkedHashMap<>();
+        Map<String, VocabularyAnnotationItem> vocTranslations = new LinkedHashMap<>();
         taxonomy.getVocabularies().forEach(vocabulary -> {
           String vocabularyName = vocabulary.getName();
 
@@ -84,14 +84,16 @@ public class AnnotationsCollector {
               .filter(term -> attTermValues.contains(term.getName()))
               .map(term ->
                 new TermItem(
+                  term.getName(),
                   LocalizedString.from(term.getTitle()),
                   addCounts ? counts.get(TERM_COUNTS).get(taxonomyName+"."+vocabularyName+"."+term.getName()) : -1)
               )
               .collect(Collectors.toList());
 
             vocTranslations.put(
-              LocalizedString.from(vocabulary.getTitle()),
+              vocabularyName,
               new VocabularyAnnotationItem(
+                LocalizedString.from(vocabulary.getTitle()),
                 terms.isEmpty() ? new ArrayList<>() : terms,
                 addCounts ? counts.get(VOCABULARY_COUNTS).get(taxonomyName+"."+vocabularyName) : -1
               )
@@ -101,8 +103,12 @@ public class AnnotationsCollector {
 
         if (vocTranslations.size() > 0) {
           annotations.put(
-            LocalizedString.from(taxonomy.getTitle()),
-            new TaxonomyAnnotationItem(vocTranslations, addCounts ? counts.get(TAXONOMY_COUNTS).get(taxonomyName) : -1));
+            taxonomyName,
+            new TaxonomyAnnotationItem(
+              LocalizedString.from(taxonomy.getTitle()),
+              vocTranslations,
+              addCounts ? counts.get(TAXONOMY_COUNTS).get(taxonomyName) : -1)
+          );
         }
       }
     });
@@ -126,32 +132,37 @@ public class AnnotationsCollector {
   }
 
   private static abstract class AnnotationItem {
+    protected final LocalizedString title;
     protected final int count;
 
-    AnnotationItem(int count) {
+    AnnotationItem(LocalizedString title, int count) {
+      this.title = title;
       this.count = count;
     }
 
+    public LocalizedString getTitle() {
+      return title;
+    }
     public int getCount() {
       return count;
     }
   }
 
   public static class TaxonomyAnnotationItem extends AnnotationItem {
-    private final Map<LocalizedString, VocabularyAnnotationItem> vocabularies;
-     public TaxonomyAnnotationItem(Map<LocalizedString, VocabularyAnnotationItem> vocabularies, int count) {
-       super(count);
+    private final Map<String, VocabularyAnnotationItem> vocabularies;
+     public TaxonomyAnnotationItem(LocalizedString title, Map<String, VocabularyAnnotationItem> vocabularies, int count) {
+       super(title, count);
        this.vocabularies = vocabularies;
      }
-    public Map<LocalizedString, VocabularyAnnotationItem> getVocabularies() {
+    public Map<String, VocabularyAnnotationItem> getVocabularies() {
       return vocabularies;
     }
   }
 
   public static class VocabularyAnnotationItem extends AnnotationItem{
     private final List<TermItem> terms;
-     public VocabularyAnnotationItem(List<TermItem> terms, int count) {
-       super(count);
+     public VocabularyAnnotationItem(LocalizedString title, List<TermItem> terms, int count) {
+       super(title, count);
        this.terms = terms;
      }
 
@@ -162,9 +173,9 @@ public class AnnotationsCollector {
   public static class TermItem extends AnnotationItem{
     private final LocalizedString term;
 
-    public TermItem(LocalizedString term, int count) {
-      super(count);
-      this.term = term;
+    public TermItem(String name, LocalizedString title, int count) {
+      super(title, count);
+      this.term = title;
     }
 
     public LocalizedString getTerm() {
