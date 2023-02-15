@@ -98,6 +98,15 @@ public class AnnotationsCollector {
                 addCounts ? counts.get(VOCABULARY_COUNTS).get(taxonomyName+"."+vocabularyName) : -1
               )
             );
+          } else {
+            vocTranslations.put(
+              vocabularyName,
+              new VocabularyAnnotationItem(
+                LocalizedString.from(vocabulary.getTitle()),
+                new ArrayList<>(),
+                -1
+              ).notPresent()
+            );
           }
         });
 
@@ -161,13 +170,24 @@ public class AnnotationsCollector {
 
   public static class VocabularyAnnotationItem extends AnnotationItem{
     private final List<TermItem> terms;
+    private boolean missing = false;
+
      public VocabularyAnnotationItem(LocalizedString title, List<TermItem> terms, int count) {
        super(title, count);
        this.terms = terms;
      }
 
+     public VocabularyAnnotationItem notPresent() {
+       missing = true;
+       return this;
+     }
+
     public List<TermItem> getTerms() {
       return terms;
+    }
+
+    public boolean isMissing() {
+      return missing;
     }
   }
   public static class TermItem extends AnnotationItem{

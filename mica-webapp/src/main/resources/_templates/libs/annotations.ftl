@@ -61,15 +61,17 @@
 
 <#macro entityAnnotationsDetail taxonomyId="" vocabularies={}>
     <#list vocabularies as vocabulary, vocabularyItem>
-        <#assign vocabularyId = taxonomyId + 'vocabulary' + vocabulary?index />
-      <p class="mb-1 pl-1 py-2 bg-light font-weight-bold">${localize(vocabularyItem.title)} <@itemCount item=vocabularyItem/></p>
-      <div class="pt-1 pb-1 pl-1">
-        <div class="row ">
-            <#list vocabularyItem.terms as termItem>
-              <div class="col-6 font-weight-normal">${localize(termItem.title)} <@itemCount item=termItem/></div>
-            </#list>
-        </div>
-      </div>
+        <#if !vocabularyItem.missing>
+            <#assign vocabularyId = taxonomyId + 'vocabulary' + vocabulary?index />
+          <p class="mb-1 pl-1 py-2 bg-light font-weight-bold">${localize(vocabularyItem.title)} <@itemCount item=vocabularyItem/></p>
+          <div class="pt-1 pb-1 pl-1">
+            <div class="row ">
+                <#list vocabularyItem.terms as termItem>
+                  <div class="col-6 font-weight-normal">${localize(termItem.title)} <@itemCount item=termItem/></div>
+                </#list>
+            </div>
+          </div>
+        </#if>
     </#list>
 </#macro>
 
@@ -77,7 +79,8 @@
   <dl class="row striped mt-0 mb-1 " style="columns: 2">
       <#list vocabularies as vocabulary, vocabularyItem>
         <dt class="col-12" style="border-left: #36A2EB solid 10px; margin-bottom: 3px">
-          <span></span>${localize(vocabularyItem.title)} <@itemCount item=vocabularyItem/></span>
+          <span class="<#if vocabularyItem.missing>text-muted</#if>">${localize(vocabularyItem.title)} <@itemCount item=vocabularyItem/> </span>
+          <span><i class="fas float-right <#if vocabularyItem.missing>text-muted fa-minus<#else>text-success fa-check</#if>"></i></span>
         </dt>
       </#list>
   </dl>
@@ -88,3 +91,4 @@
       <span class="ml-1 text-muted"><small>(${item.count})</small></span>
     </#if>
 </#macro>
+
