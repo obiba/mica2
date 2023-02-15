@@ -225,9 +225,9 @@
 
     <#if datasetVariablesClassificationsTaxonomies?? && datasetVariablesClassificationsTaxonomies?size gt 0>
       const taxonomies = ['${datasetVariablesClassificationsTaxonomies?join("', '")}'];
-      DatasetService.getVariablesCoverage('${dataset.id}', taxonomies, '${.lang}', function(data) {
+      DatasetService.getVariablesCoverage('${dataset.id}', taxonomies, '${.lang}', function(data, vocabulariesColorsMapFunc) {
         if (data && data.charts) {
-          Mica.variablesCoverage = data.charts.map(chart => prepareVariablesClassificationsData(chart));
+          Mica.variablesCoverage = data.charts.map(chart => prepareVariablesClassificationsData(chart, vocabulariesColorsMapFunc(['${colors?join("', '")}'])));
         }
         renderVariablesClassifications();
       }, function(response) {

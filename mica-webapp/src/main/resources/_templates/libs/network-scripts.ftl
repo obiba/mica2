@@ -468,9 +468,9 @@
     <#if networkVariablesClassificationsTaxonomies?? && networkVariablesClassificationsTaxonomies?size gt 0 && studyAcronyms?? && studyAcronyms?size gt 0>
       const taxonomies = ['${networkVariablesClassificationsTaxonomies?join("', '")}'];
       $('#classificationsContainer').hide();
-      NetworkService.getVariablesCoverage('${network.id}', taxonomies, '${.lang}', function(data) {
+      NetworkService.getVariablesCoverage('${network.id}', taxonomies, '${.lang}', function(data, vocabulariesColorsMapFunc) {
         if (data && data.charts) {
-          Mica.variablesCoverage = data.charts.map(chart => prepareVariablesClassificationsData(chart));
+          Mica.variablesCoverage = data.charts.map(chart => prepareVariablesClassificationsData(chart, vocabulariesColorsMapFunc(['${colors?join("', '")}'])));
         }
         initSelectBucket();
         renderVariablesClassifications('_all');

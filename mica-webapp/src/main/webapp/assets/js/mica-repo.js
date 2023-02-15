@@ -40,6 +40,47 @@ class QueryService {
         }
       });
   }
+
+  static getVariablesCoverage(getCoverageUrl, onsuccess, onfailure) {
+    let variableTaxonomiesSearchUrl = '/ws/taxonomies/_filter?target=variable';
+
+    axios.all([axios.get(MicaService.normalizeUrl(getCoverageUrl)), axios.get(MicaService.normalizeUrl(variableTaxonomiesSearchUrl))])
+    .then(axios.spread(function (coverageRes, taxoRes) {
+      let createColorsMapAndStylesheet = function(colors) {
+        let result = {};
+        let styleSheet = new CSSStyleSheet();
+
+        if (Array.isArray(taxoRes.data) && Array.isArray(colors)) {
+          taxoRes.data.filter(taxo => taxo.name !== 'Mica_variable').forEach(taxo => {
+            let index = 0;
+
+            result[taxo.name] = {};
+
+            taxo.vocabularies.forEach(voc => {
+              result[taxo.name][voc.name] = colors[index % colors.length];
+              styleSheet.insertRule(`.${taxo.name} .${voc.name} { background-color: ${colors[index % colors.length]} }`);
+              index = index + 1;
+            });
+          });
+        }
+
+        document.adoptedStyleSheets = [styleSheet];
+
+        return result;
+      }
+
+      //console.dir(response);
+      if (onsuccess) {
+        onsuccess(coverageRes.data, createColorsMapAndStylesheet);
+      }
+
+    })).catch(axios.spread(function (coverageRes, taxoRes) {
+      console.dir(coverageRes);
+      if (onfailure) {
+        onfailure(coverageRes, taxoRes);
+      }
+    }));
+  }
 }
 
 /**
@@ -83,19 +124,8 @@ class StudyService {
     let url = '/ws/variables/charts/_coverage';
     let query = 'variable(eq(studyId,' + id + '),sort(name),aggregate(re(' + taxonomies.map(tx => tx + '*').join(',') + '),bucket(dceId))),locale(' + lang + ')';
     url = url + '?query=' + query;
-    axios.get(MicaService.normalizeUrl(url))
-      .then(response => {
-        //console.dir(response);
-        if (onsuccess) {
-          onsuccess(response.data);
-        }
-      })
-      .catch(response => {
-        console.dir(response);
-        if (onfailure) {
-          onfailure(response);
-        }
-      });
+
+    QueryService.getVariablesCoverage(url, onsuccess, onfailure);
   };
 
 }
@@ -109,19 +139,8 @@ class NetworkService {
     let url = '/ws/variables/charts/_coverage';
     let query = 'network(eq(Mica_network.id,' + id + ')),variable(sort(name),aggregate(re(' + taxonomies.map(tx => tx + '*').join(',') + '),bucket(studyId))),locale(' + lang + ')';
     url = url + '?query=' + query;
-    axios.get(MicaService.normalizeUrl(url))
-      .then(response => {
-        //console.dir(response);
-        if (onsuccess) {
-          onsuccess(response.data);
-        }
-      })
-      .catch(response => {
-        console.dir(response);
-        if (onfailure) {
-          onfailure(response);
-        }
-      });
+    
+    QueryService.getVariablesCoverage(url, onsuccess, onfailure);
   }
 
   static getAffiliatedMembers(affiliatedMembersQuery, onSuccess, onFailure) {
@@ -301,19 +320,8 @@ class DatasetService {
     let url = '/ws/variables/charts/_coverage';
     let query = 'variable(eq(datasetId,' + id + '),sort(name),aggregate(re(' + taxonomies.map(tx => tx + '*').join(',') + '),bucket(datasetId))),locale(' + lang + ')';
     url = url + '?query=' + query;
-    axios.get(MicaService.normalizeUrl(url))
-      .then(response => {
-        //console.dir(response);
-        if (onsuccess) {
-          onsuccess(response.data);
-        }
-      })
-      .catch(response => {
-        console.dir(response);
-        if (onfailure) {
-          onfailure(response);
-        }
-      });
+    
+    QueryService.getVariablesCoverage(url, onsuccess, onfailure);
   }
 
 }
