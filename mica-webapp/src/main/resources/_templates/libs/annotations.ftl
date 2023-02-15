@@ -35,7 +35,7 @@
 
 <#macro entityAnnotationsAccordion taxonomy={} taxonomyItem={} index=0 detailed=true>
   <div class="accordion my-2" id="annotationsAccordion_${index}">
-    <div class="card mb-0">
+    <div class="card mb-0 ${taxonomy}">
         <#assign taxonomyLocalized = localize(taxonomyItem.title) />
         <#assign taxonomyId = taxonomyLocalized?replace(" ", "_") />
         <#assign collapsedClass = (index == 0)?then('collapsed', '') />
@@ -63,7 +63,7 @@
     <#list vocabularies as vocabulary, vocabularyItem>
         <#if !vocabularyItem.missing>
             <#assign vocabularyId = taxonomyId + 'vocabulary' + vocabulary?index />
-          <p class="mb-1 pl-1 py-2 bg-light font-weight-bold">${localize(vocabularyItem.title)} <@itemCount item=vocabularyItem/></p>
+          <p class="mb-1 pl-1 py-2 bg-light font-weight-bold"><@vocabularyColorLabel vocabulary=vocabulary/> ${localize(vocabularyItem.title)} <@itemCount item=vocabularyItem/></p>
           <div class="pt-1 pb-1 pl-1">
             <div class="row ">
                 <#list vocabularyItem.terms as termItem>
@@ -78,7 +78,8 @@
 <#macro entityAnnotationsSummary vocabularies={}>
   <dl class="row striped mt-0 mb-1 " style="columns: 2">
       <#list vocabularies as vocabulary, vocabularyItem>
-        <dt class="col-12" style="border-left: #36A2EB solid 10px; margin-bottom: 3px">
+        <dt class="col-12 mb-2">
+            <@vocabularyColorLabel vocabulary=vocabulary/>
           <span class="<#if vocabularyItem.missing>text-muted</#if>">${localize(vocabularyItem.title)} <@itemCount item=vocabularyItem/> </span>
           <span><i class="fas float-right <#if vocabularyItem.missing>text-muted fa-minus<#else>text-success fa-check</#if>"></i></span>
         </dt>
@@ -88,6 +89,10 @@
 
 <#macro itemCount item={}>
     <#if item.count gt -1>
-      <span class="p-2 text-muted" style="cursor: default" title="<@message 'number-of-studies-annotated'/>"><small>${item.count}</small></span>
+      <span class="pl-1 text-muted small" style="cursor: default" title="<@message 'number-of-studies-annotated'/>">${item.count}</span>
     </#if>
+</#macro>
+
+<#macro vocabularyColorLabel vocabulary="">
+  <span class="p-1 mr-1 ${vocabulary}"></span>
 </#macro>
