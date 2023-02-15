@@ -38,78 +38,78 @@
 
 <!-- Global js variables -->
 <script>
-    const contextPath = "${contextPath}";
-    <!-- Number formatting -->
-    const numberFormatter = new Intl.NumberFormat('${.lang}');
-    <!-- DataTable options -->
-    let dataTablesDefaultOpts = {
-        "paging": true,
-        "pageLength": 25,
-        "lengthChange": true,
-        "searching": true,
-        "ordering": true,
-        "info": true,
-        "autoWidth": true,
-        "language": {
-            "url": "${assetsPath}/i18n/datatables.${.lang}.json"
-        }
-    };
-    let dataTablesSortSearchOpts = {
-        "paging": false,
-        "lengthChange": false,
-        "searching": true,
-        "ordering": true,
-        "info": false,
-        "autoWidth": true,
-        "language": {
-            "url": "${assetsPath}/i18n/datatables.${.lang}.json"
-        }
-    };
-    let dataTablesSortOpts = {
-        "paging": false,
-        "lengthChange": false,
-        "searching": false,
-        "ordering": true,
-        "info": false,
-        "autoWidth": true,
-        "language": {
-            "url": "${assetsPath}/i18n/datatables.${.lang}.json"
-        }
-    };
-    let dataTablesNoSortSearchOpts = {
-        "paging": true,
-        "pageLength": 25,
-        "lengthChange": false,
-        "searching": true,
-        "ordering": false,
-        "info": false,
-        "autoWidth": true,
-        "language": {
-            "url": "${assetsPath}/i18n/datatables.${.lang}.json"
-        }
-    };
-    <!-- Dto utility functions -->
-    const localizedString = function(localizedObj) {
-      if (localizedObj) {
-        for (const obj of localizedObj) {
-          if (obj.lang === '${.lang}') {
-            return obj.value;
-          }
-        }
-        for (const obj of localizedObj) {
-          if (obj.lang === 'und') {
-            return obj.value;
-          }
+  const contextPath = "${contextPath}";
+  <!-- Number formatting -->
+  const numberFormatter = new Intl.NumberFormat('${.lang}');
+  <!-- DataTable options -->
+  let dataTablesDefaultOpts = {
+    "paging": true,
+    "pageLength": 25,
+    "lengthChange": true,
+    "searching": true,
+    "ordering": true,
+    "info": true,
+    "autoWidth": true,
+    "language": {
+      "url": "${assetsPath}/i18n/datatables.${.lang}.json"
+    }
+  };
+  let dataTablesSortSearchOpts = {
+    "paging": false,
+    "lengthChange": false,
+    "searching": true,
+    "ordering": true,
+    "info": false,
+    "autoWidth": true,
+    "language": {
+      "url": "${assetsPath}/i18n/datatables.${.lang}.json"
+    }
+  };
+  let dataTablesSortOpts = {
+    "paging": false,
+    "lengthChange": false,
+    "searching": false,
+    "ordering": true,
+    "info": false,
+    "autoWidth": true,
+    "language": {
+      "url": "${assetsPath}/i18n/datatables.${.lang}.json"
+    }
+  };
+  let dataTablesNoSortSearchOpts = {
+    "paging": true,
+    "pageLength": 25,
+    "lengthChange": false,
+    "searching": true,
+    "ordering": false,
+    "info": false,
+    "autoWidth": true,
+    "language": {
+      "url": "${assetsPath}/i18n/datatables.${.lang}.json"
+    }
+  };
+  <!-- Dto utility functions -->
+  const localizedString = function(localizedObj) {
+    if (localizedObj) {
+      for (const obj of localizedObj) {
+        if (obj.lang === '${.lang}') {
+          return obj.value;
         }
       }
-      return '';
-    };
+      for (const obj of localizedObj) {
+        if (obj.lang === 'und') {
+          return obj.value;
+        }
+      }
+    }
+    return '';
+  };
 
-    const escapeQuotes = function(str, quote) {
-      const q = quote ? quote : '"';
-      const regex = new RegExp(q, 'g');
-      return str ? str.replace(regex, '\\' + q) : str;
-    };
+  const escapeQuotes = function(str, quote) {
+    const q = quote ? quote : '"';
+    const regex = new RegExp(q, 'g');
+    return str ? str.replace(regex, '\\' + q) : str;
+  };
 </script>
 
 <script>
@@ -198,5 +198,13 @@
     }
     SetService.showCount('#cart-count', undefined, '${.lang}');
     </#if>
+  });
+
+  // Little helper to show desired elements after the page is ready
+  window.addEventListener('DOMContentLoaded', (event) => {
+    document.querySelectorAll(".show-on-content-loaded")
+      .forEach(element => {
+        setTimeout(() => element.classList.remove("d-none"), 250)
+      })
   });
 </script>

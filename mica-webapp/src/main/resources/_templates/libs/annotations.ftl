@@ -1,6 +1,6 @@
 
 <#macro entityAnnotations annotations={}>
-  <div class="row">
+  <div class="row d-none show-on-content-loaded">
     <div class="col-12">
       <div class="card card-primary card-outline">
         <div class="card-header">
