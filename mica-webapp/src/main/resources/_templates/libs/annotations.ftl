@@ -34,7 +34,7 @@
 </#macro>
 
 <#macro entityAnnotationsAccordion taxonomy={} taxonomyItem={} index=0 detailed=true>
-  <div class="accordion my-2" id="annoationsAccordion">
+  <div class="accordion my-2" id="annotationsAccordion_${index}">
     <div class="card mb-0">
         <#assign taxonomyLocalized = localize(taxonomyItem.title) />
         <#assign taxonomyId = taxonomyLocalized?replace(" ", "_") />
@@ -46,7 +46,7 @@
                 data-toggle="collapse"
                 data-target="#${taxonomyId}">${taxonomyLocalized} <@itemCount item=taxonomyItem/></button>
       </div>
-      <div id="${taxonomyId}" class="${'collapse ' + showClass}" data-parent="#annoationsAccordion">
+      <div id="${taxonomyId}" class="${'collapse ' + showClass}" data-parent="#annotationsAccordion_${index}">
         <div class="card-body">
             <#if detailed>
                 <@entityAnnotationsDetail taxonomyId=taxonomyId vocabularies=taxonomyItem.vocabularies />

@@ -174,3 +174,16 @@ fieldset.quote {
 .st-node .active a {
   background-color: aliceblue;
 }
+
+
+*[id^="annotationsAccordion"] button::after {
+  font-weight: 900;
+  font-family: "Font Awesome 5 Free";
+  content: "\f068";
+
+  float: right;
+}
+
+*[id^="annotationsAccordion"] button.collapsed::after {
+  content: "\f067";
+}
