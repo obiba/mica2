@@ -88,7 +88,6 @@
 
 <#macro itemCount item={}>
     <#if item.count gt -1>
-      <span class="ml-1 text-muted"><small>(${item.count})</small></span>
+      <span class="p-2 text-muted" style="cursor: default" title="<@message 'number-of-studies-annotated'/>"><small>${item.count}</small></span>
     </#if>
 </#macro>
-
