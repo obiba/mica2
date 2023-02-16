@@ -78,7 +78,7 @@
 <#macro entityAnnotationsSummary vocabularies={}>
   <dl class="row striped mt-0 mb-1 " style="columns: 2">
       <#list vocabularies as vocabulary, vocabularyItem>
-        <dt class="col-12 mb-2">
+        <dt class="col-12 <#if !vocabulary?is_last>mb-2</#if>">
             <@vocabularyColorLabel vocabulary=vocabulary/>
           <span class="<#if vocabularyItem.missing>text-muted</#if>">${localize(vocabularyItem.title)} <@itemCount item=vocabularyItem/> </span>
           <span><i class="fas float-right <#if vocabularyItem.missing>text-muted fa-minus<#else>text-success fa-check</#if>"></i></span>
