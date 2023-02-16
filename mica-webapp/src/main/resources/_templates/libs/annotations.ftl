@@ -76,7 +76,7 @@
 </#macro>
 
 <#macro entityAnnotationsSummary vocabularies={}>
-  <dl class="row striped mt-0 mb-1 " style="columns: 2">
+  <dl class="row mt-0 mb-1 " style="columns: 2">
       <#list vocabularies as vocabulary, vocabularyItem>
         <dt class="col-12 <#if !vocabulary?is_last>mb-2</#if>">
             <@vocabularyColorLabel vocabulary=vocabulary/>
