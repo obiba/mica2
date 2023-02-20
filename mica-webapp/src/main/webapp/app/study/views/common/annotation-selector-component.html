@@ -1,5 +1,9 @@
 <div class="panel panel-body ">
-  <span ng-if="!$ctrl.taxos || $ctrl.taxos.length == 0" translate>taxonomy-for-tagging-by-concept-not-configured</span>
+
+  <p ng-if="!$ctrl.taxos || $ctrl.taxos.length == 0"
+     class="alert alert-info"
+     ng-bind-html="'annotation-by-concept.no-taxonomies-configured' | translate">
+  </p>
 
   <div>
     <label>{{ 'annotation-by-concept.taxonomies' | translate }}</label>

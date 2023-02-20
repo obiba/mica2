@@ -565,8 +565,8 @@
     "projects-count-enabled-help": "Afficher les nombres de projets dans la section d'administration.",
     "data-access-requests-count-enabled": "Métriques de demandes d'accès aux données activées",
     "data-access-requests-count-enabled-help": "Afficher les nombres de demandes d'accès aux données dans la section d'administration.",
-    "taxonomies-for-annotation-by-concept": "Annotation by Concept Taxonomies",
-    "taxonomies-for-annotation-by-concept-help": "List of taxonomies that will be used when annotating a study by concept"
+    "taxonomies-for-annotation-by-concept": "Taxonomies d'annotation par concept",
+    "taxonomies-for-annotation-by-concept-help": "Liste des taxonomies qui seront utilisées lors de l'annotation d'une étude par concept."
   },
   "publish": {
     "label": "Publier",
@@ -1057,7 +1057,8 @@
       "study-not-published":"Pour publier un ensemble de données collectées, l'étude de collecte qui lui est liée doit aussi être publiée",
       "population-not-published":"Pour publier un ensemble de données collectées, la population qui lui est liée doit aussi être publiée"
     },
-    "require-indexing-alert": "En raison d'une mise à jour dans l'étude '{{entity}}', cet ensemble de données doit être indexé, visitez la page <a href=\"#/admin/statistics-summary\"> <u> administration </u> </a> pour procéder."
+    "require-indexing-alert": "En raison d'une mise à jour dans l'étude '{{entity}}', cet ensemble de données doit être indexé, visitez la page <a href=\"#/admin/statistics-summary\"> <u> administration </u> </a> pour procéder.",
+    "warning-annotations-update": "N'oubliez pas de publier '{{arg0}}' pour mettre à jour sa liste d'annotations inférées par les variables associées à '{{arg1}}'."
   },
   "attributes": "Attributs",
   "attribute": {
@@ -1574,6 +1575,7 @@
   "revisions": "Révisions",
   "revisions-none": "Aucune révision",
   "revision": "Révision",
+  "annotations": "Annotations",
   "revision-date": "Date de révision",
   "revision-date-on": "Le",
   "revisions-difference-author": "Modifié par {{author}}",
@@ -2642,7 +2644,8 @@
     "vocabularies": "Vocabularies",
     "terms": "Terms",
     "annotations-list": "Annotations",
-    "no-annotations": "There are no annotions."
+    "no-annotations": "There are no annotions.",
+    "no-taxonomies-configured": "Pour configurer un sous-ensemble de taxonomies, allez à la section <a href='#/admin/general'><u>Administration / Général / Taxonomies d'annotation par concept</u></a>."
   }
 
 }

@@ -565,8 +565,8 @@
     "projects-count-enabled-help": "Show projects counts in the administration section.",
     "data-access-requests-count-enabled": "Data Access Requests metrics enabled",
     "data-access-requests-count-enabled-help": "Show data access requests counts in the administration section.",
-    "taxonomies-for-annotation-by-concept": "Annotation by Concept Taxonomies",
-    "taxonomies-for-annotation-by-concept-help": "List of taxonomies that will be used when annotating a study by concept"
+    "taxonomies-for-annotation-by-concept": "Taxonomies for Annotation by Concept",
+    "taxonomies-for-annotation-by-concept-help": "List of taxonomies that will be used when annotating a study by concept."
   },
   "publish": {
     "label": "Publish",
@@ -1057,7 +1057,8 @@
       "study-not-published":"Before publishing a collected dataset, its linked individual study must already be published",
       "population-not-published":"Before publishing a collected dataset, its linked population must already be published"
     },
-    "require-indexing-alert": "Due to an update in study '{{entity}}' this dataset requires to be indexed, visit the <a href=\"#/admin/statistics-summary\"><u>administration</u></a> page to proceed."
+    "require-indexing-alert": "Due to an update in study '{{entity}}' this dataset requires to be indexed, visit the <a href=\"#/admin/statistics-summary\"><u>administration</u></a> page to proceed.",
+    "warning-annotations-update": "Remember to publish '{{arg0}}' to update its list of annotations inferred by variables associated to '{{arg1}}'."
   },
   "attributes": "Attributes",
   "attribute": {
@@ -1572,6 +1573,7 @@
   "settings": "Settings",
   "other-settings": "Other settings",
   "revisions": "Revisions",
+  "annotations": "Annotations",
   "revisions-none": "No Revision",
   "revision": "Revision",
   "revision-date": "Revision Date",
@@ -2636,12 +2638,13 @@
   },
   "annotation-by-concept": {
     "title": "Annotations by Concept",
-    "description": "Annotate the study by concept using the configured set of taxonomies defined in the Administration page.",
+    "description": "Annotate the study by concept using variable taxonomies.",
     "annotate": "Annotate",
     "taxonomies": "Taxonomies",
     "vocabularies": "Vocabularies",
     "terms": "Terms",
     "annotations-list": "Annotations",
-    "no-annotations": "There are no annotions."
+    "no-annotations": "There are no annotions.",
+    "no-taxonomies-configured": "To configure a subset of taxonomies, go to <a href='#/admin/general'><u>Administration / General / Taxonomies for Annotation by Concept</u></a> section."
   }
 }

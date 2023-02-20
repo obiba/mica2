@@ -6,10 +6,10 @@
         <div class="card-header">
           <h3 class="card-title pt-2"><@message "classifications" /></h3>
           <ul class="nav nav-pills ml-auto float-right">
-            <li class="nav-item"><a class="nav-link active" href="#summary" data-toggle="tab">
+            <li class="nav-item"><a class="nav-link active" title="<@message "summary-view" />" href="#summary" data-toggle="tab">
                 <i class="fas fa-grip-lines"></i></a>
             </li>
-            <li class="nav-item"><a class="nav-link " href="#detail" data-toggle="tab">
+            <li class="nav-item"><a class="nav-link " title="<@message "detail-view" />" href="#detail" data-toggle="tab">
                 <i class="fas fa-grip-horizontal"></i></a>
             </li>
           </ul>
