@@ -547,8 +547,8 @@ mica.dataset
       var getStudyId = function(dataset) {
         return $scope.type === 'harmonized-dataset' ?
           dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.studyId :
-          dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.studyId
-      }
+          dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.studyId;
+      };
 
       var initializeDataset = function(dataset) {
         $scope.selectedLocale = $translate.use();
