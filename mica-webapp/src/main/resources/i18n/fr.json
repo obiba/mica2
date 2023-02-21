@@ -1058,7 +1058,7 @@
       "population-not-published":"Pour publier un ensemble de données collectées, la population qui lui est liée doit aussi être publiée"
     },
     "require-indexing-alert": "En raison d'une mise à jour dans l'étude '{{entity}}', cet ensemble de données doit être indexé, visitez la page <a href=\"#/admin/statistics-summary\"> <u> administration </u> </a> pour procéder.",
-    "warning-annotations-update": "N'oubliez pas de publier '{{arg0}}' pour mettre à jour sa liste d'annotations inférées par les variables associées à '{{arg1}}'."
+    "warning-annotations-update": "Publiez {{arg0}} '{{arg1}}' pour mettre à jour ses annotations inférées par ce {{arg2}}."
   },
   "attributes": "Attributs",
   "attribute": {

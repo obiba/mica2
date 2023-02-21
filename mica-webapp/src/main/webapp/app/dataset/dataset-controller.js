@@ -544,10 +544,22 @@ mica.dataset
           );
       }
 
-      var getStudyId = function(dataset) {
-        return $scope.type === 'harmonized-dataset' ?
-          dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.studyId :
-          dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.studyId;
+      const showPostPublishAlert = function(dataset, type) {
+        const datasetTypeName = $filter('translate')(type).toLowerCase();
+        let studyTypeName, studyId;
+        if (type === 'harmonized-dataset') {
+          studyId = dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.studyId;
+          studyTypeName = $filter('translate')('global.harmonization-study').toLowerCase();
+        } else {
+          studyId = dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.studyId;
+          studyTypeName = $filter('translate')('global.individual-study').toLowerCase();
+        }
+
+        AlertBuilder.newBuilder()
+          .delay(12000)
+          .type('warning')
+          .trMsg('dataset.warning-annotations-update', [studyTypeName, studyId, datasetTypeName])
+          .build();
       };
 
       var initializeDataset = function(dataset) {
@@ -762,11 +774,7 @@ mica.dataset
                 {id: $scope.dataset.id, type: $scope.type, cascading: response.length > 0 ? 'UNDER_REVIEW' : 'NONE'},
                 function () {
                   DatasetResource.get({id: $routeParams.id, type: $scope.type}, initializeDataset);
-                  AlertBuilder.newBuilder()
-                    .delay(10000)
-                    .type('warning')
-                    .trMsg('dataset.warning-annotations-update', [getStudyId($scope.dataset), $scope.dataset.id])
-                    .build();
+                  showPostPublishAlert($scope.dataset, $scope.type);
                 },
                 function (error) {
                   AlertBuilder.newBuilder().trMsg(error.data).build();

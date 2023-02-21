@@ -1058,7 +1058,7 @@
       "population-not-published":"Before publishing a collected dataset, its linked population must already be published"
     },
     "require-indexing-alert": "Due to an update in study '{{entity}}' this dataset requires to be indexed, visit the <a href=\"#/admin/statistics-summary\"><u>administration</u></a> page to proceed.",
-    "warning-annotations-update": "Remember to publish '{{arg0}}' to update its list of annotations inferred by variables associated to '{{arg1}}'."
+    "warning-annotations-update": "Publish {{arg0}} '{{arg1}}' to update its annotations inferred by this {{arg2}}."
   },
   "attributes": "Attributes",
   "attribute": {
