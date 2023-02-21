@@ -84,7 +84,8 @@
           key: key,
           label: "<@message "variables"/>",
           borderColor: '${barChartBorderColor}',
-          backgroundColor: '${barChartBackgroundColor}'
+          backgroundColor: '${barChartBackgroundColor}',
+          useColorsArray: ${useColorsArrayForClassificationsChart?c}
         });
 
         Plotly.newPlot("bar-graph", chartConfig.data, chartConfig.layout, {responsive: true});
