@@ -38,7 +38,7 @@
     <div class="card mb-0 ${taxonomy}">
         <#assign taxonomyLocalized = localize(taxonomyItem.title) />
         <#assign taxonomyId = taxonomyLocalized?replace(" ", "_") />
-        <#assign collapsedClass = (index == 0)?then('collapsed', '') />
+        <#assign collapsedClass = (index != 0)?then('collapsed', '') />
         <#assign showClass = (index == 0)?then('show', '') />
 
       <div class="card-header">
