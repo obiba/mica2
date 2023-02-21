@@ -1,7 +1,7 @@
 <div>
   <div ng-include="'app/study/views/harmonization-study-view-header.html'" ng-init="tabName='tags'"></div>
 
-  <h3 translate>tags</h3>
+  <h3 translate>annotation-by-concept.title</h3>
 
   <p>
     <small class="help-block inline">{{'global.lastUpdate' | translate}}: {{studySummary.timestamps.lastUpdate | amDateFormat : 'lll'}}
@@ -9,5 +9,11 @@
     <publish-status class="inline" state="studySummary['obiba.mica.EntityStateDto.studySummaryState']"></publish-status>
   </p>
 
-  <tag-by-concept taxos="usableVariableTaxonomiesForConceptTagging" current="attributes" on-update="updateTags(newTags)"></tag-by-concept>
+  <div class="help-block" style="padding-top: 1rem">
+    {{'annotation-by-concept.description' | translate}}
+  </div>
+
+  <annotation-selector taxos="usableVariableTaxonomiesForConceptTagging" current="study.attributes" on-update="updateTags(newTags)"></annotation-selector>
+
+  <annotation-list attributes="study.attributes" taxonomy-names="usableVariableTaxonomiesForConceptTagging" on-update="updateTags(newTags)"></annotation-list>
 </div>

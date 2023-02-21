@@ -746,6 +746,8 @@ mica.study.HarmonizationStudyViewController = function (
         formLanguages[loc] = $filter('translate')('language.' + loc);
       });
 
+      self.usableVariableTaxonomiesForConceptTagging = micaConfig.usableVariableTaxonomiesForConceptTagging;
+
       self.languages = micaConfig.languages;
       self.roles = micaConfig.roles;
       self.openAccess = micaConfig.openAccess;
