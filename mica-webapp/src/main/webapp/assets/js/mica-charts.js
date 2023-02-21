@@ -87,8 +87,6 @@ function prepareVariablesClassificationsData(chart, colorsMap) {
     vocabularies.push(vocabulary);
   });
 
-  vocabularies = vocabularies.sort((a, b) => { return ('' + a.label).localeCompare(b.label); });
-
   return {
     vocabularies: vocabularies,
     itemCounts: itemCounts,
@@ -142,7 +140,8 @@ function makeVariablesClassificationsChartSettings(chartData, chartDataset) {
     layout: {
       yaxis: {
         automargin: true,
-        ticksuffix: ' '
+        ticksuffix: ' ',
+        autorange: 'reversed'
       }
     }
   };
