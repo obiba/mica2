@@ -135,7 +135,8 @@ public class AnnotationsCollector {
       inferredAttributes.forEach(attribute -> {
         taxMap.put(attribute.getNamespace(), i + 1);
         vocMap.put(attribute.getNamespace()+"."+attribute.getName(), i + 1);
-        termMap.put(attribute.getNamespace()+"."+attribute.getName()+"."+attribute.getValues().getUndetermined(), i + 1);
+        if (attribute.getValues() != null)
+          termMap.put(attribute.getNamespace()+"."+attribute.getName()+"."+attribute.getValues().getUndetermined(), i + 1);
       });
     });
   }
