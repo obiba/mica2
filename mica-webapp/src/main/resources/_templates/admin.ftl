@@ -46,6 +46,8 @@
   <!-- endbower -->
   <!-- do not change location due to fonts dependency on ng-obiba-mica -->
   <link rel="stylesheet" href="${contextPath}/styles/mica.css">
+  <!-- this one comes after the bootstrap rules included in mica.css -->
+  <link rel="stylesheet" href="${contextPath}/bower_components/bootstrap-vertical-tabs/bootstrap.vertical-tabs.min.css" />
   <!-- endbuild -->
   <link rel="stylesheet" href="${contextPath}/ws/config/style.css">
 </head>

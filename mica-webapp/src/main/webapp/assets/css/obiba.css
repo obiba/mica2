@@ -142,17 +142,17 @@
   background-color: #abf2bc;
 }
 
-.form-card li.list-group-item, fieldset.form-card {
+.schema-form-tabarray.form-card .tab-content .tab-pane.active, fieldset.form-card, .form-card li.list-group-item {
   border: 2px solid #cecece !important;
   border-radius: 20px !important;
   margin-bottom: 20px;
 }
 
-fieldset.form-card {
+.schema-form-tabarray.form-card .tab-content .tab-pane.active, fieldset.form-card {
   padding: 20px;
 }
 
-.form-card.form-card-grey li.list-group-item, fieldset.form-card.form-card-grey {
+.schema-form-tabarray.form-card.form-card-grey .tab-content .tab-pane.active, .form-card.form-card-grey li.list-group-item, fieldset.form-card.form-card-grey {
   background-color: #f4f6f9;
 }
 
@@ -165,4 +165,8 @@ fieldset.quote {
   border-left: 0.7rem solid #007bff;
   margin: 1.5em 0;
   padding-left: 1.5rem;
+}
+
+.tabs-right {
+  display: none !important;
 }
