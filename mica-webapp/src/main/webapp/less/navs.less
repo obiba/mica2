@@ -11,6 +11,11 @@
   list-style: none;
 }
 
+.nav > li {
+  position: relative;
+  display: block;
+}
+
 // Make links block level
 .nav > li > a {
   display: block;
@@ -322,7 +327,6 @@
 
 // Remove border on bottom, left, right
 .tabs-below > .nav-tabs,
-.tabs-right > .nav-tabs,
 .tabs-left > .nav-tabs {
   border-bottom: 0;
 }
@@ -372,13 +376,11 @@
 // ------------
 
 // Common styles
-.tabs-left > .nav-tabs > li,
-.tabs-right > .nav-tabs > li {
+.tabs-left > .nav-tabs > li {
   float: none;
 }
 
-.tabs-left > .nav-tabs > li > a,
-.tabs-right > .nav-tabs > li > a {
+.tabs-left > .nav-tabs > li > a {
   min-width: 74px;
   margin-right: 0;
   margin-bottom: 3px;
@@ -410,31 +412,10 @@
   *border-right-color: white;
 }
 
-// Tabs on the right
-.tabs-right > .nav-tabs {
-  float: right;
-  margin-left: 19px;
-  border-left: 1px solid #ddd;
-}
+// Tabs on the right: not supported
 
-.tabs-right > .nav-tabs > li > a {
-  margin-left: -1px;
-  .border-top-radius(0);
-  .border-right-radius(4);
-  .border-bottom-radius(4);
-  .border-left-radius(0);
-}
-
-.tabs-right > .nav-tabs > li > a:hover,
-.tabs-right > .nav-tabs > li > a:focus {
-  border-color: @gray-lighter @gray-lighter @gray-lighter #ddd;
-}
-
-.tabs-right > .nav-tabs .active > a,
-.tabs-right > .nav-tabs .active > a:hover,
-.tabs-right > .nav-tabs .active > a:focus {
-  border-color: #ddd #ddd #ddd transparent;
-  *border-left-color: white;
+.tabs-right {
+  display: none !important;
 }
 
 // DISABLED STATES
