@@ -1,5 +1,5 @@
 
-<#macro entityAnnotations annotations={}>
+<#macro entityAnnotations annotations={} showCount=false>
   <div class="row d-none show-on-content-loaded">
     <div class="col-12">
       <div class="card card-primary card-outline">
@@ -41,7 +41,7 @@
         <#assign collapsedClass = (index != 0)?then('collapsed', '') />
         <#assign showClass = (index == 0)?then('show', '') />
 
-      <div class="card-header">
+      <div class="card-header pr-2">
         <button type="button" class="${'btn btn-link btn-block text-navy text-left pl-0 ' + collapsedClass}"
                 data-toggle="collapse"
                 data-target="#${taxonomyId}">${taxonomyLocalized} <span class="badge badge-light"><@itemCount item=taxonomyItem/></span></button>
@@ -63,11 +63,11 @@
     <#list vocabularies as vocabulary, vocabularyItem>
         <#if !vocabularyItem.missing>
             <#assign vocabularyId = taxonomyId + 'vocabulary' + vocabulary?index />
-          <p class="mb-1 pl-1 py-2 bg-light font-weight-bold"><@vocabularyColorLabel vocabulary=vocabulary/> ${localize(vocabularyItem.title)} <@itemCount item=vocabularyItem/></p>
+          <p class="mb-1 pl-1 py-2 bg-light font-weight-bold"><@vocabularyColorLabel vocabulary=vocabulary/> ${localize(vocabularyItem.title)} <span class="float-right"><@itemCount item=vocabularyItem/></span></p>
           <div class="pt-1 pb-1 pl-1">
             <div class="row ">
                 <#list vocabularyItem.terms as termItem>
-                  <div class="col-6 font-weight-normal">${localize(termItem.title)} <@itemCount item=termItem/></div>
+                  <div class="col-6 font-weight-normal">${localize(termItem.title)} <span class="float-right"><@itemCount item=termItem/></span></div>
                 </#list>
             </div>
           </div>
@@ -80,8 +80,15 @@
       <#list vocabularies as vocabulary, vocabularyItem>
         <dt class="col-12 <#if !vocabulary?is_last>mb-2</#if>">
             <@vocabularyColorLabel vocabulary=vocabulary/>
-          <span class="<#if vocabularyItem.missing>text-muted</#if>">${localize(vocabularyItem.title)} <@itemCount item=vocabularyItem/> </span>
-          <span><i class="fas float-right <#if vocabularyItem.missing>text-muted fa-minus<#else>text-success fa-check</#if>"></i></span>
+          <span class="<#if vocabularyItem.missing>text-muted</#if>">${localize(vocabularyItem.title)}</span>
+            <#if vocabularyItem.missing>
+              <span><i class="fas float-right text-muted fa-minus"></i></span>
+            <#elseif vocabularyItem.count == -1>
+              <span><i class="fas fa-check float-right text-success"></i></span>
+            <#else>
+              <span class="float-right"><@itemCount item=vocabularyItem/></span>
+            </#if>
+            <#--          <span><i class="fas float-right <#if vocabularyItem.missing>text-muted fa-minus<#else>text-success fa-check</#if>"></i></span>-->
         </dt>
       </#list>
   </dl>
@@ -89,7 +96,7 @@
 
 <#macro itemCount item={}>
     <#if item.count gt -1>
-      <span class="pl-1 text-muted small" style="cursor: default" title="<@message 'number-of-studies-annotated'/>">${item.count}</span>
+      <span class="px-1 text-muted" style="cursor: default" title="<@message 'number-of-studies-annotated'/>">${item.count}</span>
     </#if>
 </#macro>
 
