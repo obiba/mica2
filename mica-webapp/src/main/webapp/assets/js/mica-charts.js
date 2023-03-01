@@ -88,6 +88,7 @@ function prepareVariablesClassificationsData(chart, colorsMap) {
   });
 
   return {
+    taxonomy: chart.taxonomy,
     vocabularies: vocabularies,
     itemCounts: itemCounts,
     title: chart.title,
@@ -113,8 +114,8 @@ function makeVariablesClassificationsChartSettings(chartData, chartDataset) {
     names.push(v.name);
     labels.push(v.label);
 
-    if (processedVocabularies.indexOf() === -1 && (chartData.colorsMap || {})['Mlstr_area']) {
-      colors.push(chartData.colorsMap['Mlstr_area'][v.name]);
+    if (processedVocabularies.indexOf() === -1 && (chartData.colorsMap || {})[chartData.taxonomy]) {
+      colors.push(chartData.colorsMap[chartData.taxonomy][v.name]);
       processedVocabularies.push(v.name);
     }
   });
@@ -125,7 +126,7 @@ function makeVariablesClassificationsChartSettings(chartData, chartDataset) {
       type: "bar",
       orientation: "h",
       marker: {
-        color: (chartData.colorsMap || {})['Mlstr_area'] && chartDataset.useColorsArray ? colors : chartDataset.backgroundColor
+        color: (chartData.colorsMap || {})[chartData.taxonomy] && chartDataset.useColorsArray ? colors : chartDataset.backgroundColor
       },
       x: names.map(n => {
         return chartData.itemCounts[k][n] ? chartData.itemCounts[k][n] : 0;
