@@ -183,8 +183,8 @@ mica.admin
       };
     }])
 
-  .controller('IndexingController', ['$scope', '$rootScope', 'IndexService', 'MicaConfigResource', 'NOTIFICATION_EVENTS',
-    function ($scope, $rootScope, IndexService, MicaConfigResource, NOTIFICATION_EVENTS) {
+  .controller('IndexingController', ['$scope', '$rootScope', 'IndexService', 'MicaConfigResource', 'NOTIFICATION_EVENTS', 'AlertBuilder',
+    function ($scope, $rootScope, IndexService, MicaConfigResource, NOTIFICATION_EVENTS, AlertBuilder) {
       MicaConfigResource.get(function(config){
         $scope.micaConfig = config;
       });
@@ -204,6 +204,12 @@ mica.admin
       $scope.indexAll = function () {
         withConfirm(function () {
           IndexService.all.build();
+          AlertBuilder.newBuilder()
+            .delay(12000)
+            .type('warning')
+            .trMsg('config.warning-annotations-update')
+            .build();
+
         }, {message: 'Do you want to rebuild all the indices?'});
       };
 
@@ -222,18 +228,33 @@ mica.admin
       $scope.indexDatasets = function () {
         withConfirm(function () {
           IndexService.datasets.build();
+          AlertBuilder.newBuilder()
+            .delay(12000)
+            .type('warning')
+            .trMsg('config.warning-annotations-update')
+            .build();
         });
       };
 
       $scope.indexCollectedDatasets = function () {
         withConfirm(function () {
           IndexService.collectedDatasets.build();
+          AlertBuilder.newBuilder()
+            .delay(12000)
+            .type('warning')
+            .trMsg('config.warning-annotations-update-study')
+            .build();
         });
       };
 
       $scope.indexHarmonizedDatasets = function () {
         withConfirm(function () {
           IndexService.harmonizedDatasets.build();
+          AlertBuilder.newBuilder()
+            .delay(12000)
+            .type('warning')
+            .trMsg('config.warning-annotations-update-initiative')
+            .build();
         });
       };
 

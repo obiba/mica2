@@ -566,7 +566,10 @@
     "data-access-requests-count-enabled": "Métriques de demandes d'accès aux données activées",
     "data-access-requests-count-enabled-help": "Afficher les nombres de demandes d'accès aux données dans la section d'administration.",
     "taxonomies-for-annotation-by-concept": "Taxonomies d'annotation par concept",
-    "taxonomies-for-annotation-by-concept-help": "Liste des taxonomies qui seront utilisées lors de l'annotation d'une étude par concept."
+    "taxonomies-for-annotation-by-concept-help": "Liste des taxonomies qui seront utilisées lors de l'annotation d'une étude par concept.",
+    "warning-annotations-update-study": "N'oubliez pas d'indexer toutes les études individuelles pour mettre à jour leurs annotations déduites des ensembles de données.",
+    "warning-annotations-update-initiative": "N'oubliez pas d'indexer toutes les initiatives d'harmonisation pour mettre à jour leurs annotations déduites des protocoles associés.",
+    "warning-annotations-update": "N'oubliez pas d'indexer toutes les études individuelles et les initiatives d'harmonisation pour mettre à jour leurs annotations déduites des ensembles de données et des protocoles associés."
   },
   "publish": {
     "label": "Publier",
@@ -1058,7 +1061,7 @@
       "population-not-published":"Pour publier un ensemble de données collectées, la population qui lui est liée doit aussi être publiée"
     },
     "require-indexing-alert": "En raison d'une mise à jour dans l'étude '{{entity}}', cet ensemble de données doit être indexé, visitez la page <a href=\"#/admin/statistics-summary\"> <u> administration </u> </a> pour procéder.",
-    "warning-annotations-update": "Publiez {{arg0}} '{{arg1}}' pour mettre à jour ses annotations inférées par ce {{arg2}}."
+    "warning-annotations-update": "N'oubliez pas de publier le {{arg0}} '{{arg1}}' pour mettre à jour ses annotations déduites de ce protocole d'harmonisation."
   },
   "attributes": "Attributs",
   "attribute": {

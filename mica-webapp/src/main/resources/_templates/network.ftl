@@ -385,7 +385,7 @@
           </#if>
 
           <#if annotations?size gt 0>
-              <@entityAnnotations annotations=annotations/>
+              <@entityAnnotations annotations=annotations showCount=true/>
           </#if>
 
         <!-- Variables classifications -->

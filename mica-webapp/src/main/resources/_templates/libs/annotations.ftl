@@ -1,5 +1,5 @@
 
-<#macro entityAnnotations annotations={}>
+<#macro entityAnnotations annotations={} showCount=false>
   <div class="row d-none show-on-content-loaded">
     <div class="col-12">
       <div class="card card-primary card-outline">
@@ -44,7 +44,7 @@
       <div class="card-header">
         <button type="button" class="${'btn btn-link btn-block text-navy text-left pl-0 ' + collapsedClass}"
                 data-toggle="collapse"
-                data-target="#${taxonomyId}">${taxonomyLocalized} <@itemCount item=taxonomyItem/></button>
+                data-target="#${taxonomyId}">${taxonomyLocalized} <span class="badge badge-light"><@itemCount item=taxonomyItem/></span></button>
       </div>
       <div id="${taxonomyId}" class="${'collapse ' + showClass}" data-parent="#annotationsAccordion_${index}">
         <div class="card-body">

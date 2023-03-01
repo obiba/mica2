@@ -566,7 +566,10 @@
     "data-access-requests-count-enabled": "Data Access Requests metrics enabled",
     "data-access-requests-count-enabled-help": "Show data access requests counts in the administration section.",
     "taxonomies-for-annotation-by-concept": "Taxonomies for Annotation by Concept",
-    "taxonomies-for-annotation-by-concept-help": "List of taxonomies that will be used when annotating a study by concept."
+    "taxonomies-for-annotation-by-concept-help": "List of taxonomies that will be used when annotating a study by concept.",
+    "warning-annotations-update-study": "Remember to Index all individual studies to update their annotations inferred from associated datasets.",
+    "warning-annotations-update-initiative": "Remember to Index all harmonization initiatives to update their annotations inferred from associated protocols.",
+    "warning-annotations-update": "Remember to Index all individual studies and harmonization initiatives to update their annotations inferred from associated datasets and protocols."
   },
   "publish": {
     "label": "Publish",
@@ -1058,7 +1061,7 @@
       "population-not-published":"Before publishing a collected dataset, its linked population must already be published"
     },
     "require-indexing-alert": "Due to an update in study '{{entity}}' this dataset requires to be indexed, visit the <a href=\"#/admin/statistics-summary\"><u>administration</u></a> page to proceed.",
-    "warning-annotations-update": "Publish {{arg0}} '{{arg1}}' to update its annotations inferred by this {{arg2}}."
+    "warning-annotations-update": "Remember to publish the {{arg0}} '{{arg1}}'  to update its annotations inferred from this harmonization protocol."
   },
   "attributes": "Attributes",
   "attribute": {

@@ -154,7 +154,7 @@
   <div class="page-header" ng-switch="authenticated">
   </div>
 
-  <div class="container alert-fixed-position">
+  <div class="container alert-fixed-position" style="transform: translateX(-50%); left: 50%;">
     <obiba-alert id="MainController"></obiba-alert>
   </div>
 
