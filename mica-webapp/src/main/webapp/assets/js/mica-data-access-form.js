@@ -299,8 +299,48 @@ angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schem
           e.$validators = {
             wordLimitError: function (value) {
               if (angular.isDefined(value) && value !== null) {
+                var wordMax = e.wordLimit;
+                var wordMin = 0;
+                var range = e.wordLimit.split(':');
+                if (range.length > 1) {
+                  wordMin = range[0];
+                  wordMax = range[1];
+                }
                 var wordCount = (value.match(/\S+/g) || []).length;
-                if (wordCount > parseInt(e.wordLimit)) {
+                if (wordCount < parseInt(wordMin)) {
+                  return false;
+                }
+                if (wordCount > parseInt(wordMax)) {
+                  return false;
+                }
+              }
+              return true;
+            }
+          };
+        });
+        form.filter(function (e) {
+          return e.hasOwnProperty('wordMax');
+        }).forEach(function (e) {
+          e.$validators = {
+            wordMaxError: function (value) {
+              if (angular.isDefined(value) && value !== null) {
+                var wordCount = (value.match(/\S+/g) || []).length;
+                if (wordCount > parseInt(e.wordMax)) {
+                  return false;
+                }
+              }
+              return true;
+            }
+          };
+        });
+        form.filter(function (e) {
+          return e.hasOwnProperty('wordMin');
+        }).forEach(function (e) {
+          e.$validators = {
+            wordMinError: function (value) {
+              if (angular.isDefined(value) && value !== null) {
+                var wordCount = (value.match(/\S+/g) || []).length;
+                if (wordCount < parseInt(e.wordMin)) {
                   return false;
                 }
               }
