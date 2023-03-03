@@ -170,3 +170,7 @@ fieldset.quote {
 .tabs-right {
   display: none !important;
 }
+
+.st-node .active a {
+  background-color: aliceblue;
+}
