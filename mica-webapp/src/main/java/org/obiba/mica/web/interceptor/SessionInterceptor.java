@@ -84,7 +84,10 @@ public class SessionInterceptor implements AsyncHandlerInterceptor {
       String uid = SubjectUtils.getAnonymousUserId(request);
       if (Strings.isNullOrEmpty(uid)) {
         String userId = UUID.randomUUID().toString();
-        response.addCookie(new Cookie(SubjectUtils.ANONYMOUS_USER_KEY, userId));
+        Cookie cookie = new Cookie(SubjectUtils.ANONYMOUS_USER_KEY, userId);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        response.addCookie(cookie);
         request.setAttribute(SubjectUtils.ANONYMOUS_USER_KEY, userId);
       }
     }
