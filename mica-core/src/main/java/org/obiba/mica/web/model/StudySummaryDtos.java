@@ -92,6 +92,7 @@ class StudySummaryDtos {
     }
 
     study.getInferredAttributes().forEach(attribute -> builder.addInferredAttributes(attributeDtos.asDto(attribute)));
+    study.getAttributes().forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
 
     if(study.hasModel()) builder.setContent(JSONUtils.toJSON(study.getModel()));
     builder.setStudyResourcePath(study.getResourcePath());
