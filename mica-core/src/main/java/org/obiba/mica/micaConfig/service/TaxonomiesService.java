@@ -14,12 +14,18 @@ import com.google.common.base.Strings;
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
-import org.apache.commons.compress.utils.Lists;
 import org.obiba.mica.core.event.DocumentSetUpdatedEvent;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
-import org.obiba.mica.micaConfig.service.helper.*;
+import org.obiba.mica.micaConfig.service.helper.DatasetIdAggregationMetaDataHelper;
+import org.obiba.mica.micaConfig.service.helper.DceIdAggregationMetaDataHelper;
+import org.obiba.mica.micaConfig.service.helper.NetworkIdAggregationMetaDataHelper;
+import org.obiba.mica.micaConfig.service.helper.NetworksSetsAggregationMetaDataHelper;
+import org.obiba.mica.micaConfig.service.helper.PopulationIdAggregationMetaDataHelper;
+import org.obiba.mica.micaConfig.service.helper.StudiesSetsAggregationMetaDataHelper;
+import org.obiba.mica.micaConfig.service.helper.StudyIdAggregationMetaDataHelper;
+import org.obiba.mica.micaConfig.service.helper.VariablesSetsAggregationMetaDataHelper;
 import org.obiba.mica.network.event.NetworkPublishedEvent;
 import org.obiba.mica.network.event.NetworkUnpublishedEvent;
 import org.obiba.mica.spi.search.TaxonomyTarget;
@@ -40,6 +46,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -112,20 +119,28 @@ public class TaxonomiesService {
     boolean modified = false;
     List<Taxonomy> variableTaxonomies = getAllVariableTaxonomies();
     for (Vocabulary vocabulary : taxonomyTaxonomy.getVocabularies()) {
+
       if (vocabulary.getName().equals("variable")) {
         Term variableChars = vocabulary.getTerm("Variable_chars");
+        Set<String> termsInOtherGroups = vocabulary.getTerms().stream()
+          .filter(term -> !term.equals(variableChars))
+          .flatMap(term -> term.getTerms().stream())
+          .map(Term::getName)
+          .collect(Collectors.toSet());
+
         // check variable taxonomies to be added to meta
         List<String> variableTaxonomiesNames = variableChars.getTerms().stream()
           .map(TaxonomyEntity::getName).collect(Collectors.toList());
         for (Taxonomy variableTaxonomy : variableTaxonomies) {
-          if (!variableTaxonomiesNames.contains(variableTaxonomy.getName())) {
+          String variableTaxonomyName = variableTaxonomy.getName();
+          if (!variableTaxonomiesNames.contains(variableTaxonomyName) && !termsInOtherGroups.contains(variableTaxonomyName)) {
             Term newTerm = new Term(variableTaxonomy.getName());
             newTerm.addAttribute("hidden", "true");
             newTerm.setTitle(variableTaxonomy.getTitle());
             newTerm.setDescription(variableTaxonomy.getDescription());
             variableChars.getTerms().add(newTerm);
             modified = true;
-          } else {
+          } else if (!termsInOtherGroups.contains(variableTaxonomyName)) {
             // check any title/description modifications
             Term term = variableChars.getTerm(variableTaxonomy.getName());
             MapDifference<String, String> diff = Maps.difference(term.getTitle(), variableTaxonomy.getTitle());
@@ -140,6 +155,7 @@ public class TaxonomiesService {
             }
           }
         }
+
         // check variable taxonomies to be removed from meta
         List<String> reverseVariableTaxonomiesNames = variableTaxonomies.stream()
           .map(TaxonomyEntity::getName).collect(Collectors.toList());
