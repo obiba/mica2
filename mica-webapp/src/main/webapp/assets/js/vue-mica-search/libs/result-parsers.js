@@ -21,7 +21,7 @@ class GraphicsResultParser {
           y.push(val.title);
         });
 
-        const width = Array(x.length).fill(x.length* 0.1);
+        const width = Array(x.length).fill(x.length * 0.1);
 
         return [{
           type: "bar",

@@ -260,7 +260,7 @@ const GraphicResult = {
     <div class="card-body">
       <p class="text-muted">{{chartDataset.options.text | translate}}</p>
       <div v-bind:id="containerId" class="row">
-        <div v-bind:id="chartContainerId" class="col-sm-12 col-xl-6 my-auto" style="max-height: 24em"></div>
+        <div v-bind:id="chartContainerId" class="col-sm-12 col-xl-6 my-auto"></div>
 
         <div v-bind:id="tableContainerId" class="col-sm-12 col-xl-6 overflow-auto" style="max-height: 24em">
           <table id="vosr-datasets-result" class="table table-striped" width="100%">
@@ -360,7 +360,7 @@ const GraphicResult = {
         layout.height = (2*1.42857)*12*(this.chartDataset.plotData.data[0] || {}).y.length;
       }
 
-      Plotly.newPlot(this.chartContainerId, this.chartDataset.plotData.data, layout, {responsive: true, displaylogo: false, modeBarButtonsToRemove: ['select2d', 'lasso2d', 'pan', 'zoom', 'autoscale', 'zoomin', 'zoomout', 'resetscale']});
+      Plotly.react(this.chartContainerId, this.chartDataset.plotData.data, layout, {responsive: true, displaylogo: false, modeBarButtonsToRemove: ['select2d', 'lasso2d', 'pan', 'zoom', 'autoscale', 'zoomin', 'zoomout', 'resetscale']});
     },
     onCountClick(event, vocabulary, term, queryOverride) {
       event.preventDefault();
