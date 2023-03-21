@@ -231,7 +231,6 @@ public abstract class AbstractDocumentQuery implements DocumentQueryInterface {
    * Executes query to extract study IDs from the aggregation results
    *
    * @return List of study IDs
-   * @throws IOException
    */
   public List<String> queryStudyIds() {
     return queryStudyIds(query);
@@ -242,7 +241,6 @@ public abstract class AbstractDocumentQuery implements DocumentQueryInterface {
    *
    * @param studyIds
    * @return
-   * @throws IOException
    */
   public List<String> queryStudyIds(List<String> studyIds) {
     return queryStudyIds(newStudyIdQuery(studyIds));

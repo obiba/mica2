@@ -22,8 +22,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 /**
  * Persist AuditEvent managed by the Spring Boot actuator
- *
- * @see org.springframework.boot.actuate.audit.AuditEvent
  */
 @Document(collection = "T_PERSISTENT_AUDIT_EVENT")
 public class PersistentAuditEvent {

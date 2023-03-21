@@ -45,7 +45,6 @@ public interface DocumentQueryInterface {
    * Executes query to extract study IDs from the aggregation results
    *
    * @return List of study IDs
-   * @throws IOException
    */
   List<String> queryStudyIds();
 
@@ -54,7 +53,6 @@ public interface DocumentQueryInterface {
    *
    * @param studyIds
    * @return
-   * @throws IOException
    */
   List<String> queryStudyIds(List<String> studyIds);
 

@@ -169,7 +169,7 @@ public class DraftHarmonizationStudyResource extends AbstractGitPersistableResou
   }
 
   /**
-   * DELETE  /ws/studies/:id -> delete the "id" study.
+   * {@code DELETE  /ws/studies/:id -> delete the "id" study.}
    */
   @DELETE
   @Timed

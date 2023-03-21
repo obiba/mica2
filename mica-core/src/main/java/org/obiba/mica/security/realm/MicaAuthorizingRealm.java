@@ -78,14 +78,14 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
   /**
    * Overridden because the OpalSecurityManager sets {@code this} as the {@code RolePermissionResolver} on all configured
    * realms. This results the following object graph:
-   * <p/>
-   * <pre>
+   * 
+   * {@code
    * AuthorizingReam.rolePermissionResolver -> MicaAuthorizingRealm (this)
    *      ^
    *      |
    * MicaAuthorizingRealm.rolePermissionResolver -> GroupPermissionResolver
-   *
-   * <pre>
+   * }
+   * 
    * By overriding this method, we prevent an infinite loop from occurring when
    * {@code getRolePermissionResolver().resolvePermissionsInRole()} is called.
    */

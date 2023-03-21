@@ -91,7 +91,6 @@ public class DataAccessCollaboratorService {
    *
    * @param dar
    * @param email
-   * @return
    */
   public void inviteCollaborator(@NotNull DataAccessRequest dar, String email) {
     if (!dataAccessRequestUtilService.getDataAccessConfig().isCollaboratorsEnabled()) throw new ForbiddenException("Inviting collaborators is not enabled");
