@@ -289,7 +289,6 @@ public class SubjectAclService {
    *
    * @param resource Resource is expected to apply to a published document
    * @param instance
-   * @return
    */
   @Timed
   public void checkAccess(@NotNull String resource, @Nullable String instance) {

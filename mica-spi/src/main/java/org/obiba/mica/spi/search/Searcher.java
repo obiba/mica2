@@ -196,7 +196,6 @@ public interface Searcher {
    * @param aggregationProperties
    * @param idFilter
    * @return
-   * @throws IOException
    */
   DocumentResults cover(String indexName, String type, Query query, Properties aggregationProperties, @Nullable IdFilter idFilter);
 

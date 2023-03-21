@@ -122,7 +122,8 @@ public class BaseController {
    *
    * @param locale   from cookie (dirty string)
    * @param language from query param
-   * @return
+   *
+   * @return cleaned lang identifier
    */
   protected String getLang(String locale, String language) {
     String lang = language == null ? locale : language;

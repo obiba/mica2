@@ -37,10 +37,8 @@ import static java.util.stream.Collectors.toList;
 
 /**
  * Service for sending e-mails.
- * <p/>
- * <p>
+ * 
  * We use the @Async annotation to send e-mails asynchronously.
- * </p>
  */
 @Service
 public class MailService extends AgateRestService {

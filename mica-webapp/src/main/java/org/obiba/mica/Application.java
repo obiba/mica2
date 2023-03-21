@@ -33,9 +33,8 @@ public class Application {
 
   /**
    * Initializes mica.
-   * <p/>
+   *
    * Spring profiles can be configured with a program arguments --spring.profiles.active=your-active-profile
-   * <p/>
    */
   @PostConstruct
   public void initApplication() {
@@ -48,7 +47,8 @@ public class Application {
 
   /**
    * Main method, used to run the application.
-   * <p/>
+   *
+   * @param args
    * To run the application with hot reload enabled, add the following arguments to your JVM:
    * "-javaagent:spring_loaded/springloaded-jhipster.jar -noverify -Dspringloaded=plugins=io.github.jhipster.loaded.instrument.JHipsterLoadtimeInstrumentationPlugin"
    */

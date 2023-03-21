@@ -16,7 +16,6 @@ import java.io.IOException;
 
 /**
  * This filter is used to mitigate the "Web Application Potentially Vulnerable to Clickjacking". See https://www.tenable.com/plugins/nessus/85582
- * </p>
  */
 public class ClickjackingHttpHeadersFilter implements Filter {
 

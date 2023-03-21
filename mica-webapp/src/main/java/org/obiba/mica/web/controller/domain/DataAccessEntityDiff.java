@@ -41,7 +41,8 @@ public class DataAccessEntityDiff {
 
   /**
    * Merge the different differences types and filter/sort keys.
-   * @return
+   *
+   * @return differences
    */
   public Map<String, List<Object>> getDifferences() {
     Map<String, List<Object>> diffs = Maps.newTreeMap();

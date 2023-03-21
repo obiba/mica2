@@ -160,7 +160,7 @@ public class DraftIndividualStudyResource extends AbstractGitPersistableResource
   }
 
   /**
-   * DELETE  /ws/studies/:id -> delete the "id" study.
+   * {@code DELETE  /ws/studies/:id -> delete the "id" study.}
    */
   @DELETE
   @Timed

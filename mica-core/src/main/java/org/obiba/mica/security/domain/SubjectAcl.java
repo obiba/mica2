@@ -120,8 +120,6 @@ public class SubjectAcl extends AbstractAuditableDocument implements Comparable<
 
   /**
    * Remove all actions.
-   *
-   * @param action
    */
   public void removeActions() {
     actions = null;
