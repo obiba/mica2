@@ -96,10 +96,7 @@ public final class GZipResponseUtil {
 
   /**
    * Adds the gzip HTTP header to the response.
-   * <p/>
-   * <p>
    * This is need when a gzipped body is returned so that browsers can properly decompress it.
-   * </p>
    *
    * @param response the response which will have a header added to it. I.e this method changes its parameter
    * @throws GzipResponseHeadersNotModifiableException Either the response is committed or we were called using the include method
