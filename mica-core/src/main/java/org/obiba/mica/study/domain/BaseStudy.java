@@ -10,19 +10,31 @@
 
 package org.obiba.mica.study.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.hibernate.validator.constraints.URL;
-import org.obiba.mica.core.domain.*;
+import org.obiba.mica.core.domain.AbstractModelAware;
+import org.obiba.mica.core.domain.Attribute;
+import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.domain.Membership;
+import org.obiba.mica.core.domain.Person;
+import org.obiba.mica.core.domain.PersonAware;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.spi.search.Indexable;
 import org.obiba.mica.spi.tables.IStudy;
 
 import javax.validation.constraints.NotNull;
 import java.beans.Transient;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static java.util.stream.Collectors.toList;
 
@@ -297,6 +309,7 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
    *
    * @return Set of attributes
    */
+  @JsonIgnore
   public Set<Attribute> getMergedAttributes() {
     Set<Attribute> clone = new HashSet<Attribute>() {{
       addAll(inferredAttributes);
