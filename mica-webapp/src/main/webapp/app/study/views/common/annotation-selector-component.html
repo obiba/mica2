@@ -31,17 +31,6 @@
     </p>
   </div>
 
-  <div ng-disabled="$ctrl.chosenVocabs && $ctrl.chosenVocabs.length === 1">
-    <label>{{ 'annotation-by-concept.terms' | translate }}</label>
-    <p>
-      <select chosen multiple class="chosen-select"
-              ng-options="term.name as (term.title | localizedString) for term in $ctrl.termChoices"
-              ng-model="$ctrl.chosenTerms">
-        <option value="">-- {{'choose-term' | translate}} --</option>
-      </select>
-    </p>
-  </div>
-
   <p>
     <button class="btn btn-primary btn-responsive" type="button" ng-disabled="!$ctrl.readyToTag" ng-click="$ctrl.addTags()" translate>annotation-by-concept.annotate</button>
   </p>

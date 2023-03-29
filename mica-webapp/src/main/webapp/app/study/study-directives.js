@@ -50,7 +50,6 @@ mica.study
       function reset() {
         self.chosenTaxo = null;
         self.vocabChoices = [];
-        self.termChoices = [];
         self.readyToTag = false;
       }
 
@@ -104,16 +103,7 @@ mica.study
       };
 
       self.vocabsSelected = function() {
-        if (self.chosenVocabs && self.chosenVocabs.length === 1) {
-          self.readyToTag = true;
-          self.termChoices = (self.vocabChoices.filter(v => v.name === self.chosenVocabs[0])[0] || {terms: []}).terms;
-        } else if (self.chosenVocabs && self.chosenVocabs.length > 0) {
-          self.readyToTag = true;
-          self.termChoices = [];
-        } else {
-          self.readyToTag = false;
-          self.termChoices = [];
-        }
+        self.readyToTag = self.chosenVocabs && self.chosenVocabs.length > 0
       };
 
       self.addTags = function() {
@@ -126,16 +116,8 @@ mica.study
           self.chosenVocabs.forEach(vocab => {
             attributes.push({namespace: namespace, name: vocab});
           });
-        } else if (Array.isArray(self.chosenVocabs) && self.chosenVocabs.length === 1) {
-          var name = Array.isArray(self.chosenVocabs) ? self.chosenVocabs[0] : self.chosenVocabs;
-
-          if (Array.isArray(self.chosenTerms) && self.chosenTerms.length > 0) {
-            self.chosenTerms.forEach(term => {
-              attributes.push({namespace: namespace, name: name, values: {und: term}});
-            });
-          } else {
-            attributes.push({namespace: namespace, name: name});
-          }
+        } else {
+          attributes.push({namespace: namespace, name: name});
         }
 
         var processed = processNewtagsWithCurrent(attributes);
