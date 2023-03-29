@@ -60,9 +60,6 @@ mica.study
         // do not repeat tags with same namespace, name and value
         self.tags.forEach(tag => {
           var found = res.filter(r => r.namespace === tag.namespace && r.name === tag.name);
-          if (found.values && tag.values && found.values.und !== tag.values.und) {
-            res.push(tag);
-          }
 
           if (!found || (Array.isArray(found) && found.length === 0)) {
             res.push(tag);
@@ -103,7 +100,7 @@ mica.study
       };
 
       self.vocabsSelected = function() {
-        self.readyToTag = self.chosenVocabs && self.chosenVocabs.length > 0
+        self.readyToTag = self.chosenVocabs && self.chosenVocabs.length > 0;
       };
 
       self.addTags = function() {
@@ -112,12 +109,10 @@ mica.study
         var namespace = Array.isArray(self.chosenTaxo) ? self.chosenTaxo[0] : self.chosenTaxo;
 
         // more than one vocab forgoes the value
-        if (Array.isArray(self.chosenVocabs) && self.chosenVocabs.length > 1) {
+        if (Array.isArray(self.chosenVocabs) && self.chosenVocabs.length > 0) {
           self.chosenVocabs.forEach(vocab => {
             attributes.push({namespace: namespace, name: vocab});
           });
-        } else {
-          attributes.push({namespace: namespace, name: name});
         }
 
         var processed = processNewtagsWithCurrent(attributes);
@@ -159,15 +154,10 @@ mica.study
                   namespaceMap = acc[att.namespace] = {title: taxonomy.title, description: taxonomy.description, names: {}};
                 }
                 const vocabulary = taxonomy.vocabularies.filter(vocabulary => vocabulary.name === att.name).pop();
-                const terms = vocabulary.terms;
                 let nameMap = namespaceMap.names[att.name];
                 if (!nameMap) {
-                  nameMap = namespaceMap.names[att.name] = {title: vocabulary.title, description: vocabulary.description, values: []};
+                  namespaceMap.names[att.name] = {title: vocabulary.title, description: vocabulary.description, values: []};
                 }
-                nameMap.values = nameMap.values.concat(
-                  terms.filter(term => term.name === (att.values || [{value:''}])[0].value)
-                    .map(term => ({name: term.name, title: term.title, description: term.description}))
-                );
 
                 return acc;
               }, {});
