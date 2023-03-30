@@ -153,6 +153,7 @@ public class AnnotationsCollector {
     public LocalizedString getTitle() {
       return title;
     }
+    
     public int getCount() {
       return count;
     }
@@ -160,26 +161,28 @@ public class AnnotationsCollector {
 
   public static class TaxonomyAnnotationItem extends AnnotationItem {
     private final List<VocabularyAnnotationItem> vocabularies;
-     public TaxonomyAnnotationItem(LocalizedString title, List<VocabularyAnnotationItem> vocabularies, int count) {
-       super(title, count);
-       this.vocabularies = vocabularies;
-     }
+
+    public TaxonomyAnnotationItem(LocalizedString title, List<VocabularyAnnotationItem> vocabularies, int count) {
+      super(title, count);
+      this.vocabularies = vocabularies;
+    }
+
     public List<VocabularyAnnotationItem> getVocabularies() {
       return vocabularies;
     }
   }
 
-  public static class VocabularyAnnotationItem extends AnnotationItem{
+  public static class VocabularyAnnotationItem extends AnnotationItem {
     private final String name;
 
     private final List<TermItem> terms;
     private boolean missing = false;
 
-     public VocabularyAnnotationItem(String name, LocalizedString title, List<TermItem> terms, int count) {
-       super(title, count);
-       this.name = name;
-       this.terms = terms;
-     }
+    public VocabularyAnnotationItem(String name, LocalizedString title, List<TermItem> terms, int count) {
+      super(title, count);
+      this.name = name;
+      this.terms = terms;
+    }
 
     public String getName() {
       return name;
@@ -198,12 +201,18 @@ public class AnnotationsCollector {
       return missing;
     }
   }
-  public static class TermItem extends AnnotationItem{
+  public static class TermItem extends AnnotationItem {
+    private final String name;
     private final LocalizedString term;
 
     public TermItem(String name, LocalizedString title, int count) {
       super(title, count);
+      this.name = name;
       this.term = title;
+    }
+
+    public String getName() {
+      return name;
     }
 
     public LocalizedString getTerm() {
