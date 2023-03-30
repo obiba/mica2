@@ -70,7 +70,7 @@ public class AnnotationsCollector {
 
       if (groupedAttributes.containsKey(taxonomyName)) {
         Map<String, List<LocalizedString>> attVocabularyNames = groupedAttributes.get(taxonomyName);
-        Map<String, VocabularyAnnotationItem> vocTranslations = new LinkedHashMap<>();
+        List<VocabularyAnnotationItem> vocTranslations = new ArrayList<>();
         taxonomy.getVocabularies().forEach(vocabulary -> {
           String vocabularyName = vocabulary.getName();
 
@@ -90,18 +90,18 @@ public class AnnotationsCollector {
               )
               .collect(Collectors.toList());
 
-            vocTranslations.put(
-              vocabularyName,
+            vocTranslations.add(
               new VocabularyAnnotationItem(
+                vocabularyName,
                 LocalizedString.from(vocabulary.getTitle()),
                 terms.isEmpty() ? new ArrayList<>() : terms,
                 addCounts ? counts.get(VOCABULARY_COUNTS).get(taxonomyName+"."+vocabularyName) : -1
               )
             );
           } else {
-            vocTranslations.put(
-              vocabularyName,
+            vocTranslations.add(
               new VocabularyAnnotationItem(
+                vocabularyName,
                 LocalizedString.from(vocabulary.getTitle()),
                 new ArrayList<>(),
                 -1
@@ -159,26 +159,33 @@ public class AnnotationsCollector {
   }
 
   public static class TaxonomyAnnotationItem extends AnnotationItem {
-    private final Map<String, VocabularyAnnotationItem> vocabularies;
-     public TaxonomyAnnotationItem(LocalizedString title, Map<String, VocabularyAnnotationItem> vocabularies, int count) {
+    private final List<VocabularyAnnotationItem> vocabularies;
+     public TaxonomyAnnotationItem(LocalizedString title, List<VocabularyAnnotationItem> vocabularies, int count) {
        super(title, count);
        this.vocabularies = vocabularies;
      }
-    public Map<String, VocabularyAnnotationItem> getVocabularies() {
+    public List<VocabularyAnnotationItem> getVocabularies() {
       return vocabularies;
     }
   }
 
   public static class VocabularyAnnotationItem extends AnnotationItem{
+    private final String name;
+
     private final List<TermItem> terms;
     private boolean missing = false;
 
-     public VocabularyAnnotationItem(LocalizedString title, List<TermItem> terms, int count) {
+     public VocabularyAnnotationItem(String name, LocalizedString title, List<TermItem> terms, int count) {
        super(title, count);
+       this.name = name;
        this.terms = terms;
      }
 
-     public VocabularyAnnotationItem notPresent() {
+    public String getName() {
+      return name;
+    }
+
+    public VocabularyAnnotationItem notPresent() {
        missing = true;
        return this;
      }

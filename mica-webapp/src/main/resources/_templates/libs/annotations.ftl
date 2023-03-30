@@ -60,13 +60,13 @@
 </#macro>
 
 <#macro entityAnnotationsDetail taxonomyId="" vocabularies={}>
-    <#list vocabularies as vocabulary, vocabularyItem>
-        <#if !vocabularyItem.missing>
+    <#list vocabularies as vocabulary>
+        <#if !vocabulary.missing>
             <#assign vocabularyId = taxonomyId + 'vocabulary' + vocabulary?index />
-          <p class="mb-1 pl-1 py-2 bg-light font-weight-bold"><@vocabularyColorLabel vocabulary=vocabulary/> ${localize(vocabularyItem.title)} <span class="float-right"><@itemCount item=vocabularyItem/></span></p>
+          <p class="mb-1 pl-1 py-2 bg-light font-weight-bold"><@vocabularyColorLabel vocabulary=vocabulary.name/> ${localize(vocabulary.title)} <span class="float-right"><@itemCount item=vocabulary/></span></p>
           <div class="pt-1 pb-1 pl-1">
             <div class="row ">
-                <#list vocabularyItem.terms as termItem>
+                <#list vocabulary.terms as termItem>
                   <div class="col-6 font-weight-normal">${localize(termItem.title)} <span class="float-right"><@itemCount item=termItem/></span></div>
                 </#list>
             </div>
@@ -77,16 +77,16 @@
 
 <#macro entityAnnotationsSummary vocabularies={}>
   <dl class="row mt-0 mb-1 " style="columns: 2">
-      <#list vocabularies as vocabulary, vocabularyItem>
+      <#list vocabularies as vocabulary>
         <dt class="col-12 <#if !vocabulary?is_last>mb-2</#if>">
-            <@vocabularyColorLabel vocabulary=vocabulary/>
-          <span class="<#if vocabularyItem.missing>text-muted</#if>">${localize(vocabularyItem.title)}</span>
-            <#if vocabularyItem.missing>
+            <@vocabularyColorLabel vocabulary=vocabulary.name/>
+          <span class="<#if vocabulary.missing>text-muted</#if>">${localize(vocabulary.title)}</span>
+            <#if vocabulary.missing>
               <span><i class="fas float-right text-muted fa-minus"></i></span>
-            <#elseif vocabularyItem.count == -1>
+            <#elseif vocabulary.count == -1>
               <span><i class="fas fa-check float-right text-success"></i></span>
             <#else>
-              <span class="float-right"><@itemCount item=vocabularyItem/></span>
+              <span class="float-right"><@itemCount item=vocabulary/></span>
             </#if>
             <#--          <span><i class="fas float-right <#if vocabularyItem.missing>text-muted fa-minus<#else>text-success fa-check</#if>"></i></span>-->
         </dt>

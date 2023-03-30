@@ -26,7 +26,6 @@ import org.obiba.mica.core.support.DatasetInferredAttributesCollector;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
-import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.spi.tables.StudyTableSource;
@@ -49,9 +48,6 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
 
   @Inject
   private StudyTableSourceServiceRegistry studyTableSourceServiceRegistry;
-
-  @Inject
-  private MicaConfigService micaConfigService;
 
   /**
    * Get all {@link org.obiba.mica.dataset.domain.DatasetVariable}s from a {@link org.obiba.mica.dataset.domain.Dataset}.
@@ -145,10 +141,8 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
   }
 
   protected Iterable<DatasetVariable> wrappedGetDatasetVariables(T dataset) {
-    List<String> usableVariableTaxonomiesForConceptTagging = micaConfigService.getConfig().getUsableVariableTaxonomiesForConceptTagging();
-
     try {
-      return getDatasetVariables(dataset, new DatasetInferredAttributesCollector(usableVariableTaxonomiesForConceptTagging));
+      return getDatasetVariables(dataset, new DatasetInferredAttributesCollector(null));
     } catch (NoSuchValueTableException e) {
       throw e;
     } catch (MagmaRuntimeException e) {
