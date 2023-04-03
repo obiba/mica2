@@ -12,19 +12,35 @@ package org.obiba.mica.network.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.core.domain.Attribute;
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.rest.FileResource;
+import org.obiba.mica.micaConfig.service.TaxonomiesService;
 import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
+import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -41,6 +57,12 @@ public class PublishedNetworkResource {
   private PublishedNetworkService publishedNetworkService;
 
   @Inject
+  private PublishedStudyService publishedStudyService;
+
+  @Inject
+  private TaxonomiesService taxonomiesService;
+
+  @Inject
   private ApplicationContext applicationContext;
 
   @Inject
@@ -54,6 +76,30 @@ public class PublishedNetworkResource {
   public Mica.NetworkDto get(@PathParam("id") String id) {
     checkAccess(id);
     return dtos.asDto(getNetwork(id));
+  }
+
+  @GET
+  @Path("/study-annotations")
+  public Map<String, List<Taxonomy>> annotations(@PathParam("id") String id) {
+    checkAccess(id);
+    @NotNull
+    final List<Taxonomy> variableTaxonomies = taxonomiesService.getVariableTaxonomies();
+    final List<BaseStudy> networkStudies = publishedStudyService.findByIds(getNetwork(id).getStudyIds());
+
+    Map<String, Map<String, Map<String, List<LocalizedString>>>> result = networkStudies.stream().collect(Collectors.toMap(
+      study -> study.getId(),
+      study -> study.getMergedAttributes().stream().collect(
+        Collectors.groupingBy(
+          Attribute::getNamespace,
+          LinkedHashMap::new, Collectors.groupingBy(
+            Attribute::getName,
+            Collectors.mapping(attribute -> Optional.ofNullable(attribute.getValues()).orElse(new LocalizedString()), Collectors.toList())
+          )
+        )
+      )
+    ));
+
+    return result.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> processMergedAttributes(variableTaxonomies, entry.getValue())));
   }
 
   @Path("/file/{fileId}")
@@ -77,5 +123,37 @@ public class PublishedNetworkResource {
     Network network = publishedNetworkService.findById(id);
     if (network == null) throw NoSuchNetworkException.withId(id);
     return network;
+  }
+
+  private List<Taxonomy> processMergedAttributes(List<Taxonomy> variableTaxonomies, Map<String, Map<String, List<LocalizedString>>> groupedAttributes) {
+    List<Taxonomy> taxonomies = new ArrayList<>();
+
+    groupedAttributes.keySet().forEach(taxonomyName -> {
+      Taxonomy foundTaxonomy = variableTaxonomies.stream().filter(taxonomy -> taxonomy.getName().equals(taxonomyName)).findFirst().orElse(null);
+      if (foundTaxonomy != null) {
+        Set<String> vocabularyNames = groupedAttributes.get(taxonomyName).keySet();
+        List<Vocabulary> foundVocabularies = foundTaxonomy.getVocabularies().stream().filter(vocabulary -> vocabularyNames.contains(vocabulary.getName())).collect(Collectors.toList());
+
+        Taxonomy theTaxonomy = new Taxonomy(foundTaxonomy.getName());
+        theTaxonomy.setTitle(foundTaxonomy.getTitle());
+        theTaxonomy.setDescription(foundTaxonomy.getDescription());
+
+        foundVocabularies.forEach(vocabulary -> {
+          Vocabulary aVocabulary = new Vocabulary(vocabulary.getName());
+          aVocabulary.setTitle(vocabulary.getTitle());
+          aVocabulary.setDescription(vocabulary.getDescription());
+
+          List<String> termNames = groupedAttributes.get(taxonomyName).get(vocabulary.getName()).stream().map(LocalizedString::getUndetermined).collect(Collectors.toList());
+
+          aVocabulary.setTerms(vocabulary.getTerms().stream().filter(term -> termNames.contains(term.getName())).collect(Collectors.toList()));
+
+          theTaxonomy.addVocabulary(aVocabulary);
+        });
+
+        taxonomies.add(theTaxonomy);
+      }
+    });
+
+    return taxonomies;
   }
 }
