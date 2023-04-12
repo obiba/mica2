@@ -2,7 +2,6 @@ package org.obiba.mica.web.controller;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.Membership;
@@ -64,9 +63,6 @@ public class NetworkController extends BaseController {
       .collect(Collectors.toList()));
 
     List<BaseStudy> studies = publishedStudyService.findByIds(network.getStudyIds());
-    Map<String, AnnotationsCollector.TaxonomyAnnotationItem> annotations = AnnotationsCollector.collectAndCount(studies, taxonomiesService);
-    params.put("annotations", annotations);
-    params.put("annotationsAsJson", JSONUtils.objectToJSON(annotations));
 
     List<BaseStudy> individualStudies = studies.stream()
       .filter(s -> (s instanceof Study) && subjectAclService.isAccessible("/individual-study", s.getId()))
@@ -76,6 +72,10 @@ public class NetworkController extends BaseController {
       .filter(s -> (s instanceof HarmonizationStudy) && subjectAclService.isAccessible("/harmonization-study", s.getId()))
       .collect(Collectors.toList());
     params.put("harmonizationStudies", harmonizationStudies);
+
+    // TODO do we want a separate one for Harmonization Initiatives
+    Map<String, AnnotationsCollector.TaxonomyAnnotationItem> annotations = AnnotationsCollector.collectAndCount(individualStudies, taxonomiesService);
+    params.put("annotations", annotations);
 
     Map<String, LocalizedString> studyAcronyms = studies.stream().collect(Collectors.toMap(AbstractGitPersistable::getId, BaseStudy::getAcronym));
     params.put("studyAcronyms", studyAcronyms);
