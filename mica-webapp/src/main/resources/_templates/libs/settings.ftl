@@ -172,3 +172,4 @@
 <#assign networkVariablesClassificationsTaxonomies = variablesClassificationsTaxonomies/>
 <#assign studyVariablesClassificationsTaxonomies = variablesClassificationsTaxonomies/>
 <#assign datasetVariablesClassificationsTaxonomies = variablesClassificationsTaxonomies/>
+<#assign classificationTaxonomiesToExclude = ['Mlstr_additional']/>

@@ -1,5 +1,7 @@
 
 <#macro entityAnnotations annotations={} showCount=false>
+  <#assign taxonomyKeys = annotations?keys?filter(key -> !classificationTaxonomiesToExclude?seq_contains(key)) >
+
   <div class="row d-none show-on-content-loaded">
     <div class="col-12">
       <div class="card card-primary card-outline">
@@ -17,13 +19,13 @@
         <div class="card-body">
           <div class="tab-content">
             <div class="tab-pane active" id="summary">
-                <#list annotations as taxonomy, taxonomyItem>
-                    <@entityAnnotationsAccordion taxonomy=taxonomy taxonomyItem=taxonomyItem index=taxonomy?index detailed=false />
+                <#list taxonomyKeys as taxonomy>
+                  <@entityAnnotationsAccordion taxonomy=taxonomy taxonomyItem=annotations[taxonomy] index=taxonomy?index detailed=false />
                 </#list>
             </div>
             <div class="tab-pane" id="detail">
-                <#list annotations as taxonomy, taxonomyItem>
-                    <@entityAnnotationsAccordion taxonomy=taxonomy taxonomyItem=taxonomyItem index=taxonomy?index detailed=true />
+                <#list taxonomyKeys as taxonomy>
+                  <@entityAnnotationsAccordion taxonomy=taxonomy taxonomyItem=annotations[taxonomy] index=taxonomy?index detailed=true />
                 </#list>
             </div>
           </div>
@@ -42,7 +44,7 @@
         <#assign showClass = (index == 0)?then('show', '') />
 
       <div class="card-header pr-2">
-        <button type="button" class="${'btn btn-link btn-block text-navy text-left pl-0 ' + collapsedClass}"
+        <button type="button" class="${'btn btn-block text-navy text-left pl-0 ' + collapsedClass}"
                 data-toggle="collapse"
                 data-target="#${taxonomyId}">${taxonomyLocalized} <span class="badge badge-light"><@itemCount item=taxonomyItem/></span></button>
       </div>
@@ -63,11 +65,11 @@
     <#list vocabularies as vocabulary>
         <#if !vocabulary.missing>
             <#assign vocabularyId = taxonomyId + 'vocabulary' + vocabulary?index />
-          <p class="mb-1 pl-1 py-2 bg-light font-weight-bold"><@vocabularyColorLabel vocabulary=vocabulary.name/> ${localize(vocabulary.title)} <span class="float-right"><@itemCount item=vocabulary/></span></p>
+          <p class="mb-1 pl-1 py-2 bg-light font-weight-bold"><@vocabularyColorLabel vocabulary=vocabulary.name/> ${localize(vocabulary.title)} <span class="float-right pr-2"><@itemCount item=vocabulary/></span></p>
           <div class="pt-1 pb-1 pl-1">
             <div class="row ">
                 <#list vocabulary.terms as termItem>
-                  <div class="col-6 font-weight-normal">${localize(termItem.title)} <span class="float-right"><@itemCount item=termItem/></span></div>
+                  <div class="col-xs-12 col-md-6 font-weight-normal">${localize(termItem.title)} <span class="float-right"><@itemCount item=termItem/></span></div>
                 </#list>
             </div>
           </div>

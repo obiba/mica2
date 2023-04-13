@@ -265,9 +265,10 @@
         <#if showStudyFiles>
           <@studyFilesBrowser study=study/>
         </#if>
-
-        <#if annotations?size gt 0>
+        <#if type != "Harmonization">
+          <#if annotations?size gt 0>
             <@entityAnnotations annotations=annotations/>
+          </#if>
         </#if>
 
         <!-- Variables classifications -->

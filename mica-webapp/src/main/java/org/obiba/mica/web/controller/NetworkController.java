@@ -73,9 +73,11 @@ public class NetworkController extends BaseController {
       .collect(Collectors.toList());
     params.put("harmonizationStudies", harmonizationStudies);
 
-    // TODO do we want a separate one for Harmonization Initiatives
     Map<String, AnnotationsCollector.TaxonomyAnnotationItem> annotations = AnnotationsCollector.collectAndCount(individualStudies, taxonomiesService);
     params.put("annotations", annotations);
+
+    Map<String, AnnotationsCollector.TaxonomyAnnotationItem> initiativeAnnotations = AnnotationsCollector.collectAndCount(individualStudies, taxonomiesService);
+    params.put("initiativeAnnotations", annotations);
 
     Map<String, LocalizedString> studyAcronyms = studies.stream().collect(Collectors.toMap(AbstractGitPersistable::getId, BaseStudy::getAcronym));
     params.put("studyAcronyms", studyAcronyms);
