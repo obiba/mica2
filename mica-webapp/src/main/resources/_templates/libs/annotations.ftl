@@ -35,23 +35,22 @@
   </div>
 </#macro>
 
-<#macro entityAnnotationsAccordion taxonomy={} taxonomyItem={} index=0 detailed=true>
+<#macro entityAnnotationsAccordion taxonomy="" taxonomyItem={} index=0 detailed=true>
   <div class="accordion my-2" id="annotationsAccordion_${index}">
     <div class="card mb-0 ${taxonomy}">
         <#assign taxonomyLocalized = localize(taxonomyItem.title) />
-        <#assign taxonomyId = taxonomyLocalized?replace(" ", "_") />
         <#assign collapsedClass = (index != 0)?then('collapsed', '') />
         <#assign showClass = (index == 0)?then('show', '') />
 
       <div class="card-header pr-2">
         <button type="button" class="${'btn btn-block text-navy text-left pl-0 ' + collapsedClass}"
                 data-toggle="collapse"
-                data-target="#${taxonomyId}">${taxonomyLocalized} <span class="badge badge-light"><@itemCount item=taxonomyItem/></span></button>
+                data-target="#${taxonomy}">${taxonomyLocalized} <span class="badge badge-light"><@itemCount item=taxonomyItem/></span></button>
       </div>
-      <div id="${taxonomyId}" class="${'collapse ' + showClass}" data-parent="#annotationsAccordion_${index}">
+      <div id="${taxonomy}" class="${'collapse ' + showClass}" data-parent="#annotationsAccordion_${index}">
         <div class="card-body">
             <#if detailed>
-                <@entityAnnotationsDetail taxonomyId=taxonomyId vocabularies=taxonomyItem.vocabularies />
+                <@entityAnnotationsDetail taxonomyId=taxonomy vocabularies=taxonomyItem.vocabularies />
             <#else>
                 <@entityAnnotationsSummary vocabularies=taxonomyItem.vocabularies />
             </#if>
