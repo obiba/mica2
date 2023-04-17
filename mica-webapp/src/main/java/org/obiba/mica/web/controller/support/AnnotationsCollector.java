@@ -7,6 +7,7 @@ import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -129,15 +130,24 @@ public class AnnotationsCollector {
     Map<String, Integer> taxMap = counts.get(TAXONOMY_COUNTS);
     Map<String, Integer> vocMap = counts.get(VOCABULARY_COUNTS);
     Map<String, Integer> termMap = counts.get(TERM_COUNTS);
+    BiConsumer<String, Map<String, Integer>> increment = (key, map) -> map.merge(key, 1, Integer::sum);
 
     IntStream.range(0, attributesList.size()).forEach(i -> {
+      Map<String, Boolean> taxExistsMap = new HashMap<>();
+      Map<String, Boolean> vocExistsMap = new HashMap<>();
+      Map<String, Boolean> termExistsMap = new HashMap<>();
+
       Set<Attribute> inferredAttributes = attributesList.get(i);
       inferredAttributes.forEach(attribute -> {
-        taxMap.put(attribute.getNamespace(), i + 1);
-        vocMap.put(attribute.getNamespace()+"."+attribute.getName(), i + 1);
+        taxExistsMap.put(attribute.getNamespace(), true);
+        vocExistsMap.put(attribute.getNamespace()+"."+attribute.getName(), true);
         if (attribute.getValues() != null)
-          termMap.put(attribute.getNamespace()+"."+attribute.getName()+"."+attribute.getValues().getUndetermined(), i + 1);
+          termExistsMap.put(attribute.getNamespace()+"."+attribute.getName()+"."+attribute.getValues().getUndetermined(), true);
       });
+
+      taxExistsMap.keySet().forEach(key -> increment.accept(key, taxMap));
+      vocExistsMap.keySet().forEach(key -> increment.accept(key, vocMap));
+      termExistsMap.keySet().forEach(key -> increment.accept(key, termMap));
     });
   }
 
@@ -153,7 +163,7 @@ public class AnnotationsCollector {
     public LocalizedString getTitle() {
       return title;
     }
-    
+
     public int getCount() {
       return count;
     }
