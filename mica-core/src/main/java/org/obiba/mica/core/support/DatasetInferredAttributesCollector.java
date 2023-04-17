@@ -1,6 +1,5 @@
 package org.obiba.mica.core.support;
 
-import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.dataset.domain.DatasetVariable;
@@ -10,6 +9,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 public class DatasetInferredAttributesCollector {
   private Set<Attribute> keys = new HashSet<>();

@@ -24,7 +24,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.util.List;
 
 @Component
 public class CacheService {
@@ -96,9 +95,6 @@ public class CacheService {
     @Inject
     private CollectedDatasetService collectedDatasetService;
 
-    @Inject
-    private MicaConfigService micaConfigService;
-
     @CacheEvict(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver", allEntries = true, beforeInvocation = true)
     public void clearDatasetVariablesCache(Dataset dataset) {
       log.info("Clearing dataset variables cache dataset-{}", dataset.getId());
@@ -106,9 +102,8 @@ public class CacheService {
 
     @Async
     public void buildDatasetVariablesCache() {
-      List<String> usableVariableTaxonomiesForConceptTagging = micaConfigService.getConfig().getUsableVariableTaxonomiesForConceptTagging();
       harmonizedDatasetService.findAllPublishedDatasets().forEach(
-        dataset -> harmonizedDatasetService.getDatasetVariables(dataset, new DatasetInferredAttributesCollector(usableVariableTaxonomiesForConceptTagging))
+        dataset -> harmonizedDatasetService.getDatasetVariables(dataset, new DatasetInferredAttributesCollector(null))
           .forEach(v -> dataset.getBaseStudyTables().forEach(st -> {
             String studyId = st.getStudyId();
             try {
@@ -123,7 +118,7 @@ public class CacheService {
           })));
 
       collectedDatasetService.findAllDatasets()
-        .forEach(dataset -> collectedDatasetService.getDatasetVariables(dataset, new DatasetInferredAttributesCollector(usableVariableTaxonomiesForConceptTagging))
+        .forEach(dataset -> collectedDatasetService.getDatasetVariables(dataset, new DatasetInferredAttributesCollector(null))
           .forEach(v -> {
             try {
               collectedDatasetService.getVariableSummary(dataset, v.getName());
