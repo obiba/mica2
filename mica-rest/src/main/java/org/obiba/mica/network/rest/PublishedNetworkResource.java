@@ -86,7 +86,9 @@ public class PublishedNetworkResource {
     final List<Taxonomy> variableTaxonomies = taxonomiesService.getVariableTaxonomies();
     final List<BaseStudy> networkStudies = publishedStudyService.findByIds(getNetwork(id).getStudyIds());
 
-    Map<String, Map<String, Map<String, List<LocalizedString>>>> result = networkStudies.stream().collect(Collectors.toMap(
+    Map<String, Map<String, Map<String, List<LocalizedString>>>> result = networkStudies.stream()
+    .filter(study -> study.getClassName().equals("Study"))
+    .collect(Collectors.toMap(
       study -> study.getId(),
       study -> study.getMergedAttributes().stream().collect(
         Collectors.groupingBy(
