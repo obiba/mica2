@@ -546,19 +546,19 @@ mica.dataset
 
       const showPostPublishAlert = function(dataset, type) {
         const datasetTypeName = $filter('translate')(type).toLowerCase();
-        let studyTypeName, studyId;
+        let studyTypeName, studyId, warningMessage;
         if (type === 'harmonized-dataset') {
           studyId = dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.studyId;
-          studyTypeName = $filter('translate')('global.harmonization-study').toLowerCase();
+          warningMessage = 'harmonization-protocol.warning-annotations-update';
         } else {
           studyId = dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.studyId;
-          studyTypeName = $filter('translate')('global.individual-study').toLowerCase();
+          warningMessage = 'dataset.warning-annotations-update';
         }
 
         AlertBuilder.newBuilder()
           .delay(12000)
           .type('warning')
-          .trMsg('dataset.warning-annotations-update', [studyTypeName, studyId, datasetTypeName])
+          .trMsg(warningMessage, [studyTypeName, studyId])
           .build();
       };
 
