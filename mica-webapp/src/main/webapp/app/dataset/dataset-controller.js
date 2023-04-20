@@ -545,7 +545,6 @@ mica.dataset
       }
 
       const showPostPublishAlert = function(dataset, type) {
-        const datasetTypeName = $filter('translate')(type).toLowerCase();
         let studyTypeName, studyId, warningMessage;
         if (type === 'harmonized-dataset') {
           studyId = dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.studyId;
