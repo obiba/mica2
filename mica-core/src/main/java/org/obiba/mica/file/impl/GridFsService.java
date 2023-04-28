@@ -79,12 +79,11 @@ public class GridFsService implements FileStoreService {
   public void deleteWithMetadata(String id, Map<String, String> metadata) {
     if (metadata == null) delete(id);
 
-    Criteria criteria = new Criteria();
+    Criteria criteria = new Criteria().and("filename").is(id);;
     for (Map.Entry<String, String> entry : metadata.entrySet()) {
       criteria = criteria.and(String.format("metadata.%s", entry.getKey())).is(entry.getValue());
     }
 
-    criteria = criteria.and("filename").is(id);
     gridFsOperations.delete(new Query().addCriteria(criteria));
   }
 }
