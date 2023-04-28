@@ -66,6 +66,7 @@ import java.io.InputStream;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -150,7 +151,11 @@ public class FileSystemService {
         fileStoreService.delete(saved.getFileReference());
         attachmentRepository.deleteById(saved.getId());
       }
-      fileStoreService.save(saved.getId());
+
+      HashMap<String, String> metadata = new HashMap<>();
+      metadata.put("attachment", saved.getId());
+      fileStoreService.saveWithMetaData(saved.getId(), metadata);
+
       saved.setJustUploaded(false);
     }
 
@@ -185,7 +190,7 @@ public class FileSystemService {
     List<Attachment> attachments = attachmentRepository.findByPathAndNameOrderByCreatedDateDesc(state.getPath(), state.getName());
     attachments.forEach(a -> {
       attachmentRepository.delete(a);
-      fileStoreService.delete(a.getFileReference());
+      fileStoreService.deleteWithMetadata(a.getFileReference(), new HashMap<String, String>(){{put("attachment", a.getId());}});
     });
     attachmentStateRepository.delete(state);
     eventBus.post(new FileDeletedEvent(state));
@@ -462,7 +467,11 @@ public class FileSystemService {
     newAttachment.setPath(newPath);
     newAttachment.setName(newName);
     save(newAttachment);
-    fileStoreService.save(newAttachment.getFileReference(), fileStoreService.getFile(attachment.getFileReference()));
+    fileStoreService.saveWithMetaData(
+      newAttachment.getFileReference(),
+      fileStoreService.getFile(attachment.getFileReference()),
+      new HashMap<String, String>(){{put("attachment", newAttachment.getId());}}
+    );
     if(delete) updateStatus(state, RevisionStatus.DELETED);
   }
 
