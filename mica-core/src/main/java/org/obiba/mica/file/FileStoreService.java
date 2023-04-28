@@ -10,7 +10,10 @@
 
 package org.obiba.mica.file;
 
+import org.springframework.lang.Nullable;
+
 import java.io.InputStream;
+import java.util.Map;
 
 /**
  * File storage service: read, write and delete operations.
@@ -36,6 +39,25 @@ public interface FileStoreService {
   void save(String id, InputStream input) throws FileRuntimeException;
 
   /**
+   * Insert or update a file with the content of the {@link java.io.InputStream} along with some metadata.
+   *
+   * @param id
+   * @param input
+   * @param metadata - Key-Value entries
+   * @throws FileRuntimeException
+   */
+  void saveWithMetaData(String id, InputStream input, @Nullable Map<String, String>  metadata) throws FileRuntimeException;
+
+  /**
+   * Save a file from the {@link org.obiba.mica.file.service.TempFileService} into the final file storage along with some metadata.
+   *
+   * @param tempFileId
+   * @param metadata - Key-Value entries
+   * @throws FileRuntimeException
+   */
+  void saveWithMetaData(String tempFileId, @Nullable Map<String, String> metadata) throws FileRuntimeException;
+
+  /**
    * Save a file from the {@link org.obiba.mica.file.service.TempFileService} into the final file storage.
    *
    * @param tempFileId
@@ -49,5 +71,12 @@ public interface FileStoreService {
    * @param id
    */
   void delete(String id);
+
+  /**
+   * Delete the file (ignore if file does not exist).
+   *
+   * @param id
+   */
+  void deleteWithMetadata(String id, @Nullable Map<String, String> metadata);
 
 }

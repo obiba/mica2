@@ -10,20 +10,20 @@
 
 package org.obiba.mica.file.impl;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.inject.Inject;
-
+import com.mongodb.client.gridfs.model.GridFSFile;
 import org.obiba.mica.file.FileRuntimeException;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.service.TempFileService;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsOperations;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
-import com.mongodb.client.gridfs.model.GridFSFile;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
 
 @Component
 public class GridFsService implements FileStoreService {
@@ -43,11 +43,20 @@ public class GridFsService implements FileStoreService {
 
     try {
       return gridFsOperations.getResource(f).getInputStream();
-    } catch (IllegalStateException e) {
-      throw new FileRuntimeException(id);
-    } catch (IOException e) {
+    } catch (IllegalStateException | IOException e) {
       throw new FileRuntimeException(id);
     }
+  }
+
+  @Override
+  public void saveWithMetaData(String id, InputStream input, @Nullable Map<String, String>  metadata) {
+    gridFsOperations.store(input, id, metadata);
+  }
+
+  @Override
+  public void saveWithMetaData(String tempFileId, @Nullable Map<String, String>  metadata) {
+    saveWithMetaData(tempFileId, tempFileService.getInputStreamFromFile(tempFileId), metadata);
+    tempFileService.delete(tempFileId);
   }
 
   @Override
@@ -64,5 +73,17 @@ public class GridFsService implements FileStoreService {
   @Override
   public void delete(String id) {
     gridFsOperations.delete(new Query().addCriteria(Criteria.where("filename").is(id)));
+  }
+
+  @Override
+  public void deleteWithMetadata(String id, Map<String, String> metadata) {
+    if (metadata == null) delete(id);
+
+    Criteria criteria = new Criteria().and("filename").is(id);;
+    for (Map.Entry<String, String> entry : metadata.entrySet()) {
+      criteria = criteria.and(String.format("metadata.%s", entry.getKey())).is(entry.getValue());
+    }
+
+    gridFsOperations.delete(new Query().addCriteria(criteria));
   }
 }
