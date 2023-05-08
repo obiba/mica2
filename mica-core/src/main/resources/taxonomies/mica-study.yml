@@ -245,13 +245,21 @@
       "description":
         "en": "2000 to 2009"
         "fr": "2000 à 2009"
-    - "name": "2010:*"
+    - "name": "2010:2019"
       "title":
-        "en": "2010 and later"
-        "fr": "2010 et plus tard"
+        "en": "2010 to 2019"
+        "fr": "2010 à 2019"
       "description":
-        "en": "2010 and later"
-        "fr": "2010 et plus tard"
+        "en": "2010 to 2019"
+        "fr": "2010 à 2019"
+      "keywords": {}
+    - "name": "2020:*"
+      "title":
+        "en": "2020 and later"
+        "fr": "2020 et plus tard"
+      "description":
+        "en": "2020 and later"
+        "fr": "2020 et plus tard"
       "keywords": {}
 - "name": "end"
   "title":
