@@ -622,14 +622,14 @@ class DatasetsResultParser {
           case 'study': {
             if (!micaConfig.isSingleStudyEnabled) {
               let opalTablePath = path = this.normalizePath(`/study/${opalTable.studySummary.id}`);
-              row.push(stats.studies ? `<a href="${opalTablePath}">${localize(opalTable.studySummary.acronym)}</a>` : '-');
+              row.push(stats.studies ? `<a title="${localize(opalTable.studySummary.name)}" href="${opalTablePath}">${localize(opalTable.studySummary.acronym)}</a>` : '-');
             }
             break;
           }
           case 'initiative': {
             if (!micaConfig.isSingleStudyEnabled) {
               let opalTablePath = path = this.normalizePath(`/study/${opalTable.studySummary.id}`);
-              row.push(stats.studies ? `<a href="${opalTablePath}">${localize(opalTable.studySummary.acronym)}</a>` : '-');
+              row.push(stats.studies ? `<a title="${localize(opalTable.studySummary.name)}" href="${opalTablePath}">${localize(opalTable.studySummary.acronym)}</a>` : '-');
             }
             break;
           }
