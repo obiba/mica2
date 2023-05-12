@@ -159,7 +159,12 @@ public class FileSystemService {
       saved.setJustUploaded(false);
     }
 
-    attachmentRepository.insert(saved);
+    if (saved.getId() == null) {
+      attachmentRepository.insert(saved);
+    } else {
+      attachmentRepository.save(saved);
+    }
+
 
     state.setAttachment(saved);
     state.setLastModifiedDate(LocalDateTime.now());
