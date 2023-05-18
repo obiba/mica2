@@ -74,7 +74,7 @@ mica.study
       TaxonomyFilterResource.query().$promise.then(function (res) {
         const taxos = self.taxos || [];
         if (res && res.length > 0) {
-          self.taxoChoices = taxos.length > 0 ? res.filter(r => taxos.indexOf(r.name) > -1) : res;
+          self.taxoChoices = (taxos.length > 0 ? res.filter(r => taxos.indexOf(r.name) > -1) : res).filter(r => r.name !== 'Mica_variable');
         }
 
         return res;
