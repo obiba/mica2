@@ -122,6 +122,7 @@ public class FileSystemService {
     AttachmentState state = states.isEmpty() ? new AttachmentState() : states.get(0);
 
     boolean attachmentisNew = attachment.isNew();
+    boolean updatingPublishedAttachment = state.isPublished() && state.getPublishedAttachment().getId().equals(attachment.getId());
 
     if(attachmentisNew) {
       attachment.setId(new ObjectId().toString());
@@ -129,7 +130,7 @@ public class FileSystemService {
       Optional<Attachment> found = attachmentRepository.findById(attachment.getId());
       if(!found.isPresent() || attachment.isJustUploaded()) {
         saved = attachment;
-      } else if(state.isPublished() && state.getPublishedAttachment().getId().equals(attachment.getId())) {
+      } else if(updatingPublishedAttachment) {
         // about to update a published attachment, so make a soft copy of it
         attachment.setFileReference(saved.getFileReference());
         attachment.setCreatedDate(LocalDateTime.now());
@@ -145,6 +146,7 @@ public class FileSystemService {
       saved.setLastModifiedBy(getCurrentUsername());
     }
 
+    boolean isJustUploaded = saved.isJustUploaded();
     if(saved.isJustUploaded() && saved.getId() != null) {
       if(attachmentRepository.existsById(saved.getId())) {
         // replace already existing attachment
@@ -159,7 +161,7 @@ public class FileSystemService {
       saved.setJustUploaded(false);
     }
 
-    if (saved.getId() == null) {
+    if (isJustUploaded || updatingPublishedAttachment) {
       attachmentRepository.insert(saved);
     } else {
       attachmentRepository.save(saved);
