@@ -10,17 +10,27 @@
 
 package org.obiba.mica.study.rest;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.core.domain.Attribute;
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.rest.FileResource;
+import org.obiba.mica.micaConfig.service.TaxonomiesService;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.web.model.Mica;
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -34,12 +44,35 @@ import com.codahale.metrics.annotation.Timed;
 @Scope("request")
 public class PublishedStudyResource extends AbstractPublishedStudyResource {
 
+  @Inject
+  private TaxonomiesService taxonomiesService;
+
   @GET
   @Timed
   public Mica.StudyDto getStudyDto(@PathParam("id") String id, @QueryParam("locale") String locale) {
     checkAccess(id);
     BaseStudy study = getStudy(id, locale);
     return study instanceof Study ? dtos.asDto((Study)study) : dtos.asDto((HarmonizationStudy)study);
+  }
+
+  @GET
+  @Path("/study-annotations")
+  public List<Taxonomy> annotations(@PathParam("id") String id, @QueryParam("locale") String locale) {
+    checkAccess(id);
+    BaseStudy study = getStudy(id, locale);
+    final List<Taxonomy> variableTaxonomies = taxonomiesService.getVariableTaxonomies();
+
+    LinkedHashMap<String, Map<String, List<LocalizedString>>> result = study.getMergedAttributes().stream().collect(
+      Collectors.groupingBy(
+        Attribute::getNamespace,
+        LinkedHashMap::new, Collectors.groupingBy(
+          Attribute::getName,
+          Collectors.mapping(attribute -> Optional.ofNullable(attribute.getValues()).orElse(new LocalizedString()), Collectors.toList())
+        )
+      )
+    );
+
+    return TaxonomiesService.processMergedAttributes(variableTaxonomies, result);
   }
 
 

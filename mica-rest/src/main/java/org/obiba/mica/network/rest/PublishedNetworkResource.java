@@ -26,17 +26,14 @@ import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
-import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -101,7 +98,7 @@ public class PublishedNetworkResource {
       )
     ));
 
-    return result.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> processMergedAttributes(variableTaxonomies, entry.getValue())));
+    return result.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> TaxonomiesService.processMergedAttributes(variableTaxonomies, entry.getValue())));
   }
 
   @Path("/file/{fileId}")
@@ -125,37 +122,5 @@ public class PublishedNetworkResource {
     Network network = publishedNetworkService.findById(id);
     if (network == null) throw NoSuchNetworkException.withId(id);
     return network;
-  }
-
-  private List<Taxonomy> processMergedAttributes(List<Taxonomy> variableTaxonomies, Map<String, Map<String, List<LocalizedString>>> groupedAttributes) {
-    List<Taxonomy> taxonomies = new ArrayList<>();
-
-    groupedAttributes.keySet().forEach(taxonomyName -> {
-      Taxonomy foundTaxonomy = variableTaxonomies.stream().filter(taxonomy -> taxonomy.getName().equals(taxonomyName)).findFirst().orElse(null);
-      if (foundTaxonomy != null) {
-        Set<String> vocabularyNames = groupedAttributes.get(taxonomyName).keySet();
-        List<Vocabulary> foundVocabularies = foundTaxonomy.getVocabularies().stream().filter(vocabulary -> vocabularyNames.contains(vocabulary.getName())).collect(Collectors.toList());
-
-        Taxonomy theTaxonomy = new Taxonomy(foundTaxonomy.getName());
-        theTaxonomy.setTitle(foundTaxonomy.getTitle());
-        theTaxonomy.setDescription(foundTaxonomy.getDescription());
-
-        foundVocabularies.forEach(vocabulary -> {
-          Vocabulary aVocabulary = new Vocabulary(vocabulary.getName());
-          aVocabulary.setTitle(vocabulary.getTitle());
-          aVocabulary.setDescription(vocabulary.getDescription());
-
-          List<String> termNames = groupedAttributes.get(taxonomyName).get(vocabulary.getName()).stream().map(LocalizedString::getUndetermined).collect(Collectors.toList());
-
-          aVocabulary.setTerms(vocabulary.getTerms().stream().filter(term -> termNames.contains(term.getName())).collect(Collectors.toList()));
-
-          theTaxonomy.addVocabulary(aVocabulary);
-        });
-
-        taxonomies.add(theTaxonomy);
-      }
-    });
-
-    return taxonomies;
   }
 }
