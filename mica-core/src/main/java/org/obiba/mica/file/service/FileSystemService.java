@@ -154,9 +154,12 @@ public class FileSystemService {
         attachmentRepository.deleteById(saved.getId());
       }
 
-      HashMap<String, String> metadata = new HashMap<>();
-      metadata.put("attachment", saved.getId());
-      fileStoreService.saveWithMetaData(saved.getId(), metadata);
+      // Exclude folders in case justUploaded was set to true by mistake
+      if (!".".equals(saved.getName())) {
+        HashMap<String, String> metadata = new HashMap<>();
+        metadata.put("attachment", saved.getId());
+        fileStoreService.saveWithMetaData(saved.getId(), metadata);
+      }
 
       saved.setJustUploaded(false);
     }
