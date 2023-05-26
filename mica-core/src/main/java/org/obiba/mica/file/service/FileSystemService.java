@@ -161,7 +161,7 @@ public class FileSystemService {
       saved.setJustUploaded(false);
     }
 
-    if (isJustUploaded || updatingPublishedAttachment) {
+    if (attachmentisNew || isJustUploaded || updatingPublishedAttachment) {
       attachmentRepository.insert(saved);
     } else {
       attachmentRepository.save(saved);
