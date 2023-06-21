@@ -342,12 +342,12 @@ class VariablesResultParser {
           }
           case 'dataset': {
             path = this.normalizePath(`/dataset/${summary.datasetId}`);
-            row.push(`<a href="${path}">${localize(summary.datasetAcronym)}</a>`);
+            row.push(`<a title="${localize(summary.datasetName)}" href="${path}">${localize(summary.datasetAcronym)}</a>`);
             break;
           }
           case 'protocol': {
             path = this.normalizePath(`/dataset/${summary.datasetId}`);
-            row.push(`<a href="${path}">${localize(summary.datasetAcronym)}</a>`);
+            row.push(`<a title="${localize(summary.datasetName)}" href="${path}">${localize(summary.datasetAcronym)}</a>`);
             break;
           }
           default:

@@ -376,7 +376,7 @@ class EntityQuery {
 class VariableQuery extends EntityQuery {
   static get FIELDS() {
     return Mica.querySettings.variable.fields ? Mica.querySettings.variable.fields
-      : ['attributes.label.*', 'attributes.description.*', 'variableType', 'valueType', 'categories.*', 'populationId', 'dceId', 'datasetId', 'datasetAcronym', 'attributes.Mlstr_area*'];
+      : ['attributes.label.*', 'attributes.description.*', 'variableType', 'valueType', 'categories.*', 'populationId', 'dceId', 'datasetId', 'datasetAcronym', 'datasetName', 'attributes.Mlstr_area*'];
   }
 
   static get SORT_FIELDS() {
