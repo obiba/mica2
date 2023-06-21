@@ -97,7 +97,7 @@
             <span translate>config.taxonomies-for-annotation-by-concept</span>
           </label>
           <select chosen multiple="multiple" id="usableVariableTaxonomiesForConceptTagging" name="usableVariableTaxonomiesForConceptTagging" ng-model="micaConfig.usableVariableTaxonomiesForConceptTagging"
-              ng-options="taxo.name as (taxo.title | localizedString) for taxo in availableOpalTaxonomies.summaries" class="chosen-select">
+                  ng-options="taxo.name as (taxo.title | localizedString) for taxo in availableOpalTaxonomies.summaries" class="chosen-select">
           </select>
           <p class="input-error" ng-show="form.usableVariableTaxonomiesForConceptTagging.$dirty && form.usableVariableTaxonomiesForConceptTagging.$invalid">
             <span ng-show="form.usableVariableTaxonomiesForConceptTagging.$error.server">{{ errors.name }}</span>

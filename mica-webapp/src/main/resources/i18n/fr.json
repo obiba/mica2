@@ -565,8 +565,8 @@
     "projects-count-enabled-help": "Afficher les nombres de projets dans la section d'administration.",
     "data-access-requests-count-enabled": "Métriques de demandes d'accès aux données activées",
     "data-access-requests-count-enabled-help": "Afficher les nombres de demandes d'accès aux données dans la section d'administration.",
-    "taxonomies-for-annotation-by-concept": "Taxonomies d'annotation par concept",
-    "taxonomies-for-annotation-by-concept-help": "Liste des taxonomies qui seront utilisées lors de l'annotation d'une étude par concept.",
+    "taxonomies-for-annotation-by-concept": "Taxonomies pour l'annotation par domaine",
+    "taxonomies-for-annotation-by-concept-help": "Liste des taxonomies qui seront utilisées lors de l'annotation d'une étude par domaine.",
     "warning-annotations-update-study": "N'oubliez pas d'indexer toutes les études individuelles pour mettre à jour leurs annotations déduites des ensembles de données.",
     "warning-annotations-update-initiative": "N'oubliez pas d'indexer toutes les initiatives d'harmonisation pour mettre à jour leurs annotations déduites des protocoles associés.",
     "warning-annotations-update": "N'oubliez pas d'indexer toutes les études individuelles et les initiatives d'harmonisation pour mettre à jour leurs annotations déduites des ensembles de données et des protocoles associés."
@@ -2641,15 +2641,14 @@
     "IN_EDITION": "En édition"
   },
   "annotation-by-concept": {
-    "title": "Annotations by Concept",
-    "description": "Annotate this study using one of the taxonomies defined in the administration page. The primary use-case for this type of annotation is when a study does not have any corresponding variables.",
+    "title": "Annotations par domaine de taxonomie",
+    "description": "Annoter cette étude par un domaine appartenant à une taxonomie listée ci-dessous. Ces annotations conviennent mieux aux études qui n'ont pas de variables correspondantes.",
     "annotate": "Annotate",
     "taxonomies": "Taxonomies",
-    "vocabularies": "Vocabularies",
-    "terms": "Terms",
+    "vocabularies": "Domaines",
     "annotations-list": "Annotations",
-    "no-annotations": "There are no annotions.",
-    "no-taxonomies-configured": "Pour configurer un sous-ensemble de taxonomies, allez à la section <a href='#/admin/general'><u>Administration / Général / Taxonomies d'annotation par concept</u></a>."
+    "no-annotations": "Il n'y a aucune annotation.",
+    "no-taxonomies-configured": "Pour configurer un sous-ensemble de taxonomies, allez à la section <a href='#/admin/general'><u>Administration / Général / Taxonomies pour l'annotation par domaine</u></a>."
   }
 
 }

@@ -565,8 +565,8 @@
     "projects-count-enabled-help": "Show projects counts in the administration section.",
     "data-access-requests-count-enabled": "Data Access Requests metrics enabled",
     "data-access-requests-count-enabled-help": "Show data access requests counts in the administration section.",
-    "taxonomies-for-annotation-by-concept": "Taxonomies for Annotation by Concept",
-    "taxonomies-for-annotation-by-concept-help": "List of taxonomies that will be used when annotating a study by concept.",
+    "taxonomies-for-annotation-by-concept": "Taxonomies for Annotation by Domain",
+    "taxonomies-for-annotation-by-concept-help": "List of taxonomies that will be used when annotating a study by domain.",
     "warning-annotations-update-study": "Remember to Index all individual studies to update their annotations inferred from associated datasets.",
     "warning-annotations-update-initiative": "Remember to Index all harmonization initiatives to update their annotations inferred from associated protocols.",
     "warning-annotations-update": "Remember to Index all individual studies and harmonization initiatives to update their annotations inferred from associated datasets and protocols."
@@ -2641,14 +2641,14 @@
     "IN_EDITION": "In Edition"
   },
   "annotation-by-concept": {
-    "title": "Annotations by Concept",
-    "description": "Annotate the study by concept using variable taxonomies.",
+    "title": "Annotations by Taxonomy Domain",
+    "description": "Annotate this study by a domain belonging to a taxonomy listed below. These annotations are best suited for studies that do not have any corresponding variables.",
     "annotate": "Annotate",
     "taxonomies": "Taxonomies",
-    "vocabularies": "Vocabularies",
+    "vocabularies": "Domains",
     "terms": "Terms",
     "annotations-list": "Annotations",
-    "no-annotations": "There are no annotions.",
-    "no-taxonomies-configured": "To configure a subset of taxonomies, go to <a href='#/admin/general'><u>Administration / General / Taxonomies for Annotation by Concept</u></a> section."
+    "no-annotations": "There are no annotations.",
+    "no-taxonomies-configured": "To configure a subset of taxonomies, go to <a href='#/admin/general'><u>Administration / General / Taxonomies for Annotation by Domain</u></a> section."
   }
 }
