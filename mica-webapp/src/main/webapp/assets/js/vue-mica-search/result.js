@@ -354,13 +354,7 @@ const GraphicResult = {
   methods: {
     getEventBus: () => EventBus,
     renderCanvas() {
-      let layout = this.chartDataset.plotData.layout || {};
-
-      if ((this.chartDataset.options.type || 'bar') === 'bar') {
-        layout.height = (2*1.42857)*12*(this.chartDataset.plotData.data[0] || {}).y.length;
-      }
-
-      Plotly.react(this.chartContainerId, this.chartDataset.plotData.data, layout, {responsive: true, displaylogo: false, modeBarButtonsToRemove: ['select2d', 'lasso2d', 'pan', 'zoom', 'autoscale', 'zoomin', 'zoomout', 'resetscale']});
+      Plotly.react(this.chartContainerId, this.chartDataset.plotData.data, this.chartDataset.plotData.layout, {responsive: true, displaylogo: false, modeBarButtonsToRemove: ['select2d', 'lasso2d', 'pan', 'zoom', 'autoscale', 'zoomin', 'zoomout', 'resetscale']});
     },
     onCountClick(event, vocabulary, term, queryOverride) {
       event.preventDefault();
