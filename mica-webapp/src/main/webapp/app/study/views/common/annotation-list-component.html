@@ -4,7 +4,7 @@
   <div ng-if="$ctrl.attributes.length > 0" class="voffset3" ng-repeat="(taxName, namespace) in $ctrl.attributesMap">
     <h4>
       {{ namespace.title | localizedString }}
-      <button class="btn-link" type="button" ng-click="$ctrl.removeAttribute(taxName)"><i class="fa fa-times"></i></button>
+      <button class="btn-link" type="button" ng-click="$ctrl.removeAttribute(taxName)"><i class="fa fa-times"></i></button><i ng-show="!$ctrl.isAnnotationInFilterTaxonomies(taxName)" class="fa fa-info-circle text-warning" title="{{'annotation-by-concept.not-in-filtered-taxonomies' | translate}}"></i>
     </h4>
     <div class="row">
       <div class="col-sm-12 col-md-6" ng-repeat="(vocName, name) in namespace.names">

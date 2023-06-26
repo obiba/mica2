@@ -2648,7 +2648,8 @@
     "vocabularies": "Domaines",
     "annotations-list": "Annotations",
     "no-annotations": "Il n'y a aucune annotation.",
-    "no-taxonomies-configured": "Pour configurer un sous-ensemble de taxonomies, allez à la section <a href='#/admin/general'><u>Administration / Général / Taxonomies pour l'annotation par domaine</u></a>."
+    "no-taxonomies-configured": "Pour configurer un sous-ensemble de taxonomies, allez à la section <a href='#/admin/general'><u>Administration / Général / Taxonomies pour l'annotation par domaine</u></a>.",
+    "not-in-filtered-taxonomies": "L'annotation utilise une taxonomie qui n'est pas configurée."
   }
 
 }

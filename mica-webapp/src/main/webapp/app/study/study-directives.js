@@ -136,12 +136,15 @@ mica.study
         this.attributesMap = {};
       }
 
+      isAnnotationInFilterTaxonomies(taxonomyName) {
+        return this.taxonomyNames && this.taxonomyNames.indexOf(taxonomyName) > -1;
+      }
+
       $onChanges() {
-        if (this.attributes && this.taxonomyNames) {
+        if (this.attributes) {
           this.TaxonomyFilterResource.query().$promise
             .then(response => {
               this.taxonomies = (response || [])
-                .filter(r => this.taxonomyNames.indexOf(r.name) > -1)
                 .reduce((acc, tax) => {
                   acc[tax.name] = tax;
                   return acc;

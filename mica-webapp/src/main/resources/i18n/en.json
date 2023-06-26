@@ -2649,6 +2649,7 @@
     "terms": "Terms",
     "annotations-list": "Annotations",
     "no-annotations": "There are no annotations.",
-    "no-taxonomies-configured": "To configure a subset of taxonomies, go to <a href='#/admin/general'><u>Administration / General / Taxonomies for Annotation by Domain</u></a> section."
+    "no-taxonomies-configured": "To configure a subset of taxonomies, go to <a href='#/admin/general'><u>Administration / General / Taxonomies for Annotation by Domain</u></a> section.",
+    "not-in-filtered-taxonomies": "Annotation is using a taxonomy that is not configured."
   }
 }
