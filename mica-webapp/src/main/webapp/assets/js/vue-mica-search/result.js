@@ -257,7 +257,7 @@ const GraphicResult = {
         </button>
         </div>
     </div>
-    <div class="card-body">
+    <div class="card-body" style="min-height: 24em">
       <p class="text-muted">{{chartDataset.options.text | translate}}</p>
       <div v-bind:id="containerId" class="row">
         <div v-bind:id="chartContainerId" class="col-sm-12 col-xl-6 my-auto"></div>

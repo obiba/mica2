@@ -137,7 +137,7 @@ class GraphicsResultParser {
             type: "robinson",
           }
         },
-        height: 400,
+        height: 350,
         margin: {
           t: 0,
           r: -20,
