@@ -37,6 +37,7 @@ class GraphicsResultParser {
         }];
       },
       layoutObject: {
+        height: 390,
         margin: {
           t: 20,
           b: 40
@@ -77,6 +78,7 @@ class GraphicsResultParser {
         }];
       },
       layoutObject: {
+        height: 360,
         margin: {
           t: 50,
           b: 40
@@ -135,6 +137,7 @@ class GraphicsResultParser {
             type: "robinson",
           }
         },
+        height: 400,
         margin: {
           t: 0,
           r: -20,
