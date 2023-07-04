@@ -2642,7 +2642,7 @@
   },
   "annotation-by-concept": {
     "title": "Annotations par vocabulaire de taxonomie",
-    "description": "Annoter cette étude par un vocabulaire appartenant à une taxonomie listée ci-dessous. Ces annotations sont plus adaptées aux études qui n'ont pas de variables correspondantes..",
+    "description": "Annoter cette étude par un vocabulaire appartenant à une taxonomie listée ci-dessous.",
     "annotate": "Annotate",
     "taxonomies": "Taxonomies",
     "vocabularies": "Domaines",

@@ -2642,7 +2642,7 @@
   },
   "annotation-by-concept": {
     "title": "Annotations by Taxonomy Vocabulary",
-    "description": "Annotate this study by a vocabulary belonging to a taxonomy listed below. These annotations are best suited for studies that do not have any corresponding variables.",
+    "description": "Annotate this study by a vocabulary belonging to a taxonomy listed below.",
     "annotate": "Annotate",
     "taxonomies": "Taxonomies",
     "vocabularies": "Vocabularies",
