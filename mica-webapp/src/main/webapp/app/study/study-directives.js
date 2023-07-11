@@ -75,6 +75,12 @@ mica.study
         const taxos = self.taxos || [];
         if (res && res.length > 0) {
           self.taxoChoices = (taxos.length > 0 ? res.filter(r => taxos.indexOf(r.name) > -1) : res).filter(r => r.name !== 'Mica_variable');
+
+          if ((self.taxos||[]).length === 1) {
+            // Select the only item
+            self.chosenTaxo = self.taxos[0];
+            self.taxoSelected();
+          }
         }
 
         return res;
@@ -82,11 +88,17 @@ mica.study
 
       self.$onChanges = function(changeObj) {
         if (changeObj.current && changeObj.current.currentValue) {
-        // process tags
-        // dto attribute has array of values
-        if (Array.isArray(self.current)) {
-          self.current.forEach(i => self.tags.push({namespace: i.namespace, name: i.name, values: Array.isArray(i.values) ? {und: (i.values.filter(v => v.lang === 'und')[0] || {value: null}).value} : i.values}));
-        }
+          // process tags
+          // dto attribute has array of values
+          if (Array.isArray(self.current)) {
+            self.current.forEach(i => self.tags.push(
+              {
+                namespace: i.namespace,
+                name: i.name,
+                values: Array.isArray(i.values) ? {und: (i.values.filter(v => v.lang === 'und')[0] || {value: null}).value} : i.values
+              }
+            ));
+          }
         }
       };
 
