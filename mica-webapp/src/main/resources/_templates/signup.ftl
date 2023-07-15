@@ -58,6 +58,7 @@
               </div>
             </div>
           </div>
+          <p class="text-sm"><@message "password-helper"/></p>
         </#if>
 
         <div class="text-center">
