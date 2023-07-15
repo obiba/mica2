@@ -20,3 +20,4 @@ spring_loaded
 .work
 .vscode
 **/.attach_pid*
+./package-lock.json
