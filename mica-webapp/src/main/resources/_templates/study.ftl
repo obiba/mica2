@@ -265,6 +265,8 @@
         <#if showStudyFiles>
           <@studyFilesBrowser study=study/>
         </#if>
+
+        <!-- Annotations -->
         <#if type != "Harmonization">
           <#if annotations?size gt 0>
             <@entityAnnotations annotations=annotations/>

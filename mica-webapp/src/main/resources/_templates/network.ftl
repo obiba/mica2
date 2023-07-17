@@ -384,6 +384,7 @@
               <@networkFilesBrowser network=network/>
           </#if>
 
+        <!-- Annotations -->
           <#if annotations?size gt 0>
               <@entityAnnotations annotations=annotations showCount=true/>
           </#if>
