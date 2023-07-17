@@ -78,8 +78,8 @@ public class HarmonizedDatasetServiceTest {
 
     doReturn(dataset).when(datasetService).findById(anyString());
     when(helper.asyncGetDatasetVariables(any(Supplier.class))).thenReturn(new AsyncResult<>(l));
-    doReturn(l).when(datasetService).getDatasetVariables(any(HarmonizationDataset.class));
-    doReturn(l).when(datasetService).getDatasetVariables(any(HarmonizationDataset.class), any(StudyTable.class));
+    doReturn(l).when(datasetService).getDatasetVariables(any(HarmonizationDataset.class), null);
+    doReturn(l).when(datasetService).getDatasetVariablesFromStudyTable(any(HarmonizationDataset.class), any(StudyTable.class));
 
   }
 

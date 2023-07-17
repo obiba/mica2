@@ -544,6 +544,23 @@ mica.dataset
           );
       }
 
+      const showPostPublishAlert = function(dataset, type) {
+        let studyTypeName, studyId, warningMessage;
+        if (type === 'harmonized-dataset') {
+          studyId = dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.studyId;
+          warningMessage = 'harmonization-protocol.warning-annotations-update';
+        } else {
+          studyId = dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.studyId;
+          warningMessage = 'dataset.warning-annotations-update';
+        }
+
+        AlertBuilder.newBuilder()
+          .delay(12000)
+          .type('warning')
+          .trMsg(warningMessage, [studyTypeName, studyId])
+          .build();
+      };
+
       var initializeDataset = function(dataset) {
         $scope.selectedLocale = $translate.use();
 
@@ -616,6 +633,7 @@ mica.dataset
           };
 
         } else {
+          // $scope.datasetTable = $scope.dataset['obiba.mica.CollectedDatasetDto.type'].studyTable;
           $scope.editStudyTable = function () {
             addUpdateOpalTable();
           };
@@ -755,6 +773,7 @@ mica.dataset
                 {id: $scope.dataset.id, type: $scope.type, cascading: response.length > 0 ? 'UNDER_REVIEW' : 'NONE'},
                 function () {
                   DatasetResource.get({id: $routeParams.id, type: $scope.type}, initializeDataset);
+                  showPostPublishAlert($scope.dataset, $scope.type);
                 },
                 function (error) {
                   AlertBuilder.newBuilder().trMsg(error.data).build();

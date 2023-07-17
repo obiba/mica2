@@ -1801,7 +1801,7 @@ class VariablesSetService extends SetService {
     let url = '/ws/variables/_rql?query=variable(' +
       'in(Mica_variable.sets,' + id + '),' +
       'limit(' + from + ',' + limit + '),' +
-      'fields(attributes.label.*,variableType,datasetId,datasetAcronym,attributes.Mlstr_area*),' +
+      'fields(attributes.label.*,variableType,datasetId,datasetAcronym,datasetName,attributes.Mlstr_area*),' +
       'sort(variableType,containerId,populationWeight,dataCollectionEventWeight,datasetId,index,name))';
     axios.get(MicaService.normalizeUrl(url))
       .then(response => {

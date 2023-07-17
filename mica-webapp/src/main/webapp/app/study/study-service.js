@@ -45,7 +45,8 @@ mica.study
         'indexDatasets': {method: 'PUT', url: contextPath + '/ws/draft/individual-study/:id/index-datasets'},
         'publish': {method: 'PUT', url: contextPath + '/ws/draft/individual-study/:id/_publish', params: {id: '@id', cascading: '@cascading'}},
         'unPublish': {method: 'DELETE', url: contextPath + '/ws/draft/individual-study/:id/_publish', errorHandler: true},
-        'toStatus': {method: 'PUT', url: contextPath + '/ws/draft/individual-study/:id/_status', params: {id: '@id', value: '@value'}}
+        'toStatus': {method: 'PUT', url: contextPath + '/ws/draft/individual-study/:id/_status', params: {id: '@id', value: '@value'}},
+        'tag': {method: 'PUT', url: contextPath + '/ws/draft/individual-study/:id/attributes', params: {id: '@id'}}
       });
     }])
 
@@ -591,7 +592,8 @@ mica.study
         'rGet': {method: 'GET', transformResponse: StudyModelService.deserializeForRestoringFields},
         'publish': {method: 'PUT', url: contextPath + '/ws/draft/harmonization-study/:id/_publish', params: {id: '@id', cascading: '@cascading'}},
         'unPublish': {method: 'DELETE', url: contextPath + '/ws/draft/harmonization-study/:id/_publish', errorHandler: true},
-        'toStatus': {method: 'PUT', url: contextPath + '/ws/draft/harmonization-study/:id/_status', params: {id: '@id', value: '@value'}}
+        'toStatus': {method: 'PUT', url: contextPath + '/ws/draft/harmonization-study/:id/_status', params: {id: '@id', value: '@value'}},
+        'tag': {method: 'PUT', url: contextPath + '/ws/draft/harmonization-study/:id/attributes', params: {id: '@id'}}
       });
     }])
 
@@ -646,4 +648,8 @@ mica.study
       return $resource(contextPath + '/ws/draft/harmonization-studies/summaries?', {}, {
         'summaries': {method: 'GET', isArray: true, params: {id: '@id'}}
       });
-    }]);
+    }])
+    
+  .factory('TaxonomyFilterResource', ['$resource', function ($resource) {
+    return $resource(contextPath + 'ws/taxonomies/_filter', {target: 'variable'});
+  }]);

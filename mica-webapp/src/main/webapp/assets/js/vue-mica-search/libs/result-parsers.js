@@ -21,7 +21,7 @@ class GraphicsResultParser {
           y.push(val.title);
         });
 
-        const width = Array(x.length).fill(x.length* 0.1);
+        const width = Array(x.length).fill(x.length * 0.1);
 
         return [{
           type: "bar",
@@ -37,6 +37,7 @@ class GraphicsResultParser {
         }];
       },
       layoutObject: {
+        height: 390,
         margin: {
           t: 20,
           b: 40
@@ -77,6 +78,7 @@ class GraphicsResultParser {
         }];
       },
       layoutObject: {
+        height: 360,
         margin: {
           t: 50,
           b: 40
@@ -135,6 +137,7 @@ class GraphicsResultParser {
             type: "robinson",
           }
         },
+        height: 350,
         margin: {
           t: 0,
           r: -20,
@@ -342,12 +345,12 @@ class VariablesResultParser {
           }
           case 'dataset': {
             path = this.normalizePath(`/dataset/${summary.datasetId}`);
-            row.push(`<a href="${path}">${localize(summary.datasetAcronym)}</a>`);
+            row.push(`<a title="${localize(summary.datasetName)}" href="${path}">${localize(summary.datasetAcronym)}</a>`);
             break;
           }
           case 'protocol': {
             path = this.normalizePath(`/dataset/${summary.datasetId}`);
-            row.push(`<a href="${path}">${localize(summary.datasetAcronym)}</a>`);
+            row.push(`<a title="${localize(summary.datasetName)}" href="${path}">${localize(summary.datasetAcronym)}</a>`);
             break;
           }
           default:
@@ -622,14 +625,14 @@ class DatasetsResultParser {
           case 'study': {
             if (!micaConfig.isSingleStudyEnabled) {
               let opalTablePath = path = this.normalizePath(`/study/${opalTable.studySummary.id}`);
-              row.push(stats.studies ? `<a href="${opalTablePath}">${localize(opalTable.studySummary.acronym)}</a>` : '-');
+              row.push(stats.studies ? `<a title="${localize(opalTable.studySummary.name)}" href="${opalTablePath}">${localize(opalTable.studySummary.acronym)}</a>` : '-');
             }
             break;
           }
           case 'initiative': {
             if (!micaConfig.isSingleStudyEnabled) {
               let opalTablePath = path = this.normalizePath(`/study/${opalTable.studySummary.id}`);
-              row.push(stats.studies ? `<a href="${opalTablePath}">${localize(opalTable.studySummary.acronym)}</a>` : '-');
+              row.push(stats.studies ? `<a title="${localize(opalTable.studySummary.name)}" href="${opalTablePath}">${localize(opalTable.studySummary.acronym)}</a>` : '-');
             }
             break;
           }

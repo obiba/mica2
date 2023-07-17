@@ -233,13 +233,15 @@ const RqlNode = {
     otherArgs() {
       if (this.isNode()) {
         const others = this.args.slice(1);
-        return others.map(other => {
+        let result = others.map(other => {
           if (this.isNode(other)) {
-            return this.other;
+            return this.other || other;
           } else {
             return this.asInput(other);
           }
         });
+
+        return result;
       } else {
         return [];
       }

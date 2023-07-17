@@ -12,6 +12,7 @@ package org.obiba.mica.micaConfig.service;
 
 import com.google.common.eventbus.EventBus;
 import org.obiba.magma.NoSuchVariableException;
+import org.obiba.mica.core.support.DatasetInferredAttributesCollector;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.dataset.service.HarmonizedDatasetService;
@@ -102,7 +103,7 @@ public class CacheService {
     @Async
     public void buildDatasetVariablesCache() {
       harmonizedDatasetService.findAllPublishedDatasets().forEach(
-        dataset -> harmonizedDatasetService.getDatasetVariables(dataset)
+        dataset -> harmonizedDatasetService.getDatasetVariables(dataset, new DatasetInferredAttributesCollector(null))
           .forEach(v -> dataset.getBaseStudyTables().forEach(st -> {
             String studyId = st.getStudyId();
             try {
@@ -117,15 +118,16 @@ public class CacheService {
           })));
 
       collectedDatasetService.findAllDatasets()
-        .forEach(dataset -> collectedDatasetService.getDatasetVariables(dataset).forEach(v -> {
-          try {
-            collectedDatasetService.getVariableSummary(dataset, v.getName());
-          } catch (NoSuchVariableException ex) {
-            //ignore
-          } catch (Exception e) {
-            log.warn("Error building dataset variable cache of study dataset {}: {}", dataset.getId(), v, e);
-          }
-        }));
+        .forEach(dataset -> collectedDatasetService.getDatasetVariables(dataset, new DatasetInferredAttributesCollector(null))
+          .forEach(v -> {
+            try {
+              collectedDatasetService.getVariableSummary(dataset, v.getName());
+            } catch (NoSuchVariableException ex) {
+              //ignore
+            } catch (Exception e) {
+              log.warn("Error building dataset variable cache of study dataset {}: {}", dataset.getId(), v, e);
+            }
+          }));
     }
   }
 }

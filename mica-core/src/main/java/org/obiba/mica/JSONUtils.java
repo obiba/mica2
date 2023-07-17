@@ -57,6 +57,22 @@ public class JSONUtils {
   }
 
   /**
+   * Convert a Java Object to a JSON string.
+   *
+   * @param object
+   * @return
+   */
+  public static String objectToJSON(Object object) {
+    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
+    try {
+      return mapper.writeValueAsString(object);
+    } catch(JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
    * Convert a JSON string to {@link Properties}.
    *
    * @param jsonStr

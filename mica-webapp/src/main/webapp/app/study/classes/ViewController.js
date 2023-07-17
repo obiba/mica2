@@ -62,6 +62,14 @@ mica.study.BaseViewController = function (
     });
   };
 
+  self.updateTags = function (newTags) {
+    DraftStudyResource.tag({id: $routeParams.id}, newTags, function () {
+      $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, self.initializeState);
+      $scope.study = self.fetchStudy($routeParams.id);
+      $scope.studyId = $routeParams.id;
+    });
+  };
+
   /* jshint unused:vars */
   self.delete = function (study) { };
 
@@ -279,6 +287,8 @@ mica.study.ViewController = function (
         formLanguages[loc] = $filter('translate')('language.' + loc);
       });
 
+      self.usableVariableTaxonomiesForConceptTagging = micaConfig.usableVariableTaxonomiesForConceptTagging;
+
       self.languages = micaConfig.languages;
       self.roles = micaConfig.roles;
       self.openAccess = micaConfig.openAccess;
@@ -336,7 +346,9 @@ mica.study.ViewController = function (
     }
 
     $timeout(function () {
-      $scope.timeline.reset().create('#timeline', study).addLegend();
+      if (document.getElementById('timeline')) {
+        $scope.timeline.reset().create('#timeline', study).addLegend();
+      }
       $scope.sfForm = angular.copy(self.sfForm);
     }, 250);
   }
@@ -733,6 +745,8 @@ mica.study.HarmonizationStudyViewController = function (
       micaConfig.languages.forEach(function (loc) {
         formLanguages[loc] = $filter('translate')('language.' + loc);
       });
+
+      self.usableVariableTaxonomiesForConceptTagging = micaConfig.usableVariableTaxonomiesForConceptTagging;
 
       self.languages = micaConfig.languages;
       self.roles = micaConfig.roles;

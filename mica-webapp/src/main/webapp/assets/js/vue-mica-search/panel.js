@@ -218,8 +218,13 @@ const RqlPanel = {
       let type = Criterion.typeOfVocabulary(vocabulary);
       if (type === "TERMS") {
         let query = this.getAssociatedQuery(vocabulary);
+
         if (query) {
-          return vocabulary.terms.length > (query.args[1] || 0).length;
+          if (query && Array.isArray(query)) {
+            return vocabulary.terms.length > (query.reduce((acc, curr) => acc + (curr.args[1] || []).length, 0));
+          } else {
+            return vocabulary.terms.length > (query.args[1] || []).length;
+          }
         }
 
         return true;

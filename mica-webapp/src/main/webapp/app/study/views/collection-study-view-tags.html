@@ -1,0 +1,19 @@
+<div>
+  <div ng-include="'app/study/views/collection-study-view-header.html'" ng-init="tabName='tags'"></div>
+
+  <h3>{{'annotation-by-concept.title' | translate}}</h3>
+
+  <p>
+    <small class="help-block inline">{{'global.lastUpdate' | translate}}: {{studySummary.timestamps.lastUpdate | amDateFormat : 'lll'}}
+    </small>
+    <publish-status class="inline" state="studySummary['obiba.mica.EntityStateDto.studySummaryState']"></publish-status>
+  </p>
+
+  <div class="help-block" style="padding-top: 1rem">
+    {{'annotation-by-concept.description' | translate}}
+  </div>
+
+  <annotation-selector taxos="usableVariableTaxonomiesForConceptTagging" current="study.attributes" on-update="updateTags(newTags)"></annotation-selector>
+
+  <annotation-list attributes="study.attributes" taxonomy-names="usableVariableTaxonomiesForConceptTagging" on-update="updateTags(newTags)"></annotation-list>
+</div>

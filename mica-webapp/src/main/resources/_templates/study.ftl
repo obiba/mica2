@@ -5,6 +5,7 @@
 <#include "models/population.ftl">
 <#include "models/dce.ftl">
 <#include "models/files.ftl">
+<#include "models/annotations.ftl">
 
 <#if !type??>
     <#assign title = "studies">
@@ -263,6 +264,13 @@
         <!-- Files -->
         <#if showStudyFiles>
           <@studyFilesBrowser study=study/>
+        </#if>
+
+        <!-- Annotations -->
+        <#if type != "Harmonization">
+          <#if annotations?size gt 0>
+            <@entityAnnotations annotations=annotations/>
+          </#if>
         </#if>
 
         <!-- Variables classifications -->

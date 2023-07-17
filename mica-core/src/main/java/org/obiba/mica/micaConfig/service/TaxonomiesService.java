@@ -14,6 +14,8 @@ import com.google.common.base.Strings;
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
+
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.event.DocumentSetUpdatedEvent;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
@@ -43,8 +45,11 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -111,6 +116,38 @@ public class TaxonomiesService {
     this.studiesSetsHelper = studiesSetsHelper;
     this.variablesSetsHelper = variablesSetsHelper;
     this.taxonomyConfigService = taxonomyConfigService;
+  }
+
+  public static List<Taxonomy> processMergedAttributes(List<Taxonomy> variableTaxonomies, Map<String, Map<String, List<LocalizedString>>> groupedAttributes) {
+    List<Taxonomy> taxonomies = new ArrayList<>();
+
+    groupedAttributes.keySet().forEach(taxonomyName -> {
+      Taxonomy foundTaxonomy = variableTaxonomies.stream().filter(taxonomy -> taxonomy.getName().equals(taxonomyName)).findFirst().orElse(null);
+      if (foundTaxonomy != null) {
+        Set<String> vocabularyNames = groupedAttributes.get(taxonomyName).keySet();
+        List<Vocabulary> foundVocabularies = foundTaxonomy.getVocabularies().stream().filter(vocabulary -> vocabularyNames.contains(vocabulary.getName())).collect(Collectors.toList());
+
+        Taxonomy theTaxonomy = new Taxonomy(foundTaxonomy.getName());
+        theTaxonomy.setTitle(foundTaxonomy.getTitle());
+        theTaxonomy.setDescription(foundTaxonomy.getDescription());
+
+        foundVocabularies.forEach(vocabulary -> {
+          Vocabulary aVocabulary = new Vocabulary(vocabulary.getName());
+          aVocabulary.setTitle(vocabulary.getTitle());
+          aVocabulary.setDescription(vocabulary.getDescription());
+
+          List<String> termNames = groupedAttributes.get(taxonomyName).get(vocabulary.getName()).stream().map(LocalizedString::getUndetermined).collect(Collectors.toList());
+
+          aVocabulary.setTerms(vocabulary.getTerms().stream().filter(term -> termNames.contains(term.getName())).collect(Collectors.toList()));
+
+          theTaxonomy.addVocabulary(aVocabulary);
+        });
+
+        taxonomies.add(theTaxonomy);
+      }
+    });
+
+    return taxonomies;
   }
 
   @NotNull

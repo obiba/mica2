@@ -437,83 +437,83 @@
                     </tbody>
                   </table>
 
-                    <#if study.model.access_special_conditions_to_leave??>
-                      <p class="text-muted">${localize(study.model.access_special_conditions_to_leave)}</p>
-                    </#if>
-                </div>
-              </#if>
-              <#if study.model.access_fees?? && study.model.access_fees == true>
-                <div class="tab-pane fade" id="access-fees" role="tabpanel" aria-labelledby="access-fees-tab">
-
-                  <p><b><@message "study.access.access_data_sharing_cost.cost-title"/></b></p>
-
-                  <table class="table table-sm table-striped">
-                    <tbody>
-                    <tr>
-                      <td><@message "study_taxonomy.vocabulary.access_data.title"/></td>
-                      <td class="w-50">
-                        <#if (study.model.access_data_sharing_cost.data)??>
-                          <@costToLabel value=study.model.access_data_sharing_cost.data/>
+                        <#if study.model.access_special_conditions_to_leave??>
+                          <p class="text-muted">${localize(study.model.access_special_conditions_to_leave)}</p>
                         </#if>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><@message "study_taxonomy.vocabulary.access_bio_samples.title"/></td>
-                      <td>
-                        <#if (study.model.access_data_sharing_cost.biological_samples)??>
-                          <@costToLabel value=study.model.access_data_sharing_cost.biological_samples/>
+                    </div>
+                  </#if>
+                  <#if study.model.access_fees?? && study.model.access_fees == true>
+                    <div class="tab-pane fade" id="access-fees" role="tabpanel" aria-labelledby="access-fees-tab">
+
+                      <p><b><@message "study.access.access_data_sharing_cost.cost-title"/></b></p>
+
+                      <table class="table table-sm table-striped">
+                        <tbody>
+                        <tr>
+                          <td><@message "study_taxonomy.vocabulary.access_data.title"/></td>
+                          <td class="w-50">
+                              <#if (study.model.access_data_sharing_cost.data)??>
+                                  <@costToLabel value=study.model.access_data_sharing_cost.data/>
+                              </#if>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><@message "study_taxonomy.vocabulary.access_bio_samples.title"/></td>
+                          <td>
+                              <#if (study.model.access_data_sharing_cost.biological_samples)??>
+                                  <@costToLabel value=study.model.access_data_sharing_cost.biological_samples/>
+                              </#if>
+                          </td>
+                        </tr>
+                        </tbody>
+                      </table>
+
+                        <#if study.model.access_cost_additional_information??>
+                          <p class="text-muted">${localize(study.model.access_cost_additional_information)}</p>
                         </#if>
-                      </td>
-                    </tr>
-                    </tbody>
-                  </table>
 
-                    <#if study.model.access_cost_additional_information??>
-                      <p class="text-muted">${localize(study.model.access_cost_additional_information)}</p>
-                    </#if>
+                      <p><b><@message "study.access.access_data_sharing_cost.cost-reduction-title"/></b></p>
 
-                  <p><b><@message "study.access.access_data_sharing_cost.cost-reduction-title"/></b></p>
+                      <table class="table table-sm table-striped">
+                        <tbody>
+                        <tr>
+                          <td><@message "study_taxonomy.vocabulary.access_data.title"/></td>
+                          <td class="w-50">
+                              <#if (study.model.access_cost_reduction_consideration.data)??>
+                                  <@yesnoToIcon value=study.model.access_cost_reduction_consideration.data/>
+                              </#if>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><@message "study_taxonomy.vocabulary.access_bio_samples.title"/></td>
+                          <td>
+                              <#if (study.model.access_cost_reduction_consideration.bio_samples)??>
+                                  <@yesnoToIcon value=study.model.access_cost_reduction_consideration.bio_samples/>
+                              </#if>
+                          </td>
+                        </tr>
+                        </tbody>
+                      </table>
 
-                  <table class="table table-sm table-striped">
-                    <tbody>
-                    <tr>
-                      <td><@message "study_taxonomy.vocabulary.access_data.title"/></td>
-                      <td class="w-50">
-                        <#if (study.model.access_cost_reduction_consideration.data)??>
-                          <@yesnoToIcon value=study.model.access_cost_reduction_consideration.data/>
+                        <#if study.model.access_cost_reduction_consideration_specification??>
+                          <p class="text-muted">${localize(study.model.access_cost_reduction_consideration_specification)}</p>
                         </#if>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><@message "study_taxonomy.vocabulary.access_bio_samples.title"/></td>
-                      <td>
-                        <#if (study.model.access_cost_reduction_consideration.bio_samples)??>
-                          <@yesnoToIcon value=study.model.access_cost_reduction_consideration.bio_samples/>
-                        </#if>
-                      </td>
-                    </tr>
-                    </tbody>
-                  </table>
-
-                    <#if study.model.access_cost_reduction_consideration_specification??>
-                      <p class="text-muted">${localize(study.model.access_cost_reduction_consideration_specification)}</p>
-                    </#if>
-                </div>
-              </#if>
+                    </div>
+                  </#if>
+              </div>
             </div>
+            <!-- /.card -->
           </div>
-          <!-- /.card -->
-        </div>
-      <#else>
-        <@studyAccessInfo study=study/>
-      </#if>
+        <#else>
+            <@studyAccessInfo study=study/>
+        </#if>
 
-      <#if study.model.access_supplementary_info??>
-        <p><b><@message "suppl-info"/></b></p>
-        <div>
-            ${localize(study.model.access_supplementary_info)}
-        </div>
-      </#if>
+        <#if study.model.access_supplementary_info??>
+          <p><b><@message "suppl-info"/></b></p>
+          <div>
+              ${localize(study.model.access_supplementary_info)}
+          </div>
+        </#if>
     </div>
     <div class="card-footer">
       <div class="row">

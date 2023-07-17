@@ -564,7 +564,12 @@
     "projects-count-enabled": "Métriques des projets activées",
     "projects-count-enabled-help": "Afficher les nombres de projets dans la section d'administration.",
     "data-access-requests-count-enabled": "Métriques de demandes d'accès aux données activées",
-    "data-access-requests-count-enabled-help": "Afficher les nombres de demandes d'accès aux données dans la section d'administration."
+    "data-access-requests-count-enabled-help": "Afficher les nombres de demandes d'accès aux données dans la section d'administration.",
+    "taxonomies-for-annotation-by-concept": "Taxonomies pour l'annotation par vocabulaire",
+    "taxonomies-for-annotation-by-concept-help": "Liste des taxonomies qui seront utilisées lors de l'annotation d'une étude par un vocabulaire.",
+    "warning-annotations-update-study": "N'oubliez pas d'indexer toutes les études individuelles pour mettre à jour leurs annotations déduites des ensembles de données.",
+    "warning-annotations-update-initiative": "N'oubliez pas d'indexer toutes les initiatives d'harmonisation pour mettre à jour leurs annotations déduites des protocoles associés.",
+    "warning-annotations-update": "N'oubliez pas d'indexer toutes les études individuelles et les initiatives d'harmonisation pour mettre à jour leurs annotations déduites des ensembles de données et des protocoles associés."
   },
   "publish": {
     "label": "Publier",
@@ -876,7 +881,8 @@
         "prospective": "Prospective",
         "retrospective": "Rétrospective"
       }
-    }
+    },
+    "warning-annotations-update": "N'oubliez pas de publier l'initiative d'harmonisation '{{arg1}}' pour mettre à jour ses annotations déduites de ce protocol d'harmonisation."
   },
   "contact": {
     "add": {
@@ -1055,7 +1061,8 @@
       "study-not-published":"Pour publier un ensemble de données collectées, l'étude de collecte qui lui est liée doit aussi être publiée",
       "population-not-published":"Pour publier un ensemble de données collectées, la population qui lui est liée doit aussi être publiée"
     },
-    "require-indexing-alert": "En raison d'une mise à jour dans l'étude '{{entity}}', cet ensemble de données doit être indexé, visitez la page <a href=\"#/admin/statistics-summary\"> <u> administration </u> </a> pour procéder."
+    "require-indexing-alert": "En raison d'une mise à jour dans l'étude '{{entity}}', cet ensemble de données doit être indexé, visitez la page <a href=\"#/admin/statistics-summary\"> <u> administration </u> </a> pour procéder.",
+    "warning-annotations-update": "N'oubliez pas de publier l'étude '{{arg1}}' pour mettre à jour ses annotations déduites de cet ensemble de données."
   },
   "attributes": "Attributs",
   "attribute": {
@@ -1572,6 +1579,7 @@
   "revisions": "Révisions",
   "revisions-none": "Aucune révision",
   "revision": "Révision",
+  "annotations": "Annotations",
   "revision-date": "Date de révision",
   "revision-date-on": "Le",
   "revisions-difference-author": "Modifié par {{author}}",
@@ -2631,5 +2639,17 @@
     "UNDER_REVIEW": "En révision",
     "TO_DELETE": "À supprimer",
     "IN_EDITION": "En édition"
+  },
+  "annotation-by-concept": {
+    "title": "Annotations par vocabulaire de taxonomie",
+    "description": "Annoter cette étude par un vocabulaire appartenant à une taxonomie listée ci-dessous.",
+    "annotate": "Annotate",
+    "taxonomies": "Taxonomies",
+    "vocabularies": "Domaines",
+    "annotations-list": "Annotations",
+    "no-annotations": "Il n'y a aucune annotation.",
+    "no-taxonomies-configured": "Pour configurer un sous-ensemble de taxonomies, rendez-vous dans la section <a href='#/admin/general'><u>Administration / General / Taxonomies pour l'annotation par vocabulaire</u></a>.",
+    "not-in-filtered-taxonomies": "L'annotation utilise une taxonomie qui n'est pas configurée."
   }
+
 }

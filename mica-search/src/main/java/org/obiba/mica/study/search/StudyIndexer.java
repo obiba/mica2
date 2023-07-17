@@ -12,14 +12,17 @@ package org.obiba.mica.study.search;
 
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
+import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.event.DocumentSetDeletedEvent;
 import org.obiba.mica.core.event.DocumentSetUpdatedEvent;
 import org.obiba.mica.core.service.PersonService;
+import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.obiba.mica.spi.search.Indexable;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.event.*;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.study.service.StudySetService;
@@ -29,11 +32,12 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class StudyIndexer {
@@ -50,12 +54,15 @@ public class StudyIndexer {
 
   private final StudySetService studySetService;
 
+  private final PublishedDatasetService publishedDatasetService;
+
   @Inject
-  public StudyIndexer(Indexer indexer, StudyService studyService, PersonService personService, StudySetService studySetService) {
+  public StudyIndexer(Indexer indexer, StudyService studyService, PersonService personService, StudySetService studySetService, PublishedDatasetService publishedDatasetService) {
     this.indexer = indexer;
     this.studyService = studyService;
     this.personService = personService;
     this.studySetService = studySetService;
+    this.publishedDatasetService = publishedDatasetService;
   }
 
   @Async
@@ -64,7 +71,7 @@ public class StudyIndexer {
     lock.lock();
     try {
       log.info("Study {} was updated", event.getPersistable());
-      indexer.index(Indexer.DRAFT_STUDY_INDEX, (Indexable) decorate(event.getPersistable()));
+      indexer.index(Indexer.DRAFT_STUDY_INDEX, (Indexable) decorate(event.getPersistable(), true));
     } finally {
       lock.unlock();
     }
@@ -76,7 +83,7 @@ public class StudyIndexer {
     lock.lock();
     try {
       log.info("Study {} was published", event.getPersistable());
-      indexer.index(Indexer.PUBLISHED_STUDY_INDEX, (Indexable) decorate(event.getPersistable()));
+      indexer.index(Indexer.PUBLISHED_STUDY_INDEX, (Indexable) decorate(event.getPersistable(), false));
     } finally {
       lock.unlock();
     }
@@ -116,12 +123,12 @@ public class StudyIndexer {
       List<String> studyIds = event.getIds();
 
       if (studyIds.isEmpty()) {
-        reIndexAllPublished(decorate(studyService.findAllPublishedStudies()));
-        reIndexAllDraft(decorate(studyService.findAllDraftStudies()));
+        reIndexAllPublished(decorate(studyService.findAllPublishedStudies(), false));
+        reIndexAllDraft(decorate(studyService.findAllDraftStudies(), true));
       } else {
-        // indexAll does not deletes the index before
-        indexer.indexAllIndexables(Indexer.PUBLISHED_STUDY_INDEX, decorate(studyService.findAllPublishedStudies(studyIds)));
-        indexer.indexAllIndexables(Indexer.DRAFT_STUDY_INDEX, decorate(studyService.findAllDraftStudies(studyIds)));
+        // indexAll does not delete the index before
+        indexer.indexAllIndexables(Indexer.PUBLISHED_STUDY_INDEX, decorate(studyService.findAllPublishedStudies(studyIds), false));
+        indexer.indexAllIndexables(Indexer.DRAFT_STUDY_INDEX, decorate(studyService.findAllDraftStudies(studyIds), true));
       }
     } finally {
       lock.unlock();
@@ -189,12 +196,37 @@ public class StudyIndexer {
     indexer.reIndexAllIndexables(indexName, studies);
   }
 
-  private List<BaseStudy> decorate(List<BaseStudy> studies) {
-    return addMemberships(addSets(studies));
+  private List<BaseStudy> addInferredAttributes(List<BaseStudy> studies, boolean draft) {
+    studies.forEach(study -> {
+      Set<Attribute> inferredAttributes = new HashSet();
+      List<String> fields = new ArrayList<String>() {{
+        add("inferredAttributes");
+      }};
+
+      if (!draft) {
+        if (study instanceof Study) {
+          publishedDatasetService.find(0, 99999, null, null, study.getId(), null, fields)
+            .getList()
+            .forEach(dataset -> inferredAttributes.addAll(dataset.getInferredAttributes()));
+        } else {
+          publishedDatasetService.getHarmonizationDatasetsByStudy(study.getId())
+            .forEach(dataset -> inferredAttributes.addAll(dataset.getInferredAttributes()));
+        }
+      }
+
+      log.debug("Study {} inferred attributes {}", study.getId(), inferredAttributes.size());
+      study.setInferredAttributes(inferredAttributes);
+    });
+
+    return studies;
   }
 
-  private BaseStudy decorate(BaseStudy study) {
-    return addMemberships(addSets(study));
+  private List<BaseStudy> decorate(List<BaseStudy> studies, boolean draft) {
+    return addInferredAttributes(addMemberships(addSets(studies)), draft);
+  }
+
+  private BaseStudy decorate(BaseStudy study, boolean draft) {
+    return addInferredAttributes(Stream.of(addMemberships(addSets(study))).collect(Collectors.toList()), draft).get(0);
   }
 
   private List<BaseStudy> addMemberships(List<BaseStudy> studies) {

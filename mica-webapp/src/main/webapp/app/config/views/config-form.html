@@ -90,6 +90,21 @@
         <h4 translate>config.sections</h4>
         <div form-checkbox name="isRepositoryEnabled" model="micaConfig.isRepositoryEnabled"
             label="config.repository-enabled" help="config.repository-enabled-help"></div>
+
+        <div class="form-group"
+            ng-class="{'has-error': (form.usableVariableTaxonomiesForConceptTagging.$dirty || form.saveAttempted) && form.usableVariableTaxonomiesForConceptTagging.$invalid}">
+          <label for="usableVariableTaxonomiesForConceptTagging" class="control-label">
+            <span translate>config.taxonomies-for-annotation-by-concept</span>
+          </label>
+          <select chosen multiple="multiple" id="usableVariableTaxonomiesForConceptTagging" name="usableVariableTaxonomiesForConceptTagging" ng-model="micaConfig.usableVariableTaxonomiesForConceptTagging"
+                  ng-options="taxo.name as (taxo.title | localizedString) for taxo in availableOpalTaxonomies.summaries" class="chosen-select">
+          </select>
+          <p class="input-error" ng-show="form.usableVariableTaxonomiesForConceptTagging.$dirty && form.usableVariableTaxonomiesForConceptTagging.$invalid">
+            <span ng-show="form.usableVariableTaxonomiesForConceptTagging.$error.server">{{ errors.name }}</span>
+          </p>
+          <p class="help-block" translate>config.taxonomies-for-annotation-by-concept-help</p>
+        </div>
+
         <div form-checkbox name="isSingleStudyEnabled" model="micaConfig.isSingleStudyEnabled"
             label="config.single-study-enabled" help="config.single-study-enabled-help"></div>
         <div form-checkbox name="isNetworkEnabled" model="micaConfig.isNetworkEnabled" label="config.network-enabled"

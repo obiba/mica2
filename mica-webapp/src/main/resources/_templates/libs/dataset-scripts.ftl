@@ -35,20 +35,26 @@
       Mica.variablesCoverage.forEach(chartData => {
         chartsElem.append('<h5>' + chartData.title + '</h5>');
         chartsElem.append('<p>' + chartData.subtitle + '</p>');
-        chartsElem.append('<div id="bar-graph" class="mb-4"></div>');
+        chartsElem.append('<div id="bar-graph-' + chartData.taxonomy + '" class="mb-4"></div>');
 
         const chartConfig = makeVariablesClassificationsChartSettings(chartData, {
           key: '${dataset.id}',
           label: "<@message "variables"/>",
           borderColor: '${barChartBorderColor}',
-          backgroundColor: '${barChartBackgroundColor}'
+          backgroundColor: '${barChartBackgroundColor}',
+          useColorsArray: ${useColorsArrayForClassificationsChart?c}
         });
 
-        Plotly.newPlot("bar-graph", chartConfig.data, chartConfig.layout, {responsive: true});
+        Plotly.newPlot("bar-graph-" + chartData.taxonomy, chartConfig.data, chartConfig.layout, {responsive: true});
       });
       $('#classificationsContainer').show();
 
-      Plotly.relayout("bar-graph", {width: $('#classificationsContainer #bar-graph').width(), height: (2*1.42857)*12*Mica.variablesCoverage[0].vocabularies.length});
+      Mica.variablesCoverage.forEach(chartData => {
+        let contentLength = Math.max(Mica.variablesCoverage.filter(c => c.taxonomy === chartData.taxonomy)[0].vocabularies.length, 7);
+        let contentWidth = $('#classificationsContainer #bar-graph-' + chartData.taxonomy).width();
+
+        Plotly.relayout("bar-graph-" + chartData.taxonomy, {width: contentWidth, height: (2*1.42857)*12*contentLength});
+      });
     } else {
       $('#noVariablesClassifications').show();
     }
@@ -225,9 +231,9 @@
 
     <#if datasetVariablesClassificationsTaxonomies?? && datasetVariablesClassificationsTaxonomies?size gt 0>
       const taxonomies = ['${datasetVariablesClassificationsTaxonomies?join("', '")}'];
-      DatasetService.getVariablesCoverage('${dataset.id}', taxonomies, '${.lang}', function(data) {
+      DatasetService.getVariablesCoverage('${dataset.id}', taxonomies, '${.lang}', function(data, vocabulariesColorsMapFunc) {
         if (data && data.charts) {
-          Mica.variablesCoverage = data.charts.map(chart => prepareVariablesClassificationsData(chart));
+          Mica.variablesCoverage = data.charts.map(chart => prepareVariablesClassificationsData(chart, vocabulariesColorsMapFunc(['${colors?join("', '")}'])));
         }
         renderVariablesClassifications();
       }, function(response) {

@@ -12,12 +12,17 @@ package org.obiba.mica.dataset.service;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
-import org.obiba.magma.*;
+import org.obiba.magma.MagmaRuntimeException;
+import org.obiba.magma.NoSuchValueTableException;
+import org.obiba.magma.NoSuchVariableException;
+import org.obiba.magma.ValueTable;
+import org.obiba.magma.Variable;
 import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.core.service.StudyTableSourceServiceRegistry;
+import org.obiba.mica.core.support.DatasetInferredAttributesCollector;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
@@ -50,7 +55,7 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
    * @param dataset
    * @return
    */
-  public abstract Iterable<DatasetVariable> getDatasetVariables(T dataset) throws NoSuchValueTableException;
+  public abstract Iterable<DatasetVariable> getDatasetVariables(T dataset, @Nullable DatasetInferredAttributesCollector collector) throws NoSuchValueTableException;
 
   /**
    * Get the {@link org.obiba.mica.dataset.domain.DatasetVariable} from a {@link org.obiba.mica.dataset.domain.Dataset}.
@@ -137,7 +142,7 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
 
   protected Iterable<DatasetVariable> wrappedGetDatasetVariables(T dataset) {
     try {
-      return getDatasetVariables(dataset);
+      return getDatasetVariables(dataset, new DatasetInferredAttributesCollector(null));
     } catch (NoSuchValueTableException e) {
       throw e;
     } catch (MagmaRuntimeException e) {

@@ -10,17 +10,31 @@
 
 package org.obiba.mica.study.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.hibernate.validator.constraints.URL;
-import org.obiba.mica.core.domain.*;
+import org.obiba.mica.core.domain.AbstractModelAware;
+import org.obiba.mica.core.domain.Attribute;
+import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.domain.Membership;
+import org.obiba.mica.core.domain.Person;
+import org.obiba.mica.core.domain.PersonAware;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.spi.search.Indexable;
 import org.obiba.mica.spi.tables.IStudy;
 
 import javax.validation.constraints.NotNull;
 import java.beans.Transient;
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static java.util.stream.Collectors.toList;
 
@@ -55,6 +69,10 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
   private Set<String> sets;
 
   private SortedSet<Population> populations = Sets.newTreeSet();
+
+  private Set<Attribute> inferredAttributes = new HashSet<>();
+
+  private Set<Attribute> attributes = new HashSet<>();
 
   //
   // Accessors
@@ -271,5 +289,52 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
   // for JSON deserial
   public void setClassName(String className) {}
 
+  public Set<Attribute> getInferredAttributes() {
+    return inferredAttributes;
+  }
+  public void setInferredAttributes(Set<Attribute> inferredAttributes) {
+    this.inferredAttributes = inferredAttributes == null ? new HashSet<>() : inferredAttributes;
+  }
 
+  public Set<Attribute> getAttributes() {
+    return attributes;
+  }
+
+  public void setAttributes(Set<Attribute> attributes) {
+    this.attributes = attributes == null ? new HashSet<>() : attributes;
+  }
+
+  /**
+   * Merges the inferred and manually added attributes, the former having precedence.
+   *
+   * @return Set of attributes
+   */
+  @JsonIgnore
+  public Set<Attribute> getMergedAttributes() {
+    Set<Attribute> clone = new HashSet<Attribute>() {{
+      addAll(inferredAttributes);
+    }};
+
+    if (clone.isEmpty()) {
+      clone.addAll(attributes);
+    } else {
+      attributes.forEach(attribute -> {
+        String attributeNamespace = attribute.getNamespace();
+        String attributeName = attribute.getName();
+        LocalizedString attributeValues = Optional.ofNullable(attribute.getValues()).orElse(new LocalizedString());
+
+        inferredAttributes.forEach(att -> {
+          if (attributeNamespace.equals(att.getNamespace()) && attributeName.equals(att.getName())) {
+            if (!attributeValues.isEmpty() && !attributeValues.equals(att.getValues())) {
+              clone.add(attribute);
+            }
+          } else {
+            clone.add(attribute);
+          }
+        });
+      });
+    }
+
+    return clone;
+  }
 }

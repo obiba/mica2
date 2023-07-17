@@ -1,0 +1,37 @@
+<div class="panel panel-body ">
+
+  <p ng-if="!$ctrl.taxos || $ctrl.taxos.length == 0"
+     class="alert alert-info"
+     ng-bind-html="'annotation-by-concept.no-taxonomies-configured' | translate">
+  </p>
+
+  <div>
+    <label>{{ 'annotation-by-concept.taxonomies' | translate }}</label>
+    <div class="row">
+      <p class="col-sm-12 col-md-6">
+        <select chosen class="chosen-select"
+                ng-options="taxo.name as (taxo.title | localizedString) for taxo in $ctrl.taxoChoices"
+                ng-change="$ctrl.taxoSelected()"
+                ng-model="$ctrl.chosenTaxo">
+          <!-- Required to prevent 'selected' exception upon deletion of vocabularies followed by taxonomy update -->
+          <option value=""></option>
+        </select>
+      </p>
+    </div>
+  </div>
+
+  <div ng-disabled="$ctrl.chosenTaxo">
+    <label>{{ 'annotation-by-concept.vocabularies' | translate }}</label>
+    <p>
+      <select chosen multiple class="chosen-select"
+              ng-options="vocab.name as (vocab.title | localizedString) for vocab in $ctrl.vocabChoices"
+              ng-change="$ctrl.vocabsSelected()"
+              ng-model="$ctrl.chosenVocabs">
+      </select>
+    </p>
+  </div>
+
+  <p>
+    <button class="btn btn-primary btn-responsive" type="button" ng-disabled="!$ctrl.readyToTag" ng-click="$ctrl.addTags()" translate>annotation-by-concept.annotate</button>
+  </p>
+</div>

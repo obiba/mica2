@@ -74,7 +74,7 @@ class Criterion {
   static associatedQuery(vocabulary, inputs) {
     let type = Criterion.typeOfVocabulary(vocabulary);
 
-    return (inputs || []).filter(input => {
+    let queries = (inputs || []).filter(input => {
       let found = false;
 
       switch(type) {
@@ -92,7 +92,15 @@ class Criterion {
       }
 
       return found;
-    })[0];
+    });
+
+    if (queries.length === 1) {
+      return queries[0];
+    } else if (queries.length > 1) {
+      return queries;
+    }
+
+    return null;
   }
 
   static associatedTaxonomyName(taxonomy, testVocabulary) {

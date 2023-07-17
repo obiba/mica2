@@ -36,6 +36,10 @@ mica.study
           templateUrl: 'app/study/views/collection-study-view-revisions.html',
           controller: 'StudyViewController'
         })
+        .when('/individual-study/:id/tags', {
+          templateUrl: 'app/study/views/collection-study-view-tags.html',
+          controller: 'StudyViewController'
+        })
         .when('/individual-study/:id/files', {
           templateUrl: 'app/study/views/collection-study-view-files.html',
           controller: 'StudyViewController',
@@ -86,6 +90,10 @@ mica.study
         })
         .when('/harmonization-study/:id/revisions', {
           templateUrl: 'app/study/views/harmonization-study-view-revisions.html',
+          controller: 'HarmonizationStudyViewController'
+        })
+        .when('/harmonization-study/:id/tags', {
+          templateUrl: 'app/study/views/harmonization-study-view-tags.html',
           controller: 'HarmonizationStudyViewController'
         })
         .when('/harmonization-study/:id/files', {

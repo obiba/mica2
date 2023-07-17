@@ -23,17 +23,13 @@
         <div class="form-group">
           <label class="control-label" translate>share-resource.modal.share-link-to-copy</label>
           <div class="input-group">
-            <input id="shareLink" type="text" class="form-control" ng-model="shareLink"
-                   tooltip-is-open="showCopiedTooltipStatus" uib-tooltip="{{'global.copied' | translate}}" tooltip-trigger="'none'"/>
+            <input type="text" class="form-control" id="theShareLink" ng-model="shareLink" tooltip-is-open="showCopiedTooltipStatus" uib-tooltip="{{'global.copied' | translate}}" tooltip-trigger="'none'">
             <span class="input-group-btn">
-              <button class="btn" ng-click="showCopiedTooltip()"
-                      ngclipboard data-clipboard-target="#shareLink" uib-tooltip="{{'global.copy-to-clipboard' | translate}}">
-                <span class="fa fa-copy" alt="Copy to clipboard"/>
-              </button>
+              <button class="btn btn-default" type="button" ng-click="showCopiedTooltip()" ngclipboard data-clipboard-target="#theShareLink" uib-tooltip="{{'global.copy-to-clipboard' | translate}}"><span class="fa fa-copy" alt="Copy to clipboard"></span></button>
             </span>
           </div>
-          <span class="help-block" translate>share-resource.modal.share-link-help-text</span>
         </div>
+        <span class="help-block" translate>share-resource.modal.share-link-help-text</span>
       </div>
 
       <div class="col-md-12">

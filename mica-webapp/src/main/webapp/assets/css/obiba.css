@@ -19,7 +19,7 @@
   speak: none;
   line-height: 1;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  -moz-osx-font-smoothing: grayscale  ;
 }
 [class^="io-"]:before,
 [class*=" io-"]:before {
@@ -173,4 +173,22 @@ fieldset.quote {
 
 .st-node .active a {
   background-color: aliceblue;
+}
+
+
+*[id^="annotationsAccordion"] button::after {
+  font-weight: 900;
+  font-family: "Font Awesome 5 Free";
+  content: "\f068";
+
+  float: right;
+}
+
+*[id^="annotationsAccordion"] button.collapsed::after {
+  content: "\f067";
+}
+
+div[id^="vosrs-charts-container"] div[id^="vosrs-charts-"] {
+  min-height: 24em;
+  max-height: 24em;
 }

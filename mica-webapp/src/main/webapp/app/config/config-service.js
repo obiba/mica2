@@ -79,7 +79,9 @@ mica.config
       'get': {method: 'GET', isArray: true}
     });
   }])
-
+  .factory('OpalTaxonomyiesSummaryResource', ['$resource', function ($resource) {
+    return $resource(contextPath + '/ws/taxonomies/_summary', {vocabularies: false});
+  }])
   .factory('StyleEditorService', [
     function () {
       return {

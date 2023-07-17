@@ -3,6 +3,7 @@
 <#include "models/network.ftl">
 <#include "models/member.ftl">
 <#include "models/files.ftl">
+<#include "models/annotations.ftl">
 
 <!DOCTYPE html>
 <html lang="${.lang}">
@@ -381,6 +382,11 @@
         <!-- Files -->
           <#if showNetworkFiles>
               <@networkFilesBrowser network=network/>
+          </#if>
+
+        <!-- Annotations -->
+          <#if annotations?size gt 0>
+              <@entityAnnotations annotations=annotations showCount=true/>
           </#if>
 
         <!-- Variables classifications -->

@@ -10,22 +10,6 @@
 
 package org.obiba.mica.web.model;
 
-import java.time.format.DateTimeFormatter;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.study.date.PersistableYearMonth;
@@ -40,6 +24,21 @@ import org.obiba.mica.study.service.StudyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import java.time.format.DateTimeFormatter;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toSet;
 

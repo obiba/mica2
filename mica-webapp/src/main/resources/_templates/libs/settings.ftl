@@ -121,7 +121,7 @@
 <#assign searchNetworkColumnsHarmonization = ["name", "harmonization"]/>
 <#assign searchNetworkColumnsIndividual = ["name", "individual"]/>
 <!-- Extracted fields on search by type -->
-<#assign searchVariableFields = ["attributes.label.*", "attributes.description.*", "variableType", "valueType", "categories.*", "unit", "populationId", "dceId", "datasetId", "datasetAcronym", "attributes.Mlstr_area*"]/>
+<#assign searchVariableFields = ["attributes.label.*", "attributes.description.*", "variableType", "valueType", "categories.*", "unit", "populationId", "dceId", "datasetId", "datasetAcronym", "datasetName", "attributes.Mlstr_area*"]/>
 <#assign searchDatasetFields = ["acronym.*","name.*","variableType","studyTable.studyId","studyTable.project","studyTable.table","studyTable.populationId","studyTable.dataCollectionEventId","harmonizationTable.studyId","harmonizationTable.project","harmonizationTable.table","harmonizationTable.populationId"]/>
 <#assign searchStudyFields = ["acronym.*","name.*","model.methods.design","populations.dataCollectionEvents.model.dataSources","model.numberOfParticipants.participant"]/>
 <#assign searchNetworkFields = ["acronym.*","name.*","studyIds"]/>
@@ -154,7 +154,9 @@
 <!-- Charts -->
 <#assign barChartBackgroundColor = "rgb(54, 162, 235)"/>
 <#assign barChartBorderColor = "#3c8dbc"/>
-<#assign colors = ["#f56954", "#00a65a", "#f39c12", "#00c0ef", "#3c8dbc", "#d2d6de", "#007bff", "#6610f2", "#20c997", "#6f42c1", "#e83e8c", "#dc3545", "#fd7e14", "#ffc107", "#28a745",  "#17a2b8", "#f56954", "#00a65a", "#f39c12", "#00c0ef", "#3c8dbc", "#d2d6de", "#007bff", "#6610f2", "#20c997", "#6f42c1", "#e83e8c", "#dc3545", "#fd7e14", "#ffc107", "#28a745",  "#17a2b8"]>
+<#--<#assign colors = ["#f56954", "#00a65a", "#f39c12", "#00c0ef", "#3c8dbc", "#d2d6de", "#007bff", "#6610f2", "#20c997", "#6f42c1", "#e83e8c", "#dc3545", "#fd7e14", "#ffc107", "#28a745", "#17a2b8", "#f56954", "#00a65a", "#f39c12", "#00c0ef", "#3c8dbc", "#d2d6de", "#007bff", "#6610f2", "#20c997", "#6f42c1", "#e83e8c", "#dc3545", "#fd7e14", "#ffc107", "#28a745", "#17a2b8"]>-->
+<#assign colors = ["#c1121f", "#2a9d8f", "#ffbe0b", "#c879ff", "#3a86ff", "#f48c06", "#ff006e", "#bbd0ff", "#669bbc", "#e85d04", "#6b9080", "#6610f2", "#00f5d4", "#4d908e", "#fee440", "#118ab2", "#eaac8b", "#5c4742", "#90be6d", "#00bbf9", "#d2d6de", "#f15bb5", "#a4c3b2", "#f56954", "#9d0208", "#277da1", "#bde0fe", "#c0f283", "#ffd6ff", "#cce3de", "#cb997e", "#273469"]>
+<#assign useColorsArrayForClassificationsChart = true/>
 
 <!-- Files -->
 <#assign showFiles = true/>
@@ -170,3 +172,4 @@
 <#assign networkVariablesClassificationsTaxonomies = variablesClassificationsTaxonomies/>
 <#assign studyVariablesClassificationsTaxonomies = variablesClassificationsTaxonomies/>
 <#assign datasetVariablesClassificationsTaxonomies = variablesClassificationsTaxonomies/>
+<#assign classificationTaxonomiesToExclude = ['Mlstr_additional']/>

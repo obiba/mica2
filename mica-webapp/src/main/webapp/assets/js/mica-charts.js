@@ -62,7 +62,7 @@ const makeVariableHistogramChartSettings = function(intervalFrequencies, borderC
   }];
 };
 
-const prepareVariablesClassificationsData = function(chart) {
+function prepareVariablesClassificationsData(chart, colorsMap) {
   const itemCounts = {};
   let vocabularies = [];
   chart.data.forEach(vocabularyData => {
@@ -71,6 +71,7 @@ const prepareVariablesClassificationsData = function(chart) {
       name: vocabularyData.vocabulary,
       label: title
     };
+
     vocabularyData.items.filter(item => item.key !== '').forEach(item => {
       if (!itemCounts[item.key]) {
         itemCounts[item.key] = {};
@@ -82,18 +83,19 @@ const prepareVariablesClassificationsData = function(chart) {
       itemCounts._all[vocabularyData.vocabulary] =
         (itemCounts._all[vocabularyData.vocabulary] ? itemCounts._all[vocabularyData.vocabulary] : 0) + item.value;
     });
+    
     vocabularies.push(vocabulary);
   });
 
-  vocabularies = vocabularies.sort((a, b) => { return ('' + a.label).localeCompare(b.label); });
-
   return {
+    taxonomy: chart.taxonomy,
     vocabularies: vocabularies,
     itemCounts: itemCounts,
     title: chart.title,
-    subtitle: chart.subtitle
+    subtitle: chart.subtitle,
+    colorsMap: colorsMap
   };
-};
+}
 
 /**
  * Extract
@@ -102,9 +104,21 @@ const prepareVariablesClassificationsData = function(chart) {
  * @param chartDataset which key is used to extract a single bucket
  * @returns ChartJS settings
  */
-const makeVariablesClassificationsChartSettings = function(chartData, chartDataset) {
-  const names = chartData.vocabularies.map(v => v.name);
-  const labels = chartData.vocabularies.map(v => v.label);
+function makeVariablesClassificationsChartSettings(chartData, chartDataset) {
+  let processedVocabularies = [];
+  const names = [];
+  const labels = [];
+  const colors = [];
+
+  chartData.vocabularies.forEach(v => {
+    names.push(v.name);
+    labels.push(v.label);
+
+    if (processedVocabularies.indexOf() === -1 && (chartData.colorsMap || {})[chartData.taxonomy]) {
+      colors.push(chartData.colorsMap[chartData.taxonomy][v.name]);
+      processedVocabularies.push(v.name);
+    }
+  });
 
   const datasets = [];
   Object.keys(chartData.itemCounts).filter(k => k === chartDataset.key).forEach(k => {
@@ -112,7 +126,7 @@ const makeVariablesClassificationsChartSettings = function(chartData, chartDatas
       type: "bar",
       orientation: "h",
       marker: {
-        color: chartDataset.backgroundColor
+        color: (chartData.colorsMap || {})[chartData.taxonomy] && chartDataset.useColorsArray ? colors : chartDataset.backgroundColor
       },
       x: names.map(n => {
         return chartData.itemCounts[k][n] ? chartData.itemCounts[k][n] : 0;
@@ -127,8 +141,9 @@ const makeVariablesClassificationsChartSettings = function(chartData, chartDatas
     layout: {
       yaxis: {
         automargin: true,
-        ticksuffix: ' '
+        ticksuffix: ' ',
+        autorange: 'reversed'
       }
     }
   };
-};
+}

@@ -1,8 +1,12 @@
 package org.obiba.mica.web.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.googlecode.protobuf.format.JsonFormat;
+import org.obiba.mica.core.domain.Attribute;
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.service.PersonService;
+import org.obiba.mica.micaConfig.service.TaxonomiesService;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.date.PersistableYearMonth;
 import org.obiba.mica.study.domain.BaseStudy;
@@ -11,8 +15,10 @@ import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.web.controller.support.AnnotationsCollector;
 import org.obiba.mica.web.model.LocalizedStringDtos;
 import org.obiba.mica.web.model.Mica;
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,10 +26,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.inject.Inject;
-
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 public class StudyController extends BaseController {
@@ -40,6 +45,12 @@ public class StudyController extends BaseController {
   @Inject
   private LocalizedStringDtos localizedStringDtos;
 
+  @Inject
+  private ObjectMapper objectMapper;
+
+  @Inject
+  private TaxonomiesService taxonomiesService;
+
   @GetMapping("/study/{id:.+}")
   public ModelAndView study(@PathVariable String id, @RequestParam(value = "draft", required = false) String shareKey) {
     Map<String, Object> params = newParameters();
@@ -52,6 +63,10 @@ public class StudyController extends BaseController {
       String timelineData = asJSONTimelineData((Study) study);
       params.put("timelineData", timelineData);
     }
+
+    ArrayList<BaseStudy> studies = new ArrayList<>();
+    studies.add(study);
+    params.put("annotations", AnnotationsCollector.collect(studies, taxonomiesService));
 
     return new ModelAndView("study", params);
   }

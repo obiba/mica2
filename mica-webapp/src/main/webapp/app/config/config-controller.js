@@ -27,6 +27,7 @@ mica.config
     'NOTIFICATION_EVENTS',
     'DocumentSetsPermissionsResource',
     'CrosstabsPermissionsResource',
+    'OpalTaxonomyiesSummaryResource',
 
     function ($rootScope,
               $scope,
@@ -43,8 +44,18 @@ mica.config
               FormServerValidation,
               NOTIFICATION_EVENTS,
               DocumentSetsPermissionsResource,
-              CrosstabsPermissionsResource) {
+              CrosstabsPermissionsResource,
+              OpalTaxonomyiesSummaryResource) {
       $scope.micaConfig = MicaConfigResource.get();
+      $scope.availableOpalTaxonomies = {};
+
+      OpalTaxonomyiesSummaryResource.get().$promise.then(function (res) {
+        (res.summaries || []).reduce((acc, curr) => {
+          acc[curr.name] = curr.title;
+          return acc;
+        }, $scope.availableOpalTaxonomies);
+        return res;
+      });
 
       function getAvailableLanguages() {
         $scope.availableLanguages = $resource(contextPath + '/ws/config/languages').get({locale: $translate.use()});
@@ -467,6 +478,7 @@ mica.config
     'FormServerValidation',
     '$translate',
     'AlertService',
+    'OpalTaxonomyiesSummaryResource',
 
     function ($rootScope,
               $scope,
@@ -478,9 +490,11 @@ mica.config
               MicaConfigResource,
               FormServerValidation,
               $translate,
-              AlertService) {
+              AlertService,
+              OpalTaxonomyiesSummaryResource) {
       var reload = false;
       $scope.micaConfig = MicaConfigResource.get();
+      $scope.availableOpalTaxonomies = OpalTaxonomyiesSummaryResource.get();
 
       function getAvailableLanguages() {
         $resource(contextPath + '/ws/config/languages').get({locale: $translate.use()}).$promise.then(function (languages) {

@@ -257,10 +257,10 @@ const GraphicResult = {
         </button>
         </div>
     </div>
-    <div class="card-body">
+    <div class="card-body" style="min-height: 24em">
       <p class="text-muted">{{chartDataset.options.text | translate}}</p>
       <div v-bind:id="containerId" class="row">
-        <div v-bind:id="chartContainerId" class="col-sm-12 col-xl-6 my-auto" style="max-height: 24em"></div>
+        <div v-bind:id="chartContainerId" class="col-sm-12 col-xl-6 my-auto"></div>
 
         <div v-bind:id="tableContainerId" class="col-sm-12 col-xl-6 overflow-auto" style="max-height: 24em">
           <table id="vosr-datasets-result" class="table table-striped" width="100%">
@@ -278,16 +278,16 @@ const GraphicResult = {
 
                   <td class="col" v-bind:title="totals ? (100 * row.count/totals.countTotal).toFixed(2) + '%' : ''" v-if="row.count > 0">
                     <a href="" v-on:click="onCountClick($event, row.vocabulary, row.key, row.queryOverride)" class="query-anchor">{{row.count}}</a>
-                    <small class="ml-1" v-if="chartDataset.options.withTotals && chartDataset.options.withPercentages">({{totals ? (100 * row.count/totals.countTotal).toFixed(2) + '%' : ''}})</small>
+                    <small class="ml-1 d-inline-block" style="width: 4rem;" v-if="chartDataset.options.withTotals && chartDataset.options.withPercentages">({{totals ? (100 * row.count/totals.countTotal).toFixed(2) + '%' : ''}})</small>
                   </td>
 
                   <td class="col" v-bind:title="totals ? (0).toFixed(2) + '%' : ''" v-if="row.count === 0">
                     <span class="text-muted">{{row.count}}</span>
-                    <small v-if="chartDataset.options.withTotals && chartDataset.options.withPercentages" class="ml-1 text-muted">({{totals ? (0).toFixed(2) + '%' : ''}})</small>
+                    <small v-if="chartDataset.options.withTotals && chartDataset.options.withPercentages" class="ml-1 text-muted d-inline-block" style="width: 4rem;">({{totals ? (0).toFixed(2) + '%' : ''}})</small>
                   </td>
 
                   <td class="col" v-bind:title="totals ? (100 * row.subAgg/totals.subAggTotal).toFixed(2) + '%' : ''" v-if="row.subAgg !== undefined">
-                    <span v-bind:class="{ 'text-muted': row.subAgg !== undefined && row.subAgg === 0 }">{{row.subAgg !== undefined && row.subAgg === 0 ? '-' : row.subAgg.toLocaleString()}}</span>
+                    <span class="d-inline-block" style="width: 4rem;" v-bind:class="{ 'text-muted': row.subAgg !== undefined && row.subAgg === 0 }">{{row.subAgg !== undefined && row.subAgg === 0 ? '-' : row.subAgg.toLocaleString()}}</span>
                   </td>
                 </tr>
             </tbody>
@@ -296,7 +296,7 @@ const GraphicResult = {
                   <th class="col">{{ 'graphics.total' | translate }}</th>
                   <th class="col">
                     <span>{{totals.countTotal.toLocaleString()}}</span>
-                    <small class="ml-1" v-if="chartDataset.options.withTotals && chartDataset.options.withPercentages">({{(100).toFixed(2) + '%'}})</small>
+                    <small class="ml-1 d-inline-block" style="width: 4rem;" v-if="chartDataset.options.withTotals && chartDataset.options.withPercentages">({{(100).toFixed(2) + '%'}})</small>
                   </th>
                   <th class="col" v-if="totals.subAggTotal !== undefined">{{totals.subAggTotal.toLocaleString()}}</th>
                 </tr>
@@ -354,13 +354,7 @@ const GraphicResult = {
   methods: {
     getEventBus: () => EventBus,
     renderCanvas() {
-      let layout = this.chartDataset.plotData.layout || {};
-
-      if ((this.chartDataset.options.type || 'bar') === 'bar') {
-        layout.height = (2*1.42857)*12*(this.chartDataset.plotData.data[0] || {}).y.length;
-      }
-
-      Plotly.newPlot(this.chartContainerId, this.chartDataset.plotData.data, layout, {responsive: true, displaylogo: false, modeBarButtonsToRemove: ['select2d', 'lasso2d', 'pan', 'zoom', 'autoscale', 'zoomin', 'zoomout', 'resetscale']});
+      Plotly.react(this.chartContainerId, this.chartDataset.plotData.data, this.chartDataset.plotData.layout, {responsive: true, displaylogo: false, modeBarButtonsToRemove: ['select2d', 'lasso2d', 'pan', 'zoom', 'autoscale', 'zoomin', 'zoomout', 'resetscale']});
     },
     onCountClick(event, vocabulary, term, queryOverride) {
       event.preventDefault();

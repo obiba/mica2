@@ -194,6 +194,8 @@ class MicaConfigDtos {
     builder.setIsProjectsCountEnabled(config.isProjectsCountEnabled());
     builder.setIsDataAccessRequestsCountEnabled(config.isDataAccessRequestCountEnabled());
 
+    if (config.hasUsableVariableTaxonomiesForConceptTagging()) builder.addAllUsableVariableTaxonomiesForConceptTagging(config.getUsableVariableTaxonomiesForConceptTagging());
+
     return builder.build();
   }
 
@@ -277,6 +279,8 @@ class MicaConfigDtos {
     config.setVariablesCountEnabled(dto.getIsVariablesCountEnabled());
     config.setProjectsCountEnabled(dto.getIsProjectsCountEnabled());
     config.setDataAccessRequestCountEnabled(dto.getIsDataAccessRequestsCountEnabled());
+
+    if (dto.getUsableVariableTaxonomiesForConceptTaggingCount() > 0) config.setUsableVariableTaxonomiesForConceptTagging(dto.getUsableVariableTaxonomiesForConceptTaggingList());
 
     return config;
   }

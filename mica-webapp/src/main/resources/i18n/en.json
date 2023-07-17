@@ -564,7 +564,12 @@
     "projects-count-enabled": "Projects metrics enabled",
     "projects-count-enabled-help": "Show projects counts in the administration section.",
     "data-access-requests-count-enabled": "Data Access Requests metrics enabled",
-    "data-access-requests-count-enabled-help": "Show data access requests counts in the administration section."
+    "data-access-requests-count-enabled-help": "Show data access requests counts in the administration section.",
+    "taxonomies-for-annotation-by-concept": "Taxonomies for Annotation by Vocabulary",
+    "taxonomies-for-annotation-by-concept-help": "List of taxonomies that will be used when annotating a study by a vocabulary.",
+    "warning-annotations-update-study": "Remember to Index all individual studies to update their annotations inferred from associated datasets.",
+    "warning-annotations-update-initiative": "Remember to Index all harmonization initiatives to update their annotations inferred from associated protocols.",
+    "warning-annotations-update": "Remember to Index all individual studies and harmonization initiatives to update their annotations inferred from associated datasets and protocols."
   },
   "publish": {
     "label": "Publish",
@@ -876,7 +881,8 @@
         "prospective": "Prospective",
         "retrospective": "Retrospective"
       }
-    }
+    },
+    "warning-annotations-update": "Remember to publish the harmonization initiative '{{arg1}}' to update its annotations inferred from this harmonization protocol."
   },
   "contact": {
     "add": {
@@ -1055,7 +1061,8 @@
       "study-not-published":"Before publishing a collected dataset, its linked individual study must already be published",
       "population-not-published":"Before publishing a collected dataset, its linked population must already be published"
     },
-    "require-indexing-alert": "Due to an update in study '{{entity}}' this dataset requires to be indexed, visit the <a href=\"#/admin/statistics-summary\"><u>administration</u></a> page to proceed."
+    "require-indexing-alert": "Due to an update in study '{{entity}}' this dataset requires to be indexed, visit the <a href=\"#/admin/statistics-summary\"><u>administration</u></a> page to proceed.",
+    "warning-annotations-update": "Remember to publish the individual study '{{arg1}}' to update its annotations inferred from this collected dataset."
   },
   "attributes": "Attributes",
   "attribute": {
@@ -1570,6 +1577,7 @@
   "settings": "Settings",
   "other-settings": "Other settings",
   "revisions": "Revisions",
+  "annotations": "Annotations",
   "revisions-none": "No Revision",
   "revision": "Revision",
   "revision-date": "Revision Date",
@@ -2631,5 +2639,17 @@
     "UNDER_REVIEW": "Under Review",
     "TO_DELETE": "To Delete",
     "IN_EDITION": "In Edition"
+  },
+  "annotation-by-concept": {
+    "title": "Annotations by Taxonomy Vocabulary",
+    "description": "Annotate this study by a vocabulary belonging to a taxonomy listed below.",
+    "annotate": "Annotate",
+    "taxonomies": "Taxonomies",
+    "vocabularies": "Vocabularies",
+    "terms": "Terms",
+    "annotations-list": "Annotations",
+    "no-annotations": "There are no annotations.",
+    "no-taxonomies-configured": "To configure a subset of taxonomies, go to <a href='#/admin/general'><u>Administration / General / Taxonomies for Annotation by Vocabulary</u></a> section.",
+    "not-in-filtered-taxonomies": "Annotation is using a taxonomy that is not configured."
   }
 }

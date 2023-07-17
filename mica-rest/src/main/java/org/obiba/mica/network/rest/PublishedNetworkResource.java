@@ -12,19 +12,32 @@ package org.obiba.mica.network.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.core.domain.Attribute;
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.rest.FileResource;
+import org.obiba.mica.micaConfig.service.TaxonomiesService;
 import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -41,6 +54,12 @@ public class PublishedNetworkResource {
   private PublishedNetworkService publishedNetworkService;
 
   @Inject
+  private PublishedStudyService publishedStudyService;
+
+  @Inject
+  private TaxonomiesService taxonomiesService;
+
+  @Inject
   private ApplicationContext applicationContext;
 
   @Inject
@@ -54,6 +73,32 @@ public class PublishedNetworkResource {
   public Mica.NetworkDto get(@PathParam("id") String id) {
     checkAccess(id);
     return dtos.asDto(getNetwork(id));
+  }
+
+  @GET
+  @Path("/study-annotations")
+  public Map<String, List<Taxonomy>> annotations(@PathParam("id") String id) {
+    checkAccess(id);
+    @NotNull
+    final List<Taxonomy> variableTaxonomies = taxonomiesService.getVariableTaxonomies();
+    final List<BaseStudy> networkStudies = publishedStudyService.findByIds(getNetwork(id).getStudyIds());
+
+    Map<String, Map<String, Map<String, List<LocalizedString>>>> result = networkStudies.stream()
+    .filter(study -> study.getClassName().equals("Study"))
+    .collect(Collectors.toMap(
+      study -> study.getId(),
+      study -> study.getMergedAttributes().stream().collect(
+        Collectors.groupingBy(
+          Attribute::getNamespace,
+          LinkedHashMap::new, Collectors.groupingBy(
+            Attribute::getName,
+            Collectors.mapping(attribute -> Optional.ofNullable(attribute.getValues()).orElse(new LocalizedString()), Collectors.toList())
+          )
+        )
+      )
+    ));
+
+    return result.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> TaxonomiesService.processMergedAttributes(variableTaxonomies, entry.getValue())));
   }
 
   @Path("/file/{fileId}")
