@@ -199,8 +199,15 @@ public class TaxonomiesService {
         List<Term> newTerms = variableChars.getTerms().stream()
           .filter(term -> "Mica_variable".equals(term.getName()) || reverseVariableTaxonomiesNames.contains(term.getName()))
           .collect(Collectors.toList());
+
+        List<Term> uniqueVariableCharsTerms = variableChars.getTerms().stream().distinct().collect(Collectors.toList());
         if (newTerms.size() < variableChars.getTerms().size()) {
           variableChars.setTerms(newTerms);
+          modified = true;
+        }
+
+        if (uniqueVariableCharsTerms.size() != newTerms.size()) {
+          variableChars.setTerms(uniqueVariableCharsTerms);
           modified = true;
         }
       }
