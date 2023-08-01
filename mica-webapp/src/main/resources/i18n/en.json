@@ -882,7 +882,7 @@
         "retrospective": "Retrospective"
       }
     },
-    "warning-annotations-update": "Remember to publish the harmonization initiative '{{arg1}}' to update its annotations inferred from this harmonization protocol."
+    "warning-annotations-update": "Remember to publish or index the harmonization initiative '{{arg1}}' to update its annotations inferred from this harmonization protocol."
   },
   "contact": {
     "add": {
@@ -1062,7 +1062,9 @@
       "population-not-published":"Before publishing a collected dataset, its linked population must already be published"
     },
     "require-indexing-alert": "Due to an update in study '{{entity}}' this dataset requires to be indexed, visit the <a href=\"#/admin/statistics-summary\"><u>administration</u></a> page to proceed.",
-    "warning-annotations-update": "Remember to publish the individual study '{{arg1}}' to update its annotations inferred from this collected dataset."
+    "warning-annotations-update": "Remember to publish or index the individual study '{{arg1}}' to update its annotations inferred from this collected dataset.",
+    "index-study": "Index Study",
+    "publish-study": "Publish Study"
   },
   "attributes": "Attributes",
   "attribute": {

@@ -29,7 +29,8 @@ mica.study
   .factory('DraftStudiesResource', ['$resource', 'StudyModelService',
     function ($resource, StudyModelService) {
       return $resource(contextPath + '/ws/draft/individual-studies?comment:comment', {}, {
-        'save': {method: 'POST', errorHandler: true, transformRequest: StudyModelService.serialize}
+        'save': {method: 'POST', errorHandler: true, transformRequest: StudyModelService.serialize},
+        'index': {method: 'PUT', url: '/ws/draft/individual-studies/_index', params:{id:'@id'}}
       });
     }])
 
@@ -649,7 +650,7 @@ mica.study
         'summaries': {method: 'GET', isArray: true, params: {id: '@id'}}
       });
     }])
-    
+
   .factory('TaxonomyFilterResource', ['$resource', function ($resource) {
     return $resource(contextPath + 'ws/taxonomies/_filter', {target: 'variable'});
   }]);

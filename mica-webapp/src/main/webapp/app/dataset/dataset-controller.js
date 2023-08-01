@@ -437,6 +437,8 @@ mica.dataset
     'DatasetService',
     'DocumentPermissionsService',
     'StudyStatesResource',
+    'DraftStudiesResource',
+    'DraftStudyResource',
     'EntityFormResource',
     'OpalTablesService',
     'CollectedDatasetResource',
@@ -466,6 +468,8 @@ mica.dataset
               DatasetService,
               DocumentPermissionsService,
               StudyStatesResource,
+              DraftStudiesResource,
+              DraftStudyResource,
               EntityFormResource,
               OpalTablesService,
               CollectedDatasetResource,
@@ -633,7 +637,22 @@ mica.dataset
           };
 
         } else {
-          // $scope.datasetTable = $scope.dataset['obiba.mica.CollectedDatasetDto.type'].studyTable;
+
+          $scope.studyTable = dataset['obiba.mica.CollectedDatasetDto.type'].studyTable;
+          $scope.studyPublished = undefined;
+
+          if ('studySummary' in $scope.studyTable) {
+            $scope.studyPublished = $scope.studyTable.studySummary.published;
+          }
+
+          $scope.indexOrPublishStudy = function() {
+            if ($scope.studyPublished) {
+              DraftStudiesResource.index({id: [$scope.studyTable.studyId]})
+            } else {
+              DraftStudyResource.publish({id: $scope.studyTable.studyId})
+            }
+          }
+
           $scope.editStudyTable = function () {
             addUpdateOpalTable();
           };
