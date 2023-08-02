@@ -437,6 +437,8 @@ mica.dataset
     'DatasetService',
     'DocumentPermissionsService',
     'StudyStatesResource',
+    'DraftStudiesResource',
+    'DraftStudyResource',
     'EntityFormResource',
     'OpalTablesService',
     'CollectedDatasetResource',
@@ -466,6 +468,8 @@ mica.dataset
               DatasetService,
               DocumentPermissionsService,
               StudyStatesResource,
+              DraftStudiesResource,
+              DraftStudyResource,
               EntityFormResource,
               OpalTablesService,
               CollectedDatasetResource,
@@ -633,7 +637,32 @@ mica.dataset
           };
 
         } else {
-          // $scope.datasetTable = $scope.dataset['obiba.mica.CollectedDatasetDto.type'].studyTable;
+
+          $scope.studyTable = dataset['obiba.mica.CollectedDatasetDto.type'].studyTable;
+          $scope.studyPublished = undefined;
+
+          if ('studySummary' in $scope.studyTable) {
+            $scope.studyPublished = $scope.studyTable.studySummary.published;
+          }
+
+          $scope.indexOrPublishStudy = function() {
+            const onSuccess = () => {
+              $scope.fetchDataset($scope.dataset.id);
+              const messageKey  = $scope.studyPublished ? 'dataset.study-indexed' : 'dataset.study-published';
+              AlertBuilder.newBuilder()
+                .delay(5000)
+                .type('info')
+                .trMsg(messageKey, [$scope.dataset.id])
+                .build();
+            };
+
+            if ($scope.studyPublished) {
+              DraftStudiesResource.index({id: [$scope.studyTable.studyId]}).$promise.then(onSuccess);
+            } else {
+              DraftStudyResource.publish({id: $scope.studyTable.studyId}).$promise.then(onSuccess);
+            }
+          };
+
           $scope.editStudyTable = function () {
             addUpdateOpalTable();
           };
