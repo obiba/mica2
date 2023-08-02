@@ -646,10 +646,20 @@ mica.dataset
           }
 
           $scope.indexOrPublishStudy = function() {
+            const onSuccess = () => {
+              $scope.fetchDataset($scope.dataset.id);
+              const messageKey  = $scope.studyPublished ? 'dataset.study-indexed' : 'dataset.study-published';
+              AlertBuilder.newBuilder()
+                .delay(5000)
+                .type('info')
+                .trMsg(messageKey, [$scope.dataset.id])
+                .build();
+            }
+
             if ($scope.studyPublished) {
-              DraftStudiesResource.index({id: [$scope.studyTable.studyId]})
+              DraftStudiesResource.index({id: [$scope.studyTable.studyId]}).$promise.then(onSuccess);
             } else {
-              DraftStudyResource.publish({id: $scope.studyTable.studyId})
+              DraftStudyResource.publish({id: $scope.studyTable.studyId}).$promise.then(onSuccess);
             }
           }
 
