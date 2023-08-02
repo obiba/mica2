@@ -654,14 +654,14 @@ mica.dataset
                 .type('info')
                 .trMsg(messageKey, [$scope.dataset.id])
                 .build();
-            }
+            };
 
             if ($scope.studyPublished) {
               DraftStudiesResource.index({id: [$scope.studyTable.studyId]}).$promise.then(onSuccess);
             } else {
               DraftStudyResource.publish({id: $scope.studyTable.studyId}).$promise.then(onSuccess);
             }
-          }
+          };
 
           $scope.editStudyTable = function () {
             addUpdateOpalTable();
