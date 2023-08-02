@@ -64,7 +64,7 @@ public class DraftCollectedDatasetResource extends
   @GET
   public Mica.DatasetDto get(@QueryParam("key") String key) {
     checkPermission("/draft/collected-dataset", "VIEW", key);
-    return dtos.asDto(getDataset(), true, !Strings.isNullOrEmpty(key));
+    return dtos.asDto(getDataset(), true, true);
   }
 
   @GET

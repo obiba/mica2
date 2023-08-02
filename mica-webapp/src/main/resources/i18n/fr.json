@@ -882,7 +882,7 @@
         "retrospective": "Rétrospective"
       }
     },
-    "warning-annotations-update": "N'oubliez pas de publier l'initiative d'harmonisation '{{arg1}}' pour mettre à jour ses annotations déduites de ce protocol d'harmonisation."
+    "warning-annotations-update": "N'oubliez pas d'indexer l'initiative d'harmonisation '{{arg1}}' pour mettre à jour ses annotations déduites de ce protocol d'harmonisation."
   },
   "contact": {
     "add": {
@@ -1062,7 +1062,11 @@
       "population-not-published":"Pour publier un ensemble de données collectées, la population qui lui est liée doit aussi être publiée"
     },
     "require-indexing-alert": "En raison d'une mise à jour dans l'étude '{{entity}}', cet ensemble de données doit être indexé, visitez la page <a href=\"#/admin/statistics-summary\"> <u> administration </u> </a> pour procéder.",
-    "warning-annotations-update": "N'oubliez pas de publier l'étude '{{arg1}}' pour mettre à jour ses annotations déduites de cet ensemble de données."
+    "warning-annotations-update": "N'oubliez pas d'indexer l'étude '{{arg1}}' pour mettre à jour ses annotations déduites de cet ensemble de données.",
+    "index-study": "Indexer l'étude",
+    "study-indexed": "L'étude '{{arg0}}' a été indexée avec succès.",
+    "publish-study": "Publier l'étude",
+    "study-published": "L'étude '{{arg0}}' a été publiée avec succès."
   },
   "attributes": "Attributs",
   "attribute": {

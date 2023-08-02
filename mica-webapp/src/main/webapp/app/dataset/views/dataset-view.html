@@ -13,14 +13,20 @@
 
   <p ng-if="dataset['obiba.mica.EntityStateDto.datasetState'].requireIndexing"
      class="alert alert-warning"
-     ng-bind-html="'dataset.require-indexing-alert' | translate: {entity:dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.studyId}"></p>
+     ng-bind-html="'dataset.require-indexing-alert' | translate: {entity:studyTable.studyId}"></p>
 
-  <div ng-class="{'voffset3': !screen.is('lg')}" class="clearfix hidden-print">
+    <div ng-class="{'voffset3': !screen.is('lg')}" class="clearfix hidden-print">
     <h3 class="pull-left no-margin-top" translate>view</h3>
     <div class="pull-right">
       <a ng-href="#/{{type}}/{{dataset.id}}/edit" class="btn btn-primary btn-responsive" ng-if="permissions.canEdit()">
         <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
       </a>
+
+      <span ng-if="studyPublished !== undefined">
+        <a href class="btn btn-primary btn-responsive" ng-click="indexOrPublishStudy()" >
+          <span>{{studyPublished ? 'dataset.index-study' : 'dataset.publish-study' | translate }}</span>
+        </a>
+      </span>
 
       <a share-modal resource-type="type" resource-id="dataset.id" permissions="permissions"/>
 
