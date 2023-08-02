@@ -638,7 +638,7 @@ mica.dataset
 
         } else {
 
-          $scope.studyTable = dataset['obiba.mica.CollectedDatasetDto.type'].studyTable;
+          $scope.studyTable = 'obiba.mica.CollectedDatasetDto.type' in dataset ? dataset['obiba.mica.CollectedDatasetDto.type'].studyTable : {};
           $scope.studyPublished = undefined;
 
           if ('studySummary' in $scope.studyTable) {
