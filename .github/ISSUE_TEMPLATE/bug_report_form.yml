@@ -44,8 +44,6 @@ body:
         4. Change study status to Deleted and then delete the study\n
         5. In the public pages, go to Individual Studies listing\n
         6. Observe that the deleted study is still there"
-    validations:
-      required: true
   - type: dropdown
     id: operating-system
     attributes:
