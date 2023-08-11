@@ -1,0 +1,82 @@
+name: Mica Bug Report
+description: File a bug report for Mica
+labels: ["bug", "issue"]
+assignees:
+  - meek0
+  - kazoompa
+  - ymarcon
+body:
+  - type: checkboxes
+    id: unique
+    attributes:
+      label: This issue is unique
+      options:
+        - label: I have used the [search tool](https://github.com/obiba/mica2/issues?q=) and did not find an issue describing my bug. 
+          required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version information
+      placeholder: "Example: 5.2.2"
+      description: Please provide the exact version of Mica you are using. If you don't know it, ask your server administrator or if you have access to Mica administration section, retrieve the version at the bottom of the web page. Before submitting an issue, ensure you are using the [latest version](https://github.com/obiba/mica2/releases/latest).
+  - type: textarea
+    id: expected-behvior
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen? Did this work in previous versions of Mica.
+      placeholder: "Example: when an individual study is deleted, it should no longer be listed in the public pages."
+  - type: textarea
+    id: actual-behvior
+    attributes:
+      label: Actual behavior
+      description: What did actually happen?
+      placeholder: "Example: A deleted individual study is still listed in the public pages."
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Provide information on how to reproduce this bug. Make sure your instructions are clear and include screenshots when applicable.
+      placeholder: 
+        "Example:\n
+        1. Log in to Mica\n
+        2. In the administration section, go to Individual Studies section\n
+        3. View a study\n
+        4. Change study status to Deleted and then delete the study\n
+        5. In the public pages, go to Individual Studies listing\n
+        6. Observe that the deleted study is still there"
+    validations:
+      required: true
+  - type: dropdown
+    id: operating-system
+    attributes:
+      label: Operating System (OS)
+      description: If you know this bug occurs on multiple operating systems, select all you have tested.
+      multiple: true
+      options:
+        - Windows
+        - Mac OS
+        - Linux
+      default: 0
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      description: If you know this bug occurs on multiple browsers, select all you have tested.
+      multiple: true
+      options:
+        - Google Chrome
+        - Microssoft Edge
+        - Safari
+        - FireFox
+        - Brave
+        - Opera
+      default: 0      
+  - type: textarea
+    id: contact-onfo
+    attributes:
+      label: Contact info
+      description: OBiBa always appreciates knowing about its software users. Please provide the below information if you are a new user Of Mica or you are evaluating the software. 
+      placeholder: "
+        - Name of your organisation \n
+        - What does your organisation do\n
+        - Your organisation's website"
