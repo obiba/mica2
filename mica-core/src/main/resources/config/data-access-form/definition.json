@@ -198,7 +198,7 @@
         "key": "abstract",
         "notitle": true,
         "type": "textarea",
-        "wordLimit": 500,
+        "wordLimit": "0:500",
         "validationMessage": {
           "wordLimitError": "The 500 words limit has been exceeded."
         }
@@ -216,7 +216,7 @@
         "key": "summary",
         "notitle": true,
         "type": "textarea",
-        "wordLimit": 200,
+        "wordLimit": "0:200",
         "validationMessage": {
           "wordLimitError": "The 200 words limit has been exceeded."
         }
