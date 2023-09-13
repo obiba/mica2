@@ -36,6 +36,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 
 import au.com.bytecode.opencsv.CSVWriter;
+import net.minidev.json.JSONArray;
 
 public class CsvReportGenerator {
 
@@ -171,6 +172,11 @@ public class CsvReportGenerator {
   private String extractValueFromDataAccessRequest(DocumentContext dataAccessRequestDetails, String key) {
     try {
       try {
+        JSONArray listValue = dataAccessRequestDetails.read(key, JSONArray.class);
+        return translateListValue(listValue);
+      } catch (ClassCastException ignore) {
+      }
+      try {
         Boolean booleanValue = dataAccessRequestDetails.read(key, Boolean.class);
         return translateBooleanValue(booleanValue);
       } catch (ClassCastException ignore) {
@@ -190,6 +196,11 @@ public class CsvReportGenerator {
     return extractTranslatedField(darSchema, GENERIC_TANSLATION_PREFIX + "." + translationKey);
   }
 
+  private String translateListValue(JSONArray value) {
+    if (value == null) return EMPTY_CELL_CONTENT;
+    return value.stream().map(v -> String.valueOf(v)).collect(Collectors.joining(","));
+  }
+
   private String getWith0AsDefault(Long value) {
     return value != null ? value.toString() : "0";
   }
@@ -198,7 +209,7 @@ public class CsvReportGenerator {
     return elements;
   }
 
-  private String formatDate(LocalDateTime dateTime) {    
+  private String formatDate(LocalDateTime dateTime) {
     return DATETIME_FORMAT.format(dateTime);
   }
 
