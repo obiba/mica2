@@ -12,6 +12,7 @@ package org.obiba.mica.core.source;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.ValueTable;
 import org.obiba.magma.datasource.excel.ExcelDatasource;
 import org.obiba.magma.support.Initialisables;
@@ -68,9 +69,13 @@ public class ExcelTableSource extends AbstractStudyTableSource implements StudyT
   @Override
   public ValueTable getValueTable() {
     ensureInitialized();
-    return Strings.isNullOrEmpty(table) ?
-      excelDatasource.getValueTables().stream().findFirst().get() :
-      excelDatasource.getValueTable(table);
+    ValueTable valueTable;
+    if (Strings.isNullOrEmpty(table)){
+      valueTable = excelDatasource.getValueTables().stream().findFirst().orElseThrow(()-> new NoSuchValueTableException(""));
+    }else{
+      valueTable = excelDatasource.getValueTable(table);
+    }
+    return valueTable;
   }
 
   @Override
