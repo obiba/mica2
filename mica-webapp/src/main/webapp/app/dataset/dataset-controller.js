@@ -123,7 +123,7 @@ mica.dataset
       };
 
       var populateStudyTable = function (studyTable) {
-        if (studyTable !== {}) {
+        if (Object.keys(studyTable).length > 0) {
           $scope.selected.study = {
             id: studyTable.studyId,
             population: {
@@ -324,7 +324,7 @@ mica.dataset
             }).pop();
 
             if (!$scope.selected.project) {
-              $scope.selected.project = $scope.projects.pop();
+              $scope.selected.project = $scope.projects[0];
             }
 
             $scope.selected.project.table = $scope.selected.project.datasource.table.filter(function (t) {
@@ -332,7 +332,7 @@ mica.dataset
             }).pop();
 
             if (!$scope.selected.project.table) {
-              $scope.selected.project.table = $scope.selected.project.datasource.table.pop();
+              $scope.selected.project.table = ($scope.selected.project.datasource.table || [])[0];
             }
           });
         });
@@ -347,8 +347,8 @@ mica.dataset
           model: {}
         };
         getOpalProjects().then(function() {
-          $scope.selected.project = $scope.projects.pop();
-          $scope.selected.project.table = $scope.selected.project.datasource.table.pop();
+          $scope.selected.project = $scope.projects[0];
+          $scope.selected.project.table = ($scope.selected.project.datasource.table || [])[0];
         });
       }
 
@@ -1021,9 +1021,9 @@ mica.dataset
                   $scope.selected.project.table = selectedTable;
                 }
               } else {
-                $scope.selected.project = $scope.projects.pop();
+                $scope.selected.project = $scope.projects[0];
                 if ($scope.selected.project) {
-                  $scope.selected.project.table = $scope.selected.project.datasource.table.pop();
+                  $scope.selected.project.table = ($scope.selected.project.datasource.table || [])[0];
                 }
               }
 
