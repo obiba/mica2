@@ -18,6 +18,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import org.apache.commons.math3.util.Pair;
 import org.obiba.mica.core.domain.BaseStudyTable;
+import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -38,6 +39,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 /**
  * Dataschema variable resource: variable describing an harmonization dataset.
@@ -77,10 +79,11 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     Mica.DatasetVariableAggregationsDto.Builder aggDto = Mica.DatasetVariableAggregationsDto.newBuilder();
 
     List<Future<Mica.DatasetVariableAggregationDto>> results = Lists.newArrayList();
-    dataset.getBaseStudyTables().forEach(table -> results.add(helper.getVariableFacet(dataset, variableName, table)));
+    List<BaseStudyTable> studyTables = getBaseStudyTables(dataset);
+    studyTables.forEach(table -> results.add(helper.getVariableFacet(dataset, variableName, table)));
 
-    for (int i = 0; i < dataset.getBaseStudyTables().size(); i++) {
-      BaseStudyTable opalTable = dataset.getBaseStudyTables().get(i);
+    for (int i = 0; i < studyTables.size(); i++) {
+      BaseStudyTable opalTable = studyTables.get(i);
       Future<Mica.DatasetVariableAggregationDto> futureResult = results.get(i);
       try {
         builder.add(dtos.asDto(opalTable, futureResult.get(), withStudySummary).build());
@@ -182,12 +185,13 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     Mica.DatasetVariableContingenciesDto.Builder crossDto = Mica.DatasetVariableContingenciesDto.newBuilder();
 
     List<Future<Mica.DatasetVariableContingencyDto>> results = Lists.newArrayList();
-    dataset.getBaseStudyTables().forEach(table -> results.add(helper.getContingencyTable(dataset, var, crossVar, table)));
+    List<BaseStudyTable> studyTables = getBaseStudyTables(dataset);
+    studyTables.forEach(table -> results.add(helper.getContingencyTable(dataset, var, crossVar, table)));
 
     Multimap<String, Mica.DatasetVariableAggregationDto> termAggregations = LinkedListMultimap.create();
 
-    for (int i = 0; i < dataset.getBaseStudyTables().size(); i++) {
-      BaseStudyTable studyTable = dataset.getBaseStudyTables().get(i);
+    for (int i = 0; i < studyTables.size(); i++) {
+      BaseStudyTable studyTable = studyTables.get(i);
       Future<Mica.DatasetVariableContingencyDto> futureResult = results.get(i);
 
       try {
@@ -227,6 +231,12 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     DatasetVariable crossVar = getDatasetVariable(datasetId, crossVariable, DatasetVariable.Type.Dataschema, null);
 
     return Pair.create(var, crossVar);
+  }
+
+  private List<BaseStudyTable> getBaseStudyTables(HarmonizationDataset dataset) {
+    return dataset.getBaseStudyTables().stream()
+      .filter((s) -> subjectAclService.isAccessible(s instanceof StudyTable ? "/individual-study" : "/harmonization-study", s.getStudyId()))
+      .collect(Collectors.toList());
   }
 
   private void checkDatasetAccess() {
