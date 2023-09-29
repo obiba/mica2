@@ -183,7 +183,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     Mica.DatasetVariableHarmonizationDto.Builder builder = Mica.DatasetVariableHarmonizationDto.newBuilder();
     builder.setResolver(dtos.asDto(variableResolver));
 
-    dataset.getBaseStudyTables().forEach(table -> {
+    getBaseStudyTables(dataset).forEach(table -> {
       try {
         builder.addDatasetVariableSummaries(
             getDatasetVariableSummaryDto(dataset.getId(), variableResolver.getName(), DatasetVariable.Type.Harmonized,
@@ -202,7 +202,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     Mica.DatasetVariableHarmonizationSummaryDto.Builder builder = Mica.DatasetVariableHarmonizationSummaryDto.newBuilder();
     builder.setDataschemaVariableRef(dtos.asDto(variableResolver));
 
-    dataset.getBaseStudyTables().forEach(table ->
+    getBaseStudyTables(dataset).forEach(table ->
       builder.addHarmonizedVariables(getDatasetHarmonizedVariableSummaryDto(dataset.getId(), variableResolver.getName(), DatasetVariable.Type.Harmonized, table)));
 
     return builder.build();
@@ -347,5 +347,11 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
 
   public void setLocale(String value) {
     locale = value;
+  }
+
+  private List<BaseStudyTable> getBaseStudyTables(HarmonizationDataset dataset) {
+    return dataset.getBaseStudyTables().stream()
+      .filter((s) -> subjectAclService.isAccessible(s instanceof StudyTable ? "/individual-study" : "/harmonization-study", s.getStudyId()))
+      .collect(Collectors.toList());
   }
 }
