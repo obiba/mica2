@@ -49,7 +49,7 @@ public class DatasetsController extends BaseController {
   private List<Dataset> getDatasets() {
     try {
       return publishedDatasetService.findAll().stream()
-        .filter(d -> isAccessible((d instanceof StudyDataset) ? "/collected-dataset" : "harmonized-dataset", d.getId()))
+        .filter(d -> isAccessible((d instanceof StudyDataset) ? "/collected-dataset" : "/harmonized-dataset", d.getId()))
         .sorted(Comparator.comparing(AbstractGitPersistable::getId))
         .collect(Collectors.toList());
     } catch (Exception e) {

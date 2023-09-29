@@ -15,6 +15,7 @@ import com.google.common.base.Strings;
 import org.apache.commons.math3.util.Pair;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.mica.core.domain.BaseStudyTable;
+import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -31,6 +32,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Harmonized variable resource: variable of an harmonization dataset, implementing the dataschema variable with the same name.
@@ -69,7 +72,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
     checkDatasetAccess();
     checkVariableSummaryAccess();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
-    for (BaseStudyTable baseTable : dataset.getBaseStudyTables()) {
+    for (BaseStudyTable baseTable : getBaseStudyTables(dataset)) {
       if (baseTable.isFor(studyId, source)) {
         try {
           return dtos.asDto(baseTable,
@@ -100,7 +103,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   private Mica.DatasetVariableContingencyDto getContingencyDto(DatasetVariable var, DatasetVariable crossVar) {
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
 
-    for (BaseStudyTable baseTable : dataset.getBaseStudyTables()) {
+    for (BaseStudyTable baseTable : getBaseStudyTables(dataset)) {
       if (baseTable.isFor(studyId, source)) {
         try {
           return dtos.asContingencyDto(baseTable, datasetService.getContingencyTable(dataset, baseTable, var, crossVar)).build();
@@ -174,6 +177,12 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
     DatasetVariable crossVar = getDatasetVariable(datasetId, crossVariable, DatasetVariable.Type.Harmonized, studyId, source, tableType);
 
     return Pair.create(var, crossVar);
+  }
+
+  private List<BaseStudyTable> getBaseStudyTables(HarmonizationDataset dataset) {
+    return dataset.getBaseStudyTables().stream()
+      .filter((s) -> subjectAclService.isAccessible(s instanceof StudyTable ? "/individual-study" : "/harmonization-study", s.getStudyId()))
+      .collect(Collectors.toList());
   }
 
   private void checkDatasetAccess() {
