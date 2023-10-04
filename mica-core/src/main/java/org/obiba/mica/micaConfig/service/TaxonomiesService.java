@@ -193,21 +193,18 @@ public class TaxonomiesService {
           }
         }
 
-        // check variable taxonomies to be removed from meta
+        // check variable taxonomies to be hidden in meta
         List<String> reverseVariableTaxonomiesNames = variableTaxonomies.stream()
           .map(TaxonomyEntity::getName).collect(Collectors.toList());
-        List<Term> newTerms = variableChars.getTerms().stream()
-          .filter(term -> "Mica_variable".equals(term.getName()) || reverseVariableTaxonomiesNames.contains(term.getName()))
+        List<Term> termsToHide = variableChars.getTerms().stream()
+          .filter(term -> !"Mica_variable".equals(term.getName()) && !reverseVariableTaxonomiesNames.contains(term.getName()))
+          .filter(term -> term.getAttributeValue("hidden") == null || term.getAttributeValue("hidden").equals("false"))
           .collect(Collectors.toList());
 
-        List<Term> uniqueVariableCharsTerms = variableChars.getTerms().stream().distinct().collect(Collectors.toList());
-        if (newTerms.size() < variableChars.getTerms().size()) {
-          variableChars.setTerms(newTerms);
-          modified = true;
-        }
-
-        if (uniqueVariableCharsTerms.size() != newTerms.size()) {
-          variableChars.setTerms(uniqueVariableCharsTerms);
+        if (!termsToHide.isEmpty()) {
+          for (Term term : termsToHide) {
+            term.addAttribute("hidden", "true");
+          }
           modified = true;
         }
       }
