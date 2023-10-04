@@ -13,7 +13,7 @@ opal:
     password: password
 
 agate:
-    url: https://localhost:8444
+    url: http://localhost:8081
     application:
         name: mica
         key: changeit
