@@ -69,6 +69,9 @@ public class DataAccessRequestUtilService {
   private DataAccessAmendmentFormService dataAccessAmendmentFormService;
 
   @Inject
+  private DataAccessAgreementFormService dataAccessAgreementFormService;
+
+  @Inject
   private SubjectAclService subjectAclService;
 
   @Inject
@@ -87,6 +90,8 @@ public class DataAccessRequestUtilService {
       return dataAccessFeasibilityFormService.findByRevision(formRevision).get();
     if (dataAccessEntity instanceof DataAccessAmendment)
       return dataAccessAmendmentFormService.findByRevision(formRevision).get();
+    if (dataAccessEntity instanceof DataAccessAgreement)
+      return dataAccessAgreementFormService.findByRevision(formRevision).get();
     throw new BadRequestException("Unknown data access request entity class: " + dataAccessEntity.getClass().getSimpleName());
   }
 
