@@ -214,6 +214,7 @@ mica.study.ViewController = function (
   $filter,
   $q,
   $log,
+  LocalizedValues,
   NOTIFICATION_EVENTS,
   CONTACT_EVENTS,
   EntityFormResource,
@@ -411,7 +412,7 @@ mica.study.ViewController = function (
   self.initializeForm();
 
   populationManagement($rootScope, $scope, $location, NOTIFICATION_EVENTS);
-  populationDceManagement($rootScope, $scope, $location, $translate, $uibModal, EntityPathBuilder, NOTIFICATION_EVENTS);
+  populationDceManagement($rootScope, $scope, $location, $translate, $uibModal, LocalizedValues, EntityPathBuilder, NOTIFICATION_EVENTS);
   contactManagement($scope, $routeParams, CONTACT_EVENTS, self.fetchStudy);
   revisionManagement($rootScope, $scope, $location, $filter, $translate, DraftStudyRevisionsResource, NOTIFICATION_EVENTS, self.initializeStudy, DraftStudyResource);
 };
@@ -449,12 +450,12 @@ function populationManagement($rootScope, $scope, $location, NOTIFICATION_EVENTS
   };
 }
 
-function populationDceManagement($rootScope, $scope, $location, $translate, $uibModal, EntityPathBuilder, NOTIFICATION_EVENTS) {
+function populationDceManagement($rootScope, $scope, $location, $translate, $uibModal, LocalizedValues, EntityPathBuilder, NOTIFICATION_EVENTS) {
   $scope.addDataCollectionEvent = function (study, population, dce) {
-    $location.url($location.path() + '/population/' + population.id + '/dce/add');
-
     if (dce) {
-      $location.search('sourceDceId', dce.id);
+      openDuplicateDataCollectionEventModal(study, population, dce)
+    } else {
+      $location.url($location.path() + '/population/' + population.id + '/dce/add');
     }
   };
 
@@ -521,6 +522,27 @@ function populationDceManagement($rootScope, $scope, $location, $translate, $uib
     }));
   };
 
+  function openDuplicateDataCollectionEventModal(study, population, dce) {
+    $uibModal.open({
+      templateUrl: 'app/study/views/population/dce/data-collection-event-clone-modal.html',
+      controllerAs: '$ctrl',
+      controller: ['$uibModalInstance',
+        function($uibModalInstance) {
+          this.clones = 1;
+          this.dceName = LocalizedValues.forLang(dce.name, $translate.use());
+          this.onDuplicate = () => {
+            $uibModalInstance.close();
+            $location.url($location.path() + '/population/' + population.id + '/dce/add');
+
+            if (dce) {
+              $location.search({'sourceDceId': dce.id, 'clones': this.clones});
+            }
+          }
+
+          this.onClose = () => $uibModalInstance.dismiss('close');
+        }]
+    });
+  }
 
 }
 

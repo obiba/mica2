@@ -1089,6 +1089,11 @@
     "countries": "Countries ISO",
     "numberOfParticipants-noLimit": "No limit",
     "recruitment": "Recruitment",
+    "clone-data-collection-event-modal" : {
+      "title": "Clone Data Collection Event",
+      "prompt": "Enter the number of times you wish to clone '{{dce}}':",
+      "button": "Clone"
+    },
     "delete-dialog": {
       "title": "Delete Population",
       "message": "Are you sure to delete the population?"
