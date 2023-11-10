@@ -109,6 +109,8 @@ public class DatasetVariable implements Indexable, AttributeAware, IVariable {
 
   private Set<String> sets;
 
+  private String tableUid;
+
   public DatasetVariable() {
   }
 
@@ -143,6 +145,7 @@ public class DatasetVariable implements Indexable, AttributeAware, IVariable {
     dceId = studyTable.getDataCollectionEventUId();
 
     source = studyTable.getSource();
+    setTableUid(studyTable.getTableUniqueId());
   }
 
   private DatasetVariable(Dataset dataset, Type type, Variable variable) {
@@ -422,6 +425,14 @@ public class DatasetVariable implements Indexable, AttributeAware, IVariable {
 
   private String cleanStringForSearch(String string) {
     return string != null ? string.replace("-", "") : null;
+  }
+
+  public String getTableUid() {
+    return tableUid;
+  }
+
+  public void setTableUid(String tableUid) {
+    this.tableUid = tableUid;
   }
 
   public static class IdEncoderDecoder {

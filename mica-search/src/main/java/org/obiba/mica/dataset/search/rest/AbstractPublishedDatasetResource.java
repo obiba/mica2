@@ -22,7 +22,6 @@ import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.TaxonomiesService;
-import org.obiba.mica.micaConfig.service.VariableTaxonomiesService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
@@ -39,7 +38,6 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.ForbiddenException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -118,6 +116,10 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
                                                             int limit, @Nullable String sort, @Nullable String order) {
     String rql = String.format("and(eq(datasetId,%s),eq(variableType,%s))", datasetId, type.toString());
     return getDatasetVariableDtosInternal(rql, from, limit, sort, order);
+  }
+
+  protected Map<Object, Object> getHarmonizationStatusAggregation(String id, int size, String agg, String fieldName) {
+    return searcher.harmonizationStatusAggregation(id, size, agg, fieldName);
   }
 
   protected Mica.DatasetVariablesDto getDatasetVariableDtosInternal(String rql, int from, int limit, @Nullable String sort, @Nullable String order) {

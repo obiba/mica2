@@ -423,6 +423,11 @@ class DatasetDtos {
       sbuilder.setDataCollectionEventId(dceId);
     }
 
+    String tableUid = studyTable.getTableUniqueId();
+    if (!Strings.isNullOrEmpty(tableUid)) {
+      sbuilder.setTableUid(tableUid);
+    }
+
     if(includeSummary) sbuilder.setStudySummary(studySummaryDtos.asDto(studyTable.getStudyId()));
 
     sbuilder.addAllName(localizedStringDtos.asDto(studyTable.getName()));
@@ -447,6 +452,11 @@ class DatasetDtos {
       OpalTableSource source = OpalTableSource.fromURN(harmonizationTable.getSource());
       hBuilder.setProject(source.getProject());
       hBuilder.setTable(source.getTable());
+    }
+
+    String tableUid = harmonizationTable.getTableUniqueId();
+    if (!Strings.isNullOrEmpty(tableUid)) {
+      hBuilder.setTableUid(tableUid);
     }
 
     if(includeSummary) hBuilder.setStudySummary(studySummaryDtos.asDto(harmonizationTable.getStudyId()));

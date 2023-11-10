@@ -557,6 +557,7 @@ message DatasetDto {
     optional int32 weight = 10;
     repeated LocalizedStringDto additionalInformation = 11;
     optional string source = 12;
+    optional string tableUid = 13;
   }
 
   message HarmonizationTableDto {
@@ -570,6 +571,7 @@ message DatasetDto {
     optional int32 weight = 8;
     repeated LocalizedStringDto additionalInformation = 9;
     optional string source = 10;
+    optional string tableUid = 11;
   }
 }
 

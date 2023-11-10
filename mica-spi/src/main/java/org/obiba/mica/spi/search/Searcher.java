@@ -201,6 +201,7 @@ public interface Searcher {
 
   DocumentResults cover(String indexName, String type, Query query, Properties aggregationProperties, Map<String, Properties> subAggregationProperties, @Nullable IdFilter idFilter);
 
+  Map<Object, Object> harmonizationStatusAggregation(String datasetId, int size, String aggregationFieldName, String statusFieldName);
 
   /**
    * Read the found documents.

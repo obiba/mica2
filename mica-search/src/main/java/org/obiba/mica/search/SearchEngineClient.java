@@ -109,4 +109,9 @@ public class SearchEngineClient implements Searcher {
   public long countDocumentsWithField(String indexName, String type, String field) {
     return getSearcher().countDocumentsWithField(indexName, type, field);
   }
+
+  @Override
+  public Map<Object, Object> harmonizationStatusAggregation(String datasetId, int size, String aggregationFieldName, String statusFieldName) {
+    return getSearcher().harmonizationStatusAggregation(datasetId, size, aggregationFieldName, statusFieldName);
+  }
 }
