@@ -418,10 +418,10 @@ mica.study.DataCollectionEventEditController = function (
   self.save = function (form) {
     if (!validate(form)) { form.saveAttempted = true; }
     else {
-      const search = $location.search()
+      const search = $location.search();
       if ('clones' in search && search.clones > 1) {
-        const clones = parseInt(search.clones) - 1
-        const url = $location.url()
+        const clones = parseInt(search.clones) - 1;
+        const url = $location.url();
         // Prevent changing the $location as it will initiate a URL change
         self.updateStudy(url.replace(/clones=\d+/, `clones=${clones}`));
       } else {

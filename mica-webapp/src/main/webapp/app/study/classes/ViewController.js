@@ -453,7 +453,7 @@ function populationManagement($rootScope, $scope, $location, NOTIFICATION_EVENTS
 function populationDceManagement($rootScope, $scope, $location, $translate, $uibModal, LocalizedValues, EntityPathBuilder, NOTIFICATION_EVENTS) {
   $scope.addDataCollectionEvent = function (study, population, dce) {
     if (dce) {
-      openDuplicateDataCollectionEventModal(study, population, dce)
+      openDuplicateDataCollectionEventModal(study, population, dce);
     } else {
       $location.url($location.path() + '/population/' + population.id + '/dce/add');
     }
@@ -537,7 +537,7 @@ function populationDceManagement($rootScope, $scope, $location, $translate, $uib
             if (dce) {
               $location.search({'sourceDceId': dce.id, 'clones': this.clones});
             }
-          }
+          };
 
           this.onClose = () => $uibModalInstance.dismiss('close');
         }]
