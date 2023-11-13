@@ -628,7 +628,7 @@ mica.entityTaxonomyConfig
       }
 
       function getTermFormData(forClassName, content, valueType, siblings, vocabulary) {
-        var isStatic = VocabularyAttributeService.isStatic(vocabulary);
+        var isStatic = VocabularyAttributeService.isStatic(vocabulary, forClassName);
         var data = {
           schema: {
             'type': 'object',
