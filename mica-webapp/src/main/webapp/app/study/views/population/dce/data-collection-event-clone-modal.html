@@ -1,0 +1,25 @@
+<div class="modal-content">
+  <form name="form" role="form" ng-submit="save(form)">
+    <div class="modal-header">
+      <button type="button" class="close" ng-click="$ctrl.onClose()" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <h4 class="modal-title">
+        <span>{{'population.clone-data-collection-event-modal.title' | translate}}</span>
+      </h4>
+    </div>
+    <div class="modal-body">
+      <p class="help-block">{{'population.clone-data-collection-event-modal.prompt' | translate:{dce:$ctrl.dceName} }}</p>
+      <input class="form-control" ng-model="$ctrl.clones" type="number">
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default" ng-click="$ctrl.onClose()" aria-label="Close">
+        <span translate>cancel</span>
+      </button>
+      <button type="submit" class="btn btn-primary" ng-click="$ctrl.onDuplicate()" ng-disabled="$ctrl.clones < 1">
+        <span>{{'population.clone-data-collection-event-modal.button' | translate}}</span>
+      </button>
+    </div>
+  </form>
+</div>

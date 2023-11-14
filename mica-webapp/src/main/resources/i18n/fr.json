@@ -1089,6 +1089,11 @@
     "countries": "Pays ISO",
     "numberOfParticipants-noLimit": "Aucune limite",
     "recruitment": "Recrutement",
+    "clone-data-collection-event-modal" : {
+      "title" : "Cloner ensembles de données de collecte",
+      "prompt" : "Entrer le nombre de fois que vous souhaitez cloner '{{dce}}':",
+      "bouton" : "Cloner"
+    },
     "delete-dialog": {
       "title": "Supprimer la population",
       "message": "Êtes-vous sûr de supprimer la population?"

@@ -44,14 +44,18 @@ mica.study.BaseEditController = function (
   self.type = '';
 
   self.cancel = function () {
-    $location.path('/' + self.type + '-study' + ($routeParams.id ? '/' + $routeParams.id : '')).replace();
+    $location.path('/' + self.type + '-study' + ($routeParams.id ? '/' + $routeParams.id : '')).search({}).replace();
   };
 
-  self.updateStudy = function () {
+  self.updateStudy = function (url) {
     $log.debug('Updating study', $scope.study);
     $scope.study.$save({ comment: $scope.revision.comment }, function () {
       FormDirtyStateObserver.unobserve();
-      $location.url('/' + self.type + '-study/' + $routeParams.id);
+      if (url) {
+        $location.url(url);
+      } else {
+        $location.url('/' + self.type + '-study/' + $routeParams.id);
+      }
     }, self.saveErrorHandler);
   };
 
@@ -413,7 +417,17 @@ mica.study.DataCollectionEventEditController = function (
 
   self.save = function (form) {
     if (!validate(form)) { form.saveAttempted = true; }
-    else { self.updateStudy(); }
+    else {
+      const search = $location.search();
+      if ('clones' in search && search.clones > 1) {
+        const clones = parseInt(search.clones) - 1;
+        const url = $location.url();
+        // Prevent changing the $location as it will initiate a URL change
+        self.updateStudy(url.replace(/clones=\d+/, `clones=${clones}`));
+      } else {
+        self.updateStudy();
+      }
+    }
   };
 
   self.type = 'individual';

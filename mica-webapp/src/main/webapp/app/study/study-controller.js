@@ -49,6 +49,7 @@ mica.study
     '$filter',
     '$q',
     '$log',
+    'LocalizedValues',
     'NOTIFICATION_EVENTS',
     'CONTACT_EVENTS',
     'EntityFormResource',
