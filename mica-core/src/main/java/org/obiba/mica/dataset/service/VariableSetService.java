@@ -10,7 +10,6 @@
 
 package org.obiba.mica.dataset.service;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.googlecode.protobuf.format.JsonFormat;

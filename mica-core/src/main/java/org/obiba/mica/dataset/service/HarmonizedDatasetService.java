@@ -233,6 +233,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
     HashSet<HarmonizationDataset> publishedDatasets = Sets.newHashSet(findPublishedDatasets(includeIds));
     datasets.forEach(dataset -> {
       try {
+        dataset.generateTableUniqueId();
         eventBus.post(new DatasetUpdatedEvent(dataset));
 
         if (publishedDatasets.contains(dataset)) {
@@ -291,6 +292,9 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
     if(published) {
       checkIsPublishable(dataset);
       publishState(id);
+
+      dataset.generateTableUniqueId();
+
       eventBus.post(new DatasetPublishedEvent(dataset, wrappedGetDatasetVariables(dataset), null,
         getCurrentUsername(), cascadingScope));
       indexHarmonizedVariables(dataset);

@@ -178,6 +178,16 @@ public class PublishedHarmonizedDatasetResource extends AbstractPublishedDataset
     return resource;
   }
 
+  @GET
+  @Path("/tables/harmonizations")
+  @Override
+  public Map<Object, Object> getHarmonizationStatusAggregation(@PathParam("id") String id,
+                                                @QueryParam("size") @DefaultValue("9999") int size,
+                                                @QueryParam("agg") @DefaultValue("tableUid") String agg,
+                                                @QueryParam("field") @DefaultValue("attributes.Mlstr_harmo__status.und") String fieldName) {
+    return super.getHarmonizationStatusAggregation(id, size, agg, fieldName);
+  }
+
   private Mica.DatasetVariablesHarmonizationsDto getVariableHarmonizationsInternal(String id,
                                                                                    int from, int limit, String sort, String order, boolean includeSummaries) {
 

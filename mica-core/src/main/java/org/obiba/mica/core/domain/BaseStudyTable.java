@@ -32,6 +32,8 @@ public class BaseStudyTable {
 
   private String source;
 
+  private String tableUniqueId;
+
   // legacy
   private String project;
 
@@ -138,6 +140,14 @@ public class BaseStudyTable {
       this.source = OpalTableSource.newSource(project, table).getURN();
     }
     return source;
+  }
+
+  public String getTableUniqueId() {
+    return tableUniqueId;
+  }
+
+  public void setTableUniqueId(String tableUniqueId) {
+    this.tableUniqueId = tableUniqueId;
   }
 
   @Deprecated

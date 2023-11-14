@@ -105,4 +105,9 @@ public class HarmonizationDataset extends Dataset {
     return Lists.newArrayList(Iterables.concat(getStudyTables(), getHarmonizationTables())).stream()//
       .sorted(Comparator.comparingInt(BaseStudyTable::getWeight)).collect(Collectors.toList());
   }
+
+  public void generateTableUniqueId() {
+    getHarmonizationTables().forEach(table -> table.setTableUniqueId(UUID.randomUUID().toString()));
+    getStudyTables().forEach(table -> table.setTableUniqueId(UUID.randomUUID().toString()));
+  }
 }
