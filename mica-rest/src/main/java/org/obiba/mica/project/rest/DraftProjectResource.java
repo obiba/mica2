@@ -136,6 +136,7 @@ public class DraftProjectResource extends AbstractGitPersistableResource<Project
     checkPermission("/draft/project", "DELETE");
     try {
       projectService.delete(id);
+      removeExternalEditorPermissionsIfApplicable("/draft/project");
     } catch (NoSuchProjectException e) {
       // ignore
     }

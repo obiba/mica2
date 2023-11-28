@@ -24,6 +24,7 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.core.domain.EntityStateFilter;
 import org.obiba.mica.core.service.DocumentService;
@@ -32,6 +33,7 @@ import org.obiba.mica.project.event.IndexProjectsEvent;
 import org.obiba.mica.project.service.DraftProjectService;
 import org.obiba.mica.project.service.ProjectService;
 import org.obiba.mica.search.AccessibleIdFilterBuilder;
+import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.Dtos;
@@ -123,6 +125,13 @@ public class DraftProjectsResource {
     Project project = dtos.fromDto(projectDto);
 
     projectService.save(project, comment);
+
+    if (SecurityUtils.getSubject().hasRole(Roles.MICA_EXTERNAL_EDITOR)) {
+      subjectAclService.addPermission("/draft/project", "VIEW,EDIT", project.getId());
+      subjectAclService.addPermission("/draft/project/" + project.getId(), "EDIT", "_status");
+      subjectAclService.addPermission("/draft/project/" + project.getId() + "/_attachments", "EDIT");
+    }
+
     return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "project", project.getId()).build()).build();
   }
 
