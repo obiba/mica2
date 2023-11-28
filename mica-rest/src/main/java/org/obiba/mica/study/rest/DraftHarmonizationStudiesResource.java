@@ -26,8 +26,10 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
+import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.event.IndexStudiesEvent;
@@ -87,6 +89,13 @@ public class DraftHarmonizationStudiesResource {
     @Nullable @QueryParam("comment") String comment) {
     HarmonizationStudy study = (HarmonizationStudy)dtos.fromDto(studyDto);
     harmonizationStudyService.save(study, comment);
+
+    if (SecurityUtils.getSubject().hasRole(Roles.MICA_EXTERNAL_EDITOR)) {
+      subjectAclService.addPermission("/draft/harmonization-study", "VIEW,EDIT", study.getId());
+      subjectAclService.addPermission("/draft/harmonization-study/" + study.getId(), "EDIT", "_status");
+      subjectAclService.addPermission("/draft/harmonization-study/" + study.getId() + "/_attachments", "EDIT");
+    }
+
     return Response.created(uriInfo.getBaseUriBuilder().path(DraftHarmonizationStudiesResource.class, "study").build(study.getId()))
       .build();
   }

@@ -26,7 +26,10 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 
 import com.google.common.eventbus.EventBus;
+
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.event.IndexStudiesEvent;
@@ -93,6 +96,13 @@ public class DraftIndividualStudiesResource {
     @Nullable @QueryParam("comment") String comment) {
     Study study = (Study)dtos.fromDto(studyDto);
     individualStudyService.save(study, comment);
+
+    if (SecurityUtils.getSubject().hasRole(Roles.MICA_EXTERNAL_EDITOR)) {
+      subjectAclService.addPermission("/draft/individual-study", "VIEW,EDIT", study.getId());
+      subjectAclService.addPermission("/draft/individual-study/" + study.getId(), "EDIT", "_status");
+      subjectAclService.addPermission("/draft/individual-study/" + study.getId() + "/_attachments", "EDIT");
+    }
+
     return Response.created(uriInfo.getBaseUriBuilder().path(DraftIndividualStudiesResource.class, "study").build(study.getId()))
       .build();
   }
