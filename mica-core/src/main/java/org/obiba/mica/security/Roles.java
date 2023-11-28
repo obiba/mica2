@@ -25,6 +25,8 @@ public interface Roles {
   // can edit data draft data
   String MICA_EDITOR = "mica-editor";
 
+  String MICA_EXTERNAL_EDITOR = "mica-external-editor";
+
   // can manage data access requests
   String MICA_DAO = "mica-data-access-officer";
 

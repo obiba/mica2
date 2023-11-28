@@ -196,6 +196,7 @@ public class DraftIndividualStudyResource extends AbstractGitPersistableResource
   public Response delete() {
     checkPermission("/draft/individual-study", "DELETE");
     individualStudyService.delete(id);
+    removeExternalEditorPermissionsIfApplicable("/draft/individual-study");
     return Response.noContent().build();
   }
 
