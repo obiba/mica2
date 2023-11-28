@@ -197,6 +197,7 @@ public class DraftHarmonizationStudyResource extends AbstractGitPersistableResou
   public Response delete() {
     checkPermission("/draft/harmonization-study", "DELETE");
     studyService.delete(id);
+    removeExternalEditorPermissionsIfApplicable("/draft/harmonization-study");
     return Response.noContent().build();
   }
 

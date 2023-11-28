@@ -78,14 +78,14 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
   /**
    * Overridden because the OpalSecurityManager sets {@code this} as the {@code RolePermissionResolver} on all configured
    * realms. This results the following object graph:
-   * 
+   *
    * {@code
    * AuthorizingReam.rolePermissionResolver -> MicaAuthorizingRealm (this)
    *      ^
    *      |
    * MicaAuthorizingRealm.rolePermissionResolver -> GroupPermissionResolver
    * }
-   * 
+   *
    * By overriding this method, we prevent an infinite loop from occurring when
    * {@code getRolePermissionResolver().resolvePermissionsInRole()} is called.
    */
@@ -241,6 +241,12 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
               "/data-access-request:ADD,/data-access-request:VIEW,/data-access-request:DELETE," +
               "/files:UPLOAD,/user:VIEW",
             permissions);
+          break;
+        case Roles.MICA_EXTERNAL_EDITOR:
+          perms = mergePermissions("/data-access-request:ADD,/files:UPLOAD", permissions);
+          Arrays.stream(ALL_RESOURCES).forEach(e -> {
+            perms.addAll(toPermissions(String.format("/draft/%s:ADD", e)));
+          });
           break;
         case Roles.MICA_USER:
           perms = mergePermissions("/data-access-request:ADD,/files:UPLOAD", permissions);
