@@ -30,6 +30,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.core.domain.EntityStateFilter;
 import org.obiba.mica.core.service.DocumentService;
@@ -38,6 +39,7 @@ import org.obiba.mica.network.event.IndexNetworksEvent;
 import org.obiba.mica.network.service.DraftNetworkService;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.search.AccessibleIdFilterBuilder;
+import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.Dtos;
@@ -130,6 +132,13 @@ public class DraftNetworksResource {
     Network network = dtos.fromDto(networkDto);
 
     networkService.save(network, comment);
+
+    if (SecurityUtils.getSubject().hasRole(Roles.MICA_EXTERNAL_EDITOR)) {
+      subjectAclService.addPermission("/draft/network", "VIEW,EDIT", network.getId());
+      subjectAclService.addPermission("/draft/network/" + network.getId(), "EDIT", "_status");
+      subjectAclService.addPermission("/draft/network/" + network.getId() + "/_attachments", "EDIT");
+    }
+
     return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "network", network.getId()).build()).build();
   }
 
