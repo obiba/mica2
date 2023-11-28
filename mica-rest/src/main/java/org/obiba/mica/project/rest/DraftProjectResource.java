@@ -17,7 +17,6 @@ import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.file.rest.FileResource;
-import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.domain.ProjectState;
 import org.obiba.mica.project.service.NoSuchProjectException;
@@ -129,6 +128,7 @@ public class DraftProjectResource extends AbstractGitPersistableResource<Project
     checkPermission("/draft/project", "DELETE");
     try {
       projectService.delete(id);
+      removeExternalEditorPermissionsIfApplicable("/draft/project");
     } catch (NoSuchProjectException e) {
       // ignore
     }
