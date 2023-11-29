@@ -246,6 +246,9 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
           perms = mergePermissions("/data-access-request:ADD,/files:UPLOAD", permissions);
           Arrays.stream(ALL_RESOURCES).forEach(e -> {
             perms.addAll(toPermissions(String.format("/draft/%s:ADD", e)));
+            perms.addAll(toPermissions(String.format("/draft/file:ADD:/%s", e)));
+            perms.addAll(toPermissions(String.format("/draft/file:VIEW:/%s", e)));
+            perms.addAll(toPermissions(String.format("/draft/file:EDIT:/%s", e)));
           });
           break;
         case Roles.MICA_USER:
