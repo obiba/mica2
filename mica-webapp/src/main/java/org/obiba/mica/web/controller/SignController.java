@@ -174,7 +174,7 @@ public class SignController extends BaseController {
 
     String agateUrl = agateServerConfigService.getAgateUrl();
 
-    String requestUrl = request.getRequestURL().toString();
+    String requestUrl = getRequestUrl(request);
     String requestUri = request.getRequestURI();
     String baseUrl = requestUrl.replaceFirst(requestUri, "");
 
@@ -201,7 +201,7 @@ public class SignController extends BaseController {
 
     String agateUrl = agateServerConfigService.getAgateUrl();
 
-    String requestUrl = request.getRequestURL().toString();
+    String requestUrl = getRequestUrl(request);
     String requestUri = request.getRequestURI();
     String baseUrl = requestUrl.replaceFirst(requestUri, "") + micaConfigService.getContextPath();
 
@@ -219,4 +219,17 @@ public class SignController extends BaseController {
     }
   }
 
+  /**
+   * Extract request url from request object, and enforce https for non localhost server.
+   *
+   * @param request
+   * @return
+   */
+  private String getRequestUrl(HttpServletRequest request) {
+    String requestUrl = request.getRequestURL().toString();
+    if (requestUrl.startsWith("http://") && !requestUrl.startsWith("http://localhost:") && !requestUrl.startsWith("http://127.0.0.1:")) {
+      return requestUrl.replaceFirst("http://", "https://");
+    }
+    return requestUrl;
+  }
 }
