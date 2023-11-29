@@ -143,6 +143,8 @@ public class DraftCollectedDatasetsResource {
       subjectAclService.addPermission("/draft/collected-dataset", "VIEW,EDIT", dataset.getId());
       subjectAclService.addPermission("/draft/collected-dataset/" + dataset.getId(), "EDIT", "_status");
       subjectAclService.addPermission("/draft/collected-dataset/" + dataset.getId() + "/_attachments", "EDIT");
+
+      subjectAclService.addPermission("/draft/file", "ADD,VIEW,EDIT", "/collected-dataset");
     }
 
     return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "collected-dataset", dataset.getId()).build())

@@ -133,6 +133,8 @@ public class DraftHarmonizedDatasetsResource {
       subjectAclService.addPermission("/draft/harmonized-dataset", "VIEW,EDIT", dataset.getId());
       subjectAclService.addPermission("/draft/harmonized-dataset/" + dataset.getId(), "EDIT", "_status");
       subjectAclService.addPermission("/draft/harmonized-dataset/" + dataset.getId() + "/_attachments", "EDIT");
+
+      subjectAclService.addPermission("/draft/file", "ADD,VIEW,EDIT", "/harmonized-dataset");
     }
 
     return Response
