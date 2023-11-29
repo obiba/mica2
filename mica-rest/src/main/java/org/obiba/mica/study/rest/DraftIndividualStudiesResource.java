@@ -101,6 +101,8 @@ public class DraftIndividualStudiesResource {
       subjectAclService.addPermission("/draft/individual-study", "VIEW,EDIT", study.getId());
       subjectAclService.addPermission("/draft/individual-study/" + study.getId(), "EDIT", "_status");
       subjectAclService.addPermission("/draft/individual-study/" + study.getId() + "/_attachments", "EDIT");
+
+      subjectAclService.addPermission("/draft/file", "ADD,VIEW,EDIT", "/individual-study");
     }
 
     return Response.created(uriInfo.getBaseUriBuilder().path(DraftIndividualStudiesResource.class, "study").build(study.getId()))
