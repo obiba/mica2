@@ -79,6 +79,8 @@ public class CompareController extends BaseController {
         documentIds.addAll(queryStudyIds(query));
       } else if ("networks".equals(documentType) && config.isStudiesCompareEnabled()) {
         documentIds.addAll(queryNetworkIds(query));
+      } else {
+        documentType = "";
       }
     }
 
