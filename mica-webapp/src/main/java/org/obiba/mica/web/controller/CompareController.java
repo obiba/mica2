@@ -64,7 +64,8 @@ public class CompareController extends BaseController {
   public ModelAndView get(HttpServletRequest request, @RequestParam(required = false) String type, @RequestParam(required = false) String ids, @RequestParam(required = false) String query) {
     Subject subject = SecurityUtils.getSubject();
     MicaConfig config = micaConfigService.getConfig();
-    String documentType = Strings.isNullOrEmpty(type) ? "studies" : type.toLowerCase();
+    String documentType = "networks".equals(type.toLowerCase()) ? "networks" : "studies";
+
     Set<String> documentIds = Sets.newTreeSet();
     List<Study> individualStudies = new ArrayList<>();
     List<HarmonizationStudy> harmonizationStudies = new ArrayList<>();
@@ -77,7 +78,7 @@ public class CompareController extends BaseController {
     if (!Strings.isNullOrEmpty(query)) {
       if ("studies".equals(documentType) && config.isStudiesCompareEnabled()) {
         documentIds.addAll(queryStudyIds(query));
-      } else if ("networks".equals(documentType) && config.isStudiesCompareEnabled()) {
+      } else if ("networks".equals(documentType) && config.isNetworksCompareEnabled()) {
         documentIds.addAll(queryNetworkIds(query));
       }
     }
