@@ -103,7 +103,7 @@ public class SessionInterceptor implements AsyncHandlerInterceptor {
       String username = subject.getPrincipal().toString();
       try {
         Map<String, Object> params = userProfileService.getProfileMap(username, true);
-        List<String> roles = Lists.newArrayList(Roles.MICA_ADMIN, Roles.MICA_REVIEWER, Roles.MICA_EDITOR, Roles.MICA_DAO, Roles.MICA_USER);
+        List<String> roles = Lists.newArrayList(Roles.MICA_ADMIN, Roles.MICA_REVIEWER, Roles.MICA_EDITOR, Roles.MICA_DAO, Roles.MICA_USER, Roles.MICA_EXTERNAL_EDITOR);
         boolean[] result = subject.hasRoles(roles);
         for (int i = result.length - 1; i >= 0; i--) {
           if (!result[i]) roles.remove(i);
