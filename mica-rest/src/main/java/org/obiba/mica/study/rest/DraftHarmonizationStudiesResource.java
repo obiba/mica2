@@ -94,8 +94,6 @@ public class DraftHarmonizationStudiesResource {
       subjectAclService.addPermission("/draft/harmonization-study", "VIEW,EDIT", study.getId());
       subjectAclService.addPermission("/draft/harmonization-study/" + study.getId(), "EDIT", "_status");
       subjectAclService.addPermission("/draft/harmonization-study/" + study.getId() + "/_attachments", "EDIT");
-
-      subjectAclService.addPermission("/draft/file", "ADD,VIEW,EDIT", "/harmonization-study");
     }
 
     return Response.created(uriInfo.getBaseUriBuilder().path(DraftHarmonizationStudiesResource.class, "study").build(study.getId()))
