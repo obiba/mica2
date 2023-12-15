@@ -130,8 +130,6 @@ public class DraftProjectsResource {
       subjectAclService.addPermission("/draft/project", "VIEW,EDIT", project.getId());
       subjectAclService.addPermission("/draft/project/" + project.getId(), "EDIT", "_status");
       subjectAclService.addPermission("/draft/project/" + project.getId() + "/_attachments", "EDIT");
-
-      subjectAclService.addPermission("/draft/file", "ADD,VIEW,EDIT", "/project");
     }
 
     return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "project", project.getId()).build()).build();
