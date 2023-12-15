@@ -137,8 +137,6 @@ public class DraftNetworksResource {
       subjectAclService.addPermission("/draft/network", "VIEW,EDIT", network.getId());
       subjectAclService.addPermission("/draft/network/" + network.getId(), "EDIT", "_status");
       subjectAclService.addPermission("/draft/network/" + network.getId() + "/_attachments", "EDIT");
-
-      subjectAclService.addPermission("/draft/file", "ADD,VIEW,EDIT", "/network");
     }
 
     return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "network", network.getId()).build()).build();
