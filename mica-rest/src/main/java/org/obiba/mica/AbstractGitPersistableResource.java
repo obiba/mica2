@@ -178,8 +178,6 @@ public abstract class AbstractGitPersistableResource<T extends EntityState, T1 e
       subjectAclService.removePermission(path, "VIEW,EDIT", getId());
       subjectAclService.removePermission(path + getId(), "EDIT", "_status");
       subjectAclService.removePermission(path + getId() + "/_attachments", "EDIT", null);
-
-      subjectAclService.removePermission("/draft/file", "ADD,VIEW,EDIT", path);
     }
   }
 
