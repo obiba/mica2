@@ -379,10 +379,26 @@ angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schem
       }
     });
 
+    function isRequestFormValid() {
+      if ($scope.forms.requestForm.$valid) {
+        return true;
+      }
+      if ($scope.forms.requestForm.$error.schemaForm) {
+        return false;
+      }
+      if ($scope.forms.requestForm.$error["tv4-302"]) {
+        // remove false positive
+        const errs = $scope.forms.requestForm.$error["tv4-302"]
+          .filter(err => !Array.isArray(err.$viewValue));
+        return errs.length === 0;
+      }
+      return true;
+    }
+
     $scope.validate = function () {
       $scope.$broadcast('schemaFormValidate');
       // check if the form is valid
-      if ($scope.forms.requestForm.$valid) {
+      if (isRequestFormValid()) {
         MicaService.toastSuccess(formMessages.validationSuccess);
       } else {
         // an invalid form can be saved with warning
@@ -411,7 +427,7 @@ angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schem
     $scope.submit = function (id, type, aId) {
       $scope.$broadcast('schemaFormValidate');
       // check if the form is valid
-      if ($scope.forms.requestForm.$valid) {
+      if (isRequestFormValid()) {
         DataAccessService.submit(id, type, aId);
       } else {
         // an invalid form cannot be submitted
@@ -421,7 +437,7 @@ angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schem
     $scope.approveAgreement = function (id, aId) {
       $scope.$broadcast('schemaFormValidate');
       // check if the form is valid
-      if ($scope.forms.requestForm.$valid) {
+      if (isRequestFormValid()) {
         DataAccessService.approve(id, 'agreement', aId);
       } else {
         // an invalid form cannot be submitted
