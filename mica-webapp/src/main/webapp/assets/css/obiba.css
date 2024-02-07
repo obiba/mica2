@@ -156,6 +156,10 @@
   background-color: #f4f6f9;
 }
 
+.schema-form-tabarray.form-card .tab-content .help-block {
+  display: none;
+}
+
 .form-card.form-card-white li.list-group-item, fieldset.form-card.form-card-white {
   background-color: #ffffff;
 }
