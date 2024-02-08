@@ -2188,6 +2188,8 @@
       "prefix-help": "Generated IDs will start with the specified text. Only alpha-numeric characters, underscores and hyphens are accepted.",
       "length": "Length",
       "length-help": "Length of the generated part of the ID (i.e. not including the prefix).",
+      "random-id": "Random identifier",
+      "random-id-help": "Generate a random or an incremental identifier.",
       "allow-id-with-leading-zeros": "Allow Leading Zeros",
       "allow-id-with-leading-zeros-help": "Allow leading zeros when generating IDs."
     },
