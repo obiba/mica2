@@ -2188,6 +2188,8 @@
       "prefix-help": "Les ID générés vont commencer avec le texte spécifié. Seuls les caractères alphanumériques, les traits de soulignement et les traits d'union sont acceptés.",
       "length": "Length",
       "length-help": "Longueur de la partie générée de l'ID (préfixe non compris).",
+      "random-id": "Identifiant aléatoire",
+      "random-id-help": "Générer un identifiant aléatoir ou incrémental.",
       "allow-id-with-leading-zeros": "Préfixé par des zéros",
       "allow-id-with-leading-zeros-help": "Permettre de préfixer l'identifiant généré par des zéros."
     },

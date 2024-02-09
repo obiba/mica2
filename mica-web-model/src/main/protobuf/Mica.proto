@@ -980,6 +980,7 @@ message DataAccessConfigDto {
   optional string preliminaryCsvExportFormat = 58;
   required bool mergePreliminaryContentEnabled = 59;
   required string agreementOpenedPolicy = 60;
+  required bool randomId = 61;
 }
 
 message DataAccessFormDto {

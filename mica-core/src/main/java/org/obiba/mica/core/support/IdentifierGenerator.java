@@ -33,6 +33,11 @@ public class IdentifierGenerator {
   private boolean hex = false;
 
   private List<String> exclusions;
+  private boolean incremental;
+
+  private long incrementalFrom;
+
+  private long incrementalCurrent = -1;
 
   private IdentifierGenerator() {}
 
@@ -70,25 +75,39 @@ public class IdentifierGenerator {
       throw new IllegalStateException("keySize must be at least 1: " + keySize);
     }
 
-    StringBuilder sb = new StringBuilder(keySize);
-
-    sb.append(nextIntModuloZero());
-    for(int i = 1; i < keySize; i++) {
-      sb.append(generator.nextInt(10));
-    }
-
-    String value = sb.toString();
-    if(hex) {
-      String valueHex = Long.toHexString(Long.valueOf(value)).toUpperCase();
-      while(valueHex.length() < keySize) {
-        valueHex = nextIntModuloZero() + valueHex;
+    StringBuilder value;
+    if (incremental) {
+      if (incrementalCurrent == -1) {
+        incrementalCurrent = incrementalFrom;
+      } else {
+        incrementalCurrent += 1;
       }
-      value = valueHex;
+      value = new StringBuilder("" + incrementalCurrent);
+      if (allowStartWithZero) {
+        while (value.length() < keySize) {
+          value.insert(0, "0");
+        }
+      }
+    } else {
+      StringBuilder sb = new StringBuilder(keySize);
+      sb.append(nextIntModuloZero());
+      for(int i = 1; i < keySize; i++) {
+        sb.append(generator.nextInt(10));
+      }
+      value = new StringBuilder(sb.toString());
     }
 
-    String result = getPrefixLength() > 0 ? prefix + value : value;
+    if (hex) {
+      StringBuilder valueHex = new StringBuilder(Long.toHexString(Long.parseLong(value.toString())).toUpperCase());
+      while (valueHex.length() < keySize) {
+        valueHex.insert(0, nextIntModuloZero());
+      }
+      value = new StringBuilder(valueHex.toString());
+    }
 
-    if (getExclusions().indexOf(result) != -1) return generateIdentifier();
+    String result = getPrefixLength() > 0 ? prefix + value : value.toString();
+
+    if (getExclusions().contains(result)) return generateIdentifier();
     return result;
   }
 
@@ -120,9 +139,13 @@ public class IdentifierGenerator {
       return this;
     }
 
-    public Builder zeros() {
-      idGenerator.allowStartWithZero = true;
+    public Builder zeros(boolean withZeros) {
+      idGenerator.allowStartWithZero = withZeros;
       return this;
+    }
+
+    public Builder zeros() {
+      return zeros(true);
     }
 
     public Builder hex() {
@@ -132,6 +155,12 @@ public class IdentifierGenerator {
 
     public Builder exclusions(List<String> exclusions) {
       idGenerator.exclusions = exclusions;
+      return this;
+    }
+
+    public Builder incremental(long from) {
+      idGenerator.incremental = true;
+      idGenerator.incrementalFrom = from;
       return this;
     }
 

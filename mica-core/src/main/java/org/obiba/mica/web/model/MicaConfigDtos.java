@@ -315,7 +315,7 @@ class MicaConfigDtos {
     if(dataAccessConfig.hasIdPrefix()) {
       builder.setIdPrefix(dataAccessConfig.getIdPrefix());
     }
-
+    builder.setRandomId(dataAccessConfig.isRandomId());
     builder.setAllowIdWithLeadingZeros(dataAccessConfig.isAllowIdWithLeadingZeros());
 
     builder.setIdLength(dataAccessConfig.getIdLength())
@@ -396,9 +396,8 @@ class MicaConfigDtos {
     if(dto.hasIdPrefix()) {
       dataAccessConfig.setIdPrefix(dto.getIdPrefix());
     }
-
+    dataAccessConfig.setRandomId(dto.getRandomId());
     dataAccessConfig.setAllowIdWithLeadingZeros(dto.getAllowIdWithLeadingZeros());
-
     dataAccessConfig.setIdLength(dto.getIdLength());
 
     dataAccessConfig.setNotifyCreated(dto.getNotifyCreated());

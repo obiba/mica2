@@ -20,6 +20,7 @@ public class DataAccessConfig extends AbstractAuditableDocument {
 
   final static int DEFAULT_ID_LENGTH = 6;
 
+  private boolean randomId = true;
   private String idPrefix;
 
   private int idLength = 6;
@@ -124,6 +125,14 @@ public class DataAccessConfig extends AbstractAuditableDocument {
 
   public DataAccessConfig() {
     super();
+  }
+
+  public boolean isRandomId() {
+    return randomId;
+  }
+
+  public void setRandomId(boolean randomId) {
+    this.randomId = randomId;
   }
 
   public boolean hasIdPrefix() {

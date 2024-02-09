@@ -399,14 +399,15 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
     Object exclusions = YamlResourceReader.readClassPath(EXCLUSION_IDS_YAML_RESOURCE_PATH, Map.class).get("exclusions");
 
     IdentifierGenerator.Builder builder = IdentifierGenerator.newBuilder().prefix(dataAccessConfig.getIdPrefix())
-      .size(dataAccessConfig.getIdLength());
+      .size(dataAccessConfig.getIdLength())
+      .zeros(dataAccessConfig.isAllowIdWithLeadingZeros());
 
-    if (dataAccessConfig.isAllowIdWithLeadingZeros()) {
-      builder.zeros();
+    if (!dataAccessConfig.isRandomId()) {
+      builder.incremental(getRepository().count() + 1);
     }
 
     if (exclusions instanceof List) {
-      log.info("Using exclusions {} to generate DAR id", exclusions.toString());
+      log.info("Using exclusions {} to generate DAR id", exclusions);
       builder.exclusions((List) exclusions);
     }
 
