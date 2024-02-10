@@ -152,7 +152,7 @@ public class DataAccessConfig extends AbstractAuditableDocument {
   }
 
   public void setIdLength(int idLength) {
-    this.idLength = idLength < DEFAULT_ID_LENGTH ? DEFAULT_ID_LENGTH : idLength;
+    this.idLength = idLength < 1 ? DEFAULT_ID_LENGTH : idLength;
   }
 
   public void setNotifyCreated(boolean notifyCreated) {
