@@ -14,7 +14,6 @@ import com.google.common.collect.ImmutableList;
 import java.util.Set;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import net.sf.ehcache.CacheManager;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -27,6 +26,7 @@ import org.apache.shiro.authz.permission.PermissionResolver;
 import org.apache.shiro.authz.permission.PermissionResolverAware;
 import org.apache.shiro.authz.permission.RolePermissionResolver;
 import org.apache.shiro.authz.permission.RolePermissionResolverAware;
+import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.SessionsSecurityManager;
@@ -41,13 +41,14 @@ import org.obiba.shiro.SessionStorageEvaluator;
 import org.obiba.shiro.realm.ObibaRealm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManager> {
+public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManager>, DisposableBean {
 
   public static final String INI_REALM = "mica-ini-realm";
 
@@ -101,8 +102,8 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
     return true;
   }
 
-  @PreDestroy
-  public void destroySecurityManager() {
+  @Override
+  public void destroy() throws Exception {
     log.debug("Shutdown SecurityManager");
     // Destroy the security manager.
     SecurityUtils.setSecurityManager(null);

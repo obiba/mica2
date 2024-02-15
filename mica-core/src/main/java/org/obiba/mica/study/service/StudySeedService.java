@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import org.obiba.mica.study.domain.Study;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -39,7 +40,7 @@ import com.google.common.io.Files;
  */
 @Service
 @Validated
-public class StudySeedService {
+public class StudySeedService implements InitializingBean {
 
   private static final Logger log = LoggerFactory.getLogger(StudySeedService.class);
 
@@ -56,8 +57,8 @@ public class StudySeedService {
 
   private File seedRepository;
 
-  @PostConstruct
-  public void init() {
+  @Override
+  public void afterPropertiesSet() throws Exception {
     if(seedRepository == null && !Strings.isNullOrEmpty(System.getProperty("MICA_HOME"))) {
       seedRepository = new File(PATH_SEED.replace("${MICA_HOME}", System.getProperty("MICA_HOME")));
     }

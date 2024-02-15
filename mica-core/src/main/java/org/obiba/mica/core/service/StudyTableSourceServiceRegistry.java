@@ -30,6 +30,8 @@ import org.obiba.mica.spi.tables.*;
 import org.obiba.mica.study.domain.Study;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -42,7 +44,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class StudyTableSourceServiceRegistry {
+public class StudyTableSourceServiceRegistry implements InitializingBean, DisposableBean {
 
   private static final Logger log = LoggerFactory.getLogger(StudyTableSourceServiceRegistry.class);
 
@@ -63,8 +65,8 @@ public class StudyTableSourceServiceRegistry {
 
   private Cache<String, StudyTableSource> sourcesCache;
 
-  @PostConstruct
-  public void initialize() {
+  @Override
+  public void afterPropertiesSet() throws Exception {
     sourcesCache = CacheBuilder.newBuilder()
       .maximumSize(1000)
       .expireAfterWrite(1, TimeUnit.MINUTES)
@@ -74,8 +76,8 @@ public class StudyTableSourceServiceRegistry {
       .build();
   }
 
-  @PreDestroy
-  public void close() {
+  @Override
+  public void destroy() throws Exception {
     sourcesCache.cleanUp();
   }
 

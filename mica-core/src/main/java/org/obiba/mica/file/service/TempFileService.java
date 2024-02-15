@@ -30,6 +30,7 @@ import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.TempFileRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -41,7 +42,7 @@ import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 
 @Component
-public class TempFileService {
+public class TempFileService implements InitializingBean {
 
   private static final Logger log = LoggerFactory.getLogger(TempFileService.class);
 
@@ -56,8 +57,8 @@ public class TempFileService {
 
   private File tmpRoot;
 
-  @PostConstruct
-  public void init() throws IOException {
+  @Override
+  public void afterPropertiesSet() throws Exception {
     if(tmpRoot == null) {
       tmpRoot = new File(TMP_ROOT.replace("${MICA_HOME}", System.getProperty("MICA_HOME")));
       if(!tmpRoot.exists() && !tmpRoot.mkdirs()) {

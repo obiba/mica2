@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AuthenticationExecutorImpl extends AbstractAuthenticationExecutor {
+public class AuthenticationExecutorImpl extends AbstractAuthenticationExecutor, InitializingBean {
 
   @Inject
   private FileSystemService fileSystemService;
@@ -39,8 +39,8 @@ public class AuthenticationExecutorImpl extends AbstractAuthenticationExecutor {
   private int banTime;
 
 
-  @PostConstruct
-  public void configure() {
+  @Override
+  public void afterPropertiesSet() throws Exception {
     configureBan(maxTry, trialTime, banTime);
   }
 

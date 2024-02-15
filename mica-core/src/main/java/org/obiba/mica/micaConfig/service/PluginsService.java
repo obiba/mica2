@@ -28,6 +28,7 @@ import org.obiba.plugins.spi.ServicePlugin;
 import org.obiba.runtime.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -40,7 +41,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-public class PluginsService implements EnvironmentAware {
+public class PluginsService implements EnvironmentAware, InitializingBean {
 
   private static final Logger log = LoggerFactory.getLogger(PluginsService.class);
 
@@ -293,8 +294,8 @@ public class PluginsService implements EnvironmentAware {
     return servicePlugins.stream().filter(s -> clazz.isAssignableFrom(s.getClass())).collect(Collectors.toList());
   }
 
-  @PostConstruct
-  public void init() {
+  @Override
+  public void afterPropertiesSet() throws Exception {
     if (pluginsDir != null) return;
     pluginsDir = new File(PLUGINS_PATH.replace("${MICA_HOME}", System.getProperty("MICA_HOME")));
     if (!pluginsDir.exists() && !pluginsDir.mkdirs()) {

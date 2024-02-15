@@ -70,7 +70,7 @@ public class SchemaFormContentFileService {
     Object json = defaultConfiguration().jsonProvider().parse(content);
     DocumentContext context = JsonPath.using(defaultConfiguration().addOptions(Option.AS_PATH_LIST)).parse(json);
     DocumentContext reader =
-        new JsonContext(defaultConfiguration().addOptions(Option.REQUIRE_PROPERTIES)).parse(json);
+      JsonPath.using(defaultConfiguration().addOptions(Option.REQUIRE_PROPERTIES)).parse(json);
 
     try {
       ((JSONArray)context.read("$..obibaFiles")).stream()
@@ -107,7 +107,7 @@ public class SchemaFormContentFileService {
 
   private Map<String, JSONArray> getPathFilesMap(DocumentContext context, Object json) {
     DocumentContext reader =
-        new JsonContext(defaultConfiguration().addOptions(Option.REQUIRE_PROPERTIES)).parse(json);
+      JsonPath.using(defaultConfiguration().addOptions(Option.REQUIRE_PROPERTIES)).parse(json);
 
     JSONArray paths = null;
     try {

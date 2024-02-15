@@ -27,7 +27,7 @@ import com.google.common.collect.Sets;
 
 @Component
 @Scope("prototype")
-public class AggregationMetaDataResolver {
+public class AggregationMetaDataResolver implements InitializingBean {
 
   @Inject
   private DefaultAggregationMetaDataProvider defaultAggregationTitleProvider;
@@ -36,8 +36,8 @@ public class AggregationMetaDataResolver {
 
   private Map<String, AggregationMetaDataProvider> aggregationProviderMap;
 
-  @PostConstruct
-  public void init() {
+  @Override
+  public void afterPropertiesSet() throws Exception {
     providers = new HashSet<>();
     aggregationProviderMap = Maps.newHashMap();
   }

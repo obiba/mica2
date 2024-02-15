@@ -17,6 +17,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.shiro.codec.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.env.Environment;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
@@ -31,7 +32,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-public abstract class AgateRestService {
+public abstract class AgateRestService implements InitializingBean {
 
   private static final Logger log = LoggerFactory.getLogger(AgateRestService.class);
 
@@ -54,8 +55,8 @@ public abstract class AgateRestService {
   private HttpComponentsClientHttpRequestFactory httpRequestFactory;
 
 
-  @PostConstruct
-  public void init() {}
+  @Override
+  public void afterPropertiesSet() throws Exception {}
 
   protected String getApplicationName() {
     return agateServerConfigService.getServiceName();
