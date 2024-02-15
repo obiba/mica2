@@ -37,6 +37,7 @@ import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
 import org.obiba.opal.core.support.yaml.TaxonomyYaml;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
@@ -60,7 +61,7 @@ import java.util.stream.Collectors;
  * Access to the variable taxonomies, from the different providers, including opal, local files and plugins.
  */
 @Component
-public class VariableTaxonomiesService implements EnvironmentAware {
+public class VariableTaxonomiesService implements EnvironmentAware, InitializingBean {
 
   private static final Logger log = LoggerFactory.getLogger(VariableTaxonomiesService.class);
 
@@ -94,8 +95,8 @@ public class VariableTaxonomiesService implements EnvironmentAware {
     .expireAfterWrite(1, TimeUnit.MINUTES)
     .build();
 
-  @PostConstruct
-  public void init() {
+  @Override
+  public void afterPropertiesSet() throws Exception {
     if (variableTaxonomiesDir == null) {
       variableTaxonomiesDir = new File(VARIABLE_TAXONOMIES_PATH.replace("${MICA_HOME}", System.getProperty("MICA_HOME")));
       fileSystemService.mkdirs("/taxonomies/variable");

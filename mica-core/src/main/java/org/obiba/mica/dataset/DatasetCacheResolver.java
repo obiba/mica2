@@ -16,7 +16,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-import net.sf.ehcache.config.CacheConfiguration;
+import org.ehcache.config.CacheConfiguration;
 
 import org.obiba.mica.dataset.domain.Dataset;
 import org.springframework.cache.Cache;
@@ -34,7 +34,7 @@ import com.google.common.collect.Lists;
 public class DatasetCacheResolver implements CacheResolver {
 
   @Inject
-  private net.sf.ehcache.CacheManager cacheManager;
+  private org.ehcache.CacheManager cacheManager;
 
   @Inject
   private MetricRegistry metricRegistry;
@@ -57,8 +57,8 @@ public class DatasetCacheResolver implements CacheResolver {
       if (datasetCache == null) {
         CacheConfiguration conf = cacheManager.getEhcache("dataset-variables").getCacheConfiguration().clone();
         conf.setName(cacheName);
-        cacheManager.addCache(new net.sf.ehcache.Cache(conf));
-        net.sf.ehcache.Cache cache = cacheManager.getCache(cacheName);
+        cacheManager.addCache(new org.ehcache.Cache(conf));
+        org.ehcache.Cache cache = cacheManager.getCache(cacheName);
         cacheManager.replaceCacheWithDecoratedCache(cache, InstrumentedEhcache.instrument(metricRegistry, cache));
         datasetCache = new EhCacheCache(cacheManager.getEhcache(cacheName));
       }

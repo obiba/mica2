@@ -13,10 +13,11 @@ package org.obiba.mica.config;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
-import net.sf.ehcache.Cache;
 
+import org.ehcache.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -31,15 +32,15 @@ import com.codahale.metrics.ehcache.InstrumentedEhcache;
 @Configuration("cacheConfiguration")
 @EnableCaching
 @AutoConfigureAfter(value = { MetricsConfiguration.class })
-public class CacheConfiguration {
+public class CacheConfiguration implements DisposableBean {
 
   private static final Logger log = LoggerFactory.getLogger(CacheConfiguration.class);
 
   @Inject
   private MetricRegistry metricRegistry;
 
-  @PreDestroy
-  public void destroy() {
+  @Override
+  public void destroy() throws Exception {
     log.info("Remove Cache Manager metrics");
     metricRegistry.getNames().forEach(metricRegistry::remove);
   }
