@@ -4,6 +4,7 @@ import javax.inject.Inject;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
+import org.obiba.mica.core.service.AgateServerConfigService;
 import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
@@ -21,6 +22,9 @@ public class AdminController extends BaseController {
 
   @Inject
   private MicaConfigService micaConfigService;
+
+  @Inject
+  protected AgateServerConfigService agateServerConfigService;
 
   @Inject
   private NetworkService networkService;
@@ -64,6 +68,22 @@ public class AdminController extends BaseController {
       || projectService.findAllIds().stream()
       .anyMatch(id -> isPermitted("/draft/project", "VIEW", id)))
       return new ModelAndView("admin");
+
+    return new ModelAndView("redirect:/");
+  }
+
+  @GetMapping("/administration")
+  public ModelAndView administration() {
+    Subject subject = SecurityUtils.getSubject();
+    String contextPath = micaConfigService.getContextPath();
+    if (!subject.isAuthenticated())
+      return new ModelAndView("redirect:/signin?redirect=" + contextPath + "/administration");
+    if (subject.hasRole(Roles.MICA_ADMIN) || subject.hasRole(Roles.MICA_DAO) || subject.hasRole(Roles.MICA_EDITOR) || subject.hasRole(Roles.MICA_REVIEWER)) {
+      String agateUrl = agateServerConfigService.getAgateUrl();
+      ModelAndView mv = new ModelAndView("administration");
+      mv.getModel().put("agateUrl", agateUrl);
+      return mv;
+    }
 
     return new ModelAndView("redirect:/");
   }
