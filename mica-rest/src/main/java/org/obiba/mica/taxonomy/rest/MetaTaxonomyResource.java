@@ -12,6 +12,13 @@ package org.obiba.mica.taxonomy.rest;
 
 
 import com.codahale.metrics.annotation.Timed;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Response;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.micaConfig.service.TaxonomiesService;
 import org.obiba.mica.security.Roles;
@@ -21,8 +28,6 @@ import org.obiba.opal.web.taxonomy.Dtos;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
 
 @Component
 @Path("/meta-taxonomy")

@@ -16,7 +16,7 @@
     <groupId>org.obiba.mica</groupId>
     <artifactId>mica</artifactId>
     <version>5.4-SNAPSHOT</version>
-    <relativePath>../</relativePath>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>mica-search</artifactId>
@@ -51,8 +51,8 @@
       <artifactId>obiba-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.ws.rs</groupId>
-      <artifactId>javax.ws.rs-api</artifactId>
+      <groupId>jakarta.ws.rs</groupId>
+      <artifactId>jakarta.ws.rs-api</artifactId>
     </dependency>
     <dependency>
       <groupId>jakarta.servlet</groupId>

@@ -10,13 +10,12 @@
 
 package org.obiba.mica.access.rest;
 
-import com.google.protobuf.GeneratedMessage;
 import org.obiba.jersey.exceptionmapper.AbstractErrorDtoExceptionMapper;
 import org.obiba.mica.micaConfig.DataAccessFeasibilityNotEnabled;
 import org.obiba.web.model.ErrorDtos;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.Provider;
 
 @Provider
 public class DataAccessFeasibilityNotEnabledMapper extends AbstractErrorDtoExceptionMapper<DataAccessFeasibilityNotEnabled> {
@@ -27,7 +26,7 @@ public class DataAccessFeasibilityNotEnabledMapper extends AbstractErrorDtoExcep
   }
 
   @Override
-  protected GeneratedMessage.ExtendableMessage<?> getErrorDto(DataAccessFeasibilityNotEnabled e) {
+  protected ErrorDtos.ClientErrorDto getErrorDto(DataAccessFeasibilityNotEnabled e) {
     return ErrorDtos.ClientErrorDto.newBuilder() //
       .setCode(getStatus().getStatusCode()) //
       .setMessageTemplate("server.error.data-access-feasibility.not-enabled") //

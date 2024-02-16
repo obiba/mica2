@@ -11,8 +11,8 @@
 
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://www.ehcache.org/v3"
-         xmlns:jsr107="http://www.ehcache.org/v3/jsr107">
-
+         xmlns:jsr107="http://www.ehcache.org/v3/jsr107"
+        xsi:schemaLocation="http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core-3.0.xsd">
   <!--
     This is a default configuration, it is re-configured by the CacheConfiguration Spring Bean, using the
     properties from the resources/config/*.yml files.

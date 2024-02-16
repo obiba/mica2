@@ -17,11 +17,12 @@ import org.apache.shiro.subject.Subject;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.shiro.web.filter.AbstractAuthenticationExecutor;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AuthenticationExecutorImpl extends AbstractAuthenticationExecutor, InitializingBean {
+public class AuthenticationExecutorImpl extends AbstractAuthenticationExecutor implements InitializingBean {
 
   @Inject
   private FileSystemService fileSystemService;

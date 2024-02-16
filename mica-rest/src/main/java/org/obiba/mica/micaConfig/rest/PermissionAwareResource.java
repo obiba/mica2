@@ -10,7 +10,7 @@
 
 package org.obiba.mica.micaConfig.rest;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.security.Roles;

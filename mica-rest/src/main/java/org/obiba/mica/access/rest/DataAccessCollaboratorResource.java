@@ -1,7 +1,10 @@
 package org.obiba.mica.access.rest;
 
 
-import com.google.common.base.Strings;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.core.Response;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.access.domain.DataAccessCollaborator;
 import org.obiba.mica.access.domain.DataAccessRequest;
@@ -16,11 +19,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 @Scope("request")

@@ -10,17 +10,20 @@
 
 package org.obiba.mica.dataset.search.rest;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
-
+import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Strings;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.StreamingOutput;
 import org.obiba.mica.search.JoinQueryExecutor;
-import org.obiba.mica.search.reports.JoinQueryReportGenerator;
 import org.obiba.mica.search.queries.rql.RQLQueryBuilder;
+import org.obiba.mica.search.reports.JoinQueryReportGenerator;
 import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.study.domain.HarmonizationStudy;
@@ -28,8 +31,9 @@ import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.codahale.metrics.annotation.Timed;
-import com.google.common.base.Strings;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.List;
 
 @Component
 @Path("/datasets")

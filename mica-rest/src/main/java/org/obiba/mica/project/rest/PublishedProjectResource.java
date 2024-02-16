@@ -13,9 +13,9 @@ package org.obiba.mica.project.rest;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.project.domain.Project;

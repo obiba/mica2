@@ -10,13 +10,7 @@
 
 package org.obiba.mica.file.search.rest;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-import javax.ws.rs.Path;
-
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import jakarta.ws.rs.Path;
 import org.obiba.mica.core.service.PublishedDocumentService;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.search.EsDraftFileService;
@@ -24,6 +18,10 @@ import org.obiba.mica.file.search.FileFilterHelper;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Path("/draft/files-search")
 @Scope("request")

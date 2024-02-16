@@ -10,13 +10,12 @@
 
 package org.obiba.mica.access.rest;
 
-import com.google.protobuf.GeneratedMessage;
 import org.obiba.jersey.exceptionmapper.AbstractErrorDtoExceptionMapper;
 import org.obiba.mica.micaConfig.DataAccessAmendmentsNotEnabled;
 import org.obiba.web.model.ErrorDtos;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.Provider;
 
 @Provider
 public class DataAccessAmendmentsNotEnabledMapper extends AbstractErrorDtoExceptionMapper<DataAccessAmendmentsNotEnabled> {
@@ -27,7 +26,7 @@ public class DataAccessAmendmentsNotEnabledMapper extends AbstractErrorDtoExcept
   }
 
   @Override
-  protected GeneratedMessage.ExtendableMessage<?> getErrorDto(DataAccessAmendmentsNotEnabled e) {
+  protected ErrorDtos.ClientErrorDto getErrorDto(DataAccessAmendmentsNotEnabled e) {
     return ErrorDtos.ClientErrorDto.newBuilder() //
       .setCode(getStatus().getStatusCode()) //
       .setMessageTemplate("server.error.data-access-amendment.not-enabled") //

@@ -10,9 +10,9 @@
 
 package org.obiba.mica.micaConfig.rest;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.Provider;
 
 import org.obiba.mica.micaConfig.NoSuchOpalCredential;
 

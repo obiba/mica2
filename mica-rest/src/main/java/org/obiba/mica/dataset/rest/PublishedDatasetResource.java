@@ -11,10 +11,10 @@
 package org.obiba.mica.dataset.rest;
 
 import javax.inject.Inject;
-import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import jakarta.ws.rs.ForbiddenException;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 
 import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.core.source.OpalTableSource;

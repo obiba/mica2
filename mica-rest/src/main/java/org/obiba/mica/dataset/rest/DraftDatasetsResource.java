@@ -11,9 +11,9 @@
 package org.obiba.mica.dataset.rest;
 
 import javax.inject.Inject;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.dataset.event.IndexDatasetsEvent;

@@ -10,23 +10,23 @@
 
 package org.obiba.mica.dataset.search.rest.variable;
 
-import javax.inject.Inject;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.DatasetVariable;
+import org.obiba.mica.dataset.search.rest.collection.PublishedCollectedDatasetVariableResource;
 import org.obiba.mica.dataset.search.rest.harmonization.PublishedDataschemaDatasetVariableResource;
 import org.obiba.mica.dataset.search.rest.harmonization.PublishedHarmonizedDatasetVariableResource;
-import org.obiba.mica.dataset.search.rest.collection.PublishedCollectedDatasetVariableResource;
-import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.dataset.service.CollectedDatasetService;
+import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
 
 @Component
 @Scope("request")

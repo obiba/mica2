@@ -11,10 +11,13 @@
 package org.obiba.mica.taxonomy.rest;
 
 import com.codahale.metrics.annotation.Timed;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
 import org.obiba.opal.web.model.Opal;
 import org.springframework.stereotype.Component;
-
-import javax.ws.rs.*;
 
 @Component
 @Path("/taxonomy/{name}")

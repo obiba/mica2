@@ -18,7 +18,7 @@ import org.obiba.mica.web.model.Mica;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 @Component
 @Path("/config/" + StudyDatasetConfigResource.TARGET_NAME)

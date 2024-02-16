@@ -1,7 +1,7 @@
 package org.obiba.mica.web.interceptor;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.obiba.mica.micaConfig.domain.MicaConfig;
