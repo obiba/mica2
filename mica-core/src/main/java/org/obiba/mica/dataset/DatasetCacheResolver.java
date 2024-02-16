@@ -10,31 +10,25 @@
 
 package org.obiba.mica.dataset;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Optional;
-
-import javax.inject.Inject;
-
-import org.ehcache.config.CacheConfiguration;
-
+import com.codahale.metrics.MetricRegistry;
+import com.google.common.collect.Lists;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.ehcache.EhCacheCache;
 import org.springframework.cache.interceptor.CacheOperationInvocationContext;
 import org.springframework.cache.interceptor.CacheResolver;
 import org.springframework.stereotype.Component;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.ehcache.InstrumentedEhcache;
-import com.google.common.collect.Lists;
+import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Optional;
 
 @Component("datasetVariablesCacheResolver")
 public class DatasetCacheResolver implements CacheResolver {
 
-  @Inject
-  private org.ehcache.CacheManager cacheManager;
+//  @Inject
+//  private org.ehcache.CacheManager cacheManager;
 
   @Inject
   private MetricRegistry metricRegistry;
@@ -54,14 +48,14 @@ public class DatasetCacheResolver implements CacheResolver {
       String cacheName = "dataset-" + ((Dataset) dataset.get()).getId();
       Cache datasetCache = springCacheManager.getCache(cacheName);
 
-      if (datasetCache == null) {
-        CacheConfiguration conf = cacheManager.getEhcache("dataset-variables").getCacheConfiguration().clone();
-        conf.setName(cacheName);
-        cacheManager.addCache(new org.ehcache.Cache(conf));
-        org.ehcache.Cache cache = cacheManager.getCache(cacheName);
-        cacheManager.replaceCacheWithDecoratedCache(cache, InstrumentedEhcache.instrument(metricRegistry, cache));
-        datasetCache = new EhCacheCache(cacheManager.getEhcache(cacheName));
-      }
+//      if (datasetCache == null) {
+//        CacheConfiguration conf = cacheManager.getEhcache("dataset-variables").getCacheConfiguration().clone();
+//        conf.setName(cacheName);
+//        cacheManager.addCache(new org.ehcache.Cache(conf));
+//        org.ehcache.Cache cache = cacheManager.getCache(cacheName);
+//        cacheManager.replaceCacheWithDecoratedCache(cache, InstrumentedEhcache.instrument(metricRegistry, cache));
+//        datasetCache = new EhCacheCache(cacheManager.getEhcache(cacheName));
+//      }
 
       res.add(datasetCache);
     }

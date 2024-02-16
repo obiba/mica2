@@ -37,7 +37,7 @@ import static java.util.stream.Collectors.toList;
 
 /**
  * Service for sending e-mails.
- * 
+ *
  * We use the @Async annotation to send e-mails asynchronously.
  */
 @Service
@@ -53,7 +53,7 @@ public class MailService extends AgateRestService {
   private String from;
 
   @Override
-  public void init() {
+  public void afterPropertiesSet() throws Exception {
     from = env.getProperty("spring.mail.from");
     if(Strings.isNullOrEmpty(from)) {
       from = "mica@example.org";

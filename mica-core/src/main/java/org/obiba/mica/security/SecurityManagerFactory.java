@@ -28,6 +28,7 @@ import org.apache.shiro.authz.permission.RolePermissionResolver;
 import org.apache.shiro.authz.permission.RolePermissionResolverAware;
 import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
+import org.ehcache.integrations.shiro.EhcacheShiroManager;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.SessionsSecurityManager;
 import org.apache.shiro.realm.Realm;
@@ -159,8 +160,7 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
   private void initializeCacheManager(DefaultWebSecurityManager dsm) {
     if(dsm.getCacheManager() == null) {
       EhCacheManager ehCacheManager = new EhCacheManager();
-      ehCacheManager.setCacheManager(cacheManager);
-      dsm.setCacheManager(ehCacheManager);
+      dsm.setCacheManager(cacheManager);
     }
   }
 

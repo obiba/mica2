@@ -3,6 +3,7 @@ package org.obiba.mica.access.service;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
+import jakarta.ws.rs.ForbiddenException;
 import org.apache.shiro.SecurityUtils;
 import org.joda.time.DateTime;
 import org.json.JSONException;
@@ -28,7 +29,6 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.ForbiddenException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;

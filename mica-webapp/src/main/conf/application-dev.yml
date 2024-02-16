@@ -32,6 +32,7 @@ shiro:
         nbHashIterations: 10000
         salt: mica
 
+
 #
 # Other advanced settings
 #
@@ -55,6 +56,9 @@ spring:
         protocol: smtp
         tls: false
         auth: false
+    cache:
+        jcache:
+            config: classpath:ehcache.xml
 
 # You can add as many as folders to watch
 # You just need to add a dash + the directory to watch

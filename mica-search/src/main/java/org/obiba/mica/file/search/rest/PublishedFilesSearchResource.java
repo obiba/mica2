@@ -10,11 +10,8 @@
 
 package org.obiba.mica.file.search.rest;
 
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.ws.rs.Path;
-
+import com.google.common.collect.Lists;
+import jakarta.ws.rs.Path;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.service.PublishedDocumentService;
 import org.obiba.mica.file.AttachmentState;
@@ -23,7 +20,8 @@ import org.obiba.mica.web.model.Mica;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Lists;
+import javax.inject.Inject;
+import java.util.List;
 
 @Path("/files-search")
 @RequiresAuthentication

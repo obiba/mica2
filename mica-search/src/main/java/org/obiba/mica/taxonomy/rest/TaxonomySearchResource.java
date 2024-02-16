@@ -12,6 +12,13 @@ package org.obiba.mica.taxonomy.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
 import org.obiba.mica.security.SubjectUtils;
 import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.opal.core.cfg.NoSuchVocabularyException;
@@ -22,9 +29,6 @@ import org.obiba.opal.web.taxonomy.Dtos;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
 import java.util.List;
 import java.util.Map;
 

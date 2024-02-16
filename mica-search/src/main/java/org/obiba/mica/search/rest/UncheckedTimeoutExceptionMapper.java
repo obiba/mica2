@@ -11,11 +11,11 @@
 package org.obiba.mica.search.rest;
 
 import com.google.common.util.concurrent.UncheckedTimeoutException;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.Provider;
 import org.obiba.jersey.exceptionmapper.AbstractErrorDtoExceptionMapper;
 import org.obiba.web.model.ErrorDtos;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Provider;
 
 @Provider
 public class UncheckedTimeoutExceptionMapper extends AbstractErrorDtoExceptionMapper<UncheckedTimeoutException> {

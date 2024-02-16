@@ -11,7 +11,7 @@
 package org.obiba.mica.micaConfig.rest;
 
 import javax.inject.Inject;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.micaConfig.domain.DataCollectionEventConfig;

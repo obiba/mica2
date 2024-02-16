@@ -14,8 +14,8 @@ import org.obiba.jersey.exceptionmapper.AbstractErrorDtoExceptionMapper;
 import org.obiba.shiro.web.filter.UserBannedException;
 import org.obiba.web.model.ErrorDtos;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.Provider;
 
 @Provider
 public class UserBannedExceptionMapper extends AbstractErrorDtoExceptionMapper<UserBannedException> {
