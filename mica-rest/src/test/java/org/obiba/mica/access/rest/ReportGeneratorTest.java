@@ -15,6 +15,7 @@ import com.jayway.jsonpath.JsonPathException;
 import org.assertj.core.util.Lists;
 import org.joda.time.DateTime;
 import org.json.JSONException;
+
 import org.junit.Test;
 import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessEntity;
@@ -31,8 +32,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
+import static org.hamcrest.MatcherAssert.assertThat;
 public class ReportGeneratorTest {
 
   @Test
