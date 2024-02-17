@@ -22,8 +22,9 @@ public class LoggerDTO {
   private String level;
 
   public LoggerDTO(Logger logger) {
-    name = logger.getName();
-    level = logger.getEffectiveLevel().toString();
+    // TO FIX
+//    name = logger.getName();
+//    level = logger.getEffectiveLevel().toString();
   }
 
   @JsonCreator

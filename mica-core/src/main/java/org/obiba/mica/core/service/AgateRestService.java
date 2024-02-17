@@ -10,10 +10,11 @@
 
 package org.obiba.mica.core.service;
 
-import org.apache.http.client.HttpClient;
+import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.core5.ssl.SSLContextBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.shiro.codec.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +72,9 @@ public abstract class AgateRestService implements InitializingBean {
     log.info("Connecting to Agate: {}", agateServerConfigService.getAgateUrl());
     if(agateServerConfigService.isSecured()) {
       if(httpRequestFactory == null) {
-        httpRequestFactory = new HttpComponentsClientHttpRequestFactory(createHttpClient());
+        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+        factory.setHttpClient(createHttpClient());
+        httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
       }
       return new RestTemplate(httpRequestFactory);
     } else {
@@ -86,7 +89,8 @@ public abstract class AgateRestService implements InitializingBean {
   protected HttpClient createHttpClient() {
     HttpClientBuilder builder = HttpClientBuilder.create();
     try {
-      builder.setSSLSocketFactory(getSocketFactory());
+      SSLContext sslContext = new SSLContextBuilder().build();
+      builder.setSSLContext(sslContext);
       // if component not specified, will use the default
 
     } catch(NoSuchAlgorithmException | KeyManagementException e) {

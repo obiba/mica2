@@ -12,7 +12,6 @@ package org.obiba.mica.security;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import java.util.Set;
-import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
