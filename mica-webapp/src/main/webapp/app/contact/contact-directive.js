@@ -34,9 +34,11 @@ angular.module('mica.contact')
 
           if (ctrl.order) {
             ctrl.order.forEach(function (order) {
-              ctrl.memberships[order.role].sort(function (a, b) {
-                return order.personIds.indexOf(a.id) - order.personIds.indexOf(b.id);
-              });
+              if (order.role in ctrl.memberships) {
+                ctrl.memberships[order.role].sort(function (a, b) {
+                  return order.personIds.indexOf(a.id) - order.personIds.indexOf(b.id);
+                });
+              }
             });
           }
         }
