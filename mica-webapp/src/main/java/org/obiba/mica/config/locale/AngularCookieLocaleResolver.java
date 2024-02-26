@@ -10,21 +10,21 @@
 
 package org.obiba.mica.config.locale;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
-import java.util.stream.Collectors;
-
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.i18n.LocaleContext;
 import org.springframework.context.i18n.TimeZoneAwareLocaleContext;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.util.WebUtils;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 /**
  * Angular cookie saved the locale with a double quote (%22en%22).
@@ -35,9 +35,14 @@ import org.springframework.web.util.WebUtils;
  */
 public class AngularCookieLocaleResolver extends CookieLocaleResolver {
 
+  private static final String NG_COOKIE_NAME = "NG_TRANSLATE_LANG_KEY";
+
+  private static final Logger logger = LoggerFactory.getLogger(AngularCookieLocaleResolver.class);
+
   private final MicaConfigService micaConfigService;
 
   public AngularCookieLocaleResolver(MicaConfigService micaConfigService) {
+    super(NG_COOKIE_NAME);
     this.micaConfigService = micaConfigService;
   }
 
@@ -76,16 +81,16 @@ public class AngularCookieLocaleResolver extends CookieLocaleResolver {
     };
   }
 
-  @Override
-  public void addCookie(HttpServletResponse response, String cookieValue) {
-    // Mandatory cookie modification for angular to support the locale switching on the server side.
-    super.addCookie(response, "%22" + cookieValue + "%22");
-  }
+//  @Override
+//  public void addCookie(HttpServletResponse response, String cookieValue) {
+//    // Mandatory cookie modification for angular to support the locale switching on the server side.
+//    super.addCookie(response, "%22" + cookieValue + "%22");
+//  }
 
   private void parseLocaleCookieIfNecessary(HttpServletRequest request) {
     if(request.getAttribute(LOCALE_REQUEST_ATTRIBUTE_NAME) == null) {
       // Retrieve and parse cookie value.
-      Cookie cookie = WebUtils.getCookie(request, getCookieName());
+      Cookie cookie = WebUtils.getCookie(request, NG_COOKIE_NAME);
       Locale locale = null;
       TimeZone timeZone = null;
       if(cookie != null) {

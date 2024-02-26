@@ -1,14 +1,14 @@
 package org.obiba.mica.web.interceptor;
 
-import javax.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import jakarta.servlet.http.HttpServletResponse;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.inject.Inject;
 
 @Component
 public class MicaConfigInterceptor implements HandlerInterceptor {

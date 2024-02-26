@@ -180,12 +180,12 @@
       </dependency>
       <dependency>
         <groupId>io.dropwizard.metrics</groupId>
-        <artifactId>metrics-servlet</artifactId>
+        <artifactId>metrics-jakarta-servlet</artifactId>
         <version>${dropwizard-metrics.version}</version>
       </dependency>
       <dependency>
         <groupId>io.dropwizard.metrics</groupId>
-        <artifactId>metrics-servlets</artifactId>
+        <artifactId>metrics-jakarta-servlets</artifactId>
         <version>${dropwizard-metrics.version}</version>
         <exclusions>
           <exclusion>

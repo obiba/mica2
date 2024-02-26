@@ -10,15 +10,9 @@
 
 package org.obiba.mica.study;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.inject.Inject;
-
+import com.google.common.collect.Lists;
+import com.google.common.eventbus.EventBus;
+import com.google.common.io.Files;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.junit.After;
@@ -55,7 +49,11 @@ import org.obiba.mica.micaConfig.service.TaxonomyConfigService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.security.service.SubjectAclService;
-import org.obiba.mica.study.domain.*;
+import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.domain.HarmonizationStudy;
+import org.obiba.mica.study.domain.Population;
+import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
 import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.mica.study.service.PublishedStudyService;
@@ -73,20 +71,16 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-import com.google.common.collect.Lists;
-import com.google.common.eventbus.EventBus;
-import com.google.common.io.Files;
-import com.mongodb.client.MongoClient;
-
-import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
+import javax.inject.Inject;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.obiba.mica.assertj.Assertions.assertThat;
 import static org.obiba.mica.core.domain.LocalizedString.en;
 
@@ -487,11 +481,6 @@ public class IndividualStudyServiceTest {
       return new MongoCustomConversions(
           Lists.newArrayList(new MongoDbConfiguration.LocalizedStringWriteConverter(),
               new MongoDbConfiguration.LocalizedStringReadConverter()));
-    }
-
-    @Override
-    protected String getMappingBasePackage() {
-      return "org.obiba.mica";
     }
 
   }

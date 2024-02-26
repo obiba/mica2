@@ -10,11 +10,24 @@
 
 package org.obiba.mica.core.service;
 
-import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.cookie.StandardCookieSpec;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactoryBuilder;
+import org.apache.hc.core5.http.io.SocketConfig;
+import org.apache.hc.core5.http.ssl.TLS;
+import org.apache.hc.core5.pool.PoolConcurrencyPolicy;
+import org.apache.hc.core5.pool.PoolReusePolicy;
+import org.apache.hc.core5.ssl.SSLContexts;
+import org.apache.hc.core5.ssl.TrustStrategy;
+import org.apache.hc.core5.util.TimeValue;
+import org.apache.hc.core5.util.Timeout;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.hc.core5.ssl.SSLContextBuilder;
-import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.shiro.codec.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,12 +36,12 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.security.KeyManagementException;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -57,7 +70,8 @@ public abstract class AgateRestService implements InitializingBean {
 
 
   @Override
-  public void afterPropertiesSet() throws Exception {}
+  public void afterPropertiesSet() throws Exception {
+  }
 
   protected String getApplicationName() {
     return agateServerConfigService.getServiceName();
@@ -69,35 +83,45 @@ public abstract class AgateRestService implements InitializingBean {
   }
 
   protected RestTemplate newRestTemplate() {
-    log.info("Connecting to Agate: {}", agateServerConfigService.getAgateUrl());
-    if(agateServerConfigService.isSecured()) {
-      if(httpRequestFactory == null) {
-        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-        factory.setHttpClient(createHttpClient());
-        httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
-      }
-      return new RestTemplate(httpRequestFactory);
-    } else {
-      return new RestTemplate();
+
+    TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
+
+    PoolingHttpClientConnectionManager connectionManager = null;
+    try {
+      connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
+        .setSSLSocketFactory(SSLConnectionSocketFactoryBuilder.create()
+          .setSslContext(SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build())
+          .setTlsVersions(TLS.V_1_3, TLS.V_1_2)
+          .build())
+        .setDefaultSocketConfig(SocketConfig.custom()
+          .setSoTimeout(Timeout.ofSeconds(5))
+          .build())
+        .setPoolConcurrencyPolicy(PoolConcurrencyPolicy.STRICT)
+        .setConnPoolPolicy(PoolReusePolicy.LIFO)
+        .setDefaultConnectionConfig(ConnectionConfig.custom()
+          .setTimeToLive(TimeValue.ofMinutes(1L))
+          .setConnectTimeout(Timeout.ofSeconds(5))
+          .build())
+        .build();
+    } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException e) {
+      throw new RuntimeException(e);
     }
+
+    CloseableHttpClient client = HttpClients.custom()
+      .setConnectionManager(connectionManager)
+      .setDefaultRequestConfig(RequestConfig.custom()
+        .setResponseTimeout(Timeout.ofSeconds(5))
+        .setCookieSpec(StandardCookieSpec.STRICT)
+        .build())
+      .build();
+
+    HttpComponentsClientHttpRequestFactory httpComponentsClientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory(client);
+
+    return new RestTemplate(httpComponentsClientHttpRequestFactory);
   }
 
   protected HttpComponentsClientHttpRequestFactory getHttpRequestFactory() {
     return httpRequestFactory;
-  }
-
-  protected HttpClient createHttpClient() {
-    HttpClientBuilder builder = HttpClientBuilder.create();
-    try {
-      SSLContext sslContext = new SSLContextBuilder().build();
-      builder.setSSLContext(sslContext);
-      // if component not specified, will use the default
-
-    } catch(NoSuchAlgorithmException | KeyManagementException e) {
-      throw new RuntimeException(e);
-    }
-
-    return builder.build();
   }
 
   /**
@@ -127,7 +151,7 @@ public abstract class AgateRestService implements InitializingBean {
       }
     };
     SSLContext sslContext = SSLContext.getInstance("TLS");
-    sslContext.init(null, new TrustManager[] { tm }, null);
+    sslContext.init(null, new TrustManager[]{tm}, null);
 
     return new SSLConnectionSocketFactory(sslContext, new NoopHostnameVerifier());
   }

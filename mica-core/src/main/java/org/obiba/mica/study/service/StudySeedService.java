@@ -10,16 +10,10 @@
 
 package org.obiba.mica.study.service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
+import com.google.common.io.Files;
 import org.obiba.mica.study.domain.Study;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,10 +22,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
-import com.google.common.io.Files;
+import javax.inject.Inject;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Import studies (save and publish) from JSON files found in MICA_HOME/seed/in directory.

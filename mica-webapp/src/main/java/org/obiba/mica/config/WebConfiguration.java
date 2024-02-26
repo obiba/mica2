@@ -11,8 +11,8 @@
 package org.obiba.mica.config;
 
 import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.servlet.InstrumentedFilter;
-import com.codahale.metrics.servlets.MetricsServlet;
+import io.dropwizard.metrics.servlet.InstrumentedFilter;
+import io.dropwizard.metrics.servlets.MetricsServlet;
 import com.google.common.base.Strings;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -125,7 +125,7 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
   private void customizeSsl(Server server) {
     if (httpsPort <= 0) return;
 
-    SslContextFactory jettySsl = new SslContextFactory() {
+    SslContextFactory.Server jettySsl = new SslContextFactory.Server() {
 
       @Override
       protected void doStart() throws Exception {
