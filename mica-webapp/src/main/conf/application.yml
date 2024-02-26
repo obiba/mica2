@@ -51,7 +51,6 @@ spring:
     data:
         mongodb:
             uri: mongodb://localhost:27017/mica
-    profiles: prod
     cache:
       jcache:
         config: classpath:ehcache.xml

@@ -11,7 +11,6 @@
 
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://www.ehcache.org/v3"
-         xmlns:jsr107="http://www.ehcache.org/v3/jsr107"
         xsi:schemaLocation="http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core-3.0.xsd">
   <!--
     This is a default configuration, it is re-configured by the CacheConfiguration Spring Bean, using the
@@ -50,11 +49,11 @@
 
     <resources>
       <heap unit="entries">100</heap>
-      <disk persistent="false"/>
+<!--      <disk persistent="false"/>-->
     </resources>
-    <expiry>
-      <none/>
-    </expiry>
+<!--    <expiry>-->
+<!--      <none/>-->
+<!--    </expiry>-->
 
 <!--      maxBytesLocalHeap="1M"-->
 <!--      overflowToDisk="false"-->
@@ -76,9 +75,9 @@
       <disk unit="MB">1</disk>
     </resources>
 
-    <expiry>
-      <none/>
-    </expiry>
+<!--    <expiry>-->
+<!--      <none/>-->
+<!--    </expiry>-->
 <!--      overflowToDisk="true"-->
 <!--      eternal="true"-->
 <!--      timeToLiveSeconds="0"-->
@@ -97,9 +96,9 @@
       <heap unit="entries">100</heap>
       <disk unit="MB">1</disk>
     </resources>
-    <expiry>
-      <none/>
-    </expiry>
+<!--    <expiry>-->
+<!--      <none/>-->
+<!--    </expiry>-->
 <!--      overflowToDisk="true"-->
 <!--      eternal="true"-->
 <!--      timeToLiveSeconds="0"-->
@@ -118,9 +117,9 @@
       <heap unit="entries">10000</heap>
       <disk unit="MB">1</disk>
     </resources>
-    <expiry>
-      <none/>
-    </expiry>
+<!--    <expiry>-->
+<!--      <none/>-->
+<!--    </expiry>-->
 <!--         maxBytesLocalHeap="1M"-->
 <!--         diskPersistent="true"-->
 <!--         overflowToDisk="true"-->
@@ -140,9 +139,9 @@
       <heap unit="entries">100</heap>
       <disk unit="MB">1</disk>
     </resources>
-    <expiry>
-      <none/>
-    </expiry>
+<!--    <expiry>-->
+<!--      <none/>-->
+<!--    </expiry>-->
 <!--    overflowToDisk="true"-->
 <!--    eternal="true">-->
   </cache>
@@ -159,9 +158,9 @@
       <heap unit="entries">100</heap>
       <disk unit="MB">1</disk>
     </resources>
-    <expiry>
-      <none/>
-    </expiry>
+<!--    <expiry>-->
+<!--      <none/>-->
+<!--    </expiry>-->
 
 <!--    eternal="true"-->
 <!--    overflowToDisk="true"-->
