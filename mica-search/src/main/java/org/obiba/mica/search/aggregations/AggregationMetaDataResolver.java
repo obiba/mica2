@@ -10,21 +10,18 @@
 
 package org.obiba.mica.search.aggregations;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import javax.inject.Inject;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Component
 @Scope("prototype")

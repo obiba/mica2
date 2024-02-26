@@ -10,9 +10,6 @@
 
 package org.obiba.mica.web.rest.security;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
 import org.apache.shiro.subject.Subject;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -20,6 +17,8 @@ import org.obiba.shiro.web.filter.AbstractAuthenticationExecutor;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
 
 @Component
 public class AuthenticationExecutorImpl extends AbstractAuthenticationExecutor implements InitializingBean {

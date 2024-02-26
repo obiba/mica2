@@ -10,21 +10,20 @@
 
 package org.obiba.mica.web.rest.security;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.annotation.Priority;
-import javax.inject.Inject;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.NewCookie;
-
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+
+import jakarta.annotation.Priority;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.List;
 
 @Priority(Integer.MIN_VALUE)
 public class AuthenticationInterceptor implements ContainerResponseFilter {

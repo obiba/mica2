@@ -10,6 +10,17 @@
 
 package org.obiba.mica.dataset.service;
 
+import com.google.common.base.Strings;
+import org.bouncycastle.openssl.PEMWriter;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.security.KeyStoreManager;
+import org.obiba.security.KeyStoreRepository;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
+import javax.security.auth.callback.CallbackHandler;
+import javax.validation.constraints.NotNull;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -19,20 +30,6 @@ import java.net.URL;
 import java.security.KeyStoreException;
 import java.security.cert.Certificate;
 import java.util.Optional;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.security.auth.callback.CallbackHandler;
-import javax.validation.constraints.NotNull;
-
-import org.bouncycastle.openssl.PEMWriter;
-import org.obiba.mica.micaConfig.service.MicaConfigService;
-import org.obiba.security.KeyStoreManager;
-import org.obiba.security.KeyStoreRepository;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.stereotype.Service;
-
-import com.google.common.base.Strings;
 
 import static java.util.Optional.ofNullable;
 

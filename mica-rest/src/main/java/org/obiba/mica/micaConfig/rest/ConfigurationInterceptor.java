@@ -10,16 +10,15 @@
 
 package org.obiba.mica.micaConfig.rest;
 
-import java.io.IOException;
-
-import javax.annotation.Priority;
-import javax.inject.Inject;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
-
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+
+import jakarta.annotation.Priority;
+import javax.inject.Inject;
+import java.io.IOException;
 
 @Priority(Integer.MIN_VALUE)
 public class ConfigurationInterceptor implements ContainerResponseFilter {

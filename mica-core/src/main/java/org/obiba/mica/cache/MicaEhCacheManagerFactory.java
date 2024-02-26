@@ -6,7 +6,6 @@ import org.ehcache.config.builders.CacheManagerBuilder;
 import org.ehcache.xml.XmlConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.ehcache.EhCacheCacheManager;
 
 import java.net.MalformedURLException;
 import java.net.URL;
