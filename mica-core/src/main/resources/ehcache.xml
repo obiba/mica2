@@ -16,7 +16,7 @@
     This is a default configuration, it is re-configured by the CacheConfiguration Spring Bean, using the
     properties from the resources/config/*.yml files.
   -->
-  <persistence directory="${MICA_HOME}/work/ehcache"/>
+  <persistence directory="${MICA_HOME}/work/ehcache2"/>
 
   <cache alias="org.apache.shiro.realm.text.PropertiesRealm-0-accounts">
     <key-type serializer="org.ehcache.impl.serialization.CompactJavaSerializer">

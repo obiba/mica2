@@ -443,7 +443,7 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
     return new DatasetVariable(dataset, getValueTable(dataset).getVariable(variableName));
   }
 
-  @Cacheable(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver", key = "#variableName")
+  @Cacheable(cacheNames= "dataset-variables",  key = "#variableName")
   public Mica.DatasetVariableAggregationDto getVariableSummary(@NotNull StudyDataset dataset, String variableName) {
     log.info("Caching variable summary {} {}", dataset.getId(), variableName);
     StudyTableSource tableSource = getStudyTableSource(dataset, dataset.getSafeStudyTable());
@@ -642,7 +642,7 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
     @Inject
     CollectedDatasetService service;
 
-    @CacheEvict(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver", allEntries = true, beforeInvocation = true)
+    @CacheEvict(cacheNames = "dataset-variables", allEntries = true, beforeInvocation = true)
     public void evictCache(StudyDataset dataset) {
       log.info("clearing dataset variables cache dataset-{}", dataset.getId());
     }
