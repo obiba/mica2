@@ -47,13 +47,14 @@
       java.lang.Object
     </value-type>
 
+    <expiry>
+      <none/>
+    </expiry>
+
     <resources>
       <heap unit="entries">100</heap>
 <!--      <disk persistent="false"/>-->
     </resources>
-<!--    <expiry>-->
-<!--      <none/>-->
-<!--    </expiry>-->
 
 <!--      maxBytesLocalHeap="1M"-->
 <!--      overflowToDisk="false"-->
@@ -70,14 +71,15 @@
       java.lang.Object
     </value-type>
 
+    <expiry>
+      <none/>
+    </expiry>
+
     <resources>
       <heap unit="entries">100</heap>
       <disk unit="MB">1</disk>
     </resources>
 
-<!--    <expiry>-->
-<!--      <none/>-->
-<!--    </expiry>-->
 <!--      overflowToDisk="true"-->
 <!--      eternal="true"-->
 <!--      timeToLiveSeconds="0"-->
@@ -92,13 +94,14 @@
       java.lang.Object
     </value-type>
 
+    <expiry>
+      <none/>
+    </expiry>
+
     <resources>
       <heap unit="entries">100</heap>
       <disk unit="MB">1</disk>
     </resources>
-<!--    <expiry>-->
-<!--      <none/>-->
-<!--    </expiry>-->
 <!--      overflowToDisk="true"-->
 <!--      eternal="true"-->
 <!--      timeToLiveSeconds="0"-->
@@ -113,13 +116,14 @@
       java.lang.Object
     </value-type>
 
+    <expiry>
+      <none/>
+    </expiry>
+
     <resources>
       <heap unit="entries">10000</heap>
       <disk unit="MB">1</disk>
     </resources>
-<!--    <expiry>-->
-<!--      <none/>-->
-<!--    </expiry>-->
 <!--         maxBytesLocalHeap="1M"-->
 <!--         diskPersistent="true"-->
 <!--         overflowToDisk="true"-->
@@ -135,13 +139,14 @@
       java.lang.Object
     </value-type>
 
+    <expiry>
+      <none/>
+    </expiry>
+
     <resources>
       <heap unit="entries">100</heap>
       <disk unit="MB">1</disk>
     </resources>
-<!--    <expiry>-->
-<!--      <none/>-->
-<!--    </expiry>-->
 <!--    overflowToDisk="true"-->
 <!--    eternal="true">-->
   </cache>
@@ -154,13 +159,14 @@
       java.lang.Object
     </value-type>
 
+    <expiry>
+      <none/>
+    </expiry>
+
     <resources>
       <heap unit="entries">100</heap>
       <disk unit="MB">1</disk>
     </resources>
-<!--    <expiry>-->
-<!--      <none/>-->
-<!--    </expiry>-->
 
 <!--    eternal="true"-->
 <!--    overflowToDisk="true"-->
