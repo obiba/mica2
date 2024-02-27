@@ -112,9 +112,9 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
   private SessionsSecurityManager doCreateSecurityManager() {
 
     ImmutableList.Builder<Realm> builder = ImmutableList.<Realm>builder().add(micaIniRealm());
-    String obibaRealmUrl = environment.getProperty("agate.url");
-    String serviceName = environment.getProperty("agate.application.name");
-    String serviceKey = environment.getProperty("agate.application.key");
+    String obibaRealmUrl = environment.getProperty("mica.url");
+    String serviceName = environment.getProperty("mica.application.name");
+    String serviceKey = environment.getProperty("mica.application.key");
 
     if(!Strings.isNullOrEmpty(obibaRealmUrl)) {
       builder.add(obibaRealm(obibaRealmUrl, serviceName, serviceKey));
