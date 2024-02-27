@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import jakarta.inject.Inject;
 import javax.validation.constraints.NotNull;
@@ -20,12 +21,16 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.git.CommitInfo;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.service.DocumentDifferenceService;
 import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.core.support.RegexHashMap;
 import org.obiba.mica.micaConfig.service.EntityConfigKeyTranslationService;
+import org.obiba.mica.security.Roles;
+import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica.GitCommitInfoDto;
 import org.obiba.mica.web.model.Mica.PersonDto;
@@ -42,13 +47,18 @@ public class PersonResource {
   private final Dtos dtos;
 
   private final PersonService personService;
+  private final SubjectAclService subjectAclService;
+
+  private final StudyService studyService;
 
   private final EntityConfigKeyTranslationService entityConfigKeyTranslationService;
 
   @Inject
-  public PersonResource(Dtos dtos, PersonService personService, EntityConfigKeyTranslationService entityConfigKeyTranslationService) {
+  public PersonResource(Dtos dtos, PersonService personService, SubjectAclService subjectAclService, StudyService studyService, EntityConfigKeyTranslationService entityConfigKeyTranslationService) {
     this.dtos = dtos;
     this.personService = personService;
+    this.subjectAclService = subjectAclService;
+    this.studyService = studyService;
     this.entityConfigKeyTranslationService = entityConfigKeyTranslationService;
   }
 
@@ -72,6 +82,28 @@ public class PersonResource {
     if (personDto == null) {
       return dtos.asDto(personService.findById(id), true);
     }
+
+    return dtos.asDto(personService.save(dtos.fromDto(personDto)), true);
+  }
+
+  @PUT
+  @Path("/{id}/strict")
+  public PersonDto updatePersonForStudy(@PathParam("id") String id, PersonDto personDto) {
+    if (personDto == null) {
+      return dtos.asDto(personService.findById(id), true);
+    }
+
+    personDto.getStudyMembershipsList().forEach(membership -> {
+      if (studyService.isCollectionStudy(membership.getParentId())) {
+        subjectAclService.checkPermission("/draft/individual-study", "EDIT", membership.getParentId());
+      } else {
+        subjectAclService.checkPermission("/draft/harmonization-study", "EDIT", membership.getParentId());
+      }
+    });
+
+    personDto.getNetworkMembershipsList().forEach(membership -> {
+      subjectAclService.checkPermission("/draft/network", "EDIT", membership.getParentId());
+    });
 
     return dtos.asDto(personService.save(dtos.fromDto(personDto)), true);
   }
