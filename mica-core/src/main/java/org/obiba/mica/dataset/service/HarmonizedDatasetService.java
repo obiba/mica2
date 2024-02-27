@@ -395,7 +395,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
       getTable(dataset, studyId, source).getVariableValueSource(variableName).getVariable());
   }
 
-  @Cacheable(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver", key = "#variableName + ':' + #studyId + ':' + #source")
+  @Cacheable(cacheNames = "dataset-variables", key = "#variableName + ':' + #studyId + ':' + #source")
   public Mica.DatasetVariableAggregationDto getVariableSummary(@NotNull HarmonizationDataset dataset, String variableName, String studyId, String source) {
     for(BaseStudyTable baseTable : dataset.getBaseStudyTables()) {
       if(baseTable.isFor(studyId, source)) {
@@ -540,7 +540,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
       this.eventBus = eventBus;
     }
 
-    @CacheEvict(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver", allEntries = true, beforeInvocation = true)
+    @CacheEvict(cacheNames = "dataset-variables", allEntries = true, beforeInvocation = true)
     public void evictCache(HarmonizationDataset dataset) {
       log.info("cleared dataset variables cache dataset-{}", dataset.getId());
     }

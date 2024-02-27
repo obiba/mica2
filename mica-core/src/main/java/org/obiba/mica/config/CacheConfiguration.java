@@ -11,13 +11,10 @@
 package org.obiba.mica.config;
 
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration("cacheConfiguration")
-@EnableCaching
-@AutoConfigureAfter(value = { MetricsConfiguration.class })
+//@Configuration("cacheConfiguration")
+//@EnableCaching
+//@AutoConfigureAfter(value = { MetricsConfiguration.class })
 public class CacheConfiguration implements DisposableBean {
 
 //  private static final Logger log = LoggerFactory.getLogger(CacheConfiguration.class);

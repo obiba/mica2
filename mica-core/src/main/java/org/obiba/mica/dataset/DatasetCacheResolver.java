@@ -17,14 +17,13 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.interceptor.CacheOperationInvocationContext;
 import org.springframework.cache.interceptor.CacheResolver;
-import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 
-@Component("datasetVariablesCacheResolver")
+//@Component("datasetVariablesCacheResolver")
 public class DatasetCacheResolver implements CacheResolver {
 
 //  @Inject

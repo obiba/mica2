@@ -95,7 +95,7 @@ public class CacheService {
     @Inject
     private CollectedDatasetService collectedDatasetService;
 
-    @CacheEvict(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver", allEntries = true, beforeInvocation = true)
+    @CacheEvict(cacheNames = "dataset-variables", allEntries = true, beforeInvocation = true)
     public void clearDatasetVariablesCache(Dataset dataset) {
       log.info("Clearing dataset variables cache dataset-{}", dataset.getId());
     }

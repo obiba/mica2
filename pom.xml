@@ -51,7 +51,7 @@
     <esapi.version>2.5.3.1</esapi.version>
     <freemarker.version>2.3.29</freemarker.version>
     <guava.version>19.0</guava.version>
-    <geronimo-javamail_1.4_mail.version>1.8.3</geronimo-javamail_1.4_mail.version>
+<!--    <geronimo-javamail_1.4_mail.version>1.8.3</geronimo-javamail_1.4_mail.version>-->
     <itextpdf.version>5.5.6</itextpdf.version>
     <javax.inject.version>1</javax.inject.version>
     <javax-rs.version>2.0</javax-rs.version>
@@ -250,11 +250,11 @@
         <version>${joda-time.version}</version>
       </dependency>
 
-      <dependency>
-        <groupId>org.apache.geronimo.javamail</groupId>
-        <artifactId>geronimo-javamail_1.4_mail</artifactId>
-        <version>${geronimo-javamail_1.4_mail.version}</version>
-      </dependency>
+<!--      <dependency>-->
+<!--        <groupId>org.apache.geronimo.javamail</groupId>-->
+<!--        <artifactId>geronimo-javamail_1.4_mail</artifactId>-->
+<!--        <version>${geronimo-javamail_1.4_mail.version}</version>-->
+<!--      </dependency>-->
 
       <dependency>
         <groupId>org.mongodb</groupId>
@@ -748,6 +748,12 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-freemarker</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-mail</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
