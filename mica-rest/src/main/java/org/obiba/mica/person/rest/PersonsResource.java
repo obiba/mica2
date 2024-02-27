@@ -14,8 +14,13 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Response;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.contact.event.IndexContactsEvent;
+import org.obiba.mica.core.domain.Membership;
+import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.service.PersonService;
+import org.obiba.mica.network.service.NetworkService;
+import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
@@ -36,15 +41,18 @@ public class PersonsResource {
 
   private final StudyService studyService;
 
+  private final NetworkService networkService;
+
   private final EventBus eventBus;
 
   @Inject
   public PersonsResource(Dtos dtos, PersonService personService, SubjectAclService subjectAclService,
-                         StudyService service, EventBus eventBus) {
+                         StudyService service, NetworkService networkService, EventBus eventBus) {
     this.dtos = dtos;
     this.personService = personService;
     this.subjectAclService = subjectAclService;
     this.studyService = service;
+    this.networkService = networkService;
     this.eventBus = eventBus;
   }
 
@@ -75,12 +83,35 @@ public class PersonsResource {
   }
 
   @POST
-  @RequiresPermissions({ "/draft/individual-study:EDIT", "/draft/harmonization-study:EDIT", "/draft/network:EDIT" })
+  @RequiresPermissions({"/draft/individual-study:EDIT", "/draft/harmonization-study:EDIT", "/draft/network:EDIT"})
   public PersonDto createPerson(PersonDto personDto) {
     if (personDto == null) {
       return null;
     }
 
     return dtos.asDto(personService.save(dtos.fromDto(personDto)), true);
+  }
+
+  @POST
+  @Path("/strict")
+  public PersonDto createPersonForStudy(PersonDto personDto) {
+    if (personDto == null) {
+      return null;
+    }
+
+    personDto.getStudyMembershipsList().forEach(membership -> {
+      if (studyService.isCollectionStudy(membership.getParentId())) {
+        subjectAclService.checkPermission("/draft/individual-study", "EDIT", membership.getParentId());
+      } else {
+        subjectAclService.checkPermission("/draft/harmonization-study", "EDIT", membership.getParentId());
+      }
+    });
+
+    personDto.getNetworkMembershipsList().forEach(membership -> {
+      subjectAclService.checkPermission("/draft/network", "EDIT", membership.getParentId());
+    });
+
+    Person person = dtos.fromDto(personDto);
+    return dtos.asDto(personService.save(person), true);
   }
 }
