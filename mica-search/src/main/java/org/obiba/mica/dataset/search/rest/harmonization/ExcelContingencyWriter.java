@@ -17,9 +17,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import com.google.common.collect.Lists;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -78,25 +76,25 @@ public class ExcelContingencyWriter {
     fontTitle.setBold(true);
     titleStyle = workbook.createCellStyle();
     titleStyle.setFont(fontTitle);
-    titleStyle.setAlignment(CellStyle.ALIGN_CENTER);
+    titleStyle.setAlignment(HorizontalAlignment.CENTER);
 
     XSSFFont font = workbook.createFont();
     font.setBold(true);
     headerStyle = workbook.createCellStyle();
-    headerStyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(200, 200, 200)));
-    headerStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+    headerStyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(200, 200, 200), null));
+    headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
     headerStyle.setFont(font);
-    headerStyle.setBorderBottom(CellStyle.BORDER_THIN);
-    headerStyle.setBorderTop(CellStyle.BORDER_THIN);
-    headerStyle.setBorderLeft(CellStyle.BORDER_THIN);
-    headerStyle.setBorderRight(CellStyle.BORDER_THIN);
-    headerStyle.setAlignment(CellStyle.ALIGN_CENTER);
+    headerStyle.setBorderBottom(BorderStyle.THIN);
+    headerStyle.setBorderTop(BorderStyle.THIN);
+    headerStyle.setBorderLeft(BorderStyle.THIN);
+    headerStyle.setBorderRight(BorderStyle.THIN);
+    headerStyle.setAlignment(HorizontalAlignment.CENTER);
 
     tableStyle = workbook.createCellStyle();
-    tableStyle.setBorderBottom(CellStyle.BORDER_THIN);
-    tableStyle.setBorderTop(CellStyle.BORDER_THIN);
-    tableStyle.setBorderLeft(CellStyle.BORDER_THIN);
-    tableStyle.setBorderRight(CellStyle.BORDER_THIN);
+    tableStyle.setBorderBottom(BorderStyle.THIN);
+    tableStyle.setBorderTop(BorderStyle.THIN);
+    tableStyle.setBorderLeft(BorderStyle.THIN);
+    tableStyle.setBorderRight(BorderStyle.THIN);
 
     return workbook;
   }
