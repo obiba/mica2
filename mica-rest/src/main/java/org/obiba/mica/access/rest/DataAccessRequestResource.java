@@ -10,33 +10,9 @@
 
 package org.obiba.mica.access.rest;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.IOException;
-import java.text.ParseException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
+import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Strings;
+import com.google.common.eventbus.EventBus;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -47,6 +23,7 @@ import org.obiba.mica.access.domain.ActionLog;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.domain.StatusChange;
+import org.obiba.mica.access.export.DataAccessEntityExporter;
 import org.obiba.mica.access.notification.DataAccessRequestCommentMailNotification;
 import org.obiba.mica.access.notification.DataAccessRequestReportNotificationService;
 import org.obiba.mica.access.service.DataAccessEntityService;
@@ -61,14 +38,16 @@ import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.service.TempFileService;
-import org.obiba.mica.micaConfig.DataAccessAmendmentsNotEnabled;
 import org.obiba.mica.micaConfig.DataAccessAgreementNotEnabled;
+import org.obiba.mica.micaConfig.DataAccessAmendmentsNotEnabled;
 import org.obiba.mica.micaConfig.DataAccessFeasibilityNotEnabled;
 import org.obiba.mica.micaConfig.DataAccessPreliminaryNotEnabled;
 import org.obiba.mica.micaConfig.domain.AbstractDataAccessEntityForm;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
+import org.obiba.mica.micaConfig.service.SchemaFormConfigService;
+import org.obiba.mica.micaConfig.service.helper.SchemaFormConfig;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.event.ResourceDeletedEvent;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -78,9 +57,20 @@ import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import com.codahale.metrics.annotation.Timed;
-import com.google.common.base.Strings;
-import com.google.common.eventbus.EventBus;
+import javax.inject.Inject;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 
 @Component
@@ -95,8 +85,6 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   private DataAccessRequestService dataAccessRequestService;
 
   private DataAccessRequestCommentMailNotification commentMailNotification;
-
-  private DataAccessRequestReportNotificationService reportNotificationService;
 
   private CommentsService commentsService;
 
@@ -114,7 +102,6 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   public DataAccessRequestResource(
     DataAccessRequestService dataAccessRequestService,
     DataAccessRequestCommentMailNotification commentMailNotification,
-    DataAccessRequestReportNotificationService reportNotificationService,
     DataAccessFormService dataAccessFormService,
     CommentsService commentsService,
     ApplicationContext applicationContext,
@@ -125,11 +112,11 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     DataAccessConfigService dataAccessConfigService,
     TempFileService tempFileService,
     VariableSetService variableSetService,
-    DataAccessRequestUtilService dataAccessRequestUtilService) {
-    super(subjectAclService, fileStoreService, dataAccessConfigService, variableSetService, dataAccessRequestUtilService);
+    DataAccessRequestUtilService dataAccessRequestUtilService,
+    SchemaFormConfigService schemaFormConfigService) {
+    super(subjectAclService, fileStoreService, dataAccessConfigService, variableSetService, dataAccessRequestUtilService, schemaFormConfigService);
     this.dataAccessRequestService = dataAccessRequestService;
     this.commentMailNotification = commentMailNotification;
-    this.reportNotificationService = reportNotificationService;
     this.dataAccessFormService = dataAccessFormService;
     this.commentsService = commentsService;
     this.tempFileService = tempFileService;
@@ -189,6 +176,23 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
 
     return Response.ok(dataAccessRequestService.getRequestPdf(id, lang))
       .header("Content-Disposition", "attachment; filename=\"" + "data-access-request-" + id + ".pdf" + "\"").build();
+  }
+
+  @GET
+  @Timed
+  @Path("/_word")
+  public Response getWordDocument(@PathParam("id") String id, @QueryParam("lang") String lang) throws IOException {
+    subjectAclService.checkPermission("/data-access-request", "VIEW", id);
+
+    if (Strings.isNullOrEmpty(lang)) lang = LANGUAGE_TAG_UNDETERMINED;
+
+    DataAccessRequest request = dataAccessRequestService.findById(id);
+    DataAccessForm form = dataAccessFormService.findByRevision(request.hasFormRevision() ? request.getFormRevision().toString() : "latest").get();
+    SchemaFormConfig config = schemaFormConfigService.getConfig(form, request, lang);
+    DataAccessEntityExporter exporter = DataAccessEntityExporter.newBuilder().config(config).build();
+    String title = schemaFormConfigService.getTranslator(lang).translate("data-access-config.schema-form.title");
+    return Response.ok(exporter.export(title, id).toByteArray())
+      .header("Content-Disposition", "attachment; filename=\"" + "data-access-request-" + id + ".docx" + "\"").build();
   }
 
   @PUT

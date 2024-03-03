@@ -616,6 +616,12 @@
         <version>${poi.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.jsoup</groupId>
+        <artifactId>jsoup</artifactId>
+        <version>1.17.2</version>
+      </dependency>
+
+      <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
         <version>${logback.version}</version>

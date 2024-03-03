@@ -31,6 +31,7 @@ import org.obiba.mica.micaConfig.domain.AbstractDataAccessEntityForm;
 import org.obiba.mica.micaConfig.domain.DataAccessPreliminaryForm;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.DataAccessPreliminaryFormService;
+import org.obiba.mica.micaConfig.service.SchemaFormConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -74,8 +75,9 @@ public class DataAccessPreliminaryResource extends DataAccessEntityResource<Data
     DataAccessPreliminaryService dataAccessPreliminaryService,
     DataAccessPreliminaryFormService dataAccessPreliminaryFormService,
     VariableSetService variableSetService,
-    DataAccessRequestUtilService dataAccessRequestUtilService) {
-    super(subjectAclService, fileStoreService, dataAccessConfigService, variableSetService, dataAccessRequestUtilService);
+    DataAccessRequestUtilService dataAccessRequestUtilService,
+    SchemaFormConfigService schemaFormConfigService) {
+    super(subjectAclService, fileStoreService, dataAccessConfigService, variableSetService, dataAccessRequestUtilService, schemaFormConfigService);
     this.dtos = dtos;
     this.dataAccessRequestService = dataAccessRequestService;
     this.dataAccessPreliminaryService = dataAccessPreliminaryService;
