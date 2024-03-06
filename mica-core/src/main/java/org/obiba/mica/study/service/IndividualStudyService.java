@@ -49,6 +49,7 @@ import org.obiba.mica.study.event.DraftStudyPopulationDceWeightChangedEvent;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -95,7 +96,7 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
     saveInternal(study, comment, cascade, false);
   }
 
-  public void saveInternal(final Study study, String comment, boolean cascade, boolean weightChanged) {
+  private void saveInternal(final Study study, String comment, boolean cascade, boolean weightChanged) {
     if (!Strings.isNullOrEmpty(study.getId()) && micaConfigService.getConfig().isCommentsRequiredOnDocumentSave() && Strings.isNullOrEmpty(comment)) {
       throw new MissingCommentException("Due to the server configuration, comments are required when saving this document.");
     }
@@ -141,6 +142,7 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
     eventBus.post(new DraftStudyUpdatedEvent(study));
   }
 
+  @CacheEvict(value = "studies-draft", key = "#study.id")
   public void save(Study study, String comment, boolean weightChanged) {
     saveInternal(study, comment, true, weightChanged);
   }
