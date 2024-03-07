@@ -40,7 +40,7 @@ public class DataAccessEntityExporterTest {
       .definition(getDefaultDefinition())
       .model("{}")
       .build();
-    exporter.export("Test", "000");
+    exporter.export("Test", "Approved", "000");
   }
 
   private String getDefaultSchema() throws IOException  {

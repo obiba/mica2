@@ -26,6 +26,8 @@ import java.util.stream.Stream;
 
 public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
 
+  protected static final String LANGUAGE_TAG_UNDETERMINED = "und";
+
   protected final SubjectAclService subjectAclService;
 
   protected final SchemaFormConfigService schemaFormConfigService;

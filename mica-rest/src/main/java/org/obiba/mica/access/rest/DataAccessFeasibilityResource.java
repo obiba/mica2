@@ -12,12 +12,14 @@ package org.obiba.mica.access.rest;
 
 
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Strings;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessFeasibility;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.domain.StatusChange;
+import org.obiba.mica.access.export.DataAccessEntityExporter;
 import org.obiba.mica.access.service.DataAccessEntityService;
 import org.obiba.mica.access.service.DataAccessFeasibilityService;
 import org.obiba.mica.access.service.DataAccessRequestService;
@@ -29,6 +31,7 @@ import org.obiba.mica.micaConfig.domain.DataAccessFeasibilityForm;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.DataAccessFeasibilityFormService;
 import org.obiba.mica.micaConfig.service.SchemaFormConfigService;
+import org.obiba.mica.micaConfig.service.helper.SchemaFormConfig;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -142,6 +145,24 @@ public class DataAccessFeasibilityResource extends DataAccessEntityResource<Data
     }
 
     return Response.noContent().build();
+  }
+
+  @GET
+  @Timed
+  @Path("/_word")
+  public Response getWordDocument(@QueryParam("lang") String lang) throws IOException {
+    subjectAclService.checkPermission(getParentResourcePath(), "VIEW", id);
+
+    if (Strings.isNullOrEmpty(lang)) lang = LANGUAGE_TAG_UNDETERMINED;
+
+    DataAccessFeasibility entity = dataAccessFeasibilityService.findById(id);
+    DataAccessFeasibilityForm form = dataAccessFeasibilityFormService.findByRevision(entity.hasFormRevision() ? entity.getFormRevision().toString() : "latest").get();
+    SchemaFormConfig config = schemaFormConfigService.getConfig(form, entity, lang);
+    DataAccessEntityExporter exporter = DataAccessEntityExporter.newBuilder().config(config).build();
+    String title = schemaFormConfigService.getTranslator(lang).translate("data-access-config.feasibility.schema-form.title");
+    String status = schemaFormConfigService.getTranslator(lang).translate(entity.getStatus().toString());
+    return Response.ok(exporter.export(title, status, id).toByteArray())
+      .header("Content-Disposition", "attachment; filename=\"" + "data-access-request-feasibility-" + id + ".docx" + "\"").build();
   }
 
   @PUT

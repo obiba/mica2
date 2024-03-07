@@ -25,7 +25,6 @@ import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.domain.StatusChange;
 import org.obiba.mica.access.export.DataAccessEntityExporter;
 import org.obiba.mica.access.notification.DataAccessRequestCommentMailNotification;
-import org.obiba.mica.access.notification.DataAccessRequestReportNotificationService;
 import org.obiba.mica.access.service.DataAccessEntityService;
 import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
@@ -79,8 +78,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class DataAccessRequestResource extends DataAccessEntityResource<DataAccessRequest> {
 
   private static final Logger log = getLogger(DataAccessRequestResource.class);
-
-  private static final String LANGUAGE_TAG_UNDETERMINED = "und";
 
   private DataAccessRequestService dataAccessRequestService;
 
@@ -191,7 +188,8 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     SchemaFormConfig config = schemaFormConfigService.getConfig(form, request, lang);
     DataAccessEntityExporter exporter = DataAccessEntityExporter.newBuilder().config(config).build();
     String title = schemaFormConfigService.getTranslator(lang).translate("data-access-config.schema-form.title");
-    return Response.ok(exporter.export(title, id).toByteArray())
+    String status = schemaFormConfigService.getTranslator(lang).translate(request.getStatus().toString());
+    return Response.ok(exporter.export(title, status, id).toByteArray())
       .header("Content-Disposition", "attachment; filename=\"" + "data-access-request-" + id + ".docx" + "\"").build();
   }
 
@@ -549,10 +547,11 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
 
   @Path("/preliminary/{preliminaryId}")
   public DataAccessPreliminaryResource getPreliminary(@PathParam("id") String id, @PathParam("preliminaryId") String preliminaryId) {
+    // for consistency with other sub forms, but as there is only one, use /prelim
     return getPreliminary(id);
   }
 
-  @Path("/preliminary")
+  @Path("/prelim")
   public DataAccessPreliminaryResource getPreliminary(@PathParam("id") String id) {
     if (!dataAccessRequestService.isPreliminaryEnabled()) throw new DataAccessPreliminaryNotEnabled();
     dataAccessRequestService.findById(id);

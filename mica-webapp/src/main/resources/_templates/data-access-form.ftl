@@ -117,14 +117,16 @@
                     <button type="button" class="btn btn-outline-info" data-toggle="modal"
                             data-target="#modal-diff"><i class="fas fa-code-branch"></i> <@message "form-diff"/></button>
                   </#if>
-                  <a href="${contextPath}/ws/data-access-request/${dar.id}/_word?lang=${.lang}" class="btn btn-default">
-                      <i class="fas fa-file-word"></i> <@message "download"/>
-                    </a>
                   <#if accessConfig.downloadPdf>
                     <a href="${contextPath}/ws/data-access-request/${dar.id}/_pdf?lang=${.lang}" class="btn btn-default">
                       <i class="fas fa-file-pdf"></i> <@message "download"/>
                     </a>
                   <#else>
+                    <#if isAdministrator || isDAO>
+                      <a href="${contextPath}/ws/data-access-request/${dar.id}/_word?lang=${.lang}" class="btn btn-default">
+                        <i class="fas fa-file-word"></i> <@message "download"/>
+                      </a>
+                    </#if>
                     <a href="#" onclick="window.print()" class="btn btn-default">
                       <i class="fas fa-print"></i> <@message "global.print"/>
                     </a>
