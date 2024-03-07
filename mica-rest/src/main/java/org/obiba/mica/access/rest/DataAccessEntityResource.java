@@ -12,6 +12,7 @@ import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.event.DataAccessConfigUpdatedEvent;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
+import org.obiba.mica.micaConfig.service.SchemaFormConfigService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 
@@ -25,7 +26,11 @@ import java.util.stream.Stream;
 
 public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
 
+  protected static final String LANGUAGE_TAG_UNDETERMINED = "und";
+
   protected final SubjectAclService subjectAclService;
+
+  protected final SchemaFormConfigService schemaFormConfigService;
 
   protected final FileStoreService fileStoreService;
 
@@ -46,12 +51,14 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
     FileStoreService fileStoreService,
     DataAccessConfigService dataAccessConfigService,
     VariableSetService variableSetService,
-    DataAccessRequestUtilService dataAccessRequestUtilService) {
+    DataAccessRequestUtilService dataAccessRequestUtilService,
+    SchemaFormConfigService schemaFormConfigService) {
     this.subjectAclService = subjectAclService;
     this.fileStoreService = fileStoreService;
     this.dataAccessConfigService = dataAccessConfigService;
     this.variableSetService = variableSetService;
     this.dataAccessRequestUtilService = dataAccessRequestUtilService;
+    this.schemaFormConfigService = schemaFormConfigService;
   }
 
   @Subscribe

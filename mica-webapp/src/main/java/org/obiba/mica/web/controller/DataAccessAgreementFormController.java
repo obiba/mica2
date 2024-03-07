@@ -17,7 +17,7 @@ import org.obiba.mica.access.domain.DataAccessAgreement;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.micaConfig.domain.DataAccessAgreementForm;
 import org.obiba.mica.micaConfig.service.DataAccessAgreementFormService;
-import org.obiba.mica.web.controller.domain.SchemaFormConfig;
+import org.obiba.mica.micaConfig.service.helper.SchemaFormConfig;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;

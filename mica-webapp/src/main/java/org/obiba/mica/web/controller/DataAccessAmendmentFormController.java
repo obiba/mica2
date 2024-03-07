@@ -21,7 +21,7 @@ import org.obiba.mica.micaConfig.domain.DataAccessAmendmentForm;
 import org.obiba.mica.micaConfig.service.DataAccessAmendmentFormService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.web.controller.domain.DataAccessEntityDiff;
-import org.obiba.mica.web.controller.domain.SchemaFormConfig;
+import org.obiba.mica.micaConfig.service.helper.SchemaFormConfig;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
