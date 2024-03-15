@@ -1012,11 +1012,11 @@ class UserService {
         .catch(handle => {
           console.dir(handle);
           toggleSubmitButton(true);
-          if (handle.response.data.message === 'Email already in use') {
+          if (handle.response.data?.message?.startsWith('Email already in use')) {
             onFailure('server.error.email-already-assigned');
-          } else if (handle.response.data.message === 'Invalid reCaptcha response') {
+          } else if (handle.response.data?.message === 'Invalid reCaptcha response') {
             onFailure('server.error.bad-captcha');
-          }else if (handle.response.data.messageTemplate) {
+          }else if (handle.response.data?.messageTemplate) {
             onFailure(handle.response.data.messageTemplate);
           } else {
             onFailure('server.error.bad-request');
