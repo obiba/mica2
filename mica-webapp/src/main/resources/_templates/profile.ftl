@@ -72,7 +72,7 @@
                     <#assign isOidc = false/>
                     <#if oidcProviders??>
                       <#list oidcProviders as oidc>
-                        <#if oidc.name == user.attributes["realm"]>
+                        <#if oidc.name == user.attributes["realm"] && oidc.providerUrl??>
                           <#assign isOidc = true/>
                           <p><@message "credentials-info"/></p>
                           <@message "user-account-at"/>
