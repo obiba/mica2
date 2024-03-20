@@ -10,14 +10,12 @@
 
 package org.obiba.mica.micaConfig.rest;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Provider;
-
 import org.obiba.jersey.exceptionmapper.AbstractErrorDtoExceptionMapper;
 import org.obiba.mica.micaConfig.service.InvalidFormSchemaException;
 import org.obiba.web.model.ErrorDtos;
 
-import com.google.protobuf.GeneratedMessage;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.Provider;
 
 @Provider
 public class InvalidFormSchemaExceptionMapper extends AbstractErrorDtoExceptionMapper<InvalidFormSchemaException> {
@@ -28,7 +26,7 @@ public class InvalidFormSchemaExceptionMapper extends AbstractErrorDtoExceptionM
   }
 
   @Override
-  protected GeneratedMessage.ExtendableMessage<?> getErrorDto(InvalidFormSchemaException e){
+  protected ErrorDtos.ClientErrorDto getErrorDto(InvalidFormSchemaException e){
     return ErrorDtos.ClientErrorDto.newBuilder() //
       .setCode(getStatus().getStatusCode()) //
       .setMessageTemplate("server.error.data-access-form.invalid-schema") //

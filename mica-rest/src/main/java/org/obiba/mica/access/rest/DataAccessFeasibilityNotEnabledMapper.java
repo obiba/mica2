@@ -27,7 +27,7 @@ public class DataAccessFeasibilityNotEnabledMapper extends AbstractErrorDtoExcep
   }
 
   @Override
-  protected GeneratedMessage.ExtendableMessage<?> getErrorDto(DataAccessFeasibilityNotEnabled e) {
+  protected ErrorDtos.ClientErrorDto getErrorDto(DataAccessFeasibilityNotEnabled e) {
     return ErrorDtos.ClientErrorDto.newBuilder() //
       .setCode(getStatus().getStatusCode()) //
       .setMessageTemplate("server.error.data-access-feasibility.not-enabled") //

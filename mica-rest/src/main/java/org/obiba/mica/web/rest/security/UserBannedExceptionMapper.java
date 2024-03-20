@@ -10,7 +10,6 @@
 
 package org.obiba.mica.web.rest.security;
 
-import com.google.protobuf.GeneratedMessage;
 import org.obiba.jersey.exceptionmapper.AbstractErrorDtoExceptionMapper;
 import org.obiba.shiro.web.filter.UserBannedException;
 import org.obiba.web.model.ErrorDtos;
@@ -27,7 +26,7 @@ public class UserBannedExceptionMapper extends AbstractErrorDtoExceptionMapper<U
   }
 
   @Override
-  protected GeneratedMessage.ExtendableMessage<?> getErrorDto(UserBannedException e) {
+  protected ErrorDtos.ClientErrorDto getErrorDto(UserBannedException e) {
     return ErrorDtos.ClientErrorDto.newBuilder() //
       .setCode(getStatus().getStatusCode()) //
       .setMessageTemplate("error.userBanned") //

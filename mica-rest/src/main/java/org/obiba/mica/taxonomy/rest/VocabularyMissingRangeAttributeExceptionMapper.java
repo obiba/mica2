@@ -10,15 +10,13 @@
 
 package org.obiba.mica.taxonomy.rest;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Provider;
-
 import org.obiba.jersey.exceptionmapper.AbstractErrorDtoExceptionMapper;
 import org.obiba.mica.micaConfig.service.VocabularyMissingRangeAttributeException;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.obiba.web.model.ErrorDtos;
 
-import com.google.protobuf.GeneratedMessage;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.Provider;
 
 @Provider
 public class VocabularyMissingRangeAttributeExceptionMapper
@@ -30,7 +28,7 @@ public class VocabularyMissingRangeAttributeExceptionMapper
   }
 
   @Override
-  protected GeneratedMessage.ExtendableMessage<?> getErrorDto(VocabularyMissingRangeAttributeException e) {
+  protected ErrorDtos.ClientErrorDto getErrorDto(VocabularyMissingRangeAttributeException e) {
     Vocabulary vocabulary = e.getVocabulary();
     ErrorDtos.ClientErrorDto.Builder builder =
       ErrorDtos.ClientErrorDto.newBuilder().setCode(getStatus().getStatusCode());

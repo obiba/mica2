@@ -10,14 +10,12 @@
 
 package org.obiba.mica.access.rest;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Provider;
-
 import org.obiba.jersey.exceptionmapper.AbstractErrorDtoExceptionMapper;
 import org.obiba.mica.core.domain.NoSuchCommentException;
 import org.obiba.web.model.ErrorDtos;
 
-import com.google.protobuf.GeneratedMessage;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.Provider;
 
 @Provider
 public class NoSuchCommentExceptionMapper extends AbstractErrorDtoExceptionMapper<NoSuchCommentException> {
@@ -28,7 +26,7 @@ public class NoSuchCommentExceptionMapper extends AbstractErrorDtoExceptionMappe
   }
 
   @Override
-  protected GeneratedMessage.ExtendableMessage<?> getErrorDto(NoSuchCommentException e) {
+  protected ErrorDtos.ClientErrorDto getErrorDto(NoSuchCommentException e) {
     return ErrorDtos.ClientErrorDto.newBuilder() //
       .setCode(getStatus().getStatusCode()) //
       .setMessageTemplate("server.error.data-access-request.not-found") //

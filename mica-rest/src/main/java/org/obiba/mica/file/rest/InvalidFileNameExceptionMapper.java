@@ -10,14 +10,12 @@
 
 package org.obiba.mica.file.rest;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Provider;
-
 import org.obiba.jersey.exceptionmapper.AbstractErrorDtoExceptionMapper;
 import org.obiba.mica.file.InvalidFileNameException;
 import org.obiba.web.model.ErrorDtos;
 
-import com.google.protobuf.GeneratedMessage;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.Provider;
 
 @Provider
 public class InvalidFileNameExceptionMapper extends AbstractErrorDtoExceptionMapper<InvalidFileNameException> {
@@ -28,7 +26,7 @@ public class InvalidFileNameExceptionMapper extends AbstractErrorDtoExceptionMap
   }
 
   @Override
-  protected GeneratedMessage.ExtendableMessage<?> getErrorDto(InvalidFileNameException e) {
+  protected ErrorDtos.ClientErrorDto getErrorDto(InvalidFileNameException e) {
     return ErrorDtos.ClientErrorDto.newBuilder() //
       .setCode(getStatus().getStatusCode()) //
       .setMessageTemplate("server.error.file-system.invalid-filename") //

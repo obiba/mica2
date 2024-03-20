@@ -11,7 +11,6 @@
 package org.obiba.mica.search.rest;
 
 import com.google.common.util.concurrent.UncheckedTimeoutException;
-import com.google.protobuf.GeneratedMessage;
 import org.obiba.jersey.exceptionmapper.AbstractErrorDtoExceptionMapper;
 import org.obiba.web.model.ErrorDtos;
 
@@ -27,7 +26,7 @@ public class UncheckedTimeoutExceptionMapper extends AbstractErrorDtoExceptionMa
   }
 
   @Override
-  protected GeneratedMessage.ExtendableMessage<?> getErrorDto(UncheckedTimeoutException e) {
+  protected ErrorDtos.ClientErrorDto getErrorDto(UncheckedTimeoutException e) {
     return ErrorDtos.ClientErrorDto.newBuilder()
       .setCode(getStatus().getStatusCode())
       .setMessageTemplate("server.error.search.timeout")

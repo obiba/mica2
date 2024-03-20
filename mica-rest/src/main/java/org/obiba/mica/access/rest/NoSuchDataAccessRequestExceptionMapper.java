@@ -10,14 +10,12 @@
 
 package org.obiba.mica.access.rest;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Provider;
-
 import org.obiba.jersey.exceptionmapper.AbstractErrorDtoExceptionMapper;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.web.model.ErrorDtos;
 
-import com.google.protobuf.GeneratedMessage;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.Provider;
 
 @Provider
 public class NoSuchDataAccessRequestExceptionMapper
@@ -29,7 +27,7 @@ public class NoSuchDataAccessRequestExceptionMapper
   }
 
   @Override
-  protected GeneratedMessage.ExtendableMessage<?> getErrorDto(NoSuchDataAccessRequestException e) {
+  protected ErrorDtos.ClientErrorDto getErrorDto(NoSuchDataAccessRequestException e) {
     ErrorDtos.ClientErrorDto.Builder builder = ErrorDtos.ClientErrorDto.newBuilder() //
       .setCode(getStatus().getStatusCode()) //
       .setMessageTemplate("server.error.data-access-request.not-found") //

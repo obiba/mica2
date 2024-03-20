@@ -10,14 +10,12 @@
 
 package org.obiba.mica.taxonomy.rest;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Provider;
-
 import org.obiba.jersey.exceptionmapper.AbstractErrorDtoExceptionMapper;
 import org.obiba.mica.micaConfig.service.TaxonomyNotFoundException;
 import org.obiba.web.model.ErrorDtos;
 
-import com.google.protobuf.GeneratedMessage;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.Provider;
 
 @Provider
 public class TaxonomyNotFoundExceptionMapper extends AbstractErrorDtoExceptionMapper<TaxonomyNotFoundException> {
@@ -28,7 +26,7 @@ public class TaxonomyNotFoundExceptionMapper extends AbstractErrorDtoExceptionMa
   }
 
   @Override
-  protected GeneratedMessage.ExtendableMessage<?> getErrorDto(TaxonomyNotFoundException e) {
+  protected ErrorDtos.ClientErrorDto getErrorDto(TaxonomyNotFoundException e) {
     ErrorDtos.ClientErrorDto.Builder builder =
       ErrorDtos.ClientErrorDto.newBuilder().setCode(getStatus().getStatusCode());
 

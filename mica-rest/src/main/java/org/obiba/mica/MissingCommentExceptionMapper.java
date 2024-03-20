@@ -1,13 +1,11 @@
 package org.obiba.mica;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Provider;
-
 import org.obiba.jersey.exceptionmapper.AbstractErrorDtoExceptionMapper;
 import org.obiba.mica.core.service.MissingCommentException;
 import org.obiba.web.model.ErrorDtos;
 
-import com.google.protobuf.GeneratedMessage;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.Provider;
 
 @Provider
 public class MissingCommentExceptionMapper extends AbstractErrorDtoExceptionMapper<MissingCommentException> {
@@ -17,7 +15,7 @@ public class MissingCommentExceptionMapper extends AbstractErrorDtoExceptionMapp
   }
 
   @Override
-  protected GeneratedMessage.ExtendableMessage<?> getErrorDto(MissingCommentException e) {
+  protected ErrorDtos.ClientErrorDto getErrorDto(MissingCommentException e) {
     return ErrorDtos.ClientErrorDto.newBuilder()
       .setCode(getStatus().getStatusCode())
       .setMessageTemplate("server.error.document-comment")

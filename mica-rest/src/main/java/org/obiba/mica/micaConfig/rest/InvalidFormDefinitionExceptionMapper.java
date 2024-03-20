@@ -10,14 +10,12 @@
 
 package org.obiba.mica.micaConfig.rest;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Provider;
-
 import org.obiba.jersey.exceptionmapper.AbstractErrorDtoExceptionMapper;
 import org.obiba.mica.micaConfig.service.InvalidFormDefinitionException;
 import org.obiba.web.model.ErrorDtos;
 
-import com.google.protobuf.GeneratedMessage;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.Provider;
 
 @Provider
 public class InvalidFormDefinitionExceptionMapper extends AbstractErrorDtoExceptionMapper<InvalidFormDefinitionException> {
@@ -28,7 +26,7 @@ public class InvalidFormDefinitionExceptionMapper extends AbstractErrorDtoExcept
   }
 
   @Override
-  protected GeneratedMessage.ExtendableMessage<?> getErrorDto(InvalidFormDefinitionException e){
+  protected ErrorDtos.ClientErrorDto getErrorDto(InvalidFormDefinitionException e){
     return ErrorDtos.ClientErrorDto.newBuilder() //
       .setCode(getStatus().getStatusCode()) //
       .setMessageTemplate("server.error.data-access-form.invalid-definition") //

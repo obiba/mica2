@@ -10,7 +10,6 @@
 
 package org.obiba.mica.access.rest;
 
-import com.google.protobuf.GeneratedMessage;
 import org.obiba.jersey.exceptionmapper.AbstractErrorDtoExceptionMapper;
 import org.obiba.mica.micaConfig.DataAccessAgreementNotEnabled;
 import org.obiba.web.model.ErrorDtos;
@@ -27,7 +26,7 @@ public class DataAccessAgreementNotEnabledMapper extends AbstractErrorDtoExcepti
   }
 
   @Override
-  protected GeneratedMessage.ExtendableMessage<?> getErrorDto(DataAccessAgreementNotEnabled e) {
+  protected ErrorDtos.ClientErrorDto getErrorDto(DataAccessAgreementNotEnabled e) {
     return ErrorDtos.ClientErrorDto.newBuilder()
       .setCode(getStatus().getStatusCode())
       .setMessageTemplate("server.error.data-access-agreement.not-enabled")

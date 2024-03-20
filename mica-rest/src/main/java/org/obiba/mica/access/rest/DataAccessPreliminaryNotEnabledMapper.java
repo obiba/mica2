@@ -10,7 +10,6 @@
 
 package org.obiba.mica.access.rest;
 
-import com.google.protobuf.GeneratedMessage;
 import org.obiba.jersey.exceptionmapper.AbstractErrorDtoExceptionMapper;
 import org.obiba.mica.micaConfig.DataAccessPreliminaryNotEnabled;
 import org.obiba.web.model.ErrorDtos;
@@ -27,7 +26,7 @@ public class DataAccessPreliminaryNotEnabledMapper extends AbstractErrorDtoExcep
   }
 
   @Override
-  protected GeneratedMessage.ExtendableMessage<?> getErrorDto(DataAccessPreliminaryNotEnabled e) {
+  protected ErrorDtos.ClientErrorDto getErrorDto(DataAccessPreliminaryNotEnabled e) {
     return ErrorDtos.ClientErrorDto.newBuilder() //
       .setCode(getStatus().getStatusCode()) //
       .setMessageTemplate("server.error.data-access-preliminary.not-enabled") //
