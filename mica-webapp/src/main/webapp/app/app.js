@@ -170,6 +170,7 @@ mica
     }])
 
   .run(['$rootScope',
+    '$window',
     '$location',
     '$route',
     '$http',
@@ -183,6 +184,7 @@ mica
     '$cookies',
 
     function ($rootScope,
+              $window,
               $location,
               $route,
               $http,
@@ -216,7 +218,7 @@ mica
           $rootScope.routeToLogin = true;
           updateRedirect();
         }
-        $location.path('/login').replace();
+        $window.location.href = '../signin';
       }
 
       $rootScope.$on('$routeChangeStart', function (event, next) {

@@ -9,36 +9,4 @@
   -->
 
 <div>
-  <div class="row">
-    <div class="col-md-4"></div>
-    <div class="col-md-4">
-
-      <div class="alert alert-danger" ng-show="authenticationError && !userBannedError" translate="login.messages.error.authentication">
-      </div>
-      <div class="alert alert-danger" ng-show="userBannedError" translate="login.messages.error.userBanned">
-      </div>
-      <div class="well">
-        <form class="form" role="form">
-          <div class="form-group">
-            <label for="username"><span translate>login.form.username</span> </label>
-            <input type="text" class="form-control" id="username" placeholder="{{'login.form.username.placeholder' | translate}}" ng-model="username">
-          </div>
-          <div class="form-group">
-            <label for="password" translate="login.form.password">Password</label>
-            <input type="password" class="form-control" id="password" placeholder="{{'login.form.password.placeholder' | translate}}" ng-model="password">
-          </div>
-          <button type="submit" class="btn btn-info" ng-click="login()">
-            <span translate>login.form.button</span>
-          </button>
-        </form>
-        <div ng-if="providers">
-          <hr>
-          <div ng-repeat="provider in providers">
-            <a class="btn btn-info btn-block text-center voffset2" href="{{getRedirectUrl(provider.name)}}">{{'realm.oidc.signin-with' | translate}} {{provider.title}}</a>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4"></div>
-  </div>
 </div>
