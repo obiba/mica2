@@ -15,6 +15,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
+import org.json.JSONObject;
 import org.obiba.mica.config.JerseyConfiguration;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.service.DocumentSetService;
@@ -100,7 +101,14 @@ public class SessionsResource {
     } catch (UserBannedException e) {
       throw e;
     } catch (NoSuchOtpException e) {
-      return Response.status(Response.Status.UNAUTHORIZED).header("WWW-Authenticate", e.getOtpHeader()).build();
+      Response.ResponseBuilder builder = Response.status(Response.Status.UNAUTHORIZED).header("WWW-Authenticate", e.getOtpHeader());
+      if (e.hasQrImage()) {
+        JSONObject respObject = new JSONObject();
+        respObject.put("image", e.getQrImage());
+        builder.header("Content-type", "application/json")
+          .entity(respObject.toString());
+      }
+      return builder.build();
     } catch (AuthenticationException e) {
       log.info("Authentication failure of user '{}' at ip: '{}': {}", username, request.getRemoteAddr(),
         e.getMessage());

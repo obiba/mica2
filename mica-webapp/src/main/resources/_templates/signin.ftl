@@ -80,8 +80,15 @@
     </div>
     <!-- /.login-card-body -->
     <div id="2faCard" class="card-body 2fa-card-body" style="display: none;">
+      <div id="2faImage">
+        <div>
+          <@message "2fa-qrcode-instructions"/>
+        </div>
+        <div class="text-center">
+          <img id="qr-img" src="" style="width: 100%;"/>
+        </div>
+      </div>
       <p class="login-box-msg"><@message "2fa-caption"/></p>
-
       <div>
         <div class="input-group mb-3">
           <input id="otp" name="otp" type="number" class="form-control"/>

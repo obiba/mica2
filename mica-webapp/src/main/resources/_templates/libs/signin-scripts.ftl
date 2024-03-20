@@ -4,11 +4,19 @@
       $("#otp").val("");
       $("#signInCard").hide();
       $("#2faCard").show();
+      if (response.data?.image) {
+        $("#2faImage").show();
+        $("#qr-img").attr("src", response.data.image);
+      } else {
+        $("#2faImage").hide();
+      }
     } else {
       $("#otp").val("");
       $("#signInCard").show();
       $("#2faCard").hide();
-      var alertId = banned ? "#alertBanned" : "#alertFailure";
+      $("#2faImage").hide();
+      $("#qr-img").attr("src", "");
+      const alertId = banned ? "#alertBanned" : "#alertFailure";
       $(alertId).removeClass("d-none");
       setTimeout(function () {
         $(alertId).addClass("d-none");
@@ -24,6 +32,8 @@
     $("#otp").val("");
     $("#signInCard").show();
     $("#2faCard").hide();
+    $("#2faImage").hide();
+    $("#qr-img").attr("src", "");
   };
 
   $('#otp').keypress((e) => {
