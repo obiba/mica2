@@ -27,6 +27,7 @@ import org.obiba.mica.core.support.RegexHashMap;
 import org.obiba.mica.micaConfig.service.EntityConfigKeyTranslationService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 
+import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
@@ -49,17 +50,20 @@ public class PersonResource {
 
   private final StudyService studyService;
 
+  private final NetworkService networkService;
+
   private final EntityConfigKeyTranslationService entityConfigKeyTranslationService;
 
   private final MicaConfigService micaConfigService;
 
 
   @Inject
-  public PersonResource(Dtos dtos, PersonService personService, SubjectAclService subjectAclService, StudyService studyService, EntityConfigKeyTranslationService entityConfigKeyTranslationService, MicaConfigService micaConfigService) {
+  public PersonResource(Dtos dtos, PersonService personService, SubjectAclService subjectAclService, StudyService studyService, NetworkService networkService, EntityConfigKeyTranslationService entityConfigKeyTranslationService, MicaConfigService micaConfigService) {
     this.dtos = dtos;
     this.personService = personService;
     this.subjectAclService = subjectAclService;
     this.studyService = studyService;
+    this.networkService = networkService;
     this.entityConfigKeyTranslationService = entityConfigKeyTranslationService;
     this.micaConfigService = micaConfigService;
   }
@@ -88,9 +92,27 @@ public class PersonResource {
     return dtos.asDto(personService.save(dtos.fromDto(personDto)), true);
   }
 
+  @GET
+  @Path("/{id}/study/{studyId}")
+  public PersonDto getPersonForStudy(@PathParam("id") String id, @PathParam("studyId") String studyId) {
+    Person person = personService.findById(id);
+
+    if (person == null) {
+      throw new NotFoundException("Person with id \"" + id + "\" not found.");
+    }
+
+    if (studyService.isCollectionStudy(studyId)) {
+      subjectAclService.checkPermission("/draft/individual-study", "EDIT", studyId);
+    } else {
+      subjectAclService.checkPermission("/draft/harmonization-study", "EDIT", studyId);
+    }
+
+    return dtos.asDto(person, true);
+  }
+
   @DELETE
   @Path("/{id}/study/{studyId}")
-  public PersonDto removePersonForStudy(@PathParam("id") String id, @PathParam("studyId") String studyId, @QueryParam("role") String role) {
+  public PersonDto removeStudyFromPerson(@PathParam("id") String id, @PathParam("studyId") String studyId, @QueryParam("role") String role) {
     Person person = personService.findById(id);
 
     if (studyService.isCollectionStudy(studyId)) {
@@ -104,7 +126,7 @@ public class PersonResource {
   }
   @PUT
   @Path("/{id}/study/{studyId}")
-  public PersonDto updatePersonForStudy(@PathParam("id") String id, @PathParam("studyId") String studyId, @QueryParam("role") String role) {
+  public PersonDto updatePersonWithStudy(@PathParam("id") String id, @PathParam("studyId") String studyId, @QueryParam("role") String role) {
     Person person = personService.findById(id);
     if (!micaConfigService.getRoles().contains(role)) {
       throw new IllegalArgumentException(String.format("'%s' is not a valid role", role));
@@ -116,16 +138,27 @@ public class PersonResource {
       subjectAclService.checkPermission("/draft/harmonization-study", "EDIT", studyId);
     }
 
-    if (!person.getStudyMemberships().stream().anyMatch(m -> m.getParentId().equals(studyId))) {
-      person.getStudyMemberships().add(new Person.Membership(studyId, role));
-    }
+    person.addStudy(studyService.findStudy(studyId), role);
 
     return dtos.asDto(personService.save(person), true);
   }
 
+  @GET
+  @Path("/{id}/network/{networkId}")
+  public PersonDto getPersonForNetwork(@PathParam("id") String id, @PathParam("networkId") String networkId) {
+    Person person = personService.findById(id);
+
+    if (person == null) {
+      throw new NotFoundException("Person with id \"" + id + "\" not found.");
+    }
+
+    subjectAclService.checkPermission("/draft/network", "EDIT", networkId);
+    return dtos.asDto(person, true);
+  }
+
   @DELETE
   @Path("/{id}/network/{networkId}")
-  public PersonDto removePersonForNetwork(@PathParam("id") String id, @PathParam("networkId") String networkId, @QueryParam("role") String role) {
+  public PersonDto removeNetworkFromPerson(@PathParam("id") String id, @PathParam("networkId") String networkId, @QueryParam("role") String role) {
     Person person = personService.findById(id);
     subjectAclService.checkPermission("/draft/network", "EDIT", networkId);
     person.getNetworkMemberships().removeIf(m -> m.getParentId().equals(networkId));
@@ -134,18 +167,14 @@ public class PersonResource {
 
   @PUT
   @Path("/{id}/network/{networkId}")
-  public PersonDto updatePersonForNetwork(@PathParam("id") String id, @PathParam("networkId") String networkId, @QueryParam("role") String role) {
+  public PersonDto updatePersonWithNetwork(@PathParam("id") String id, @PathParam("networkId") String networkId, @QueryParam("role") String role) {
     Person person = personService.findById(id);
     if (!micaConfigService.getRoles().contains(role)) {
       throw new IllegalArgumentException(String.format("'%s' is not a valid role", role));
     }
 
     subjectAclService.checkPermission("/draft/network", "EDIT", networkId);
-
-    if (!person.getNetworkMemberships().stream().anyMatch(m -> m.getParentId().equals(networkId))) {
-      person.getNetworkMemberships().add(new Person.Membership(networkId, role));
-    }
-
+    person.addNetwork(networkService.findById(networkId), role);
     return dtos.asDto(personService.save(person), true);
   }
 
