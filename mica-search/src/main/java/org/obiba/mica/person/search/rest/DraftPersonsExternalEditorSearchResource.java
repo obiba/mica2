@@ -9,21 +9,76 @@
  */
 
 package org.obiba.mica.person.search.rest;
-import org.apache.shiro.authz.annotation.Logical;
-import org.obiba.mica.security.Roles;
+
+import com.codahale.metrics.annotation.Timed;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.obiba.mica.security.Roles;
+import org.obiba.mica.web.model.Mica;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.util.List;
 
 @Path("/draft/persons/external/_search")
 @RequiresAuthentication
-@RequiresRoles(value = {Roles.MICA_ADMIN, Roles.MICA_EXTERNAL_EDITOR}, logical = Logical.OR)
 @Scope("request")
 @Component
 public class DraftPersonsExternalEditorSearchResource extends AbstractPersonsSearchResource {
+
+  @GET
+  @Timed
+  public Mica.PersonsDto query(@QueryParam("from") @DefaultValue("0") int from,
+                               @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") @DefaultValue(DEFAULT_SORT) String sort,
+                               @QueryParam("order") @DefaultValue("asc") String order, @QueryParam("query") String query,
+                               @QueryParam("exclude") List<String> excludes) throws IOException {
+
+    if (!SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN) && !SecurityUtils.getSubject().hasRole(Roles.MICA_EXTERNAL_EDITOR)) {
+      throw new AuthorizationException();
+    }
+
+    return super.query(from, limit, sort, order, query, excludes);
+
+  }
+
+  @GET
+  @Timed
+  @Produces("text/csv")
+  public Response queryCSV(@QueryParam("from") @DefaultValue("0") int from,
+                           @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") @DefaultValue(DEFAULT_SORT) String sort,
+                           @QueryParam("order") @DefaultValue("asc") String order, @QueryParam("query") String query,
+                           @QueryParam("exclude") List<String> excludes) throws IOException {
+
+    if (!SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN) && !SecurityUtils.getSubject().hasRole(Roles.MICA_EXTERNAL_EDITOR)) {
+      throw new AuthorizationException();
+    }
+
+    return super.queryCSV(from, limit, sort, order, query, excludes);
+  }
+
+  @GET
+  @Path("/_download")
+  @Timed
+  @Produces("text/csv")
+  public Response downloadQueryCSV(@QueryParam("from") @DefaultValue("0") int from,
+                                   @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") @DefaultValue(DEFAULT_SORT) String sort,
+                                   @QueryParam("order") @DefaultValue("asc") String order, @QueryParam("query") String query,
+                                   @QueryParam("exclude") List<String> excludes) throws IOException {
+
+    if (!SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN) && !SecurityUtils.getSubject().hasRole(Roles.MICA_EXTERNAL_EDITOR)) {
+      throw new AuthorizationException();
+    }
+
+    return super.downloadQueryCSV(from, limit, sort, order, query, excludes);
+  }
 
   @Override
   protected boolean isDraft() {
