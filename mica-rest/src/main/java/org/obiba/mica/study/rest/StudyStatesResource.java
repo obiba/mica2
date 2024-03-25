@@ -39,13 +39,19 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
+
+@Component
 @Path("/draft")
+@Scope("request")
 public class StudyStatesResource {
 
   private static final int MAX_LIMIT = 10000; //default ElasticSearch limit
