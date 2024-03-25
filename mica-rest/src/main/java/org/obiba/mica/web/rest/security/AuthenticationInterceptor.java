@@ -21,11 +21,14 @@ import org.apache.shiro.session.Session;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 
 import jakarta.annotation.Priority;
+import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.List;
 
 @Priority(Integer.MIN_VALUE)
+@Component
 public class AuthenticationInterceptor implements ContainerResponseFilter {
 
   private static final String MICA_SESSION_ID_COOKIE_NAME = "micasid";
