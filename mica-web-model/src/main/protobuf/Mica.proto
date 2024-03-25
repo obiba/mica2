@@ -848,7 +848,7 @@ message DataAccessAmendmentDto {
   required string parentId = 1;
 
   extend DataAccessRequestDto {
-    required DataAccessAmendmentDto amendment = 1000;
+    optional DataAccessAmendmentDto amendment = 1000;
   }
 }
 
@@ -856,7 +856,7 @@ message DataAccessFeasibilityDto {
   required string parentId = 1;
 
   extend DataAccessRequestDto {
-    required DataAccessFeasibilityDto feasibility = 1001;
+    optional DataAccessFeasibilityDto feasibility = 1001;
   }
 }
 
@@ -864,7 +864,7 @@ message DataAccessAgreementDto {
   required string parentId = 1;
 
   extend DataAccessRequestDto {
-    required DataAccessAgreementDto agreement = 1002;
+    optional DataAccessAgreementDto agreement = 1002;
   }
 }
 
@@ -872,7 +872,7 @@ message DataAccessPreliminaryDto {
   required string parentId = 1;
 
   extend DataAccessRequestDto {
-    required DataAccessPreliminaryDto preliminary = 1003;
+    optional DataAccessPreliminaryDto preliminary = 1003;
   }
 }
 
@@ -901,7 +901,7 @@ message DataAccessRequestSummaryDto {
 
 message DataAccessAmendmentSummaryDto {
   extend DataAccessRequestSummaryDto {
-    required string parentId = 1000;
+    optional string parentId = 1000;
   }
 }
 
