@@ -42,7 +42,7 @@
               <goal>run</goal>
             </goals>
             <configuration>
-              <protocVersion>2.5.0</protocVersion>
+              <protocVersion>${protobuf.version}</protocVersion>
               <inputDirectories>
                 <include>src/main/protobuf</include>
               </inputDirectories>
@@ -50,10 +50,6 @@
                 <outputTarget>
                   <type>java</type>
                   <outputDirectory>${project.build.directory}/generated-sources/protobuf-java</outputDirectory>
-                </outputTarget>
-                <outputTarget>
-                  <type>python</type>
-                  <outputDirectory>${project.build.directory}/generated-sources/protobuf-python</outputDirectory>
                 </outputTarget>
               </outputTargets>
             </configuration>
@@ -74,32 +70,11 @@
             <configuration>
               <sources>
                 <source>${project.build.directory}/generated-sources/protobuf-java</source>
-                <source>${project.build.directory}/generated-sources/protobuf-python</source>
               </sources>
             </configuration>
           </execution>
         </executions>
       </plugin>
-
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptors>
-            <descriptor>src/main/assembly/protobuf-python.xml</descriptor>
-          </descriptors>
-          <filters />
-        </configuration>
-        <executions>
-          <execution>
-            <id>make-assembly</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
     </plugins>
   </build>
 
