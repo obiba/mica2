@@ -329,8 +329,6 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       Mica.StudyDto.Builder builder = Mica.StudyDto.newBuilder();
       Readable input = new InputStreamReader(inputStream, Charsets.UTF_8);
       ExtensionRegistry extensionRegistry = ExtensionRegistry.newInstance();
-      extensionRegistry .add(Mica.CollectionStudyDto.type);
-      extensionRegistry .add(Mica.HarmonizationStudyDto.type);
       JsonFormat.merge(input, extensionRegistry, builder);
       List<Attachment> atts = extractAttachments(builder);
       BaseStudy study = dtos.fromDto( builder);

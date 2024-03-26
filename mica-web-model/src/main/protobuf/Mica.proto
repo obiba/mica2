@@ -168,24 +168,17 @@ message StudyDto {
   optional string studyResourcePath = 32;
   repeated MembershipSortOrderDto membershipSortOrder = 33;
   repeated AttributeDto attributes = 34;
+  required StudyTye type = 35;
 
-  extensions 1000 to max;
+  // Used in case of harmonization studies
+  repeated DatasetDto.StudyTableDto studyTables = 36;
+  repeated DatasetDto.HarmonizationTableDto harmonizationTables = 37;
+
 }
 
-
-message CollectionStudyDto {
-  extend StudyDto {
-    optional CollectionStudyDto type = 1000;
-  }
-}
-
-message HarmonizationStudyDto {
-  repeated DatasetDto.StudyTableDto studyTables = 1;
-  repeated DatasetDto.HarmonizationTableDto harmonizationTables = 2;
-
-  extend StudyDto {
-    optional HarmonizationStudyDto type = 1001;
-  }
+enum StudyTye {
+  INDIVIDUAL = 0;
+  HARMONIZATION = 1;
 }
 
 enum OpalCredentialType {
