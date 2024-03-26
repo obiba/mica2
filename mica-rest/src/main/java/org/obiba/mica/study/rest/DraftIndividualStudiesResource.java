@@ -36,8 +36,12 @@ import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
 
 import com.codahale.metrics.annotation.Timed;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+@Component
 @Path("/draft")
+@Scope("request")
 public class DraftIndividualStudiesResource {
 
   @Inject

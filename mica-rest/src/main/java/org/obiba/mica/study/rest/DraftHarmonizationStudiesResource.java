@@ -38,8 +38,12 @@ import org.springframework.context.ApplicationContext;
 
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.eventbus.EventBus;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+@Component
 @Path("/draft")
+@Scope("request")
 public class DraftHarmonizationStudiesResource {
 
   @Inject
