@@ -586,10 +586,10 @@ class DatasetsResultParser {
         : taxonomyFilter.apply(null, ['Mica_dataset.className.StudyDataset']) ;
 
       let opalTable = dataset.variableType === 'Dataschema'
-        ? (dataset['obiba.mica.HarmonizedDatasetDto.type'] || {}).harmonizationTable
-        : (dataset['obiba.mica.CollectedDatasetDto.type'] || {}).studyTable;
+        ? dataset.harmonizationTable
+        : dataset.studyTable;
 
-      const stats = dataset['obiba.mica.CountStatsDto.datasetCountStats'] || {};
+      const stats = dataset.countStats || {};
       let anchor = (type, value) => `<a href="" class="query-anchor" data-target="dataset" data-target-id="${dataset.id}" data-type="${type}">${value.toLocaleString(this.locale)}</a>`;
 
       (displayOptions[columnKey] || displayOptions.datasetColumns).forEach(column => {

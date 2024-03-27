@@ -370,7 +370,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       Mica.DatasetDto.Builder builder = Mica.DatasetDto.newBuilder();
       Readable input = new InputStreamReader(inputStream, Charsets.UTF_8);
       JsonFormat.merge(input, builder);
-      return dtos.fromDto(builder);
+      return dtos.fromDto(builder.build());
     }
 
     private byte[] readBytes(ZipInputStream zipIn) throws IOException {

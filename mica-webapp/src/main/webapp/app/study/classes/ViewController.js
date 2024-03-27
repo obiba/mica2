@@ -101,7 +101,7 @@ mica.study.BaseViewController = function (
   };
 
   self.initializeState = function (state) {
-    $scope.permissions = DocumentPermissionsService.state(state['obiba.mica.EntityStateDto.studySummaryState']);
+    $scope.permissions = DocumentPermissionsService.state(state.state);
   };
 
   self.onRestore = function (event, args) {

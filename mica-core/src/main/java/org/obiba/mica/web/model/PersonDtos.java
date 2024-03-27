@@ -25,6 +25,7 @@ import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
@@ -150,10 +151,7 @@ class PersonDtos {
       if(study != null) {
         builder.addAllParentAcronym(localizedStringDtos.asDto(study.getAcronym()));
         builder.addAllParentName(localizedStringDtos.asDto(study.getName()));
-        builder.setExtension(
-          Mica.PersonDto.StudyMembershipDto.meta,
-          Mica.PersonDto.StudyMembershipDto.newBuilder().setType(study.getResourcePath()).build()
-        );
+        builder.setType(study instanceof Study ? Mica.PersonDto.Type.STUDY : Mica.PersonDto.Type.INITIATIVE);
       }
     }
 
@@ -172,6 +170,7 @@ class PersonDtos {
       if(network != null) {
         builder.addAllParentAcronym(localizedStringDtos.asDto(network.getAcronym()));
         builder.addAllParentName(localizedStringDtos.asDto(network.getName()));
+        builder.setType(Mica.PersonDto.Type.NETWORK);
       }
     }
 

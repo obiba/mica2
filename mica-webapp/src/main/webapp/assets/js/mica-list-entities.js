@@ -830,7 +830,7 @@ class ObibaDatasetsApp {
           return MicaService.normalizeUrl(`/${this.searchModeFromStudyType(studyType)}#lists?type=variables&query=study(${studyQuery}),dataset(in(Mica_dataset.id,${dataset.id}))`);
         },
         hasStats: function(dataset) {
-          const countStats = dataset['obiba.mica.CountStatsDto.datasetCountStats'];
+          const countStats = dataset.countStats;
           return countStats.variables + countStats.studies + countStats.networks > 0
         },
         getResultDtoField: function () {

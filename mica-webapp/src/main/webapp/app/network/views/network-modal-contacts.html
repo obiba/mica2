@@ -49,7 +49,7 @@
           </td>
           <td>
             <span ng-repeat="membership in person.studyMemberships">
-              <a ng-href="#/{{membership['obiba.mica.PersonDto.StudyMembershipDto.meta'].type}}/{{membership.parentId}}" ng-click="cancel()">
+              <a ng-href="#/{{PersonTypeToResourceMap[membership.type]}}/{{membership.parentId}}" ng-click="cancel()">
                 <localized value="membership.parentAcronym" lang="lang"></localized>
               </a>
               (<em>{{'contact.label.' + membership.role | translate}}</em>)<span ng-if="!$last">,</span>

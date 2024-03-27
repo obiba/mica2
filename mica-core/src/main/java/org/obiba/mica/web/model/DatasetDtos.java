@@ -80,9 +80,8 @@ class DatasetDtos {
 
     if(dataset.hasStudyTable() && !Strings.isNullOrEmpty(dataset.getStudyTable().getStudyId()) &&
       isStudyTablePermitted(asDraft, "individual", dataset.getStudyTable().getStudyId())) {
-      Mica.CollectedDatasetDto.Builder sbuilder = Mica.CollectedDatasetDto.newBuilder()
-        .setStudyTable(asDto(dataset.getStudyTable(), studySummary));
-      builder.setExtension(Mica.CollectedDatasetDto.type, sbuilder.build());
+      builder.setType(Mica.DatasetType.COLLECTED);
+      builder.setStudyTable(asDto(dataset.getStudyTable(), studySummary));
     }
 
     Mica.PermissionsDto permissionsDto = permissionsDtos.asDto(dataset);
@@ -92,10 +91,7 @@ class DatasetDtos {
       if(state.isPresent()) {
         builder.setPublished(state.get().isPublished());
         Mica.EntityStateDto.Builder stateBuilder = entityStateDtos.asDto(state.get()).setPermissions(permissionsDto);
-        builder.setExtension(
-          Mica.EntityStateDto.datasetState,
-          stateBuilder.setPermissions(permissionsDto).setRequireIndexing(state.get().isRequireIndexing()).build()
-        );
+        builder.setState(stateBuilder.setPermissions(permissionsDto).setRequireIndexing(state.get().isRequireIndexing()).build());
       }
     }
 
@@ -118,35 +114,32 @@ class DatasetDtos {
     Mica.DatasetDto.Builder builder = asBuilder(dataset);
     builder.setVariableType(DatasetVariable.Type.Dataschema.name());
 
-    Mica.HarmonizedDatasetDto.Builder hbuilder = Mica.HarmonizedDatasetDto.newBuilder();
-
     if(dataset.hasHarmonizationTable() && !Strings.isNullOrEmpty(dataset.getHarmonizationTable().getStudyId()) &&
       isStudyTablePermitted(asDraft, "harmonization", dataset.getHarmonizationTable().getStudyId())) {
-      hbuilder.setHarmonizationTable(
+      builder.setHarmonizationTable(
         createHarmonizationLinkDtoFromHarmonizationTable(dataset.getHarmonizationTable(), asDraft));
     }
 
     if(!dataset.getStudyTables().isEmpty()) {
       dataset.getStudyTables().stream()
         .filter(studyTable -> isStudyTablePermitted(asDraft, "individual", studyTable.getStudyId()))
-        .forEach(studyTable -> hbuilder.addStudyTables(asDto(studyTable, studySummary)));
+        .forEach(studyTable -> builder.addStudyTables(asDto(studyTable, studySummary)));
     }
 
     if(!dataset.getHarmonizationTables().isEmpty()) {
       dataset.getHarmonizationTables().stream()
         .filter(studyTable -> isStudyTablePermitted(asDraft, "harmonization", studyTable.getStudyId()))
-        .forEach(harmonizationTable -> hbuilder.addHarmonizationTables(asDto(harmonizationTable, studySummary)));
+        .forEach(harmonizationTable -> builder.addHarmonizationTables(asDto(harmonizationTable, studySummary)));
     }
 
-    builder.setExtension(Mica.HarmonizedDatasetDto.type, hbuilder.build());
+    builder.setType(Mica.DatasetType.PROTOCOL);
 
     Mica.PermissionsDto permissionsDto = permissionsDtos.asDto(dataset);
     if(asDraft) {
       Optional<HarmonizationDatasetState> state = harmonizationDatasetStateRepository.findById(dataset.getId());
       if(state.isPresent()) {
         builder.setPublished(state.get().isPublished());
-        builder.setExtension(Mica.EntityStateDto.datasetState,
-          entityStateDtos.asDto(state.get()).setPermissions(permissionsDto).build());
+        builder.setState(entityStateDtos.asDto(state.get()).setPermissions(permissionsDto).build());
       }
     }
 
@@ -525,14 +518,14 @@ class DatasetDtos {
   }
 
   @NotNull
-  public Dataset fromDto(Mica.DatasetDtoOrBuilder dto) {
-    Dataset dataset = dto.hasExtension(Mica.HarmonizedDatasetDto.type)
-      ? fromDto(dto.getExtension(Mica.HarmonizedDatasetDto.type))
-      : dto.hasExtension(Mica.CollectedDatasetDto.type)
-        ? fromDto(dto.getExtension(Mica.CollectedDatasetDto.type))
+  public Dataset fromDto(Mica.DatasetDto dto) {
+    Dataset dataset = Mica.DatasetType.PROTOCOL == dto.getType()
+      ? fromProtocolDto(dto)
+      : Mica.DatasetType.COLLECTED == dto.getType()
+        ? fromCollectedDto(dto)
         : new StudyDataset();
 
-    if(dto.hasId()) dataset.setId(dto.getId());
+    if(dto.hasId()) dataset.setId(dto.getId() );
     dataset.setAcronym(localizedStringDtos.fromDto(dto.getAcronymList()));
     dataset.setName(localizedStringDtos.fromDto(dto.getNameList()));
     dataset.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
@@ -548,7 +541,7 @@ class DatasetDtos {
     return dataset;
   }
 
-  private Dataset fromDto(@NotNull Mica.HarmonizedDatasetDto dto) {
+  private Dataset fromProtocolDto(@NotNull Mica.DatasetDto dto) {
     Assert.notNull(dto, "HarmonizationDataset dt cannot be null.");
     HarmonizationDataset harmonizationDataset = new HarmonizationDataset();
 
@@ -575,7 +568,7 @@ class DatasetDtos {
     return harmonizationDataset;
   }
 
-  private Dataset fromDto(@NotNull Mica.CollectedDatasetDto dto) {
+  private Dataset fromCollectedDto(@NotNull Mica.DatasetDto dto) {
     Assert.notNull(dto, "StudyDataset dt cannot be null.");
     StudyDataset studyDataset = new StudyDataset();
     Optional.ofNullable(dto).ifPresent(ext -> studyDataset.setStudyTable(fromDto(ext.getStudyTable())));

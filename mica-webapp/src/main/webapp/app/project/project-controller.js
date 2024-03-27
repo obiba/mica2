@@ -270,7 +270,7 @@ mica.project
       }
 
       function initializeProject(project) {
-        $scope.permissions = DocumentPermissionsService.state(project['obiba.mica.EntityStateDto.projectState']);
+        $scope.permissions = DocumentPermissionsService.state(project.state);
       }
 
       $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3, Comment: 4};

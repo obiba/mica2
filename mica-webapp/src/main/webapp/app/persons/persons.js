@@ -82,11 +82,11 @@ mica.persons
             entity.acronym = LocalizedValues.forLang(membership.parentAcronym, lang);
             entity.name = LocalizedValues.forLang(membership.parentName, lang);
             entity.roles = [$filter('translate')(`contact.label.${membership.role}`)];
-            if ('obiba.mica.PersonDto.StudyMembershipDto.meta' in membership) {
-              entity.url = `/${membership['obiba.mica.PersonDto.StudyMembershipDto.meta'].type}/${entity.id}`;
-            } else {
-              entity.url = `/network/${entity.id}`;
+            const resourceUrl = mica.commons.consts.PersonTypeToResourceMap[membership.type];
+            if (!resourceUrl) {
+              throw new Error(`Invalid membership type ${membership.type}`);
             }
+            entity.url = `/${resourceUrl}/${entity.id}`;
           } else {
             entity.roles = [].concat([$filter('translate')(`contact.label.${membership.role}`)], entity.roles).sort();
           }

@@ -37,6 +37,7 @@ mica.contact
       $scope.close = function () {
         $uibModalInstance.dismiss('close');
       };
+      $scope.PersonTypeToResourceMap = mica.commons.consts.PersonTypeToResourceMap;
     }])
 
   .controller('ContactEditModalController', ['$scope',

@@ -343,7 +343,7 @@ public class StudiesImportResource {
 	private Study saveIndividualStudy(String id, String remoteContent,
 			Mica.StudyDto.Builder builder, ExtensionRegistry extensionRegistry, List<String> listDiffsForm) throws ParseException {
 
-    builder.setType(Mica.StudyTye.INDIVIDUAL);
+    builder.setType(Mica.StudyType.STUDY);
 		JsonFormat.merge(remoteContent, extensionRegistry, builder);
 
 		Mica.StudyDtoOrBuilder dtoBuilder = (Mica.StudyDtoOrBuilder)builder;
@@ -424,7 +424,7 @@ public class StudiesImportResource {
 	private HarmonizationStudy saveHarmonizationStudy(String id, String remoteContent,
 			Mica.StudyDto.Builder builder, ExtensionRegistry extensionRegistry, List<String> listDiffsForm) throws ParseException {
 
-		builder.setType(Mica.StudyTye.HARMONIZATION);
+		builder.setType(Mica.StudyType.INITIATIVE);
 		JsonFormat.merge(remoteContent, extensionRegistry, builder);
 
 		Mica.StudyDtoOrBuilder dtoBuilder = (Mica.StudyDtoOrBuilder)builder;

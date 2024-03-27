@@ -106,11 +106,11 @@
         this.memberships.studies =
           this.EntityMembershipService.groupRolesByEntity(
             'studies',
-            this.person.studyMemberships.filter(membership => membership['obiba.mica.PersonDto.StudyMembershipDto.meta'].type ==='individual-study'));
+            this.person.studyMemberships.filter(membership => membership.type === mica.commons.consts.PersonTypeNames.STUDY));
 
         this.memberships.initiatives = this.EntityMembershipService.groupRolesByEntity(
           'initiatives',
-          this.person.studyMemberships.filter(membership => membership['obiba.mica.PersonDto.StudyMembershipDto.meta'].type !=='individual-study'));
+          this.person.studyMemberships.filter(membership => membership.type === mica.commons.consts.PersonTypeNames.INITIATIVE));
       }
     }
 
@@ -196,7 +196,7 @@
           };
 
           if ('study' === entityType) {
-            membership['obiba.mica.PersonDto.StudyMembershipDto.meta'] = {type: entity.studyResourcePath};
+            membership.type = mica.commons.consts.PersonResourceToTypeMap[entity.studyResourcePath];
           }
           entityMemberships.push(membership);
         });

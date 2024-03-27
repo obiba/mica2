@@ -65,7 +65,7 @@ public class CsvPersonsWriter {
     List<Mica.PersonDto.MembershipDto> initiativesMemberships = new ArrayList<>();
       studyMembershipsList.stream()
       .forEach(m -> {
-        if (Study.RESOURCE_PATH.equals(m.getExtension(Mica.PersonDto.StudyMembershipDto.meta).getType())) {
+        if (Mica.PersonDto.Type.STUDY.equals(m.getType())) {
           studiesMemberships.add(m);
         } else {
           initiativesMemberships.add(m);

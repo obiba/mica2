@@ -208,6 +208,7 @@ mica.network
       $scope.network = network;
       $scope.lang = lang;
       $scope.persons = [];
+      $scope.PersonTypeToResourceMap = mica.commons.consts.PersonTypeToResourceMap;
 
       var studyIds = network.studyIds ? network.studyIds.concat([]) : [];
       var networkIds = network.networkIds ? network.networkIds.concat([]) : [];
@@ -354,7 +355,7 @@ mica.network
           $scope.logoUrl = contextPath + '/ws/draft/network/'+network.id+'/file/'+network.logo.id+'/_download';
         }
 
-        $scope.permissions = DocumentPermissionsService.state(network['obiba.mica.EntityStateDto.state']);
+        $scope.permissions = DocumentPermissionsService.state(network.state);
         $scope.studySummaries = [];
         $scope.initiativeSummaries = [];
 

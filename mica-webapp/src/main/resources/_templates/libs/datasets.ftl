@@ -127,7 +127,7 @@
               <div class="row pt-1 row-cols-3">
                 <template v-if="hasStats(dataset)">
                   <stat-item
-                    v-bind:count="dataset['obiba.mica.CountStatsDto.datasetCountStats'].networks"
+                    v-bind:count="dataset.countStats.networks"
                     v-bind:singular="'network' | translate"
                     v-bind:plural="'networks' | translate"
                     v-bind:url="networks(dataset)">
@@ -135,12 +135,12 @@
                   <study-stat-item
                     v-bind:url="studies(dataset)"
                     v-bind:type="dataset.variableType"
-                    v-bind:stats="dataset['obiba.mica.CountStatsDto.datasetCountStats']">
+                    v-bind:stats="dataset.countStats">
                   </study-stat-item>
                   <variable-stat-item
                     v-bind:url="variablesUrl(dataset)"
                     v-bind:type="dataset.variableType"
-                    v-bind:stats="dataset['obiba.mica.CountStatsDto.datasetCountStats']">
+                    v-bind:stats="dataset.countStats">
                   </variable-stat-item>
                 </template>
                 <template v-else>

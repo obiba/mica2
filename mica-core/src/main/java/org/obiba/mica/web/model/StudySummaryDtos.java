@@ -289,7 +289,7 @@ class StudySummaryDtos {
 
     builder.setPublished(studyState.isPublished());
 
-    return builder.setExtension(Mica.EntityStateDto.studySummaryState, stateBuilder.build()).build();
+    return builder.setState(stateBuilder.build()).build();
   }
 
   @NotNull

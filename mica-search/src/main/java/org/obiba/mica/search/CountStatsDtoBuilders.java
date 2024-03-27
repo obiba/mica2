@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
-import static org.obiba.mica.web.model.MicaSearch.CountStatsDto;
+import static org.obiba.mica.web.model.Mica.CountStatsDto;
 
 
 public class CountStatsDtoBuilders {

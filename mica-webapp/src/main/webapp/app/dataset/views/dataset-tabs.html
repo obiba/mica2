@@ -20,7 +20,7 @@
     <li ng-class="{'active': tabName === 'comments'}">
       <a href="#/{{type}}/{{dataset.id}}/comments" title="{{'comments' | translate}}"><i class="fa fa-comments"></i></a>
     </li>
-    <li ng-class="{'active': tabName === 'permissions'}" ng-if="dataset['obiba.mica.EntityStateDto.datasetState'].permissions.publish">
+    <li ng-class="{'active': tabName === 'permissions'}" ng-if="dataset.state.permissions.publish">
       <a href="#/{{type}}/{{dataset.id}}/permissions" title="{{'permissions' | translate}}"><i class="fa fa-lock"></i></a>
     </li>
   </ul>

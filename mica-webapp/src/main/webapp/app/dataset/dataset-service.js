@@ -255,6 +255,7 @@ mica.dataset
     };
 
     factory.addUpdateTable = function(dataset, tableType, wrapper, newTable) {
+      dataset.type = 'PROTOCOL';
       if (angular.isDefined(wrapper)) {
         if (wrapper.type !== tableType) {
           this.deleteTable(dataset, wrapper);
@@ -270,24 +271,22 @@ mica.dataset
     };
 
     factory.setTable = function(dataset, newTable) {
-      if (!dataset['obiba.mica.CollectedDatasetDto.type']) {
-        dataset['obiba.mica.CollectedDatasetDto.type'] = {};
-      }
-      dataset['obiba.mica.CollectedDatasetDto.type'].studyTable = newTable;
+      dataset.type = 'COLLECTED';
+      dataset.studyTable = newTable;
     };
 
     factory.getTables = function getOpalTables(dataset) {
       tableWrappers = [];
 
-      if (dataset['obiba.mica.HarmonizedDatasetDto.type'].studyTables) {
-        tableWrappers = dataset['obiba.mica.HarmonizedDatasetDto.type'].studyTables.map(function (studyTable) {
+      if (dataset.studyTables) {
+        tableWrappers = dataset.studyTables.map(function (studyTable) {
           return {type: mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE, table: studyTable};
         });
       }
 
-      if (dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTables) {
+      if (dataset.harmonizationTables) {
         tableWrappers = tableWrappers.concat(
-          dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTables.map(function (harmonizationTable) {
+          dataset.harmonizationTables.map(function (harmonizationTable) {
             return {type: mica.dataset.OPAL_TABLE_TYPES.HARMONIZATION_TABLE, table: harmonizationTable};
           })
         );
@@ -309,7 +308,7 @@ mica.dataset
         tables.splice(index, 1);
         if (tables.length === 0) {
           var tablesName = wrapper.type === mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE ? 'studyTables' : 'harmonizationTables';
-          dataset['obiba.mica.HarmonizedDatasetDto.type'][tablesName] = undefined;
+          dataset[tablesName] = undefined;
         }
 
         tableWrappers.splice(wrapperIndex, 1);
@@ -372,12 +371,12 @@ mica.dataset
         serializeOpalTableForRestoringFields(datasetCopy);
       }
 
-      if (typeof dataset['obiba.mica.HarmonizedDatasetDto.type'] === 'object') {
-        datasetCopy['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTables = (dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTables || []).map(serializeTableSource);
-        datasetCopy['obiba.mica.HarmonizedDatasetDto.type'].studyTables = (dataset['obiba.mica.HarmonizedDatasetDto.type'].studyTables || []).map(serializeTableSource);
-        datasetCopy['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable = serializeTableSource(dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable || {});
-      } else if (typeof dataset['obiba.mica.CollectedDatasetDto.type'] === 'object') {
-        datasetCopy['obiba.mica.CollectedDatasetDto.type'].studyTable = serializeTableSource(dataset['obiba.mica.CollectedDatasetDto.type'].studyTable || {});
+      if (dataset.type === 'PROTOCOL') {
+        datasetCopy.harmonizationTables = (dataset.harmonizationTables || []).map(serializeTableSource);
+        datasetCopy.studyTables = (dataset.studyTables || []).map(serializeTableSource);
+        datasetCopy.harmonizationTable = serializeTableSource(dataset.harmonizationTable || {});
+      } else if (dataset.type === 'COLLECTED') {
+        datasetCopy.studyTable = serializeTableSource(dataset.studyTable || {});
       }
 
       datasetCopy.content = datasetCopy.model ? angular.toJson(datasetCopy.model) : null;
@@ -402,24 +401,24 @@ mica.dataset
         deserializeOpalTableForRestoringFields(dataset);
       }
 
-      if (typeof dataset['obiba.mica.HarmonizedDatasetDto.type'] === 'object') {
-        dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTables = (dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTables || []).map(deserializeTableSource);
-        dataset['obiba.mica.HarmonizedDatasetDto.type'].studyTables = (dataset['obiba.mica.HarmonizedDatasetDto.type'].studyTables || []).map(deserializeTableSource);
-        dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable = deserializeTableSource(dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable || {});
-      } else if (typeof dataset['obiba.mica.CollectedDatasetDto.type'] === 'object') {
-        dataset['obiba.mica.CollectedDatasetDto.type'].studyTable = deserializeTableSource(dataset['obiba.mica.CollectedDatasetDto.type'].studyTable || {});
+      if (dataset.type === 'PROTOCOL') {
+        dataset.harmonizationTables = (dataset.harmonizationTables || []).map(deserializeTableSource);
+        dataset.studyTables = (dataset.studyTables || []).map(deserializeTableSource);
+        dataset.harmonizationTable = deserializeTableSource(dataset.harmonizationTable || {});
+      } else if (dataset.type === 'COLLECTED') {
+        dataset.studyTable = deserializeTableSource(dataset.studyTable || {});
       }
 
       return dataset;
     }
 
     function serializeOpalTableForRestoringFields(dataset) {
-      if (typeof dataset['obiba.mica.HarmonizedDatasetDto.type'] === 'object') {
-        dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTables = (dataset.harmonizationTables || []).map(serializeTable);
-        dataset['obiba.mica.HarmonizedDatasetDto.type'].studyTables = (dataset.studyTables || []).map(serializeTable);
-        dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable = serializeTable(dataset.harmonizationTable || {});
-      } else if (typeof dataset['obiba.mica.CollectedDatasetDto.type'] === 'object') {
-        dataset['obiba.mica.CollectedDatasetDto.type'].studyTable = serializeTable(dataset.studyTable || {});
+      if (dataset.type === 'PROTOCOL') {
+        dataset.harmonizationTables = (dataset.harmonizationTables || []).map(serializeTable);
+        dataset.studyTables = (dataset.studyTables || []).map(serializeTable);
+        dataset.harmonizationTable = serializeTable(dataset.harmonizationTable || {});
+      } else if (dataset.type === 'COLLECTED') {
+        dataset.studyTable = serializeTable(dataset.studyTable || {});
       }
 
       function serializeTable(table) {
@@ -453,12 +452,12 @@ mica.dataset
     }
 
     function deserializeOpalTableForRestoringFields(dataset) {
-      if (typeof dataset['obiba.mica.HarmonizedDatasetDto.type'] === 'object') {
-        dataset.harmonizationTables = (dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTables || []).map(deserializeTable);
-        dataset.studyTables = (dataset['obiba.mica.HarmonizedDatasetDto.type'].studyTables || []).map(deserializeTable);
-        dataset.harmonizationTable = deserializeTable(dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable || {});
-      } else if (typeof dataset['obiba.mica.CollectedDatasetDto.type'] === 'object') {
-        dataset.studyTable = deserializeTable(dataset['obiba.mica.CollectedDatasetDto.type'].studyTable || {});
+      if (dataset.type === 'PROTOCOL') {
+        dataset.harmonizationTables = (dataset.harmonizationTables || []).map(deserializeTable);
+        dataset.studyTables = (dataset.studyTables || []).map(deserializeTable);
+        dataset.harmonizationTable = deserializeTable(dataset.harmonizationTable || {});
+      } else if (dataset.type === 'COLLECTED') {
+        dataset.studyTable = deserializeTable(dataset.studyTable || {});
       }
 
       function deserializeTable(table) {

@@ -169,7 +169,7 @@ mica.study.EditController = function (
 
   function createStudy() {
     $log.debug('Creating new study', $scope.study);
-    $scope.study.type = 'INDIVIDUAL';
+    $scope.study.type = mica.commons.consts.PersonTypeNames.STUDY;
     DraftStudiesResource.save($scope.study, function (resource, getResponseHeaders) {
       FormDirtyStateObserver.unobserve();
       var parts = getResponseHeaders().location.split('/');
@@ -274,7 +274,7 @@ mica.study.HarmonizationStudyEditController = function (
 
   function createStudy() {
     $log.debug('Creating new study', $scope.study);
-    $scope.study.type = 'HARMONIZATION';
+    $scope.study.type = mica.commons.consts.PersonTypeNames.INITIATIVE;
     DraftStudiesResource.save($scope.study, function (resource, getResponseHeaders) {
       FormDirtyStateObserver.unobserve();
       var parts = getResponseHeaders().location.split('/');

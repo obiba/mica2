@@ -73,8 +73,7 @@ class ProjectDtos {
       ProjectState projectState = projectService.getEntityState(project.getId());
       builder.setTimestamps(TimestampsDtos.asDto(project)) //
           .setPublished(projectState.isPublished()) //
-          .setExtension(Mica.EntityStateDto.projectState,
-              entityStateDtos.asDto(projectState).setPermissions(permissionsDto).build());
+        .setState(entityStateDtos.asDto(projectState).setPermissions(permissionsDto).build());
     }
 
     builder.setPermissions(permissionsDto);
