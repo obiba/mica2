@@ -11,7 +11,7 @@
 <div>
   <div ng-include="'app/dataset/views/dataset-view-header.html'" ng-init="tabName='view'"></div>
 
-  <p ng-if="dataset['obiba.mica.EntityStateDto.datasetState'].requireIndexing"
+  <p ng-if="dataset.state.requireIndexing"
      class="alert alert-warning"
      ng-bind-html="'dataset.require-indexing-alert' | translate: {entity:studyTable.studyId}"></p>
 
@@ -35,14 +35,14 @@
         <i class="fa fa-print"></i> <span translate>global.print</span>
       </a>
 
-      <status-buttons class="inline" state="dataset['obiba.mica.EntityStateDto.datasetState']" on-publish="publish(true)" on-un-publish="publish(false)" on-delete="delete()" to-draft="toStatus('DRAFT')" to-under-review="toStatus('UNDER_REVIEW')" to-deleted="toStatus('DELETED')">
+      <status-buttons class="inline" state="dataset.state" on-publish="publish(true)" on-un-publish="publish(false)" on-delete="delete()" to-draft="toStatus('DRAFT')" to-under-review="toStatus('UNDER_REVIEW')" to-deleted="toStatus('DELETED')">
       </status-buttons>
     </div>
   </div>
   <p>
     <small class="help-block inline">{{'global.lastUpdate' | translate}}: {{dataset.timestamps.lastUpdate | amDateFormat : 'lll'}}
     </small>
-    <publish-status class="inline" state="dataset['obiba.mica.EntityStateDto.datasetState']"></publish-status>
+    <publish-status class="inline" state="dataset.state"></publish-status>
   </p>
   <div ng-include="'app/dataset/views/' + type + '-view-details.html'"></div>
 </div>

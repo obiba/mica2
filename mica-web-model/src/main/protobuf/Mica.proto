@@ -31,7 +31,10 @@ message StudySummaryDto {
   optional PermissionsDto permissions = 14;
   optional string studyResourcePath = 15;
   optional string content = 16;
-  extensions 1000 to max;
+  optional EntityStateDto state = 17;
+
+  // Specific to search
+  optional CountStatsDto countStats = 18;
 }
 
 message PopulationSummaryDto {
@@ -74,26 +77,6 @@ message EntityStateDto {
   optional string publishedId = 6;
   optional PermissionsDto permissions = 7;
   optional bool requireIndexing = 8;
-
-  extend NetworkDto {
-    optional EntityStateDto state = 1000;
-  }
-
-  extend NetworkSummaryDto {
-    optional EntityStateDto networkSummaryState = 1000;
-  }
-
-  extend StudySummaryDto {
-    optional EntityStateDto studySummaryState = 1000;
-  }
-
-  extend DatasetDto {
-    optional EntityStateDto datasetState = 1002;
-  }
-
-  extend ProjectDto {
-    optional EntityStateDto projectState = 1000;
-  }
 }
 message PopulationDto {
   optional string id = 1;
@@ -168,7 +151,7 @@ message StudyDto {
   optional string studyResourcePath = 32;
   repeated MembershipSortOrderDto membershipSortOrder = 33;
   repeated AttributeDto attributes = 34;
-  required StudyTye type = 35;
+  required StudyType type = 35;
 
   // Used in case of harmonization studies
   repeated DatasetDto.StudyTableDto studyTables = 36;
@@ -176,9 +159,24 @@ message StudyDto {
 
 }
 
-enum StudyTye {
-  INDIVIDUAL = 0;
-  HARMONIZATION = 1;
+enum StudyType {
+  StudyType_UNSET = 0;
+  STUDY = 1;
+  INITIATIVE = 2;
+}
+
+enum DatasetType {
+  DatasetType_UNSET = 0;
+  COLLECTED = 1;
+  PROTOCOL = 2;
+}
+enum StateType {
+  StateType_UNSET = 0;
+  STUDY_SUMMARY = 1;
+  NETWORK = 2;
+  NETWORK_SUMMARY = 3;
+  DATASET = 4;
+  PROJECT = 5;
 }
 
 enum OpalCredentialType {
@@ -267,7 +265,10 @@ message NetworkDto {
   optional PermissionsDto permissions = 21;
   optional string content = 22;
   repeated MembershipSortOrderDto membershipSortOrder = 23;
-  extensions 1000 to max;
+  optional EntityStateDto state = 24;
+
+  // Specific to search
+  optional CountStatsDto countStats = 25;
 }
 
 message NetworksDto {
@@ -286,7 +287,7 @@ message NetworkSummaryDto {
   repeated string studyIds = 6;
   repeated string networkIds = 7;
   optional PermissionsDto permissions = 8;
-  extensions 1000 to max;
+  optional EntityStateDto state = 9;
 }
 
 message TimestampsDto {
@@ -338,20 +339,18 @@ message PersonDto {
     optional AddressDto address = 3;
   }
 
+  enum Type {
+    Type_UNSET = 0;
+    STUDY = 1;
+    INITIATIVE = 2;
+    NETWORK = 3;
+  }
   message MembershipDto {
     required string role = 1;
     required string parentId = 2;
     repeated LocalizedStringDto parentAcronym = 3;
     repeated LocalizedStringDto parentName = 4;
-    extensions 1000 to max;
-  }
-
-  message StudyMembershipDto {
-    required string type = 1;
-
-    extend MembershipDto {
-      optional StudyMembershipDto meta = 1000;
-    }
+    required Type type = 5;
   }
 }
 
@@ -533,8 +532,20 @@ message DatasetDto {
   optional string variableType = 9;
   optional PermissionsDto permissions = 10;
   optional string content = 11;
+  optional DatasetType type = 12;
+  optional EntityStateDto state = 13;
 
-  extensions 1000 to max;
+  // Collected dataset specific
+  optional DatasetDto.StudyTableDto studyTable = 14;
+
+  // Harmonization dataset specific
+  optional DatasetDto.HarmonizationTableDto harmonizationTable = 15;
+  repeated DatasetDto.StudyTableDto studyTables = 16;
+  repeated DatasetDto.HarmonizationTableDto harmonizationTables = 17;
+  optional string networkId = 18;
+
+  // Specific to search
+  optional CountStatsDto countStats = 19;
 
   message StudyTableDto {
     optional string project = 1;
@@ -565,27 +576,6 @@ message DatasetDto {
     repeated LocalizedStringDto additionalInformation = 9;
     optional string source = 10;
     optional string tableUid = 11;
-  }
-}
-
-message CollectedDatasetDto {
-  optional DatasetDto.StudyTableDto studyTable = 1;
-  extensions 1000 to max;
-
-  extend DatasetDto {
-    optional CollectedDatasetDto type = 1000;
-  }
-}
-
-message HarmonizedDatasetDto {
-  optional DatasetDto.HarmonizationTableDto harmonizationTable = 1;
-  repeated DatasetDto.StudyTableDto studyTables = 2;
-  repeated DatasetDto.HarmonizationTableDto harmonizationTables = 3;
-
-  optional string networkId = 4;
-
-  extend DatasetDto {
-    optional HarmonizedDatasetDto type = 1001;
   }
 }
 
@@ -913,7 +903,7 @@ message ProjectDto {
 
   optional PermissionsDto permissions = 7;
   optional bool published = 8;
-  extensions 1000 to max;
+  optional EntityStateDto state = 9;
 }
 
 message LocalizedPropertyDto {
@@ -1155,4 +1145,18 @@ message EntityIndexHealthDto {
   }
 
   repeated ItemDto requireIndexing = 1;
+}
+
+message CountStatsDto {
+  optional int32 variables = 1;
+  optional int32 studyDatasets = 2;
+  optional int32 harmonizationDatasets = 3;
+  optional int32 studies = 4;
+  optional int32 individualStudies = 5;
+  optional int32 harmonizationStudies = 6;
+  optional int32 networks = 7;
+  optional int32 studyVariables = 8;
+  optional int32 dataschemaVariables = 9;
+  optional int32 studiesWithVariables = 10;
+  optional int32 harmonizationStudiesWithVariables = 11;
 }

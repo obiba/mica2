@@ -74,7 +74,7 @@ public class DatasetDtosCsvReportGenerator extends CsvReportGenerator {
 
     List<String> line = new ArrayList<>();
 
-    MicaSearch.CountStatsDto stats = datasetDto.getExtension(MicaSearch.CountStatsDto.datasetCountStats);
+    Mica.CountStatsDto stats = datasetDto.getCountStats();
 
     if (mustShow("showDatasetsAcronymColumn"))
       line.add(getLocalizedStringFor(datasetDto.getAcronymList(), locale, datasetDto.getAcronym(0)).getValue());
@@ -93,20 +93,22 @@ public class DatasetDtosCsvReportGenerator extends CsvReportGenerator {
   }
 
   private String findType(Mica.DatasetDto datasetDto) {
-    if (datasetDto.hasExtension(Mica.HarmonizedDatasetDto.type))
+    Mica.DatasetType dataseType = datasetDto.getType();
+    if (Mica.DatasetType.PROTOCOL == dataseType)
       return translator.translate("dataset_taxonomy.vocabulary.className.term.HarmonizationDataset.title");
-    else if (datasetDto.hasExtension(Mica.CollectedDatasetDto.type))
+    else if (Mica.DatasetType.COLLECTED == dataseType)
       return translator.translate("dataset_taxonomy.vocabulary.className.term.StudyDataset.title");
     else
       return NOT_EXISTS;
   }
 
   private String findOpalTableStudyAcronym(Mica.DatasetDto datasetDto) {
-    if (datasetDto.hasExtension(Mica.HarmonizedDatasetDto.type)) {
-      StudySummaryDto harmoStudySummary = datasetDto.getExtension(Mica.HarmonizedDatasetDto.type).getHarmonizationTable().getStudySummary();
+    Mica.DatasetType dataseType = datasetDto.getType();
+    if (Mica.DatasetType.PROTOCOL == dataseType) {
+      StudySummaryDto harmoStudySummary = datasetDto.getHarmonizationTable().getStudySummary();
       return getLocalizedStringFor(harmoStudySummary.getAcronymList(), locale, harmoStudySummary.getAcronym(0)).getValue();
-    } else if (datasetDto.hasExtension(Mica.CollectedDatasetDto.type)) {
-      StudySummaryDto studySummary = datasetDto.getExtension(Mica.CollectedDatasetDto.type).getStudyTable().getStudySummary();
+    } else if (Mica.DatasetType.COLLECTED == dataseType) {
+      StudySummaryDto studySummary = datasetDto.getStudyTable().getStudySummary();
       return getLocalizedStringFor(studySummary.getAcronymList(), locale, studySummary.getAcronym(0)).getValue();
     } else
       return NOT_EXISTS;

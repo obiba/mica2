@@ -130,8 +130,7 @@ class NetworkDtos {
 
       builder.setTimestamps(TimestampsDtos.asDto(network)) //
         .setPublished(networkState.isPublished()) //
-        .setExtension(Mica.EntityStateDto.state,
-          entityStateDtos.asDto(networkState).setPermissions(permissionsDto).build());
+        .setState(entityStateDtos.asDto(networkState).setPermissions(permissionsDto).build());
 
       builder.setPermissions(permissionsDto);
     }

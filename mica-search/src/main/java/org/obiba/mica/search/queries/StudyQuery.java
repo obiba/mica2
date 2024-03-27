@@ -129,7 +129,7 @@ public class StudyQuery extends AbstractDocumentQuery {
         summaryBuilder.clearPopulationSummaries();
       }
       if (studyCountStatsBuilder != null) {
-        summaryBuilder.setExtension(MicaSearch.CountStatsDto.studyCountStats, studyCountStatsBuilder.build(study))
+        summaryBuilder.setCountStats(studyCountStatsBuilder.build(study))
           .build();
       }
       resBuilder.addSummaries(summaryBuilder.build());
