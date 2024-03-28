@@ -45,6 +45,7 @@ import org.obiba.mica.study.event.StudyPublishedEvent;
 import org.obiba.mica.study.event.StudyUnpublishedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;

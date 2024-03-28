@@ -73,9 +73,8 @@ public class DocumentDigestDtos {
       .addAllName(localizedStringDtos.asDto(network.getName()));
 
     List<String> studyIds = network.getStudyIds();
-    if (studyIds.size() > 0) {
-      builder.setExtension(Mica.NetworkDigestDto.studies,
-        Mica.NetworkDigestDto.newBuilder().addAllIds(studyIds).build());
+    if (!studyIds.isEmpty()) {
+      builder.addAllIds(studyIds);
     }
 
     return builder;

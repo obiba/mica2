@@ -87,20 +87,20 @@
             </span>
           </td>
           <td>
-            <div publish-status state="project['obiba.mica.EntityStateDto.projectState']"></div>
+            <div publish-status state="project.state"></div>
           </td>
           <td>
-            {{'publish.status.' + project['obiba.mica.EntityStateDto.projectState'].revisionStatus | translate}}
+            {{'publish.status.' + project.state.revisionStatus | translate}}
           </td>
           <td>
             <ul class="list-inline">
-              <li ng-if="project['obiba.mica.EntityStateDto.projectState'].permissions.edit && project['obiba.mica.EntityStateDto.projectState'].revisionStatus === 'DRAFT'">
+              <li ng-if="project.state.permissions.edit && project.state.revisionStatus === 'DRAFT'">
                 <a ng-href="#/project/{{project.id}}/edit" title="{{'edit' | translate}}"><i class="fa fa-pencil"></i></a>
               </li>
-              <li ng-if="project['obiba.mica.EntityStateDto.projectState'].permissions.delete && project['obiba.mica.EntityStateDto.projectState'].revisionStatus === 'DELETED'">
+              <li ng-if="project.state.permissions.delete && project.state.revisionStatus === 'DELETED'">
                 <a href ng-click="deleteProject(project)" title="{{'delete' | translate}}"><i class="fa fa-trash-o"></i></a>
               </li>
-              <li ng-if="project['obiba.mica.EntityStateDto.projectState'].revisionStatus === 'UNDER_REVIEW'">
+              <li ng-if="project.state.revisionStatus === 'UNDER_REVIEW'">
                 <a ng-href="#/project/{{project.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
               </li>
             </ul>

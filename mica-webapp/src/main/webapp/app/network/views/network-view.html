@@ -25,7 +25,7 @@
         <i class="fa fa-print"></i> <span translate>global.print</span>
       </a>
 
-      <status-buttons class="inline" state="network['obiba.mica.EntityStateDto.state']" on-publish="publish(true)" on-un-publish="publish(false)" on-delete="delete()" to-draft="toStatus('DRAFT')" to-under-review="toStatus('UNDER_REVIEW')" to-deleted="toStatus('DELETED')">
+      <status-buttons class="inline" state="network.state" on-publish="publish(true)" on-un-publish="publish(false)" on-delete="delete()" to-draft="toStatus('DRAFT')" to-under-review="toStatus('UNDER_REVIEW')" to-deleted="toStatus('DELETED')">
       </status-buttons>
 
     </div>
@@ -35,7 +35,7 @@
     <small class="help-block inline">{{'global.lastUpdate' | translate}}: {{network.timestamps.lastUpdate |
       amDateFormat : 'lll'}}
     </small>
-    <publish-status class="inline" state="network['obiba.mica.EntityStateDto.state']"></publish-status>
+    <publish-status class="inline" state="network.state"></publish-status>
   </p>
 
   <div ng-include="'app/network/views/network-view-details.html'"></div>

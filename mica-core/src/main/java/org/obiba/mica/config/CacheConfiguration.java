@@ -10,38 +10,12 @@
 
 package org.obiba.mica.config;
 
-import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Configuration;
 
-//@Configuration("cacheConfiguration")
-//@EnableCaching
-//@AutoConfigureAfter(value = { MetricsConfiguration.class })
-public class CacheConfiguration implements DisposableBean {
+@Configuration("cacheConfiguration")
+@EnableCaching
+public class CacheConfiguration {
 
-//  private static final Logger log = LoggerFactory.getLogger(CacheConfiguration.class);
-//
-//  @Inject
-//  private MetricRegistry metricRegistry;
-//
-  @Override
-  public void destroy() throws Exception {
-//    log.info("Remove Cache Manager metrics");
-//    metricRegistry.getNames().forEach(metricRegistry::remove);
-  }
-
-//  @Bean
-//  public EhCacheManagerFactoryBean cacheManagerFactory() {
-//    log.debug("Starting Ehcache");
-//    EhCacheManagerFactoryBean factoryBean = new EhCacheManagerFactoryBean();
-//    factoryBean.setCacheManagerName("mica");
-//
-//    return factoryBean;
-//  }
-
-//  @Bean
-//  public CacheManager springCacheManager() {
-//    log.debug("Starting Spring Cache");
-//    org.ehcache.CacheManager cacheManager = new MicaEhCacheManagerFactory().create();
-//
-//    return cacheManager;
-//  }
 }

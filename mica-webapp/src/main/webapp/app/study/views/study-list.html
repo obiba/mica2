@@ -96,23 +96,23 @@
             </ul>
           </td>
           <td>
-            <div publish-status state="study['obiba.mica.EntityStateDto.studySummaryState']"></div>
+            <div publish-status state="study.state"></div>
           </td>
           <td>
-            {{'publish.status.' + study['obiba.mica.EntityStateDto.studySummaryState'].revisionStatus | translate}}
+            {{'publish.status.' + study.state.revisionStatus | translate}}
           </td>
           <td class="text-nowrap">
             {{study.timestamps.lastUpdate | amDateFormat : 'lll'}}
           </td>
           <td>
             <ul class="list-inline">
-              <li ng-if="study['obiba.mica.EntityStateDto.studySummaryState'].permissions.edit && study['obiba.mica.EntityStateDto.studySummaryState'].revisionStatus === 'DRAFT'">
+              <li ng-if="study.state.permissions.edit && study.state.revisionStatus === 'DRAFT'">
                 <a ng-href="{{path}}/{{study.id}}/edit" title="{{'edit' | translate}}"><i class="fa fa-pencil"></i></a>
               </li>
-              <li ng-if="study['obiba.mica.EntityStateDto.studySummaryState'].permissions.delete && study['obiba.mica.EntityStateDto.studySummaryState'].revisionStatus === 'DELETED'">
+              <li ng-if="study.state.permissions.delete && study.state.revisionStatus === 'DELETED'">
                 <a href ng-click="deleteDocument(study)" title="{{'delete' | translate}}"><i class="fa fa-trash-o"></i></a>
               </li>
-              <li ng-if="study['obiba.mica.EntityStateDto.studySummaryState'].revisionStatus === 'UNDER_REVIEW'">
+              <li ng-if="study.state.revisionStatus === 'UNDER_REVIEW'">
                 <a ng-href="{{path}}/{{study.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
               </li>
             </ul>

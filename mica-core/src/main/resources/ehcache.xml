@@ -18,20 +18,6 @@
   -->
   <persistence directory="${MICA_HOME}/work/ehcache"/>
 
-  <cache alias="org.apache.shiro.realm.text.PropertiesRealm-0-accounts">
-    <key-type serializer="org.ehcache.impl.serialization.CompactJavaSerializer">
-      java.lang.Object
-    </key-type>
-    <value-type serializer="org.ehcache.impl.serialization.CompactJavaSerializer">
-      java.lang.Object
-    </value-type>
-
-    <resources>
-      <heap unit="entries">1000</heap>
-      <disk unit="GB">1</disk>
-    </resources>
-  </cache>
-
   <cache-template name="defaultCacheConfiguration">
     <expiry>
       <tti unit="seconds">120</tti>
@@ -162,6 +148,7 @@
     <expiry>
       <none/>
     </expiry>
+
 
     <resources>
       <heap unit="entries">100</heap>

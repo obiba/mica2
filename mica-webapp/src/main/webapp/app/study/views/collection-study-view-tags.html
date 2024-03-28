@@ -6,7 +6,7 @@
   <p>
     <small class="help-block inline">{{'global.lastUpdate' | translate}}: {{studySummary.timestamps.lastUpdate | amDateFormat : 'lll'}}
     </small>
-    <publish-status class="inline" state="studySummary['obiba.mica.EntityStateDto.studySummaryState']"></publish-status>
+    <publish-status class="inline" state="studySummary.state"></publish-status>
   </p>
 
   <div class="help-block" style="padding-top: 1rem">

@@ -23,7 +23,6 @@ import org.apache.shiro.authz.permission.PermissionResolver;
 import org.apache.shiro.authz.permission.PermissionResolverAware;
 import org.apache.shiro.authz.permission.RolePermissionResolver;
 import org.apache.shiro.authz.permission.RolePermissionResolverAware;
-import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.SessionsSecurityManager;
 import org.apache.shiro.realm.Realm;
@@ -41,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -66,6 +66,8 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
   private final PermissionResolver permissionResolver;
 
   private SessionsSecurityManager securityManager;
+
+
 
   @Inject
   @Lazy
@@ -112,9 +114,9 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
   private SessionsSecurityManager doCreateSecurityManager() {
 
     ImmutableList.Builder<Realm> builder = ImmutableList.<Realm>builder().add(micaIniRealm());
-    String obibaRealmUrl = environment.getProperty("mica.url");
-    String serviceName = environment.getProperty("mica.application.name");
-    String serviceKey = environment.getProperty("mica.application.key");
+    String obibaRealmUrl = environment.getProperty("agate.url");
+    String serviceName = environment.getProperty("agate.application.name");
+    String serviceKey = environment.getProperty("agate.application.key");
 
     if(!Strings.isNullOrEmpty(obibaRealmUrl)) {
       builder.add(obibaRealm(obibaRealmUrl, serviceName, serviceKey));
@@ -157,7 +159,7 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
   private void initializeCacheManager(DefaultWebSecurityManager dsm) {
     if(dsm.getCacheManager() == null) {
       EhcacheShiroManager ehCacheManager = new EhCache3ShiroManager();
-      ehCacheManager.setCacheManagerConfigFile("classpath:ehcache.xml");
+      ehCacheManager.setCacheManagerConfigFile("classpath:ehcache-shiro.xml");
       dsm.setCacheManager(ehCacheManager);
     }
   }
