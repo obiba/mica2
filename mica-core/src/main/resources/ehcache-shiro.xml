@@ -25,18 +25,6 @@
     <value-type serializer="org.ehcache.impl.serialization.CompactJavaSerializer">
       java.lang.Object
     </value-type>
-    <listeners>
-      <listener>
-        <class>org.obiba.mica.cache.EhCacheEventLogger</class>
-        <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
-        <event-ordering-mode>UNORDERED</event-ordering-mode>
-        <events-to-fire-on>CREATED</events-to-fire-on>
-        <events-to-fire-on>UPDATED</events-to-fire-on>
-        <events-to-fire-on>EXPIRED</events-to-fire-on>
-        <events-to-fire-on>REMOVED</events-to-fire-on>
-        <events-to-fire-on>EVICTED</events-to-fire-on>
-      </listener>
-    </listeners>
     <resources>
       <heap unit="entries">10000</heap>
       <disk unit="GB">1</disk>
