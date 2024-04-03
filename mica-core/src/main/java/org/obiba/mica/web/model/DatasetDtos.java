@@ -80,8 +80,7 @@ class DatasetDtos {
 
     if(dataset.hasStudyTable() && !Strings.isNullOrEmpty(dataset.getStudyTable().getStudyId()) &&
       isStudyTablePermitted(asDraft, "individual", dataset.getStudyTable().getStudyId())) {
-      builder.setType(Mica.DatasetType.COLLECTED);
-      builder.setStudyTable(asDto(dataset.getStudyTable(), studySummary));
+      builder.setCollected(Mica.CollectedDatasetDto.newBuilder().setStudyTable(asDto(dataset.getStudyTable(), studySummary)));
     }
 
     Mica.PermissionsDto permissionsDto = permissionsDtos.asDto(dataset);
@@ -113,26 +112,27 @@ class DatasetDtos {
   Mica.DatasetDto.Builder asDtoBuilder(@NotNull HarmonizationDataset dataset, boolean asDraft, boolean studySummary) {
     Mica.DatasetDto.Builder builder = asBuilder(dataset);
     builder.setVariableType(DatasetVariable.Type.Dataschema.name());
+    Mica.HarmonizedDatasetDto.Builder hBuilder = Mica.HarmonizedDatasetDto.newBuilder();
 
     if(dataset.hasHarmonizationTable() && !Strings.isNullOrEmpty(dataset.getHarmonizationTable().getStudyId()) &&
       isStudyTablePermitted(asDraft, "harmonization", dataset.getHarmonizationTable().getStudyId())) {
-      builder.setHarmonizationTable(
+      hBuilder.setHarmonizationTable(
         createHarmonizationLinkDtoFromHarmonizationTable(dataset.getHarmonizationTable(), asDraft));
     }
 
     if(!dataset.getStudyTables().isEmpty()) {
       dataset.getStudyTables().stream()
         .filter(studyTable -> isStudyTablePermitted(asDraft, "individual", studyTable.getStudyId()))
-        .forEach(studyTable -> builder.addStudyTables(asDto(studyTable, studySummary)));
+        .forEach(studyTable -> hBuilder.addStudyTables(asDto(studyTable, studySummary)));
     }
 
     if(!dataset.getHarmonizationTables().isEmpty()) {
       dataset.getHarmonizationTables().stream()
         .filter(studyTable -> isStudyTablePermitted(asDraft, "harmonization", studyTable.getStudyId()))
-        .forEach(harmonizationTable -> builder.addHarmonizationTables(asDto(harmonizationTable, studySummary)));
+        .forEach(harmonizationTable -> hBuilder.addHarmonizationTables(asDto(harmonizationTable, studySummary)));
     }
 
-    builder.setType(Mica.DatasetType.PROTOCOL);
+    builder.setProtocol(hBuilder);
 
     Mica.PermissionsDto permissionsDto = permissionsDtos.asDto(dataset);
     if(asDraft) {
@@ -519,10 +519,10 @@ class DatasetDtos {
 
   @NotNull
   public Dataset fromDto(Mica.DatasetDto dto) {
-    Dataset dataset = Mica.DatasetType.PROTOCOL == dto.getType()
-      ? fromProtocolDto(dto)
-      : Mica.DatasetType.COLLECTED == dto.getType()
-        ? fromCollectedDto(dto)
+    Dataset dataset = dto.hasProtocol()
+      ? fromDto(dto.getProtocol())
+      : dto.hasCollected()
+        ? fromDto(dto.getCollected())
         : new StudyDataset();
 
     if(dto.hasId()) dataset.setId(dto.getId() );
@@ -541,9 +541,10 @@ class DatasetDtos {
     return dataset;
   }
 
-  private Dataset fromProtocolDto(@NotNull Mica.DatasetDto dto) {
+  private Dataset fromDto(@NotNull Mica.HarmonizedDatasetDto dto) {
     Assert.notNull(dto, "HarmonizationDataset dt cannot be null.");
     HarmonizationDataset harmonizationDataset = new HarmonizationDataset();
+
 
     if(dto.getStudyTablesCount() > 0) {
       dto.getStudyTablesList().forEach(tableDto -> harmonizationDataset.addStudyTable(fromDto(tableDto)));
@@ -568,7 +569,7 @@ class DatasetDtos {
     return harmonizationDataset;
   }
 
-  private Dataset fromCollectedDto(@NotNull Mica.DatasetDto dto) {
+  private Dataset fromDto(@NotNull Mica.CollectedDatasetDto dto) {
     Assert.notNull(dto, "StudyDataset dt cannot be null.");
     StudyDataset studyDataset = new StudyDataset();
     Optional.ofNullable(dto).ifPresent(ext -> studyDataset.setStudyTable(fromDto(ext.getStudyTable())));

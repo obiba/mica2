@@ -159,11 +159,6 @@ message HarmonizationStudyDto {
   repeated DatasetDto.HarmonizationTableDto harmonizationTables = 37;
 }
 
-enum DatasetType {
-  DatasetType_UNSET = 0;
-  COLLECTED = 1;
-  PROTOCOL = 2;
-}
 enum StateType {
   StateType_UNSET = 0;
   STUDY_SUMMARY = 1;
@@ -333,6 +328,7 @@ message PersonDto {
     INITIATIVE = 2;
     NETWORK = 3;
   }
+
   message MembershipDto {
     required string role = 1;
     required string parentId = 2;
@@ -520,20 +516,13 @@ message DatasetDto {
   optional string variableType = 9;
   optional PermissionsDto permissions = 10;
   optional string content = 11;
-  optional DatasetType type = 12;
-  optional EntityStateDto state = 13;
-
-  // Collected dataset specific
-  optional DatasetDto.StudyTableDto studyTable = 14;
-
-  // Harmonization dataset specific
-  optional DatasetDto.HarmonizationTableDto harmonizationTable = 15;
-  repeated DatasetDto.StudyTableDto studyTables = 16;
-  repeated DatasetDto.HarmonizationTableDto harmonizationTables = 17;
-  optional string networkId = 18;
+  optional EntityStateDto state = 12;
 
   // Specific to search
-  optional CountStatsDto countStats = 19;
+  optional CountStatsDto countStats = 13;
+
+  optional CollectedDatasetDto collected = 14;
+  optional HarmonizedDatasetDto protocol = 15;
 
   message StudyTableDto {
     optional string project = 1;
@@ -565,6 +554,17 @@ message DatasetDto {
     optional string source = 10;
     optional string tableUid = 11;
   }
+}
+
+message CollectedDatasetDto {
+  required DatasetDto.StudyTableDto studyTable = 1;
+}
+
+message HarmonizedDatasetDto {
+  required DatasetDto.HarmonizationTableDto harmonizationTable = 1;
+  repeated DatasetDto.StudyTableDto studyTables = 2;
+  repeated DatasetDto.HarmonizationTableDto harmonizationTables = 3;
+  optional string networkId = 4;
 }
 
 message DatasetsDto {

@@ -312,15 +312,15 @@ mica.dataset
 
           $scope.harmonizationStudies.$promise.then(function (harmonizationStudies) {
             $scope.selected.study = harmonizationStudies.filter(function (s) {
-              return dataset.harmonizationTable &&
-                s.id === dataset.harmonizationTable.studyId;
+              return dataset.protocol.harmonizationTable &&
+                s.id === dataset.protocol.harmonizationTable.studyId;
             })[0];
 
           });
 
           getOpalProjects().then(function() {
             $scope.selected.project = $scope.projects.filter(function (p) {
-              return p.name === dataset.harmonizationTable.project;
+              return p.name === dataset.protocol.harmonizationTable.project;
             }).pop();
 
             if (!$scope.selected.project) {
@@ -328,7 +328,7 @@ mica.dataset
             }
 
             $scope.selected.project.table = $scope.selected.project.datasource.table.filter(function (t) {
-              return t === dataset.harmonizationTable.table;
+              return t === dataset.protocol.harmonizationTable.table;
             }).pop();
 
             if (!$scope.selected.project.table) {
@@ -339,8 +339,10 @@ mica.dataset
       } else {
         $scope.dataset = {
           published: false,
-          harmonizationTable: {
-            namespace: 'opal'
+          protocol: {
+            harmonizationTable: {
+              namespace: 'opal'
+            }
           },
           model: {}
         };
@@ -359,12 +361,12 @@ mica.dataset
           return;
         }
 
-        $scope.dataset.harmonizationTable = $scope.dataset.harmonizationTable || {};
-        if ($scope.dataset.harmonizationTable.namespace === 'opal') {
-          $scope.dataset.harmonizationTable.project = $scope.selected.project.name;
-          $scope.dataset.harmonizationTable.table = $scope.selected.project.table;
+        $scope.dataset.protocol.harmonizationTable = $scope.dataset.protocol.harmonizationTable || {};
+        if ($scope.dataset.protocol.harmonizationTable.namespace === 'opal') {
+          $scope.dataset.protocol.harmonizationTable.project = $scope.selected.project.name;
+          $scope.dataset.protocol.harmonizationTable.table = $scope.selected.project.table;
         }
-        $scope.dataset.harmonizationTable.studyId = $scope.selected.study ? $scope.selected.study.id : null;
+        $scope.dataset.protocol.harmonizationTable.studyId = $scope.selected.study ? $scope.selected.study.id : null;
 
         if ($scope.dataset.id) {
           updateDataset();
@@ -518,7 +520,7 @@ mica.dataset
                 if($scope.type === 'harmonized-dataset') {
                   return angular.isDefined(wrapper) ? wrapper.table : {weight: $scope.opalTables ? $scope.opalTables.length : 0};
                 } else {
-                  return angular.isDefined($scope.dataset.type) && $scope.dataset.type === 'COLLECTED' ? $scope.dataset.studyTable : {};
+                  return angular.isDefined($scope.dataset.collected) ? $scope.dataset.collected.studyTable : {};
                 }
               },
               tableType: function () {
@@ -549,10 +551,10 @@ mica.dataset
       const showPostPublishAlert = function(dataset, type) {
         let studyTypeName, studyId, warningMessage;
         if (type === 'harmonized-dataset') {
-          studyId = dataset.harmonizationTable.studyId;
+          studyId = dataset.protocol.harmonizationTable.studyId;
           warningMessage = 'harmonization-protocol.warning-annotations-update';
         } else {
-          studyId = dataset.studyTable.studyId;
+          studyId = dataset.collected.studyTable.studyId;
           warningMessage = 'dataset.warning-annotations-update';
         }
 
@@ -568,16 +570,16 @@ mica.dataset
 
         $scope.permissions = DocumentPermissionsService.state(dataset.state);
         if($scope.type === 'harmonized-dataset') {
-          if(dataset.harmonizationTable) {
-            StudyStatesResource.get({id: dataset.harmonizationTable.studyId}).$promise.then(function (harmonizationStudy) {
+          if(dataset.protocol.harmonizationTable) {
+            StudyStatesResource.get({id: dataset.protocol.harmonizationTable.studyId}).$promise.then(function (harmonizationStudy) {
               $scope.datasetStudy = harmonizationStudy.id;
               $scope.datasetPopulation = harmonizationStudy.populationSummaries.filter(function (population) {
-                return population.id === dataset.harmonizationTable.populationId;
+                return population.id === dataset.protocol.harmonizationTable.populationId;
               })[0];
             }).catch(function () {});
           }
-          $scope.datasetProject = dataset.harmonizationTable.project;
-          $scope.datasetTable = dataset.harmonizationTable.table;
+          $scope.datasetProject = dataset.protocol.harmonizationTable.project;
+          $scope.datasetTable = dataset.protocol.harmonizationTable.table;
           $scope.opalTables = OpalTablesService.getTables(dataset);
 
           $scope.addStudyTable = function () {
@@ -636,7 +638,7 @@ mica.dataset
 
         } else {
 
-          $scope.studyTable = 'COLLECTED' === dataset.type ? dataset.studyTable : {};
+          $scope.studyTable = dataset.collected ? dataset.collected.studyTable : {};
           $scope.studyPublished = undefined;
 
           if ('studySummary' in $scope.studyTable) {
@@ -665,7 +667,7 @@ mica.dataset
             addUpdateOpalTable();
           };
           $scope.deleteStudyTable = function () {
-            delete $scope.dataset.studyTable;
+            delete $scope.dataset.collected;
             saveAndUpdateDataset();
           };
         }
