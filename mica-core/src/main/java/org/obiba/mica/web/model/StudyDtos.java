@@ -81,7 +81,6 @@ class StudyDtos {
   @NotNull
   Mica.StudyDto asDto(@NotNull Study study, boolean asDraft) {
     Mica.StudyDto.Builder builder = asDtoBuilder(study, asDraft);
-    builder.setType(Mica.StudyType.STUDY);
     builder.setPublished(individualStudyService.isPublished(study.getId()));
 
     return builder.build();
@@ -90,29 +89,28 @@ class StudyDtos {
   @NotNull
   Mica.StudyDto asDto(@NotNull HarmonizationStudy study, boolean asDraft, List<HarmonizationDataset> datasets) {
     Mica.StudyDto.Builder builder = asDtoBuilder(study, asDraft);
-    builder.setType(Mica.StudyType.INITIATIVE);
+    Mica.HarmonizationStudyDto.Builder hBuilder = Mica.HarmonizationStudyDto.newBuilder();
     HarmonizedDatasetHelper.TablesMerger tableMerger = HarmonizedDatasetHelper.newTablesMerger(datasets);
 
     tableMerger.getStudyTables()
       .stream().filter(studyTable -> datasetDtos.isStudyTablePermitted(asDraft, "individual", studyTable.getStudyId()))
-      .forEach(st -> builder.addStudyTables(datasetDtos.asDto(st, true)));
+      .forEach(st -> hBuilder.addStudyTables(datasetDtos.asDto(st, true)));
 
     tableMerger.getHarmonizationStudyTables()
       .stream().filter(studyTable -> datasetDtos.isStudyTablePermitted(asDraft, "harmonization", studyTable.getStudyId()))
-      .forEach(st -> builder.addHarmonizationTables(datasetDtos.asDto(st, true)));
+      .forEach(st -> hBuilder.addHarmonizationTables(datasetDtos.asDto(st, true)));
 
     builder.setPublished(harmonizationStudyService.isPublished(study.getId()));
 
-    return builder.build();
+    return builder.setInitiative(hBuilder).build();
   }
 
   @NotNull
   Mica.StudyDto asDto(@NotNull HarmonizationStudy study, boolean asDraft) {
     Mica.StudyDto.Builder builder = asDtoBuilder(study, asDraft);
-    builder.setType(Mica.StudyType.INITIATIVE);
     builder.setPublished(harmonizationStudyService.isPublished(study.getId()));
 
-    return builder.build();
+    return builder.setInitiative(Mica.HarmonizationStudyDto.newBuilder()).build();
   }
 
   private Mica.StudyDto.Builder asDtoBuilder(@NotNull BaseStudy study, boolean asDraft) {
@@ -162,13 +160,8 @@ class StudyDtos {
 
   @NotNull
   BaseStudy fromDto(@NotNull Mica.StudyDtoOrBuilder dto) {
-    Mica.StudyType type = dto.getType();
-    Assert.isTrue(
-      type == Mica.StudyType.STUDY || type == Mica.StudyType.INITIATIVE,
-      "StudyDto must of a type extension."
-    );
 
-    BaseStudy study = type == Mica.StudyType.STUDY ? new Study() : new HarmonizationStudy();
+    BaseStudy study = dto.hasInitiative() ? new HarmonizationStudy() : new Study() ;
 
     if(dto.hasId()) study.setId(dto.getId());
     if(dto.getNameCount() > 0) study.setName(localizedStringDtos.fromDto(dto.getNameList()));

@@ -151,18 +151,12 @@ message StudyDto {
   optional string studyResourcePath = 32;
   repeated MembershipSortOrderDto membershipSortOrder = 33;
   repeated AttributeDto attributes = 34;
-  required StudyType type = 35;
-
-  // Used in case of harmonization studies
-  repeated DatasetDto.StudyTableDto studyTables = 36;
-  repeated DatasetDto.HarmonizationTableDto harmonizationTables = 37;
-
+  optional HarmonizationStudyDto initiative = 35;
 }
 
-enum StudyType {
-  StudyType_UNSET = 0;
-  STUDY = 1;
-  INITIATIVE = 2;
+message HarmonizationStudyDto {
+  repeated DatasetDto.StudyTableDto studyTables = 36;
+  repeated DatasetDto.HarmonizationTableDto harmonizationTables = 37;
 }
 
 enum DatasetType {
