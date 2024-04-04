@@ -93,22 +93,20 @@ public class DatasetDtosCsvReportGenerator extends CsvReportGenerator {
   }
 
   private String findType(Mica.DatasetDto datasetDto) {
-    Mica.DatasetType dataseType = datasetDto.getType();
-    if (Mica.DatasetType.PROTOCOL == dataseType)
+    if (datasetDto.hasProtocol())
       return translator.translate("dataset_taxonomy.vocabulary.className.term.HarmonizationDataset.title");
-    else if (Mica.DatasetType.COLLECTED == dataseType)
+    else if (datasetDto.hasCollected())
       return translator.translate("dataset_taxonomy.vocabulary.className.term.StudyDataset.title");
     else
       return NOT_EXISTS;
   }
 
   private String findOpalTableStudyAcronym(Mica.DatasetDto datasetDto) {
-    Mica.DatasetType dataseType = datasetDto.getType();
-    if (Mica.DatasetType.PROTOCOL == dataseType) {
-      StudySummaryDto harmoStudySummary = datasetDto.getHarmonizationTable().getStudySummary();
+    if (datasetDto.hasProtocol()) {
+      StudySummaryDto harmoStudySummary = datasetDto.getProtocol().getHarmonizationTable().getStudySummary();
       return getLocalizedStringFor(harmoStudySummary.getAcronymList(), locale, harmoStudySummary.getAcronym(0)).getValue();
-    } else if (Mica.DatasetType.COLLECTED == dataseType) {
-      StudySummaryDto studySummary = datasetDto.getStudyTable().getStudySummary();
+    } else if (datasetDto.hasCollected()) {
+      StudySummaryDto studySummary = datasetDto.getCollected().getStudyTable().getStudySummary();
       return getLocalizedStringFor(studySummary.getAcronymList(), locale, studySummary.getAcronym(0)).getValue();
     } else
       return NOT_EXISTS;
