@@ -147,7 +147,7 @@ public class PublishedStudiesSetResource extends AbstractPublishedDocumentsSetRe
     if (Strings.isNullOrEmpty(query)) return dtos.asDto(set);
     MicaSearch.JoinQueryResultDto result = makeQuery(QueryType.STUDY, query);
     if (result.hasStudyResultDto() && result.getStudyResultDto().getTotalHits() > 0) {
-      List<String> ids = result.getStudyResultDto().getExtension(MicaSearch.StudyResultDto.result).getSummariesList().stream()
+      List<String> ids = result.getStudyResultDto().getStudyResult().getSummariesList().stream()
         .map(Mica.StudySummaryDto::getId).collect(Collectors.toList());
       getDocumentSetService().addIdentifiers(id, ids);
       set = getSecuredDocumentSet(id, anonymousUserId);

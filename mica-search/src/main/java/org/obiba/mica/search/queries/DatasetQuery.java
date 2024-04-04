@@ -152,7 +152,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
     Consumer<Dataset> addDto = getDatasetConsumer(scope, resBuilder, datasetCountStatsBuilder);
     List<Dataset> published = getPublishedDocumentsFromHitsByClassName(results, Dataset.class);
     published.forEach(addDto::accept);
-    builder.setExtension(DatasetResultDto.result, resBuilder.build());
+    builder.setDatasetResult(resBuilder.build());
   }
 
   @Override

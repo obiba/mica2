@@ -94,12 +94,12 @@ public class SpecificStudyReportGenerator extends CsvReportGenerator {
     JoinQuery joinQuery = searcher.makeJoinQuery(rqlQuery);
 
     List<String> studyIds = joinQueryExecutor.query(QueryType.STUDY, joinQuery)
-        .getStudyResultDto()
-        .getExtension(MicaSearch.StudyResultDto.result)
-        .getSummariesList()
-        .stream()
-        .map(Mica.StudySummaryDto::getId)
-        .collect(toList());
+      .getStudyResultDto()
+      .getStudyResult()
+      .getSummariesList()
+      .stream()
+      .map(Mica.StudySummaryDto::getId)
+      .collect(toList());
     Translator translator = JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(joinQuery.getLocale(), false));
 
     report(translator, studyIds, joinQuery.getLocale(), outputStream, null);

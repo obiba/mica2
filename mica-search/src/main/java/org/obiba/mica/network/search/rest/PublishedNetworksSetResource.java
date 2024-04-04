@@ -147,7 +147,7 @@ public class PublishedNetworksSetResource extends AbstractPublishedDocumentsSetR
     if (Strings.isNullOrEmpty(query)) return dtos.asDto(set);
     MicaSearch.JoinQueryResultDto result = makeQuery(QueryType.NETWORK, query);
     if (result.hasNetworkResultDto() && result.getNetworkResultDto().getTotalHits() > 0) {
-      List<String> ids = result.getNetworkResultDto().getExtension(MicaSearch.NetworkResultDto.result).getNetworksList().stream()
+      List<String> ids = result.getNetworkResultDto().getNetworkResult().getNetworksList().stream()
         .map(Mica.NetworkDto::getId).collect(Collectors.toList());
       getDocumentSetService().addIdentifiers(id, ids);
       set = getSecuredDocumentSet(id, anonymousUserId);

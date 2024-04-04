@@ -14,7 +14,6 @@ message PluginPackageDto {
     required string type = 10;
     optional string file = 11;
     optional bool uninstalled = 12;
-    extensions 1000 to max;
 }
 
 message PluginPackagesDto {

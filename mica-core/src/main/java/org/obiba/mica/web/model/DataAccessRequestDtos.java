@@ -26,6 +26,7 @@ import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.model.Mica.DataAccessRequestDto.StatusChangeDto.Builder;
 import org.obiba.shiro.realm.ObibaRealm.Subject;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
@@ -217,9 +218,9 @@ class DataAccessRequestDtos {
 
   @NotNull
   public DataAccessPreliminary fromPreliminaryDto(@NotNull Mica.DataAccessRequestDto dto) {
+    Assert.isTrue(Mica.DataAccessRequestDto.Type.PRELIMINARY == dto.getType(), "Expected preliminary request type");
     DataAccessPreliminary.Builder builder = DataAccessPreliminary.newBuilder();
-    Mica.DataAccessPreliminaryDto extension = dto.getExtension(Mica.DataAccessPreliminaryDto.preliminary);
-    builder.parentId(extension.getParentId());
+    builder.parentId(dto.getParentId());
 
     fromDto(dto, builder);
     DataAccessPreliminary preliminary = (DataAccessPreliminary) builder.build();
@@ -231,9 +232,9 @@ class DataAccessRequestDtos {
 
   @NotNull
   public DataAccessFeasibility fromFeasibilityDto(@NotNull Mica.DataAccessRequestDto dto) {
+    Assert.isTrue(Mica.DataAccessRequestDto.Type.FEASIBILITY == dto.getType(), "Expected feasibility request type");
     DataAccessFeasibility.Builder builder = DataAccessFeasibility.newBuilder();
-    Mica.DataAccessFeasibilityDto extension = dto.getExtension(Mica.DataAccessFeasibilityDto.feasibility);
-    builder.parentId(extension.getParentId());
+    builder.parentId(dto.getParentId());
 
     fromDto(dto, builder);
     DataAccessFeasibility feasibility = (DataAccessFeasibility) builder.build();
@@ -250,9 +251,9 @@ class DataAccessRequestDtos {
 
   @NotNull
   public DataAccessAgreement fromAgreementDto(@NotNull Mica.DataAccessRequestDto dto) {
+    Assert.isTrue(Mica.DataAccessRequestDto.Type.AGREEMENT == dto.getType(), "Expected agreement request type");
     DataAccessFeasibility.Builder builder = DataAccessFeasibility.newBuilder();
-    Mica.DataAccessAgreementDto extension = dto.getExtension(Mica.DataAccessAgreementDto.agreement);
-    builder.parentId(extension.getParentId());
+    builder.parentId(dto.getParentId());
 
     fromDto(dto, builder);
     DataAccessAgreement agreement = (DataAccessAgreement) builder.build();
@@ -269,9 +270,9 @@ class DataAccessRequestDtos {
 
   @NotNull
   public DataAccessAmendment fromAmendmentDto(@NotNull Mica.DataAccessRequestDto dto) {
+    Assert.isTrue(Mica.DataAccessRequestDto.Type.AMENDMENT == dto.getType(), "Expected amendment request type");
     DataAccessAmendment.Builder builder = DataAccessAmendment.newBuilder();
-    Mica.DataAccessAmendmentDto extension = dto.getExtension(Mica.DataAccessAmendmentDto.amendment);
-    builder.parentId(extension.getParentId());
+    builder.parentId(dto.getParentId());
 
     fromDto(dto, builder);
     DataAccessAmendment amendment = (DataAccessAmendment) builder.build();
@@ -368,11 +369,8 @@ class DataAccessRequestDtos {
     if (dataAccessEntity instanceof DataAccessAmendment) {
 
       DataAccessAmendment amendment = (DataAccessAmendment) dataAccessEntity;
-
-      builder.setExtension(
-        Mica.DataAccessAmendmentDto.amendment,
-        Mica.DataAccessAmendmentDto.newBuilder().setParentId(amendment.getParentId()).build()
-      );
+      builder.setType(Mica.DataAccessRequestDto.Type.AGREEMENT);
+      builder.setParentId(amendment.getParentId());
 
       builder.addAllActions(
         addDataAccessEntityActions(

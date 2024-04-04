@@ -136,7 +136,7 @@ public class  PublishedNetworksSearchResource {
     JoinQuery joinQuery = searcher.makeJoinQuery(query);
     List<String> networkIds = joinQueryExecutor.query(QueryType.NETWORK, joinQuery)
       .getNetworkResultDto()
-      .getExtension(MicaSearch.NetworkResultDto.result)
+      .getNetworkResult()
       .getNetworksList()
       .stream()
       .map(Mica.NetworkDto::getId)

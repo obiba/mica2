@@ -321,8 +321,8 @@ class ObibaStudiesService extends ObibaEntitiesService {
     const savedCallback = onsuccess;
     const newOnsuccess = (response) => {
       let dto = response.studyResultDto;
-      if (dto && dto['obiba.mica.StudyResultDto.result']) {
-        dto['obiba.mica.StudyResultDto.result'].summaries.forEach((summary) => {
+      if (dto && dto.studyResult) {
+        dto.studyResult.summaries.forEach((summary) => {
           if (summary.content) {
             summary.model = JSON.parse(summary.content);
           }
@@ -838,8 +838,8 @@ class ObibaDatasetsApp {
         },
         setEntities: function(response) {
           const dto = response.datasetResultDto;
-          if (dto && dto['obiba.mica.DatasetResultDto.result'] && dto['obiba.mica.DatasetResultDto.result'].datasets) {
-            this.entities = dto['obiba.mica.DatasetResultDto.result'].datasets;
+          if (dto && dto.datasetResult && dto.datasetResult.datasets) {
+            this.entities = dto.datasetResult.datasets;
             this.total = dto.totalHits;
             this.ensureEvenEntities();
           }
@@ -884,7 +884,7 @@ class ObibaStudiesApp {
           return MicaService.normalizeUrl(`/${this.searchModeFromStudyType(study.studyResourcePath)}#lists?type=variables&query=study(${studyQuery}),variable(in(Mica_variable.variableType,${variableType}))`)
         },
         hasStats: function(study) {
-          const countStats = study['obiba.mica.CountStatsDto.studyCountStats'];
+          const countStats = study.countStats;
           const datasetStats = type === 'individual-studies' ? countStats.studyDatasets : countStats.harmonizationDatasets
           let hasModelStats = study.model
             && (study.model.numberOfParticipants && study.model.numberOfParticipants.number
@@ -897,8 +897,8 @@ class ObibaStudiesApp {
         },
         setEntities: function(response) {
           const dto = response.studyResultDto;
-          if (dto && dto['obiba.mica.StudyResultDto.result'] && dto['obiba.mica.StudyResultDto.result'].summaries) {
-            this.entities = dto['obiba.mica.StudyResultDto.result'].summaries;
+          if (dto && dto.studyResult && dto.studyResult.summaries) {
+            this.entities = dto.studyResult.summaries;
             this.total = dto.totalHits;
             this.ensureEvenEntities();
           }
@@ -962,8 +962,8 @@ class ObibaNetworksApp {
         },
         setEntities: function(response) {
           const dto = response.networkResultDto;
-          if (dto && dto['obiba.mica.NetworkResultDto.result'] && dto['obiba.mica.NetworkResultDto.result'].networks) {
-            this.entities = dto['obiba.mica.NetworkResultDto.result'].networks;
+          if (dto && dto.networkResult && dto.networkResult.networks) {
+            this.entities = dto.networkResult.networks;
             this.total = dto.totalHits;
             this.ensureEvenEntities();
           }

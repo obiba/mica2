@@ -145,7 +145,7 @@ public class PublishedStudiesSearchResource {
     JoinQuery joinQuery = searcher.makeJoinQuery(query);
     List<String> studyIds = joinQueryExecutor.query(QueryType.STUDY, joinQuery)
       .getStudyResultDto()
-      .getExtension(MicaSearch.StudyResultDto.result)
+      .getStudyResult()
       .getSummariesList()
       .stream()
       .map(Mica.StudySummaryDto::getId)

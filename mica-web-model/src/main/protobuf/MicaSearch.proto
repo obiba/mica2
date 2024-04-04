@@ -14,60 +14,42 @@ message QueryResultDto {
   required int32 totalHits = 2;
   required int64 totalCount = 3;
 
-  extensions 1000 to max;
+  optional DatasetVariableResultDto variableResult = 4;
+  optional DatasetResultDto datasetResult = 5;
+  optional StudyResultDto studyResult = 6;
+  optional NetworkResultDto networkResult = 8;
+  repeated StudySummaryDto summaries = 9;
 }
 
 message DatasetVariableResultDto {
   repeated obiba.mica.DatasetVariableResolverDto summaries = 1;
   repeated obiba.mica.DatasetVariableDto variables = 2;
   repeated obiba.mica.DatasetDto datasets = 3;
-
-  extend QueryResultDto {
-    optional DatasetVariableResultDto result = 1000;
-  }
 }
 
 message DatasetResultDto {
   repeated obiba.mica.DatasetDto datasets = 1;
   repeated obiba.mica.DocumentDigestDto digests = 2;
-
-  extend QueryResultDto {
-    optional DatasetResultDto result = 1001;
-  }
 }
 
 message StudyResultDto {
   repeated obiba.mica.StudySummaryDto summaries = 1;
   repeated obiba.mica.StudyDto studies = 2;
   repeated obiba.mica.DocumentDigestDto digests = 3;
-
-  extend QueryResultDto {
-    optional StudyResultDto result = 1002;
-  }
 }
 
 message NetworkResultDto {
   repeated obiba.mica.NetworkDto networks = 1;
   repeated obiba.mica.DocumentDigestDto digests = 2;
-
-  extend QueryResultDto {
-    optional NetworkResultDto result = 1003;
-  }
-}
-
-message StudySummariesResultDto {
-  repeated obiba.mica.StudySummaryDto summaries = 1;
-
-  extend QueryResultDto {
-    optional StudySummariesResultDto result = 1009;
-  }
 }
 
 message AggregationResultDto {
   required string aggregation = 1;
   repeated LocalizedStringDto title = 2;
   repeated AggregationResultDto children = 3;
-  extensions 1000 to max;
+  repeated StatsAggregationResultDto stats = 5;
+  repeated TermsAggregationResultDto terms = 4;
+  repeated RangeAggregationResultDto ranges = 6;
 }
 
 message TermsAggregationResultDto {
@@ -80,10 +62,6 @@ message TermsAggregationResultDto {
   optional string start = 8;
   optional string end = 9;
   optional string sortField = 10;
-
-  extend AggregationResultDto {
-    repeated TermsAggregationResultDto terms = 1000;
-  }
 }
 
 message StatsAggregationResultDataDto {
@@ -96,10 +74,6 @@ message StatsAggregationResultDataDto {
 
 message StatsAggregationResultDto {
   required StatsAggregationResultDataDto data = 2;
-
-  extend AggregationResultDto {
-    optional StatsAggregationResultDto stats = 1001;
-  }
 }
 
 message RangeAggregationResultDto {
@@ -112,10 +86,6 @@ message RangeAggregationResultDto {
   optional double from = 7;
   optional double to = 8;
   repeated AggregationResultDto aggs = 9;
-
-  extend AggregationResultDto {
-    repeated RangeAggregationResultDto ranges = 1002;
-  }
 }
 
 message BucketCoverageDto {

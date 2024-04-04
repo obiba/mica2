@@ -54,9 +54,7 @@ public class EsQueryResultParser {
         case AggregationHelper.AGG_STATS:
           Searcher.DocumentStatsAggregation stats = aggregation.asStats();
           if (stats.getCount() > 0) {
-            aggResultBuilder.setExtension(
-                StatsAggregationResultDto.stats,
-                StatsAggregationResultDto.newBuilder().setData(buildStatsDto(stats)).build());
+            aggResultBuilder.addStats(StatsAggregationResultDto.newBuilder().setData(buildStatsDto(stats)).build());
           }
           break;
         case AggregationHelper.AGG_TERMS:
@@ -70,7 +68,7 @@ public class EsQueryResultParser {
             }
 
             AggregationMetaDataProvider.MetaData metaData = aggregationMetaDataResolver
-                .getMetaData(aggregation.getName(), bucket.getKeyAsString(), locale);
+              .getMetaData(aggregation.getName(), bucket.getKeyAsString(), locale);
             if (metaData.hasTitle()) termsBuilder.setTitle(metaData.getTitle());
             if (metaData.hasDescription()) termsBuilder.setDescription(metaData.getDescription());
             if (metaData.hasClassName()) termsBuilder.setClassName(metaData.getClassName());
@@ -78,23 +76,22 @@ public class EsQueryResultParser {
             if (metaData.hasEnd()) termsBuilder.setEnd(metaData.getEnd());
             if (metaData.hasSortField()) termsBuilder.setSortField(metaData.getSortField());
 
-            aggResultBuilder.addExtension(TermsAggregationResultDto.terms,
-                termsBuilder.setKey(bucket.getKeyAsString()).setCount((int) bucket.getDocCount()).build());
+            aggResultBuilder.addTerms(termsBuilder.setKey(bucket.getKeyAsString()).setCount((int) bucket.getDocCount()).build());
           });
           break;
 
         case AggregationHelper.AGG_RANGE:
           aggregation.asRange().getBuckets().forEach(bucket -> {
             AggregationMetaDataProvider.MetaData metaData = aggregationMetaDataResolver
-                .getMetaData(aggregation.getName(), bucket.getKeyAsString(), locale);
+              .getMetaData(aggregation.getName(), bucket.getKeyAsString(), locale);
             List<Searcher.DocumentAggregation> bucketAggregations = bucket.getAggregations();
 
             RangeAggregationResultDto.Builder rangeBuilder =
-                RangeAggregationResultDto.newBuilder()
-                    .setDefault(-1)
-                    .setCount(bucket.getDocCount())
-                    .setKey(bucket.getKeyAsString())
-                    .setTitle(metaData.getTitle());
+              RangeAggregationResultDto.newBuilder()
+                .setDefault(-1)
+                .setCount(bucket.getDocCount())
+                .setKey(bucket.getKeyAsString())
+                .setTitle(metaData.getTitle());
 
             if (bucketAggregations != null && bucketAggregations.size() > 0) {
               rangeBuilder.addAllAggs(parseAggregations(bucketAggregations));
@@ -112,7 +109,7 @@ public class EsQueryResultParser {
               rangeBuilder.setTo(to);
             }
 
-            aggResultBuilder.addExtension(RangeAggregationResultDto.ranges, rangeBuilder.build());
+            aggResultBuilder.addRanges(rangeBuilder.build());
           });
 
           break;
@@ -135,7 +132,7 @@ public class EsQueryResultParser {
 
   private MicaSearch.StatsAggregationResultDataDto buildStatsDto(Searcher.DocumentStatsAggregation stats) {
     MicaSearch.StatsAggregationResultDataDto.Builder builder = MicaSearch.StatsAggregationResultDataDto.newBuilder()
-        .setCount(stats.getCount());
+      .setCount(stats.getCount());
 
     if (!Double.isInfinite(stats.getMin())) {
       builder.setMin(stats.getMin());

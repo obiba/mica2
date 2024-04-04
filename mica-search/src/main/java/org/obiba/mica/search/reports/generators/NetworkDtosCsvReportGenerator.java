@@ -32,7 +32,7 @@ public class NetworkDtosCsvReportGenerator extends CsvReportGenerator {
   public NetworkDtosCsvReportGenerator(boolean forHarmonization, MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, String locale, Translator translator) {
     this.forHarmonization = forHarmonization;
     this.columnsToHide = columnsToHide;
-    this.networkDtos = queryResult.getNetworkResultDto().getExtension(MicaSearch.NetworkResultDto.result).getNetworksList();
+    this.networkDtos = queryResult.getNetworkResultDto().getNetworkResult().getNetworksList();
     this.translator = translator;
     this.locale = locale;
   }

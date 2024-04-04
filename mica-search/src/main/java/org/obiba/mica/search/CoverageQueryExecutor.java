@@ -101,7 +101,7 @@ public class CoverageQueryExecutor {
   private Iterable<MicaSearch.TaxonomyCoverageDto> getCoverages(List<MicaSearch.AggregationResultDto> aggregations) {
     Map<String, Map<String, MicaSearch.TermsAggregationResultDto>> aggTermsTitlesMap = aggregations.stream().collect(
         Collectors.toMap(MicaSearch.AggregationResultDto::getAggregation,
-            a -> a.getExtension(MicaSearch.TermsAggregationResultDto.terms).stream()
+            a -> a.getTermsList().stream()
                 .collect(Collectors.toMap(MicaSearch.TermsAggregationResultDto::getKey, t -> t))));
 
     Map<String, List<BucketResult>> bucketResultsByTaxonomy = extractBucketResults(aggregations).stream()
@@ -110,7 +110,7 @@ public class CoverageQueryExecutor {
     Map<String, Map<String, Integer>> aggsMap = Maps.newHashMap();
     aggregations.forEach(agg -> {
       String name = agg.getAggregation();
-      List<MicaSearch.TermsAggregationResultDto> results = agg.getExtension(MicaSearch.TermsAggregationResultDto.terms);
+      List<MicaSearch.TermsAggregationResultDto> results = agg.getTermsList();
       if (results != null && !results.isEmpty() && isAttributeField(name)) {
         String key = name.replaceAll("^attributes-", "").replaceAll("-und$", "");
         if (!aggsMap.containsKey(key)) aggsMap.put(key, Maps.newHashMap());
@@ -161,10 +161,10 @@ public class CoverageQueryExecutor {
 
     aggregations.stream().filter(agg -> aggsBy.contains(agg.getAggregation())).forEach(bucket -> {
       String bucketField = bucket.getAggregation(); // studyIds for instance
-      bucket.getExtension(MicaSearch.TermsAggregationResultDto.terms).stream() //
+      bucket.getTermsList().stream() //
           .filter(agg -> agg.getAggsCount() > 0) //
           .forEach(agg -> agg.getAggsList().stream() //
-              .filter(t -> !t.getExtension(MicaSearch.TermsAggregationResultDto.terms).isEmpty()) //
+              .filter(t -> !t.getTermsList().isEmpty()) //
               .forEach(t -> termResults.addAll(BucketResult.list(bucketField, agg.getKey(), t))));
     });
 
@@ -370,7 +370,7 @@ public class CoverageQueryExecutor {
       AttributeKey attrKey = AttributeKey.from(key);
       String taxonomy = attrKey.hasNamespace(null) ? "Default" : attrKey.getNamespace();
       String vocabulary = attrKey.getName();
-      return agg.getExtension(MicaSearch.TermsAggregationResultDto.terms).stream()
+      return agg.getTermsList().stream()
           .map(t -> new BucketResult(bucketField, bucketValue, taxonomy, vocabulary, t.getKey(), t.getCount()))
           .collect(Collectors.toList());
     }

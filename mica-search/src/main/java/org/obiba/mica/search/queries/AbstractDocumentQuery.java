@@ -433,7 +433,8 @@ public abstract class AbstractDocumentQuery implements DocumentQueryInterface {
     return
         resultDto.getAggsList().stream()
             .filter(agg -> joinField.equals(AggregationHelper.unformatName(agg.getAggregation())))
-            .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)).flatMap(Collection::stream)
+            .map(MicaSearch.AggregationResultDto::getTermsList)
+            .flatMap(Collection::stream)
             .filter(s -> s.getCount() > 0)
             .filter(s -> Strings.isNullOrEmpty(className) || className.equals(s.getClassName()))
             .collect(Collectors.toMap(
@@ -446,24 +447,24 @@ public abstract class AbstractDocumentQuery implements DocumentQueryInterface {
     if (resultDto == null) return Maps.newHashMap();
     return resultDto.getAggsList().stream()
         .filter(agg -> bucketField.equals(AggregationHelper.unformatName(agg.getAggregation())))
-        .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms))
+        .map(MicaSearch.AggregationResultDto::getTermsList)
         .flatMap(Collection::stream)
         .filter(t -> bucketValue.equals(t.getKey()))
         .map(t -> t.getAggsList())
         .flatMap(Collection::stream)
         .filter(agg -> joinField.equals(AggregationHelper.unformatName(agg.getAggregation())))
-        .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms))
+        .map(MicaSearch.AggregationResultDto::getTermsList)
         .flatMap(Collection::stream)
         .filter(s -> s.getCount() > 0)
-        .collect(Collectors.toMap(MicaSearch.TermsAggregationResultDto::getKey, term -> term.getCount()));
+        .collect(Collectors.toMap(MicaSearch.TermsAggregationResultDto::getKey, MicaSearch.TermsAggregationResultDto::getCount));
   }
 
   List<String> getResponseDocumentIds(List<String> fields, List<MicaSearch.AggregationResultDto> aggDtos) {
     log.debug("start getResponseDocumentIds");
     List<String> ids = aggDtos.stream() //
         .filter(agg -> fields.contains(AggregationHelper.unformatName(agg.getAggregation()))) //
-        .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)) //
-        .flatMap((d) -> d.stream()) //
+        .map(MicaSearch.AggregationResultDto::getTermsList) //
+        .flatMap(Collection::stream)
         .filter(s -> s.getCount() > 0) //
         .map(MicaSearch.TermsAggregationResultDto::getKey) //
         .collect(Collectors.toList()); //

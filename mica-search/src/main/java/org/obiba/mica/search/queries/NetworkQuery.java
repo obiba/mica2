@@ -131,7 +131,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
     }
 
     networks.forEach(addDto);
-    builder.setExtension(NetworkResultDto.result, resBuilder.build());
+    builder.setNetworkResult(resBuilder.build());
   }
 
   private Consumer<Network> networkConsumer(QueryScope scope, NetworkResultDto.Builder resBuilder,

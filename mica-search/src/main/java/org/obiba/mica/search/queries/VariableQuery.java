@@ -164,7 +164,7 @@ public class VariableQuery extends AbstractDocumentQuery {
       }
     }
 
-    builder.setExtension(MicaSearch.DatasetVariableResultDto.result, resBuilder.build());
+    builder.setVariableResult(resBuilder.build());
   }
 
   @Override

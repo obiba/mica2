@@ -33,7 +33,7 @@ public class StudySummaryDtosCsvReportGenerator extends CsvReportGenerator {
 
   public StudySummaryDtosCsvReportGenerator(MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, String locale, Translator translator) {
     this.columnsToHide = columnsToHide;
-    this.studySummaryDtos = queryResult.getStudyResultDto().getExtension(MicaSearch.StudyResultDto.result).getSummariesList();
+    this.studySummaryDtos = queryResult.getStudyResultDto().getSummariesList();
     this.translator = translator;
     this.locale = locale;
   }

@@ -117,7 +117,7 @@ public class StudyQuery extends AbstractDocumentQuery {
     Consumer<BaseStudy> addDto = getStudyConsumer(scope, resBuilder, studyCountStatsBuilder);
     List<BaseStudy> publishedStudies = getPublishedDocumentsFromHitsByClassName(results, BaseStudy.class);
     publishedStudies.forEach(addDto::accept);
-    builder.setExtension(StudyResultDto.result, resBuilder.build());
+    builder.setStudyResult(resBuilder.build());
   }
 
   private Consumer<BaseStudy> getStudyConsumer(QueryScope scope, StudyResultDto.Builder resBuilder,

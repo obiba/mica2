@@ -189,7 +189,7 @@ public class PublishedDatasetVariablesSetResource extends AbstractPublishedDocum
     if (Strings.isNullOrEmpty(query)) return dtos.asDto(set);
     MicaSearch.JoinQueryResultDto result = makeQuery(QueryType.VARIABLE, query);
     if (result.hasVariableResultDto() && result.getVariableResultDto().getTotalHits() > 0) {
-      List<String> ids = result.getVariableResultDto().getExtension(MicaSearch.DatasetVariableResultDto.result).getSummariesList().stream()
+      List<String> ids = result.getVariableResultDto().getVariableResult().getSummariesList().stream()
         .map(Mica.DatasetVariableResolverDto::getId).collect(Collectors.toList());
       getDocumentSetService().addIdentifiers(id, ids);
       set = getSecuredDocumentSet(id, anonymousUserId);

@@ -1,5 +1,3 @@
-syntax = "proto2";
-
 package obiba.mica;
 option java_package = "org.obiba.mica.web.model";
 
@@ -795,6 +793,14 @@ message DataAccessRequestDto {
     optional string lastModifiedDate = 4;
   }
 
+  enum Type {
+    REQUEST = 0;
+    AMENDMENT = 1;
+    FEASIBILITY = 2;
+    AGREEMENT = 3;
+    PRELIMINARY = 4;
+  }
+
   optional string id = 1;
   optional TimestampsDto timestamps = 2;
   required string applicant = 3;
@@ -813,40 +819,8 @@ message DataAccessRequestDto {
   optional TimelineDto reportsTimeline = 16;
   optional bool archived = 17 [default = false];
   optional int32 formRevision = 18;
-
-  extensions 1000 to max;
-}
-
-message DataAccessAmendmentDto {
-  required string parentId = 1;
-
-  extend DataAccessRequestDto {
-    optional DataAccessAmendmentDto amendment = 1000;
-  }
-}
-
-message DataAccessFeasibilityDto {
-  required string parentId = 1;
-
-  extend DataAccessRequestDto {
-    optional DataAccessFeasibilityDto feasibility = 1001;
-  }
-}
-
-message DataAccessAgreementDto {
-  required string parentId = 1;
-
-  extend DataAccessRequestDto {
-    optional DataAccessAgreementDto agreement = 1002;
-  }
-}
-
-message DataAccessPreliminaryDto {
-  required string parentId = 1;
-
-  extend DataAccessRequestDto {
-    optional DataAccessPreliminaryDto preliminary = 1003;
-  }
+  required Type type = 19;
+  optional string parentId = 20;
 }
 
 message DataAccessCollaboratorDto {
@@ -869,13 +843,6 @@ message DataAccessRequestSummaryDto {
   required string status = 2;
   required bool viewable = 3;
   optional string applicant = 4;
-  extensions 1000 to max;
-}
-
-message DataAccessAmendmentSummaryDto {
-  extend DataAccessRequestSummaryDto {
-    optional string parentId = 1000;
-  }
 }
 
 message ProjectSummaryDto {
