@@ -57,7 +57,7 @@
     <javax-rs.version>2.0</javax-rs.version>
     <jersey.version>3.1.3</jersey.version>
     <jetty.version>11.0.19</jetty.version>
-    <jgit.version>3.6.2.201501210735-r</jgit.version>
+    <jgit.version>6.9.0.202403050737-r</jgit.version>
     <jhipsterloaded.version>0.7</jhipsterloaded.version>
     <joda-time.version>2.8.2</joda-time.version>
     <json-path.version>2.8.0</json-path.version>
@@ -65,7 +65,7 @@
     <jsr305.version>3.0.0</jsr305.version>
     <logback.version>1.4.14</logback.version>
     <logstash-logback.version>7.4</logstash-logback.version>
-    <magma.version>4.0.1</magma.version>
+    <magma.version>5.0-SNAPSHOT</magma.version>
     <metrics-spring.version>3.0.0</metrics-spring.version>
     <mongodb-driver.version>4.9.1</mongodb-driver.version>
     <nosqlunit.version>0.7.9</nosqlunit.version>
