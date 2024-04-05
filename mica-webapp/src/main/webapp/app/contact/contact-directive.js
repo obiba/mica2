@@ -46,7 +46,7 @@ angular.module('mica.contact')
         function refresh(currentDocid) {
           ctrl.data = [];
           ctrl.memberships = {};
-          if (ctrl.doctype === 'STUDY') {
+          if (['STUDY', 'INITIATIVE'].indexOf(ctrl.doctype) > -1) {
             return PersonResource.getStudyMemberships({studyId: currentDocid}).$promise.then(function (data) {
               ctrl.data = data;
               initMembership(data, 'studyMemberships', currentDocid);
@@ -128,7 +128,7 @@ angular.module('mica.contact')
 
 
             if (contactConfirmed === person) {
-              if (ctrl.doctype === 'STUDY') {
+              if (['STUDY', 'INITIATIVE'].indexOf(ctrl.doctype) > -1) {
                 person.studyMemberships = person.studyMemberships.filter(function (membership) {
                   return membership.parentId === ctrl.docid && membership.role !== role;
                 });
@@ -173,10 +173,11 @@ angular.module('mica.contact')
           }).result.then(function (person) {
             var newMembership = {
               role: role,
-              parentId: ctrl.docid
+              parentId: ctrl.docid,
+              type: ctrl.doctype
             };
 
-            if (ctrl.doctype === 'STUDY') {
+            if (['STUDY', 'INITIATIVE'].indexOf(ctrl.doctype) > -1) {
               if (!person.studyMemberships) {
                 person.studyMemberships = [newMembership];
               } else {

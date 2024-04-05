@@ -22,12 +22,12 @@ mica.contact
         }
       });
     }])
-  .factory('PersonResource', ['$resource', function ($resource) {
+  .factory('PersonResource', ['$resource', 'ContactSerializationService', function ($resource, ContactSerializationService) {
     return $resource(contextPath + '/ws/draft/person/:id', {}, {
       'get': {method: 'GET', params: {id: '@id'}},
       'update': {method: 'PUT', params: {id: '@id'}},
       'delete': {method: 'DELETE', params: {id: '@id'}},
-      'create': {url: contextPath + '/ws/draft/persons', method: 'POST'},
+      'create': {url: contextPath + '/ws/draft/persons', method: 'POST', transformRequest: ContactSerializationService.serialize},
       'getStudyMemberships': {url: contextPath + '/ws/draft/persons/study/:studyId', method: 'GET', isArray: true, params: {studyId: '@studyId'}},
       'getNetworkMemberships': {url: contextPath + '/ws/draft/persons/network/:networkId', method: 'GET', isArray: true, params: {networkId: '@networkId'}}
     });
@@ -50,7 +50,7 @@ mica.contact
   .factory('PersonViewRevisionResource', ['$resource', 'ContactSerializationService',
     function ($resource, ContactSerializationService) {
       return $resource(contextPath + '/ws/draft/person/:id/commit/:commitId/view', {}, {
-        'view': {method: 'GET', params: {id: '@id', commitId: '@commitId'}, transformResponse: ContactSerializationService.deserialize}
+        'view': {method: 'GET', params: {id: '@id', commitId: '@commitId'}, transformResponse: ContactSerializationService.serialize}
       });
     }])
   .factory('ContactSerializationService', ['LocalizedValues',
@@ -59,6 +59,7 @@ mica.contact
       var it = this;
 
       this.serialize = function(person) {
+        delete person.institutionName;
 
         if (person.institution) {
           person.institution.name = LocalizedValues.objectToArray(person.institution.name);
