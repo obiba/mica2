@@ -132,6 +132,8 @@
 <#assign searchNetworkSortFields = ["acronym"]/>
 <!-- Coverage tab -->
 <#assign searchCoverageDisplay = (config.studyDatasetEnabled || config.harmonizationDatasetEnabled)/>
+<#assign useOnlyOpalTaxonomiesForCoverage = true/>
+
 <!-- Graphics tab -->
 <#assign searchGraphicsDisplay = (config.networkEnabled && !config.singleStudyEnabled && searchCharts?has_content)/>
 <!-- List tab -->

@@ -399,7 +399,7 @@ class TableFixedHeaderUtility {
       borderColor: Mica.charts.borderColor,
       agg: 'populations-model-selectionCriteria-countriesIso',
       vocabulary: 'populations-selectionCriteria-countriesIso',
-      dataKey: 'obiba.mica.TermsAggregationResultDto.terms',
+      dataKey: 'terms',
       withSort: true,
       parseForTable: genericParseForTable
     },
@@ -414,7 +414,7 @@ class TableFixedHeaderUtility {
       parseForTable: genericParseForTable,
       agg: 'model-methods-design',
       vocabulary: 'methods-design',
-      dataKey: 'obiba.mica.TermsAggregationResultDto.terms',
+      dataKey: 'terms',
     },
     'number-participants-chart': {
       id: 'number-participants-chart',
@@ -427,7 +427,7 @@ class TableFixedHeaderUtility {
       parseForTable: genericParseForTable,
       agg: 'model-numberOfParticipants-participant-number-range',
       vocabulary: 'numberOfParticipants-participant-range',
-      dataKey: 'obiba.mica.RangeAggregationResultDto.ranges',
+      dataKey: 'ranges',
     },
     'bio-samples-chart': {
       id: 'bio-samples-chart',
@@ -440,7 +440,7 @@ class TableFixedHeaderUtility {
       parseForTable: genericParseForTable,
       agg: 'populations-dataCollectionEvents-model-bioSamples',
       vocabulary: 'populations-dataCollectionEvents-bioSamples',
-      dataKey: 'obiba.mica.TermsAggregationResultDto.terms',
+      dataKey: 'terms',
     },
     'study-start-year-chart': {
       id: 'study-start-year-chart',
@@ -453,7 +453,7 @@ class TableFixedHeaderUtility {
       parseForTable: genericParseForTable,
       agg: 'model-startYear-range',
       vocabulary: 'start-range',
-      dataKey: 'obiba.mica.RangeAggregationResultDto.ranges',
+      dataKey: 'ranges',
     }
   };
 

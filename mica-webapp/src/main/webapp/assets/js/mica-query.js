@@ -354,8 +354,7 @@ class EntityQuery {
     if (tree) {
       let variableQuery = tree.search(name => TARGETS.VARIABLE === name);
       if (variableQuery) {
-        // TODO: should the coverage be limited to MLSTR taxonomies?
-        const coveragePossible = tree.search((name, args) => this.__isOpalTaxonomy(args));
+        const coveragePossible = Mica.useOnlyOpalTaxonomiesForCoverage ? tree.search((name, args) => this.__isOpalTaxonomy(args)) : true;
 
         if (coveragePossible) {
           // aggregation
