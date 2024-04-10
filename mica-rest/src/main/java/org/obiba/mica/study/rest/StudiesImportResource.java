@@ -61,6 +61,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import support.legacy.UpgradeLegacyEntities;
 
 import javax.inject.Inject;
 import java.io.BufferedReader;
@@ -349,46 +350,12 @@ public class StudiesImportResource {
     return result;
   }
 
-  private String upgradeLegacyData(String content) {
-    ObjectMapper mapper = new ObjectMapper();
-    JsonNode jsonNode = null;
-    try {
-      jsonNode = mapper.readTree(content);
 
-      if (jsonNode.has("obiba.mica.CollectionStudyDto.type")) {
-        ((ObjectNode) jsonNode).remove("obiba.mica.CollectionStudyDto.type");
-      } else if (jsonNode.has("obiba.mica.HarmonizationStudyDto.type")) {
-        ((ObjectNode) jsonNode).remove("obiba.mica.HarmonizationStudyDto.type");
-      }
-
-      List<JsonNode> memberships = jsonNode.findValues("memberships");
-      memberships.forEach(membership -> {
-        membership.findValues("studyMemberships").forEach(studyMembership -> studyMembership.forEach(study -> {
-          JsonNode metaType = study.get("obiba.mica.PersonDto.StudyMembershipDto.meta").get("type");
-          if (metaType.asText().equals("harmonization-study")) {
-            ((ObjectNode) study).put("type", "INITIATIVE");
-          } else if (metaType.asText().equals("individual-study")) {
-            ((ObjectNode) study).put("type", "STUDY");
-          }
-
-          ((ObjectNode) study).remove("obiba.mica.PersonDto.StudyMembershipDto.meta");
-        }));
-
-        membership.findValues("networkMemberships").forEach(networkMembership -> networkMembership.forEach(network -> {
-          ((ObjectNode) network).put("type", "NETWORK");
-        }));
-      });
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException(e);
-    }
-
-    return jsonNode.toString();
-  }
 
   private Study saveIndividualStudy(String id, String remoteContent,
                                     Mica.StudyDto.Builder builder, ExtensionRegistry extensionRegistry, List<String> listDiffsForm) throws ParseException {
 
-    JsonFormat.merge(upgradeLegacyData(remoteContent), extensionRegistry, builder);
+    JsonFormat.merge(UpgradeLegacyEntities.upgradeStudy(remoteContent), extensionRegistry, builder);
 
     Mica.StudyDtoOrBuilder dtoBuilder = (Mica.StudyDtoOrBuilder) builder;
 
@@ -469,7 +436,7 @@ public class StudiesImportResource {
                                                     Mica.StudyDto.Builder builder, ExtensionRegistry extensionRegistry, List<String> listDiffsForm) throws ParseException {
 
     builder.setInitiative(Mica.HarmonizationStudyDto.newBuilder());
-    JsonFormat.merge(upgradeLegacyData(remoteContent), extensionRegistry, builder);
+    JsonFormat.merge(UpgradeLegacyEntities.upgradeStudy(remoteContent), extensionRegistry, builder);
 
     Mica.StudyDtoOrBuilder dtoBuilder = (Mica.StudyDtoOrBuilder) builder;
 

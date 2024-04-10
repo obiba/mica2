@@ -59,7 +59,7 @@
     <jetty.version>11.0.19</jetty.version>
     <jgit.version>6.9.0.202403050737-r</jgit.version>
     <jhipsterloaded.version>0.7</jhipsterloaded.version>
-    <joda-time.version>2.8.2</joda-time.version>
+    <joda-time.version>2.12.7</joda-time.version>
     <json-path.version>2.8.0</json-path.version>
     <jsoup.version>1.17.2</jsoup.version>
     <jsr305.version>3.0.0</jsr305.version>

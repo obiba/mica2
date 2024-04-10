@@ -20,11 +20,15 @@ import jakarta.ws.rs.core.Response;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.obiba.mica.study.service.StudyPackageImportService;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 
+@Component
+@Scope("request")
 @Path("/draft/studies/_import")
 public class DraftStudiesImportResource {
 

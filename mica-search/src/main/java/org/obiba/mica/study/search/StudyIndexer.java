@@ -18,6 +18,7 @@ import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.event.DocumentSetDeletedEvent;
 import org.obiba.mica.core.event.DocumentSetUpdatedEvent;
 import org.obiba.mica.core.service.PersonService;
+import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.obiba.mica.spi.search.Indexable;
 import org.obiba.mica.spi.search.Indexer;
@@ -206,8 +207,10 @@ public class StudyIndexer {
       if (!draft) {
         if (study instanceof Study) {
           publishedDatasetService.find(0, 99999, null, null, study.getId(), null, fields)
-            .getList()
-            .forEach(dataset -> inferredAttributes.addAll(dataset.getInferredAttributes()));
+            .getList().forEach(dataset -> {
+              log.info("DS {}", dataset.getId());
+              inferredAttributes.addAll(dataset.getInferredAttributes());
+            });
         } else {
           publishedDatasetService.getHarmonizationDatasetsByStudy(study.getId())
             .forEach(dataset -> inferredAttributes.addAll(dataset.getInferredAttributes()));
