@@ -329,9 +329,9 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
 
     private Pair<BaseStudy, List<Attachment>> readStudy(InputStream inputStream) throws IOException {
       Mica.StudyDto.Builder builder = Mica.StudyDto.newBuilder();
+      Readable input = new InputStreamReader(inputStream, Charsets.UTF_8);
       ExtensionRegistry extensionRegistry = ExtensionRegistry.newInstance();
-      String content = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-      JsonFormat.merge(UpgradeLegacyEntities.upgradeStudy(content), extensionRegistry, builder);
+      JsonFormat.merge(input, extensionRegistry, builder);
       List<Attachment> atts = extractAttachments(builder);
       BaseStudy study = dtos.fromDto( builder);
       return Pair.create(study, atts);
@@ -363,8 +363,8 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
 
     private Network readNetwork(InputStream inputStream) throws IOException {
       Mica.NetworkDto.Builder builder = Mica.NetworkDto.newBuilder();
-      String content = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-      JsonFormat.merge(UpgradeLegacyEntities.upgradeNetwork(content), builder);
+      Readable input = new InputStreamReader(inputStream, Charsets.UTF_8);
+      JsonFormat.merge(input, builder);
       return dtos.fromDto(builder);
     }
 

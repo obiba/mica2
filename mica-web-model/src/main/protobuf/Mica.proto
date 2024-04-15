@@ -334,7 +334,7 @@ message PersonDto {
     required string parentId = 2;
     repeated LocalizedStringDto parentAcronym = 3;
     repeated LocalizedStringDto parentName = 4;
-    required Type type = 5;
+    optional Type type = 5;
   }
 }
 
@@ -560,7 +560,7 @@ message CollectedDatasetDto {
   required DatasetDto.StudyTableDto studyTable = 1;
 }
 
-message HarmonizedDatasetDto {
+  message HarmonizedDatasetDto {
   required DatasetDto.HarmonizationTableDto harmonizationTable = 1;
   repeated DatasetDto.StudyTableDto studyTables = 2;
   repeated DatasetDto.HarmonizationTableDto harmonizationTables = 3;
