@@ -3,7 +3,6 @@ package org.obiba.mica.access.rest;
 import au.com.bytecode.opencsv.CSVWriter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import org.joda.time.DateTime;
 import org.obiba.core.translator.Translator;
 import org.obiba.mica.access.domain.ActionLog;
 import org.obiba.mica.access.domain.ChangeLog;
@@ -137,7 +136,7 @@ public class CsvHistoryReportGenerator implements ReportGenerator {
     }
 
     String getDate() {
-      String timeFormat = locale.getLanguage().equalsIgnoreCase("en") ? "hh:mm a" : "HH:mm";      
+      String timeFormat = locale.getLanguage().equalsIgnoreCase("en") ? "hh:mm a" : "HH:mm";
       return DateTimeFormatter.ofPattern("MMM d yyyy " + timeFormat, locale).format(changeLog.getChangedOn());
     }
 

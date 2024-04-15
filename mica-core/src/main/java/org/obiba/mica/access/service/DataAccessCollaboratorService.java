@@ -5,7 +5,6 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import jakarta.ws.rs.ForbiddenException;
 import org.apache.shiro.SecurityUtils;
-import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.obiba.mica.access.DataAccessCollaboratorRepository;
@@ -129,8 +128,8 @@ public class DataAccessCollaboratorService {
       if (!found) {
         throw new IllegalArgumentException("invitation-wrong-user");
       }
-      DateTime expired = DateTime.parse(jsonKey.getString(CREATED_KEY)).plusDays(dataAccessConfigService.getOrCreateConfig().getCollaboratorInvitationDays());
-      if (dar.hasAcceptedCollaboratorInvitation(invitation) || expired.isBefore(DateTime.now())) {
+      LocalDateTime expired = LocalDateTime.parse(jsonKey.getString(CREATED_KEY)).plusDays(dataAccessConfigService.getOrCreateConfig().getCollaboratorInvitationDays());
+      if (dar.hasAcceptedCollaboratorInvitation(invitation) || expired.isBefore(LocalDateTime.now())) {
         throw new IllegalArgumentException("invitation-expired");
       }
 
@@ -232,7 +231,7 @@ public class DataAccessCollaboratorService {
       jsonKey.put(AUTHOR_KEY, SecurityUtils.getSubject().getPrincipal().toString());
       jsonKey.put(REQUEST_KEY, dar.getId());
       jsonKey.put(EMAIL_KEY, email);
-      jsonKey.put(CREATED_KEY, DateTime.now());
+      jsonKey.put(CREATED_KEY, LocalDateTime.now());
     } catch (JSONException e) {
       throw new IllegalArgumentException(e);
     }

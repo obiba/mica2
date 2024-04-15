@@ -10,14 +10,12 @@
 
 package org.obiba.mica.micaConfig.service;
 
-import org.joda.time.DateTime;
 import org.obiba.mica.micaConfig.domain.DataAccessAgreementForm;
 import org.obiba.mica.micaConfig.repository.DataAccessAgreementFormRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-
 import java.time.LocalDateTime;
 import java.util.Optional;
 

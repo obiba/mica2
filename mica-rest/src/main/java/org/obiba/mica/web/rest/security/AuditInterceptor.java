@@ -18,7 +18,6 @@ import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MultivaluedMap;
-import org.joda.time.DateTime;
 import org.obiba.mica.security.ShiroAuditorAware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +27,8 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +66,7 @@ public class AuditInterceptor implements ContainerResponseFilter {
     MDC.put("ip", ClientIPUtils.getClientIP(requestContext, servletRequest));
 
     Date d = requestContext.getDate();
-    if(d != null) MDC.put("time", (DateTime.now().getMillis() - d.getTime()) + "");
+    if(d != null) MDC.put("time", (LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli() - d.getTime()) + "");
 
     StringBuilder sb = new StringBuilder("/").append(requestContext.getUriInfo().getPath(true));
     MultivaluedMap<String, String> params = requestContext.getUriInfo().getQueryParameters();

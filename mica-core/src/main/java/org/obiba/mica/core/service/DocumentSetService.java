@@ -18,7 +18,6 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
-import org.joda.time.DateTime;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.domain.InvalidDocumentSetTypeException;
 import org.obiba.mica.core.event.DocumentSetDeletedEvent;
@@ -36,7 +35,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;

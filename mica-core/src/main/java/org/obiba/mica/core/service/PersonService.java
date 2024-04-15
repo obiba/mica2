@@ -13,24 +13,9 @@ package org.obiba.mica.core.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-
-import org.joda.time.DateTime;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import org.obiba.git.CommitInfo;
 import org.obiba.mica.contact.event.PersonDeletedEvent;
 import org.obiba.mica.contact.event.PersonUpdatedEvent;
@@ -49,9 +34,20 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.google.common.collect.Sets;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Validated

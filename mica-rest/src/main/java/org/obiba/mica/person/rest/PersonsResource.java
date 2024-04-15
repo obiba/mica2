@@ -1,6 +1,8 @@
 package org.obiba.mica.person.rest;
 
 import com.google.common.eventbus.EventBus;
+
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
@@ -19,6 +21,7 @@ import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica.PersonDto;
 import org.springframework.stereotype.Component;
+import support.legacy.UpgradeLegacyEntities;
 
 @Component
 @RequiresAuthentication
@@ -37,7 +40,7 @@ public class PersonsResource {
 
   @Inject
   public PersonsResource(Dtos dtos, PersonService personService, SubjectAclService subjectAclService,
-    StudyService service, EventBus eventBus) {
+                         StudyService service, EventBus eventBus) {
     this.dtos = dtos;
     this.personService = personService;
     this.subjectAclService = subjectAclService;
@@ -65,7 +68,7 @@ public class PersonsResource {
 
   @PUT
   @Path("/_index")
-  @RequiresPermissions({ "/draft/individual-study:EDIT", "/draft/harmonization-study:EDIT", "/draft/network:EDIT" })
+  @RequiresPermissions({"/draft/individual-study:EDIT", "/draft/harmonization-study:EDIT", "/draft/network:EDIT"})
   public Response index() {
     eventBus.post(new IndexContactsEvent());
     return Response.noContent().build();
