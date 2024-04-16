@@ -100,36 +100,36 @@
               </div>
             </div>
             <div class="card-footer py-1">
-              <div v-if="hasStats(network['obiba.mica.CountStatsDto.networkCountStats'])" class="row pt-1 row-cols-5">
+              <div v-if="hasStats(network.countStats)" class="row pt-1 row-cols-5">
                 <stat-item
-                        v-bind:count="network['obiba.mica.CountStatsDto.networkCountStats'].individualStudies"
+                        v-bind:count="network.countStats.individualStudies"
                         v-bind:singular="'individual-study' | translate"
                         v-bind:plural="'individual-studies' | translate"
                         v-bind:url="individualStudies(network.id)">
                 </stat-item>
                 <#if config.studyDatasetEnabled>
                   <stat-item
-                          v-bind:count="network['obiba.mica.CountStatsDto.networkCountStats'].studiesWithVariables"
+                          v-bind:count="network.countStats.studiesWithVariables"
                           v-bind:singular="'study-with-variables' | translate"
                           v-bind:plural="'studies-with-variables' | translate"
                           v-bind:url="individualStudiesWithVariables(network.id)">
                   </stat-item>
                   <stat-item
-                          v-bind:count="network['obiba.mica.CountStatsDto.networkCountStats'].studyVariables"
+                          v-bind:count="network.countStats.studyVariables"
                           v-bind:singular="'study-variable' | translate"
                           v-bind:plural="'study-variables' | translate"
                           v-bind:url="individualStudyVariables(network.id)">
                   </stat-item>
                 </#if>
                 <stat-item
-                        v-bind:count="network['obiba.mica.CountStatsDto.networkCountStats'].harmonizationStudies"
+                        v-bind:count="network.countStats.harmonizationStudies"
                         v-bind:singular="'harmonization-study' | translate"
                         v-bind:plural="'harmonization-studies' | translate"
                         v-bind:url="harmonizationStudies(network.id)">
                 </stat-item>
                 <#if config.harmonizationDatasetEnabled>
                   <stat-item
-                          v-bind:count="network['obiba.mica.CountStatsDto.networkCountStats'].dataschemaVariables"
+                          v-bind:count="network.countStats.dataschemaVariables"
                           v-bind:singular="'harmonization-study-variable' | translate"
                           v-bind:plural="'harmonization-study-variables' | translate"
                           v-bind:url="harmonizationStudyVariables(network.id)">>
