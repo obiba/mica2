@@ -12,7 +12,7 @@ message JoinQueryResultDto {
 message QueryResultDto {
   repeated AggregationResultDto aggs = 1;
   required int32 totalHits = 2;
-  required int64 totalCount = 3;
+  required double totalCount = 3;
 
   optional DatasetVariableResultDto variableResult = 4;
   optional DatasetResultDto datasetResult = 5;
@@ -65,7 +65,7 @@ message TermsAggregationResultDto {
 }
 
 message StatsAggregationResultDataDto {
-  required int64 count = 1;
+  required double count = 1;
   optional double min = 2;
   optional double max = 3;
   optional double avg = 4;
@@ -81,8 +81,8 @@ message RangeAggregationResultDto {
   optional string title = 2;
   optional string description = 3;
   optional string className = 4;
-  required int64 default = 5;
-  required int64 count = 6;
+  required double default = 5;
+  required double count = 6;
   optional double from = 7;
   optional double to = 8;
   repeated AggregationResultDto aggs = 9;
@@ -125,7 +125,7 @@ message TaxonomyCoverageDto {
 message TaxonomiesCoverageDto {
   repeated TaxonomyCoverageDto taxonomies = 1;
   required int32 totalHits = 2;
-  required int64 totalCount = 3;
+  required double totalCount = 3;
   repeated string by = 4;
   optional JoinQueryResultDto queryResult = 5;
 }
@@ -213,7 +213,7 @@ message EntitiesCountDto {
 }
 
 message EntityTotalCountDto {
-  required int64 total = 1;
+  required double total = 1;
   required int32 hits = 2;
 }
 
