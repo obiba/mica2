@@ -81,7 +81,10 @@ public class SubjectAclResource {
     }
 
     if (fileResource != null && fileInstance != null) {
-      subjectAclService.findByResourceInstance(fileResource, fileInstance).forEach(subjectAcl -> builderMap.get(subjectAcl.getPrincipal()).setFile(true));
+      subjectAclService.findByResourceInstance(fileResource, fileInstance).forEach(subjectAcl -> {
+        AclDto.Builder builder = builderMap.get(subjectAcl.getPrincipal());
+        if (builder != null) builder.setFile(true);
+      });
     }
 
     return builderMap.values().stream().map(AclDto.Builder::build).collect(Collectors.toList());
