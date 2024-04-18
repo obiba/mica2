@@ -177,6 +177,7 @@ mica.study
 
       population.content = population.model ? angular.toJson(population.model) : null;
 
+      delete population._active;
       delete population.model;
 
       if(population.dataCollectionEvents) {
@@ -241,6 +242,7 @@ mica.study
 
       dce.content = dce.model ? angular.toJson(dce.model) : null;
 
+      delete dce._active;
       delete dce.model;
     }
 
