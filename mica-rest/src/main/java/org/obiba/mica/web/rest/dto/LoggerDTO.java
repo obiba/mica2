@@ -10,10 +10,9 @@
 
 package org.obiba.mica.web.rest.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.google.common.base.Objects;
-
 import ch.qos.logback.classic.Logger;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.google.common.base.MoreObjects;
 
 public class LoggerDTO {
 
@@ -22,9 +21,8 @@ public class LoggerDTO {
   private String level;
 
   public LoggerDTO(Logger logger) {
-    // TO FIX
-//    name = logger.getName();
-//    level = logger.getEffectiveLevel().toString();
+    name = logger.getName();
+    level = logger.getEffectiveLevel().toString();
   }
 
   @JsonCreator
@@ -49,6 +47,6 @@ public class LoggerDTO {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this).add("name", name).add("level", level).toString();
+    return MoreObjects.toStringHelper(this).add("name", name).add("level", level).toString();
   }
 }

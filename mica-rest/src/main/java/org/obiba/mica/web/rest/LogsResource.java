@@ -48,8 +48,7 @@ public class LogsResource {
   public HttpStatus changeLevel(LoggerDTO jsonLogger) {
     @SuppressWarnings("TypeMayBeWeakened")
     LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-    // TO FIX
-//    context.getLogger(jsonLogger.getName()).setLevel(Level.valueOf(jsonLogger.getLevel()));
+    context.getLogger(jsonLogger.getName()).setLevel(Level.valueOf(jsonLogger.getLevel()));
     return HttpStatus.NO_CONTENT;
   }
 }
