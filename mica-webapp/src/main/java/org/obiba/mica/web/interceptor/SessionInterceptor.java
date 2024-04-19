@@ -96,6 +96,8 @@ public class SessionInterceptor implements AsyncHandlerInterceptor {
 
   public static void populateUserEntries(HttpServletRequest request, ModelAndView modelAndView, MicaConfigService micaConfigService, UserProfileService userProfileService,
                                          VariableSetService variableSetService, StudySetService studySetService, NetworkSetService networkSetService, SubjectAclService subjectAclService) {
+    boolean isRedirect =  !Strings.isNullOrEmpty(modelAndView.getViewName()) && modelAndView.getViewName().startsWith("redirect:");
+    if (isRedirect) return;
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       String username = subject.getPrincipal().toString();

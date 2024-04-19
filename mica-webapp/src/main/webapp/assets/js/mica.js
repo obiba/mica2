@@ -813,7 +813,7 @@ class MicaService {
 
   static redirect(path) {
     if (path && path.startsWith('http')) {
-      window.location.assign(path);
+      window.location.assign(this.normalizeUrl('/check?redirect=') + path);
     } else if (path) {
       window.location.assign(path);
     } else {
