@@ -45,6 +45,18 @@ public class SignController extends BaseController {
   @Inject
   protected AgateServerConfigService agateServerConfigService;
 
+  /**
+   * Controller for redirect URL.
+   *
+   * @param redirect
+   * @return
+   */
+  @GetMapping("/check")
+  public ModelAndView check(@RequestParam(value = "redirect", required = false) String redirect) {
+    String verifiedRedirect = verifyRedirect(redirect);
+    return new ModelAndView("redirect:" + (Strings.isNullOrEmpty(verifiedRedirect) ? micaConfigService.getContextPath() + "/" : verifiedRedirect));
+  }
+
   @GetMapping("/signin")
   public ModelAndView signin(HttpServletRequest request, @RequestParam(value = "redirect", required = false) String redirect,
                              @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
@@ -53,7 +65,7 @@ public class SignController extends BaseController {
 
     String lang = getLang(locale, language);
     List<OidcProvider> providers = getOidcProviders(lang, false).stream()
-      .map(o -> new OidcProvider(o, getOidcSigninUrl(o.getName(), request, redirect))).collect(Collectors.toList());
+      .map(o -> new OidcProvider(o, getOidcSigninUrl(o.getName(), request, verifyRedirect(redirect)))).collect(Collectors.toList());
     mv.getModel().put("oidcProviders", providers);
     return mv;
   }
@@ -69,7 +81,7 @@ public class SignController extends BaseController {
 
     String lang = getLang(locale, language);
     List<OidcProvider> providers = getOidcProviders(lang, true).stream()
-      .map(o -> new OidcProvider(o, getOidcSignupUrl(o.getName(), request, redirect))).collect(Collectors.toList());
+      .map(o -> new OidcProvider(o, getOidcSignupUrl(o.getName(), request, verifyRedirect(redirect)))).collect(Collectors.toList());
     mv.getModel().put("oidcProviders", providers);
     mv.getModel().put("authConfig", getAuthConfiguration());
 
@@ -231,5 +243,11 @@ public class SignController extends BaseController {
       return requestUrl.replaceFirst("http://", "https://");
     }
     return requestUrl;
+  }
+
+  private String verifyRedirect(String redirect) {
+    String agateUrl = agateServerConfigService.getAgateUrl();
+    if (Strings.isNullOrEmpty(redirect) || redirect.startsWith("/") || redirect.startsWith(agateUrl)) return redirect;
+    return "";
   }
 }
