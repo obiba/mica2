@@ -365,7 +365,7 @@ message AttachmentDto {
   optional string type = 3;
   repeated LocalizedStringDto description = 4;
   optional string lang = 5;
-  optional int64 size = 6;
+  optional double size = 6;
   optional string md5 = 7;
   optional bool justUploaded = 8;
   optional TimestampsDto timestamps = 9;
@@ -377,7 +377,7 @@ message AttachmentDto {
 message TempFileDto {
   required string id = 1;
   required string name = 2;
-  optional int64 size = 3;
+  optional double size = 3;
   optional string md5 = 4;
 }
 
@@ -415,8 +415,8 @@ message MicaConfigDto {
   optional string portalUrl = 31;
   repeated string availableLayoutOptions = 32;
   optional string searchLayout = 33;
-  required int64 maxNumberOfSets = 34;
-  required int64 maxItemsPerSet = 35;
+  required double maxNumberOfSets = 34;
+  required double maxItemsPerSet = 35;
   required bool anonymousCanCreateCart = 36; // legacy
   required bool currentUserCanCreateCart = 37;
   required bool currentUserCanCreateSets = 38;
@@ -461,8 +461,8 @@ message PublicMicaConfigDto {
   repeated string languages = 4;
   repeated string availableLayoutOptions = 5;
   optional string searchLayout = 6;
-  required int64 maxNumberOfSets = 7;
-  required int64 maxItemsPerSet = 8;
+  required double maxNumberOfSets = 7;
+  required double maxItemsPerSet = 8;
   required string agateUrl = 9;
 }
 
@@ -1028,7 +1028,7 @@ message FileDto {
   required string path = 2;
   required FileType type = 3;
   repeated FileDto children = 4;
-  optional int64 size = 5;
+  optional double size = 5;
   optional TimestampsDto timestamps = 6;
   optional AttachmentStateDto state = 7;
   optional AttachmentDto attachment = 8;
@@ -1058,7 +1058,7 @@ message MicaMetricsDto {
 
     message PropertyDto {
       required string name = 1;
-      optional int64 value = 2;
+      optional double value = 2;
     }
 
     repeated DocumentMetricsDto documents = 1;
@@ -1071,7 +1071,7 @@ message DocumentSetDto {
   optional TimestampsDto timestamps = 4;
   optional string username = 5;
   repeated string identifiers = 6;
-  required int64 count = 7;
+  required double count = 7;
   required bool locked = 8;
 }
 
@@ -1084,7 +1084,7 @@ message ComposedSetDto {
   required string operation = 6;
   repeated string sets = 7;
   required string query = 8;
-  required int64 count = 9;
+  required double count = 9;
 }
 
 message SetOperationDto {

@@ -600,7 +600,7 @@
                 <dt class="col-4"><@message "contact.email"/></dt>
                 <dd class="col-8">${study.model.access_info_representative.email!""}</dd>
                 <dt class="col-4"><@message "contact.phone"/></dt>
-                <dd class="col-8">${study.model.access_info_representative.phone!""}</dd>
+                <dd class="col-8">${study.model.access_info_representative.telephone!""}</dd>
               </dl>
             </div>
             <div class="modal-footer">
