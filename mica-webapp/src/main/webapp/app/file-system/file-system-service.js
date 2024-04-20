@@ -75,8 +75,8 @@ mica.fileSystem
       });
     }])
 
-  .service('FileSystemService', ['TempFileResource', 'Upload',
-    function (TempFileResource, Upload) {
+  .service('FileSystemService', ['TempFileResource', 'Upload','$resource',
+    function (TempFileResource, Upload, $resource) {
 
       this.isFile = function (document) {
         return document && document.type === 'FILE';
@@ -85,6 +85,10 @@ mica.fileSystem
       this.isRoot = function (document) {
         return document && document.path === '/';
       };
+
+      this.filesExtensions = $resource(contextPath + '/ws/files/temp/_extensions', {}, {
+        'get': {method: 'GET', accept: 'text/plain'}
+      });
 
       this.getDocumentTypeTitle = function (type) {
         switch (type) {
@@ -121,7 +125,7 @@ mica.fileSystem
           switch (ext[1].toLowerCase()) {
             case 'doc':
             case 'docx':
-            case 'odm':
+            case 'odt':
             case 'gdoc':
               return 'fa-file-word-o';
 
@@ -133,7 +137,8 @@ mica.fileSystem
               return 'fa-file-pdf-o';
 
             case 'ppt':
-            case 'odt':
+            case 'pptx':
+            case 'odp':
               return 'fa-file-powerpoint-o';
 
             case 'xt':

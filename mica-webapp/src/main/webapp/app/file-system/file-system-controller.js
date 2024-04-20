@@ -566,6 +566,7 @@ mica.fileSystem
         {name: 'REVIEWER', label: $filter('translate')('permission.reviewer')}
       ];
 
+      $scope.filesExtensions = FileSystemService.filesExtensions.get();
       $scope.screen = $rootScope.screen;
       $scope.hasRole = $rootScope.hasRole;
       $scope.getDocumentTypeTitle = FileSystemService.getDocumentTypeTitle;

@@ -135,7 +135,7 @@
           <form>
             <div class="form-group">
               <label for="file-field"><@message "select-file-to-upload"/></label>
-              <input type="file" id="file-field" class="form-control-file" onchange="handleFiles(this.files)">
+              <input type="file" id="file-field" class="form-control-file" accept="${filesExtensions}" onchange="handleFiles(this.files)">
               <input type="hidden" id="file-id">
             </div>
             <div>
