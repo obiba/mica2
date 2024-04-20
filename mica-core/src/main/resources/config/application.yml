@@ -27,7 +27,11 @@ metrics:
 cache:
     timeToLiveSeconds: 3600
 
-portal.draftResource.urlPattern: "{portalUrl}/mica/{resourceType}/{resourceId}/draft/{shareKey}"
+portal:
+  draftResource:
+    urlPattern: "{portalUrl}/mica/{resourceType}/{resourceId}/draft/{shareKey}"
+  files:
+    extensions: .xls,.xlsx,.ods,.doc,.docx,.odt,.ppt,.pptx,.odp,.xml,.yaml,.yml,.jpg,.jpeg,.png,.pdf,.txt,.csv,.tsv,.sav,.sas7bdat,.sas7bcat,.por,.gz,.bz2,.xz,.zip
 
 #
 # Plugins

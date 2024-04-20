@@ -12,37 +12,46 @@ package org.obiba.mica.file.rest;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
+import java.util.Spliterators;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import com.google.common.base.Splitter;
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.StreamIterator;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.service.TempFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 
 import com.codahale.metrics.annotation.Timed;
+import org.springframework.stereotype.Component;
 
+@Component
 @Path("/files/temp")
 @RequiresPermissions({ "/files:UPLOAD" })
 public class TempFilesResource {
 
   private static final Logger log = LoggerFactory.getLogger(TempFilesResource.class);
+
+  @Value("${portal.files.extensions}")
+  private String filesExtensions;
 
   @Inject
   private ApplicationContext applicationContext;
@@ -55,15 +64,20 @@ public class TempFilesResource {
   @Timed
   public Response upload(@Context HttpServletRequest request, @Context UriInfo uriInfo)
     throws IOException, FileUploadException {
-
     FileItem fileItem = getUploadedFile(request);
-
     if (fileItem == null) throw new FileUploadException("Failed to extract file item from request");
+    validateFileExtension(fileItem.getName());
     TempFile tempFile = tempFileService.addTempFile(fileItem.getName(), fileItem.getInputStream());
     URI location = uriInfo.getBaseUriBuilder().path(TempFilesResource.class).path(TempFilesResource.class, "file")
       .build(tempFile.getId());
-
     return Response.created(location).build();
+  }
+
+  @GET
+  @Path("/_extensions")
+  @Produces(MediaType.TEXT_PLAIN)
+  public Response getFilesExtensions() {
+    return Response.ok().type(MediaType.TEXT_PLAIN).entity(filesExtensions).build();
   }
 
   @Path("/{id}")
@@ -83,5 +97,12 @@ public class TempFilesResource {
     }
 
     return null;
+  }
+
+  private void validateFileExtension(String filename) {
+    List<String> extensions = Splitter.on(",").splitToList(filesExtensions).stream().map(ext -> ext.trim().toLowerCase()).collect(Collectors.toList());
+    if (extensions.isEmpty() || extensions.contains("*")) return;
+    boolean valid = extensions.stream().anyMatch(ext -> filename.toLowerCase().endsWith(ext));
+    if (!valid) throw new BadRequestException("Not a valid file format");
   }
 }

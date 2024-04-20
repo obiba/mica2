@@ -41,7 +41,7 @@
 
     <div class="voffset2">
       <a ng-if="!data.isFile" ng-disabled="!data.document.permissions.edit || data.document.revisionStatus !== 'DRAFT'"
-        class="btn btn-info btn-responsive" ngf-multiple="true" ngf-select ngf-change="onFileSelect($files)">
+        class="btn btn-info btn-responsive" ngf-multiple="true" ngf-select ngf-accept="filesExtensions" ngf-change="onFileSelect($files)">
       <i class="fa fa-upload"></i> {{'upload' | translate}}
       </a>
       <a ng-if="data.document.permissions.view && data.isFile" target="_self" class="btn btn-info btn-responsive" ng-href="ws/draft/file-dl/{{data.document.path}} ">

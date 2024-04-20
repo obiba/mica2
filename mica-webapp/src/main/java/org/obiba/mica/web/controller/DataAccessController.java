@@ -24,6 +24,7 @@ import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.web.controller.domain.DataAccessCollaboratorBundle;
 import org.obiba.mica.web.controller.domain.TimelineItem;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,6 +42,9 @@ import java.util.stream.Collectors;
 
 @Controller
 public class DataAccessController extends BaseDataAccessController {
+
+  @Value("${portal.files.extensions}")
+  private String filesExtensions;
 
   @Inject
   private DataAccessCollaboratorService dataAccessCollaboratorService;
@@ -140,6 +144,8 @@ public class DataAccessController extends BaseDataAccessController {
         permissions.add("VIEW_PRIVATE_COMMENTS");
 
       params.put("permissions", permissions);
+
+      params.put("filesExtensions", filesExtensions);
 
       return new ModelAndView("data-access-documents", params);
     } else {
