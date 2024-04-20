@@ -12,9 +12,7 @@ package org.obiba.mica.file.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Splitter;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.BadRequestException;
-import com.codahale.metrics.annotation.Timed;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -25,8 +23,6 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -37,13 +33,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import javax.inject.Inject;
-import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -71,7 +65,7 @@ public class TempFilesResource {
     throws IOException, FileUploadException {
 
     if (file == null) throw new FileUploadException("Failed to extract file item from request");
-    validateFileExtension(fileDetails.getName());
+    validateFileExtension(fileDetails.getFileName());
     TempFile tempFile = tempFileService.addTempFile(fileDetails.getFileName(), file);
     URI location = uriInfo.getBaseUriBuilder().path(TempFilesResource.class).path(TempFilesResource.class, "file")
       .build(tempFile.getId());
