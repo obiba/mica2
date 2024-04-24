@@ -50,10 +50,10 @@
   </cache>
 
   <cache alias="studies-draft">
-    <key-type serializer="org.ehcache.impl.serialization.CompactJavaSerializer">
-      java.lang.Object
+    <key-type>
+      java.lang.String
     </key-type>
-    <value-type serializer="org.ehcache.impl.serialization.CompactJavaSerializer">
+    <value-type serializer="org.ehcache.impl.serialization.PlainJavaSerializer">
       java.lang.Object
     </value-type>
 
@@ -89,10 +89,10 @@
   </cache>
 
   <cache alias="studies-published">
-    <key-type serializer="org.ehcache.impl.serialization.CompactJavaSerializer">
-      java.lang.Object
+    <key-type>
+      java.lang.String
     </key-type>
-    <value-type serializer="org.ehcache.impl.serialization.CompactJavaSerializer">
+    <value-type serializer="org.ehcache.impl.serialization.PlainJavaSerializer">
       java.lang.Object
     </value-type>
 

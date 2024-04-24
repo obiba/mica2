@@ -22,12 +22,12 @@ mica.contact
         }
       });
     }])
-  .factory('PersonResource', ['$resource', 'ContactSerializationService', function ($resource, ContactSerializationService) {
+  .factory('PersonResource', ['$resource', function ($resource) {
     return $resource(contextPath + '/ws/draft/person/:id', {}, {
       'get': {method: 'GET', params: {id: '@id'}},
       'update': {method: 'PUT', params: {id: '@id'}},
       'delete': {method: 'DELETE', params: {id: '@id'}},
-      'create': {url: contextPath + '/ws/draft/persons', method: 'POST', transformRequest: ContactSerializationService.serialize},
+      'create': {url: contextPath + '/ws/draft/persons', method: 'POST'},
       'getStudyMemberships': {url: contextPath + '/ws/draft/persons/study/:studyId', method: 'GET', isArray: true, params: {studyId: '@studyId'}},
       'getNetworkMemberships': {url: contextPath + '/ws/draft/persons/network/:networkId', method: 'GET', isArray: true, params: {networkId: '@networkId'}}
     });
@@ -59,21 +59,22 @@ mica.contact
       var it = this;
 
       this.serialize = function(person) {
-        delete person.institutionName;
+        var personCopy = angular.copy(person);
+        delete personCopy.institutionName;
 
-        if (person.institution) {
-          person.institution.name = LocalizedValues.objectToArray(person.institution.name);
-          person.institution.department = LocalizedValues.objectToArray(person.institution.department);
-          if (person.institution.address) {
-            person.institution.address.street = LocalizedValues.objectToArray(person.institution.address.street);
-            person.institution.address.city = LocalizedValues.objectToArray(person.institution.address.city);
-            if (person.institution.address.country) {
-              person.institution.address.country = {'iso': person.institution.address.country};
+        if (personCopy.institution) {
+          personCopy.institution.name = LocalizedValues.objectToArray(personCopy.institution.name);
+          personCopy.institution.department = LocalizedValues.objectToArray(personCopy.institution.department);
+          if (personCopy.institution.address) {
+            personCopy.institution.address.street = LocalizedValues.objectToArray(personCopy.institution.address.street);
+            personCopy.institution.address.city = LocalizedValues.objectToArray(personCopy.institution.address.city);
+            if (personCopy.institution.address.country) {
+              personCopy.institution.address.country = {'iso': personCopy.institution.address.country};
             }
           }
         }
 
-        return person;
+        return personCopy;
       };
 
       this.deserializeList = function (personsList) {
