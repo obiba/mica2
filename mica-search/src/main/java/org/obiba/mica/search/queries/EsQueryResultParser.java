@@ -54,7 +54,7 @@ public class EsQueryResultParser {
         case AggregationHelper.AGG_STATS:
           Searcher.DocumentStatsAggregation stats = aggregation.asStats();
           if (stats.getCount() > 0) {
-            aggResultBuilder.addStats(StatsAggregationResultDto.newBuilder().setData(buildStatsDto(stats)).build());
+            aggResultBuilder.setStats(StatsAggregationResultDto.newBuilder().setData(buildStatsDto(stats)).build());
           }
           break;
         case AggregationHelper.AGG_TERMS:

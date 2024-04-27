@@ -47,8 +47,8 @@ message AggregationResultDto {
   required string aggregation = 1;
   repeated LocalizedStringDto title = 2;
   repeated AggregationResultDto children = 3;
-  repeated StatsAggregationResultDto stats = 5;
   repeated TermsAggregationResultDto terms = 4;
+  optional StatsAggregationResultDto stats = 5;
   repeated RangeAggregationResultDto ranges = 6;
 }
 
