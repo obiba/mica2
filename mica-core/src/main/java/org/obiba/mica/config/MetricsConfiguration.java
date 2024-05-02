@@ -14,11 +14,11 @@ import java.lang.management.ManagementFactory;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Configuration;
@@ -85,7 +85,7 @@ public class MetricsConfiguration extends MetricsConfigurerAdapter implements En
 
   @Configuration
   @ConditionalOnClass(Graphite.class)
-  public static class GraphiteRegistry implements EnvironmentAware {
+  public static class GraphiteRegistry implements EnvironmentAware, InitializingBean {
 
     private final Logger log = LoggerFactory.getLogger(GraphiteRegistry.class);
 
@@ -99,8 +99,8 @@ public class MetricsConfiguration extends MetricsConfigurerAdapter implements En
       this.environment = environment;
     }
 
-    @PostConstruct
-    private void init() {
+    @Override
+    public void afterPropertiesSet() throws Exception {
       Boolean graphiteEnabled = environment.getProperty(PROP_GRAPHITE_ENABLED, Boolean.class, false);
       if(graphiteEnabled) {
         log.info("Initializing Metrics Graphite reporting");

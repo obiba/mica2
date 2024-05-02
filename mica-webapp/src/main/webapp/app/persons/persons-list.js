@@ -35,14 +35,14 @@
       get () {
         return self._query || null;
       },
-  
+
       set (text) {
         self._query = text ? text.trim() : null;
-  
+
         if (self.timeoutHandler) {
           self.$timeout.cancel(self.timeoutHandler);
         }
-  
+
         self.timeoutHandler = self.$timeout((getPersons(self._query, 0)), 250);
       }
     });
@@ -78,14 +78,14 @@
               person.studies =
                 self.EntityMembershipService.groupRolesByEntity(
                   'studies',
-                  person.studyMemberships.filter(membership => membership['obiba.mica.PersonDto.StudyMembershipDto.meta'].type ==='individual-study'));
+                  person.studyMemberships.filter(membership => mica.commons.consts.PersonTypeToResourceMap[membership.type] === 'individual-study'));
             }
 
             if (person.studyMemberships) {
               person.initiatives =
                 self.EntityMembershipService.groupRolesByEntity(
                   'initiatives',
-                  person.studyMemberships.filter(membership => membership['obiba.mica.PersonDto.StudyMembershipDto.meta'].type !=='individual-study'));
+                  person.studyMemberships.filter(membership => mica.commons.consts.PersonTypeToResourceMap[membership.type] === 'harmonization-study'));
             }
 
             return person;

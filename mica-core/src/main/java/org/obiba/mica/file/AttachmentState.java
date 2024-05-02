@@ -10,7 +10,6 @@
 
 package org.obiba.mica.file;
 
-import org.joda.time.DateTime;
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.domain.Timestamped;
@@ -19,6 +18,8 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.time.LocalDateTime;
 
 @Document
 public class AttachmentState extends AbstractAuditableDocument implements Timestamped {
@@ -38,7 +39,7 @@ public class AttachmentState extends AbstractAuditableDocument implements Timest
   @DBRef
   private Attachment publishedAttachment;
 
-  private DateTime publicationDate;
+  private LocalDateTime publicationDate;
 
   private String publishedBy;
 
@@ -101,17 +102,17 @@ public class AttachmentState extends AbstractAuditableDocument implements Timest
     return publishedAttachment;
   }
 
-  public DateTime getPublicationDate() {
+  public LocalDateTime getPublicationDate() {
     return publicationDate;
   }
 
-  public void setPublicationDate(DateTime publicationDate) {
+  public void setPublicationDate(LocalDateTime publicationDate) {
     this.publicationDate = publicationDate;
   }
 
   public void publish(String by) {
     setPublishedAttachment(getAttachment());
-    setPublicationDate(DateTime.now());
+    setPublicationDate(LocalDateTime.now());
     setPublishedBy(by);
   }
 

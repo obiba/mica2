@@ -74,7 +74,7 @@ mica.dataset
         let indexingResource = (this.type === 'Harmonized' ? this.HarmonizedDatasetsResource : this.CollectedDatasetsResource);
 
         this.datasets.filter(dataset => this.selection.indexOf(dataset.id) > -1).forEach(dataset => {
-          let state = dataset['obiba.mica.EntityStateDto.datasetState'];
+          let state = dataset.state;
 
           if (state.publishedTag && state.revisionsAhead === 0) {
             forIndex.push(dataset.id);

@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import javax.ws.rs.GET;
+import jakarta.ws.rs.GET;
 
 @Component
 @Scope("request")

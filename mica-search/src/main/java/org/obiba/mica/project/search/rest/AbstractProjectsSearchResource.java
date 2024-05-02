@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.QueryParam;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.QueryParam;
 
 import org.obiba.mica.core.service.PublishedDocumentService;
 import org.obiba.mica.project.domain.Project;

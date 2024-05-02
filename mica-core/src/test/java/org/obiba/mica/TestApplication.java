@@ -10,21 +10,19 @@
 
 package org.obiba.mica;
 
-import java.io.IOException;
-import java.util.Arrays;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
 
+import javax.inject.Inject;
+import java.util.Arrays;
+
 @ComponentScan("org.obiba")
 @EnableAutoConfiguration
-public class TestApplication {
+public class TestApplication implements InitializingBean {
 
   private static final Logger log = LoggerFactory.getLogger(TestApplication.class);
 
@@ -37,8 +35,8 @@ public class TestApplication {
    * Spring profiles can be configured with a program arguments --spring.profiles.active=your-active-profile
    * <p>
    */
-  @PostConstruct
-  public void initApplication() throws IOException {
+  @Override
+  public void afterPropertiesSet() throws Exception {
     if(env.getActiveProfiles().length == 0) {
       log.warn("No Spring profile configured, running with default configuration");
     } else {

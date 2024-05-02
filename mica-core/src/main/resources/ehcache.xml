@@ -9,79 +9,187 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd"
-    name="CM1"
-    updateCheck="false"
-    maxBytesLocalHeap="1G">
-
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://www.ehcache.org/v3"
+        xsi:schemaLocation="http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core-3.0.xsd">
   <!--
     This is a default configuration, it is re-configured by the CacheConfiguration Spring Bean, using the
     properties from the resources/config/*.yml files.
   -->
+  <persistence directory="${MICA_HOME}/work/ehcache"/>
 
-  <diskStore path="${MICA_HOME}/work/ehcache"/>
+  <cache-template name="defaultCacheConfiguration">
+    <expiry>
+      <tti unit="seconds">120</tti>
+    </expiry>
+    <heap unit="entries">10000</heap>
+  </cache-template>
 
-  <defaultCache eternal="false" overflowToDisk="false"/>
+  <cache alias="micaConfig">
+    <key-type serializer="org.ehcache.impl.serialization.CompactJavaSerializer">
+      java.lang.Object
+    </key-type>
+    <value-type serializer="org.ehcache.impl.serialization.CompactJavaSerializer">
+      java.lang.Object
+    </value-type>
 
-  <!-- We want eternal="true" and no timeToIdle or timeToLive settings because Shiro manages session
-         expirations explicitly.  If we set it to false and then set corresponding timeToIdle and timeToLive properties,
-         ehcache would evict sessions without Shiro's knowledge, which would cause many problems
-        (e.g. "My Shiro session timeout is 30 minutes - why isn't a session available after 2 minutes?"
-               Answer - ehcache expired it due to the timeToIdle property set to 120 seconds.)
-        diskPersistent=true since we want an enterprise session management feature - ability to use sessions after
-        even after a JVM restart.  -->
-  <cache name="shiro-activeSessionCache"
-      maxBytesLocalHeap="500M"
-      overflowToDisk="true"
-      eternal="true"
-      timeToLiveSeconds="0"
-      timeToIdleSeconds="0"
-      diskPersistent="true"
-      diskExpiryThreadIntervalSeconds="600"/>
+    <expiry>
+      <none/>
+    </expiry>
 
-  <cache name="org.apache.shiro.realm.text.PropertiesRealm-0-accounts"
-      maxBytesLocalHeap="16M"
-      eternal="true"
-      overflowToDisk="true"/>
+    <resources>
+      <heap unit="entries">100</heap>
+<!--      <disk persistent="false"/>-->
+    </resources>
 
-  <cache name="micaConfig"
-      maxBytesLocalHeap="1M"
-      overflowToDisk="false"
-      eternal="true"
-      timeToLiveSeconds="0"
-      timeToIdleSeconds="0"/>
-
-  <cache name="studies-draft"
-      overflowToDisk="true"
-      eternal="true"
-      timeToLiveSeconds="0"
-      timeToIdleSeconds="0"/>
-
-  <cache name="studies-published"
-      overflowToDisk="true"
-      eternal="true"
-      timeToLiveSeconds="0"
-      timeToIdleSeconds="0"/>
-
-  <cache name="variable-taxonomies"
-         maxBytesLocalHeap="1M"
-         diskPersistent="true"
-         overflowToDisk="true"
-         eternal="true">
-    <sizeOfPolicy maxDepth="100000"/>
+<!--      maxBytesLocalHeap="1M"-->
+<!--      overflowToDisk="false"-->
+<!--      eternal="true"-->
+<!--      timeToLiveSeconds="0"-->
+<!--      timeToIdleSeconds="0"-->
   </cache>
 
-  <cache name="aggregations-metadata"
-    overflowToDisk="true"
-    eternal="true">
+  <cache alias="studies-draft">
+    <key-type>
+      java.lang.String
+    </key-type>
+    <value-type serializer="org.ehcache.impl.serialization.PlainJavaSerializer">
+      java.lang.Object
+    </value-type>
+
+    <expiry>
+      <none/>
+    </expiry>
+
+    <!-- Uncomment for debugging -->
+    <!--
+    <listeners>
+      <listener>
+        <class>org.obiba.mica.cache.EhCacheEventLogger</class>
+        <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
+        <event-ordering-mode>UNORDERED</event-ordering-mode>
+        <events-to-fire-on>CREATED</events-to-fire-on>
+        <events-to-fire-on>UPDATED</events-to-fire-on>
+        <events-to-fire-on>EXPIRED</events-to-fire-on>
+        <events-to-fire-on>REMOVED</events-to-fire-on>
+        <events-to-fire-on>EVICTED</events-to-fire-on>
+      </listener>
+    </listeners>
+    -->
+
+    <resources>
+      <heap unit="entries">100</heap>
+      <disk unit="MB">1</disk>
+    </resources>
+
+<!--      overflowToDisk="true"-->
+<!--      eternal="true"-->
+<!--      timeToLiveSeconds="0"-->
+<!--      timeToIdleSeconds="0"-->
   </cache>
 
-  <cache name="dataset-variables"
-    eternal="true"
-    overflowToDisk="true"
-    diskPersistent="true">
+  <cache alias="studies-published">
+    <key-type>
+      java.lang.String
+    </key-type>
+    <value-type serializer="org.ehcache.impl.serialization.PlainJavaSerializer">
+      java.lang.Object
+    </value-type>
+
+    <expiry>
+      <none/>
+    </expiry>
+
+    <resources>
+      <heap unit="entries">100</heap>
+      <disk unit="MB">1</disk>
+    </resources>
+<!--      overflowToDisk="true"-->
+<!--      eternal="true"-->
+<!--      timeToLiveSeconds="0"-->
+<!--      timeToIdleSeconds="0"-->
   </cache>
 
-</ehcache>
+  <cache alias="variable-taxonomies">
+    <key-type serializer="org.ehcache.impl.serialization.CompactJavaSerializer">
+      java.lang.Object
+    </key-type>
+    <value-type serializer="org.ehcache.impl.serialization.CompactJavaSerializer">
+      java.lang.Object
+    </value-type>
+
+    <expiry>
+      <none/>
+    </expiry>
+
+    <resources>
+      <heap unit="entries">10000</heap>
+      <disk unit="MB">1</disk>
+    </resources>
+<!--         maxBytesLocalHeap="1M"-->
+<!--         diskPersistent="true"-->
+<!--         overflowToDisk="true"-->
+<!--         eternal="true"-->
+<!--    <sizeOfPolicy maxDepth="100000"/>--> <!-- Maybe use <eviction-advisor></eviction-advisor> -->
+  </cache>
+
+  <cache alias="aggregations-metadata">
+    <key-type serializer="org.ehcache.impl.serialization.CompactJavaSerializer">
+      java.lang.Object
+    </key-type>
+    <value-type serializer="org.ehcache.impl.serialization.CompactJavaSerializer">
+      java.lang.Object
+    </value-type>
+
+    <expiry>
+      <none/>
+    </expiry>
+
+    <resources>
+      <heap unit="entries">100</heap>
+      <disk unit="MB">1</disk>
+    </resources>
+<!--    overflowToDisk="true"-->
+<!--    eternal="true">-->
+  </cache>
+
+  <cache alias="dataset-variables">
+    <key-type serializer="org.ehcache.impl.serialization.CompactJavaSerializer">
+      java.lang.Object
+    </key-type>
+    <value-type serializer="org.ehcache.impl.serialization.CompactJavaSerializer">
+      java.lang.Object
+    </value-type>
+
+    <expiry>
+      <none/>
+    </expiry>
+
+    <!-- Uncomment for debugging -->
+    <!--
+    <listeners>
+      <listener>
+        <class>org.obiba.mica.cache.EhCacheEventLogger</class>
+        <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
+        <event-ordering-mode>UNORDERED</event-ordering-mode>
+        <events-to-fire-on>CREATED</events-to-fire-on>
+        <events-to-fire-on>UPDATED</events-to-fire-on>
+        <events-to-fire-on>EXPIRED</events-to-fire-on>
+        <events-to-fire-on>REMOVED</events-to-fire-on>
+        <events-to-fire-on>EVICTED</events-to-fire-on>
+      </listener>
+    </listeners>
+    -->
+
+    <resources>
+      <heap unit="entries">100</heap>
+      <disk unit="MB">1</disk>
+    </resources>
+
+    <!--    eternal="true"-->
+<!--    overflowToDisk="true"-->
+<!--    diskPersistent="true">-->
+  </cache>
+
+</config>
 

@@ -117,7 +117,7 @@ public class StudyQuery extends AbstractDocumentQuery {
     Consumer<BaseStudy> addDto = getStudyConsumer(scope, resBuilder, studyCountStatsBuilder);
     List<BaseStudy> publishedStudies = getPublishedDocumentsFromHitsByClassName(results, BaseStudy.class);
     publishedStudies.forEach(addDto::accept);
-    builder.setExtension(StudyResultDto.result, resBuilder.build());
+    builder.setStudyResult(resBuilder.build());
   }
 
   private Consumer<BaseStudy> getStudyConsumer(QueryScope scope, StudyResultDto.Builder resBuilder,
@@ -129,7 +129,7 @@ public class StudyQuery extends AbstractDocumentQuery {
         summaryBuilder.clearPopulationSummaries();
       }
       if (studyCountStatsBuilder != null) {
-        summaryBuilder.setExtension(MicaSearch.CountStatsDto.studyCountStats, studyCountStatsBuilder.build(study))
+        summaryBuilder.setCountStats(studyCountStatsBuilder.build(study))
           .build();
       }
       resBuilder.addSummaries(summaryBuilder.build());

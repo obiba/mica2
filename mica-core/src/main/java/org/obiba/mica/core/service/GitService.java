@@ -18,7 +18,6 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import javax.annotation.Nullable;
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -45,6 +44,7 @@ import org.obiba.mica.core.domain.GitIdentifier;
 import org.obiba.mica.core.domain.GitPersistable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
@@ -56,7 +56,7 @@ import com.google.common.io.ByteStreams;
 
 @Component
 @Validated
-public class GitService {
+public class GitService implements InitializingBean {
 
   private static final Logger log = LoggerFactory.getLogger(GitService.class);
 
@@ -76,8 +76,8 @@ public class GitService {
 
   private File clonesRoot;
 
-  @PostConstruct
-  public void init() {
+  @Override
+  public void afterPropertiesSet() throws Exception {
     if(repositoriesRoot == null) {
       repositoriesRoot = new File(PATH_DATA.replace("${MICA_HOME}", System.getProperty("MICA_HOME")));
     }

@@ -1,13 +1,13 @@
 package org.obiba.mica.core.service;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 @Service
-public class AgateServerConfigService {
+public class AgateServerConfigService implements InitializingBean {
 
   private String agateUrl;
 
@@ -22,8 +22,8 @@ public class AgateServerConfigService {
     this.env = env;
   }
 
-  @PostConstruct
-  public void initialize() {
+  @Override
+  public void afterPropertiesSet() throws Exception {
     agateUrl = env.getProperty("agate.url");
     serviceName = env.getProperty("agate.application.name");
     serviceKey = env.getProperty("agate.application.key");

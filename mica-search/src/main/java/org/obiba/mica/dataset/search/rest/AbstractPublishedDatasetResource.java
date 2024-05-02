@@ -35,7 +35,7 @@ import org.springframework.context.ApplicationContext;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.ForbiddenException;
+import jakarta.ws.rs.ForbiddenException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;

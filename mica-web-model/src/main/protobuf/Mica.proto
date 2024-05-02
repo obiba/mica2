@@ -31,7 +31,10 @@ message StudySummaryDto {
   optional PermissionsDto permissions = 14;
   optional string studyResourcePath = 15;
   optional string content = 16;
-  extensions 1000 to max;
+  optional EntityStateDto state = 17;
+
+  // Specific to search
+  optional CountStatsDto countStats = 18;
 }
 
 message PopulationSummaryDto {
@@ -74,26 +77,6 @@ message EntityStateDto {
   optional string publishedId = 6;
   optional PermissionsDto permissions = 7;
   optional bool requireIndexing = 8;
-
-  extend NetworkDto {
-    optional EntityStateDto state = 1000;
-  }
-
-  extend NetworkSummaryDto {
-    optional EntityStateDto networkSummaryState = 1000;
-  }
-
-  extend StudySummaryDto {
-    optional EntityStateDto studySummaryState = 1000;
-  }
-
-  extend DatasetDto {
-    optional EntityStateDto datasetState = 1002;
-  }
-
-  extend ProjectDto {
-    optional EntityStateDto projectState = 1000;
-  }
 }
 message PopulationDto {
   optional string id = 1;
@@ -168,24 +151,21 @@ message StudyDto {
   optional string studyResourcePath = 32;
   repeated MembershipSortOrderDto membershipSortOrder = 33;
   repeated AttributeDto attributes = 34;
-
-  extensions 1000 to max;
-}
-
-
-message CollectionStudyDto {
-  extend StudyDto {
-    optional CollectionStudyDto type = 1000;
-  }
+  optional HarmonizationStudyDto initiative = 35;
 }
 
 message HarmonizationStudyDto {
-  repeated DatasetDto.StudyTableDto studyTables = 1;
-  repeated DatasetDto.HarmonizationTableDto harmonizationTables = 2;
+  repeated DatasetDto.StudyTableDto studyTables = 36;
+  repeated DatasetDto.HarmonizationTableDto harmonizationTables = 37;
+}
 
-  extend StudyDto {
-    optional HarmonizationStudyDto type = 1001;
-  }
+enum StateType {
+  StateType_UNSET = 0;
+  STUDY_SUMMARY = 1;
+  NETWORK = 2;
+  NETWORK_SUMMARY = 3;
+  DATASET = 4;
+  PROJECT = 5;
 }
 
 enum OpalCredentialType {
@@ -244,15 +224,9 @@ message DocumentDigestDto {
   required string id = 1;
   repeated LocalizedStringDto acronym = 2;
   repeated LocalizedStringDto name = 3;
-  extensions 1000 to max;
-}
 
-message NetworkDigestDto {
-  repeated string ids = 1;
-
-  extend DocumentDigestDto {
-    optional NetworkDigestDto studies = 1000;
-  }
+  // Specific to network
+  repeated string ids = 4;
 }
 
 message NetworkDto {
@@ -274,7 +248,10 @@ message NetworkDto {
   optional PermissionsDto permissions = 21;
   optional string content = 22;
   repeated MembershipSortOrderDto membershipSortOrder = 23;
-  extensions 1000 to max;
+  optional EntityStateDto state = 24;
+
+  // Specific to search
+  optional CountStatsDto countStats = 25;
 }
 
 message NetworksDto {
@@ -293,7 +270,7 @@ message NetworkSummaryDto {
   repeated string studyIds = 6;
   repeated string networkIds = 7;
   optional PermissionsDto permissions = 8;
-  extensions 1000 to max;
+  optional EntityStateDto state = 9;
 }
 
 message TimestampsDto {
@@ -345,20 +322,19 @@ message PersonDto {
     optional AddressDto address = 3;
   }
 
+  enum Type {
+    Type_UNSET = 0;
+    STUDY = 1;
+    INITIATIVE = 2;
+    NETWORK = 3;
+  }
+
   message MembershipDto {
     required string role = 1;
     required string parentId = 2;
     repeated LocalizedStringDto parentAcronym = 3;
     repeated LocalizedStringDto parentName = 4;
-    extensions 1000 to max;
-  }
-
-  message StudyMembershipDto {
-    required string type = 1;
-
-    extend MembershipDto {
-      optional StudyMembershipDto meta = 1000;
-    }
+    optional Type type = 5;
   }
 }
 
@@ -389,7 +365,7 @@ message AttachmentDto {
   optional string type = 3;
   repeated LocalizedStringDto description = 4;
   optional string lang = 5;
-  optional int64 size = 6;
+  optional double size = 6;
   optional string md5 = 7;
   optional bool justUploaded = 8;
   optional TimestampsDto timestamps = 9;
@@ -401,7 +377,7 @@ message AttachmentDto {
 message TempFileDto {
   required string id = 1;
   required string name = 2;
-  optional int64 size = 3;
+  optional double size = 3;
   optional string md5 = 4;
 }
 
@@ -439,8 +415,8 @@ message MicaConfigDto {
   optional string portalUrl = 31;
   repeated string availableLayoutOptions = 32;
   optional string searchLayout = 33;
-  required int64 maxNumberOfSets = 34;
-  required int64 maxItemsPerSet = 35;
+  required double maxNumberOfSets = 34;
+  required double maxItemsPerSet = 35;
   required bool anonymousCanCreateCart = 36; // legacy
   required bool currentUserCanCreateCart = 37;
   required bool currentUserCanCreateSets = 38;
@@ -485,8 +461,8 @@ message PublicMicaConfigDto {
   repeated string languages = 4;
   repeated string availableLayoutOptions = 5;
   optional string searchLayout = 6;
-  required int64 maxNumberOfSets = 7;
-  required int64 maxItemsPerSet = 8;
+  required double maxNumberOfSets = 7;
+  required double maxItemsPerSet = 8;
   required string agateUrl = 9;
 }
 
@@ -540,8 +516,13 @@ message DatasetDto {
   optional string variableType = 9;
   optional PermissionsDto permissions = 10;
   optional string content = 11;
+  optional EntityStateDto state = 12;
 
-  extensions 1000 to max;
+  // Specific to search
+  optional CountStatsDto countStats = 13;
+
+  optional CollectedDatasetDto collected = 14;
+  optional HarmonizedDatasetDto protocol = 15;
 
   message StudyTableDto {
     optional string project = 1;
@@ -576,24 +557,14 @@ message DatasetDto {
 }
 
 message CollectedDatasetDto {
-  optional DatasetDto.StudyTableDto studyTable = 1;
-  extensions 1000 to max;
-
-  extend DatasetDto {
-    optional CollectedDatasetDto type = 1000;
-  }
+  required DatasetDto.StudyTableDto studyTable = 1;
 }
 
-message HarmonizedDatasetDto {
-  optional DatasetDto.HarmonizationTableDto harmonizationTable = 1;
+  message HarmonizedDatasetDto {
+  required DatasetDto.HarmonizationTableDto harmonizationTable = 1;
   repeated DatasetDto.StudyTableDto studyTables = 2;
   repeated DatasetDto.HarmonizationTableDto harmonizationTables = 3;
-
   optional string networkId = 4;
-
-  extend DatasetDto {
-    optional HarmonizedDatasetDto type = 1001;
-  }
 }
 
 message DatasetsDto {
@@ -822,6 +793,14 @@ message DataAccessRequestDto {
     optional string lastModifiedDate = 4;
   }
 
+  enum Type {
+    REQUEST = 0;
+    AMENDMENT = 1;
+    FEASIBILITY = 2;
+    AGREEMENT = 3;
+    PRELIMINARY = 4;
+  }
+
   optional string id = 1;
   optional TimestampsDto timestamps = 2;
   required string applicant = 3;
@@ -840,40 +819,8 @@ message DataAccessRequestDto {
   optional TimelineDto reportsTimeline = 16;
   optional bool archived = 17 [default = false];
   optional int32 formRevision = 18;
-
-  extensions 1000 to max;
-}
-
-message DataAccessAmendmentDto {
-  required string parentId = 1;
-
-  extend DataAccessRequestDto {
-    required DataAccessAmendmentDto amendment = 1000;
-  }
-}
-
-message DataAccessFeasibilityDto {
-  required string parentId = 1;
-
-  extend DataAccessRequestDto {
-    required DataAccessFeasibilityDto feasibility = 1001;
-  }
-}
-
-message DataAccessAgreementDto {
-  required string parentId = 1;
-
-  extend DataAccessRequestDto {
-    required DataAccessAgreementDto agreement = 1002;
-  }
-}
-
-message DataAccessPreliminaryDto {
-  required string parentId = 1;
-
-  extend DataAccessRequestDto {
-    required DataAccessPreliminaryDto preliminary = 1003;
-  }
+  required Type type = 19;
+  optional string parentId = 20;
 }
 
 message DataAccessCollaboratorDto {
@@ -896,13 +843,6 @@ message DataAccessRequestSummaryDto {
   required string status = 2;
   required bool viewable = 3;
   optional string applicant = 4;
-  extensions 1000 to max;
-}
-
-message DataAccessAmendmentSummaryDto {
-  extend DataAccessRequestSummaryDto {
-    required string parentId = 1000;
-  }
 }
 
 message ProjectSummaryDto {
@@ -920,7 +860,7 @@ message ProjectDto {
 
   optional PermissionsDto permissions = 7;
   optional bool published = 8;
-  extensions 1000 to max;
+  optional EntityStateDto state = 9;
 }
 
 message LocalizedPropertyDto {
@@ -1088,7 +1028,7 @@ message FileDto {
   required string path = 2;
   required FileType type = 3;
   repeated FileDto children = 4;
-  optional int64 size = 5;
+  optional double size = 5;
   optional TimestampsDto timestamps = 6;
   optional AttachmentStateDto state = 7;
   optional AttachmentDto attachment = 8;
@@ -1118,7 +1058,7 @@ message MicaMetricsDto {
 
     message PropertyDto {
       required string name = 1;
-      optional int64 value = 2;
+      optional double value = 2;
     }
 
     repeated DocumentMetricsDto documents = 1;
@@ -1131,7 +1071,7 @@ message DocumentSetDto {
   optional TimestampsDto timestamps = 4;
   optional string username = 5;
   repeated string identifiers = 6;
-  required int64 count = 7;
+  required double count = 7;
   required bool locked = 8;
 }
 
@@ -1144,7 +1084,7 @@ message ComposedSetDto {
   required string operation = 6;
   repeated string sets = 7;
   required string query = 8;
-  required int64 count = 9;
+  required double count = 9;
 }
 
 message SetOperationDto {
@@ -1162,4 +1102,18 @@ message EntityIndexHealthDto {
   }
 
   repeated ItemDto requireIndexing = 1;
+}
+
+message CountStatsDto {
+  optional int32 variables = 1;
+  optional int32 studyDatasets = 2;
+  optional int32 harmonizationDatasets = 3;
+  optional int32 studies = 4;
+  optional int32 individualStudies = 5;
+  optional int32 harmonizationStudies = 6;
+  optional int32 networks = 7;
+  optional int32 studyVariables = 8;
+  optional int32 dataschemaVariables = 9;
+  optional int32 studiesWithVariables = 10;
+  optional int32 harmonizationStudiesWithVariables = 11;
 }

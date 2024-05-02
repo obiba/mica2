@@ -169,7 +169,6 @@ mica.study.EditController = function (
 
   function createStudy() {
     $log.debug('Creating new study', $scope.study);
-    $scope.study['obiba.mica.CollectionStudyDto.type'] = {};
     DraftStudiesResource.save($scope.study, function (resource, getResponseHeaders) {
       FormDirtyStateObserver.unobserve();
       var parts = getResponseHeaders().location.split('/');
@@ -274,7 +273,7 @@ mica.study.HarmonizationStudyEditController = function (
 
   function createStudy() {
     $log.debug('Creating new study', $scope.study);
-    $scope.study['obiba.mica.HarmonizationStudyDto.type'] = {};
+    $scope.study.initiative = {};
     DraftStudiesResource.save($scope.study, function (resource, getResponseHeaders) {
       FormDirtyStateObserver.unobserve();
       var parts = getResponseHeaders().location.split('/');

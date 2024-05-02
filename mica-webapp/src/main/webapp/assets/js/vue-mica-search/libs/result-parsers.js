@@ -173,11 +173,15 @@ class GraphicsResultParser {
     }
 
     const processor = GraphicsResultParser.DEFAULT_GRAPH_PROCESSORS[GraphicsResultParser.__getPlotlyType(options.type || 'bar')];
-    return [processor.processData({key: options.agg, values: chartData, title: options.title}, options.colors || options.backgroundColor), processor.layoutObject];
+    return [processor.processData({
+      key: options.agg,
+      values: chartData,
+      title: options.title
+    }, options.colors || options.backgroundColor), processor.layoutObject];
   }
 
   static __parseForTable(vocabulary, chartData, forSubAggData) {
-    return chartData.filter(term => term.count>0).map(term => {
+    return chartData.filter(term => term.count > 0).map(term => {
       let row = {
         vocabulary: vocabulary.replace(/model-/, ""),
         key: term.key,
@@ -242,7 +246,7 @@ class VariablesResultParser {
     if (studyTypeSelection) {
       if (studyTypeSelection.study) {
         columnKey = 'variableColumnsIndividual';
-      } else if(studyTypeSelection.harmonization) {
+      } else if (studyTypeSelection.harmonization) {
         columnKey = 'variableColumnsHarmonization';
       }
     }
@@ -251,9 +255,9 @@ class VariablesResultParser {
       throw new Error("No variable results available.");
     }
 
-    if (variablesResult.totalHits < 1) return { totalHits: 0 };
+    if (variablesResult.totalHits < 1) return {totalHits: 0};
 
-    const result = variablesResult["obiba.mica.DatasetVariableResultDto.result"];
+    const result = variablesResult.variableResult;
 
     if (!result) {
       throw new Error("Invalid JSON.");
@@ -283,7 +287,7 @@ class VariablesResultParser {
           case 'label+description': {
             let labelElem = marked(localize(summary.variableLabel));
             if (column === 'label+description' && summary.description) {
-              labelElem =  "<i class='fa fa-info-circle text-muted float-left mr-2 mt-1' data-toggle='tooltip' data-html='true' title='" + marked(localize(summary.description)) + "'></i> " + labelElem;
+              labelElem = "<i class='fa fa-info-circle text-muted float-left mr-2 mt-1' data-toggle='tooltip' data-html='true' title='" + marked(localize(summary.description)) + "'></i> " + labelElem;
             }
             row.push(labelElem);
             break;
@@ -374,36 +378,36 @@ class StudiesResultParser {
   }
 
   static __getNumberOfParticipants(content) {
-     const numberOfParticipants = content['numberOfParticipants'];
-     if (numberOfParticipants) {
+    const numberOfParticipants = content['numberOfParticipants'];
+    if (numberOfParticipants) {
       const participant = numberOfParticipants['participant'];
       if (participant) {
         return participant.number || '-';
       }
-     }
+    }
 
-     return '-';
+    return '-';
   }
 
   parse(data, micaConfig, localize, displayOptions, studyTypeSelection) {
-    const studiesResult = data.studyResultDto;
+    const dtoResult = data.studyResultDto;
 
     let columnKey = 'studyColumns';
     if (studyTypeSelection) {
       if (studyTypeSelection.study) {
         columnKey = 'studyColumnsIndividual';
-      } else if(studyTypeSelection.harmonization) {
+      } else if (studyTypeSelection.harmonization) {
         columnKey = 'studyColumnsHarmonization';
       }
     }
 
-    if (!studiesResult) {
+    if (!dtoResult) {
       throw new Error("No network results available.");
     }
 
-    if (studiesResult.totalHits < 1) return { totalHits: 0 };
+    if (dtoResult.totalHits < 1) return {totalHits: 0};
 
-    const result = studiesResult["obiba.mica.StudyResultDto.result"];
+    const result = dtoResult.studyResult;
 
     if (!result) {
       throw new Error("Invalid JSON.");
@@ -411,7 +415,7 @@ class StudiesResultParser {
 
     let parsed = {
       data: [],
-      totalHits: studiesResult.totalHits
+      totalHits: dtoResult.totalHits
     }
 
     const taxonomyFilter = Vue.filter('taxonomy-title') || (title => title);
@@ -422,9 +426,9 @@ class StudiesResultParser {
 
       const type = summary.studyResourcePath === 'harmonization-study'
         ? taxonomyFilter.apply(null, ['Mica_study.className.HarmonizationStudy'])
-        : taxonomyFilter.apply(null, ['Mica_study.className.Study']) ;
+        : taxonomyFilter.apply(null, ['Mica_study.className.Study']);
 
-      const stats = summary['obiba.mica.CountStatsDto.studyCountStats'] || {};
+      const stats = summary.countStats || {};
       const content = JSON.parse(summary.content);
       const dataSources = summary.dataSources || [];
       const hasDatasource = (dataSources, id) => dataSources.indexOf(id) > -1;
@@ -545,7 +549,7 @@ class DatasetsResultParser {
   }
 
   parse(data, micaConfig, localize, displayOptions, studyTypeSelection) {
-    const datasetsResult = data.datasetResultDto;
+    const resultDto = data.datasetResultDto;
     const tr = Vue.filter('translate') || (value => value);
     const taxonomyFilter = Vue.filter('taxonomy-title') || (value => value);
 
@@ -553,18 +557,18 @@ class DatasetsResultParser {
     if (studyTypeSelection) {
       if (studyTypeSelection.study) {
         columnKey = 'datasetColumnsIndividual';
-      } else if(studyTypeSelection.harmonization) {
+      } else if (studyTypeSelection.harmonization) {
         columnKey = 'datasetColumnsHarmonization';
       }
     }
 
-    if (!datasetsResult) {
+    if (!resultDto) {
       throw new Error("No dataset results available.");
     }
 
-    if (datasetsResult.totalHits < 1) return { totalHits: 0};
+    if (resultDto.totalHits < 1) return {totalHits: 0};
 
-    const result = datasetsResult["obiba.mica.DatasetResultDto.result"];
+    const result = resultDto.datasetResult;
 
     if (!result) {
       throw new Error("Invalid JSON.");
@@ -572,7 +576,7 @@ class DatasetsResultParser {
 
     let parsed = {
       data: [],
-      totalHits: datasetsResult.totalHits
+      totalHits: resultDto.totalHits
     }
 
     const datasets = result.datasets || [];
@@ -583,13 +587,13 @@ class DatasetsResultParser {
       let row = [`<a href="${path}">${localize(dataset.acronym)}</a>`];
       const type = dataset.variableType === 'Dataschema'
         ? taxonomyFilter.apply(null, ['Mica_dataset.className.HarmonizationDataset'])
-        : taxonomyFilter.apply(null, ['Mica_dataset.className.StudyDataset']) ;
+        : taxonomyFilter.apply(null, ['Mica_dataset.className.StudyDataset']);
 
       let opalTable = dataset.variableType === 'Dataschema'
-        ? (dataset['obiba.mica.HarmonizedDatasetDto.type'] || {}).harmonizationTable
-        : (dataset['obiba.mica.CollectedDatasetDto.type'] || {}).studyTable;
+        ? dataset.protocol.harmonizationTable
+        : dataset.collected.studyTable;
 
-      const stats = dataset['obiba.mica.CountStatsDto.datasetCountStats'] || {};
+      const stats = dataset.countStats || {};
       let anchor = (type, value) => `<a href="" class="query-anchor" data-target="dataset" data-target-id="${dataset.id}" data-type="${type}">${value.toLocaleString(this.locale)}</a>`;
 
       (displayOptions[columnKey] || displayOptions.datasetColumns).forEach(column => {
@@ -661,24 +665,24 @@ class NetworksResultParser {
   }
 
   parse(data, micaConfig, localize, displayOptions, studyTypeSelection) {
-    const networksResult = data.networkResultDto;
+    const dtoResult = data.networkResultDto;
 
     let columnKey = 'networkColumns';
     if (studyTypeSelection) {
       if (studyTypeSelection.study) {
         columnKey = 'networkColumnsIndividual';
-      } else if(studyTypeSelection.harmonization) {
+      } else if (studyTypeSelection.harmonization) {
         columnKey = 'networkColumnsHarmonization';
       }
     }
 
-    if (!networksResult) {
+    if (!dtoResult) {
       throw new Error("No network results available.");
     }
 
-    if (networksResult.totalHits < 1) return { totalHits: 0};
+    if (dtoResult.totalHits < 1) return {totalHits: 0};
 
-    const result = networksResult["obiba.mica.NetworkResultDto.result"];
+    const result = dtoResult.networkResult;
 
     if (!result) {
       throw new Error("Invalid JSON.");
@@ -686,13 +690,13 @@ class NetworksResultParser {
 
     let parsed = {
       data: [],
-      totalHits: networksResult.totalHits
+      totalHits: dtoResult.totalHits
     }
 
     const networks = result.networks || [];
 
     networks.forEach(network => {
-      const stats = network['obiba.mica.CountStatsDto.networkCountStats'] || {};
+      const stats = network.countStats || {};
       let anchor = (type, value, studyType) => `<a href="" class="query-anchor" data-study-type="${studyType}" data-target="network" data-target-id="${network.id}" data-type="${type}">${value.toLocaleString(this.locale)}</a>`;
 
       let path = this.normalizePath(`/network/${network.id}`);
@@ -1030,7 +1034,7 @@ class CoverageResultParser {
   }
 
   parseHeaders(bucket, result) {
-    let table = { cols: [] };
+    let table = {cols: []};
     let vocabulariesTermsMap = {};
 
     if (result && result.rows) {
@@ -1048,7 +1052,7 @@ class CoverageResultParser {
       // TODO $scope.isFullCoverageImpossibleOrCoverageAlreadyFull();
     }
 
-    return { table, vocabulariesTermsMap};
+    return {table, vocabulariesTermsMap};
   }
 
   parse(data) {

@@ -9,6 +9,8 @@
     defaultLocale: "${defaultLang}"
   };
 
+  Mica.useOnlyOpalTaxonomiesForCoverage = ${useOnlyOpalTaxonomiesForCoverage?c};
+
   Mica.tr = {
     "all": "<@message "all"/>",
     "variables": "<@message "variables"/>",

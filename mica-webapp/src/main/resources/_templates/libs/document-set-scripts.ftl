@@ -16,6 +16,7 @@
 
   Mica.setIsLocked = ${set.locked?c};
   Mica.isAdministrator = ${isAdministrator?c};
+  Mica.useOnlyOpalTaxonomiesForCoverage = ${useOnlyOpalTaxonomiesForCoverage?c};
 
   Mica.tr = {
     "variables": "<@message "variables"/>",

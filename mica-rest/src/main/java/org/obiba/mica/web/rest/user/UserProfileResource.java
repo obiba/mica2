@@ -11,8 +11,11 @@
 package org.obiba.mica.web.rest.user;
 
 import com.google.common.base.Strings;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -23,10 +26,6 @@ import org.obiba.shiro.realm.ObibaRealm;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
 import java.util.NoSuchElementException;
 
 @Component

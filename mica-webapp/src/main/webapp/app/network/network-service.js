@@ -135,6 +135,13 @@ mica.network
         networkCopy.description = LocalizedValues.objectToArray(networkCopy.description);
       }
 
+
+      if (networkCopy.logo) {
+        // Remove fields not in the DTO
+        delete networkCopy.logo.showProgressBar;
+        delete networkCopy.logo.progress;
+      }
+
       networkCopy.content = networkCopy.model ? angular.toJson(networkCopy.model) : null;
       delete networkCopy.model; // NOTICE: must be removed to avoid protobuf exception in dto.
       return angular.toJson(networkCopy);

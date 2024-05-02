@@ -32,7 +32,7 @@ public class NetworkDtosCsvReportGenerator extends CsvReportGenerator {
   public NetworkDtosCsvReportGenerator(boolean forHarmonization, MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, String locale, Translator translator) {
     this.forHarmonization = forHarmonization;
     this.columnsToHide = columnsToHide;
-    this.networkDtos = queryResult.getNetworkResultDto().getExtension(MicaSearch.NetworkResultDto.result).getNetworksList();
+    this.networkDtos = queryResult.getNetworkResultDto().getNetworkResult().getNetworksList();
     this.translator = translator;
     this.locale = locale;
   }
@@ -80,7 +80,7 @@ public class NetworkDtosCsvReportGenerator extends CsvReportGenerator {
 
     List<String> line = new ArrayList<>();
 
-    MicaSearch.CountStatsDto networkCountStats = networkDto.getExtension(MicaSearch.CountStatsDto.networkCountStats);
+    Mica.CountStatsDto networkCountStats = networkDto.getCountStats();
 
     line.add(getLocalizedStringFor(networkDto.getAcronymList(), locale, networkDto.getAcronym(0)).getValue());
     line.add(getLocalizedStringFor(networkDto.getNameList(), locale, networkDto.getName(0)).getValue());

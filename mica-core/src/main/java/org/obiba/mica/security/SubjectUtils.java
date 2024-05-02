@@ -12,8 +12,8 @@ package org.obiba.mica.security;
 
 import java.util.concurrent.Callable;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Cookie;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;

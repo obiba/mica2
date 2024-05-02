@@ -27,7 +27,7 @@
       <div class="col-xs-12">
         <h4 translate>studies</h4>
         <span ng-repeat="membership in contact.studyMemberships">
-          <a target="_blank" ng-href="#/{{membership['obiba.mica.PersonDto.StudyMembershipDto.meta'].type}}/{{membership.parentId}}">
+          <a target="_blank" ng-href="#/{{PersonTypeToResourceMap[membership.type]}}/{{membership.parentId}}">
             <localized value="membership.parentAcronym" lang="lang"></localized>
           </a>
           (<em>{{'contact.label.' + membership.role | translate}}</em>)<span ng-if="!$last">,</span>
@@ -39,7 +39,7 @@
       <div class="col-xs-12">
         <h4 translate>networks</h4>
         <span ng-repeat="membership in contact.networkMemberships">
-          <a target="_blank" ng-href="#/{{membership['obiba.mica.PersonDto.StudyMembershipDto.meta'].type}}/{{membership.parentId}}">
+          <a target="_blank" ng-href="#/{{PersonTypeToResourceMap[membership.type]}}/{{membership.parentId}}">
             <localized value="membership.parentAcronym" lang="lang"></localized>
           </a>
           (<em>{{'contact.label.' + membership.role | translate}}</em>)<span ng-if="!$last">,</span>

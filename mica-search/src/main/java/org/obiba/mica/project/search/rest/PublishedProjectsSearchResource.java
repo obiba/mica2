@@ -10,7 +10,7 @@
 
 package org.obiba.mica.project.search.rest;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.context.annotation.Scope;

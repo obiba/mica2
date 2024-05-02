@@ -12,6 +12,12 @@ package org.obiba.mica.file.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.io.Files;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Response;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileStoreService;
@@ -22,8 +28,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriUtils;
 
 import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
 
 @Component
 @Path("/")

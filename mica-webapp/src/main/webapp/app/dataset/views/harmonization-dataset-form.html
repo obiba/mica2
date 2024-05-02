@@ -34,17 +34,17 @@
         <div sf-model="dataset.model" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions"></div>
       </div>
       <div class="col-md-6">
-        <div ng-show="dataset['obiba.mica.HarmonizedDatasetDto.type']">
-          <h3 translate>dataset.data-schema.title</h3>
+        <div ng-show="dataset.protocol">
+          <h3 translate>  dataset.data-schema.title</h3>
 
           <p class="help-block" translate>dataset.data-schema.info</p>
 
           <p class="help-block" translate>dataset.datasource.info-schema</p>
 
-          <select id="namespace" name="namespace" class="form-control" ng-model="dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.namespace" ng-options="'dataset.study-table.source.' + namespace | translate for namespace in NAMESPACES" required="true">
+          <select id="namespace" name="namespace" class="form-control" ng-model="dataset.protocol.harmonizationTable.namespace" ng-options="'dataset.study-table.source.' + namespace | translate for namespace in NAMESPACES" required="true">
           </select>
 
-          <div ng-show="dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.namespace === 'opal'">
+          <div ng-show="dataset.protocol.harmonizationTable.namespace === 'opal'">
 
             <p class="help-block" translate>dataset.datasource.opal.info-schema</p>
             <div class="row">
@@ -84,7 +84,7 @@
 
           </div>
 
-          <div ng-show="dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.namespace === 'file'">
+          <div ng-show="dataset.protocol.harmonizationTable.namespace === 'file'">
             <p class="help-block" translate>dataset.datasource.file.info-schema</p>
             <div class="row">
               <div class="col-md-6">
@@ -94,20 +94,20 @@
                     <span translate>path</span>
                     <span>*</span>
                   </label>
-                  <input type="text" class="form-control" ng-model="dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.path">
+                  <input type="text" class="form-control" ng-model="dataset.protocol.harmonizationTable.path">
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group"
                      ng-class="{'has-error': (form['table'].$dirty || form.saveAttempted) && form['table'].$invalid}">
                   <label class="control-label" translate>dataset.table</label>
-                  <input type="text" class="form-control" ng-model="dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.table">
+                  <input type="text" class="form-control" ng-model="dataset.protocol.harmonizationTable.table">
                 </div>
               </div>
             </div>
           </div>
 
-          <div ng-show="dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.namespace === 'other'">
+          <div ng-show="dataset.protocol.harmonizationTable.namespace === 'other'">
             <p class="help-block" translate>dataset.datasource.other.info-schema</p>
             <div class="row">
               <div class="col-md-6">
@@ -117,14 +117,14 @@
                     <span translate>dataset.datasource.other.nid</span>
                     <span>*</span>
                   </label>
-                  <input type="text" class="form-control" ng-model="dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.nid">
+                  <input type="text" class="form-control" ng-model="dataset.protocol.harmonizationTable.nid">
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group"
                      ng-class="{'has-error': (form['table'].$dirty || form.saveAttempted) && form['table'].$invalid}">
                   <label class="control-label" translate>dataset.datasource.other.nss</label>
-                  <input type="text" class="form-control" ng-model="dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.nss">
+                  <input type="text" class="form-control" ng-model="dataset.protocol.harmonizationTable.nss">
                 </div>
               </div>
             </div>

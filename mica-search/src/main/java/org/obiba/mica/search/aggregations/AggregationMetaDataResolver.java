@@ -10,24 +10,22 @@
 
 package org.obiba.mica.search.aggregations;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
-import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-
 @Component
 @Scope("prototype")
-public class AggregationMetaDataResolver {
+public class AggregationMetaDataResolver implements InitializingBean {
 
   @Inject
   private DefaultAggregationMetaDataProvider defaultAggregationTitleProvider;
@@ -36,8 +34,8 @@ public class AggregationMetaDataResolver {
 
   private Map<String, AggregationMetaDataProvider> aggregationProviderMap;
 
-  @PostConstruct
-  public void init() {
+  @Override
+  public void afterPropertiesSet() throws Exception {
     providers = new HashSet<>();
     aggregationProviderMap = Maps.newHashMap();
   }

@@ -138,10 +138,10 @@
                   </ul>
                 </td>
                 <td>
-                  <div publish-status state="studyVO['obiba.mica.EntityStateDto.studySummaryState']"></div>
+                  <div publish-status state="studyVO.state"></div>
                 </td>
                	<td>
-                  {{'publish.status.' + studyVO['obiba.mica.EntityStateDto.studySummaryState'].revisionStatus | translate}}
+                  {{'publish.status.' + studyVO.state.revisionStatus | translate}}
                	</td>
               </tr>
 			</tbody>

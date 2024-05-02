@@ -10,6 +10,16 @@
 
 package org.obiba.mica;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.collect.MapDifference;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.obiba.git.CommitInfo;
 import org.obiba.mica.comment.rest.CommentResource;
 import org.obiba.mica.comment.rest.CommentsResource;
@@ -30,18 +40,6 @@ import org.springframework.beans.factory.annotation.Value;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.collect.MapDifference;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

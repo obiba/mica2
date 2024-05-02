@@ -10,8 +10,7 @@
 
 package org.obiba.mica.config;
 
-import javax.inject.Inject;
-
+import com.google.common.eventbus.Subscribe;
 import org.obiba.mica.config.locale.AngularCookieLocaleResolver;
 import org.obiba.mica.config.locale.ExtendedResourceBundleMessageSource;
 import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
@@ -24,13 +23,13 @@ import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
-import com.google.common.eventbus.Subscribe;
+import javax.inject.Inject;
 
 @Configuration
-public class LocaleConfiguration extends WebMvcConfigurerAdapter implements EnvironmentAware {
+public class LocaleConfiguration implements WebMvcConfigurer, EnvironmentAware {
 
   private Environment environment;
 
@@ -51,7 +50,7 @@ public class LocaleConfiguration extends WebMvcConfigurerAdapter implements Envi
   @Bean(name = "localeResolver")
   public LocaleResolver localeResolver() {
     AngularCookieLocaleResolver cookieLocaleResolver = new AngularCookieLocaleResolver(micaConfigService);
-    cookieLocaleResolver.setCookieName("NG_TRANSLATE_LANG_KEY");
+//    cookieLocaleResolver.setCookieName("NG_TRANSLATE_LANG_KEY");
     return cookieLocaleResolver;
   }
 

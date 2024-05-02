@@ -132,7 +132,7 @@ class AttachmentDtos {
     if(dto.hasType()) attachment.setType(dto.getType());
     if(dto.getDescriptionCount() > 0) attachment.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
     if(dto.hasLang()) attachment.setLang(new Locale(dto.getLang()));
-    attachment.setSize(dto.getSize());
+    attachment.setSize((long)dto.getSize());
     if(dto.hasMd5()) attachment.setMd5(dto.getMd5());
     attachment.setJustUploaded(dto.getJustUploaded());
 

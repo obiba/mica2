@@ -87,23 +87,23 @@
             </ul>
           </td>
           <td>
-            <div publish-status state="dataset['obiba.mica.EntityStateDto.datasetState']"></div>
+            <div publish-status state="dataset.state"></div>
           </td>
           <td>
-            {{'publish.status.' + dataset['obiba.mica.EntityStateDto.datasetState'].revisionStatus | translate}}
+            {{'publish.status.' + dataset.state.revisionStatus | translate}}
           </td>
           <td class="text-nowrap">
             {{dataset.timestamps.lastUpdate | amDateFormat : 'lll'}}
           </td>
           <td>
             <ul class="list-inline">
-              <li ng-if="dataset['obiba.mica.EntityStateDto.datasetState'].permissions.edit && dataset['obiba.mica.EntityStateDto.datasetState'].revisionStatus === 'DRAFT'">
+              <li ng-if="dataset.state.permissions.edit && dataset.state.revisionStatus === 'DRAFT'">
                 <a ng-href="#/harmonized-dataset/{{dataset.id}}/edit" title="{{'edit' | translate}}"><i class="fa fa-pencil"></i></a>
               </li>
-              <li ng-if="dataset['obiba.mica.EntityStateDto.datasetState'].permissions.delete && dataset['obiba.mica.EntityStateDto.datasetState'].revisionStatus === 'DELETED'">
+              <li ng-if="dataset.state.permissions.delete && dataset.state.revisionStatus === 'DELETED'">
                 <a href ng-click="deleteDocument(dataset)" title="{{'delete' | translate}}"><i class="fa fa-trash-o"></i></a>
               </li>
-              <li ng-if="dataset['obiba.mica.EntityStateDto.datasetState'].revisionStatus === 'UNDER_REVIEW'">
+              <li ng-if="dataset.state.revisionStatus === 'UNDER_REVIEW'">
                 <a ng-href="#/harmonized-dataset/{{dataset.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
               </li>
             </ul>

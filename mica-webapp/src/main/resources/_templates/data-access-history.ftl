@@ -71,9 +71,7 @@
                 <table id="status" class="table table-bordered table-striped">
                   <thead>
                   <tr>
-                    <#if accessConfig.amendmentsEnabled || accessConfig.feasibilityEnabled || accessConfig.preliminaryEnabled || accessConfig.agreementEnabled>
-                      <th><@message "form"/></th>
-                    </#if>
+                    <th><@message "form"/></th>
                     <th><@message "status"/></th>
                     <th><@message "author"/></th>
                     <th><@message "date"/></th>

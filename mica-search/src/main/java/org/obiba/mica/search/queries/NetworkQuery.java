@@ -131,7 +131,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
     }
 
     networks.forEach(addDto);
-    builder.setExtension(NetworkResultDto.result, resBuilder.build());
+    builder.setNetworkResult(resBuilder.build());
   }
 
   private Consumer<Network> networkConsumer(QueryScope scope, NetworkResultDto.Builder resBuilder,
@@ -147,8 +147,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
         : dtos.asDtoBuilder(network);
 
       if (networkCountStatsBuilder != null) {
-        networkBuilder.setExtension(MicaSearch.CountStatsDto.networkCountStats, networkCountStatsBuilder.build(network))
-            .build();
+        networkBuilder.setCountStats(networkCountStatsBuilder.build(network)).build();
       }
       resBuilder.addNetworks(networkBuilder.build());
     };

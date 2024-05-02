@@ -35,7 +35,7 @@ public class DatasetVariableDtosCsvReportGenerator extends CsvReportGenerator {
   public DatasetVariableDtosCsvReportGenerator(boolean forHarmonization, MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, String locale, Translator translator) {
     this.forHarmonization = forHarmonization;
     this.columnsToHide = columnsToHide;
-    this.datasetVariableDtos = queryResult.getVariableResultDto().getExtension(MicaSearch.DatasetVariableResultDto.result).getSummariesList();
+    this.datasetVariableDtos = queryResult.getVariableResultDto().getVariableResult().getSummariesList();
     this.translator = translator;
     this.locale = locale;
   }

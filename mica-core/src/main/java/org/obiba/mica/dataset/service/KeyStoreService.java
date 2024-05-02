@@ -10,6 +10,17 @@
 
 package org.obiba.mica.dataset.service;
 
+import com.google.common.base.Strings;
+import org.bouncycastle.openssl.PEMWriter;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.security.KeyStoreManager;
+import org.obiba.security.KeyStoreRepository;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
+import javax.security.auth.callback.CallbackHandler;
+import javax.validation.constraints.NotNull;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -20,26 +31,13 @@ import java.security.KeyStoreException;
 import java.security.cert.Certificate;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.security.auth.callback.CallbackHandler;
-import javax.validation.constraints.NotNull;
-
-import org.bouncycastle.openssl.PEMWriter;
-import org.obiba.mica.micaConfig.service.MicaConfigService;
-import org.obiba.security.KeyStoreManager;
-import org.obiba.security.KeyStoreRepository;
-import org.springframework.stereotype.Service;
-
-import com.google.common.base.Strings;
-
 import static java.util.Optional.ofNullable;
 
 /**
  *
  */
 @Service
-public class KeyStoreService {
+public class KeyStoreService implements InitializingBean {
 
   public static final String SYSTEM_KEY_STORE = "system";
 
@@ -55,8 +53,8 @@ public class KeyStoreService {
 
   private final KeyStoreRepository keyStoreRepository = new KeyStoreRepository();
 
-  @PostConstruct
-  public void init() {
+  @Override
+  public void afterPropertiesSet() throws Exception {
     if(keystoresRoot == null) {
       keystoresRoot = new File(PATH_KEYSTORE.replace("${MICA_HOME}", System.getProperty("MICA_HOME")));
     }

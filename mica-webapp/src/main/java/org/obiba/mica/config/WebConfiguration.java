@@ -10,20 +10,19 @@
 
 package org.obiba.mica.config;
 
-import java.io.IOException;
-import java.util.Arrays;
-
-import javax.inject.Inject;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.codahale.metrics.MetricRegistry;
+import io.dropwizard.metrics.servlet.InstrumentedFilter;
+import io.dropwizard.metrics.servlets.MetricsServlet;
+import com.google.common.base.Strings;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.shiro.web.env.EnvironmentLoaderListener;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -52,10 +51,9 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.servlet.InstrumentedFilter;
-import com.codahale.metrics.servlets.MetricsServlet;
-import com.google.common.base.Strings;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Configuration of web application with Servlet 3.0 APIs.
@@ -127,7 +125,7 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
   private void customizeSsl(Server server) {
     if (httpsPort <= 0) return;
 
-    SslContextFactory jettySsl = new SslContextFactory() {
+    SslContextFactory.Server jettySsl = new SslContextFactory.Server() {
 
       @Override
       protected void doStart() throws Exception {

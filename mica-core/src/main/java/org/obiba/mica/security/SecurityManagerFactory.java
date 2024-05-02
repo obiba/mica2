@@ -11,10 +11,6 @@ package org.obiba.mica.security;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-import java.util.Set;
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-import net.sf.ehcache.CacheManager;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -27,7 +23,6 @@ import org.apache.shiro.authz.permission.PermissionResolver;
 import org.apache.shiro.authz.permission.PermissionResolverAware;
 import org.apache.shiro.authz.permission.RolePermissionResolver;
 import org.apache.shiro.authz.permission.RolePermissionResolverAware;
-import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.SessionsSecurityManager;
 import org.apache.shiro.realm.Realm;
@@ -36,18 +31,25 @@ import org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO;
 import org.apache.shiro.util.LifecycleUtils;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
+import org.ehcache.integrations.shiro.EhcacheShiroManager;
+import org.obiba.shiro.EhCache3ShiroManager;
 import org.obiba.shiro.NoSuchOtpException;
 import org.obiba.shiro.SessionStorageEvaluator;
 import org.obiba.shiro.realm.ObibaRealm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
+import java.util.Set;
+
 @Component
-public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManager> {
+public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManager>, DisposableBean {
 
   public static final String INI_REALM = "mica-ini-realm";
 
@@ -63,9 +65,9 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
 
   private final PermissionResolver permissionResolver;
 
-  private final CacheManager cacheManager;
-
   private SessionsSecurityManager securityManager;
+
+
 
   @Inject
   @Lazy
@@ -79,7 +81,6 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
     this.realms = realms;
     this.rolePermissionResolver = rolePermissionResolver;
     this.permissionResolver = permissionResolver;
-    this.cacheManager = cacheManager;
   }
 
   @Override
@@ -101,8 +102,8 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
     return true;
   }
 
-  @PreDestroy
-  public void destroySecurityManager() {
+  @Override
+  public void destroy() throws Exception {
     log.debug("Shutdown SecurityManager");
     // Destroy the security manager.
     SecurityUtils.setSecurityManager(null);
@@ -157,8 +158,8 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
 
   private void initializeCacheManager(DefaultWebSecurityManager dsm) {
     if(dsm.getCacheManager() == null) {
-      EhCacheManager ehCacheManager = new EhCacheManager();
-      ehCacheManager.setCacheManager(cacheManager);
+      EhcacheShiroManager ehCacheManager = new EhCache3ShiroManager();
+      ehCacheManager.setCacheManagerConfigFile("classpath:ehcache-shiro.xml");
       dsm.setCacheManager(ehCacheManager);
     }
   }

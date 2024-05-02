@@ -12,6 +12,21 @@ package org.obiba.mica.variable.search.rest;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.StreamingOutput;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.DocumentSet;
@@ -33,12 +48,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.util.List;
@@ -180,7 +189,7 @@ public class PublishedDatasetVariablesSetResource extends AbstractPublishedDocum
     if (Strings.isNullOrEmpty(query)) return dtos.asDto(set);
     MicaSearch.JoinQueryResultDto result = makeQuery(QueryType.VARIABLE, query);
     if (result.hasVariableResultDto() && result.getVariableResultDto().getTotalHits() > 0) {
-      List<String> ids = result.getVariableResultDto().getExtension(MicaSearch.DatasetVariableResultDto.result).getSummariesList().stream()
+      List<String> ids = result.getVariableResultDto().getVariableResult().getSummariesList().stream()
         .map(Mica.DatasetVariableResolverDto::getId).collect(Collectors.toList());
       getDocumentSetService().addIdentifiers(id, ids);
       set = getSecuredDocumentSet(id, anonymousUserId);

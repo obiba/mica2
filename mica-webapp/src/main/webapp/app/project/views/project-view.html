@@ -27,7 +27,7 @@
       </a>
 
       <status-buttons class="inline"
-        state="project['obiba.mica.EntityStateDto.projectState']"
+        state="project.state"
         on-publish="publish(true)"
         on-un-publish="publish(false)"
         on-delete="delete()"
@@ -43,7 +43,7 @@
       <small class="help-block inline">{{'global.lastUpdate' | translate}}: {{project.timestamps.lastUpdate |
         amDateFormat : 'lll'}}
       </small>
-      <publish-status class="inline" state="project['obiba.mica.EntityStateDto.projectState']"></publish-status>
+      <publish-status class="inline" state="project.state"></publish-status>
     </p>
     <div ng-if="project.request" class="pull-right">
       <small class="help-block inline">{{'research-project.data-access-request' | translate}}:

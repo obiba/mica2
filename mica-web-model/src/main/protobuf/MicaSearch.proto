@@ -12,88 +12,44 @@ message JoinQueryResultDto {
 message QueryResultDto {
   repeated AggregationResultDto aggs = 1;
   required int32 totalHits = 2;
-  required int64 totalCount = 3;
+  required double totalCount = 3;
 
-  extensions 1000 to max;
+  optional DatasetVariableResultDto variableResult = 4;
+  optional DatasetResultDto datasetResult = 5;
+  optional StudyResultDto studyResult = 6;
+  optional NetworkResultDto networkResult = 8;
+  repeated StudySummaryDto summaries = 9;
 }
 
 message DatasetVariableResultDto {
   repeated obiba.mica.DatasetVariableResolverDto summaries = 1;
   repeated obiba.mica.DatasetVariableDto variables = 2;
   repeated obiba.mica.DatasetDto datasets = 3;
-
-  extend QueryResultDto {
-    optional DatasetVariableResultDto result = 1000;
-  }
 }
 
 message DatasetResultDto {
   repeated obiba.mica.DatasetDto datasets = 1;
   repeated obiba.mica.DocumentDigestDto digests = 2;
-
-  extend QueryResultDto {
-    optional DatasetResultDto result = 1001;
-  }
 }
 
 message StudyResultDto {
   repeated obiba.mica.StudySummaryDto summaries = 1;
   repeated obiba.mica.StudyDto studies = 2;
   repeated obiba.mica.DocumentDigestDto digests = 3;
-
-  extend QueryResultDto {
-    optional StudyResultDto result = 1002;
-  }
-}
-
-message CountStatsDto {
-  optional int32 variables = 1;
-  optional int32 studyDatasets = 2;
-  optional int32 harmonizationDatasets = 3;
-  optional int32 studies = 4;
-  optional int32 individualStudies = 5;
-  optional int32 harmonizationStudies = 6;
-  optional int32 networks = 7;
-  optional int32 studyVariables = 8;
-  optional int32 dataschemaVariables = 9;
-  optional int32 studiesWithVariables = 10;
-  optional int32 harmonizationStudiesWithVariables = 11;
-
-  extend StudySummaryDto {
-    optional CountStatsDto studyCountStats = 1001;
-  }
-
-  extend DatasetDto {
-    optional CountStatsDto datasetCountStats = 1003;
-  }
-
-  extend NetworkDto {
-    optional CountStatsDto networkCountStats = 1001;
-  }
 }
 
 message NetworkResultDto {
   repeated obiba.mica.NetworkDto networks = 1;
   repeated obiba.mica.DocumentDigestDto digests = 2;
-
-  extend QueryResultDto {
-    optional NetworkResultDto result = 1003;
-  }
-}
-
-message StudySummariesResultDto {
-  repeated obiba.mica.StudySummaryDto summaries = 1;
-
-  extend QueryResultDto {
-    optional StudySummariesResultDto result = 1009;
-  }
 }
 
 message AggregationResultDto {
   required string aggregation = 1;
   repeated LocalizedStringDto title = 2;
   repeated AggregationResultDto children = 3;
-  extensions 1000 to max;
+  repeated TermsAggregationResultDto terms = 4;
+  optional StatsAggregationResultDto stats = 5;
+  repeated RangeAggregationResultDto ranges = 6;
 }
 
 message TermsAggregationResultDto {
@@ -106,14 +62,10 @@ message TermsAggregationResultDto {
   optional string start = 8;
   optional string end = 9;
   optional string sortField = 10;
-
-  extend AggregationResultDto {
-    repeated TermsAggregationResultDto terms = 1000;
-  }
 }
 
 message StatsAggregationResultDataDto {
-  required int64 count = 1;
+  required double count = 1;
   optional double min = 2;
   optional double max = 3;
   optional double avg = 4;
@@ -122,10 +74,6 @@ message StatsAggregationResultDataDto {
 
 message StatsAggregationResultDto {
   required StatsAggregationResultDataDto data = 2;
-
-  extend AggregationResultDto {
-    optional StatsAggregationResultDto stats = 1001;
-  }
 }
 
 message RangeAggregationResultDto {
@@ -133,15 +81,11 @@ message RangeAggregationResultDto {
   optional string title = 2;
   optional string description = 3;
   optional string className = 4;
-  required int64 default = 5;
-  required int64 count = 6;
+  required double default = 5;
+  required double count = 6;
   optional double from = 7;
   optional double to = 8;
   repeated AggregationResultDto aggs = 9;
-
-  extend AggregationResultDto {
-    repeated RangeAggregationResultDto ranges = 1002;
-  }
 }
 
 message BucketCoverageDto {
@@ -181,7 +125,7 @@ message TaxonomyCoverageDto {
 message TaxonomiesCoverageDto {
   repeated TaxonomyCoverageDto taxonomies = 1;
   required int32 totalHits = 2;
-  required int64 totalCount = 3;
+  required double totalCount = 3;
   repeated string by = 4;
   optional JoinQueryResultDto queryResult = 5;
 }
@@ -269,7 +213,7 @@ message EntitiesCountDto {
 }
 
 message EntityTotalCountDto {
-  required int64 total = 1;
+  required double total = 1;
   required int32 hits = 2;
 }
 

@@ -13,10 +13,10 @@ package org.obiba.mica.file.rest;
 import java.io.IOException;
 
 import javax.inject.Inject;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.file.TempFile;

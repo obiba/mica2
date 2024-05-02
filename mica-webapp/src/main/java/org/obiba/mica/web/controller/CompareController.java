@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -136,7 +136,7 @@ public class CompareController extends BaseController {
   private List<String> queryStudyIds(String query) {
     MicaSearch.JoinQueryResultDto result = makeQuery(QueryType.STUDY, query);
     if (result.hasStudyResultDto() && result.getStudyResultDto().getTotalHits() > 0) {
-      return result.getStudyResultDto().getExtension(MicaSearch.StudyResultDto.result).getSummariesList().stream()
+      return result.getStudyResultDto().getStudyResult().getSummariesList().stream()
         .map(Mica.StudySummaryDto::getId).collect(Collectors.toList());
     }
     return new ArrayList<>();
@@ -145,7 +145,7 @@ public class CompareController extends BaseController {
   private List<String> queryNetworkIds(String query) {
     MicaSearch.JoinQueryResultDto result = makeQuery(QueryType.NETWORK, query);
     if (result.hasNetworkResultDto() && result.getNetworkResultDto().getTotalHits() > 0) {
-      return result.getNetworkResultDto().getExtension(MicaSearch.NetworkResultDto.result).getNetworksList().stream()
+      return result.getNetworkResultDto().getNetworkResult().getNetworksList().stream()
         .map(Mica.NetworkDto::getId).collect(Collectors.toList());
     }
     return new ArrayList<>();

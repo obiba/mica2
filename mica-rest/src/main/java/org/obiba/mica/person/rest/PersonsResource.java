@@ -1,15 +1,17 @@
 package org.obiba.mica.person.rest;
 
 import com.google.common.eventbus.EventBus;
+
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.core.Response;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.contact.event.IndexContactsEvent;
@@ -19,6 +21,7 @@ import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica.PersonDto;
 import org.springframework.stereotype.Component;
+import support.legacy.UpgradeLegacyEntities;
 
 @Component
 @RequiresAuthentication
@@ -37,7 +40,7 @@ public class PersonsResource {
 
   @Inject
   public PersonsResource(Dtos dtos, PersonService personService, SubjectAclService subjectAclService,
-    StudyService service, EventBus eventBus) {
+                         StudyService service, EventBus eventBus) {
     this.dtos = dtos;
     this.personService = personService;
     this.subjectAclService = subjectAclService;
@@ -65,7 +68,7 @@ public class PersonsResource {
 
   @PUT
   @Path("/_index")
-  @RequiresPermissions({ "/draft/individual-study:EDIT", "/draft/harmonization-study:EDIT", "/draft/network:EDIT" })
+  @RequiresPermissions({"/draft/individual-study:EDIT", "/draft/harmonization-study:EDIT", "/draft/network:EDIT"})
   public Response index() {
     eventBus.post(new IndexContactsEvent());
     return Response.noContent().build();

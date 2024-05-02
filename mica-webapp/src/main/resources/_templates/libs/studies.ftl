@@ -141,12 +141,12 @@
                   <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
                     <dataset-stat-item
                             v-bind:type="study.studyResourcePath"
-                            v-bind:stats="study['obiba.mica.CountStatsDto.studyCountStats']">
+                            v-bind:stats="study.countStats">
                     </dataset-stat-item>
                     <variable-stat-item
                             v-bind:url="variablesUrl(study)"
                             v-bind:type="study.studyResourcePath"
-                            v-bind:stats="study['obiba.mica.CountStatsDto.studyCountStats']">
+                            v-bind:stats="study.countStats">
                     </variable-stat-item>
                   <#else>
                     <a href="javascript:void(0)" class="btn btn-sm" style="cursor: initial; opacity: 0">

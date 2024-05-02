@@ -145,6 +145,12 @@ mica.study
 
       studyCopy.content = studyCopy.model ? angular.toJson(studyCopy.model) : null;
 
+      if (studyCopy.logo) {
+        // Remove fields not in the DTO
+        delete studyCopy.logo.showProgressBar;
+        delete studyCopy.logo.progress;
+      }
+
       delete studyCopy.model; // NOTICE: must be removed to avoid protobuf exception in dto.
 
       if(studyCopy.populations) {
@@ -171,6 +177,7 @@ mica.study
 
       population.content = population.model ? angular.toJson(population.model) : null;
 
+      delete population._active;
       delete population.model;
 
       if(population.dataCollectionEvents) {
@@ -235,6 +242,7 @@ mica.study
 
       dce.content = dce.model ? angular.toJson(dce.model) : null;
 
+      delete dce._active;
       delete dce.model;
     }
 

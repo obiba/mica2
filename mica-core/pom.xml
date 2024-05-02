@@ -27,6 +27,15 @@
 
   <dependencies>
     <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.ws.rs</groupId>
+      <artifactId>jakarta.ws.rs-api</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.obiba.mica</groupId>
       <artifactId>mica-spi</artifactId>
     </dependency>
@@ -39,32 +48,32 @@
       <artifactId>magma-datasource-excel</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.codahale.metrics</groupId>
+      <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.codahale.metrics</groupId>
+      <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-json</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.codahale.metrics</groupId>
+      <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-ehcache</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.codahale.metrics</groupId>
+      <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-graphite</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.codahale.metrics</groupId>
+      <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-jvm</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.codahale.metrics</groupId>
-      <artifactId>metrics-servlet</artifactId>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-jakarta-servlet</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.codahale.metrics</groupId>
-      <artifactId>metrics-servlets</artifactId>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-jakarta-servlets</artifactId>
     </dependency>
     <dependency>
       <groupId>com.googlecode.protobuf-java-format</groupId>
@@ -131,10 +140,10 @@
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.geronimo.javamail</groupId>
-      <artifactId>geronimo-javamail_1.4_mail</artifactId>
-    </dependency>
+    <!--    <dependency>-->
+    <!--      <groupId>org.apache.geronimo.javamail</groupId>-->
+    <!--      <artifactId>geronimo-javamail_1.4_mail</artifactId>-->
+    <!--    </dependency>-->
     <dependency>
       <groupId>org.hibernate.validator</groupId>
       <artifactId>hibernate-validator</artifactId>
@@ -153,6 +162,19 @@
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-cache</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.ehcache</groupId>
+      <artifactId>ehcache</artifactId>
+      <classifier>jakarta</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.ehcache.integrations.shiro</groupId>
+      <artifactId>shiro-ehcache3</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-logging</artifactId>
       <exclusions>
         <exclusion>
@@ -165,6 +187,12 @@
         </exclusion>
       </exclusions>
     </dependency>
+
+<!--    <dependency>-->
+<!--      <groupId>org.slf4j</groupId>-->
+<!--      <artifactId>jcl-over-slf4j</artifactId>-->
+<!--    </dependency>-->
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-aop</artifactId>
@@ -242,10 +270,12 @@
     <dependency>
       <groupId>org.apache.shiro</groupId>
       <artifactId>shiro-core</artifactId>
+      <classifier>jakarta</classifier>
     </dependency>
     <dependency>
       <groupId>org.apache.shiro</groupId>
       <artifactId>shiro-spring</artifactId>
+      <classifier>jakarta</classifier>
     </dependency>
     <dependency>
       <groupId>org.apache.shiro</groupId>
@@ -255,6 +285,12 @@
       <groupId>eu.flatwhite.shiro</groupId>
       <artifactId>shiro-extras</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.shiro</groupId>
+      <artifactId>shiro-web</artifactId>
+      <classifier>jakarta</classifier>
+    </dependency>
+
 
     <dependency>
       <groupId>org.obiba.commons</groupId>
@@ -274,6 +310,10 @@
       <groupId>com.itextpdf</groupId>
       <artifactId>itextpdf</artifactId>
     </dependency>
+      <dependency>
+          <groupId>org.obiba.commons</groupId>
+          <artifactId>obiba-password-hasher</artifactId>
+      </dependency>
 
   </dependencies>
 

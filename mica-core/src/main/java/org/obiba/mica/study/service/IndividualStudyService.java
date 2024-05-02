@@ -22,8 +22,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 
 import org.json.JSONException;
@@ -43,6 +45,7 @@ import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.study.ConstraintException;
 import org.obiba.mica.study.StudyRepository;
 import org.obiba.mica.study.StudyStateRepository;
+import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.event.DraftStudyPopulationDceWeightChangedEvent;
@@ -52,6 +55,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 
 import com.google.common.base.Strings;

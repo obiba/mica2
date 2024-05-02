@@ -267,8 +267,8 @@ class MicaConfigDtos {
     config.setContingencyEnabled(dto.getIsContingencyEnabled());
     config.setSetsSearchEnabled(dto.getIsSetsSearchEnabled());
 
-    if (dto.hasMaxItemsPerSet() && dto.getMaxItemsPerSet() > 0) config.setMaxItemsPerSet(dto.getMaxItemsPerSet());
-    if (dto.hasMaxNumberOfSets() && dto.getMaxNumberOfSets() > 0) config.setMaxNumberOfSets(dto.getMaxNumberOfSets());
+    if (dto.hasMaxItemsPerSet() && dto.getMaxItemsPerSet() > 0) config.setMaxItemsPerSet((long)dto.getMaxItemsPerSet());
+    if (dto.hasMaxNumberOfSets() && dto.getMaxNumberOfSets() > 0) config.setMaxNumberOfSets((long)dto.getMaxNumberOfSets());
     if (dto.hasCartTimeToLive()) config.setCartTimeToLive(dto.getCartTimeToLive());
     if (dto.hasSetTimeToLive()) config.setSetTimeToLive(dto.getSetTimeToLive());
 

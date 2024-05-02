@@ -14,6 +14,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -61,6 +62,7 @@ import com.google.common.io.ByteSource;
 import com.google.common.io.ByteStreams;
 import com.google.protobuf.ExtensionRegistry;
 import com.googlecode.protobuf.format.JsonFormat;
+import support.legacy.UpgradeLegacyEntities;
 
 @Service
 public class StudyPackageImportServiceImpl extends AbstractProtobufProvider implements StudyPackageImportService {
@@ -329,8 +331,6 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       Mica.StudyDto.Builder builder = Mica.StudyDto.newBuilder();
       Readable input = new InputStreamReader(inputStream, Charsets.UTF_8);
       ExtensionRegistry extensionRegistry = ExtensionRegistry.newInstance();
-      extensionRegistry .add(Mica.CollectionStudyDto.type);
-      extensionRegistry .add(Mica.HarmonizationStudyDto.type);
       JsonFormat.merge(input, extensionRegistry, builder);
       List<Attachment> atts = extractAttachments(builder);
       BaseStudy study = dtos.fromDto( builder);
@@ -372,7 +372,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       Mica.DatasetDto.Builder builder = Mica.DatasetDto.newBuilder();
       Readable input = new InputStreamReader(inputStream, Charsets.UTF_8);
       JsonFormat.merge(input, builder);
-      return dtos.fromDto(builder);
+      return dtos.fromDto(builder.build());
     }
 
     private byte[] readBytes(ZipInputStream zipIn) throws IOException {

@@ -22,7 +22,7 @@
     <li ng-class="{'active': tabName === 'comments'}">
       <a href="#/project/{{project.id}}/comments" title="{{'comments' | translate}}"><i class="fa fa-comments"></i></a>
     </li>
-    <li ng-class="{'active': tabName === 'permissions'}" ng-if="project['obiba.mica.EntityStateDto.projectState'].permissions.publish">
+    <li ng-class="{'active': tabName === 'permissions'}" ng-if="project.state.permissions.publish">
       <a href="#/project/{{project.id}}/permissions" title="{{'permissions' | translate}}"><i class="fa fa-lock"></i></a>
     </li>
   </ul>

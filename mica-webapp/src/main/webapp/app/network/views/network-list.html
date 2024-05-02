@@ -88,23 +88,23 @@
             </ul>
           </td>
           <td>
-            <div publish-status state="network['obiba.mica.EntityStateDto.networkSummaryState']"></div>
+            <div publish-status state="network.state"></div>
           </td>
           <td>
-            {{'publish.status.' + network['obiba.mica.EntityStateDto.networkSummaryState'].revisionStatus | translate}}
+            {{'publish.status.' + network.state.revisionStatus | translate}}
           </td>
           <td class="text-nowrap">
             {{network.timestamps.lastUpdate | amDateFormat : 'lll'}}
           </td>
           <td>
             <ul class="list-inline">
-              <li ng-if="network['obiba.mica.EntityStateDto.networkSummaryState'].permissions.edit && network['obiba.mica.EntityStateDto.networkSummaryState'].revisionStatus === 'DRAFT'">
+              <li ng-if="network.state.permissions.edit && network.state.revisionStatus === 'DRAFT'">
                 <a ng-href="#/network/{{network.id}}/edit" title="{{'edit' | translate}}"><i class="fa fa-pencil"></i></a>
               </li>
-              <li ng-if="network['obiba.mica.EntityStateDto.networkSummaryState'].permissions.delete && network['obiba.mica.EntityStateDto.networkSummaryState'].revisionStatus === 'DELETED'">
+              <li ng-if="network.state.permissions.delete && network.state.revisionStatus === 'DELETED'">
                 <a href ng-click="deleteDocument(network)" title="{{'delete' | translate}}"><i class="fa fa-trash-o"></i></a>
               </li>
-              <li ng-if="network['obiba.mica.EntityStateDto.networkSummaryState'].revisionStatus === 'UNDER_REVIEW'">
+              <li ng-if="network.state.revisionStatus === 'UNDER_REVIEW'">
                 <a ng-href="#/network/{{network.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
               </li>
             </ul>

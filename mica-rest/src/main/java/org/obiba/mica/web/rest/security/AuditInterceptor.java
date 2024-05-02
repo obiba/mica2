@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 OBiBa. All rights reserved.
+ * Copyright (c) 2019 OBiBa. All rights reserved.
  *
  * This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0.
@@ -10,30 +10,30 @@
 
 package org.obiba.mica.web.rest.security;
 
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedMap;
-
-import com.google.common.base.Strings;
-import org.apache.http.HttpStatus;
-import org.joda.time.DateTime;
+import com.google.common.base.Joiner;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.container.ContainerResponseFilter;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MultivaluedMap;
 import org.obiba.mica.security.ShiroAuditorAware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
-import com.google.common.base.Joiner;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
+@Component
 public class AuditInterceptor implements ContainerResponseFilter {
 
   private static final Logger log = LoggerFactory.getLogger(AuditInterceptor.class);
@@ -42,18 +42,6 @@ public class AuditInterceptor implements ContainerResponseFilter {
 
   private static final String WS_ROOT = "/ws";
 
-  private static final String[] VALID_IP_HEADER_CANDIDATES = {
-    "X-Forwarded-For",
-    "Proxy-Client-IP",
-    "WL-Proxy-Client-IP",
-    "HTTP_X_FORWARDED_FOR",
-    "HTTP_X_FORWARDED",
-    "HTTP_X_CLUSTER_CLIENT_IP",
-    "HTTP_CLIENT_IP",
-    "HTTP_FORWARDED_FOR",
-    "HTTP_FORWARDED",
-    "HTTP_VIA",
-    "REMOTE_ADDR"};
 
   @Inject
   private ShiroAuditorAware auditorAware;
@@ -75,14 +63,14 @@ public class AuditInterceptor implements ContainerResponseFilter {
     MDC.put("username", auditorAware.getCurrentAuditor().get());
     MDC.put("status", responseContext.getStatus() + "");
     MDC.put("method", requestContext.getMethod());
-    MDC.put("ip", getClientIP(requestContext));
+    MDC.put("ip", ClientIPUtils.getClientIP(requestContext, servletRequest));
 
     Date d = requestContext.getDate();
-    if(d != null) MDC.put("time", (DateTime.now().getMillis() - d.getTime()) + "");
+    if(d != null) MDC.put("time", (LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli() - d.getTime()) + "");
 
     StringBuilder sb = new StringBuilder("/").append(requestContext.getUriInfo().getPath(true));
     MultivaluedMap<String, String> params = requestContext.getUriInfo().getQueryParameters();
-    if(params.size() > 0) {
+    if(!params.isEmpty()) {
       sb.append(" queryParams:").append("{");
       boolean first = true;
       for(Map.Entry<String, List<String>> kv : params.entrySet()) {
@@ -96,44 +84,27 @@ public class AuditInterceptor implements ContainerResponseFilter {
     return sb.toString();
   }
 
-  private String getClientIP(ContainerRequestContext requestContext) {
-    String ip = "";
-
-    for (String ipHeader : VALID_IP_HEADER_CANDIDATES) {
-      ip = requestContext.getHeaders().keySet().stream()
-        .filter(ipHeader::equalsIgnoreCase)
-        .map(requestContext::getHeaderString)
-        .findFirst().orElse("");
-      if (!Strings.isNullOrEmpty(ip)) break;
-    }
-
-    if (Strings.isNullOrEmpty(ip))
-      ip = servletRequest.getRemoteAddr();
-
-    return ip;
-  }
-
   private void logServerError(ContainerRequestContext requestContext, ContainerResponseContext responseContext) {
     if(!log.isErrorEnabled()) return;
-    if(responseContext.getStatus() < HttpStatus.SC_INTERNAL_SERVER_ERROR) return;
+    if(responseContext.getStatus() < HttpStatus.INTERNAL_SERVER_ERROR.value()) return;
 
     log.error(LOG_FORMAT, getArguments(requestContext, responseContext));
   }
 
   private void logClientError(ContainerRequestContext requestContext, ContainerResponseContext responseContext) {
     if(!log.isWarnEnabled()) return;
-    if(responseContext.getStatus() < HttpStatus.SC_BAD_REQUEST) return;
-    if(responseContext.getStatus() >= HttpStatus.SC_INTERNAL_SERVER_ERROR) return;
+    if(responseContext.getStatus() < HttpStatus.BAD_REQUEST.value()) return;
+    if(responseContext.getStatus() >= HttpStatus.INTERNAL_SERVER_ERROR.value()) return;
 
     log.warn(LOG_FORMAT, getArguments(requestContext, responseContext));
   }
 
   private void logInfo(ContainerRequestContext requestContext, ContainerResponseContext responseContext) {
     if(!log.isInfoEnabled()) return;
-    if(responseContext.getStatus() >= HttpStatus.SC_BAD_REQUEST) return;
+    if(responseContext.getStatus() >= HttpStatus.BAD_REQUEST.value()) return;
 
     boolean logged = false;
-    if(responseContext.getStatus() == HttpStatus.SC_CREATED) {
+    if(responseContext.getStatus() == HttpStatus.CREATED.value()) {
       String resourceUri = responseContext.getHeaderString(HttpHeaders.LOCATION);
       if(resourceUri != null) {
         String args = getArguments(requestContext, responseContext);

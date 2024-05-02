@@ -13,7 +13,6 @@ package org.obiba.mica.access.rest;
 import com.google.common.collect.Maps;
 import com.jayway.jsonpath.JsonPathException;
 import org.assertj.core.util.Lists;
-import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.junit.Test;
 import org.obiba.mica.access.domain.DataAccessAmendment;
@@ -30,9 +29,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
 public class ReportGeneratorTest {
 
   @Test

@@ -10,27 +10,25 @@
 
 package org.obiba.mica.study.rest;
 
-import java.io.IOException;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.obiba.mica.study.service.StudyPackageImportService;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.io.InputStream;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.obiba.mica.study.service.StudyPackageImportService;
-
+@Component
+@Scope("request")
 @Path("/draft/studies/_import")
 public class DraftStudiesImportResource {
 
@@ -40,32 +38,10 @@ public class DraftStudiesImportResource {
   @POST
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @RequiresPermissions("/draft/individual-study:ADD")
-  public Response importZip(@Context HttpServletRequest request,
-    @QueryParam("publish") @DefaultValue("false") boolean publish) throws FileUploadException, IOException {
-    FileItem uploadedFile = getUploadedFile(request);
-    studyPackageImportService.importZip(uploadedFile.getInputStream(), publish);
-
+  public Response importZip(@FormDataParam("file") InputStream file,
+    @QueryParam("publish") @DefaultValue("false") boolean publish) throws IOException {
+    studyPackageImportService.importZip(file, publish);
     return Response.ok().build();
-  }
-
-  /**
-   * Returns the first {@code FileItem} that is represents a file upload field. If no such field exists, this method
-   * returns null
-   *
-   * @param request
-   * @return
-   * @throws FileUploadException
-   */
-  FileItem getUploadedFile(HttpServletRequest request) throws FileUploadException {
-    FileItemFactory factory = new DiskFileItemFactory();
-    ServletFileUpload upload = new ServletFileUpload(factory);
-    for(FileItem fileItem : upload.parseRequest(request)) {
-      if(!fileItem.isFormField()) {
-        return fileItem;
-      }
-    }
-
-    return null;
   }
 
 }

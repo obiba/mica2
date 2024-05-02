@@ -11,11 +11,20 @@
 package org.obiba.mica.access.rest;
 
 import com.codahale.metrics.annotation.Timed;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.joda.time.DateTime;
 import org.obiba.core.translator.JsonTranslator;
 import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
@@ -34,10 +43,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -89,7 +96,7 @@ public class DataAccessRequestsResource {
       SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) || SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN)
     ).write(byteArrayOutputStream);
 
-    String date = new DateTime().toString("YYYY-MM-dd");
+    String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     String filename = String.format("attachment; filename=\"Access-Requests-History-Report_%s.csv\"", date);
     return Response.ok(byteArrayOutputStream.toByteArray()).header("Content-Disposition", filename).build();
   }
@@ -108,7 +115,7 @@ public class DataAccessRequestsResource {
       dataAccessConfig.getAmendmentCsvExportFormat(),
       lang).write(byteArrayOutputStream);
 
-    String date = new DateTime().toString("YYYY-MM-dd");
+    String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     return Response.ok(byteArrayOutputStream.toByteArray())
       .header("Content-Disposition", String.format("attachment; filename=\"Access-Requests-Report_%s.csv\"", date))
       .build();

@@ -12,6 +12,24 @@
 
 mica.commons = angular.module('mica.commons', []);
 
+mica.commons.consts = {};
+
+mica.commons.consts.PersonTypeToResourceMap = {
+  'STUDY': 'individual-study',
+  'INITIATIVE': 'harmonization-study',
+  'NETWORK': 'network',
+};
+mica.commons.consts.PersonResourceToTypeMap = {
+  'individual-study': 'STUDY',
+  'harmonization-study': 'INITIATIVE',
+  'network': 'NETWORK',
+};
+mica.commons.consts.PersonTypeNames = {
+  'STUDY': 'STUDY',
+  'INITIATIVE': 'INITIATIVE',
+  'NETWORK': 'NETWORK',
+};
+
 mica.commons.EntityState = function($q, parentScope) {
 
   function createDirtyObservable() {

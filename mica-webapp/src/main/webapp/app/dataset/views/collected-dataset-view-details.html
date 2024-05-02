@@ -17,9 +17,9 @@
       <div>
         <h3 class="pull-left" translate>dataset.study-table.title</h3>
         <div ng-show="inViewMode() && permissions.canEdit()" class="pull-right voffset3 hidden-print">
-          <a href="" ng-click="editStudyTable()" class="action btn btn-primary btn-responsive" ng-show="dataset['obiba.mica.CollectedDatasetDto.type']">
+          <a href="" ng-click="editStudyTable()" class="action btn btn-primary btn-responsive" ng-show="dataset.collected">
             <i class="fa fa-pencil-square-o"></i></a>
-          <a href="" ng-click="deleteStudyTable()" class="action btn btn-danger btn-responsive" ng-show="dataset['obiba.mica.CollectedDatasetDto.type']">
+          <a href="" ng-click="deleteStudyTable()" class="action btn btn-danger btn-responsive" ng-show="dataset.collected">
             <i class="fa fa-trash-o"></i></a>
         </div>
       </div>
@@ -28,37 +28,37 @@
 
       <p class="help-block" translate>dataset.study-table.info</p>
 
-      <button type="button" class="btn btn-info btn-sm voffset2" ng-click="editStudyTable()" ng-hide="dataset['obiba.mica.CollectedDatasetDto.type']">
+      <button type="button" class="btn btn-info btn-sm voffset2" ng-click="editStudyTable()" ng-hide="dataset.collected">
         <i class="fa fa-plus"></i> <span translate>dataset.add-study-table</span>
       </button>
 
-      <table class="table table-bordered table-striped" ng-show="dataset['obiba.mica.CollectedDatasetDto.type']">
+      <table class="table table-bordered table-striped" ng-show="dataset.collected.studyTable">
         <tbody>
         <tr>
           <th translate>study.label</th>
           <td>
-            <a ng-href="#/individual-study/{{dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.studyId}}">
-              {{dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.studyId}}
+            <a ng-href="#/individual-study/{{dataset.collected.studyTable.studyId}}">
+              {{dataset.collected.studyTable.studyId}}
             </a>
           </td>
         </tr>
         <tr>
           <th translate>study.population</th>
           <td>
-            {{dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.populationId}}
+            {{dataset.collected.studyTable.populationId}}
           </td>
         </tr>
         <tr>
           <th translate>study.data-collection-event</th>
           <td>
-            {{dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.dataCollectionEventId}}
+            {{dataset.collected.studyTable.dataCollectionEventId}}
           </td>
         </tr>
         <tr>
           <th translate>dataset.table-name</th>
           <td>
             <ul class="list-unstyled">
-              <li ng-repeat="text in dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.name">
+              <li ng-repeat="text in dataset.collected.studyTable.name">
                 <span class="badge">{{text.lang}}</span> {{text.value}}
               </li>
             </ul>
@@ -68,7 +68,7 @@
           <th translate>dataset.table-description</th>
           <td>
             <ul class="list-unstyled">
-              <li ng-repeat="text in dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.description">
+              <li ng-repeat="text in dataset.collected.studyTable.description">
                 <span class="badge">{{text.lang}}</span> {{text.value}}
               </li>
             </ul>
@@ -79,7 +79,7 @@
           <th translate>dataset.table-additional-information</th>
           <td>
             <ul class="list-unstyled">
-              <li ng-repeat="text in dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.additionalInformation">
+              <li ng-repeat="text in dataset.collected.studyTable.additionalInformation">
                 <span class="badge">{{text.lang}}</span> {{text.value}}
               </li>
             </ul>
@@ -89,66 +89,66 @@
         </tbody>
       </table>
 
-      <div ng-show="dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.namespace === 'opal'">
+      <div ng-show="dataset.collected.studyTable.namespace === 'opal'">
         <h4 translate>dataset.datasource.opal.title</h4>
         <p class="help-block" translate>dataset.datasource.opal.info</p>
 
-        <table class="table table-bordered table-striped" ng-show="dataset['obiba.mica.CollectedDatasetDto.type']">
+        <table class="table table-bordered table-striped" ng-show="dataset.collected">
           <tbody>
           <tr>
             <th translate>dataset.project</th>
             <td>
-              {{dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.project}}
+              {{dataset.collected.studyTable.project}}
             </td>
           </tr>
           <tr>
             <th translate>dataset.table</th>
             <td>
-              {{dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.table}}
+              {{dataset.collected.studyTable.table}}
             </td>
           </tr>
           </tbody>
         </table>
       </div>
 
-      <div ng-show="dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.namespace === 'file'">
+      <div ng-show="dataset.collected.studyTable.namespace === 'file'">
         <h4 translate>dataset.datasource.file.title</h4>
         <p class="help-block" translate>dataset.datasource.file.info</p>
 
-        <table class="table table-bordered table-striped" ng-show="dataset['obiba.mica.CollectedDatasetDto.type']">
+        <table class="table table-bordered table-striped" ng-show="dataset.collected">
           <tbody>
           <tr>
             <th translate>path</th>
             <td>
-              {{dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.path}}
+              {{dataset.collected.studyTable.path}}
             </td>
           </tr>
           <tr>
             <th translate>dataset.table</th>
             <td>
-              {{dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.table}}
+              {{dataset.collected.studyTable.table}}
             </td>
           </tr>
           </tbody>
         </table>
       </div>
 
-      <div ng-show="dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.namespace === 'other'">
+      <div ng-show="dataset.collected.studyTable.namespace === 'other'">
         <h4 translate>dataset.datasource.other.title</h4>
         <p class="help-block" translate>dataset.datasource.other.info</p>
 
-        <table class="table table-bordered table-striped" ng-show="dataset['obiba.mica.CollectedDatasetDto.type']">
+        <table class="table table-bordered table-striped" ng-show="dataset.collected">
           <tbody>
           <tr>
             <th translate>dataset.datasource.other.nid</th>
             <td>
-              {{dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.nid}}
+              {{dataset.collected.studyTable.nid}}
             </td>
           </tr>
           <tr>
             <th translate>dataset.datasource.other.nss</th>
             <td>
-              {{dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.nss}}
+              {{dataset.collected.studyTable.nss}}
             </td>
           </tr>
           </tbody>

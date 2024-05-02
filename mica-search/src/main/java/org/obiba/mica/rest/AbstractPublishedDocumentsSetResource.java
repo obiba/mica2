@@ -18,8 +18,8 @@ import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.StreamingOutput;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.util.Collection;
 
