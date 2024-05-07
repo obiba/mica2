@@ -135,6 +135,8 @@ mica.network
         networkCopy.description = LocalizedValues.objectToArray(networkCopy.description);
       }
 
+      // Remove fields added in the client
+      (networkCopy.studySummaries || []).forEach(summary => delete summary.selected);
 
       if (networkCopy.logo) {
         // Remove fields not in the DTO
