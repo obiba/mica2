@@ -27,7 +27,7 @@ message StudySummaryDto {
   repeated string dataSources = 10;
   repeated PopulationSummaryDto populationSummaries = 11;
   required bool published = 12;
-  optional int64 variables = 13;
+  optional double variables = 13;
   optional PermissionsDto permissions = 14;
   optional string studyResourcePath = 15;
   optional string content = 16;
