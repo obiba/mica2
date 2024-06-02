@@ -16,6 +16,9 @@ spring:
             pool:
                 size: 30
             thread-name-prefix: mica-executor-
+    cache:
+      jcache:
+        config: classpath:ehcache.xml
 
 metrics:
     jmx.enabled: true
