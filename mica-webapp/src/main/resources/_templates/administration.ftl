@@ -50,18 +50,20 @@
             </div>
           </div>
           <div class="col-sm-12 col-lg-6">
-            <div class="small-box bg-warning">
-              <div class="inner">
-                <h3><@message "users-administration"/></h3>
-                <p><@message "admin-users"/></p>
+            <#if isAdministrator || isReviewer || isEditor>
+              <div class="small-box bg-warning">
+                <div class="inner">
+                  <h3><@message "users-administration"/></h3>
+                  <p><@message "admin-users"/></p>
+                </div>
+                <div class="icon">
+                  <i class="fas fa-users"></i>
+                </div>
+                <a href="${agateUrl}/admin" class="small-box-footer">
+                  <@message "more-info"/> <i class="fas fa-arrow-circle-right"></i>
+                </a>
               </div>
-              <div class="icon">
-                <i class="fas fa-users"></i>
-              </div>
-              <a href="${agateUrl}/admin" class="small-box-footer">
-                <@message "more-info"/> <i class="fas fa-arrow-circle-right"></i>
-              </a>
-            </div>
+            </#if>
           </div>
         </div>
       </div><!-- /.container-fluid -->
