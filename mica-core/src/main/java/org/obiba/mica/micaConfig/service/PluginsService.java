@@ -56,7 +56,7 @@ public class PluginsService implements EnvironmentAware, InitializingBean {
 
   private static final String MICA_SEARCH_PLUGIN_NAME = "plugins.micaSearchPlugin";
 
-  private static final String DEFAULT_MICA_SEARCH_PLUGIN_NAME = "mica-search-es";
+  private static final String DEFAULT_MICA_SEARCH_PLUGIN_NAME = "mica-search-es8";
 
   private static final String DEFAULT_PLUGINS_UPDATE_SITE = "https://plugins.obiba.org";
 

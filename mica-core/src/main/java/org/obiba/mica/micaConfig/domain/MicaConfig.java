@@ -25,13 +25,14 @@ import org.obiba.runtime.Version;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Document
-public class MicaConfig extends AbstractAuditableDocument {
+public class MicaConfig extends AbstractAuditableDocument implements Serializable {
 
   private static final long serialVersionUID = -9020464712632680519L;
 
