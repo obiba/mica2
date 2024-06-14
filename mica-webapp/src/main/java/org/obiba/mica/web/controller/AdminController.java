@@ -44,18 +44,8 @@ public class AdminController extends BaseController {
   @Inject
   private ProjectService projectService;
 
-  @GetMapping("/admin")
-  public ModelAndView admin() {
-    Subject subject = SecurityUtils.getSubject();
-    String contextPath = micaConfigService.getContextPath();
-    if (!subject.isAuthenticated())
-      return new ModelAndView("redirect:/signin?redirect=" + contextPath + "/admin");
-
-    if (subject.hasRole(Roles.MICA_ADMIN) || subject.hasRole(Roles.MICA_DAO) || subject.hasRole(Roles.MICA_EDITOR) || subject.hasRole(Roles.MICA_REVIEWER))
-      return new ModelAndView("admin");
-
-    // Check if the user has permission on any draft document
-    if (networkService.findAllIds().stream()
+  private boolean hasPermissionOnAnyDraftDocument() {
+    return networkService.findAllIds().stream()
       .anyMatch(id -> isPermitted("/draft/network", "VIEW", id))
       || individualStudyService.findAllIds().stream()
       .anyMatch(id -> isPermitted("/draft/individual-study", "VIEW", id))
@@ -66,7 +56,21 @@ public class AdminController extends BaseController {
       || harmonizedDatasetService.findAllIds().stream()
       .anyMatch(id -> isPermitted("/draft/harmonized-dataset", "VIEW", id))
       || projectService.findAllIds().stream()
-      .anyMatch(id -> isPermitted("/draft/project", "VIEW", id)))
+      .anyMatch(id -> isPermitted("/draft/project", "VIEW", id));
+  }
+
+  @GetMapping("/admin")
+  public ModelAndView admin() {
+    Subject subject = SecurityUtils.getSubject();
+    String contextPath = micaConfigService.getContextPath();
+    if (!subject.isAuthenticated())
+      return new ModelAndView("redirect:/signin?redirect=" + contextPath + "/admin");
+
+    if (subject.hasRole(Roles.MICA_ADMIN)
+      || subject.hasRole(Roles.MICA_DAO)
+      || subject.hasRole(Roles.MICA_EDITOR)
+      || subject.hasRole(Roles.MICA_REVIEWER)
+      || hasPermissionOnAnyDraftDocument())
       return new ModelAndView("admin");
 
     return new ModelAndView("redirect:/");
@@ -78,7 +82,11 @@ public class AdminController extends BaseController {
     String contextPath = micaConfigService.getContextPath();
     if (!subject.isAuthenticated())
       return new ModelAndView("redirect:/signin?redirect=" + contextPath + "/administration");
-    if (subject.hasRole(Roles.MICA_ADMIN) || subject.hasRole(Roles.MICA_DAO) || subject.hasRole(Roles.MICA_EDITOR) || subject.hasRole(Roles.MICA_REVIEWER)) {
+    if (subject.hasRole(Roles.MICA_ADMIN)
+      || subject.hasRole(Roles.MICA_DAO)
+      || subject.hasRole(Roles.MICA_EDITOR)
+      || subject.hasRole(Roles.MICA_REVIEWER)
+      || hasPermissionOnAnyDraftDocument()) {
       String agateUrl = agateServerConfigService.getAgateUrl();
       ModelAndView mv = new ModelAndView("administration");
       mv.getModel().put("agateUrl", agateUrl);

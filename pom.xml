@@ -61,12 +61,12 @@
     <jsr305.version>3.0.0</jsr305.version>
     <logback.version>1.2.9</logback.version>
     <logstash-logback.version>6.6</logstash-logback.version>
-    <magma.version>4.0.1</magma.version>
+    <magma.version>4.0.7</magma.version>
     <metrics-spring.version>3.0.0</metrics-spring.version>
     <mongodb-driver.version>4.7.2</mongodb-driver.version>
     <nosqlunit.version>0.7.9</nosqlunit.version>
     <obiba-commons.version>3.0.7</obiba-commons.version>
-    <opal.version>4.5.2</opal.version>
+    <opal.version>4.7.3</opal.version>
     <opencsv.version>2.3</opencsv.version>
     <poi.version>5.2.5</poi.version>
     <protobuf.version>2.5.0</protobuf.version>
