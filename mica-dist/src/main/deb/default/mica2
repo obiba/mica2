@@ -29,4 +29,4 @@ MICA_LOG=/var/log/mica2
 MICA_ARGS=""
 
 # arguments to pass to java
-JAVA_ARGS="-Xms2G -Xmx2G -XX:MaxPermSize=256M"
+JAVA_ARGS="-Xms2G -Xmx2G"
