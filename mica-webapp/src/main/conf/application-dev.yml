@@ -38,7 +38,7 @@ shiro:
 #
 
 plugins:
-    micaSearchPlugin: mica-search-es
+    micaSearchPlugin: mica-search-es8
     updateSite: https://plugins.obiba.org
 
 opalTaxonomies:

@@ -39,14 +39,9 @@
 
     <resources>
       <heap unit="entries">100</heap>
-<!--      <disk persistent="false"/>-->
+      <disk persistent="true" unit="MB">1</disk>
     </resources>
 
-<!--      maxBytesLocalHeap="1M"-->
-<!--      overflowToDisk="false"-->
-<!--      eternal="true"-->
-<!--      timeToLiveSeconds="0"-->
-<!--      timeToIdleSeconds="0"-->
   </cache>
 
   <cache alias="studies-draft">
@@ -79,13 +74,10 @@
 
     <resources>
       <heap unit="entries">100</heap>
-      <disk unit="MB">1</disk>
+      <offheap unit="MB">10</offheap>
+      <disk persistent="true" unit="MB">100</disk>
     </resources>
 
-<!--      overflowToDisk="true"-->
-<!--      eternal="true"-->
-<!--      timeToLiveSeconds="0"-->
-<!--      timeToIdleSeconds="0"-->
   </cache>
 
   <cache alias="studies-published">
@@ -102,12 +94,9 @@
 
     <resources>
       <heap unit="entries">100</heap>
-      <disk unit="MB">1</disk>
+      <offheap unit="MB">10</offheap>
+      <disk persistent="true" unit="MB">100</disk>
     </resources>
-<!--      overflowToDisk="true"-->
-<!--      eternal="true"-->
-<!--      timeToLiveSeconds="0"-->
-<!--      timeToIdleSeconds="0"-->
   </cache>
 
   <cache alias="variable-taxonomies">
@@ -124,13 +113,8 @@
 
     <resources>
       <heap unit="entries">10000</heap>
-      <disk unit="MB">1</disk>
+      <disk persistent="true" unit="MB">1</disk>
     </resources>
-<!--         maxBytesLocalHeap="1M"-->
-<!--         diskPersistent="true"-->
-<!--         overflowToDisk="true"-->
-<!--         eternal="true"-->
-<!--    <sizeOfPolicy maxDepth="100000"/>--> <!-- Maybe use <eviction-advisor></eviction-advisor> -->
   </cache>
 
   <cache alias="aggregations-metadata">
@@ -147,10 +131,9 @@
 
     <resources>
       <heap unit="entries">100</heap>
-      <disk unit="MB">1</disk>
+      <offheap unit="MB">10</offheap>
+      <disk persistent="true" unit="MB">100</disk>
     </resources>
-<!--    overflowToDisk="true"-->
-<!--    eternal="true">-->
   </cache>
 
   <cache alias="dataset-variables">
@@ -183,12 +166,9 @@
 
     <resources>
       <heap unit="entries">100</heap>
-      <disk unit="MB">1</disk>
+      <offheap unit="MB">10</offheap>
+      <disk persistent="true" unit="MB">100</disk>
     </resources>
-
-    <!--    eternal="true"-->
-<!--    overflowToDisk="true"-->
-<!--    diskPersistent="true">-->
   </cache>
 
 </config>
