@@ -128,6 +128,7 @@ public class PersonResource {
     person.getStudyMemberships().removeIf(m -> m.getParentId().equals(studyId));
     return dtos.asDto(personService.save(person), true);
   }
+
   @PUT
   @Path("/{id}/study/{studyId}")
   public PersonDto updatePersonWithStudy(@PathParam("id") String id, @PathParam("studyId") String studyId, @QueryParam("role") String role) {
