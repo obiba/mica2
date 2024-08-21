@@ -13,7 +13,6 @@ package org.obiba.mica.core.source;
 import com.google.common.base.Strings;
 import org.obiba.magma.ValueTable;
 import org.obiba.mica.core.source.support.OpalDtos;
-import org.obiba.mica.core.source.support.QueryTermsUtil;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.spi.tables.AbstractStudyTableSource;
 import org.obiba.mica.spi.tables.IVariable;
@@ -68,8 +67,7 @@ public class OpalTableSource extends AbstractStudyTableSource {
 
   @Override
   public Mica.DatasetVariableContingencyDto getContingency(IVariable variable, IVariable crossVariable) {
-    Search.QueryTermsDto query = QueryTermsUtil.getContingencyQuery(variable, crossVariable);
-    Search.QueryResultDto results = getRestValueTable().getFacets(query);
+    Search.QueryResultDto results = getRestValueTable().getContingency(variable.getName(), crossVariable.getName());
     return OpalDtos.asDto(variable, crossVariable, getContext().getPrivacyThreshold(), results);
   }
 
