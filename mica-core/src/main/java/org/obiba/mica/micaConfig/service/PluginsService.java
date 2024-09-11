@@ -335,7 +335,7 @@ public class PluginsService implements EnvironmentAware, InitializingBean {
 
     boolean micaSearchFound = false; // mica-search plugin is a singleton
     List<PluginResources> filteredPlugins =
-      plugins.stream().filter(plugin -> searchPluginName.equals(plugin.getName())
+      plugins.stream().filter(plugin -> (!Strings.isNullOrEmpty(searchPluginName) && searchPluginName.equals(plugin.getName()))
           || MICA_TABLES_PLUGIN_TYPE.equals(plugin.getType())
           || MICA_TAXONOMIES_PLUGIN_TYPE.equals(plugin.getType()))
         .sorted(Comparator.comparing(PluginResources::getVersion))
