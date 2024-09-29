@@ -16,15 +16,25 @@ import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.spi.search.support.EmptyQuery;
 import org.obiba.mica.spi.search.support.JoinQuery;
 import org.obiba.mica.spi.search.support.Query;
+import org.obiba.mica.study.StudyRepository;
+import org.obiba.mica.study.domain.Study;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
+import java.util.stream.Collectors;
 
 public class DefaultSearcher implements Searcher {
+
+  private StudyRepository studyRepository;
+
+  public void setStudyRepository(StudyRepository studyRepository) {
+    this.studyRepository = studyRepository;
+  }
 
   @Override
   public JoinQuery makeJoinQuery(String rql) {
@@ -73,6 +83,15 @@ public class DefaultSearcher implements Searcher {
 
   @Override
   public DocumentResults getDocuments(String indexName, String type, int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String queryString, @Nullable TermFilter termFilter, @Nullable IdFilter idFilter, @Nullable List<String> fields, @Nullable List<String> excludedFields) {
+    if (DefaultIndexer.DRAFT_STUDY_INDEX.equals(indexName)) {
+      // Calculate page number based on offset and limit
+      int page = from / limit;
+      Sort sortRequest = "asc".equalsIgnoreCase(order) ? Sort.by(sort).ascending() : Sort.by(sort).descending();
+      // TODO ids filter
+      final long total = studyRepository.count();
+      final List<Study> studies = studyRepository.findAll(PageRequest.of(page, limit, sortRequest)).getContent();
+      return new StudyDocumentResults(total, studies);
+    }
     return new EmptyDocumentResults();
   }
 
@@ -104,5 +123,78 @@ public class DefaultSearcher implements Searcher {
   @Override
   public Map<Object, Object> harmonizationStatusAggregation(String datasetId, int size, String aggregationFieldName, String statusFieldName) {
     return Map.of();
+  }
+
+  private static class StudyDocumentResult implements DocumentResult {
+    private final Study std;
+
+    public StudyDocumentResult(Study std) {
+      this.std = std;
+    }
+
+    @Override
+    public String getId() {
+      return std.getId();
+    }
+
+    @Override
+    public boolean hasObject() {
+      return true;
+    }
+
+    @Override
+    public Object getObject() {
+      return std;
+    }
+
+    @Override
+    public boolean hasSource() {
+      return false;
+    }
+
+    @Override
+    public Map<String, Object> getSource() {
+      return null;
+    }
+
+    @Override
+    public InputStream getSourceInputStream() {
+      return null;
+    }
+
+    @Override
+    public String getClassName() {
+      return "";
+    }
+  }
+
+  private static class StudyDocumentResults implements DocumentResults {
+    private final long total;
+    private final List<Study> studies;
+
+    public StudyDocumentResults(long total, List<Study> studies) {
+      this.total = total;
+      this.studies = studies;
+    }
+
+    @Override
+    public long getTotal() {
+      return total;
+    }
+
+    @Override
+    public List<DocumentResult> getDocuments() {
+      return studies.stream().map(StudyDocumentResult::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public Map<String, Long> getAggregation(String field) {
+      return Map.of();
+    }
+
+    @Override
+    public List<DocumentAggregation> getAggregations() {
+      return List.of();
+    }
   }
 }

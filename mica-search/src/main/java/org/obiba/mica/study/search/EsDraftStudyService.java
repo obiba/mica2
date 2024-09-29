@@ -49,6 +49,7 @@ public class EsDraftStudyService extends AbstractIdentifiedDocumentService<BaseS
 
   @Override
   protected BaseStudy processHit(Searcher.DocumentResult res) throws IOException {
+    if (res.hasObject()) return (BaseStudy) res.getObject();
     return (BaseStudy) objectMapper.readValue(res.getSourceInputStream(), getClass(res.getClassName()));
   }
 

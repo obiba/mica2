@@ -12,6 +12,7 @@ package org.obiba.mica.search;
 
 import org.obiba.mica.micaConfig.service.PluginsService;
 import org.obiba.mica.search.basic.DefaultSearcher;
+import org.obiba.mica.search.basic.DefaultSearcherFactory;
 import org.obiba.mica.spi.search.QueryScope;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.spi.search.support.JoinQuery;
@@ -32,13 +33,16 @@ public class SearchEngineClient implements Searcher {
   @Inject
   private PluginsService pluginsService;
 
+  @Inject
+  private DefaultSearcherFactory searcherFactory;
+
   private Searcher defaultSearcher;
 
   private Searcher getSearcher() {
     if (pluginsService.hasSearchEngineService())
       return pluginsService.getSearchEngineService().getSearcher();
     if (defaultSearcher == null) {
-      defaultSearcher = new DefaultSearcher();
+      defaultSearcher = searcherFactory.newSearcher();
     }
     return defaultSearcher;
   }

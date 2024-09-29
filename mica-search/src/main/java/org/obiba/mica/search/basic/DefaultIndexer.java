@@ -91,7 +91,7 @@ public class DefaultIndexer implements Indexer {
 
   @Override
   public boolean hasIndex(String indexName) {
-    return false;
+    return indexName.endsWith("-draft");
   }
 
   @Override
