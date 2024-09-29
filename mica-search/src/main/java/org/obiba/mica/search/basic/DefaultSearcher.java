@@ -13,6 +13,7 @@ package org.obiba.mica.search.basic;
 import org.jetbrains.annotations.Nullable;
 import org.obiba.mica.spi.search.QueryScope;
 import org.obiba.mica.spi.search.Searcher;
+import org.obiba.mica.spi.search.support.EmptyQuery;
 import org.obiba.mica.spi.search.support.JoinQuery;
 import org.obiba.mica.spi.search.support.Query;
 
@@ -27,17 +28,17 @@ public class DefaultSearcher implements Searcher {
 
   @Override
   public JoinQuery makeJoinQuery(String rql) {
-    return null;
+    return new EmptyJoinQuery();
   }
 
   @Override
   public Query makeQuery(String rql) {
-    return null;
+    return new EmptyQuery();
   }
 
   @Override
   public Query andQuery(Query... queries) {
-    return null;
+    return new EmptyQuery();
   }
 
   @Override
