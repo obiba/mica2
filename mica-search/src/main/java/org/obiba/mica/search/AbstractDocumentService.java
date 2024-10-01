@@ -85,7 +85,8 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
     Documents<T> documents = new Documents<>(Long.valueOf(results.getTotal()).intValue(), from, limit);
     results.getDocuments().forEach(res -> {
       try {
-        documents.add(processHit(res));
+        if (res.hasObject()) documents.add((T) res.getObject());
+        else documents.add(processHit(res));
       } catch (IOException e) {
         log.error("Failed processing found hits.", e);
       }
@@ -217,7 +218,8 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
     return documentResults.getDocuments().stream()
       .map(documentResult -> {
         try {
-          return processHit(documentResult);
+          if (documentResult.hasObject()) return (T) documentResult.getObject();
+          else return processHit(documentResult);
         } catch (IOException e) {
           throw new RuntimeException(e);
         }

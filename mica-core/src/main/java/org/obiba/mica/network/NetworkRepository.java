@@ -12,6 +12,7 @@ package org.obiba.mica.network;
 
 import java.util.List;
 
+import org.obiba.mica.core.repository.DocumentRepository;
 import org.obiba.mica.network.domain.Network;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
@@ -19,7 +20,7 @@ import org.springframework.data.mongodb.repository.Query;
 /**
  * Spring Data MongoDB repository for the {@link org.obiba.mica.network.domain.Network} entity.
  */
-public interface NetworkRepository extends MongoRepository<Network, String>, NetworkRepositoryCustom {
+public interface NetworkRepository extends MongoRepository<Network, String>, NetworkRepositoryCustom, DocumentRepository<Network> {
 
   List<Network> findByStudyIds(String studyId);
 

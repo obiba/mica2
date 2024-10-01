@@ -16,24 +16,23 @@ import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.spi.search.support.EmptyQuery;
 import org.obiba.mica.spi.search.support.JoinQuery;
 import org.obiba.mica.spi.search.support.Query;
-import org.obiba.mica.study.StudyRepository;
-import org.obiba.mica.study.domain.Study;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
+import java.util.Set;
 
+/**
+ * The default searcher is a proxy class that will redirect queries to the corresponding document index and type.
+ */
 public class DefaultSearcher implements Searcher {
 
-  private StudyRepository studyRepository;
+  private final Set<DocumentSearcher> documentSearchers;
 
-  public void setStudyRepository(StudyRepository studyRepository) {
-    this.studyRepository = studyRepository;
+  DefaultSearcher(Set<DocumentSearcher> documentSearchers) {
+    this.documentSearchers = documentSearchers;
   }
 
   @Override
@@ -52,149 +51,80 @@ public class DefaultSearcher implements Searcher {
   }
 
   @Override
-  public DocumentResults find(String indexName, String type, String rql, IdFilter idFilter) {
-    return new EmptyDocumentResults();
-  }
-
-  @Override
-  public DocumentResults count(String indexName, String type, String rql, IdFilter idFilter) {
-    return new EmptyDocumentResults();
-  }
-
-  @Override
-  public List<String> suggest(String indexName, String type, int limit, String locale, String queryString, String defaultFieldName) {
-    return List.of();
-  }
-
-  @Override
-  public InputStream getDocumentById(String indexName, String type, String id) {
-    return null;
-  }
-
-  @Override
-  public InputStream getDocumentByClassName(String indexName, String type, Class clazz, String id) {
-    return null;
-  }
-
-  @Override
-  public DocumentResults getDocumentsByClassName(String indexName, String type, Class clazz, int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String queryString, @Nullable TermFilter termFilter, @Nullable IdFilter idFilter) {
-    return new EmptyDocumentResults();
-  }
-
-  @Override
-  public DocumentResults getDocuments(String indexName, String type, int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String queryString, @Nullable TermFilter termFilter, @Nullable IdFilter idFilter, @Nullable List<String> fields, @Nullable List<String> excludedFields) {
-    if (DefaultIndexer.DRAFT_STUDY_INDEX.equals(indexName)) {
-      // Calculate page number based on offset and limit
-      int page = from / limit;
-      Sort sortRequest = "asc".equalsIgnoreCase(order) ? Sort.by(sort).ascending() : Sort.by(sort).descending();
-      // TODO ids filter
-      final long total = studyRepository.count();
-      final List<Study> studies = studyRepository.findAll(PageRequest.of(page, limit, sortRequest)).getContent();
-      return new StudyDocumentResults(total, studies);
-    }
-    return new EmptyDocumentResults();
-  }
-
-  @Override
-  public long countDocumentsWithField(String indexName, String type, String field) {
-    return 0;
-  }
-
-  @Override
-  public DocumentResults query(String indexName, String type, Query query, QueryScope scope, List<String> mandatorySourceFields, Properties aggregationProperties, @Nullable IdFilter idFilter) throws IOException {
-    return new EmptyDocumentResults();
-  }
-
-  @Override
-  public DocumentResults aggregate(String indexName, String type, Query query, Properties aggregationProperties, IdFilter idFilter) {
-    return new EmptyDocumentResults();
-  }
-
-  @Override
-  public DocumentResults cover(String indexName, String type, Query query, Properties aggregationProperties, @Nullable IdFilter idFilter) {
-    return new EmptyDocumentResults();
-  }
-
-  @Override
-  public DocumentResults cover(String indexName, String type, Query query, Properties aggregationProperties, Map<String, Properties> subAggregationProperties, @Nullable IdFilter idFilter) {
-    return new EmptyDocumentResults();
-  }
-
-  @Override
   public Map<Object, Object> harmonizationStatusAggregation(String datasetId, int size, String aggregationFieldName, String statusFieldName) {
     return Map.of();
   }
 
-  private static class StudyDocumentResult implements DocumentResult {
-    private final Study std;
+  //
+  // Proxy methods
+  //
 
-    public StudyDocumentResult(Study std) {
-      this.std = std;
-    }
-
-    @Override
-    public String getId() {
-      return std.getId();
-    }
-
-    @Override
-    public boolean hasObject() {
-      return true;
-    }
-
-    @Override
-    public Object getObject() {
-      return std;
-    }
-
-    @Override
-    public boolean hasSource() {
-      return false;
-    }
-
-    @Override
-    public Map<String, Object> getSource() {
-      return null;
-    }
-
-    @Override
-    public InputStream getSourceInputStream() {
-      return null;
-    }
-
-    @Override
-    public String getClassName() {
-      return "";
-    }
+  @Override
+  public DocumentResults find(String indexName, String type, String rql, IdFilter idFilter) {
+    return getSearcher(indexName, type).find(indexName, type, rql, idFilter);
   }
 
-  private static class StudyDocumentResults implements DocumentResults {
-    private final long total;
-    private final List<Study> studies;
-
-    public StudyDocumentResults(long total, List<Study> studies) {
-      this.total = total;
-      this.studies = studies;
-    }
-
-    @Override
-    public long getTotal() {
-      return total;
-    }
-
-    @Override
-    public List<DocumentResult> getDocuments() {
-      return studies.stream().map(StudyDocumentResult::new).collect(Collectors.toList());
-    }
-
-    @Override
-    public Map<String, Long> getAggregation(String field) {
-      return Map.of();
-    }
-
-    @Override
-    public List<DocumentAggregation> getAggregations() {
-      return List.of();
-    }
+  @Override
+  public DocumentResults count(String indexName, String type, String rql, IdFilter idFilter) {
+    return getSearcher(indexName, type).count(indexName, type, rql, idFilter);
   }
+
+  @Override
+  public List<String> suggest(String indexName, String type, int limit, String locale, String queryString, String defaultFieldName) {
+    return getSearcher(indexName, type).suggest(indexName, type, limit, locale, queryString, defaultFieldName);
+  }
+
+  @Override
+  public InputStream getDocumentById(String indexName, String type, String id) {
+    return getSearcher(indexName, type).getDocumentById(indexName, type, id);
+  }
+
+  @Override
+  public InputStream getDocumentByClassName(String indexName, String type, Class clazz, String id) {
+    return getSearcher(indexName, type).getDocumentByClassName(indexName, type, clazz, id);
+  }
+
+  @Override
+  public DocumentResults getDocumentsByClassName(String indexName, String type, Class clazz, int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String queryString, @Nullable TermFilter termFilter, @Nullable IdFilter idFilter) {
+    return getSearcher(indexName, type).getDocumentsByClassName(indexName, type, clazz, from, limit, sort, order, queryString, termFilter, idFilter);
+  }
+
+  @Override
+  public DocumentResults getDocuments(String indexName, String type, int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String queryString, @Nullable TermFilter termFilter, @Nullable IdFilter idFilter, @Nullable List<String> fields, @Nullable List<String> excludedFields) {
+    return getSearcher(indexName, type).getDocuments(indexName, type, from, limit, sort, order, queryString, termFilter, idFilter, fields, excludedFields);
+  }
+
+  @Override
+  public long countDocumentsWithField(String indexName, String type, String field) {
+    return getSearcher(indexName, type).countDocumentsWithField(indexName, type, field);
+  }
+
+  @Override
+  public DocumentResults query(String indexName, String type, Query query, QueryScope scope, List<String> mandatorySourceFields, Properties aggregationProperties, @Nullable IdFilter idFilter) throws IOException {
+    return getSearcher(indexName, type).query(indexName, type, query, scope, mandatorySourceFields, aggregationProperties, idFilter);
+  }
+
+  @Override
+  public DocumentResults aggregate(String indexName, String type, Query query, Properties aggregationProperties, IdFilter idFilter) {
+    return getSearcher(indexName, type).aggregate(indexName, type, query, aggregationProperties, idFilter);
+  }
+
+  @Override
+  public DocumentResults cover(String indexName, String type, Query query, Properties aggregationProperties, @Nullable IdFilter idFilter) {
+    return getSearcher(indexName, type).cover(indexName, type, query, aggregationProperties, idFilter);
+  }
+
+  @Override
+  public DocumentResults cover(String indexName, String type, Query query, Properties aggregationProperties, Map<String, Properties> subAggregationProperties, @Nullable IdFilter idFilter) {
+    return getSearcher(indexName, type).cover(indexName, type, query, aggregationProperties, subAggregationProperties, idFilter);
+  }
+
+  //
+  // Private methods
+  //
+
+  private DocumentSearcher getSearcher(String indexName, String type) {
+    return documentSearchers.stream().filter((searcher) -> searcher.isFor(indexName, type)).findFirst().orElseThrow();
+  }
+
 }

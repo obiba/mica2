@@ -10,20 +10,22 @@
 
 package org.obiba.mica.search.basic;
 
-import org.obiba.mica.study.StudyRepository;
+import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.util.Set;
 
 @Component
 public class DefaultSearcherFactory {
 
   @Inject
-  private StudyRepository studyRepository;
+  private Set<DocumentSearcher> documentSearchers;
+
+  @Inject
+  private HarmonizationDatasetRepository harmonizationDatasetRepository;
 
   public DefaultSearcher newSearcher() {
-    DefaultSearcher searcher = new DefaultSearcher();
-    searcher.setStudyRepository(studyRepository);
-    return searcher;
+    return new DefaultSearcher(documentSearchers);
   }
 }
