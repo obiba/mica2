@@ -13,10 +13,12 @@ package org.obiba.mica.core.repository;
 import java.util.List;
 
 import org.obiba.mica.file.AttachmentState;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
-public interface AttachmentStateRepository extends MongoRepository<AttachmentState, String> {
+public interface AttachmentStateRepository extends MongoRepository<AttachmentState, String>, DocumentRepository<AttachmentState> {
 
   /**
    * Find {@link AttachmentState}s matching the path regular expression.
@@ -26,6 +28,9 @@ public interface AttachmentStateRepository extends MongoRepository<AttachmentSta
    */
   @Query("{'path': {$regex: ?0}}")
   List<AttachmentState> findByPath(String pathRegEx);
+
+  @Query("{'path': {$regex: ?0}}")
+  Page<AttachmentState> findByPath(String pathRegEx, Pageable pageable);
 
   /**
    * Find published {@link AttachmentState}s matching the path regular expression.

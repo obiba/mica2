@@ -21,11 +21,7 @@ import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.AbstractStudyService;
-import org.obiba.mica.study.service.DraftStudyService;
-import org.obiba.mica.study.service.HarmonizationStudyService;
-import org.obiba.mica.study.service.IndividualStudyService;
-import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.study.service.*;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
@@ -75,7 +71,10 @@ public class StudyStatesResource {
   private ApplicationContext applicationContext;
 
   @Inject
-  private DraftStudyService draftStudyService;
+  private DraftIndividualStudyService draftIndividualStudyService;
+
+  @Inject
+  private DraftHarmonizationStudyService draftHarmonizationStudyService;
 
   @GET
   @Path("/study-states")
@@ -114,7 +113,7 @@ public class StudyStatesResource {
     if(limit == null) limit = MAX_LIMIT;
     if(limit < 0) throw new IllegalArgumentException("limit cannot be negative");
 
-    DocumentService.Documents<BaseStudy> studyDocuments = draftStudyService.find(from, limit, sort, order,
+    DocumentService.Documents<? extends BaseStudy> studyDocuments = getDraftStudyServiceByType(type).find(from, limit, sort, order,
       null, query, null, null, accessibleIdFilter);
 
     totalCount = studyDocuments.getTotal();
@@ -136,6 +135,11 @@ public class StudyStatesResource {
   private AbstractStudyService<? extends EntityState, ? extends BaseStudy> getStudyServiceByType(@NotNull String type) {
     return "individual-study".equals(type) ? individualStudyService : harmonizationStudyService;
   }
+
+  private DocumentService<? extends BaseStudy> getDraftStudyServiceByType(@NotNull String type) {
+    return "individual-study".equals(type) ? draftIndividualStudyService : draftHarmonizationStudyService;
+  }
+
 
   private List<String> getPermissionResources(@NotNull String type) {
     if (Strings.isNullOrEmpty(type)) {

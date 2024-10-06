@@ -25,6 +25,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.service.PublishedDocumentService;
+import org.obiba.mica.person.search.EsDraftPersonService;
 import org.obiba.mica.person.search.EsPersonService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -38,6 +39,9 @@ public abstract class AbstractPersonsSearchResource {
 
   @Inject
   private EsPersonService esPersonService;
+
+  @Inject
+  private EsDraftPersonService esDraftPersonService;
 
   @Inject
   private Dtos dtos;
@@ -58,7 +62,7 @@ public abstract class AbstractPersonsSearchResource {
       else query += String.format(" AND NOT(%s)", ids);
     }
 
-    PublishedDocumentService.Documents<Person> contacts = esPersonService.find(from, limit, sort, order, null, query);
+    PublishedDocumentService.Documents<Person> contacts = (isDraft() ? esDraftPersonService : esPersonService).find(from, limit, sort, order, null, query);
 
     List<Mica.PersonDto> persons = contacts.getList().stream().map(p -> dtos.asDto(p, isDraft())).collect(Collectors.toList());
 

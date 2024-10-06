@@ -10,5 +10,7 @@ public interface DocumentRepository<T extends Identified> {
 
   long count();
 
+  Page<T> findAll(Pageable pageable);
+
   Page<T> findByIdIn(Collection<String> ids, Pageable pageable);
 }

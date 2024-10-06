@@ -15,11 +15,9 @@ import com.google.common.collect.Lists;
 import org.obiba.mica.search.AbstractIdentifiedDocumentService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
-import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.DraftStudyService;
-import org.obiba.mica.study.service.HarmonizationStudyService;
+import org.obiba.mica.study.service.DraftIndividualStudyService;
 import org.obiba.mica.study.service.IndividualStudyService;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +29,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class EsDraftStudyService extends AbstractIdentifiedDocumentService<BaseStudy> implements DraftStudyService {
+public class EsDraftIndividualStudyService extends AbstractIdentifiedDocumentService<Study> implements DraftIndividualStudyService {
 
   @Inject
   private ObjectMapper objectMapper;
@@ -39,17 +37,9 @@ public class EsDraftStudyService extends AbstractIdentifiedDocumentService<BaseS
   @Inject
   private IndividualStudyService individualStudyService;
 
-  @Inject
-  private HarmonizationStudyService harmonizationStudyService;
-
   @Override
-  public IndividualStudyService getIndividualStudyService() {
-    return individualStudyService;
-  }
-
-  @Override
-  protected BaseStudy processHit(Searcher.DocumentResult res) throws IOException {
-    return (BaseStudy) objectMapper.readValue(res.getSourceInputStream(), getClass(res.getClassName()));
+  protected Study processHit(Searcher.DocumentResult res) throws IOException {
+    return (Study) objectMapper.readValue(res.getSourceInputStream(), getClass(res.getClassName()));
   }
 
   @Override
@@ -70,16 +60,9 @@ public class EsDraftStudyService extends AbstractIdentifiedDocumentService<BaseS
       public Collection<String> getValues() {
         List<String> ids = Lists.newArrayList();
         ids.addAll(findAuthorizedCollectionStudyIds());
-        ids.addAll(findAuthorizedHarmonizationStudyIds());
         return ids;
       }
     };
-  }
-
-  private List<String> findAuthorizedHarmonizationStudyIds() {
-    return harmonizationStudyService.findAllIds().stream()
-      .filter(studyId -> subjectAclService.isPermitted("/draft/harmonization-study", "VIEW", studyId))
-      .collect(Collectors.toList());
   }
 
   private List<String> findAuthorizedCollectionStudyIds() {

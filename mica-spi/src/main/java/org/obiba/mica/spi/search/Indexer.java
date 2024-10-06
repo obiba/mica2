@@ -26,7 +26,10 @@ public interface Indexer {
 
   String DRAFT_DATASET_INDEX = "dataset-draft";
   String PUBLISHED_DATASET_INDEX = "dataset-published";
-  String DATASET_TYPE = "Dataset";
+  String DATASET_TYPE = "Dataset"; // legacy: should be StudyDataset
+  String STUDY_DATASET_TYPE = "StudyDataset";
+  String HARMO_DATASET_TYPE = "HarmonizationDataset";
+
   String[] DATASET_LOCALIZED_ANALYZED_FIELDS = {"acronym", "name", "description"};
 
   String DRAFT_VARIABLE_INDEX = "variable-draft";
@@ -40,6 +43,7 @@ public interface Indexer {
   String DRAFT_STUDY_INDEX = "study-draft";
   String PUBLISHED_STUDY_INDEX = "study-published";
   String STUDY_TYPE = "Study";
+  String HARMO_STUDY_TYPE = "HarmonizationStudy";
   String[] STUDY_LOCALIZED_ANALYZED_FIELDS = {"acronym", "name", "objectives"};
   String DEFAULT_SORT_FIELD = "name";
 
@@ -54,6 +58,7 @@ public interface Indexer {
   String[] PROJECT_LOCALIZED_ANALYZED_FIELDS = {"title", "summary"};
 
   String PERSON_INDEX = "person";
+  String DRAFT_PERSON_INDEX = "person-draft";
   String PERSON_TYPE = "Person";
 
   String ATTACHMENT_DRAFT_INDEX = "file-draft";

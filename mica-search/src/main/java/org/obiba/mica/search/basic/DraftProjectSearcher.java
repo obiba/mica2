@@ -1,10 +1,21 @@
+/*
+ * Copyright (c) 2024 OBiBa. All rights reserved.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.obiba.mica.search.basic;
 
 import jakarta.inject.Inject;
 import org.jetbrains.annotations.Nullable;
+import org.obiba.mica.project.ProjectRepository;
+import org.obiba.mica.project.domain.Project;
+import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
-import org.obiba.mica.study.StudyRepository;
-import org.obiba.mica.study.domain.Study;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -14,14 +25,14 @@ import java.util.Collection;
 import java.util.List;
 
 @Component
-public class StudySearcher implements DocumentSearcher {
+public class DraftProjectSearcher implements DocumentSearcher {
 
   @Inject
-  private StudyRepository studyRepository;
+  private ProjectRepository projectRepository;
 
   @Override
   public boolean isFor(String indexName, String type) {
-    return DefaultIndexer.DRAFT_STUDY_INDEX.equals(indexName) && "Study".equals(type);
+    return Indexer.DRAFT_PROJECT_INDEX.equals(indexName);
   }
 
   @Override
@@ -32,8 +43,8 @@ public class StudySearcher implements DocumentSearcher {
     // TODO query + term filter
     Collection<String> ids = idFilter == null ? null : idFilter.getValues();
     Pageable pageable = PageRequest.of(page, limit, sortRequest);
-    final long total = ids == null ? studyRepository.count() : ids.size();
-    final List<Study> studies = (ids == null ? studyRepository.findAll(pageable) : studyRepository.findByIdIn(ids, pageable)).getContent();
-    return new IdentifiedDocumentResults<>(total, studies);
+    final long total = ids == null ? projectRepository.count() : ids.size();
+    final List<Project> projects = (ids == null ? projectRepository.findAll(pageable) : projectRepository.findByIdIn(ids, pageable)).getContent();
+    return new IdentifiedDocumentResults<>(total, projects);
   }
 }

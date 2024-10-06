@@ -12,13 +12,14 @@ package org.obiba.mica.study;
 
 import java.util.List;
 
+import org.obiba.mica.core.repository.DocumentRepository;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 public interface HarmonizationStudyRepository
-  extends MongoRepository<HarmonizationStudy, String>, HarmonizationStudyRepositoryCustom {
+  extends MongoRepository<HarmonizationStudy, String>, HarmonizationStudyRepositoryCustom, DocumentRepository<HarmonizationStudy> {
 
   @Query(value = "{}", fields = "{_id : 1}")
   List<Study> findAllExistingIds();
