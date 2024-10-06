@@ -33,7 +33,7 @@ public class EsDraftPersonService extends AbstractIdentifiedDocumentService<Pers
 
   @Override
   protected String getIndexName() {
-    return Indexer.DRAFT_PERSON_INDEX;
+    return Indexer.PERSON_INDEX;
   }
 
   @Override

@@ -58,7 +58,6 @@ public interface Indexer {
   String[] PROJECT_LOCALIZED_ANALYZED_FIELDS = {"title", "summary"};
 
   String PERSON_INDEX = "person";
-  String DRAFT_PERSON_INDEX = "person-draft";
   String PERSON_TYPE = "Person";
 
   String ATTACHMENT_DRAFT_INDEX = "file-draft";

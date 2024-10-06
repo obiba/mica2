@@ -8,12 +8,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.search.basic;
+package org.obiba.mica.search.basic.searchers;
 
 import jakarta.inject.Inject;
 import org.jetbrains.annotations.Nullable;
-import org.obiba.mica.project.ProjectRepository;
-import org.obiba.mica.project.domain.Project;
+import org.obiba.mica.network.NetworkRepository;
+import org.obiba.mica.network.domain.Network;
+import org.obiba.mica.search.basic.DocumentSearcher;
+import org.obiba.mica.search.basic.IdentifiedDocumentResults;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
 import org.springframework.data.domain.PageRequest;
@@ -25,14 +27,14 @@ import java.util.Collection;
 import java.util.List;
 
 @Component
-public class DraftProjectSearcher implements DocumentSearcher {
+public class DraftNetworkSearcher implements DocumentSearcher {
 
   @Inject
-  private ProjectRepository projectRepository;
+  private NetworkRepository networkRepository;
 
   @Override
   public boolean isFor(String indexName, String type) {
-    return Indexer.DRAFT_PROJECT_INDEX.equals(indexName);
+    return Indexer.DRAFT_NETWORK_INDEX.equals(indexName) && "Network".equals(type);
   }
 
   @Override
@@ -43,8 +45,8 @@ public class DraftProjectSearcher implements DocumentSearcher {
     // TODO query + term filter
     Collection<String> ids = idFilter == null ? null : idFilter.getValues();
     Pageable pageable = PageRequest.of(page, limit, sortRequest);
-    final long total = ids == null ? projectRepository.count() : ids.size();
-    final List<Project> projects = (ids == null ? projectRepository.findAll(pageable) : projectRepository.findByIdIn(ids, pageable)).getContent();
-    return new IdentifiedDocumentResults<>(total, projects);
+    final long total = ids == null ? networkRepository.count() : ids.size();
+    final List<Network> networks = (ids == null ? networkRepository.findAll(pageable) : networkRepository.findByIdIn(ids, pageable)).getContent();
+    return new IdentifiedDocumentResults<>(total, networks);
   }
 }

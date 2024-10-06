@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-class IdentifiedDocumentResults<T extends Identified> implements Searcher.DocumentResults {
+public class IdentifiedDocumentResults<T extends Identified> implements Searcher.DocumentResults {
   private final long total;
   private final List<T> documents;
 

@@ -10,8 +10,10 @@
 
 package org.obiba.mica.search;
 
+import jakarta.inject.Inject;
 import org.obiba.mica.micaConfig.service.PluginsService;
 import org.obiba.mica.search.basic.DefaultIndexer;
+import org.obiba.mica.search.basic.DefaultIndexerFactory;
 import org.obiba.mica.spi.search.IndexFieldMapping;
 import org.obiba.mica.spi.search.Indexable;
 import org.obiba.mica.spi.search.Indexer;
@@ -19,7 +21,6 @@ import org.springframework.data.domain.Persistable;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 import java.util.Map;
 
 @Component
@@ -28,13 +29,16 @@ public class SearchEngineIndexer implements Indexer {
   @Inject
   private PluginsService pluginsService;
 
-  private Indexer defaultIndexer;
+  @Inject
+  private DefaultIndexerFactory defaultIndexerFactory;
+
+  private DefaultIndexer defaultIndexer;
 
   private Indexer getIndexer() {
     if (pluginsService.hasSearchEngineService())
       return pluginsService.getSearchEngineService().getIndexer();
     if (defaultIndexer == null) {
-      defaultIndexer = new DefaultIndexer();
+      defaultIndexer = defaultIndexerFactory.newIndexer();
     }
     return defaultIndexer;
   }

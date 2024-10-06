@@ -6,7 +6,7 @@ import org.obiba.mica.spi.search.Searcher;
 import java.io.InputStream;
 import java.util.Map;
 
-class IdentifiedDocumentResult<T extends Identified> implements Searcher.DocumentResult {
+public class IdentifiedDocumentResult<T extends Identified> implements Searcher.DocumentResult {
 
   private final T document;
 

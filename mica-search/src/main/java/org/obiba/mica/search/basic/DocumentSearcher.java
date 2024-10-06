@@ -5,6 +5,7 @@ import org.obiba.mica.spi.search.QueryScope;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.spi.search.support.Query;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -63,5 +64,7 @@ public interface DocumentSearcher {
     return new EmptyDocumentResults();
   }
 
-
+  default File getIndexParentDir() {
+    return new File(System.getProperty("MICA_HOME") + "/work/index");
+  }
 }

@@ -8,13 +8,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.search.basic;
+package org.obiba.mica.search.basic.searchers;
 
 import com.google.common.base.Joiner;
 import jakarta.inject.Inject;
 import org.jetbrains.annotations.Nullable;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
 import org.obiba.mica.file.AttachmentState;
+import org.obiba.mica.search.basic.DocumentSearcher;
+import org.obiba.mica.search.basic.IdentifiedDocumentResults;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
 import org.springframework.data.domain.PageRequest;

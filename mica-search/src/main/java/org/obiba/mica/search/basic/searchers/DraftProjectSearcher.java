@@ -1,9 +1,21 @@
-package org.obiba.mica.search.basic;
+/*
+ * Copyright (c) 2024 OBiBa. All rights reserved.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package org.obiba.mica.search.basic.searchers;
 
 import jakarta.inject.Inject;
 import org.jetbrains.annotations.Nullable;
-import org.obiba.mica.network.NetworkRepository;
-import org.obiba.mica.network.domain.Network;
+import org.obiba.mica.project.ProjectRepository;
+import org.obiba.mica.project.domain.Project;
+import org.obiba.mica.search.basic.DocumentSearcher;
+import org.obiba.mica.search.basic.IdentifiedDocumentResults;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
 import org.springframework.data.domain.PageRequest;
@@ -15,14 +27,14 @@ import java.util.Collection;
 import java.util.List;
 
 @Component
-public class DraftNetworkSearcher implements DocumentSearcher {
+public class DraftProjectSearcher implements DocumentSearcher {
 
   @Inject
-  private NetworkRepository networkRepository;
+  private ProjectRepository projectRepository;
 
   @Override
   public boolean isFor(String indexName, String type) {
-    return Indexer.DRAFT_NETWORK_INDEX.equals(indexName) && "Network".equals(type);
+    return Indexer.DRAFT_PROJECT_INDEX.equals(indexName);
   }
 
   @Override
@@ -33,8 +45,8 @@ public class DraftNetworkSearcher implements DocumentSearcher {
     // TODO query + term filter
     Collection<String> ids = idFilter == null ? null : idFilter.getValues();
     Pageable pageable = PageRequest.of(page, limit, sortRequest);
-    final long total = ids == null ? networkRepository.count() : ids.size();
-    final List<Network> networks = (ids == null ? networkRepository.findAll(pageable) : networkRepository.findByIdIn(ids, pageable)).getContent();
-    return new IdentifiedDocumentResults<>(total, networks);
+    final long total = ids == null ? projectRepository.count() : ids.size();
+    final List<Project> projects = (ids == null ? projectRepository.findAll(pageable) : projectRepository.findByIdIn(ids, pageable)).getContent();
+    return new IdentifiedDocumentResults<>(total, projects);
   }
 }
