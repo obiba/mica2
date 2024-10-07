@@ -68,7 +68,7 @@ public class DraftPersonSearcher implements DocumentSearcher {
     // TODO term filter
     List<String> ids = null;
     List<String> foundIds = Strings.isNullOrEmpty(queryString) ? null : searchIds(queryString);
-    if (foundIds != null && !foundIds.isEmpty()) {
+    if (foundIds != null) {
       ids = Lists.newArrayList(foundIds.iterator());
     }
     Collection<String> filteredIds = idFilter == null ? null : idFilter.getValues();
