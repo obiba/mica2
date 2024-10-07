@@ -52,11 +52,7 @@ public class PluginsService implements EnvironmentAware, InitializingBean {
 
   private static final String MICA_TAXONOMIES_PLUGIN_TYPE = "mica-taxonomies";
 
-
-
   private static final String MICA_SEARCH_PLUGIN_NAME = "plugins.micaSearchPlugin";
-
-  private static final String DEFAULT_MICA_SEARCH_PLUGIN_NAME = "mica-search-es8";
 
   private static final String DEFAULT_PLUGINS_UPDATE_SITE = "https://plugins.obiba.org";
 
@@ -85,6 +81,10 @@ public class PluginsService implements EnvironmentAware, InitializingBean {
   @Override
   public void setEnvironment(Environment environment) {
     this.environment = environment;
+  }
+
+  public boolean hasSearchEngineService() {
+    return !getServicePlugins(SearchEngineService.class).isEmpty();
   }
 
   public SearchEngineService getSearchEngineService() {
@@ -305,7 +305,7 @@ public class PluginsService implements EnvironmentAware, InitializingBean {
   }
 
   public String getSearchPluginName() {
-    return environment.getProperty(MICA_SEARCH_PLUGIN_NAME, DEFAULT_MICA_SEARCH_PLUGIN_NAME);
+    return environment.getProperty(MICA_SEARCH_PLUGIN_NAME);
   }
 
   /**
@@ -315,28 +315,31 @@ public class PluginsService implements EnvironmentAware, InitializingBean {
     Collection<PluginResources> plugins = getPlugins(true);
     String searchPluginName = getSearchPluginName();
 
-    try {
-      String pluginLatestVersion = getPluginRepositoryCache().getPluginLatestVersion(searchPluginName);
-      // ensure there is a mica-search plugin installed
-      if (plugins.stream().noneMatch(p -> MICA_SEARCH_PLUGIN_TYPE.equals(p.getType()))
-        || plugins.stream()
-            .filter(plugin -> searchPluginName.equals(plugin.getName()))
-            .filter(plugin -> plugin.getVersion().compareTo(new Version(pluginLatestVersion)) >= 0).count() == 0) {
-        installPlugin(searchPluginName, null);
-        // rescan plugins
-        plugins = getPlugins(true);
+    // will use embedded default
+    if (!Strings.isNullOrEmpty(searchPluginName)) {
+      try {
+        String pluginLatestVersion = getPluginRepositoryCache().getPluginLatestVersion(searchPluginName);
+        // ensure there is a mica-search plugin installed
+        if (plugins.stream().noneMatch(p -> MICA_SEARCH_PLUGIN_TYPE.equals(p.getType()))
+          || plugins.stream()
+          .filter(plugin -> searchPluginName.equals(plugin.getName()))
+          .filter(plugin -> plugin.getVersion().compareTo(new Version(pluginLatestVersion)) >= 0).count() == 0) {
+          installPlugin(searchPluginName, null);
+          // rescan plugins
+          plugins = getPlugins(true);
+        }
+      } catch (PluginRepositoryException e) {
+        log.error("Cannot initialize plugins properly", e);
       }
-    } catch (PluginRepositoryException e) {
-      log.error("Cannot initialize plugins properly", e);
     }
 
     boolean micaSearchFound = false; // mica-search plugin is a singleton
     List<PluginResources> filteredPlugins =
-      plugins.stream().filter(plugin -> searchPluginName.equals(plugin.getName())
+      plugins.stream().filter(plugin -> (!Strings.isNullOrEmpty(searchPluginName) && searchPluginName.equals(plugin.getName()))
           || MICA_TABLES_PLUGIN_TYPE.equals(plugin.getType())
           || MICA_TAXONOMIES_PLUGIN_TYPE.equals(plugin.getType()))
         .sorted(Comparator.comparing(PluginResources::getVersion))
-        .collect(Collectors.toList());
+        .toList();
 
     for (PluginResources plugin : filteredPlugins) {
       if (MICA_SEARCH_PLUGIN_TYPE.equals(plugin.getType()) && !micaSearchFound) {

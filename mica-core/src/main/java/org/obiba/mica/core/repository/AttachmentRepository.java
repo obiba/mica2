@@ -10,15 +10,20 @@
 
 package org.obiba.mica.core.repository;
 
-import java.util.List;
-
 import org.obiba.mica.file.Attachment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
-public interface AttachmentRepository extends MongoRepository<Attachment, String> {
+import java.util.List;
+
+public interface AttachmentRepository extends MongoRepository<Attachment, String>, DocumentRepository<Attachment> {
   @Query("{'path': {$regex: ?0}}")
   List<Attachment> findByPath(String pathRegEx);
+
+  @Query("{'path': {$regex: ?0}}")
+  Page<Attachment> findByPath(String pathRegEx, Pageable pageable);
 
   List<Attachment> findByPathAndNameOrderByCreatedDateDesc(String path, String name);
 }

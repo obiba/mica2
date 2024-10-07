@@ -10,17 +10,21 @@
 
 package org.obiba.mica.study;
 
+import org.obiba.mica.core.repository.DocumentRepository;
 import org.obiba.mica.study.domain.Study;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
  * Spring Data MongoDB repository for the Study entity.
  */
 
-public interface StudyRepository extends MongoRepository<Study, String>, StudyRepositoryCustom {
+public interface StudyRepository extends MongoRepository<Study, String>, StudyRepositoryCustom, DocumentRepository<Study> {
 
   @Query("{'model' : { $exists : false }}")
   List<Study> findWithoutModel();

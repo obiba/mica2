@@ -16,7 +16,7 @@ import org.obiba.mica.core.domain.Person;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
-public interface PersonRepository extends MongoRepository<Person, String> {
+public interface PersonRepository extends MongoRepository<Person, String>, DocumentRepository<Person> {
 
   @Query(value = "{'studyMemberships.parentId' : ?0 }")
   List<Person> findByStudyMemberships(String studyId);

@@ -47,7 +47,7 @@ class EsDraftCollectedDatasetService extends AbstractEsDatasetService<StudyDatas
 
   @Override
   protected String getType() {
-    return Indexer.DATASET_TYPE;
+    return Indexer.STUDY_DATASET_TYPE;
   }
 
   @Override
