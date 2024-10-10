@@ -241,7 +241,7 @@ class EntityQuery {
       theTree.addQuery(null, targetQuery);
     }
 
-    let query = this.__findQuery(theTree, updateQuery);
+    let query = this.__findQuery(theTree.asTree(targetQuery), updateQuery);
 
     if (!query) {
       theTree.addQuery(targetQuery, updateQuery);
@@ -280,10 +280,11 @@ class EntityQuery {
           // create target and add query as child, done!
           targetQuery = new RQL.Query(info.target);
           theTree.addQuery(null, targetQuery);
-          theTree.addQuery(targetQuery, info.query)
+          theTree.addQuery(targetQuery, info.query);
           alertEventData = {target: info.target, query: info.query, action: 'created'};
         } else {
-          let theQuery = this.__findQuery(theTree, info.query);
+          // Update from the parent targetQuery
+          let theQuery = this.__findQuery(theTree.asTree(targetQuery), info.query);
           if (theQuery) {
             // query exists, just update
             theQuery.name = info.newName || info.query.name;
