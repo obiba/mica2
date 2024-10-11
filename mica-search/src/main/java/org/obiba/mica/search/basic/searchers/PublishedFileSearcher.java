@@ -12,10 +12,10 @@ package org.obiba.mica.search.basic.searchers;
 
 import com.google.common.base.Joiner;
 import jakarta.inject.Inject;
+import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
 import org.obiba.mica.file.AttachmentState;
-import org.obiba.mica.search.basic.DocumentSearcher;
 import org.obiba.mica.search.basic.IdentifiedDocumentResults;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
@@ -24,27 +24,29 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
 import java.util.List;
 
 @Component
-public class DraftAttachmentSearcher implements DocumentSearcher {
+public class PublishedFileSearcher extends BaseSearcher {
 
   @Inject
   private AttachmentStateRepository attachmentStateRepository;
 
   @Override
   public boolean isFor(String indexName, String type) {
-    return Indexer.ATTACHMENT_DRAFT_INDEX.equals(indexName);
+    return Indexer.ATTACHMENT_PUBLISHED_INDEX.equals(indexName);
   }
 
   @Override
   public Searcher.DocumentResults getDocuments(String indexName, String type, int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String queryString, @Nullable Searcher.TermFilter termFilter, @Nullable Searcher.IdFilter idFilter, @Nullable List<String> fields, @Nullable List<String> excludedFields) {
+    // TODO term filter
+    List<String> ids = searchIds(indexName, type, queryString, idFilter);
+    if (ids != null && ids.isEmpty()) {
+      return new IdentifiedDocumentResults<>(0, Lists.newArrayList());
+    }
     // Calculate page number based on offset and limit
     int page = from / limit;
     Sort sortRequest = "asc".equalsIgnoreCase(order) ? Sort.by(sort).ascending() : Sort.by(sort).descending();
-    // TODO query + term filter
-    Collection<String> ids = idFilter == null ? null : idFilter.getValues();
     Pageable pageable = PageRequest.of(page, limit, sortRequest);
     final long total = ids == null ? attachmentStateRepository.count() : ids.size();
     final List<AttachmentState> attachments = (ids == null ? attachmentStateRepository.findAll(pageable) : attachmentStateRepository.findByPath(Joiner.on("|").join(ids), pageable)).getContent();

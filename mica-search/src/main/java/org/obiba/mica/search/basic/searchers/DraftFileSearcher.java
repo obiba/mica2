@@ -10,11 +10,12 @@
 
 package org.obiba.mica.search.basic.searchers;
 
+import com.google.common.base.Joiner;
 import jakarta.inject.Inject;
 import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
-import org.obiba.mica.project.ProjectRepository;
-import org.obiba.mica.project.domain.Project;
+import org.obiba.mica.core.repository.AttachmentStateRepository;
+import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.search.basic.IdentifiedDocumentResults;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
@@ -26,14 +27,14 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class DraftProjectSearcher extends BaseSearcher {
+public class DraftFileSearcher extends BaseSearcher {
 
   @Inject
-  private ProjectRepository projectRepository;
+  private AttachmentStateRepository attachmentStateRepository;
 
   @Override
   public boolean isFor(String indexName, String type) {
-    return Indexer.DRAFT_PROJECT_INDEX.equals(indexName);
+    return Indexer.ATTACHMENT_DRAFT_INDEX.equals(indexName);
   }
 
   @Override
@@ -47,8 +48,8 @@ public class DraftProjectSearcher extends BaseSearcher {
     int page = from / limit;
     Sort sortRequest = "asc".equalsIgnoreCase(order) ? Sort.by(sort).ascending() : Sort.by(sort).descending();
     Pageable pageable = PageRequest.of(page, limit, sortRequest);
-    final long total = ids == null ? projectRepository.count() : ids.size();
-    final List<Project> projects = (ids == null ? projectRepository.findAll(pageable) : projectRepository.findByIdIn(ids, pageable)).getContent();
-    return new IdentifiedDocumentResults<>(total, projects);
+    final long total = ids == null ? attachmentStateRepository.count() : ids.size();
+    final List<AttachmentState> attachments = (ids == null ? attachmentStateRepository.findAll(pageable) : attachmentStateRepository.findByPath(Joiner.on("|").join(ids), pageable)).getContent();
+    return new IdentifiedDocumentResults<>(total, attachments);
   }
 }

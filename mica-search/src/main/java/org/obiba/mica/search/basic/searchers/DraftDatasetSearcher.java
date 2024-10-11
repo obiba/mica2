@@ -12,12 +12,12 @@ package org.obiba.mica.search.basic.searchers;
 
 import com.google.common.collect.Sets;
 import jakarta.inject.Inject;
+import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
 import org.obiba.mica.core.repository.DocumentRepository;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.dataset.domain.Dataset;
-import org.obiba.mica.search.basic.DocumentSearcher;
 import org.obiba.mica.search.basic.IdentifiedDocumentResults;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
@@ -26,12 +26,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 @Component
-public class DraftDatasetSearcher implements DocumentSearcher {
+public class DraftDatasetSearcher extends BaseSearcher {
 
   private static final Set<String> DATASET_TYPES = Sets.newHashSet(Indexer.DATASET_TYPE, Indexer.STUDY_DATASET_TYPE, Indexer.HARMO_DATASET_TYPE);
 
@@ -48,11 +47,14 @@ public class DraftDatasetSearcher implements DocumentSearcher {
 
   @Override
   public Searcher.DocumentResults getDocuments(String indexName, String type, int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String queryString, @Nullable Searcher.TermFilter termFilter, @Nullable Searcher.IdFilter idFilter, @Nullable List<String> fields, @Nullable List<String> excludedFields) {
+    // TODO term filter
+    List<String> ids = searchIds(indexName, type, queryString, idFilter);
+    if (ids != null && ids.isEmpty()) {
+      return new IdentifiedDocumentResults<>(0, Lists.newArrayList());
+    }
     // Calculate page number based on offset and limit
     int page = from / limit;
     Sort sortRequest = "asc".equalsIgnoreCase(order) ? Sort.by(sort).ascending() : Sort.by(sort).descending();
-    // TODO query + term filter
-    Collection<String> ids = idFilter == null ? null : idFilter.getValues();
     Pageable pageable = PageRequest.of(page, limit, sortRequest);
     DocumentRepository<? extends Dataset> repository = getRepository(type);
     final long total = ids == null ? repository.count() : ids.size();

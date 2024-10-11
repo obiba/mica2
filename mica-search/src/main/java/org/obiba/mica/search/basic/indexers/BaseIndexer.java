@@ -12,6 +12,9 @@ package org.obiba.mica.search.basic.indexers;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
@@ -20,6 +23,8 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.jetbrains.annotations.Nullable;
+import org.obiba.core.util.FileUtil;
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.search.basic.DocumentIndexer;
 import org.obiba.mica.spi.search.Indexable;
 import org.slf4j.Logger;
@@ -80,6 +85,7 @@ public abstract class BaseIndexer<T> implements DocumentIndexer {
 
   @Override
   public void reIndexAllIndexables(String indexName, Iterable<? extends Indexable> indexables) {
+    cleanDirectory(indexName);
     try (IndexWriter writer = newIndexWriter(indexName)) {
       for (Indexable indexable : indexables)
         writer.addDocument(asDocument((T)indexable));
@@ -91,6 +97,7 @@ public abstract class BaseIndexer<T> implements DocumentIndexer {
 
   @Override
   public void reindexAll(String indexName, Iterable<? extends Persistable<String>> persistables) {
+    cleanDirectory(indexName);
     try (IndexWriter writer = newIndexWriter(indexName)) {
       for (Persistable persistable : persistables)
         writer.addDocument(asDocument((T)persistable));
@@ -181,18 +188,26 @@ public abstract class BaseIndexer<T> implements DocumentIndexer {
   }
 
   //
-  // Private methods
+  // Protected methods
   //
 
   protected abstract Document asDocument(T item);
 
   protected IndexWriter newIndexWriter(String indexName) {
     try {
-      Analyzer analyzer = AnalyzerFactory.newPersonsAnalyzer();
+      Analyzer analyzer = AnalyzerFactory.newDefaultAnalyzer();
       IndexWriterConfig config = new IndexWriterConfig(analyzer);
       return new IndexWriter(getDirectory(indexName), config);
     } catch (IOException e) {
       throw new RuntimeException(e);
+    }
+  }
+
+  protected void cleanDirectory(String indexName) {
+    try {
+      FileUtil.delete(new File(getIndexParentDir(), indexName));
+    } catch (IOException e) {
+      // ignore
     }
   }
 
@@ -205,5 +220,14 @@ public abstract class BaseIndexer<T> implements DocumentIndexer {
       }
     }
     return directory;
+  }
+
+  protected String addLocalizedString(Document doc, String field, LocalizedString localized) {
+    if (localized == null || localized.isEmpty()) return "";
+    localized.forEach((key, value) -> {
+      doc.add(new TextField(String.format("%s.%s.analyzed", field, key), value, Field.Store.YES));
+      doc.add(new StringField(String.format("%s.%s", field, key), value, Field.Store.YES));
+    });
+    return String.join(" ", localized.values());
   }
 }

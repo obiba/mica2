@@ -26,14 +26,14 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class DraftProjectSearcher extends BaseSearcher {
+public class PublishedProjectSearcher extends BaseSearcher {
 
   @Inject
   private ProjectRepository projectRepository;
 
   @Override
   public boolean isFor(String indexName, String type) {
-    return Indexer.DRAFT_PROJECT_INDEX.equals(indexName);
+    return Indexer.PUBLISHED_PROJECT_INDEX.equals(indexName);
   }
 
   @Override

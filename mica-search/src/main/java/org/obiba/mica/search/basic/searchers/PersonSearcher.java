@@ -12,12 +12,15 @@ package org.obiba.mica.search.basic.searchers;
 
 import jakarta.inject.Inject;
 import org.apache.commons.compress.utils.Lists;
+import org.apache.lucene.store.Directory;
 import org.jetbrains.annotations.Nullable;
-import org.obiba.mica.project.ProjectRepository;
-import org.obiba.mica.project.domain.Project;
+import org.obiba.mica.core.domain.Person;
+import org.obiba.mica.core.repository.PersonRepository;
 import org.obiba.mica.search.basic.IdentifiedDocumentResults;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -26,14 +29,18 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class DraftProjectSearcher extends BaseSearcher {
+public class PersonSearcher extends BaseSearcher {
+
+  private static final Logger log = LoggerFactory.getLogger(PersonSearcher.class);
+
+  private Directory directory;
 
   @Inject
-  private ProjectRepository projectRepository;
+  private PersonRepository personRepository;
 
   @Override
   public boolean isFor(String indexName, String type) {
-    return Indexer.DRAFT_PROJECT_INDEX.equals(indexName);
+    return Indexer.PERSON_INDEX.equals(indexName);
   }
 
   @Override
@@ -47,8 +54,8 @@ public class DraftProjectSearcher extends BaseSearcher {
     int page = from / limit;
     Sort sortRequest = "asc".equalsIgnoreCase(order) ? Sort.by(sort).ascending() : Sort.by(sort).descending();
     Pageable pageable = PageRequest.of(page, limit, sortRequest);
-    final long total = ids == null ? projectRepository.count() : ids.size();
-    final List<Project> projects = (ids == null ? projectRepository.findAll(pageable) : projectRepository.findByIdIn(ids, pageable)).getContent();
-    return new IdentifiedDocumentResults<>(total, projects);
+    final long total = ids == null ? personRepository.count() : ids.size();
+    final List<Person> persons = (ids == null ? personRepository.findAll(pageable) : personRepository.findByIdIn(ids, pageable)).getContent();
+    return new IdentifiedDocumentResults<>(total, persons);
   }
 }

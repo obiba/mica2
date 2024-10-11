@@ -13,8 +13,8 @@ package org.obiba.mica.search.basic.searchers;
 import jakarta.inject.Inject;
 import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
-import org.obiba.mica.project.ProjectRepository;
-import org.obiba.mica.project.domain.Project;
+import org.obiba.mica.network.NetworkRepository;
+import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.search.basic.IdentifiedDocumentResults;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
@@ -26,14 +26,14 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class DraftProjectSearcher extends BaseSearcher {
+public class PublishedNetworkSearcher extends BaseSearcher {
 
   @Inject
-  private ProjectRepository projectRepository;
+  private NetworkRepository networkRepository;
 
   @Override
   public boolean isFor(String indexName, String type) {
-    return Indexer.DRAFT_PROJECT_INDEX.equals(indexName);
+    return Indexer.PUBLISHED_NETWORK_INDEX.equals(indexName) && "Network".equals(type);
   }
 
   @Override
@@ -47,8 +47,8 @@ public class DraftProjectSearcher extends BaseSearcher {
     int page = from / limit;
     Sort sortRequest = "asc".equalsIgnoreCase(order) ? Sort.by(sort).ascending() : Sort.by(sort).descending();
     Pageable pageable = PageRequest.of(page, limit, sortRequest);
-    final long total = ids == null ? projectRepository.count() : ids.size();
-    final List<Project> projects = (ids == null ? projectRepository.findAll(pageable) : projectRepository.findByIdIn(ids, pageable)).getContent();
-    return new IdentifiedDocumentResults<>(total, projects);
+    final long total = ids == null ? networkRepository.count() : ids.size();
+    final List<Network> networks = (ids == null ? networkRepository.findAll(pageable) : networkRepository.findByIdIn(ids, pageable)).getContent();
+    return new IdentifiedDocumentResults<>(total, networks);
   }
 }

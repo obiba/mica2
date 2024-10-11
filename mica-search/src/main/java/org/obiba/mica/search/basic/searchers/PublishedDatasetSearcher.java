@@ -10,11 +10,14 @@
 
 package org.obiba.mica.search.basic.searchers;
 
+import com.google.common.collect.Sets;
 import jakarta.inject.Inject;
 import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
-import org.obiba.mica.project.ProjectRepository;
-import org.obiba.mica.project.domain.Project;
+import org.obiba.mica.core.repository.DocumentRepository;
+import org.obiba.mica.dataset.HarmonizationDatasetRepository;
+import org.obiba.mica.dataset.StudyDatasetRepository;
+import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.search.basic.IdentifiedDocumentResults;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
@@ -24,16 +27,22 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 
 @Component
-public class DraftProjectSearcher extends BaseSearcher {
+public class PublishedDatasetSearcher extends BaseSearcher {
+
+  private static final Set<String> DATASET_TYPES = Sets.newHashSet(Indexer.DATASET_TYPE, Indexer.STUDY_DATASET_TYPE, Indexer.HARMO_DATASET_TYPE);
 
   @Inject
-  private ProjectRepository projectRepository;
+  private StudyDatasetRepository studyDatasetRepository;
+
+  @Inject
+  private HarmonizationDatasetRepository harmonizationDatasetRepository;
 
   @Override
   public boolean isFor(String indexName, String type) {
-    return Indexer.DRAFT_PROJECT_INDEX.equals(indexName);
+    return Indexer.PUBLISHED_DATASET_INDEX.equals(indexName) && DATASET_TYPES.contains(type);
   }
 
   @Override
@@ -47,8 +56,15 @@ public class DraftProjectSearcher extends BaseSearcher {
     int page = from / limit;
     Sort sortRequest = "asc".equalsIgnoreCase(order) ? Sort.by(sort).ascending() : Sort.by(sort).descending();
     Pageable pageable = PageRequest.of(page, limit, sortRequest);
-    final long total = ids == null ? projectRepository.count() : ids.size();
-    final List<Project> projects = (ids == null ? projectRepository.findAll(pageable) : projectRepository.findByIdIn(ids, pageable)).getContent();
-    return new IdentifiedDocumentResults<>(total, projects);
+    DocumentRepository<? extends Dataset> repository = getRepository(type);
+    final long total = ids == null ? repository.count() : ids.size();
+    final List<? extends Dataset> studies = (ids == null ? repository.findAll(pageable) : repository.findByIdIn(ids, pageable)).getContent();
+    return new IdentifiedDocumentResults<>(total, studies);
+  }
+
+  private DocumentRepository<? extends Dataset> getRepository(String type) {
+    if (Indexer.HARMO_DATASET_TYPE.equals(type))
+      return harmonizationDatasetRepository;
+    return studyDatasetRepository;
   }
 }

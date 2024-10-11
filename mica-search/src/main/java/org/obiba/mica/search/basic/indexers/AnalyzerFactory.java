@@ -11,11 +11,10 @@
 package org.obiba.mica.search.basic.indexers;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 
 public class AnalyzerFactory {
 
-  public static Analyzer newPersonsAnalyzer() {
+  public static Analyzer newDefaultAnalyzer() {
     return new DefaultAnalyzer(3, 3);
   }
 

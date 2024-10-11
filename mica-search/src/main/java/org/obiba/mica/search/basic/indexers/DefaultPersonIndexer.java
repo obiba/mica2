@@ -15,7 +15,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
-import org.apache.lucene.store.Directory;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.spi.search.Indexer;
 import org.springframework.stereotype.Component;
@@ -28,14 +27,12 @@ public class DefaultPersonIndexer extends BaseIndexer<Person> {
     return Indexer.PERSON_INDEX.equals(indexName);
   }
 
-  //
-  // Private methods
-  //
-
   protected Document asDocument(Person person) {
     Document doc = new Document();
-    doc.add(new StringField("id", person.getId(), Field.Store.YES));
+    doc.add(new StringField("_id", person.getId(), Field.Store.YES));
+    doc.add(new StringField("_class", person.getClass().getSimpleName(), Field.Store.YES));
 
+    doc.add(new TextField("id", person.getId(), Field.Store.YES));
     if (!Strings.isNullOrEmpty(person.getFirstName()))
       doc.add(new TextField("first-name", person.getFirstName(), Field.Store.YES));
     if (!Strings.isNullOrEmpty(person.getLastName()))
@@ -45,7 +42,7 @@ public class DefaultPersonIndexer extends BaseIndexer<Person> {
 
     String content = String.format("%s %s %s", person.getFirstName(), person.getLastName(), person.getEmail());
 
-    doc.add(new TextField("content", content, Field.Store.NO));
+    doc.add(new TextField("_content", content, Field.Store.NO));
 
     return doc;
   }

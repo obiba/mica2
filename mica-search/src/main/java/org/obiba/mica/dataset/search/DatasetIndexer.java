@@ -95,8 +95,8 @@ public class DatasetIndexer {
   synchronized public void reIndexAll(IndexDatasetsEvent event) {
     lock.lock();
     try {
-      if (indexer.hasIndex(Indexer.PUBLISHED_DATASET_INDEX)) indexer.dropIndex(Indexer.PUBLISHED_DATASET_INDEX);
       if (indexer.hasIndex(Indexer.DRAFT_DATASET_INDEX)) indexer.dropIndex(Indexer.DRAFT_DATASET_INDEX);
+      if (indexer.hasIndex(Indexer.PUBLISHED_DATASET_INDEX)) indexer.dropIndex(Indexer.PUBLISHED_DATASET_INDEX);
 
       if (indexer.hasIndex(Indexer.DRAFT_VARIABLE_INDEX)) indexer.dropIndex(Indexer.DRAFT_VARIABLE_INDEX);
       if (indexer.hasIndex(Indexer.PUBLISHED_VARIABLE_INDEX))

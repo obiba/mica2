@@ -10,30 +10,39 @@
 
 package org.obiba.mica.search.basic.searchers;
 
+import com.google.common.collect.Sets;
 import jakarta.inject.Inject;
 import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
-import org.obiba.mica.project.ProjectRepository;
-import org.obiba.mica.project.domain.Project;
+import org.obiba.mica.core.repository.DocumentRepository;
 import org.obiba.mica.search.basic.IdentifiedDocumentResults;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
+import org.obiba.mica.study.HarmonizationStudyRepository;
+import org.obiba.mica.study.StudyRepository;
+import org.obiba.mica.study.domain.BaseStudy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 
 @Component
-public class DraftProjectSearcher extends BaseSearcher {
+public class PublishedStudySearcher extends BaseSearcher {
+
+  private static final Set<String> STUDY_TYPES = Sets.newHashSet(Indexer.STUDY_TYPE, Indexer.HARMO_STUDY_TYPE);
 
   @Inject
-  private ProjectRepository projectRepository;
+  private StudyRepository studyRepository;
+
+  @Inject
+  private HarmonizationStudyRepository harmonizationStudyRepository;
 
   @Override
   public boolean isFor(String indexName, String type) {
-    return Indexer.DRAFT_PROJECT_INDEX.equals(indexName);
+    return Indexer.PUBLISHED_STUDY_INDEX.equals(indexName) && STUDY_TYPES.contains(type);
   }
 
   @Override
@@ -47,8 +56,15 @@ public class DraftProjectSearcher extends BaseSearcher {
     int page = from / limit;
     Sort sortRequest = "asc".equalsIgnoreCase(order) ? Sort.by(sort).ascending() : Sort.by(sort).descending();
     Pageable pageable = PageRequest.of(page, limit, sortRequest);
-    final long total = ids == null ? projectRepository.count() : ids.size();
-    final List<Project> projects = (ids == null ? projectRepository.findAll(pageable) : projectRepository.findByIdIn(ids, pageable)).getContent();
-    return new IdentifiedDocumentResults<>(total, projects);
+    DocumentRepository<? extends BaseStudy> repository = getRepository(type);
+    final long total = ids == null ? repository.count() : ids.size();
+    final List<? extends BaseStudy> studies = (ids == null ? repository.findAll(pageable) : repository.findByIdIn(ids, pageable)).getContent();
+    return new IdentifiedDocumentResults<>(total, studies);
+  }
+
+  private DocumentRepository<? extends BaseStudy> getRepository(String type) {
+    if (Indexer.STUDY_TYPE.equals(type))
+      return studyRepository;
+    return harmonizationStudyRepository;
   }
 }

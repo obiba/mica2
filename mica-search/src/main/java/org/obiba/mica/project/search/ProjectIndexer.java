@@ -71,12 +71,12 @@ public class ProjectIndexer {
     List<String> projectIds = event.getIds();
 
     if (projectIds.isEmpty()) {
-      reIndexAll(Indexer.PUBLISHED_PROJECT_INDEX, projectService.findAllPublishedProjects());
       reIndexAll(Indexer.DRAFT_PROJECT_INDEX, projectService.findAllProjects());
+      reIndexAll(Indexer.PUBLISHED_PROJECT_INDEX, projectService.findAllPublishedProjects());
     } else {
       // indexAll does not deletes the index before
-      indexer.indexAll(Indexer.PUBLISHED_PROJECT_INDEX, projectService.findAllPublishedProjects(projectIds));
       indexer.indexAll(Indexer.DRAFT_PROJECT_INDEX, projectService.findAllProjects(projectIds));
+      indexer.indexAll(Indexer.PUBLISHED_PROJECT_INDEX, projectService.findAllPublishedProjects(projectIds));
     }
   }
 
