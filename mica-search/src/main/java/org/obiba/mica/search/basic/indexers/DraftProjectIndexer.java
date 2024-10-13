@@ -26,13 +26,13 @@ public class DraftProjectIndexer extends BaseIndexer<Project> {
     return Indexer.DRAFT_PROJECT_INDEX.equals(indexName);
   }
 
-  protected Document asDocument(Project project) {
+  protected Document asDocument(Project project, String parentId) {
     Document doc = new Document();
     doc.add(new StringField("_id", project.getId(), Field.Store.YES));
     doc.add(new StringField("_class", project.getClass().getSimpleName(), Field.Store.YES));
 
     StringBuilder content = new StringBuilder(project.getId());
-    doc.add(new TextField("id", project.getId(), Field.Store.YES));
+    doc.add(new TextField("id", project.getId(), Field.Store.NO));
     content.append(" ").append(addLocalizedString(doc, "title", project.getTitle()));
 
     doc.add(new TextField("_content", content.toString(), Field.Store.NO));

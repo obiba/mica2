@@ -24,7 +24,6 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.jetbrains.annotations.Nullable;
 import org.obiba.core.util.FileUtil;
-import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.search.basic.DocumentIndexer;
 import org.obiba.mica.spi.search.Indexable;
 import org.slf4j.Logger;
@@ -45,8 +44,9 @@ public abstract class BaseIndexer<T> implements DocumentIndexer {
 
   @Override
   public void index(String indexName, Persistable<String> persistable) {
+    delete(indexName, persistable);
     try (IndexWriter writer = newIndexWriter(indexName)) {
-      writer.addDocument(asDocument((T)persistable));
+      writer.addDocument(asDocument((T)persistable, null));
       writer.commit();
     } catch (IOException e) {
       log.error("Indexer failure", e);
@@ -55,8 +55,9 @@ public abstract class BaseIndexer<T> implements DocumentIndexer {
 
   @Override
   public void index(String indexName, Persistable<String> persistable, Persistable<String> parent) {
+    delete(indexName, persistable);
     try (IndexWriter writer = newIndexWriter(indexName)) {
-      writer.addDocument(asDocument((T)persistable));
+      writer.addDocument(asDocument((T)persistable, parent.getId()));
       writer.commit();
     } catch (IOException e) {
       log.error("Indexer failure", e);
@@ -65,8 +66,9 @@ public abstract class BaseIndexer<T> implements DocumentIndexer {
 
   @Override
   public void index(String indexName, Indexable indexable) {
+    delete(indexName, indexable);
     try (IndexWriter writer = newIndexWriter(indexName)) {
-      writer.addDocument(asDocument((T)indexable));
+      writer.addDocument(asDocument((T)indexable, null));
       writer.commit();
     } catch (IOException e) {
       log.error("Indexer failure", e);
@@ -75,8 +77,9 @@ public abstract class BaseIndexer<T> implements DocumentIndexer {
 
   @Override
   public void index(String indexName, Indexable indexable, Indexable parent) {
+    delete(indexName, indexable);
     try (IndexWriter writer = newIndexWriter(indexName)) {
-      writer.addDocument(asDocument((T)indexable));
+      writer.addDocument(asDocument((T)indexable, indexable.getParentId()));
       writer.commit();
     } catch (IOException e) {
       log.error("Indexer failure", e);
@@ -88,7 +91,7 @@ public abstract class BaseIndexer<T> implements DocumentIndexer {
     cleanDirectory(indexName);
     try (IndexWriter writer = newIndexWriter(indexName)) {
       for (Indexable indexable : indexables)
-        writer.addDocument(asDocument((T)indexable));
+        writer.addDocument(asDocument((T)indexable, indexable.getParentId()));
       writer.commit();
     } catch (IOException e) {
       log.error("Indexer failure", e);
@@ -100,7 +103,7 @@ public abstract class BaseIndexer<T> implements DocumentIndexer {
     cleanDirectory(indexName);
     try (IndexWriter writer = newIndexWriter(indexName)) {
       for (Persistable persistable : persistables)
-        writer.addDocument(asDocument((T)persistable));
+        writer.addDocument(asDocument((T)persistable, null));
       writer.commit();
     } catch (IOException e) {
       log.error("Indexer failure", e);
@@ -111,7 +114,7 @@ public abstract class BaseIndexer<T> implements DocumentIndexer {
   public void indexAll(String indexName, Iterable<? extends Persistable<String>> persistables) {
     try (IndexWriter writer = newIndexWriter(indexName)) {
       for (Persistable persistable : persistables)
-        writer.addDocument(asDocument((T)persistable));
+        writer.addDocument(asDocument((T)persistable, null));
       writer.commit();
     } catch (IOException e) {
       log.error("Indexer failure", e);
@@ -122,7 +125,7 @@ public abstract class BaseIndexer<T> implements DocumentIndexer {
   public void indexAll(String indexName, Iterable<? extends Persistable<String>> persistables, Persistable<String> parent) {
     try (IndexWriter writer = newIndexWriter(indexName)) {
       for (Persistable persistable : persistables)
-        writer.addDocument(asDocument((T)persistable));
+        writer.addDocument(asDocument((T)persistable, parent.getId()));
       writer.commit();
     } catch (IOException e) {
       log.error("Indexer failure", e);
@@ -133,7 +136,7 @@ public abstract class BaseIndexer<T> implements DocumentIndexer {
   public void indexAllIndexables(String indexName, Iterable<? extends Indexable> indexables) {
     try (IndexWriter writer = newIndexWriter(indexName)) {
       for (Indexable indexable : indexables)
-        writer.addDocument(asDocument((T)indexable));
+        writer.addDocument(asDocument((T)indexable, null));
       writer.commit();
     } catch (IOException e) {
       log.error("Indexer failure", e);
@@ -144,7 +147,7 @@ public abstract class BaseIndexer<T> implements DocumentIndexer {
   public void indexAllIndexables(String indexName, Iterable<? extends Indexable> indexables, @Nullable String parentId) {
     try (IndexWriter writer = newIndexWriter(indexName)) {
       for (Indexable indexable : indexables)
-        writer.addDocument(asDocument((T)indexable));
+        writer.addDocument(asDocument((T)indexable, parentId));
       writer.commit();
     } catch (IOException e) {
       log.error("Indexer failure", e);
@@ -155,7 +158,7 @@ public abstract class BaseIndexer<T> implements DocumentIndexer {
   public void delete(String indexName, Persistable<String> persistable) {
     try (IndexWriter writer = newIndexWriter(indexName)) {
       // Create a query to match the documents to delete
-      Query query = new TermQuery(new Term("id", persistable.getId()));
+      Query query = new TermQuery(new Term("_id", persistable.getId()));
       // Delete documents that match the query
       writer.deleteDocuments(query);
       writer.commit();
@@ -168,7 +171,7 @@ public abstract class BaseIndexer<T> implements DocumentIndexer {
   public void delete(String indexName, Indexable indexable) {
     try (IndexWriter writer = newIndexWriter(indexName)) {
       // Create a query to match the documents to delete
-      Query query = new TermQuery(new Term("id", indexable.getId()));
+      Query query = new TermQuery(new Term("_id", indexable.getId()));
       // Delete documents that match the query
       writer.deleteDocuments(query);
       writer.commit();
@@ -191,7 +194,7 @@ public abstract class BaseIndexer<T> implements DocumentIndexer {
   // Protected methods
   //
 
-  protected abstract Document asDocument(T item);
+  protected abstract Document asDocument(T item, String parentId);
 
   protected IndexWriter newIndexWriter(String indexName) {
     try {
@@ -222,10 +225,10 @@ public abstract class BaseIndexer<T> implements DocumentIndexer {
     return directory;
   }
 
-  protected String addLocalizedString(Document doc, String field, LocalizedString localized) {
+  protected String addLocalizedString(Document doc, String field, Map<String, String> localized) {
     if (localized == null || localized.isEmpty()) return "";
     localized.forEach((key, value) -> {
-      doc.add(new TextField(String.format("%s.%s.analyzed", field, key), value, Field.Store.YES));
+      doc.add(new TextField(String.format("%s.%s.analyzed", field, key), value, Field.Store.NO));
       doc.add(new StringField(String.format("%s.%s", field, key), value, Field.Store.YES));
     });
     return String.join(" ", localized.values());

@@ -26,13 +26,13 @@ public class DraftNetworkIndexer extends BaseIndexer<Network> {
     return Indexer.DRAFT_NETWORK_INDEX.equals(indexName);
   }
 
-  protected Document asDocument(Network network) {
+  protected Document asDocument(Network network, String parentId) {
     Document doc = new Document();
     doc.add(new StringField("_id", network.getId(), Field.Store.YES));
     doc.add(new StringField("_class", network.getClass().getSimpleName(), Field.Store.YES));
 
     StringBuilder content = new StringBuilder(network.getId());
-    doc.add(new TextField("id", network.getId(), Field.Store.YES));
+    doc.add(new TextField("id", network.getId(), Field.Store.NO));
     content.append(" ").append(addLocalizedString(doc, "acronym", network.getAcronym()));
     content.append(" ").append(addLocalizedString(doc, "name", network.getName()));
 

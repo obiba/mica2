@@ -26,7 +26,7 @@ public class PublishedProjectIndexer extends BaseIndexer<Project> {
     return Indexer.PUBLISHED_PROJECT_INDEX.equals(indexName);
   }
 
-  protected Document asDocument(Project project) {
+  protected Document asDocument(Project project, String parentId) {
     Document doc = new Document();
     doc.add(new StringField("_id", project.getId(), Field.Store.YES));
     doc.add(new StringField("_class", project.getClass().getSimpleName(), Field.Store.YES));

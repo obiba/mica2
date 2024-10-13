@@ -27,15 +27,15 @@ public class PublishedVariableIndexer extends BaseIndexer<DatasetVariable> {
     return Indexer.PUBLISHED_VARIABLE_INDEX.equals(indexName);
   }
 
-  protected Document asDocument(DatasetVariable variable) {
+  protected Document asDocument(DatasetVariable variable, String parentId) {
     Document doc = new Document();
     doc.add(new StringField("_id", variable.getId(), Field.Store.YES));
     doc.add(new StringField("_class", variable.getClassName(), Field.Store.YES));
 
     StringBuilder content = new StringBuilder(variable.getId());
-    doc.add(new TextField("id", variable.getId(), Field.Store.YES));
+    doc.add(new TextField("id", variable.getId(), Field.Store.NO));
     doc.add(new StringField("name", variable.getName(), Field.Store.YES));
-    doc.add(new TextField("name.analyzed", variable.getName(), Field.Store.YES));
+    doc.add(new TextField("name.analyzed", variable.getName(), Field.Store.NO));
 
     doc.add(new TextField("_content", content.toString(), Field.Store.NO));
 

@@ -27,18 +27,18 @@ public class DefaultPersonIndexer extends BaseIndexer<Person> {
     return Indexer.PERSON_INDEX.equals(indexName);
   }
 
-  protected Document asDocument(Person person) {
+  protected Document asDocument(Person person, String parentId) {
     Document doc = new Document();
     doc.add(new StringField("_id", person.getId(), Field.Store.YES));
     doc.add(new StringField("_class", person.getClass().getSimpleName(), Field.Store.YES));
 
-    doc.add(new TextField("id", person.getId(), Field.Store.YES));
+    doc.add(new TextField("id", person.getId(), Field.Store.NO));
     if (!Strings.isNullOrEmpty(person.getFirstName()))
-      doc.add(new TextField("first-name", person.getFirstName(), Field.Store.YES));
+      doc.add(new TextField("first-name", person.getFirstName(), Field.Store.NO));
     if (!Strings.isNullOrEmpty(person.getLastName()))
-      doc.add(new TextField("last-name", person.getLastName(), Field.Store.YES));
+      doc.add(new TextField("last-name", person.getLastName(), Field.Store.NO));
     if (!Strings.isNullOrEmpty(person.getEmail()))
-      doc.add(new TextField("email", person.getEmail(), Field.Store.YES));
+      doc.add(new TextField("email", person.getEmail(), Field.Store.NO));
 
     String content = String.format("%s %s %s", person.getFirstName(), person.getLastName(), person.getEmail());
 

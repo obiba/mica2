@@ -27,7 +27,7 @@ public class PublishedFileIndexer extends BaseIndexer<AttachmentState> {
     return Indexer.ATTACHMENT_PUBLISHED_INDEX.equals(indexName);
   }
 
-  protected Document asDocument(AttachmentState state) {
+  protected Document asDocument(AttachmentState state, String parentId) {
     Document doc = new Document();
     doc.add(new StringField("_id", state.getId(), Field.Store.YES));
     doc.add(new StringField("_class", state.getClass().getSimpleName(), Field.Store.YES));
@@ -35,11 +35,11 @@ public class PublishedFileIndexer extends BaseIndexer<AttachmentState> {
     Attachment attachment = state.getPublishedAttachment();
     if (attachment != null) {
       StringBuilder content = new StringBuilder(attachment.getId());
-      doc.add(new TextField("id", attachment.getId(), Field.Store.YES));
+      doc.add(new TextField("id", attachment.getId(), Field.Store.NO));
       doc.add(new StringField("path", attachment.getPath(), Field.Store.YES));
-      doc.add(new TextField("path.analyzed", attachment.getPath(), Field.Store.YES));
+      doc.add(new TextField("path.analyzed", attachment.getPath(), Field.Store.NO));
       doc.add(new StringField("name", attachment.getName(), Field.Store.YES));
-      doc.add(new TextField("name.analyzed", attachment.getName(), Field.Store.YES));
+      doc.add(new TextField("name.analyzed", attachment.getName(), Field.Store.NO));
       content.append(" ").append(attachment.getName());
       content.append(" ").append(addLocalizedString(doc, "description", attachment.getDescription()));
 

@@ -26,7 +26,7 @@ public class PublishedNetworkIndexer extends BaseIndexer<Network> {
     return Indexer.PUBLISHED_NETWORK_INDEX.equals(indexName);
   }
 
-  protected Document asDocument(Network network) {
+  protected Document asDocument(Network network, String parentId) {
     Document doc = new Document();
     doc.add(new StringField("_id", network.getId(), Field.Store.YES));
     doc.add(new StringField("_class", network.getClass().getSimpleName(), Field.Store.YES));

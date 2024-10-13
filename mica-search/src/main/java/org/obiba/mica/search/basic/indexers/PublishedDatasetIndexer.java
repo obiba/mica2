@@ -26,13 +26,13 @@ public class PublishedDatasetIndexer extends BaseIndexer<Dataset> {
     return Indexer.PUBLISHED_DATASET_INDEX.equals(indexName);
   }
 
-  protected Document asDocument(Dataset dataset) {
+  protected Document asDocument(Dataset dataset, String parentId) {
     Document doc = new Document();
     doc.add(new StringField("_id", dataset.getId(), Field.Store.YES));
     doc.add(new StringField("_class", dataset.getClassName(), Field.Store.YES));
 
     StringBuilder content = new StringBuilder(dataset.getId());
-    doc.add(new TextField("id", dataset.getId(), Field.Store.YES));
+    doc.add(new TextField("id", dataset.getId(), Field.Store.NO));
     content.append(" ").append(addLocalizedString(doc, "acronym", dataset.getAcronym()));
     content.append(" ").append(addLocalizedString(doc, "name", dataset.getName()));
 

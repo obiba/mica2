@@ -26,13 +26,13 @@ public class PublishedStudyIndexer extends BaseIndexer<BaseStudy> {
     return Indexer.PUBLISHED_STUDY_INDEX.equals(indexName);
   }
 
-  protected Document asDocument(BaseStudy study) {
+  protected Document asDocument(BaseStudy study, String parentId) {
     Document doc = new Document();
     doc.add(new StringField("_id", study.getId(), Field.Store.YES));
     doc.add(new StringField("_class", study.getClassName(), Field.Store.YES));
 
     StringBuilder content = new StringBuilder(study.getId());
-    doc.add(new TextField("id", study.getId(), Field.Store.YES));
+    doc.add(new TextField("id", study.getId(), Field.Store.NO));
     content.append(" ").append(addLocalizedString(doc, "acronym", study.getAcronym()));
     content.append(" ").append(addLocalizedString(doc, "name", study.getName()));
 
