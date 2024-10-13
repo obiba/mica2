@@ -32,6 +32,7 @@ import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.domain.PersonAware;
 import org.obiba.mica.file.Attachment;
+import org.obiba.mica.spi.search.Identified;
 import org.obiba.mica.study.domain.Study;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -47,7 +48,7 @@ import static java.util.stream.Collectors.toSet;
 /**
  * A Network.
  */
-public class Network extends AbstractModelAware implements AttributeAware, PersonAware {
+public class Network extends AbstractModelAware implements AttributeAware, PersonAware, Identified {
 
   private static final long serialVersionUID = 2L;
 

@@ -124,12 +124,12 @@ public class StudyIndexer {
       List<String> studyIds = event.getIds();
 
       if (studyIds.isEmpty()) {
-        reIndexAllPublished(decorate(studyService.findAllPublishedStudies(), false));
         reIndexAllDraft(decorate(studyService.findAllDraftStudies(), true));
+        reIndexAllPublished(decorate(studyService.findAllPublishedStudies(), false));
       } else {
         // indexAll does not delete the index before
-        indexer.indexAllIndexables(Indexer.PUBLISHED_STUDY_INDEX, decorate(studyService.findAllPublishedStudies(studyIds), false));
         indexer.indexAllIndexables(Indexer.DRAFT_STUDY_INDEX, decorate(studyService.findAllDraftStudies(studyIds), true));
+        indexer.indexAllIndexables(Indexer.PUBLISHED_STUDY_INDEX, decorate(studyService.findAllPublishedStudies(studyIds), false));
       }
     } finally {
       lock.unlock();

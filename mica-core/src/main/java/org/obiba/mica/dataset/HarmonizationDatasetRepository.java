@@ -10,16 +10,17 @@
 
 package org.obiba.mica.dataset;
 
-import java.util.List;
-
+import org.obiba.mica.core.repository.DocumentRepository;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
+import java.util.List;
+
 /**
  * Spring Data MongoDB repository for the {@link HarmonizationDataset} entity.
  */
-public interface HarmonizationDatasetRepository extends MongoRepository<HarmonizationDataset, String> {
+public interface HarmonizationDatasetRepository extends MongoRepository<HarmonizationDataset, String>, DocumentRepository<HarmonizationDataset> {
 
   List<HarmonizationDataset> findByHarmonizationTableStudyId(String studyId);
 

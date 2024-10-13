@@ -31,6 +31,8 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.eventbus.Subscribe;
 
+import java.util.List;
+
 @Component
 public class FileIndexer {
 
@@ -80,27 +82,19 @@ public class FileIndexer {
   @Async
   @Subscribe
   public void reIndexAll(IndexFilesEvent event) {
-    if(indexer.hasIndex(Indexer.ATTACHMENT_DRAFT_INDEX)) indexer.dropIndex(Indexer.ATTACHMENT_DRAFT_INDEX);
-    if(indexer.hasIndex(Indexer.ATTACHMENT_PUBLISHED_INDEX)) indexer.dropIndex(Indexer.ATTACHMENT_PUBLISHED_INDEX);
+    if (indexer.hasIndex(Indexer.ATTACHMENT_DRAFT_INDEX)) indexer.dropIndex(Indexer.ATTACHMENT_DRAFT_INDEX);
+    if (indexer.hasIndex(Indexer.ATTACHMENT_PUBLISHED_INDEX)) indexer.dropIndex(Indexer.ATTACHMENT_PUBLISHED_INDEX);
 
     Pageable pageRequest = PageRequest.of(0, 100);
     Page<AttachmentState> attachments;
     boolean keepGoing = true;
-
     do {
       attachments = attachmentStateRepository.findAll(pageRequest);
-      attachments.forEach(a -> {
-        if (FileUtils.isDirectory(a)) return;
-
-        indexer.index(Indexer.ATTACHMENT_DRAFT_INDEX, a);
-
-        if(a.getPublishedAttachment() != null) {
-          indexer.index(Indexer.ATTACHMENT_PUBLISHED_INDEX, a);
-        }
-      });
-
+      List<AttachmentState> states = attachments.filter(a -> !FileUtils.isDirectory(a)).stream().toList();
+      indexer.indexAll(Indexer.ATTACHMENT_DRAFT_INDEX, states);
+      indexer.indexAll(Indexer.ATTACHMENT_PUBLISHED_INDEX, states);
       if (!attachments.hasNext()) keepGoing = false;
       else pageRequest = attachments.nextPageable();
-    } while(keepGoing);
+    } while (keepGoing);
   }
 }

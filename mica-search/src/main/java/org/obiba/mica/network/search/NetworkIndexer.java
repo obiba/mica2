@@ -115,12 +115,12 @@
         List<String> networkIds = event.getIds();
 
         if (networkIds.isEmpty()) {
-          reIndexAll(Indexer.PUBLISHED_NETWORK_INDEX, decorate(networkService.findAllPublishedNetworks()));
           reIndexAll(Indexer.DRAFT_NETWORK_INDEX, decorate(networkService.findAllNetworks()));
+          reIndexAll(Indexer.PUBLISHED_NETWORK_INDEX, decorate(networkService.findAllPublishedNetworks()));
         } else {
           // indexAll does not deletes the index before
-          indexer.indexAll(Indexer.PUBLISHED_NETWORK_INDEX, decorate(networkService.findAllPublishedNetworks(networkIds)));
           indexer.indexAll(Indexer.DRAFT_NETWORK_INDEX, decorate(networkService.findAllNetworks(networkIds)));
+          indexer.indexAll(Indexer.PUBLISHED_NETWORK_INDEX, decorate(networkService.findAllPublishedNetworks(networkIds)));
         }
       } finally {
         lock.unlock();

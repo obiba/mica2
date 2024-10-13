@@ -46,7 +46,7 @@ class EsDraftHarmonizedDatasetService extends AbstractIdentifiedDocumentService<
 
   @Override
   protected String getType() {
-    return Indexer.DATASET_TYPE;
+    return Indexer.HARMO_DATASET_TYPE;
   }
 
   @Override

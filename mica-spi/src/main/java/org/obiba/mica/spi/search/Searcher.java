@@ -245,6 +245,22 @@ public interface Searcher {
     String getId();
 
     /**
+     * Whether the result has a pre-processed object.
+     * @return
+     */
+    default boolean hasObject() {
+      return false;
+    }
+
+    /**
+     * Get the pre-processed object.
+     * @return
+     */
+    default Object getObject() {
+      return null;
+    }
+
+    /**
      * Whether the document source can be extracted.
      *
      * @return
