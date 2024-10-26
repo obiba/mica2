@@ -160,7 +160,7 @@ public class DataAccessAgreementResource extends DataAccessEntityResource<DataAc
     DataAccessAgreement entity = dataAccessAgreementService.findById(id);
     DataAccessAgreementForm form = dataAccessAgreementFormService.findByRevision(entity.hasFormRevision() ? entity.getFormRevision().toString() : "latest").get();
     SchemaFormConfig config = schemaFormConfigService.getConfig(form, entity, lang);
-    DataAccessEntityExporter exporter = DataAccessEntityExporter.newBuilder().config(config).build();
+    DataAccessEntityExporter exporter = DataAccessEntityExporter.newBuilder().config(config, dataAccessAgreementFormService.getExportWordConfig()).build();
     String title = schemaFormConfigService.getTranslator(lang).translate("data-access-config.agreement.schema-form.title");
     String status = schemaFormConfigService.getTranslator(lang).translate(entity.getStatus().toString());
     return Response.ok(exporter.export(title, status, id).toByteArray())

@@ -18,6 +18,8 @@ import com.google.common.base.Strings;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.poi.wp.usermodel.HeaderFooterType;
 import org.apache.poi.xwpf.usermodel.*;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.obiba.mica.access.domain.DataAccessEntity;
 import org.obiba.mica.micaConfig.domain.AbstractDataAccessEntityForm;
@@ -50,6 +52,8 @@ public class DataAccessEntityExporter {
 
   private JsonNode model;
 
+  private JSONObject wordConfig;
+
   private String prefix = "";
 
   private DataAccessEntityExporter() {
@@ -57,22 +61,22 @@ public class DataAccessEntityExporter {
 
   public ByteArrayOutputStream export(String titleStr, String status, String id) throws IOException {
     try (XWPFDocument document = new XWPFDocument();) {
+      // document title
       XWPFParagraph title = document.createParagraph();
       title.setAlignment(ParagraphAlignment.LEFT);
       title.setSpacingAfter(400);
       XWPFRun titleRun = title.createRun();
       titleRun.setText(String.format("%s [%s] - %s", titleStr, status, id));
-      titleRun.setBold(true);
-      titleRun.setFontSize(20);
+      applyFontConfig(titleRun, getItemConfig("documentTitle"));
 
       traverseDefinitionTree(document, definition, model);
 
+      // footer
       XWPFFooter footer = document.createFooter(HeaderFooterType.DEFAULT);
       XWPFParagraph footerParagraph = footer.createParagraph();
       XWPFRun footerRun = footerParagraph.createRun();
-      footerRun.setFontSize(10);
-      footerRun.setColor("757575");
       footerRun.setText(String.format("%s [%s] - %s - %s", titleStr, status, id, ISO_8601.format(new Date())));
+      applyFontConfig(footerRun, getItemConfig("footer"));
 
       ByteArrayOutputStream ba = new ByteArrayOutputStream();
       document.write(ba);
@@ -180,13 +184,25 @@ public class DataAccessEntityExporter {
    */
   private void appendHelp(XWPFDocument document, JsonNode item) {
     if (item.has("title")) {
+      String htmlText = item.get("title").asText();
       XWPFParagraph paragraph = document.createParagraph();
-      addTextWithLineBreak(paragraph, Jsoup.parse(item.get("title").asText()).wholeText(), "757575");
+      addTextWithLineBreak(paragraph, Jsoup.parse(htmlText).wholeText(), getItemConfig(getHeading(htmlText, "title")));
     }
     if (item.has("helpvalue")) {
+      String htmlText = item.get("helpvalue").asText();
       XWPFParagraph paragraph = document.createParagraph();
-      addTextWithLineBreak(paragraph, Jsoup.parse(item.get("helpvalue").asText()).wholeText(), "757575");
+      addTextWithLineBreak(paragraph, Jsoup.parse(htmlText).wholeText(), getItemConfig(getHeading(htmlText, "help")));
     }
+  }
+
+  private String getHeading(String htmlText, String defaultKey) {
+    for (int i = 1; i <= 6; i++) {
+      String tag = "h" + i;
+      if (htmlText.startsWith("<" + tag + ">")) {
+        return tag;
+      }
+    }
+    return defaultKey;
   }
 
   /**
@@ -200,12 +216,15 @@ public class DataAccessEntityExporter {
   private void appendModelValue(XWPFDocument document, String key, JsonNode keyDescription, JsonNode modelObject) {
     JsonNode keySchema = getKeySchema(key);
     if (keySchema == null) return;
-    appendKeyTitle(document, key);
-
     JsonNode value = modelObject.get(getKeyField(key));
+
     if (value == null) {
-      appendEmptyValue(document);
+      if (getEmptyValueConfig().getBoolean("visible")) {
+        appendKeyTitle(document, key);
+        appendEmptyValue(document);
+      }
     } else if (keySchema.has("type")) {
+      appendKeyTitle(document, key);
       String type = keySchema.get("type").asText();
       if ("array".equals(type)) {
         if (keySchema.has("title")) {
@@ -239,6 +258,7 @@ public class DataAccessEntityExporter {
         appendModelValueAsText(document, keyDescription, value);
       }
     } else {
+      appendKeyTitle(document, key);
       appendModelValueAsText(document, keyDescription, value);
     }
   }
@@ -285,13 +305,13 @@ public class DataAccessEntityExporter {
    * @param document
    */
   private void appendEmptyValue(XWPFDocument document) {
+    JSONObject emptyValueConfig = getEmptyValueConfig();
+    String nullText = emptyValueConfig.getString("nullText");
     XWPFParagraph paragraph = createParagraph(document);
     paragraph.setAlignment(ParagraphAlignment.LEFT);
     XWPFRun valueRun = paragraph.createRun();
-    valueRun.setText("N/A");
-    valueRun.setFontSize(8);
-    valueRun.setItalic(true);
-    valueRun.setColor("666666");
+    valueRun.setText(nullText);
+    applyFontConfig(valueRun, getEmptyValueConfig());
     valueRun.addBreak();
   }
 
@@ -306,9 +326,29 @@ public class DataAccessEntityExporter {
     paragraph.setAlignment(ParagraphAlignment.LEFT);
     XWPFRun keyRun = paragraph.createRun();
     keyRun.setText(title);
-    keyRun.setFontFamily("Courier");
-    keyRun.setFontSize(10);
-    keyRun.setBold(true);
+    applyFontConfig(keyRun, getItemConfig("field"));
+  }
+
+  /**
+   * Apply the  font configuration.
+   *
+   * @param run
+   * @param itemConfig
+   */
+  private void applyFontConfig(XWPFRun run, JSONObject itemConfig) {
+    if (itemConfig == null) {
+      run.setFontFamily("Arial");
+    } else if (itemConfig.has("style")) {
+      // FIXME does not seem to work, provided style is not applied
+      run.setStyle(getStyleConfig(itemConfig));
+    } else if (itemConfig.has("font")) {
+      JSONObject fontConfig = getFontConfig(itemConfig);
+      run.setFontFamily(fontConfig.getString("family"));
+      run.setFontSize(fontConfig.getInt("size"));
+      run.setItalic(fontConfig.getBoolean("italic"));
+      run.setBold(fontConfig.getBoolean("bold"));
+      run.setColor(fontConfig.getString("color"));
+    }
   }
 
   /**
@@ -343,7 +383,7 @@ public class DataAccessEntityExporter {
         }
       }
     }
-    addTextWithLineBreak(valueParagraph, txtValue);
+    addTextWithLineBreak(valueParagraph, txtValue, getItemConfig("value"));
   }
 
   /**
@@ -361,13 +401,13 @@ public class DataAccessEntityExporter {
    *
    * @param paragraph
    * @param text
-   * @param color
+   * @param itemConfig
    */
-  private void addTextWithLineBreak(XWPFParagraph paragraph, String text, String color) {
+  private void addTextWithLineBreak(XWPFParagraph paragraph, String text, JSONObject itemConfig) {
     Splitter.on("\n").split(text).forEach(str -> {
       XWPFRun run = paragraph.createRun();
       run.setText(str);
-      if (!Strings.isNullOrEmpty(color)) run.setColor(color);
+      applyFontConfig(run, itemConfig);
       run.addBreak();
     });
   }
@@ -438,6 +478,43 @@ public class DataAccessEntityExporter {
     return paragraph;
   }
 
+  private JSONObject getEmptyValueConfig() {
+    try {
+      return wordConfig.getJSONObject("emptyValue");
+    } catch (JSONException e) {
+      return new JSONObject("{" +
+        "  \"visible\": false," +
+        "  \"nullText\": \"N/A\"" +
+        "}");
+    }
+  }
+
+  private JSONObject getItemConfig(String key) {
+    try {
+      return wordConfig.getJSONObject(key);
+    } catch (JSONException e) {
+      return new JSONObject("{}");
+    }
+  }
+
+  private String getStyleConfig(JSONObject config) {
+    return config.has("style") ? config.getString("style") : "";
+  }
+
+  private JSONObject getFontConfig(JSONObject config) {
+    try {
+      return config.getJSONObject("font");
+    } catch (JSONException e) {
+      return new JSONObject("{\n" +
+        "  \"family\": \"Arial\",\n" +
+        "  \"size\": 10,\n" +
+        "  \"italic\": false,\n" +
+        "  \"bold\": false,\n" +
+        "  \"color\": \"000000\"\n" +
+        "}");
+    }
+  }
+
   public static Builder newBuilder() {
     return new Builder();
   }
@@ -452,10 +529,11 @@ public class DataAccessEntityExporter {
       exporter = new DataAccessEntityExporter();
     }
 
-    public Builder config(SchemaFormConfig config) {
+    public Builder config(SchemaFormConfig config, JSONObject wordConfig) {
       schema(config.getSchema());
       definition(config.getDefinition());
       model(config.getModel());
+      this.exporter.wordConfig = wordConfig;
       return this;
     }
 
