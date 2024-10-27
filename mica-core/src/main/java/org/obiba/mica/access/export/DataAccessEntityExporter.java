@@ -22,6 +22,7 @@ import org.apache.poi.xwpf.usermodel.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
 import org.obiba.mica.access.domain.DataAccessEntity;
 import org.obiba.mica.micaConfig.domain.AbstractDataAccessEntityForm;
 import org.obiba.mica.micaConfig.service.helper.SchemaFormConfig;
@@ -189,24 +190,73 @@ public class DataAccessEntityExporter {
   private void appendHelp(XWPFDocument document, JsonNode item) {
     if (item.has("title")) {
       String htmlText = item.get("title").asText();
-      XWPFParagraph paragraph = document.createParagraph();
-      addTextWithLineBreak(paragraph, Jsoup.parse(htmlText).wholeText(), getItemConfig(getHeading(htmlText, "title")), true);
+      parseAndRenderHTML(htmlText, document, "title");
     }
     if (item.has("helpvalue")) {
       String htmlText = item.get("helpvalue").asText();
-      XWPFParagraph paragraph = document.createParagraph();
-      addTextWithLineBreak(paragraph, Jsoup.parse(htmlText).wholeText(), getItemConfig(getHeading(htmlText, "help")), true);
+      parseAndRenderHTML(htmlText, document, "help");
     }
   }
 
-  private String getHeading(String htmlText, String defaultKey) {
-    for (int i = 1; i <= 6; i++) {
-      String tag = "h" + i;
-      if (htmlText.startsWith("<" + tag + ">") || htmlText.startsWith("<" + tag + " ")) {
-        return tag;
-      }
+  private void parseAndRenderHTML(String html, XWPFDocument document, String itemKey) {
+    for (Element element : Jsoup.parse(html).body().children()) {
+      processElement(element, document, itemKey);
     }
-    return defaultKey;
+  }
+
+  private XWPFParagraph processElement(Element element, XWPFDocument document, String itemKey) {
+    if ("ul".equals(element.tagName()) || "ol".equals(element.tagName())) {
+      XWPFParagraph paragraph = null;
+      for (Element listItem : element.children()) {
+        paragraph = processElement(listItem, document, itemKey); // Process each <li> item in <ul>
+      }
+      if (paragraph != null) paragraph.setSpacingAfter(100);
+      return paragraph;
+    }
+
+    XWPFParagraph paragraph = document.createParagraph();
+    XWPFRun run = paragraph.createRun();
+    applyFontConfig(run, getItemConfig(itemKey)); // apply default
+
+    switch (element.tagName()) {
+      case "h1":
+      case "h2":
+      case "h3":
+      case "h4":
+      case "h5":
+      case "h6":
+        run.setText(element.text());
+        applyFontConfig(run, getItemConfig(element.tagName()));
+        paragraph.setSpacingAfter(200);
+        break;
+      case "p":
+      case "div":
+        run.setText(element.text());
+        paragraph.setSpacingAfter(100);
+        break;
+      case "b":
+        run.setBold(true);
+        run.setText(element.text());
+        break;
+      case "i":
+        run.setItalic(true);
+        run.setText(element.text());
+        break;
+      case "u":
+        run.setUnderline(UnderlinePatterns.SINGLE);
+        run.setText(element.text());
+        break;
+      case "li":
+        run.setText("• " + element.text()); // Add bullet symbol manually
+        paragraph.setIndentationLeft(300); // Set indentation for list items
+        paragraph.setSpacingAfter(50); // Space between list items
+        break;
+      default:
+        run.setText(element.text());  // For other tags, just set plain text
+        paragraph.setSpacingAfter(100);
+        break;
+    }
+    return paragraph;
   }
 
   /**
@@ -259,6 +309,7 @@ public class DataAccessEntityExporter {
             prefix = Strings.isNullOrEmpty(savedPrefix) ? "" + count : String.format("%s.%s", savedPrefix, count);
 
             if (isArrayAsTable()) {
+              if (count > 1) addLineBreak(document);
               XWPFTable table = document.createTable();
               table.setWidth("100%");
               tablesByPrefix.put(prefix, table);
