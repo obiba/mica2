@@ -24,7 +24,7 @@
       "size": 18,
       "italic": false,
       "bold": true,
-      "color": "757575"
+      "color": "0070c0"
     }
   },
   "h2": {
@@ -33,7 +33,7 @@
       "size": 16,
       "italic": false,
       "bold": true,
-      "color": "757575"
+      "color": "0070c0"
     }
   },
   "h3": {
@@ -42,7 +42,7 @@
       "size": 14,
       "italic": false,
       "bold": true,
-      "color": "757575"
+      "color": "0070c0"
     }
   },
   "h4": {
@@ -51,7 +51,7 @@
       "size": 12,
       "italic": false,
       "bold": true,
-      "color": "757575"
+      "color": "0070c0"
     }
   },
   "h5": {
