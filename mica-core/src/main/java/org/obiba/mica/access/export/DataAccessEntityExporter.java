@@ -312,6 +312,12 @@ public class DataAccessEntityExporter {
               if (count > 1) addLineBreak(document);
               XWPFTable table = document.createTable();
               table.setWidth("100%");
+              table.setInsideHBorder(XWPFTable.XWPFBorderType.SINGLE, 2, 0, "757575");
+              table.setInsideVBorder(XWPFTable.XWPFBorderType.SINGLE, 2, 0, "757575");
+              table.setTopBorder(XWPFTable.XWPFBorderType.SINGLE, 4, 0, "757575");
+              table.setBottomBorder(XWPFTable.XWPFBorderType.SINGLE, 4, 0, "757575");
+              table.setLeftBorder(XWPFTable.XWPFBorderType.SINGLE, 4, 0, "757575");
+              table.setRightBorder(XWPFTable.XWPFBorderType.SINGLE, 4, 0, "757575");
               tablesByPrefix.put(prefix, table);
               appendTitle(table.getRow(0).getCell(0), String.format("[%s]", prefix));
             } else {
