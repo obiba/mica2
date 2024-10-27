@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.poi.wp.usermodel.HeaderFooterType;
 import org.apache.poi.xwpf.usermodel.*;
@@ -36,6 +37,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -56,11 +58,13 @@ public class DataAccessEntityExporter {
 
   private String prefix = "";
 
+  private Map<String, XWPFTable> tablesByPrefix = Maps.newHashMap();
+
   private DataAccessEntityExporter() {
   }
 
   public ByteArrayOutputStream export(String titleStr, String status, String id) throws IOException {
-    try (XWPFDocument document = new XWPFDocument();) {
+    try (XWPFDocument document = new XWPFDocument()) {
       // document title
       XWPFParagraph title = document.createParagraph();
       title.setAlignment(ParagraphAlignment.LEFT);
@@ -186,19 +190,19 @@ public class DataAccessEntityExporter {
     if (item.has("title")) {
       String htmlText = item.get("title").asText();
       XWPFParagraph paragraph = document.createParagraph();
-      addTextWithLineBreak(paragraph, Jsoup.parse(htmlText).wholeText(), getItemConfig(getHeading(htmlText, "title")));
+      addTextWithLineBreak(paragraph, Jsoup.parse(htmlText).wholeText(), getItemConfig(getHeading(htmlText, "title")), true);
     }
     if (item.has("helpvalue")) {
       String htmlText = item.get("helpvalue").asText();
       XWPFParagraph paragraph = document.createParagraph();
-      addTextWithLineBreak(paragraph, Jsoup.parse(htmlText).wholeText(), getItemConfig(getHeading(htmlText, "help")));
+      addTextWithLineBreak(paragraph, Jsoup.parse(htmlText).wholeText(), getItemConfig(getHeading(htmlText, "help")), true);
     }
   }
 
   private String getHeading(String htmlText, String defaultKey) {
     for (int i = 1; i <= 6; i++) {
       String tag = "h" + i;
-      if (htmlText.startsWith("<" + tag + ">")) {
+      if (htmlText.startsWith("<" + tag + ">") || htmlText.startsWith("<" + tag + " ")) {
         return tag;
       }
     }
@@ -220,11 +224,23 @@ public class DataAccessEntityExporter {
 
     if (value == null) {
       if (getEmptyValueConfig().getBoolean("visible")) {
-        appendKeyTitle(document, key);
-        appendEmptyValue(document);
+        if (tablesByPrefix.containsKey(prefix)) {
+          XWPFTableRow row = tablesByPrefix.get(prefix).createRow();
+          appendKeyTitle(row, key);
+          appendEmptyValue(row);
+        } else {
+          appendKeyTitle(document, key);
+          appendEmptyValue(document);
+        }
       }
     } else if (keySchema.has("type")) {
-      appendKeyTitle(document, key);
+      XWPFTableRow row = null;
+      if (tablesByPrefix.containsKey(prefix)) {
+        row = tablesByPrefix.get(prefix).createRow();
+        appendKeyTitle(row, key);
+      } else {
+        appendKeyTitle(document, key);
+      }
       String type = keySchema.get("type").asText();
       if ("array".equals(type)) {
         if (keySchema.has("title")) {
@@ -241,7 +257,16 @@ public class DataAccessEntityExporter {
           String savedPrefix = prefix;
           for (JsonNode itemValue : value) {
             prefix = Strings.isNullOrEmpty(savedPrefix) ? "" + count : String.format("%s.%s", savedPrefix, count);
-            appendTitle(document, String.format("[%s]", prefix));
+
+            if (isArrayAsTable()) {
+              XWPFTable table = document.createTable();
+              table.setWidth("100%");
+              tablesByPrefix.put(prefix, table);
+              appendTitle(table.getRow(0).getCell(0), String.format("[%s]", prefix));
+            } else {
+              appendTitle(document, String.format("[%s]", prefix));
+            }
+
             for (JsonNode itemDescription : itemsDescriptions) {
               String itemKey = itemDescription.isTextual() ? itemDescription.asText() : itemDescription.get("key").asText();
               appendModelValue(document, itemKey, itemDescription, itemValue);
@@ -249,13 +274,20 @@ public class DataAccessEntityExporter {
             count++;
           }
           prefix = savedPrefix;
+          addLineBreak(document);
         }
       } else if ("object".equals(type)) {
         if (keySchema.has("format") && "obibaFiles".equals(keySchema.get("format").asText())) {
-          appendModelValueAsFiles(document, value);
+          if (row == null) {
+            appendModelValueAsFiles(document, value);
+          } else {
+            appendModelValueAsFiles(document, row, value);
+          }
         }
-      } else {
+      } else if (row == null) {
         appendModelValueAsText(document, keyDescription, value);
+      } else {
+        appendModelValueAsText(row, keyDescription, value);
       }
     } else {
       appendKeyTitle(document, key);
@@ -299,30 +331,57 @@ public class DataAccessEntityExporter {
     addLineBreak(document);
   }
 
+  private void appendModelValueAsFiles(XWPFDocument document, XWPFTableRow row, JsonNode value) {
+    if (!value.has("obibaFiles")) return;
+    JsonNode files = value.get("obibaFiles");
+    if (!files.isArray()) return;
+    for (JsonNode file : files) {
+      addBulletedListItem(document, row, file.get("fileName").asText());
+    }
+  }
+
+  private void appendEmptyValue(XWPFDocument document) {
+    XWPFParagraph paragraph = createParagraph(document);
+    appendEmptyValue(paragraph, true);
+  }
+
+  private void appendEmptyValue(XWPFTableRow row) {
+    XWPFParagraph paragraph = row.addNewTableCell().getParagraphs().get(0);
+    appendEmptyValue(paragraph, false);
+  }
+
   /**
    * Append a text informing that there is a missing value.
    *
-   * @param document
+   * @param paragraph
    */
-  private void appendEmptyValue(XWPFDocument document) {
+  private void appendEmptyValue(XWPFParagraph paragraph, boolean lineBreak) {
     JSONObject emptyValueConfig = getEmptyValueConfig();
     String nullText = emptyValueConfig.getString("nullText");
-    XWPFParagraph paragraph = createParagraph(document);
     paragraph.setAlignment(ParagraphAlignment.LEFT);
     XWPFRun valueRun = paragraph.createRun();
     valueRun.setText(nullText);
     applyFontConfig(valueRun, getEmptyValueConfig());
-    valueRun.addBreak();
+    if (lineBreak) valueRun.addBreak();
+  }
+
+  private void appendTitle(XWPFDocument document, String title) {
+    XWPFParagraph paragraph = createParagraph(document);
+    appendTitle(paragraph, title);
+  }
+
+  private void appendTitle(XWPFTableCell cell, String title) {
+    XWPFParagraph paragraph = cell.getParagraphs().get(0);
+    appendTitle(paragraph, title);
   }
 
   /**
    * Append text as a field title.
    *
-   * @param document
+   * @param paragraph
    * @param title
    */
-  private void appendTitle(XWPFDocument document, String title) {
-    XWPFParagraph paragraph = createParagraph(document);
+  private void appendTitle(XWPFParagraph paragraph, String title) {
     paragraph.setAlignment(ParagraphAlignment.LEFT);
     XWPFRun keyRun = paragraph.createRun();
     keyRun.setText(title);
@@ -330,19 +389,17 @@ public class DataAccessEntityExporter {
   }
 
   /**
-   * Apply the  font configuration.
+   * Apply the font configuration.
    *
    * @param run
    * @param itemConfig
    */
   private void applyFontConfig(XWPFRun run, JSONObject itemConfig) {
-    if (itemConfig == null) {
-      run.setFontFamily("Arial");
-    } else if (itemConfig.has("style")) {
+    if (itemConfig != null && itemConfig.has("style")) {
       // FIXME does not seem to work, provided style is not applied
       run.setStyle(getStyleConfig(itemConfig));
-    } else if (itemConfig.has("font")) {
-      JSONObject fontConfig = getFontConfig(itemConfig);
+    } else {
+      JSONObject fontConfig = getFontConfig(itemConfig != null && itemConfig.has("font") ? itemConfig : wordConfig);
       run.setFontFamily(fontConfig.getString("family"));
       run.setFontSize(fontConfig.getInt("size"));
       run.setItalic(fontConfig.getBoolean("italic"));
@@ -364,15 +421,34 @@ public class DataAccessEntityExporter {
     appendTitle(document, title);
   }
 
+  private void appendKeyTitle(XWPFTableRow row, String key) {
+    JsonNode keySchema = getKeySchema(key);
+    if (keySchema == null || !keySchema.has("title")) return;
+    String title = keySchema.get("title").asText();
+    XWPFParagraph paragraph = row.getCell(0).getParagraphs().get(0);
+    XWPFRun keyRun = paragraph.createRun();
+    keyRun.setText(title);
+    applyFontConfig(keyRun, getItemConfig("field"));
+  }
+
+  private void appendModelValueAsText(XWPFTableRow row, JsonNode keyDescription, JsonNode value) {
+    XWPFParagraph valueParagraph = row.addNewTableCell().getParagraphs().get(0);
+    appendModelValueAsText(valueParagraph, keyDescription, value, false);
+  }
+
+  private void appendModelValueAsText(XWPFDocument document, JsonNode keyDescription, JsonNode value) {
+    XWPFParagraph valueParagraph = createParagraph(document);
+    appendModelValueAsText(valueParagraph, keyDescription, value, true);
+  }
+
   /**
    * Append model value, use titleMap definition if any.
    *
-   * @param document
+   * @param valueParagraph
    * @param keyDescription
    * @param value
    */
-  private void appendModelValueAsText(XWPFDocument document, JsonNode keyDescription, JsonNode value) {
-    XWPFParagraph valueParagraph = createParagraph(document);
+  private void appendModelValueAsText(XWPFParagraph valueParagraph, JsonNode keyDescription, JsonNode value, boolean lineBreak) {
     valueParagraph.setAlignment(ParagraphAlignment.LEFT);
     String txtValue = value.asText();
     if (keyDescription.has("titleMap")) {
@@ -383,32 +459,23 @@ public class DataAccessEntityExporter {
         }
       }
     }
-    addTextWithLineBreak(valueParagraph, txtValue, getItemConfig("value"));
+    addTextWithLineBreak(valueParagraph, txtValue, getItemConfig("value"), lineBreak);
   }
 
   /**
-   * Append text, including its line breaks.
-   *
-   * @param paragraph
-   * @param text
-   */
-  private void addTextWithLineBreak(XWPFParagraph paragraph, String text) {
-    addTextWithLineBreak(paragraph, text, null);
-  }
-
-  /**
-   * Append text with a specified color and including its line breaks.
+   * Append text with a specified font configuration and optionally include its line break.
    *
    * @param paragraph
    * @param text
    * @param itemConfig
+   * @param lineBreak
    */
-  private void addTextWithLineBreak(XWPFParagraph paragraph, String text, JSONObject itemConfig) {
+  private void addTextWithLineBreak(XWPFParagraph paragraph, String text, JSONObject itemConfig, boolean lineBreak) {
     Splitter.on("\n").split(text).forEach(str -> {
       XWPFRun run = paragraph.createRun();
       run.setText(str);
       applyFontConfig(run, itemConfig);
-      run.addBreak();
+      if (lineBreak) run.addBreak();
     });
   }
 
@@ -423,6 +490,15 @@ public class DataAccessEntityExporter {
     paragraph.setNumID(addBulletNumbering(document));
     XWPFRun run = paragraph.createRun();
     run.setText(listItem);
+    applyFontConfig(run, getItemConfig("value"));
+  }
+
+  private void addBulletedListItem(XWPFDocument document, XWPFTableRow row, String listItem) {
+    XWPFParagraph paragraph = row.addNewTableCell().getParagraphs().get(0);
+    paragraph.setNumID(addBulletNumbering(document));
+    XWPFRun run = paragraph.createRun();
+    run.setText(listItem);
+    applyFontConfig(run, getItemConfig("value"));
   }
 
   /**
@@ -452,9 +528,7 @@ public class DataAccessEntityExporter {
    * @param document
    */
   private void addLineBreak(XWPFDocument document) {
-    XWPFParagraph paragraph = createParagraph(document);
-    //XWPFRun run = paragraph.createRun();
-    //run.addBreak();
+    createParagraph(document);
   }
 
   /**
@@ -474,8 +548,16 @@ public class DataAccessEntityExporter {
    */
   private XWPFParagraph createParagraph(XWPFDocument document) {
     XWPFParagraph paragraph = document.createParagraph();
-    paragraph.setIndentationLeft(getIndentation() * 360);
+    if (!isArrayAsTable()) paragraph.setIndentationLeft(getIndentation() * 360);
     return paragraph;
+  }
+
+  private boolean isArrayAsTable() {
+    try {
+      return "table".equals(wordConfig.getJSONObject("array").getString("layout"));
+    } catch (JSONException e) {
+      return true;
+    }
   }
 
   private JSONObject getEmptyValueConfig() {

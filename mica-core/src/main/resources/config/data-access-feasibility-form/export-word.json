@@ -1,4 +1,14 @@
 {
+  "font": {
+    "family": "Arial",
+    "size": 10,
+    "italic": false,
+    "bold": false,
+    "color": "000000"
+  },
+  "array": {
+    "layout": "table"
+  },
   "documentTitle": {
     "font": {
       "family": "Arial",
@@ -112,7 +122,7 @@
   "footer": {
     "font": {
       "family": "Arial",
-      "size": 10,
+      "size": 8,
       "italic": false,
       "bold": false,
       "color": "757575"
