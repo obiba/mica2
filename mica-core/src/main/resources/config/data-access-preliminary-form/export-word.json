@@ -1,0 +1,131 @@
+{
+  "font": {
+    "family": "Arial",
+    "size": 10,
+    "italic": false,
+    "bold": false,
+    "color": "000000"
+  },
+  "array": {
+    "layout": "table"
+  },
+  "documentTitle": {
+    "font": {
+      "family": "Arial",
+      "size": 20,
+      "italic": false,
+      "bold": true,
+      "color": "000000"
+    }
+  },
+  "h1": {
+    "font": {
+      "family": "Arial",
+      "size": 18,
+      "italic": false,
+      "bold": true,
+      "color": "0070c0"
+    }
+  },
+  "h2": {
+    "font": {
+      "family": "Arial",
+      "size": 16,
+      "italic": false,
+      "bold": true,
+      "color": "0070c0"
+    }
+  },
+  "h3": {
+    "font": {
+      "family": "Arial",
+      "size": 14,
+      "italic": false,
+      "bold": true,
+      "color": "0070c0"
+    }
+  },
+  "h4": {
+    "font": {
+      "family": "Arial",
+      "size": 12,
+      "italic": false,
+      "bold": true,
+      "color": "0070c0"
+    }
+  },
+  "h5": {
+    "font": {
+      "family": "Arial",
+      "size": 10,
+      "italic": false,
+      "bold": true,
+      "color": "757575"
+    }
+  },
+  "h6": {
+    "font": {
+      "family": "Arial",
+      "size": 10,
+      "italic": false,
+      "bold": false,
+      "color": "757575"
+    }
+  },
+  "field": {
+    "font": {
+      "family": "Courier",
+      "size": 10,
+      "italic": false,
+      "bold": true,
+      "color": "000000"
+    }
+  },
+  "title": {
+    "font": {
+      "family": "Arial",
+      "size": 10,
+      "italic": false,
+      "bold": false,
+      "color": "757575"
+    }
+  },
+  "help": {
+    "font": {
+      "family": "Arial",
+      "size": 10,
+      "italic": false,
+      "bold": false,
+      "color": "757575"
+    }
+  },
+  "value": {
+    "font": {
+      "family": "Arial",
+      "size": 10,
+      "italic": false,
+      "bold": false,
+      "color": "000000"
+    }
+  },
+  "emptyValue": {
+    "visible": false,
+    "nullText": "N/A",
+    "font": {
+      "family": "Arial",
+      "size": 8,
+      "italic": true,
+      "bold": false,
+      "color": "666666"
+    }
+  },
+  "footer": {
+    "font": {
+      "family": "Arial",
+      "size": 8,
+      "italic": false,
+      "bold": false,
+      "color": "757575"
+    }
+  }
+}

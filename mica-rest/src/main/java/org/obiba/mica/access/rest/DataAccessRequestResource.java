@@ -196,7 +196,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     DataAccessRequest request = dataAccessRequestService.findById(id);
     DataAccessForm form = dataAccessFormService.findByRevision(request.hasFormRevision() ? request.getFormRevision().toString() : "latest").get();
     SchemaFormConfig config = schemaFormConfigService.getConfig(form, request, lang);
-    DataAccessEntityExporter exporter = DataAccessEntityExporter.newBuilder().config(config).build();
+    DataAccessEntityExporter exporter = DataAccessEntityExporter.newBuilder().config(config, dataAccessFormService.getExportWordConfig()).build();
     String title = schemaFormConfigService.getTranslator(lang).translate("data-access-config.schema-form.title");
     String status = schemaFormConfigService.getTranslator(lang).translate(request.getStatus().toString());
     return Response.ok(exporter.export(title, status, id).toByteArray())
