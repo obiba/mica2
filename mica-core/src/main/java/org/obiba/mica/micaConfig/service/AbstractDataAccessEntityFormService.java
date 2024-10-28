@@ -72,6 +72,15 @@ abstract class AbstractDataAccessEntityFormService<T extends AbstractDataAccessE
     return d;
   }
 
+  public JSONObject getExportWordConfig() {
+    try {
+    String exportWordJson = getDefaultDataAccessFormResourceAsString("export-word.json");
+    return new JSONObject(exportWordJson);
+    } catch (JSONException e) {
+      return new JSONObject();
+    }
+  }
+
   private void validateJsonObject(String json) {
     try {
       new JSONObject(json);

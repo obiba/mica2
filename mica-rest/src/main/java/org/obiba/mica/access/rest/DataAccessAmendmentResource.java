@@ -148,7 +148,7 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
     DataAccessAmendment entity = dataAccessAmendmentService.findById(id);
     DataAccessAmendmentForm form = dataAccessAmendmentFormService.findByRevision(entity.hasFormRevision() ? entity.getFormRevision().toString() : "latest").get();
     SchemaFormConfig config = schemaFormConfigService.getConfig(form, entity, lang);
-    DataAccessEntityExporter exporter = DataAccessEntityExporter.newBuilder().config(config).build();
+    DataAccessEntityExporter exporter = DataAccessEntityExporter.newBuilder().config(config, dataAccessAmendmentFormService.getExportWordConfig()).build();
     String title = schemaFormConfigService.getTranslator(lang).translate("data-access-config.amendment.schema-form.title");
     String status = schemaFormConfigService.getTranslator(lang).translate(entity.getStatus().toString());
     return Response.ok(exporter.export(title, status, id).toByteArray())
