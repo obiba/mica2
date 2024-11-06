@@ -32,6 +32,7 @@ public class DatasetInferredAttributesCollector {
   }
 
   public void collect(DatasetVariable variable) {
+    if (!variable.hasAttributes()) return;
     variable.getAttributes().asAttributeList().stream()
       .filter(attribute -> attributeFilterFunction.apply(attribute))
       .forEach(attribute -> keys.add(attribute));
