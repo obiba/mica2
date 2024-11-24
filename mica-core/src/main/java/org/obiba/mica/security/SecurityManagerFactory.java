@@ -33,8 +33,10 @@ import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.ehcache.integrations.shiro.EhcacheShiroManager;
 import org.obiba.shiro.EhCache3ShiroManager;
+import org.obiba.mica.security.service.MicaGroupsToRolesMapper;
 import org.obiba.shiro.NoSuchOtpException;
 import org.obiba.shiro.SessionStorageEvaluator;
+import org.obiba.shiro.realm.GroupsToRolesMapper;
 import org.obiba.shiro.realm.ObibaRealm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,6 +153,7 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
     oRealm.setBaseUrl(obibaRealmUrl);
     oRealm.setServiceName(serviceName);
     oRealm.setServiceKey(serviceKey);
+    oRealm.setGroupsToRolesMapper(new MicaGroupsToRolesMapper(environment));
     // Note: authentication caching is not enabled because it makes the SSO fail
 
     return oRealm;
