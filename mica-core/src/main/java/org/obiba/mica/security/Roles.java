@@ -10,6 +10,10 @@
 
 package org.obiba.mica.security;
 
+import com.google.common.collect.Lists;
+
+import java.util.List;
+
 public interface Roles {
 
   // can edit/publish data and change system configuration
@@ -26,4 +30,6 @@ public interface Roles {
 
   // can view published data
   String MICA_USER = "mica-user";
+
+  List<String> ALL_ROLES = Lists.newArrayList(MICA_ADMIN, MICA_REVIEWER, MICA_EDITOR, MICA_DAO, MICA_USER);
 }
