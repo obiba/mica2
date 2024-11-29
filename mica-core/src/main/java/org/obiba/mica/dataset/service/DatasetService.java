@@ -12,6 +12,7 @@ package org.obiba.mica.dataset.service;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
+import org.apache.shiro.SecurityUtils;
 import org.obiba.magma.MagmaRuntimeException;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
@@ -26,10 +27,13 @@ import org.obiba.mica.core.support.DatasetInferredAttributesCollector;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
+import org.obiba.mica.micaConfig.domain.SummaryStatisticsAccessPolicy;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.spi.tables.StudyTableSource;
 import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,6 +80,44 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
   protected abstract OpalService getOpalService();
 
   protected abstract EventBus getEventBus();
+
+  protected abstract MicaConfig getMicaConfig();
+
+  /**
+   * Apply summary statistics visibility policy.
+   *
+   * @param summary
+   * @return
+   */
+  public Mica.DatasetVariableAggregationDto getFilteredVariableSummary(Mica.DatasetVariableAggregationDto summary) {
+    SummaryStatisticsAccessPolicy policy = getMicaConfig().getSummaryStatisticsAccessPolicy();
+    if (summary == null || policy.equals(SummaryStatisticsAccessPolicy.OPEN_ALL)) return summary;
+    if (!SecurityUtils.getSubject().isAuthenticated()) {
+      if (policy.equals(SummaryStatisticsAccessPolicy.OPEN_STATS)) return summary;
+      // strip out detailed stats because user is not authenticated
+      summary = summary.toBuilder().clearFrequencies().build();
+      summary = summary.toBuilder().clearStatistics().build();
+    }
+    return summary;
+  }
+
+  /**
+   * Apply summary statistics visibility policy.
+   * 
+   * @param summary
+   * @return
+   */
+  public Mica.DatasetVariableAggregationsDto getFilteredVariableSummary(Mica.DatasetVariableAggregationsDto summary) {
+    SummaryStatisticsAccessPolicy policy = getMicaConfig().getSummaryStatisticsAccessPolicy();
+    if (summary == null || policy.equals(SummaryStatisticsAccessPolicy.OPEN_ALL)) return summary;
+    if (!SecurityUtils.getSubject().isAuthenticated()) {
+      if (policy.equals(SummaryStatisticsAccessPolicy.OPEN_STATS)) return summary;
+      // strip out detailed stats because user is not authenticated
+      summary = summary.toBuilder().clearFrequencies().build();
+      summary = summary.toBuilder().clearStatistics().build();
+    }
+    return summary;
+  }
 
   /**
    * Find all dataset identifiers.

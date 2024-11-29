@@ -20,6 +20,7 @@ import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.micaConfig.domain.SummaryStatisticsAccessPolicy;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.TaxonomiesService;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -308,10 +309,18 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   protected void checkContingencyAccess() {
     if (!micaConfigService.getConfig().isContingencyEnabled())
       throw new ForbiddenException();
+    if (micaConfigService.getConfig().getSummaryStatisticsAccessPolicy().equals(SummaryStatisticsAccessPolicy.OPEN_ALL))
+      return;
+    // other require authentication
+    if (!SecurityUtils.getSubject().isAuthenticated())
+      throw new ForbiddenException();
   }
 
   protected void checkVariableSummaryAccess() {
-    if (!SecurityUtils.getSubject().isAuthenticated() && micaConfigService.getConfig().isVariableSummaryRequiresAuthentication())
+    if (micaConfigService.getConfig().getSummaryStatisticsAccessPolicy().name().startsWith("OPEN_"))
+      return;
+    // other require authentication
+    if (!SecurityUtils.getSubject().isAuthenticated())
       throw new ForbiddenException();
   }
 

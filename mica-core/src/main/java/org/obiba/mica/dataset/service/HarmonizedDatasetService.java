@@ -15,6 +15,7 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
+import org.apache.shiro.SecurityUtils;
 import org.obiba.magma.*;
 import org.obiba.magma.support.Disposables;
 import org.obiba.mica.NoSuchEntityException;
@@ -35,6 +36,8 @@ import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
+import org.obiba.mica.micaConfig.domain.SummaryStatisticsAccessPolicy;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.service.NetworkService;
@@ -436,6 +439,11 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
   @Override
   protected EventBus getEventBus() {
     return eventBus;
+  }
+
+  @Override
+  protected MicaConfig getMicaConfig() {
+    return micaConfigService.getConfig();
   }
 
   //

@@ -15,6 +15,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.apache.shiro.SecurityUtils;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.magma.ValueTable;
@@ -40,6 +41,8 @@ import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
+import org.obiba.mica.micaConfig.domain.SummaryStatisticsAccessPolicy;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.service.NetworkService;
@@ -516,6 +519,11 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
   @Override
   protected EventBus getEventBus() {
     return eventBus;
+  }
+
+  @Override
+  protected MicaConfig getMicaConfig() {
+    return micaConfigService.getConfig();
   }
 
   //

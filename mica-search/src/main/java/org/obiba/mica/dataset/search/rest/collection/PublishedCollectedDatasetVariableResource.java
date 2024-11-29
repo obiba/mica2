@@ -67,7 +67,8 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
     StudyDataset dataset = getDataset(StudyDataset.class, datasetId);
     StudyTable studyTable = dataset.getSafeStudyTable();
     try {
-      return dtos.asDto(studyTable, datasetService.getVariableSummary(dataset, variableName), withStudySummary).build();
+      Mica.DatasetVariableAggregationDto summary = datasetService.getVariableSummary(dataset, variableName);
+      return dtos.asDto(studyTable, datasetService.getFilteredVariableSummary(summary), withStudySummary).build();
     } catch (Exception e) {
       if (log.isDebugEnabled())
         log.warn("Unable to retrieve statistics: {}", e.getMessage(), e);

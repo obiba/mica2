@@ -74,9 +74,16 @@
         <h4 translate class="voffset4">config.content-access</h4>
         <div form-checkbox min="0" name="openAccess" model="micaConfig.openAccess" label="config.openAccess"
             help="config.openAccess-help"></div>
-        <div form-checkbox min="0" name="variableSummaryRequiresAuthentication" model="micaConfig.variableSummaryRequiresAuthentication" label="config.variableSummaryRequiresAuthentication"
-             help="config.variableSummaryRequiresAuthentication-help"></div>
-
+        <div class="form-group">
+          <label for="summaryStatisticsAccessPolicy" class="control-label">
+            <span translate>config.variableSummaryRequiresAuthentication</span>
+          </label>
+          <select id="summaryStatisticsAccessPolicy" name="summaryStatisticsAccessPolicy" ng-model="micaConfig.summaryStatisticsAccessPolicy"
+            ng-options="'config.summaryStatisticsAccessPolicy-label.' + policyOption | translate for policyOption in summaryStatisticsAccessPolicyOptions"
+            class="form-control">
+          </select>
+          <p class="help-block">{{'config.variableSummaryRequiresAuthentication-help' | translate}}</p>
+        </div>
         <div form-checkbox name="signupEnabled" model="micaConfig.signupEnabled"
              label="config.signup-enabled" help="config.signup-enabled-help"></div>
         <div form-checkbox name="signupWithPassword" model="micaConfig.signupWithPassword"

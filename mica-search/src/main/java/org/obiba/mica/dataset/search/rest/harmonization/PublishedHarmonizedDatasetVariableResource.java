@@ -80,8 +80,8 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
     for (BaseStudyTable baseTable : getBaseStudyTables(dataset)) {
       if (baseTable.isFor(studyId, source)) {
         try {
-          return dtos.asDto(baseTable,
-            datasetService.getVariableSummary(dataset, variableName, studyId, source), withStudySummary).build();
+          Mica.DatasetVariableAggregationDto summary = datasetService.getVariableSummary(dataset, variableName, studyId, source);
+          return dtos.asDto(baseTable, datasetService.getFilteredVariableSummary(summary), withStudySummary).build();
         } catch (Exception e) {
           if (log.isDebugEnabled())
             log.warn("Unable to retrieve statistics: {}", e.getMessage(), e);

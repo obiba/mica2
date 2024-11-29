@@ -1,5 +1,5 @@
 <!-- Summary -->
-const makeSummary = function(showHarmonizedVariableSummarySelector) {
+const makeSummary = function(summaryStatisticsAccessPolicy, showHarmonizedVariableSummarySelector) {
 
   const initStudySelector = function(data) {
     let selectStudy = $('#select-study');
@@ -48,7 +48,7 @@ const makeSummary = function(showHarmonizedVariableSummarySelector) {
     renderFrequencies(data);
     renderStatistics(data);
 
-    if (!data.frequencies && !data.statistics) {
+    if (data.total === 0) {
       $('#noSummary').show();
     }
   };
@@ -163,7 +163,7 @@ const makeSummary = function(showHarmonizedVariableSummarySelector) {
 
     $('#loadingSummary').hide();
 
-    if (showHarmonizedVariableSummarySelector && (data.frequencies || data.statistics)) {
+    if (showHarmonizedVariableSummarySelector && data.total) {
       // study tables selector
       initStudySelector(data);
     }

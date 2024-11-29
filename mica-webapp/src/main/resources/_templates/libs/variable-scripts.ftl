@@ -119,9 +119,6 @@
       });
     </#if>
 
-    <#if showVariableStatistics && (user?? || !config.variableSummaryRequiresAuthentication)>
-      makeSummary(${showHarmonizedVariableSummarySelector?c});
-    </#if>
-
+    makeSummary('${config.summaryStatisticsAccessPolicy}', ${showHarmonizedVariableSummarySelector?c});
   });
 </script>

@@ -308,9 +308,10 @@
                   </#if>
                 </div>
                 <div class="card-body">
-                  <#if user?? || !config.variableSummaryRequiresAuthentication>
+                  <#if config.summaryStatisticsAccessPolicy?starts_with("OPEN_") || user??>
                     <@variableSummary variable=variable/>
-                  <#else>
+                  </#if>
+                  <#if config.summaryStatisticsAccessPolicy.name() != "OPEN_ALL" && config.summaryStatisticsAccessPolicy.name() != "OPEN_STATS" && user?? == false>
                     <@message "sign-in-for-variable-statistics"/>
                     <a href="${contextPath}/signin?redirect=${contextPath}/variable/${variable.id}" class="btn btn-info"><@message "sign-in"/></a>
                   </#if>
