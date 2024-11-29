@@ -37,10 +37,6 @@ shiro:
 # Other advanced settings
 #
 
-plugins:
-    micaSearchPlugin: mica-search-es8
-    updateSite: https://plugins.obiba.org
-
 opalTaxonomies:
     defaultTermsSortOrder: "title"
 
