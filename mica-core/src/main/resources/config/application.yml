@@ -40,7 +40,6 @@ portal:
 # Plugins
 #
 
-
 plugins:
   micaSearchPlugin: mica-search-es8
   updateSite: https://plugins.obiba.org

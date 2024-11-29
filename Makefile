@@ -156,3 +156,12 @@ rql:
 
 templates:
 	cd mica-webapp && cp -r src/main/resources/_templates/ target/classes/
+
+es-up:
+	docker compose up -d --pull=always --remove-orphans
+
+es-stop:
+	docker compose stop
+
+es-down:
+	docker compose down
