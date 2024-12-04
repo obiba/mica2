@@ -16,12 +16,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import jakarta.ws.rs.BadRequestException;
-import jakarta.ws.rs.DefaultValue;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 import org.apache.commons.math3.util.Pair;
 import org.obiba.mica.core.domain.BaseStudyTable;
@@ -36,13 +31,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
@@ -91,7 +86,8 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
       BaseStudyTable opalTable = studyTables.get(i);
       Future<Mica.DatasetVariableAggregationDto> futureResult = results.get(i);
       try {
-        builder.add(dtos.asDto(opalTable, futureResult.get(), withStudySummary).build());
+        Mica.DatasetVariableAggregationDto summary = futureResult.get();
+        builder.add(dtos.asDto(opalTable, summary, withStudySummary).build());
       } catch (Exception e) {
         if (log.isDebugEnabled())
           log.warn("Unable to retrieve statistics: {}", e.getMessage(), e);
@@ -108,9 +104,9 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     if (allAggDto.hasStatistics()) aggDto.setStatistics(allAggDto.getStatistics());
     aggDto.addAllFrequencies(allAggDto.getFrequenciesList());
 
-    aggDto.addAllAggregations(aggsDto);
+    aggDto.addAllAggregations(aggsDto.stream().map((summary) -> datasetService.getFilteredVariableSummary(summary)).toList());
 
-    return aggDto.build();
+    return datasetService.getFilteredVariableSummary(aggDto.build());
   }
 
   @GET
@@ -259,13 +255,14 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
                                                                  BaseStudyTable table) {
       try {
         String studyId = table.getStudyId();
-        return new AsyncResult<>(datasetService.getVariableSummary(dataset, variableName, studyId, table.getSource()));
+        Mica.DatasetVariableAggregationDto summary = datasetService.getVariableSummary(dataset, variableName, studyId, table.getSource());
+        return CompletableFuture.supplyAsync(() -> summary);
       } catch (Exception e) {
         if (log.isDebugEnabled())
           log.warn("Unable to retrieve statistics: {}", e.getMessage(), e);
         else
           log.warn("Unable to retrieve statistics: {}", e.getMessage());
-        return new AsyncResult<>(null);
+        return CompletableFuture.supplyAsync(() -> null);
       }
     }
 
@@ -273,10 +270,10 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     protected Future<Mica.DatasetVariableContingencyDto> getContingencyTable(HarmonizationDataset dataset, DatasetVariable var,
                                                                 DatasetVariable crossVar, BaseStudyTable studyTable) {
       try {
-        return new AsyncResult<>(datasetService.getContingencyTable(dataset, studyTable, var, crossVar));
+        return CompletableFuture.supplyAsync(() -> datasetService.getContingencyTable(dataset, studyTable, var, crossVar));
       } catch (Exception e) {
         log.warn("Unable to retrieve contingency statistics: " + e.getMessage(), e);
-        return new AsyncResult<>(null);
+        return CompletableFuture.supplyAsync(() -> null);
       }
     }
   }

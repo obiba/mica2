@@ -2,6 +2,7 @@ package org.obiba.mica.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
+import org.apache.shiro.SecurityUtils;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.core.domain.HarmonizationStudyTable;
 import org.obiba.mica.core.domain.StudyTable;
@@ -10,6 +11,8 @@ import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.dataset.service.HarmonizedDatasetService;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
+import org.obiba.mica.micaConfig.domain.SummaryStatisticsAccessPolicy;
 import org.obiba.mica.micaConfig.service.TaxonomiesService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
@@ -141,6 +144,8 @@ public class VariableController extends BaseController {
     params.put("query", "variable(" + query.toString() + ")");
 
     params.put("showDatasetContingencyLink", showDatasetContingencyLink());
+    params.put("showVariableSummary", showVariableSummary());
+    params.put("showSigninForVariableSummary", showSigninForVariableSummary());
 
     return new ModelAndView("variable", params);
   }
@@ -250,4 +255,19 @@ public class VariableController extends BaseController {
     return harmonizedDatasetService.findById(id);
   }
 
+  private boolean showVariableSummary() {
+    MicaConfig config = micaConfigService.getConfig();
+    if (config.getSummaryStatisticsAccessPolicy().name().startsWith("OPEN_"))
+      return true;
+    return SecurityUtils.getSubject().isAuthenticated();
+  }
+
+  private boolean showSigninForVariableSummary() {
+    MicaConfig config = micaConfigService.getConfig();
+    if (config.getSummaryStatisticsAccessPolicy().equals(SummaryStatisticsAccessPolicy.OPEN_ALL))
+      return false;
+    if (config.getSummaryStatisticsAccessPolicy().equals(SummaryStatisticsAccessPolicy.OPEN_SUMMARY))
+      return false;
+    return !SecurityUtils.getSubject().isAuthenticated();
+  }
 }

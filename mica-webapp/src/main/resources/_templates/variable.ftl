@@ -308,9 +308,10 @@
                   </#if>
                 </div>
                 <div class="card-body">
-                  <#if user?? || !config.variableSummaryRequiresAuthentication>
+                  <#if showVariableSummary>
                     <@variableSummary variable=variable/>
-                  <#else>
+                  </#if>
+                  <#if showSigninForVariableSummary>
                     <@message "sign-in-for-variable-statistics"/>
                     <a href="${contextPath}/signin?redirect=${contextPath}/variable/${variable.id}" class="btn btn-info"><@message "sign-in"/></a>
                   </#if>

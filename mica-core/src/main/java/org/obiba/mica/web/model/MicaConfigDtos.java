@@ -149,6 +149,7 @@ class MicaConfigDtos {
     builder.setIsCollectedDatasetEnabled(config.isStudyDatasetEnabled());
     builder.setIsHarmonizedDatasetEnabled(config.isHarmonizationDatasetEnabled());
     builder.setVariableSummaryRequiresAuthentication(config.isVariableSummaryRequiresAuthentication());
+    builder.setSummaryStatisticsAccessPolicy(config.getSummaryStatisticsAccessPolicy().name());
     builder.setIsImportStudiesFeatureEnabled(config.isImportStudiesFeatureEnabled());
 
     if(config.hasStyle()) builder.setStyle(config.getStyle());
@@ -249,6 +250,7 @@ class MicaConfigDtos {
     config.setHarmonizationDatasetEnabled(dto.getIsHarmonizedDatasetEnabled());
     config.setImportStudiesFeatureEnabled(dto.getIsImportStudiesFeatureEnabled());
     if (dto.hasVariableSummaryRequiresAuthentication()) config.setVariableSummaryRequiresAuthentication(dto.getVariableSummaryRequiresAuthentication());
+    config.setSummaryStatisticsAccessPolicy(SummaryStatisticsAccessPolicy.valueOf(dto.getSummaryStatisticsAccessPolicy()));
 
     if (dto.hasSignupEnabled()) config.setSignupEnabled(dto.getSignupEnabled());
     config.setSignupWithPassword(dto.getSignupWithPassword());

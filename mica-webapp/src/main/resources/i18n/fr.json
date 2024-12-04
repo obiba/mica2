@@ -432,8 +432,14 @@
     },
     "openAccess": "Accès libre",
     "openAccess-help": "L'accès aux documents publiés est ouvert à tout le monde.",
-    "variableSummaryRequiresAuthentication": "Accès restreint aux statistiques des variables",
-    "variableSummaryRequiresAuthentication-help": "L'utilisateur doit être identifié afin d'avoir accès aux statistiques de variables (sommaire, table de contingence etc.).",
+    "variableSummaryRequiresAuthentication": "Accès aux statistiques des variables",
+    "variableSummaryRequiresAuthentication-help": "L'identification de l'utilisateur peut être requise afin d'avoir accès aux statistiques de variables (sommaire, table de contingence).",
+    "summaryStatisticsAccessPolicy-label": {
+      "OPEN_ALL": "Ouvert",
+      "OPEN_SUMMARY": "Ouvert: décomptes de base et statistiques détaillées, Restreint: table de contingence",
+      "OPEN_BASICS": "Ouvert: décomptes de base, Restreint: statistiques détaillées et table de contingence",
+      "RESTRICTED_ALL": "Restreint"
+    },
     "sections": "Sections",
     "repository-enabled": "Catalogue activé",
     "repository-enabled-help": "Montrer les pages du catalogue de réseaux, initiatives, études etc. ainsi que la page de recherche.",

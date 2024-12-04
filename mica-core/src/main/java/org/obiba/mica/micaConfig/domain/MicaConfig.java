@@ -131,6 +131,8 @@ public class MicaConfig extends AbstractAuditableDocument implements Serializabl
 
   private boolean variableSummaryRequiresAuthentication = false;
 
+  private SummaryStatisticsAccessPolicy summaryStatisticsAccessPolicy;
+
   private boolean usePublicUrlForSharedLink = true;
 
   private String style;
@@ -543,6 +545,21 @@ public class MicaConfig extends AbstractAuditableDocument implements Serializabl
 
   public void setVariableSummaryRequiresAuthentication(boolean variableSummaryRequiresAuthentication) {
     this.variableSummaryRequiresAuthentication = variableSummaryRequiresAuthentication;
+    if (summaryStatisticsAccessPolicy == null) {
+      summaryStatisticsAccessPolicy = variableSummaryRequiresAuthentication ? SummaryStatisticsAccessPolicy.RESTRICTED_ALL : SummaryStatisticsAccessPolicy.OPEN_ALL;
+    }
+  }
+
+  public SummaryStatisticsAccessPolicy getSummaryStatisticsAccessPolicy() {
+    if (summaryStatisticsAccessPolicy == null) {
+      summaryStatisticsAccessPolicy = variableSummaryRequiresAuthentication ? SummaryStatisticsAccessPolicy.RESTRICTED_ALL : SummaryStatisticsAccessPolicy.OPEN_ALL;
+    }
+    return summaryStatisticsAccessPolicy;
+  }
+
+  public void setSummaryStatisticsAccessPolicy(SummaryStatisticsAccessPolicy summaryStatisticsAccessPolicy) {
+    this.summaryStatisticsAccessPolicy = summaryStatisticsAccessPolicy;
+    this.variableSummaryRequiresAuthentication = !SummaryStatisticsAccessPolicy.OPEN_ALL.equals(summaryStatisticsAccessPolicy);
   }
 
   public boolean hasStyle() {

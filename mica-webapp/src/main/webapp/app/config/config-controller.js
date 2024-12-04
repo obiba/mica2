@@ -514,6 +514,13 @@ mica.config
         'ENTITY_TYPE'
       ];
 
+      $scope.summaryStatisticsAccessPolicyOptions = [
+        'OPEN_ALL',
+        'OPEN_SUMMARY',
+        'OPEN_BASICS',
+        'RESTRICTED_ALL'
+      ];
+
       $scope.projectEnabledChanged = function() {
         if (!$scope.micaConfig.isProjectEnabled) {
           $scope.micaConfig.isProjectsCountEnabled = false;
