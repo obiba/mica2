@@ -17,7 +17,7 @@ public enum SummaryStatisticsAccessPolicy {
 
   OPEN_ALL, // open basic counts, detailed stats and contingency
 
-  OPEN_STATS, // open basic counts and detailed stats, restricted contingency
+  OPEN_SUMMARY, // open basic counts and detailed stats, restricted contingency
 
   OPEN_BASICS, // open basic counts, restricted detailed stats and contingency
 

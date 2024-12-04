@@ -93,7 +93,7 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
     SummaryStatisticsAccessPolicy policy = getMicaConfig().getSummaryStatisticsAccessPolicy();
     if (summary == null || policy.equals(SummaryStatisticsAccessPolicy.OPEN_ALL)) return summary;
     if (!SecurityUtils.getSubject().isAuthenticated()) {
-      if (policy.equals(SummaryStatisticsAccessPolicy.OPEN_STATS)) return summary;
+      if (policy.equals(SummaryStatisticsAccessPolicy.OPEN_SUMMARY)) return summary;
       // strip out detailed stats because user is not authenticated
       summary = summary.toBuilder().clearFrequencies().build();
       summary = summary.toBuilder().clearStatistics().build();
@@ -103,7 +103,7 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
 
   /**
    * Apply summary statistics visibility policy.
-   * 
+   *
    * @param summary
    * @return
    */
@@ -111,7 +111,7 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
     SummaryStatisticsAccessPolicy policy = getMicaConfig().getSummaryStatisticsAccessPolicy();
     if (summary == null || policy.equals(SummaryStatisticsAccessPolicy.OPEN_ALL)) return summary;
     if (!SecurityUtils.getSubject().isAuthenticated()) {
-      if (policy.equals(SummaryStatisticsAccessPolicy.OPEN_STATS)) return summary;
+      if (policy.equals(SummaryStatisticsAccessPolicy.OPEN_SUMMARY)) return summary;
       // strip out detailed stats because user is not authenticated
       summary = summary.toBuilder().clearFrequencies().build();
       summary = summary.toBuilder().clearStatistics().build();

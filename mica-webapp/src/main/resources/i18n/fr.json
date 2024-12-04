@@ -436,7 +436,7 @@
     "variableSummaryRequiresAuthentication-help": "L'identification de l'utilisateur peut être requise afin d'avoir accès aux statistiques de variables (sommaire, table de contingence).",
     "summaryStatisticsAccessPolicy-label": {
       "OPEN_ALL": "Ouvert",
-      "OPEN_STATS": "Ouvert: décomptes de base et statistiques détaillées, Restreint: table de contingence",
+      "OPEN_SUMMARY": "Ouvert: décomptes de base et statistiques détaillées, Restreint: table de contingence",
       "OPEN_BASICS": "Ouvert: décomptes de base, Restreint: statistiques détaillées et table de contingence",
       "RESTRICTED_ALL": "Restreint"
     },

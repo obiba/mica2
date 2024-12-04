@@ -266,7 +266,7 @@ public class VariableController extends BaseController {
     MicaConfig config = micaConfigService.getConfig();
     if (config.getSummaryStatisticsAccessPolicy().equals(SummaryStatisticsAccessPolicy.OPEN_ALL))
       return false;
-    if (config.getSummaryStatisticsAccessPolicy().equals(SummaryStatisticsAccessPolicy.OPEN_STATS))
+    if (config.getSummaryStatisticsAccessPolicy().equals(SummaryStatisticsAccessPolicy.OPEN_SUMMARY))
       return false;
     return !SecurityUtils.getSubject().isAuthenticated();
   }

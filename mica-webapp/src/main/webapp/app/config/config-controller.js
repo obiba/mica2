@@ -516,7 +516,7 @@ mica.config
 
       $scope.summaryStatisticsAccessPolicyOptions = [
         'OPEN_ALL',
-        'OPEN_STATS',
+        'OPEN_SUMMARY',
         'OPEN_BASICS',
         'RESTRICTED_ALL'
       ];

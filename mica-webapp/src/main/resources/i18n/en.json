@@ -436,7 +436,7 @@
     "variableSummaryRequiresAuthentication-help": "The user may need to be identified when accessing to the variable summary statistics (and related operations like contingency table).",
     "summaryStatisticsAccessPolicy-label": {
       "OPEN_ALL": "Open",
-      "OPEN_STATS": "Open basic counts open and detailed statistics and restricted contingency table",
+      "OPEN_SUMMARY": "Open basic counts open and detailed statistics and restricted contingency table",
       "OPEN_BASICS": "Open basic counts open, restricted detailed statistics and contingency table",
       "RESTRICTED_ALL": "Restricted statistics and contingency table"
     },
