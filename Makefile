@@ -1,5 +1,5 @@
 skipTests = false
-version=5.0-SNAPSHOT
+version=6.0-SNAPSHOT
 mvn_exec = mvn -Dmaven.test.skip=${skipTests}
 current_dir = $(shell pwd)
 search_plugin_version=
@@ -92,11 +92,11 @@ run-prod:
 	cd ../mica-dist && \
 	mvn clean package && \
 	cd target && \
-	unzip mica-${version}-dist.zip && \
+	unzip mica2-${version}-dist.zip && \
 	mkdir -p ${mica_home} && \
-	if [ ! -d ${mica_home}/conf ]; then cp -r agate-${version}/conf ${mica_home}/conf; fi
+	if [ ! -d ${mica_home}/conf ]; then cp -r mica2-${version}/conf ${mica_home}/conf; fi && \
 	export MICA_HOME="${mica_home}" && \
-	./mica-${version}/bin/mica2
+	./mica2-${version}/bin/mica2
 
 debug:
 	cd mica-webapp && \
