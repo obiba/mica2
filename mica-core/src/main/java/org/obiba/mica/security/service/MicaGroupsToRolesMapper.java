@@ -3,7 +3,6 @@ package org.obiba.mica.security.service;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 import org.obiba.mica.security.Roles;
 import org.obiba.shiro.realm.GroupsToRolesMapper;
@@ -66,7 +65,7 @@ public class MicaGroupsToRolesMapper implements GroupsToRolesMapper {
       .map((cond) -> toSet(cond, ","))
       .toList();
     roleGroups.put(role, groupsSets);
-    log.debug("init role {} groups sets: {}", role, MoreObjects.toStringHelper(groupsSets));
+    log.debug("init role {} groups sets: {}", role, Joiner.on(" | ").join(groupsSets.stream().map((set) -> MoreObjects.toStringHelper(set).toString()).toList()));
   }
 
   private Set<String> toSet(String groupsStr, String separator) {
