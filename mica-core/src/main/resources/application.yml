@@ -52,3 +52,11 @@ login:
   maxTry: 3
   trialTime: 300
   banTime: 300
+
+# assign roles when user belongs to one or more groups listed
+roles:
+  mica-administrator: mica-administrator
+  mica-reviewer: mica-reviewer
+  mica-editor: mica-editor
+  mica-data-access-officer: mica-data-access-officer
+  mica-user: mica-user
