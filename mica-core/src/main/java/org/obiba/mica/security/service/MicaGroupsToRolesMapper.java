@@ -2,6 +2,8 @@ package org.obiba.mica.security.service;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 import org.obiba.mica.security.Roles;
 import org.obiba.shiro.realm.GroupsToRolesMapper;
@@ -24,6 +26,9 @@ public class MicaGroupsToRolesMapper implements GroupsToRolesMapper {
   public MicaGroupsToRolesMapper(Environment environment) {
     Roles.ALL_ROLES.forEach(role -> {
       addRoleGroups(environment, role);
+      if (log.isDebugEnabled()) {
+        log.debug("Init groups for role '{}': {}", role, MoreObjects.toStringHelper(roleGroups.get(role)));
+      }
     });
   }
 
@@ -41,10 +46,11 @@ public class MicaGroupsToRolesMapper implements GroupsToRolesMapper {
 
   @Override
   public Set<String> toRoles(Set<String> groups) {
+    log.debug("user groups: {}", Joiner.on(",").join(groups));
     Set<String> roles = Roles.ALL_ROLES.stream()
       .filter(role -> hasRole(role, groups))
       .collect(Collectors.toSet());
-    log.debug("roles: {}", Joiner.on(",").join(roles));
+    log.debug("user roles: {}", Joiner.on(",").join(roles));
     roles.addAll(groups);
 
     return roles;
