@@ -54,18 +54,16 @@ public class MicaGroupsToRolesMapper implements GroupsToRolesMapper {
 
   private void addRoleGroups(Environment environment, String role) {
     String groupsStr = environment.getProperty(String.format("roles.%s", role), role);
-    log.debug("init role {} groups: {}", role, groupsStr);
     addRoleGroups(groupsStr, role);
   }
 
   private void addRoleGroups(String groupsStr, String role) {
     Set<String> groupsCond = toSet(groupsStr, "\\|");
-    log.debug("init role {} groups cond: {}", role, Joiner.on(" | ").join(groupsCond));
     List<Set<String>> groupsSets = groupsCond.stream()
       .map((cond) -> toSet(cond, ","))
       .toList();
     roleGroups.put(role, groupsSets);
-    log.debug("init role {} groups sets: {}", role, Joiner.on(" | ").join(groupsSets.stream().map((set) -> MoreObjects.toStringHelper(set).toString()).toList()));
+    log.debug("init role {} groups sets: {}", role, Joiner.on(" | ").join(groupsSets.stream().map((set) -> Joiner.on(", ").join(set)).toList()));
   }
 
   private Set<String> toSet(String groupsStr, String separator) {
