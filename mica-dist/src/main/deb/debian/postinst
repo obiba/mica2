@@ -68,6 +68,17 @@ case "$1" in
         mv -f /var/lib/mica2/conf/mica-aggregations.yml /var/lib/mica2/conf/mica-aggregations.yml.old
       fi
 
+      # Upgrade application.yml if necessary
+      if grep -q "profiles:" /etc/mica2/application.yml
+        then
+          cp /etc/mica2/application.yml /etc/mica2/application.yml.5.x
+          cat /etc/mica2/application.yml.5.x | grep -v "profiles:" > /etc/mica2/application.yml
+      fi
+      if [ -f /etc/mica2/application.yml ] && [ ! -f /etc/mica2/application-prod.yml ]
+      	then
+      	mv -f /etc/mica2/application.yml /etc/mica2/application-prod.yml
+      fi
+
       chown -R mica:adm /var/lib/mica2 /var/log/mica2 /etc/mica2
       chmod -R 750      /var/lib/mica2 /var/log/mica2 /etc/mica2
       chmod +x /usr/share/mica2/tools/shiro-hasher
