@@ -63,6 +63,17 @@ if [ -e /var/lib/mica2/conf/mica-aggregations.yml ] ; then
   mv /var/lib/mica2/conf/mica-aggregations.yml.old
 fi
 
+# Upgrade application.yml if necessary
+if grep -q "profiles:" /etc/mica2/application.yml
+  then
+    cp /etc/mica2/application.yml /etc/mica2/application.yml.5.x
+    cat /etc/mica2/application.yml.5.x | grep -v "profiles:" > /etc/mica2/application.yml
+fi
+if [ -f /etc/mica2/application.yml ] && [ ! -f /etc/mica2/application-prod.yml ]
+  then
+  mv -f /etc/mica2/application.yml /etc/mica2/application-prod.yml
+fi
+
 chown -R mica:adm /var/lib/mica2 /var/log/mica2 /etc/mica2
 chmod -R 750      /var/lib/mica2 /var/log/mica2 /etc/mica2
 find /etc/mica2/ -type f -print0 | xargs -0 chmod 640
