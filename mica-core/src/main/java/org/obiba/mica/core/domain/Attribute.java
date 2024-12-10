@@ -10,16 +10,16 @@
 
 package org.obiba.mica.core.domain;
 
-import java.io.Serializable;
-import java.util.Locale;
-import java.util.Objects;
-
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.obiba.mica.spi.search.support.AttributeKey;
+
+import javax.annotation.Nullable;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.util.Locale;
+import java.util.Objects;
 
 public class Attribute implements Serializable {
 
@@ -80,7 +80,7 @@ public class Attribute implements Serializable {
 
   @Override
   public String toString() {
-    return com.google.common.base.Objects.toStringHelper(this).omitNullValues().add("name", name)
+    return MoreObjects.toStringHelper(this).omitNullValues().add("name", name)
         .add("namespace", namespace).add("values", values).toString();
   }
 

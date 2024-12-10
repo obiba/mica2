@@ -11,6 +11,7 @@
 package org.obiba.mica.dataset.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import org.apache.commons.compress.utils.Lists;
@@ -384,13 +385,9 @@ public class DatasetVariable implements Indexable, AttributeAware, IVariable {
   public void setClassName(String className) {
   }
 
-  protected com.google.common.base.Objects.ToStringHelper toStringHelper() {
-    return com.google.common.base.Objects.toStringHelper(this).omitNullValues().add("id", getId());
-  }
-
   @Override
   public final String toString() {
-    return toStringHelper().toString();
+    return MoreObjects.toStringHelper(this).omitNullValues().add("id", getId()).toString();
   }
 
   @Override
