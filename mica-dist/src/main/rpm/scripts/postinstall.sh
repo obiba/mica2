@@ -69,7 +69,7 @@ if grep -q "profiles:" /etc/mica2/application.yml
     cp /etc/mica2/application.yml /etc/mica2/application.yml.5.x
     cat /etc/mica2/application.yml.5.x | grep -v "profiles:" > /etc/mica2/application.yml
 fi
-if [ -f /etc/mica2/application.yml ] && [ ! -f /etc/mica2/application-prod.yml ]
+if [ -f /etc/mica2/application.yml ]
   then
   mv -f /etc/mica2/application.yml /etc/mica2/application-prod.yml
 fi
