@@ -430,14 +430,19 @@
       "private": "Private Key",
       "public": "Public Key"
     },
-    "openAccess": "Open access",
-    "openAccess-help": "Access to published documents is opened to everyone.",
+    "openAccess": "Catalog and variable summary statistics",
+    "openAccess-help": "Access to published documents can be opened to everyone or require specific permissions.",
+    "catalogAccessPolicy-label": {
+      "OPEN_ALL": "Open catalog, no variable statistics permissions",
+      "OPEN_CATALOG": "Open catalog, with variable statistics permissions",
+      "RESTRICTED_ALL": "Restricted catalog, with variable statistics permissions"
+    },
     "variableSummaryRequiresAuthentication": "Access to variable summary statistics",
-    "variableSummaryRequiresAuthentication-help": "The user may need to be identified when accessing to the variable summary statistics (and related operations like contingency table).",
+    "variableSummaryRequiresAuthentication-help": "The user may need to be identified (and have proper permissions) when accessing to the variable summary statistics (and related operations like contingency table).",
     "summaryStatisticsAccessPolicy-label": {
       "OPEN_ALL": "Open",
-      "OPEN_SUMMARY": "Open basic counts open and detailed statistics and restricted contingency table",
-      "OPEN_BASICS": "Open basic counts open, restricted detailed statistics and contingency table",
+      "OPEN_SUMMARY": "Open basic counts and detailed statistics / Restricted contingency table",
+      "OPEN_BASICS": "Open basic counts / Restricted detailed statistics and contingency table",
       "RESTRICTED_ALL": "Restricted statistics and contingency table"
     },
     "sections": "Sections",

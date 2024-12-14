@@ -453,6 +453,7 @@ message MicaConfigDto {
   required bool isNetworksExportEnabled = 69;
   repeated string usableVariableTaxonomiesForConceptTagging = 70;
   required string summaryStatisticsAccessPolicy = 71;
+  required string catalogAccessPolicy = 72;
 }
 
 message PublicMicaConfigDto {
@@ -465,6 +466,7 @@ message PublicMicaConfigDto {
   required double maxNumberOfSets = 7;
   required double maxItemsPerSet = 8;
   required string agateUrl = 9;
+  required string catalogAccessPolicy = 10;
 }
 
 message AggregationsConfigDto {

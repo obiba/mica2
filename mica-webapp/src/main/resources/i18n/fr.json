@@ -430,14 +430,19 @@
       "private": "Clé privée",
       "public": "Clé publique"
     },
-    "openAccess": "Accès libre",
-    "openAccess-help": "L'accès aux documents publiés est ouvert à tout le monde.",
+    "openAccess": "Accès au catalogue et aux sommaires statistiques des variables",
+    "openAccess-help": "L'accès aux documents publiés peut être ouvert à tout le monde ou être en accès restreint.",
+    "catalogAccessPolicy-label": {
+      "OPEN_ALL": "Catalogue ouvert, pas de permissions pour les statistiques de variable",
+      "OPEN_CATALOG": "Catalogue ouvert, avec permissions pour les statistiques de variable",
+      "RESTRICTED_ALL": "Catalogue à accès restreint, avec permissions pour les statistiques de variable"
+    },
     "variableSummaryRequiresAuthentication": "Accès aux statistiques des variables",
-    "variableSummaryRequiresAuthentication-help": "L'identification de l'utilisateur peut être requise afin d'avoir accès aux statistiques de variables (sommaire, table de contingence).",
+    "variableSummaryRequiresAuthentication-help": "L'identification de l'utilisateur peut être requise (avec éventuelles permissions) afin d'avoir accès aux statistiques de variables (sommaire, table de contingence).",
     "summaryStatisticsAccessPolicy-label": {
       "OPEN_ALL": "Ouvert",
-      "OPEN_SUMMARY": "Ouvert: décomptes de base et statistiques détaillées, Restreint: table de contingence",
-      "OPEN_BASICS": "Ouvert: décomptes de base, Restreint: statistiques détaillées et table de contingence",
+      "OPEN_SUMMARY": "Ouvert: décomptes de base et statistiques détaillées / Restreint: table de contingence",
+      "OPEN_BASICS": "Ouvert: décomptes de base / Restreint: statistiques détaillées et table de contingence",
       "RESTRICTED_ALL": "Restreint"
     },
     "sections": "Sections",

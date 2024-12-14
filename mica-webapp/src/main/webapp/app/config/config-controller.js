@@ -514,6 +514,12 @@ mica.config
         'ENTITY_TYPE'
       ];
 
+      $scope.catalogAccessPolicyOptions = [
+        'OPEN_ALL',
+        'OPEN_CATALOG',
+        'RESTRICTED_ALL'
+      ];
+
       $scope.summaryStatisticsAccessPolicyOptions = [
         'OPEN_ALL',
         'OPEN_SUMMARY',

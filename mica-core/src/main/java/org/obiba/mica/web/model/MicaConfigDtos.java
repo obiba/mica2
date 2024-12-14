@@ -65,6 +65,7 @@ class MicaConfigDtos {
     Mica.PublicMicaConfigDto.Builder builder = Mica.PublicMicaConfigDto.newBuilder()
       .setName(config.getName())
       .setOpenAccess(config.isOpenAccess())
+      .setCatalogAccessPolicy(config.getCatalogAccessPolicy().name())
       .setAgateUrl(agateServerConfigService.getAgateUrl());
 
     config.getLocales().forEach(locale -> builder.addLanguages(locale.getLanguage()));
@@ -92,7 +93,8 @@ class MicaConfigDtos {
     Mica.MicaConfigDto.Builder builder = Mica.MicaConfigDto.newBuilder()
       .setName(config.getName())
       .setDefaultCharSet(config.getDefaultCharacterSet())//
-      .setOpenAccess(config.isOpenAccess());
+      .setOpenAccess(config.isOpenAccess())
+      .setCatalogAccessPolicy(config.getCatalogAccessPolicy().name());
     config.getLocales().forEach(locale -> builder.addLanguages(locale.getLanguage()));
 
     if(!Strings.isNullOrEmpty(config.getPublicUrl())) {
@@ -206,6 +208,7 @@ class MicaConfigDtos {
     config.setName(dto.getName());
     config.setDefaultCharacterSet(dto.getDefaultCharSet());
     config.setOpenAccess(dto.getOpenAccess());
+    config.setCatalogAccessPolicy(CatalogAccessPolicy.valueOf(dto.getCatalogAccessPolicy()));
 
     config.setOpalViewsGrouping(OpalViewsGrouping.valueOf(dto.getOpalViewsGrouping()));
 

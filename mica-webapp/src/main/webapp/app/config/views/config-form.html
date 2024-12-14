@@ -72,8 +72,16 @@
             required="true"></div>
 
         <h4 translate class="voffset4">config.content-access</h4>
-        <div form-checkbox min="0" name="openAccess" model="micaConfig.openAccess" label="config.openAccess"
-            help="config.openAccess-help"></div>
+        <div class="form-group">
+          <label for="catalogAccessPolicy" class="control-label">
+            <span translate>config.openAccess</span>
+          </label>
+          <select id="catalogAccessPolicy" name="catalogAccessPolicy" ng-model="micaConfig.catalogAccessPolicy"
+                  ng-options="'config.catalogAccessPolicy-label.' + policyOption | translate for policyOption in catalogAccessPolicyOptions"
+                  class="form-control">
+          </select>
+          <p class="help-block">{{'config.openAccess-help' | translate}}</p>
+        </div>
         <div class="form-group">
           <label for="summaryStatisticsAccessPolicy" class="control-label">
             <span translate>config.variableSummaryRequiresAuthentication</span>

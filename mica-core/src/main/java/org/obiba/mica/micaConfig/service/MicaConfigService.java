@@ -121,6 +121,9 @@ public class MicaConfigService {
 
     BeanUtils.copyProperties(micaConfig, savedConfig, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
       "lastModifiedDate", "secretKey", "micaVersion");
+    // ensure no conflict with the legacy boolean equivalent
+    savedConfig.setCatalogAccessPolicy(micaConfig.getCatalogAccessPolicy());
+    savedConfig.setSummaryStatisticsAccessPolicy(micaConfig.getSummaryStatisticsAccessPolicy());
 
     if(micaConfig.getMicaVersion() != null) savedConfig.setMicaVersion(micaConfig.getMicaVersion());
 

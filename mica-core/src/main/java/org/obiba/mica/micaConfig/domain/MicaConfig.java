@@ -77,6 +77,8 @@ public class MicaConfig extends AbstractAuditableDocument implements Serializabl
 
   private boolean openAccess = true;
 
+  private CatalogAccessPolicy catalogAccessPolicy;
+
   private boolean isStudyNotificationsEnabled = false;
 
   private String studyNotificationsSubject;
@@ -331,10 +333,23 @@ public class MicaConfig extends AbstractAuditableDocument implements Serializabl
 
   public void setOpenAccess(boolean openAccess) {
     this.openAccess = openAccess;
+    this.catalogAccessPolicy = openAccess ? CatalogAccessPolicy.OPEN_ALL : CatalogAccessPolicy.RESTRICTED_ALL;
   }
 
   public boolean isOpenAccess() {
     return openAccess;
+  }
+
+  public CatalogAccessPolicy getCatalogAccessPolicy() {
+    if (catalogAccessPolicy == null) {
+      this.catalogAccessPolicy = openAccess ? CatalogAccessPolicy.OPEN_ALL : CatalogAccessPolicy.RESTRICTED_ALL;
+    }
+    return catalogAccessPolicy;
+  }
+
+  public void setCatalogAccessPolicy(CatalogAccessPolicy catalogAccessPolicy) {
+    this.catalogAccessPolicy = catalogAccessPolicy;
+    this.openAccess = catalogAccessPolicy != CatalogAccessPolicy.RESTRICTED_ALL;
   }
 
   public boolean isStudyNotificationsEnabled() {
