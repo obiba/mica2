@@ -84,7 +84,7 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
-<script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"
+<script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit&hl=${.lang}"
         async defer>
 </script>
 <#include "libs/contact-scripts.ftl">
