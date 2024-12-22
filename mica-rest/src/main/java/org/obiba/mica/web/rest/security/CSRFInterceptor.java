@@ -32,25 +32,32 @@ public class CSRFInterceptor implements ContainerRequestFilter {
 
   private static final String REFERER_HEADER = "Referer";
 
+  private static final String USER_AGENT_HEADER = "User-Agent";
+
   private static final Pattern localhostPattern = Pattern.compile("^http[s]?://localhost:");
 
   private static final Pattern loopbackhostPattern = Pattern.compile("^http[s]?://127\\.0\\.0\\.1:");
 
   private final boolean productionMode;
 
-  private final List<String> csrfAllowed;
+  private final List<String> csrfAllowedHosts;
 
-  public CSRFInterceptor(boolean productionMode, String csrfAllowed) {
+  private final List<String> csrfAllowedAgents;
+
+  public CSRFInterceptor(boolean productionMode, String csrfAllowedHosts, String csrfAllowedAgents) {
     this.productionMode = productionMode;
-    this.csrfAllowed = Strings.isNullOrEmpty(csrfAllowed) ? Lists.newArrayList() : Splitter.on(",").splitToList(csrfAllowed.trim());
+    this.csrfAllowedHosts = Strings.isNullOrEmpty(csrfAllowedHosts) ? Lists.newArrayList() : Splitter.on(",").splitToList(csrfAllowedHosts.trim());
+    this.csrfAllowedAgents = Strings.isNullOrEmpty(csrfAllowedAgents) ? Lists.newArrayList() : Splitter.on(",").splitToList(csrfAllowedAgents.trim());
   }
 
   @Override
   public void filter(ContainerRequestContext requestContext)
     throws IOException {
-    if (!productionMode || csrfAllowed.contains("*")) return;
+    if (!productionMode || csrfAllowedHosts.contains("*")) return;
 
     String host = requestContext.getHeaderString(HOST_HEADER);
+    if (matchesLocalhost(host)) return;
+
     String referer = requestContext.getHeaderString(REFERER_HEADER);
     if (referer != null) {
       String refererHostPort = "";
@@ -61,17 +68,20 @@ public class CSRFInterceptor implements ContainerRequestFilter {
         // malformed url
       }
       // explicitly ok
-      if (csrfAllowed.contains(refererHostPort)) return;
+      if (csrfAllowedHosts.contains(refererHostPort)) return;
 
-      boolean forbidden = false;
-      if (!matchesLocalhost(host) && !referer.startsWith(String.format("https://%s/", host))) {
-        forbidden = true;
-      }
-
+      boolean forbidden = !referer.startsWith(String.format("https://%s/", host));
       if (forbidden) {
         log.warn("CSRF detection: Host={}, Referer={}", host, referer);
         log.info(">> You can add {} to csrf.allowed setting", refererHostPort);
         throw new ForbiddenException();
+      }
+    } else {
+      String userAgent = requestContext.getHeaderString(USER_AGENT_HEADER);
+      if (Strings.isNullOrEmpty(userAgent) || !matchesUserAgent(userAgent)) {
+        log.warn("CSRF detection: Host={}, User-Agent={}", host, userAgent);
+        log.info(">> Ensure 'Referer' HTTP header is set or allow this 'User-Agent' with 'csrf.allowed-agents' setting");
+        throw new ForbiddenException("CSRF error");
       }
     }
   }
@@ -81,6 +91,10 @@ public class CSRFInterceptor implements ContainerRequestFilter {
       || loopbackhostPattern.matcher(host).matches()
       || host.startsWith("localhost:")
       || host.startsWith("127.0.0.1:");
+  }
+
+  private boolean matchesUserAgent(String userAgent) {
+    return csrfAllowedAgents.stream().anyMatch(ua -> userAgent.toLowerCase().contains(ua.toLowerCase()));
   }
 
 }
