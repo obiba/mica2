@@ -53,6 +53,9 @@ login:
   trialTime: 300
   banTime: 300
 
+csrf:
+  allowed-agents: curl,python,java
+
 # assign roles when user belongs to one or more groups listed
 roles:
   mica-administrator: mica-administrator
