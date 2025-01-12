@@ -91,7 +91,7 @@
             <#if showCopyQuery>
               <div class="btn-group ml-2">
                 <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><@message "global.copy-query"/></button>
-                <ul class="dropdown-menu dropdown-menu-right">
+                <ul class="dropdown-menu dropdown-menu-right" style="width: 400px;">
                   <li class="pr-3 pl-3 pt-3">
                     <div class="input-group mb-2">
                       <input v-model="queryToCopy" disabled type="text" class="form-control" style="width: 300px;">
