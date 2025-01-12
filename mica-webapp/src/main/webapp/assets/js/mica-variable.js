@@ -188,7 +188,7 @@ const makeHarmonizedVariablesTable = function() {
         let colName = title;
 
         if (study.description) {
-          const description = marked(localizedString(study.description));
+          const description = marked.parse(localizedString(study.description));
           colName =
             '<a href="javascript:void(0)" ' +
             'data-html="true" ' +

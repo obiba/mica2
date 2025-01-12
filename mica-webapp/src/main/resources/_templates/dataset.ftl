@@ -380,7 +380,7 @@
 <script>
   $('#harmonizedTable tr [data-toggle="popover"]').popover({html: true, delay: { show: 250, hide: 750 }});
   document.querySelectorAll("[id^='popover-']").forEach(element => {
-    element.dataset.content=marked(element.dataset.content).replaceAll('"', "'");
+    element.dataset.content=marked.parse(element.dataset.content).replaceAll('"', "'");
   })
 
 </script>

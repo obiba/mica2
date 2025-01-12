@@ -45,7 +45,7 @@ Vue.filter("localize-string", (input) => {
 });
 
 Vue.filter("markdown", (input) => {
-  return marked(input);
+  return marked.parse(input);
 });
 
 Vue.filter("localize-number", (input) => {

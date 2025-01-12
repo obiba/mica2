@@ -285,9 +285,9 @@ class VariablesResultParser {
         switch (column) {
           case 'label':
           case 'label+description': {
-            let labelElem = marked(localize(summary.variableLabel));
+            let labelElem = marked.parse(localize(summary.variableLabel));
             if (column === 'label+description' && summary.description) {
-              labelElem = "<i class='fa fa-info-circle text-muted float-left mr-2 mt-1' data-toggle='tooltip' data-html='true' title='" + marked(localize(summary.description)) + "'></i> " + labelElem;
+              labelElem = "<i class='fa fa-info-circle text-muted float-left mr-2 mt-1' data-toggle='tooltip' data-html='true' title='" + marked.parse(localize(summary.description)) + "'></i> " + labelElem;
             }
             row.push(labelElem);
             break;
