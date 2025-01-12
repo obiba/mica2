@@ -24,6 +24,8 @@ import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import jakarta.servlet.http.HttpServletRequest;
+import org.owasp.esapi.ESAPI;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,10 +65,11 @@ public abstract class AbstractPublishedDocumentsSetsResource<T extends DocumentS
   }
 
   protected Mica.DocumentSetDto createEmptyDocumentSet(String name) {
-    ensureUserIsAuthorized(name);
-    if (!Strings.isNullOrEmpty(name)) checkSetsNumberLimit();
+    String safeName = ESAPI.encoder().encodeForHTML(name);
+    ensureUserIsAuthorized(safeName);
+    if (!Strings.isNullOrEmpty(safeName)) checkSetsNumberLimit();
 
-    DocumentSet created = getDocumentSetService().create(name, Lists.newArrayList());
+    DocumentSet created = getDocumentSetService().create(safeName, Lists.newArrayList());
     return dtos.asDto(created);
   }
 
@@ -90,9 +93,10 @@ public abstract class AbstractPublishedDocumentsSetsResource<T extends DocumentS
   }
 
   protected Mica.DocumentSetDto importDocuments(String name, String body) {
-    ensureUserIsAuthorized(name);
-    if (!Strings.isNullOrEmpty(name)) checkSetsNumberLimit();
-    DocumentSet created = getDocumentSetService().create(name, getDocumentSetService().extractIdentifiers(body));
+    String safeName = ESAPI.encoder().encodeForHTML(name);
+    ensureUserIsAuthorized(safeName);
+    if (!Strings.isNullOrEmpty(safeName)) checkSetsNumberLimit();
+    DocumentSet created = getDocumentSetService().create(safeName, getDocumentSetService().extractIdentifiers(body));
     return dtos.asDto(created);
   }
 
