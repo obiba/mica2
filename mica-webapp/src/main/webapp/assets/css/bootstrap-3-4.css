@@ -50,6 +50,10 @@
   display: table;
 }
 
+.bootstrap3 .input-group input[bs-datepicker] {
+  min-width: 100%;
+}
+
 .input-group-btn {
   display: none;
 }
