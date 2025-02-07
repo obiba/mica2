@@ -48,7 +48,7 @@
     <easymock.version>5.2.0</easymock.version>
     <commons-lang.version>2.6</commons-lang.version>
     <embed-mongo.version>1.50.0</embed-mongo.version>
-    <esapi.version>2.5.4.0</esapi.version>
+    <esapi.version>2.6.0.0</esapi.version>
     <freemarker.version>2.3.33</freemarker.version>
     <guava.version>33.2.1-jre</guava.version>
 <!--    <geronimo-javamail_1.4_mail.version>1.8.3</geronimo-javamail_1.4_mail.version>-->
