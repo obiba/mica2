@@ -81,7 +81,7 @@
 <#macro dataAccessFormPrintFooter form>
   <div class="border-top mt-3 pt-3">
     <div class="float-left">
-      <small><span class="moment-datetime text-muted">${.now}</span></small>
+      <small><span class="moment-datetime text-muted">${.now?iso_utc}</span></small>
     </div>
     <div class="float-right">
         <#if form.lastSubmission??>
