@@ -889,6 +889,20 @@ class FilesService {
  */
 class UserService {
 
+  static getCurrent(onsuccess, onfailure) {
+    let url = '/ws/auth/session/_current';
+    axios.get(MicaService.normalizeUrl(url))
+      .then(() => {
+        //console.dir(response);
+        let redirect = MicaService.normalizeUrl('/');
+        const q = new URLSearchParams(window.location.search);
+        if (q.get('redirect')) {
+          redirect = q.get('redirect');
+        }
+        MicaService.redirect(redirect);
+      })
+  }
+
   /**
    * Check and submit signin form.
    *
