@@ -4,7 +4,7 @@ import org.obiba.mica.study.domain.StudyState;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Component
 public class StudyStateRepositoryImpl extends EntityStateRepositoryImpl {

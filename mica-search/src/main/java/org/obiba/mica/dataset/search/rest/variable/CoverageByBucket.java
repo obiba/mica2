@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.obiba.mica.micaConfig.service.TaxonomyConfigService;
 import org.obiba.mica.spi.search.TaxonomyTarget;

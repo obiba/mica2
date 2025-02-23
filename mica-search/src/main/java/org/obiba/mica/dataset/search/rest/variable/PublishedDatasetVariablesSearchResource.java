@@ -13,7 +13,7 @@ package org.obiba.mica.dataset.search.rest.variable;
 import java.io.IOException;
 import java.util.List;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.FormParam;

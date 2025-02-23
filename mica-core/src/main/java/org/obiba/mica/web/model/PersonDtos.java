@@ -13,7 +13,7 @@ package org.obiba.mica.web.model;
 import java.util.List;
 import java.util.Locale;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.obiba.mica.core.domain.Address;
 import org.obiba.mica.core.domain.EntityState;

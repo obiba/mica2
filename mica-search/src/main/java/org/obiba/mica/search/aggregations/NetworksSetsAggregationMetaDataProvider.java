@@ -3,7 +3,7 @@ package org.obiba.mica.search.aggregations;
 import org.obiba.mica.micaConfig.service.helper.NetworksSetsAggregationMetaDataHelper;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Component
 public class NetworksSetsAggregationMetaDataProvider extends SetsAggregationMetaDataProvider {

@@ -12,7 +12,7 @@ package org.obiba.mica.web.model;
 
 import java.util.Locale;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.springframework.stereotype.Component;

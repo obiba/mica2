@@ -25,7 +25,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.UpdateResult;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Component
 public class Mica500Upgrade implements UpgradeStep {

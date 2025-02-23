@@ -6,7 +6,7 @@ import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Component
 public class VariablesSetsAggregationMetaDataHelper extends SetsAggregationMetaDataHelper {

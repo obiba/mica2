@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;

@@ -17,7 +17,7 @@ import org.obiba.mica.micaConfig.repository.ProjectConfigRepository;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Component
 public class ProjectConfigService extends EntityConfigService<ProjectConfig> {

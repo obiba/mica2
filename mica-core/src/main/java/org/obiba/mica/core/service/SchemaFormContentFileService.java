@@ -23,7 +23,7 @@ import org.obiba.mica.file.FileStoreService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.util.*;
 import java.util.stream.Collectors;

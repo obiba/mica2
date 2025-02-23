@@ -21,7 +21,7 @@ import org.obiba.mica.web.model.Mica.DataAccessRequestDto.StatusChangeDto;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.core.UriInfo;
 import java.util.ArrayList;
 import java.util.List;

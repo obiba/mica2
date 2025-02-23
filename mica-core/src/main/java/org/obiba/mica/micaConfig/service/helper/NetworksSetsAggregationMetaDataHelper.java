@@ -4,7 +4,7 @@ import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.service.NetworkSetService;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Component
 public class NetworksSetsAggregationMetaDataHelper extends SetsAggregationMetaDataHelper {

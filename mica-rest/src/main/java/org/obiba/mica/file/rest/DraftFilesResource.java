@@ -5,7 +5,7 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.file.event.IndexFilesEvent;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;

@@ -13,7 +13,7 @@ package org.obiba.mica.micaConfig.service;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.TaxonomyEntityWrapper;

@@ -10,7 +10,7 @@
 
 package org.obiba.mica.study.rest;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.joda.time.LocalDate;
 import org.junit.Before;

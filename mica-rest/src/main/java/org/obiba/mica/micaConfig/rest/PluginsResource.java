@@ -20,7 +20,7 @@ import org.obiba.mica.web.model.MicaPlugins;
 import org.obiba.mica.web.model.PluginDtos;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;

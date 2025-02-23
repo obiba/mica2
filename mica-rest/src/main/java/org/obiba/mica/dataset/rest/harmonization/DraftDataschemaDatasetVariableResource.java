@@ -12,7 +12,7 @@ package org.obiba.mica.dataset.rest.harmonization;
 
 import java.util.List;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 

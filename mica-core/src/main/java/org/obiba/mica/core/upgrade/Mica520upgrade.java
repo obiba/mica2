@@ -1,6 +1,6 @@
 package org.obiba.mica.core.upgrade;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;

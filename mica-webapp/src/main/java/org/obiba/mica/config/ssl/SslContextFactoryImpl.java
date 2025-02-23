@@ -10,7 +10,7 @@
 
 package org.obiba.mica.config.ssl;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 

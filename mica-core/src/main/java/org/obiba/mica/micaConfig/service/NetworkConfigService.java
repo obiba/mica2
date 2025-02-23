@@ -14,7 +14,7 @@ import org.obiba.mica.micaConfig.domain.NetworkConfig;
 import org.obiba.mica.micaConfig.repository.NetworkConfigRepository;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Component
 public class NetworkConfigService extends EntityConfigService<NetworkConfig> {

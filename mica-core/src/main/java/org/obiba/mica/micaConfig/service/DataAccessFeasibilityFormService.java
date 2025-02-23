@@ -3,7 +3,7 @@ package org.obiba.mica.micaConfig.service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.obiba.mica.micaConfig.domain.DataAccessFeasibilityForm;
 import org.obiba.mica.micaConfig.repository.DataAccessFeasibilityFormRepository;

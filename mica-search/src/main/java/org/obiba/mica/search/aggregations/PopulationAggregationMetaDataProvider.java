@@ -4,7 +4,7 @@ import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.micaConfig.service.helper.PopulationIdAggregationMetaDataHelper;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.Map;
 
 @Component

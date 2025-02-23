@@ -35,7 +35,7 @@ import org.obiba.web.model.OIDCDtos;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;

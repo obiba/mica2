@@ -20,7 +20,7 @@ import org.obiba.mica.spi.search.Searcher;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.stream.Collectors;

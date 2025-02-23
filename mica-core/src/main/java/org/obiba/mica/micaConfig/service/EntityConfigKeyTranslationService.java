@@ -25,7 +25,7 @@ import org.obiba.mica.core.support.RegexHashMap;
 import org.obiba.mica.micaConfig.domain.*;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;

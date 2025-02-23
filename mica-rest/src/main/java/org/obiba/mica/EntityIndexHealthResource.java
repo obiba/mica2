@@ -7,7 +7,7 @@ import org.obiba.mica.web.model.LocalizedStringDtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.Mica.EntityIndexHealthDto.ItemDto;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import java.util.Collection;
 import java.util.List;

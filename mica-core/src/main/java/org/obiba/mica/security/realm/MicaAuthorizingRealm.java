@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -78,14 +78,14 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
   /**
    * Overridden because the OpalSecurityManager sets {@code this} as the {@code RolePermissionResolver} on all configured
    * realms. This results the following object graph:
-   * 
+   *
    * {@code
    * AuthorizingReam.rolePermissionResolver -> MicaAuthorizingRealm (this)
    *      ^
    *      |
    * MicaAuthorizingRealm.rolePermissionResolver -> GroupPermissionResolver
    * }
-   * 
+   *
    * By overriding this method, we prevent an infinite loop from occurring when
    * {@code getRolePermissionResolver().resolvePermissionsInRole()} is called.
    */

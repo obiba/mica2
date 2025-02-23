@@ -30,7 +30,7 @@ import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 import jakarta.ws.rs.DefaultValue;

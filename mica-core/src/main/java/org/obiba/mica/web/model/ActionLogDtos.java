@@ -12,7 +12,7 @@ package org.obiba.mica.web.model;
 
 import java.time.LocalDateTime;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.obiba.mica.access.domain.ActionLog;
 import org.obiba.mica.user.UserProfileService;

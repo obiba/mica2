@@ -19,7 +19,7 @@ import org.springframework.data.domain.Persistable;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.Map;
 
 @Component

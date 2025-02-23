@@ -26,7 +26,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Configuration
 public class LocaleConfiguration implements WebMvcConfigurer, EnvironmentAware {
