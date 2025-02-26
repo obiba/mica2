@@ -54,6 +54,7 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Properties;
 
 /**
  * Configuration of web application with Servlet 3.0 APIs.
@@ -169,7 +170,9 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
     FreeMarkerConfigurer freeMarkerConfigurer = new FreeMarkerConfigurer();
     freeMarkerConfigurer.setDefaultEncoding("UTF-8");
     freeMarkerConfigurer.setTemplateLoaderPaths("classpath:/web/", "classpath:/static/templates/", "classpath:/public/templates/", "classpath:/templates/", "classpath:/_templates/");
-
+    Properties properties = new Properties();
+    properties.setProperty("template_exception_handler", "rethrow"); // Prevents errors in output
+    freeMarkerConfigurer.setFreemarkerSettings(properties);
     return freeMarkerConfigurer;
   }
 
