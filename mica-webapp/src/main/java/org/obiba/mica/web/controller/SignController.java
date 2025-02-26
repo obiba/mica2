@@ -92,25 +92,14 @@ public class SignController extends BaseController {
 
   @GetMapping("/signup-with")
   public ModelAndView signupWith(@CookieValue(value = "u_auth", required = false, defaultValue = "{}") String uAuth) {
-    if (!micaConfigService.getConfig().isSignupEnabled())
-      return new ModelAndView("redirect:" + micaConfigService.getContextPath() + "/");
+    // second chance if cookie was not available yet
+    return signupWithOrRedirect(uAuth, "/signup-with-u");
+  }
 
-    ModelAndView mv = new ModelAndView("signup-with");
-    JSONObject uAuthObj;
-    try {
-      String fixedUAuth = uAuth.replaceAll("\\\\", "");
-      uAuthObj = new JSONObject(fixedUAuth);
-    } catch (JSONException e) {
-      uAuthObj = new JSONObject();
-    }
-
-    log.debug("Signup with username {}", uAuth);
-    if (uAuthObj.has("username")) {
-      mv.getModel().put("uAuth", uAuthObj);
-      mv.getModel().put("authConfig", getAuthConfiguration());
-      return mv;
-    }
-    return new ModelAndView("redirect:/signup");
+  @GetMapping("/signup-with-u")
+  public ModelAndView signupWithU(@CookieValue(value = "u_auth", required = false, defaultValue = "{}") String uAuth) {
+    // if no cookie, go back to signup
+    return signupWithOrRedirect(uAuth, "/signup");
   }
 
   @GetMapping("/signout")
@@ -145,16 +134,6 @@ public class SignController extends BaseController {
     return mv;
   }
 
-  private String makePostLogoutRedirectUri() {
-    // mica signout callback url
-    UriBuilder micaBuilder = UriBuilder.fromUri(String.format("%s/signout", micaConfigService.getPublicUrl()))
-      .queryParam("cb", "true");
-    // agate signout url
-    UriBuilder agateBuilder = UriBuilder.fromUri(String.format("%s/signout", agateServerConfigService.getAgateUrl()))
-      .queryParam("post_logout_redirect_uri", micaBuilder.build());
-    return agateBuilder.build().toString();
-  }
-
   @GetMapping("/just-registered")
   public ModelAndView justRegistered(@RequestParam(value = "signin", required = false, defaultValue = "false") boolean canSignin) {
     ModelAndView mv = new ModelAndView("just-registered");
@@ -165,6 +144,38 @@ public class SignController extends BaseController {
   //
   // Private methods
   //
+
+  private ModelAndView signupWithOrRedirect(String uAuth, String redirect) {
+    if (!micaConfigService.getConfig().isSignupEnabled())
+      return new ModelAndView("redirect:" + micaConfigService.getContextPath() + "/");
+
+    ModelAndView mv = new ModelAndView("signup-with");
+    JSONObject uAuthObj;
+    try {
+      String fixedUAuth = uAuth.replaceAll("\\\\", "");
+      uAuthObj = new JSONObject(fixedUAuth);
+    } catch (JSONException e) {
+      uAuthObj = new JSONObject();
+    }
+
+    log.debug("Signup with username {}", uAuth);
+    if (uAuthObj.has("username")) {
+      mv.getModel().put("uAuth", uAuthObj);
+      mv.getModel().put("authConfig", getAuthConfiguration());
+      return mv;
+    }
+    return new ModelAndView("redirect:" + redirect);
+  }
+
+  private String makePostLogoutRedirectUri() {
+    // mica signout callback url
+    UriBuilder micaBuilder = UriBuilder.fromUri(String.format("%s/signout", micaConfigService.getPublicUrl()))
+      .queryParam("cb", "true");
+    // agate signout url
+    UriBuilder agateBuilder = UriBuilder.fromUri(String.format("%s/signout", agateServerConfigService.getAgateUrl()))
+      .queryParam("post_logout_redirect_uri", micaBuilder.build());
+    return agateBuilder.build().toString();
+  }
 
   private List<OIDCAuthProviderSummary> getOidcProviders(String locale, boolean signupOnly) {
     try {
