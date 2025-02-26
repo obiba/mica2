@@ -15,6 +15,8 @@ import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.controller.domain.AuthConfiguration;
 import org.obiba.mica.web.controller.domain.OidcProvider;
 import org.obiba.oidc.OIDCAuthProviderSummary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +32,8 @@ import java.util.stream.Collectors;
 
 @Controller
 public class SignController extends BaseController {
+
+  private static final Logger log = LoggerFactory.getLogger(SignController.class);
 
   @Inject
   private MicaConfigService micaConfigService;
@@ -100,6 +104,7 @@ public class SignController extends BaseController {
       uAuthObj = new JSONObject();
     }
 
+    log.debug("Signup with username {}", uAuth);
     if (uAuthObj.has("username")) {
       mv.getModel().put("uAuth", uAuthObj);
       mv.getModel().put("authConfig", getAuthConfiguration());
