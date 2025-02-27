@@ -889,6 +889,10 @@ class FilesService {
  */
 class UserService {
 
+  static refreshSignupWith() {
+    window.location.assign(MicaService.normalizeUrl('/signup-with?redirect=/signup'));
+  }
+
   /**
    * Ensure user is not already signed in via SSO cookie.
    *
@@ -1020,7 +1024,7 @@ class UserService {
           //console.dir(response);
           let redirect = MicaService.normalizeUrl('/');
           const q = new URLSearchParams(window.location.search);
-          if (q.get('redirect')) {
+          if (q.get('redirect') && q.get('redirect') !== '/signup') {
             redirect = q.get('redirect');
           } else if (passwordField || realmField) {
             redirect = 'just-registered?signin=true';

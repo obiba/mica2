@@ -4,7 +4,7 @@
   <#include "libs/head.ftl">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>${config.name!""} | <@message "sign-up"/></title>
+  <title>${config.name?default("")} | <@message "sign-up"/></title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script type="text/javascript">
@@ -18,7 +18,7 @@
 <body id="signup-with-page" class="hold-transition login-page">
 <div class="login-box">
   <div class="login-logo">
-    <a href="${contextPath}/"><b>${config.name!""}</b></a>
+    <a href="${contextPath}/"><b>${config.name?default("")}</b></a>
   </div>
   <!-- /.login-logo -->
   <div class="card">
@@ -32,7 +32,7 @@
       <form id="form" method="post">
 
         <div class="input-group mb-3">
-          <input name="username" type="text" class="form-control" placeholder="<@message "username"/>" value="${uAuth.username!""}" readonly>
+          <input name="username" type="text" class="form-control" placeholder="<@message "username"/>" value="${uAuth.username?default("")}" readonly>
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-user"></span>
@@ -40,21 +40,21 @@
           </div>
         </div>
         <div class="input-group mb-3">
-          <input name="email" type="email" class="form-control" placeholder="<@message "email"/>" value="${uAuth.email!""}" readonly>
+          <input name="email" type="email" class="form-control" placeholder="<@message "email"/>" value="${uAuth.email?default("")}" readonly>
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-envelope"></span>
             </div>
           </div>
         </div>
-        <input type="hidden" name="realm" value="${uAuth.realm}"/>
+        <input type="hidden" name="realm" value="${uAuth.realm?default("")}"/>
 
         <div class="text-center">
           <p>- <@message "personal-information"/> -</p>
         </div>
 
         <div class="input-group mb-3">
-          <input name="firstname" type="text" class="form-control" placeholder="<@message "firstname"/>" value="${uAuth.firstname!""}">
+          <input name="firstname" type="text" class="form-control" placeholder="<@message "firstname"/>" value="${uAuth.firstname?default("")}">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-user"></span>
@@ -62,7 +62,7 @@
           </div>
         </div>
         <div class="input-group mb-3">
-          <input name="lastname" type="text" class="form-control" placeholder="<@message "lastname"/>"  value="${uAuth.lastname!""}">
+          <input name="lastname" type="text" class="form-control" placeholder="<@message "lastname"/>"  value="${uAuth.lastname?default("")}">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-user"></span>
@@ -130,6 +130,9 @@
 
 <#include "libs/scripts.ftl">
 <script>
+  <#if !uAuth.realm??>
+  UserService.refreshSignupWith()
+  </#if>
   const requiredFields = [
     { name: "email", title: "<@message "email"/>" },
     { name: "firstname", title: "<@message "firstname"/>" },

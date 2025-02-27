@@ -91,15 +91,27 @@ public class SignController extends BaseController {
   }
 
   @GetMapping("/signup-with")
-  public ModelAndView signupWith(@CookieValue(value = "u_auth", required = false, defaultValue = "{}") String uAuth) {
-    // second chance if cookie was not available yet
-    return signupWithOrRedirect(uAuth, "/signup-with-u");
-  }
+  public ModelAndView signupWith(@CookieValue(value = "u_auth", required = false, defaultValue = "{}") String uAuth, @RequestParam(value = "redirect", required = false) String redirect) {
+    if (!micaConfigService.getConfig().isSignupEnabled())
+      return new ModelAndView("redirect:" + micaConfigService.getContextPath() + "/");
 
-  @GetMapping("/signup-with-u")
-  public ModelAndView signupWithU(@CookieValue(value = "u_auth", required = false, defaultValue = "{}") String uAuth) {
-    // if no cookie, go back to signup
-    return signupWithOrRedirect(uAuth, "/signup");
+    ModelAndView mv = new ModelAndView("signup-with");
+    mv.getModel().put("authConfig", getAuthConfiguration());
+
+    JSONObject uAuthObj;
+    try {
+      String fixedUAuth = uAuth.replaceAll("\\\\", "");
+      uAuthObj = new JSONObject(fixedUAuth);
+    } catch (JSONException e) {
+      uAuthObj = new JSONObject();
+    }
+
+    log.debug("Signup with username {}", uAuth);
+    mv.getModel().put("uAuth", uAuthObj.toMap());
+    if (uAuthObj.has("username") || Strings.isNullOrEmpty(redirect)) {
+      return mv;
+    }
+    return check(redirect);
   }
 
   @GetMapping("/signout")
@@ -144,29 +156,6 @@ public class SignController extends BaseController {
   //
   // Private methods
   //
-
-  private ModelAndView signupWithOrRedirect(String uAuth, String redirect) {
-    if (!micaConfigService.getConfig().isSignupEnabled())
-      return new ModelAndView("redirect:" + micaConfigService.getContextPath() + "/");
-
-    ModelAndView mv = new ModelAndView("signup-with");
-    JSONObject uAuthObj;
-    try {
-      String fixedUAuth = uAuth.replaceAll("\\\\", "");
-      uAuthObj = new JSONObject(fixedUAuth);
-    } catch (JSONException e) {
-      uAuthObj = new JSONObject();
-    }
-
-    log.debug("Signup with username {}", uAuth);
-    if (uAuthObj.has("username")) {
-      mv.getModel().put("uAuth", uAuthObj);
-      mv.getModel().put("authConfig", getAuthConfiguration());
-      return mv;
-    }
-    log.debug("Redirecting to " + redirect);
-    return new ModelAndView("redirect:" + redirect);
-  }
 
   private String makePostLogoutRedirectUri() {
     // mica signout callback url
