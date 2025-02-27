@@ -13,7 +13,7 @@ package org.obiba.mica.core.notification;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.service.MailService;

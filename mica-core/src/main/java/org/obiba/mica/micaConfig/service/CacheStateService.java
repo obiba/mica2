@@ -16,7 +16,7 @@ import org.obiba.mica.micaConfig.event.CacheClearEvent;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Component
 public class CacheStateService {

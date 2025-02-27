@@ -27,7 +27,7 @@ import org.obiba.mica.web.model.Mica;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriUtils;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Component
 @Path("/")

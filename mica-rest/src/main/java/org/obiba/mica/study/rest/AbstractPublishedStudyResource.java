@@ -13,7 +13,7 @@ package org.obiba.mica.study.rest;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.ModelAwareTranslator;

@@ -28,7 +28,7 @@ import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.List;

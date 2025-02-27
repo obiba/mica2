@@ -23,7 +23,7 @@ import org.obiba.mica.micaConfig.service.MicaConfigService;
 import jakarta.annotation.Priority;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.IOException;
 import java.util.List;
 

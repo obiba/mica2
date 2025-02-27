@@ -10,7 +10,7 @@
 
 package org.obiba.mica.config;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.ApplicationPath;
 
 import org.glassfish.jersey.media.multipart.MultiPartFeature;

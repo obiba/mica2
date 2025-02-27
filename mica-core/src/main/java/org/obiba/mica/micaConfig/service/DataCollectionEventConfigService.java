@@ -14,7 +14,7 @@ import org.obiba.mica.micaConfig.domain.DataCollectionEventConfig;
 import org.obiba.mica.micaConfig.repository.DataCollectionEventConfigRepository;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Component
 public class DataCollectionEventConfigService extends EntityConfigService<DataCollectionEventConfig> {

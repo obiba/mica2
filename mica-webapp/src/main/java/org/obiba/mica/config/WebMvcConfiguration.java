@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {

@@ -18,7 +18,7 @@ import org.obiba.mica.study.domain.Study;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 
 @Component
@@ -59,7 +59,7 @@ public class StudyRepositoryImpl implements StudyRepositoryCustom, PersonAwareRe
 
   @Override
   public Study insertWithReferences(Study study) {
-    saveContacts(study);  
+    saveContacts(study);
     mongoTemplate.insert(study);
     updateRemovedContacts(study);
 

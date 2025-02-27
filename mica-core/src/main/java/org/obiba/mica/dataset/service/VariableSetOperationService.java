@@ -17,7 +17,7 @@ import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Service
 @Validated

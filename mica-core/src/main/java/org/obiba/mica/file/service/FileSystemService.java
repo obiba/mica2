@@ -57,7 +57,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.FileOutputStream;

@@ -16,7 +16,7 @@ import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 
 @Component

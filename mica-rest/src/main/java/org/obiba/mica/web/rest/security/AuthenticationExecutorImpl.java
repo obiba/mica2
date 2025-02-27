@@ -18,7 +18,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Component
 public class AuthenticationExecutorImpl extends AbstractAuthenticationExecutor implements InitializingBean {

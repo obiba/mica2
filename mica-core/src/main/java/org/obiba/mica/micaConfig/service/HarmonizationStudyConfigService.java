@@ -10,7 +10,7 @@
 
 package org.obiba.mica.micaConfig.service;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.obiba.mica.micaConfig.domain.HarmonizationStudyConfig;
 import org.obiba.mica.micaConfig.repository.HarmonizationStudyConfigRepository;

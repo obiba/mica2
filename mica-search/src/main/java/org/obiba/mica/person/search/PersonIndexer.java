@@ -10,7 +10,7 @@
 
 package org.obiba.mica.person.search;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.obiba.mica.contact.event.PersonDeletedEvent;
 import org.obiba.mica.contact.event.PersonUpdatedEvent;

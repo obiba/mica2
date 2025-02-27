@@ -37,7 +37,7 @@ import org.springframework.web.client.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

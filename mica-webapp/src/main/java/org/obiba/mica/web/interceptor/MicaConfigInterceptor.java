@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Component
 public class MicaConfigInterceptor implements HandlerInterceptor {

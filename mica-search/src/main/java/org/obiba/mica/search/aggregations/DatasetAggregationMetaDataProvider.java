@@ -12,7 +12,7 @@ package org.obiba.mica.search.aggregations;
 
 import java.util.Map;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.micaConfig.service.helper.DatasetIdAggregationMetaDataHelper;

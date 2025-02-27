@@ -63,7 +63,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import support.legacy.UpgradeLegacyEntities;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;

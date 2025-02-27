@@ -33,7 +33,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;

@@ -15,7 +15,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.service.CollectedDatasetService;

@@ -5,7 +5,7 @@ import org.obiba.mica.study.EntityStateRepositoryImpl;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Component
 public class HarmonizationDatasetStateRepositoryImpl extends EntityStateRepositoryImpl {

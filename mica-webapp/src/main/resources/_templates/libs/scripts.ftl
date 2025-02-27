@@ -110,6 +110,10 @@
     const regex = new RegExp(q, 'g');
     return str ? str.replace(regex, '\\' + q) : str;
   };
+
+  <#if !user??>
+  UserService.getCurrent();
+  </#if>
 </script>
 
 <script>

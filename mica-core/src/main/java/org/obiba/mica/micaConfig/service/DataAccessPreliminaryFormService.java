@@ -5,7 +5,7 @@ import org.obiba.mica.micaConfig.repository.DataAccessPreliminaryFormRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.Optional;
 

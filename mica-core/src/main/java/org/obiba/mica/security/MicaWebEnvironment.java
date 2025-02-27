@@ -1,6 +1,6 @@
 package org.obiba.mica.security;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import org.apache.shiro.mgt.SessionsSecurityManager;
 import org.apache.shiro.web.env.DefaultWebEnvironment;
 import org.springframework.stereotype.Component;

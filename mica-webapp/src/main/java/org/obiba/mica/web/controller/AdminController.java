@@ -1,6 +1,6 @@
 package org.obiba.mica.web.controller;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;

@@ -25,7 +25,7 @@ import org.obiba.mica.web.model.Mica;
 import org.obiba.shiro.realm.ObibaRealm;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.NoSuchElementException;
 
 @Component

@@ -16,7 +16,7 @@ import org.obiba.mica.web.model.Mica.DataAccessRequestDto.StatusChangeDto;
 import org.obiba.shiro.realm.ObibaRealm;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Component
 public class StatusChangeDtos {

@@ -18,7 +18,7 @@ import org.obiba.security.KeyStoreRepository;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.security.auth.callback.CallbackHandler;
 import javax.validation.constraints.NotNull;
 import java.io.ByteArrayInputStream;

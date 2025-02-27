@@ -23,7 +23,7 @@ import org.obiba.opal.web.model.Magma;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;

@@ -18,7 +18,7 @@ import org.obiba.mica.core.domain.SetOperation;
 import org.obiba.mica.dataset.service.VariableSetOperationService;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.Set;
 
 @Component

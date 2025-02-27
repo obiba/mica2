@@ -21,7 +21,7 @@ import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 
 @Component

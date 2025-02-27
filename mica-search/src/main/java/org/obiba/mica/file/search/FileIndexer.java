@@ -10,7 +10,7 @@
 
 package org.obiba.mica.file.search;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.obiba.mica.core.repository.AttachmentStateRepository;
 import org.obiba.mica.file.AttachmentState;

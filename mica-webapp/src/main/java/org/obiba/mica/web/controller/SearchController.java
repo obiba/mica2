@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Controller
 public class SearchController extends BaseController {

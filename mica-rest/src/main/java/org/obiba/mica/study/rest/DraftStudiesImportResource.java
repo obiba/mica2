@@ -23,7 +23,7 @@ import org.obiba.mica.study.service.StudyPackageImportService;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 

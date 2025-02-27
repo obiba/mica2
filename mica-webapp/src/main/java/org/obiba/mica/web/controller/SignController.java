@@ -15,13 +15,15 @@ import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.controller.domain.AuthConfiguration;
 import org.obiba.mica.web.controller.domain.OidcProvider;
 import org.obiba.oidc.OIDCAuthProviderSummary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
@@ -30,6 +32,8 @@ import java.util.stream.Collectors;
 
 @Controller
 public class SignController extends BaseController {
+
+  private static final Logger log = LoggerFactory.getLogger(SignController.class);
 
   @Inject
   private MicaConfigService micaConfigService;
@@ -87,11 +91,13 @@ public class SignController extends BaseController {
   }
 
   @GetMapping("/signup-with")
-  public ModelAndView signupWith(@CookieValue(value = "u_auth", required = false, defaultValue = "{}") String uAuth) {
+  public ModelAndView signupWith(@CookieValue(value = "u_auth", required = false, defaultValue = "{}") String uAuth, @RequestParam(value = "redirect", required = false) String redirect) {
     if (!micaConfigService.getConfig().isSignupEnabled())
       return new ModelAndView("redirect:" + micaConfigService.getContextPath() + "/");
 
     ModelAndView mv = new ModelAndView("signup-with");
+    mv.getModel().put("authConfig", getAuthConfiguration());
+
     JSONObject uAuthObj;
     try {
       String fixedUAuth = uAuth.replaceAll("\\\\", "");
@@ -100,12 +106,12 @@ public class SignController extends BaseController {
       uAuthObj = new JSONObject();
     }
 
-    if (uAuthObj.has("username")) {
-      mv.getModel().put("uAuth", uAuthObj);
-      mv.getModel().put("authConfig", getAuthConfiguration());
+    log.debug("Signup with username {}", uAuth);
+    mv.getModel().put("uAuth", uAuthObj.toMap());
+    if (uAuthObj.has("username") || Strings.isNullOrEmpty(redirect)) {
       return mv;
     }
-    return new ModelAndView("redirect:/signup");
+    return check(redirect);
   }
 
   @GetMapping("/signout")
@@ -140,16 +146,6 @@ public class SignController extends BaseController {
     return mv;
   }
 
-  private String makePostLogoutRedirectUri() {
-    // mica signout callback url
-    UriBuilder micaBuilder = UriBuilder.fromUri(String.format("%s/signout", micaConfigService.getPublicUrl()))
-      .queryParam("cb", "true");
-    // agate signout url
-    UriBuilder agateBuilder = UriBuilder.fromUri(String.format("%s/signout", agateServerConfigService.getAgateUrl()))
-      .queryParam("post_logout_redirect_uri", micaBuilder.build());
-    return agateBuilder.build().toString();
-  }
-
   @GetMapping("/just-registered")
   public ModelAndView justRegistered(@RequestParam(value = "signin", required = false, defaultValue = "false") boolean canSignin) {
     ModelAndView mv = new ModelAndView("just-registered");
@@ -160,6 +156,16 @@ public class SignController extends BaseController {
   //
   // Private methods
   //
+
+  private String makePostLogoutRedirectUri() {
+    // mica signout callback url
+    UriBuilder micaBuilder = UriBuilder.fromUri(String.format("%s/signout", micaConfigService.getPublicUrl()))
+      .queryParam("cb", "true");
+    // agate signout url
+    UriBuilder agateBuilder = UriBuilder.fromUri(String.format("%s/signout", agateServerConfigService.getAgateUrl()))
+      .queryParam("post_logout_redirect_uri", micaBuilder.build());
+    return agateBuilder.build().toString();
+  }
 
   private List<OIDCAuthProviderSummary> getOidcProviders(String locale, boolean signupOnly) {
     try {

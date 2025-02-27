@@ -24,7 +24,7 @@ import org.obiba.mica.security.domain.SubjectAcl;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 import java.util.stream.Collectors;
 

@@ -34,7 +34,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.InputStream;
 import java.util.NoSuchElementException;
 import java.util.Optional;

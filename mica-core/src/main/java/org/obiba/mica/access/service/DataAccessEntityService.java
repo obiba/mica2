@@ -26,7 +26,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.apache.shiro.SecurityUtils;
