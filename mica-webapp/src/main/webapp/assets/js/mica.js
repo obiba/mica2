@@ -889,6 +889,12 @@ class FilesService {
  */
 class UserService {
 
+  /**
+   * Ensure user is not already signed in via SSO cookie.
+   *
+   * @param onsuccess
+   * @param onfailure
+   */
   static getCurrent(onsuccess, onfailure) {
     let url = '/ws/auth/session/_current';
     axios.get(MicaService.normalizeUrl(url))

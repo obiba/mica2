@@ -164,6 +164,7 @@ public class SignController extends BaseController {
       mv.getModel().put("authConfig", getAuthConfiguration());
       return mv;
     }
+    log.debug("Redirecting to " + redirect);
     return new ModelAndView("redirect:" + redirect);
   }
 
