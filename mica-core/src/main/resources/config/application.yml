@@ -11,6 +11,14 @@ spring:
         auth: false
     messageSource:
         cacheSeconds: 1
+    freemarker:
+      template-loader-path: classpath:/web/,classpath:/static/templates/,classpath:/public/templates/,classpath:/templates/,classpath:/_templates/
+      request-context-attribute: rc
+      settings:
+        template_exception_handler: ignore
+      charset: UTF-8
+      suffix: .ftl
+      content-type: text/html;charset=UTF-8
     task:
         scheduling:
             pool:

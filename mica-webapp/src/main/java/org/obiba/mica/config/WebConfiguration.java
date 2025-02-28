@@ -11,16 +11,11 @@
 package org.obiba.mica.config;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.base.Strings;
 import io.dropwizard.metrics.servlet.InstrumentedFilter;
 import io.dropwizard.metrics.servlets.MetricsServlet;
-import com.google.common.base.Strings;
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
+import jakarta.inject.Inject;
+import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.shiro.web.env.EnvironmentLoaderListener;
@@ -41,20 +36,12 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.EnvironmentAware;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
 import org.springframework.web.filter.CharacterEncodingFilter;
-import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
-import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
-import jakarta.inject.Inject;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Properties;
 
 /**
  * Configuration of web application with Servlet 3.0 APIs.
@@ -153,27 +140,6 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
     servletContext.addListener(EnvironmentLoaderListener.class);
 
     log.info("Web application fully configured");
-  }
-
-  @Bean
-  public FreeMarkerViewResolver freemarkerViewResolver() {
-    FreeMarkerViewResolver freeMarkerViewResolver = new FreeMarkerViewResolver();
-    freeMarkerViewResolver.setRequestContextAttribute("rc");
-    freeMarkerViewResolver.setSuffix(".ftl");
-    freeMarkerViewResolver.setContentType("text/html;charset=UTF-8");
-
-    return freeMarkerViewResolver;
-  }
-
-  @Bean
-  public FreeMarkerConfigurer freeMarkerConfigurer() {
-    FreeMarkerConfigurer freeMarkerConfigurer = new FreeMarkerConfigurer();
-    freeMarkerConfigurer.setDefaultEncoding("UTF-8");
-    freeMarkerConfigurer.setTemplateLoaderPaths("classpath:/web/", "classpath:/static/templates/", "classpath:/public/templates/", "classpath:/templates/", "classpath:/_templates/");
-    Properties properties = new Properties();
-    properties.setProperty("template_exception_handler", "rethrow"); // Prevents errors in output
-    freeMarkerConfigurer.setFreemarkerSettings(properties);
-    return freeMarkerConfigurer;
   }
 
   @Bean
