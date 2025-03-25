@@ -898,18 +898,22 @@ class IdSplitter {
           odd = !odd;
           groupId = id;
         }
-        rowSpan = this.__appendRowSpan(id);
-        this.__appendMinMax(id, row.start || this.currentYearMonth, row.end || this.currentYearMonth);
-        const studyUrl = this.__getBucketUrl(this.bucket, id);
 
-        cols.ids[row.value].push({
-          id: id,
-          url: studyUrl,
-          title: titles[0],
-          description: descriptions[0],
-          rowSpan: rowSpan,
-          index: i++
-        });
+        const studyUrl = this.__getBucketUrl(this.bucket, id);
+        this.__appendMinMax(id, row.start || this.currentYearMonth, row.end || this.currentYearMonth);
+
+        if (!micaConfig.isSingleStudyEnabled) {
+          rowSpan = this.__appendRowSpan(id);
+
+          cols.ids[row.value].push({
+            id: id,
+            url: studyUrl,
+            title: titles[0],
+            description: descriptions[0],
+            rowSpan: rowSpan,
+            index: i++
+          });
+        }
 
         // population
         id = ids[0] + ':' + ids[1];
@@ -939,22 +943,24 @@ class IdSplitter {
           index: i++
         });
       } else {
-        cols.ids[row.value].push({
-          id: row.value,
-          url: this.__getBucketUrl(this.bucket, row.value),
-          title: row.title,
-          description: row.description,
-          min: row.start,
-          start: row.start,
-          current: this.currentYear,
-          end: row.end,
-          max: row.end,
-          progressStart: 0,
-          progress: this.__getProgress(row.start ? row.start + '-01' : this.currentYearMonth, row.end ? row.end + '-12' : this.currentYearMonth),
-          progressClass: odd ? 'info' : 'warning',
-          rowSpan: 1,
-          index: i++
-        });
+        if (!micaConfig.isSingleStudyEnabled) {
+          cols.ids[row.value].push({
+            id: row.value,
+            url: this.__getBucketUrl(this.bucket, row.value),
+            title: row.title,
+            description: row.description,
+            min: row.start,
+            start: row.start,
+            current: this.currentYear,
+            end: row.end,
+            max: row.end,
+            progressStart: 0,
+            progress: this.__getProgress(row.start ? row.start + '-01' : this.currentYearMonth, row.end ? row.end + '-12' : this.currentYearMonth),
+            progressClass: odd ? 'info' : 'warning',
+            rowSpan: 1,
+            index: i++
+          });
+        }
         odd = !odd;
       }
     });
@@ -973,17 +979,18 @@ class IdSplitter {
         }
         let ids = row.value.split(':');
         if (this.minMax[ids[0]]) {
+          const progressIndex = micaConfig.isSingleStudyEnabled ? 1 : 2;
           let min = this.minMax[ids[0]][0];
           let max = this.minMax[ids[0]][1];
-          let start = cols.ids[row.value][2].start || this.currentYearMonth;
-          let end = cols.ids[row.value][2].end || this.currentYearMonth;
+          let start = cols.ids[row.value][progressIndex].start || this.currentYearMonth;
+          let end = cols.ids[row.value][progressIndex].end || this.currentYearMonth;
           let diff = this.__toTime(max, false) - this.__toTime(min, true);
           // set the DCE min and max dates of the study
-          cols.ids[row.value][2].min = min;
-          cols.ids[row.value][2].max = max;
+          cols.ids[row.value][progressIndex].max = max;
+          cols.ids[row.value][progressIndex].min = min;
           // compute the progress
-          cols.ids[row.value][2].progressStart = 100 * (this.__toTime(start, true) - this.__toTime(min, true)) / diff;
-          cols.ids[row.value][2].progress = 100 * (this.__toTime(end, false) - this.__toTime(start, true)) / diff;
+          cols.ids[row.value][progressIndex].progressStart = 100 * (this.__toTime(start, true) - this.__toTime(min, true)) / diff;
+          cols.ids[row.value][progressIndex].progress = 100 * (this.__toTime(end, false) - this.__toTime(start, true)) / diff;
           cols.ids[row.value].index = i;
         }
       });

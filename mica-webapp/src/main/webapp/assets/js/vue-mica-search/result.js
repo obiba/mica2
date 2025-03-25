@@ -1009,7 +1009,11 @@ const RowPopup = {
   name: 'row-popup',
   props: {
     state: RowPopupState,
-    typeSelection: Object
+    typeSelection: Object,
+    singleStudy: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -1071,6 +1075,12 @@ const RowPopup = {
     }
   },
   watch: {
+    singleStudy: function() {
+      if (this.singleStudy) {
+        this.headersMap.dceId.shift();
+        this.headersMap.studyId.shift()
+      }
+    },
     state: function() {
       if (this.state) {
         this.initContent();
@@ -1098,11 +1108,12 @@ const CoverageResult = {
     <div v-show="showResult">
       <div class="row">
         <div id="coverage-table-container" class="col table-responsive">
-          <row-popup :type-selection="studyTypeSelection" :state="rowPopupState"></row-popup>
+            <pre>SingleStudy {{isSingleStudyEnabled}}</pre>
+          <row-popup :type-selection="studyTypeSelection" :state="rowPopupState" :single-study="isSingleStudyEnabled"></row-popup>
           <table v-if="table" id="vosr-coverage-result" class="table table-striped" width="100%">
             <thead>
               <tr>
-                <th v-bind:rowspan="bucketStartsWithDce ? 1 : 2" v-bind:colspan="studyTypeSelection && studyTypeSelection.harmonization ? 3 : table.cols.colSpan">
+                <th v-if="!isSingleStudyEnabled" v-bind:rowspan="bucketStartsWithDce ? 1 : 2" v-bind:colspan="studyTypeSelection && studyTypeSelection.harmonization ? 3 : table.cols.colSpan">
                   <span v-if="!studyTypeSelection || !studyTypeSelection.harmonization">{{ (bucketName === 'dce' ? '' : ('coverage-buckets-' + bucketName)) | translate}}</span>
                   <span v-else>{{ 'coverage-buckets-harmonization' | translate}}</span>
                 </th>
@@ -1117,7 +1128,7 @@ const CoverageResult = {
                 </th>
               </tr>
               <tr>
-                <th v-if="bucketStartsWithDce" v-bind:colspan="studyTypeSelection && studyTypeSelection.harmonization ? 3 : 1">{{ (studyTypeSelection && studyTypeSelection.harmonization ? "coverage-buckets-harmonization" : "study") | translate }}</th>
+                <th v-if="bucketStartsWithDce && !isSingleStudyEnabled" v-bind:colspan="studyTypeSelection && studyTypeSelection.harmonization ? 3 : 1">{{ (studyTypeSelection && studyTypeSelection.harmonization ? "coverage-buckets-harmonization" : "study") | translate }}</th>
                 <th v-if="bucketStartsWithDce" v-show="!studyTypeSelection.harmonization">{{ "population" | translate }}</th>
                 <th v-if="bucketStartsWithDce" v-show="!studyTypeSelection.harmonization">{{ "data-collection-event" | translate }}</th>
 
@@ -1132,7 +1143,7 @@ const CoverageResult = {
                 </th>
               </tr>
               <tr>
-                <th v-bind:colspan="studyTypeSelection && studyTypeSelection.harmonization ? 3 : table.cols.colSpan"></th>
+                <th v-if="!isSingleStudyEnabled || bucketStartsWithDce" v-bind:colspan="studyTypeSelection && studyTypeSelection.harmonization ? 3 : table.cols.colSpan"></th>
                 <th v-for="(header, index) in table.termHeaders" v-bind:key="index" v-bind:title="header.entity.descriptions | localize-string">
                   <a href v-on:click="updateQuery($event, null, header, 'variables')">
                     <span>{{header.hits.toLocaleString()}}</span>
