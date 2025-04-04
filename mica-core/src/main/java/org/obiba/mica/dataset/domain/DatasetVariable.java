@@ -436,28 +436,28 @@ public class DatasetVariable implements Indexable, AttributeAware, IVariable {
     private static Pattern encodePattern = Pattern.compile("&|\\||\\(|\\)|=|<|>|,|/");
     // Use underscore to make sure the RQLParser does not try to decode
     private static final Map<String, String> encodeMap = Stream.of(new String[][] {
-      { "&", "_26" },
-      { "|", "_7c" },
-      { "(", "_28" },
-      { ")", "_29" },
-      { "=", "_3d" },
-      { "<", "_3c" },
-      { ">", "_3e" },
-      { ",", "_2c" },
-      { "/", "_2f" }
+      { "&", "~~26~~" },
+      { "|", "~~7c~~" },
+      { "(", "~~28~~" },
+      { ")", "~~29~~" },
+      { "=", "~~3d~~" },
+      { "<", "~~3c~~" },
+      { ">", "~~3e~~" },
+      { ",", "~~2c~~" },
+      { "/", "~~2f~~" }
     }).collect(Collectors.toMap(data -> data[0], data -> data[1]));
 
-    private static Pattern decodePattern = Pattern.compile("(_26|_7c|_28|_29|_3d|_3c|_3e|_2c|_2f)");
+    private static Pattern decodePattern = Pattern.compile("(~~26~~|~~7c~~|~~28~~|~~29~~|~~3d~~|~~3c~~|~~3e~~|~~2c~~|~~2f~~)");
     private static final Map<String, String> decodeMap = Stream.of(new String[][] {
-      { "_26", "&" },
-      { "_7c" , "|"},
-      { "_28" , "("},
-      { "_29" , ")"},
-      { "_3d" , "="},
-      { "_3c" , "<"},
-      { "_3e" , ">"},
-      { "_2c" , ","},
-      { "_2f" , "/"}
+      { "~~26~~", "&" },
+      { "~~7c~~" , "|"},
+      { "~~28~~" , "("},
+      { "~~29~~" , ")"},
+      { "~~3d~~" , "="},
+      { "~~3c~~" , "<"},
+      { "~~3e~~" , ">"},
+      { "~~2c~~" , ","},
+      { "~~2f~~" , "/"}
     }).collect(Collectors.toMap(data -> data[0], data -> data[1]));
 
     public static String encode(String value) {
