@@ -433,31 +433,33 @@ public class DatasetVariable implements Indexable, AttributeAware, IVariable {
   }
 
   public static class IdEncoderDecoder {
-    private static Pattern encodePattern = Pattern.compile("&|\\||\\(|\\)|=|<|>|,|/");
+    private static Pattern encodePattern = Pattern.compile("[&|()=<>,/%]");
     // Use underscore to make sure the RQLParser does not try to decode
     private static final Map<String, String> encodeMap = Stream.of(new String[][] {
-      { "&", "~~26~~" },
-      { "|", "~~7c~~" },
-      { "(", "~~28~~" },
-      { ")", "~~29~~" },
-      { "=", "~~3d~~" },
-      { "<", "~~3c~~" },
-      { ">", "~~3e~~" },
-      { ",", "~~2c~~" },
-      { "/", "~~2f~~" }
+      { "&", "rqlx26rql" },
+      { "|", "rqlx7crql" },
+      { "(", "rqlx28rql" },
+      { ")", "rqlx29rql" },
+      { "=", "rqlx3drql" },
+      { "<", "rqlx3crql" },
+      { ">", "rqlx3erql" },
+      { ",", "rqlx2crql" },
+      { "/", "rqlx2frql" },
+      { "%", "rqlx37rql" },
     }).collect(Collectors.toMap(data -> data[0], data -> data[1]));
 
-    private static Pattern decodePattern = Pattern.compile("(~~26~~|~~7c~~|~~28~~|~~29~~|~~3d~~|~~3c~~|~~3e~~|~~2c~~|~~2f~~)");
+    private static Pattern decodePattern = Pattern.compile("(rqlx26rql|rqlx7crql|rqlx28rql|rqlx29rql|rqlx3drql|rqlx3crql|rqlx3erql|rqlx2crql|rqlx2frql|rqlx37rql)");
     private static final Map<String, String> decodeMap = Stream.of(new String[][] {
-      { "~~26~~", "&" },
-      { "~~7c~~" , "|"},
-      { "~~28~~" , "("},
-      { "~~29~~" , ")"},
-      { "~~3d~~" , "="},
-      { "~~3c~~" , "<"},
-      { "~~3e~~" , ">"},
-      { "~~2c~~" , ","},
-      { "~~2f~~" , "/"}
+      { "rqlx26rql", "&" },
+      { "rqlx7crql" , "|"},
+      { "rqlx28rql" , "("},
+      { "rqlx29rql" , ")"},
+      { "rqlx3drql" , "="},
+      { "rqlx3crql" , "<"},
+      { "rqlx3erql" , ">"},
+      { "rqlx2crql" , ","},
+      { "rqlx2frql" , "/"},
+      { "rqlx37rql" , "%"},
     }).collect(Collectors.toMap(data -> data[0], data -> data[1]));
 
     public static String encode(String value) {
@@ -583,7 +585,7 @@ public class DatasetVariable implements Indexable, AttributeAware, IVariable {
     }
 
     public String getName() {
-      return name;
+      return IdEncoderDecoder.decode(name);
     }
 
     public String getStudyId() {

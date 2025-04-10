@@ -1,0 +1,16 @@
+{
+  "rql_safe_encoder": {
+    "type": "mapping",
+    "mappings": [
+      "& => rqlx26rql",
+      "| => rqlx7crql",
+      "( => rqlx28rql",
+      ") => rqlx29rql",
+      "= => rqlx3drql",
+      "< => rqlx3crql",
+      "> => rqlx3erql",
+      ", => rqlx2crql",
+      "/ => rqlx2frql"
+    ]
+  }
+}
