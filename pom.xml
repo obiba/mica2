@@ -72,7 +72,7 @@
     <obiba-commons.version>4.3.0</obiba-commons.version>
     <opal.version>5.1.1</opal.version>
     <opencsv.version>2.3</opencsv.version>
-    <poi.version>5.2.5</poi.version>
+    <poi.version>5.4.0</poi.version>
     <protobuf.version>3.25.5</protobuf.version>
     <protobuf-java-format.version>1.2.1-obiba</protobuf-java-format.version>
     <rql-parser.version>0.3.3-obiba</rql-parser.version>
