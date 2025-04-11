@@ -225,7 +225,7 @@ class Criterion {
         break;
       default:
         let val = input.args[0];
-        this.value = Array.isArray(val) ? val[0] : val;
+        this.value = Mica.decodeRqlSafe(Array.isArray(val) ? val[0] : val);
 
         break;
     }
@@ -274,7 +274,8 @@ class Criterion {
         break;
       default:
         if (!this.__stringIsNullOrEmpty(this.value)) {
-          query.push([Criterion.__doubleQuotesAreClosed(this.value) ? this.value : Criterion.__quote(this.value)]);
+          const encodedValue = Mica.encodeRqlSafe(this.value);
+          query.push([Criterion.__doubleQuotesAreClosed(encodedValue) ? encodedValue : Criterion.__quote(encodedValue)]);
         } else {
           query.push(["*"]);
         }
