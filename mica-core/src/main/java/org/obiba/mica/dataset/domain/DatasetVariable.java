@@ -17,7 +17,13 @@ import com.google.common.collect.Sets;
 import org.apache.commons.compress.utils.Lists;
 import org.obiba.magma.Variable;
 import org.obiba.magma.support.VariableNature;
-import org.obiba.mica.core.domain.*;
+import org.obiba.mica.core.domain.Attribute;
+import org.obiba.mica.core.domain.AttributeAware;
+import org.obiba.mica.core.domain.Attributes;
+import org.obiba.mica.core.domain.BaseStudyTable;
+import org.obiba.mica.core.domain.HarmonizationStudyTable;
+import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.core.support.SpecialCharCodec;
 import org.obiba.mica.core.support.SpecialCharCodecFactory;
 import org.obiba.mica.spi.search.Indexable;
@@ -25,14 +31,10 @@ import org.obiba.mica.spi.tables.IVariable;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
-import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 public class DatasetVariable implements Indexable, AttributeAware, IVariable {
