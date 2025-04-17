@@ -43,7 +43,7 @@
     <awaitility.version>4.2.1</awaitility.version>
     <carrotsearch.version>0.7.1</carrotsearch.version>
     <dropwizard-metrics.version>4.2.23</dropwizard-metrics.version>
-    <commons-io.version>2.15.1</commons-io.version>
+    <commons-io.version>2.16.1</commons-io.version>
     <ehcache.version>3.10.8</ehcache.version>
     <easymock.version>5.2.0</easymock.version>
     <commons-lang.version>2.6</commons-lang.version>
@@ -72,7 +72,7 @@
     <obiba-commons.version>4.3.0</obiba-commons.version>
     <opal.version>5.1.1</opal.version>
     <opencsv.version>2.3</opencsv.version>
-    <poi.version>5.2.5</poi.version>
+    <poi.version>5.3.0</poi.version>
     <protobuf.version>3.25.5</protobuf.version>
     <protobuf-java-format.version>1.2.1-obiba</protobuf-java-format.version>
     <rql-parser.version>0.3.3-obiba</rql-parser.version>
