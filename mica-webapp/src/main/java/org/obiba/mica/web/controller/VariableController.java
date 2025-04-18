@@ -6,6 +6,7 @@ import org.apache.shiro.SecurityUtils;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.core.domain.HarmonizationStudyTable;
 import org.obiba.mica.core.domain.StudyTable;
+import org.obiba.mica.core.support.SpecialCharCodecFactory;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -72,7 +73,7 @@ public class VariableController extends BaseController {
   public ModelAndView variable(@PathVariable String id) {
     Map<String, Object> params = newParameters();
 
-    String decodedId = DatasetVariable.IdEncoderDecoder.decode(id);
+    String decodedId = SpecialCharCodecFactory.get().decode(id);
 
     DatasetVariable.IdResolver resolver = DatasetVariable.IdResolver.from(decodedId);
     String datasetId = resolver.getDatasetId();

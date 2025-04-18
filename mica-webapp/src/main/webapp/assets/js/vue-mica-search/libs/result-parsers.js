@@ -279,7 +279,7 @@ class VariablesResultParser {
         row.push(`<i data-item-id="${summary.id}" class="far fa-square"></i>`);
       }
 
-      row.push(`<a href="${path}">${summary.name}</a>`);
+      row.push(`<a href="${path}">${Mica.decodeRqlSafe(summary.name)}</a>`);
 
       (displayOptions[columnKey] || displayOptions.variableColumns).forEach(column => {
         switch (column) {

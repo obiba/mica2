@@ -11,6 +11,7 @@
 package org.obiba.mica.dataset.domain;
 
 import org.junit.Test;
+import org.obiba.mica.core.support.SpecialCharCodecFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,7 +48,7 @@ public class DatasetVariableTest {
     String expected = "53c3ef8804a61f0e17f6fe78:LAB_TSC _28Month_29 _3cyear_3e_2ca_3db_7c2_262:Dataschema";
     DatasetVariable.IdResolver resolver = DatasetVariable.IdResolver.from(source);
     assertThat(resolver.getId()).isEqualTo(expected);
-    String decoded = DatasetVariable.IdEncoderDecoder.decode(expected);
+    String decoded = SpecialCharCodecFactory.get().decode(expected);
     assertThat(decoded).isEqualTo(source);
     assertThat(resolver.getName()).isEqualTo("LAB_TSC (Month) <year>,a=b|2&2");
   }
@@ -56,7 +57,7 @@ public class DatasetVariableTest {
       DatasetVariable.Type expectedType, String expectedStudyId) {
     DatasetVariable.IdResolver resolver = DatasetVariable.IdResolver.from(id);
     assertThat(resolver.getDatasetId()).isEqualTo(expectedDatasetId);
-    assertThat(DatasetVariable.IdEncoderDecoder.decode(resolver.getName())).isEqualTo(expectedName);
+    assertThat(SpecialCharCodecFactory.get().decode(resolver.getName())).isEqualTo(expectedName);
     assertThat(resolver.getType()).isEqualTo(expectedType);
     if(expectedStudyId == null) {
       assertThat(resolver.getStudyId()).isNull();

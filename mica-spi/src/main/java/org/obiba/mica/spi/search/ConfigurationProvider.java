@@ -10,10 +10,12 @@
 
 package org.obiba.mica.spi.search;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ConfigurationProvider {
 
@@ -32,4 +34,6 @@ public interface ConfigurationProvider {
   Taxonomy getDatasetTaxonomy();
 
   List<Taxonomy> getVariableTaxonomies();
+
+  Map<String, String> getSpecialCharMapping();
 }
