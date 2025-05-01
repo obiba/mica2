@@ -196,3 +196,7 @@ div[id^="vosrs-charts-container"] div[id^="vosrs-charts-"] {
   min-height: 24em;
   max-height: 24em;
 }
+
+.progress-bar-transparent {
+  opacity: 0;
+}
