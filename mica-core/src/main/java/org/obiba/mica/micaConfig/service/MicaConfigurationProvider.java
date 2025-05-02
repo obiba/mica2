@@ -11,13 +11,15 @@
 package org.obiba.mica.micaConfig.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.inject.Inject;
+import org.obiba.mica.core.support.SpecialCharCodecFactory;
 import org.obiba.mica.spi.search.ConfigurationProvider;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import jakarta.inject.Inject;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class MicaConfigurationProvider implements ConfigurationProvider {
@@ -67,5 +69,10 @@ public class MicaConfigurationProvider implements ConfigurationProvider {
   @Override
   public List<Taxonomy> getVariableTaxonomies() {
     return taxonomiesService.getAllVariableTaxonomies();
+  }
+
+  @Override
+  public Map<String, String> getSpecialCharMapping() {
+    return SpecialCharCodecFactory.get().getEncodeMap();
   }
 }

@@ -17,19 +17,24 @@ import com.google.common.collect.Sets;
 import org.apache.commons.compress.utils.Lists;
 import org.obiba.magma.Variable;
 import org.obiba.magma.support.VariableNature;
-import org.obiba.mica.core.domain.*;
+import org.obiba.mica.core.domain.Attribute;
+import org.obiba.mica.core.domain.AttributeAware;
+import org.obiba.mica.core.domain.Attributes;
+import org.obiba.mica.core.domain.BaseStudyTable;
+import org.obiba.mica.core.domain.HarmonizationStudyTable;
+import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.domain.StudyTable;
+import org.obiba.mica.core.support.SpecialCharCodec;
+import org.obiba.mica.core.support.SpecialCharCodecFactory;
 import org.obiba.mica.spi.search.Indexable;
 import org.obiba.mica.spi.tables.IVariable;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 public class DatasetVariable implements Indexable, AttributeAware, IVariable {
@@ -178,7 +183,7 @@ public class DatasetVariable implements Indexable, AttributeAware, IVariable {
 
   @Override
   public String getId() {
-    String id = datasetId + ID_SEPARATOR + IdEncoderDecoder.encode(name) + ID_SEPARATOR + variableType;
+    String id = datasetId + ID_SEPARATOR + SpecialCharCodecFactory.get().encode(name) + ID_SEPARATOR + variableType;
 
     if (Type.Harmonized == variableType) {
       String entityId = studyId;
@@ -433,58 +438,8 @@ public class DatasetVariable implements Indexable, AttributeAware, IVariable {
   }
 
   public static class IdEncoderDecoder {
-    private static Pattern encodePattern = Pattern.compile("&|\\||\\(|\\)|=|<|>|,|/");
-    // Use underscore to make sure the RQLParser does not try to decode
-    private static final Map<String, String> encodeMap = Stream.of(new String[][] {
-      { "&", "_26" },
-      { "|", "_7c" },
-      { "(", "_28" },
-      { ")", "_29" },
-      { "=", "_3d" },
-      { "<", "_3c" },
-      { ">", "_3e" },
-      { ",", "_2c" },
-      { "/", "_2f" }
-    }).collect(Collectors.toMap(data -> data[0], data -> data[1]));
 
-    private static Pattern decodePattern = Pattern.compile("(_26|_7c|_28|_29|_3d|_3c|_3e|_2c|_2f)");
-    private static final Map<String, String> decodeMap = Stream.of(new String[][] {
-      { "_26", "&" },
-      { "_7c" , "|"},
-      { "_28" , "("},
-      { "_29" , ")"},
-      { "_3d" , "="},
-      { "_3c" , "<"},
-      { "_3e" , ">"},
-      { "_2c" , ","},
-      { "_2f" , "/"}
-    }).collect(Collectors.toMap(data -> data[0], data -> data[1]));
 
-    public static String encode(String value) {
-      return encodeDecode(encodeMap, encodePattern, value);
-    }
-
-    public static String decode(String value) {
-      return encodeDecode(decodeMap, decodePattern, value);
-    }
-
-    private static String encodeDecode(Map<String, String> map, Pattern pattern, String value) {
-      Matcher matcher = pattern.matcher(value);
-      if (!matcher.find()) return  value;
-
-      StringBuffer sb = new StringBuffer();
-      matcher.appendReplacement(sb, map.get(matcher.group()));
-
-      while (matcher.find()) {
-        String group = matcher.group();
-        matcher.appendReplacement(sb, map.get(group));
-      }
-
-      matcher.appendTail(sb);
-
-      return sb.toString();
-
-    }
   }
 
   public static class IdResolver {
@@ -517,7 +472,7 @@ public class DatasetVariable implements Indexable, AttributeAware, IVariable {
 
     public static String encode(String datasetId, String variableName, Type variableType, String studyId,
                                 String source, String tableType) {
-      String id = datasetId + ID_SEPARATOR + IdEncoderDecoder.encode(variableName) + ID_SEPARATOR + variableType;
+      String id = datasetId + ID_SEPARATOR + SpecialCharCodecFactory.get().encode(variableName) + ID_SEPARATOR + variableType;
 
       String entityId;
 
@@ -543,7 +498,9 @@ public class DatasetVariable implements Indexable, AttributeAware, IVariable {
 
     private IdResolver(String id) {
       if (Strings.isNullOrEmpty(id)) throw new IllegalArgumentException("Dataset variable cannot be null or empty");
-      this.id = IdEncoderDecoder.encode(id);
+      SpecialCharCodec specialCharCodec = SpecialCharCodecFactory.get();
+
+      this.id = specialCharCodec.encode(id);
       boolean encoded = !this.id.equals(id);
 
       String[] parts = id.split(":urn:");
@@ -552,7 +509,7 @@ public class DatasetVariable implements Indexable, AttributeAware, IVariable {
       if (tokens.length < 3) throw new IllegalArgumentException("Not a valid dataset variable ID: " + id);
 
       datasetId = tokens[0];
-      name = encoded ? IdEncoderDecoder.decode(tokens[1]) : tokens[1];
+      name = encoded ? specialCharCodec.decode(tokens[1]) : tokens[1];
       type = Type.valueOf(tokens[2]);
 
       tableType = tokens.length > 3 ? tokens[3] : null;
@@ -564,7 +521,7 @@ public class DatasetVariable implements Indexable, AttributeAware, IVariable {
         // legacy
         source = String.format("urn:opal:%s.%s", tokens[5], tokens[6]);
         // need to rewrite id
-        this.id = IdEncoderDecoder.encode(encode(datasetId, name, type,studyId, source, tableType));
+        this.id = specialCharCodec.encode(encode(datasetId, name, type,studyId, source, tableType));
       } else {
         source = null;
       }
