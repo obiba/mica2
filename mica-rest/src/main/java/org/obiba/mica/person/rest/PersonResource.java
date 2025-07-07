@@ -131,8 +131,12 @@ public class PersonResource {
 
   @PUT
   @Path("/{id}/study/{studyId}")
-  public PersonDto updatePersonWithStudy(@PathParam("id") String id, @PathParam("studyId") String studyId, @QueryParam("role") String role) {
-    Person person = personService.findById(id);
+  public PersonDto updatePersonWithStudy(@PathParam("id") String id, @PathParam("studyId") String studyId, PersonDto personDto, @QueryParam("role") String role) {
+    if (personDto == null) {
+      return dtos.asDto(personService.findById(id), true);
+    }
+
+    Person person = dtos.fromDto(personDto);
     if (!micaConfigService.getRoles().contains(role)) {
       throw new IllegalArgumentException(String.format("'%s' is not a valid role", role));
     }
