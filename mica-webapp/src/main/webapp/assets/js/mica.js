@@ -11,7 +11,7 @@ class LocalizedValues {
         return result[0][keyValue];
       } else {
 
-        let langs = values.map(function(value) {
+        let langs = values.map(function (value) {
           return value[keyLang];
         });
 
@@ -21,7 +21,7 @@ class LocalizedValues {
       }
 
     } else if (values) {
-      return this.for(Object.keys(values).map(function(k) {
+      return this.for(Object.keys(values).map(function (k) {
         return {lang: k, value: values[k]};
       }), lang, keyLang, keyValue);
     }
@@ -69,7 +69,7 @@ const BUTTON_PAGE = 'button-page';
 const BUTTON_ELLIPSIS_FIRST = 'button-ellipsis-first';
 const BUTTON_ELLIPSIS_LAST = 'button-ellipsis-last';
 
-const DEFAULT_PAGE_SIZES = [10,20,50,100];
+const DEFAULT_PAGE_SIZES = [10, 20, 50, 100];
 const DEFAULT_PAGE_SIZE = DEFAULT_PAGE_SIZES[2];
 
 /**
@@ -87,7 +87,7 @@ class OBiBaPagination {
     this.numberOfPages = 0; // Fields initialized in OBiBaPagination::update()
     // TODO make 'numberOfButtons' configurable
     this.numberOfButtons = 3; // # of buttons showing the page number excluding (<<, <, ..., >, >>)
-    this.pageButtons = [1,2,3];  // used to control the DEFAULT_BUTTONS
+    this.pageButtons = [1, 2, 3];  // used to control the DEFAULT_BUTTONS
     this.hasFirstLastButtons = false;
   }
 
@@ -124,7 +124,7 @@ class OBiBaPagination {
   }
 
   __updateSelection(start, count) {
-    if (this.numberOfPages > this.numberOfButtons ) {
+    if (this.numberOfPages > this.numberOfButtons) {
       this.pageButtons = this.__initializeSelection(start, count);
     }
   }
@@ -166,9 +166,9 @@ class OBiBaPagination {
 
   __visible(id, show) {
     if (show) {
-      this.__removeClass(id,'d-none');
+      this.__removeClass(id, 'd-none');
     } else {
-      this.__addClass(id,'d-none');
+      this.__addClass(id, 'd-none');
     }
   }
 
@@ -195,7 +195,7 @@ class OBiBaPagination {
 
       // Page buttons
       this.pageButtons.forEach((p, index) => {
-        this.__createButton(parent,  `${BUTTON_PAGE}-${p}`, p, `${p}`, this.__onPageClick.bind(this));
+        this.__createButton(parent, `${BUTTON_PAGE}-${p}`, p, `${p}`, this.__onPageClick.bind(this));
         if (index === 0) {
           this.__activateButton(`${BUTTON_PAGE}-${p}`);
         }
@@ -304,17 +304,17 @@ class OBiBaPagination {
     const isLastPage = page === this.numberOfPages;
     this.page = page;
 
-    this.__enableButton(BUTTON_PREVIOUS, this.numberOfPages  > 1);
-    this.__enableButton(BUTTON_NEXT, this.numberOfPages  > 1);
+    this.__enableButton(BUTTON_PREVIOUS, this.numberOfPages > 1);
+    this.__enableButton(BUTTON_NEXT, this.numberOfPages > 1);
 
     if (isFirstPage) {
-      this.__enableButton(BUTTON_PREVIOUS,false);
+      this.__enableButton(BUTTON_PREVIOUS, false);
       this.__updateSelection(1, this.numberOfButtons);
     } else if (isLastPage) {
       this.__enableButton(BUTTON_NEXT, false);
-      this.__updateSelection(this.numberOfPages-2, this.numberOfPages);
+      this.__updateSelection(this.numberOfPages - 2, this.numberOfPages);
     } else if (isLastSelection || isFirstSelection) {
-      this.__updateSelection(page-1, this.numberOfButtons);
+      this.__updateSelection(page - 1, this.numberOfButtons);
     }
 
     if (this.numberOfPages > this.numberOfButtons) {
@@ -360,15 +360,15 @@ class OBiBaPagination {
   }
 
   __onPreviousClick(event) {
-    this.__doPageChangeAndCallback(this.page-1);
+    this.__doPageChangeAndCallback(this.page - 1);
   }
 
   __onFirstEllipsisClick(event) {
-    this.__doPageChangeAndCallback(this.pageButtons[0]-1);
+    this.__doPageChangeAndCallback(this.pageButtons[0] - 1);
   }
 
   __onLastEllipsisClick(event) {
-    this.__doPageChangeAndCallback(this.pageButtons[this.numberOfButtons-1]+1);
+    this.__doPageChangeAndCallback(this.pageButtons[this.numberOfButtons - 1] + 1);
   }
 
   __onFirstClick(event) {
@@ -380,7 +380,7 @@ class OBiBaPagination {
   }
 
   __onNextClick(event) {
-    this.__doPageChangeAndCallback(this.page+1);
+    this.__doPageChangeAndCallback(this.page + 1);
   }
 
   __normalizePage(page) {
@@ -390,7 +390,7 @@ class OBiBaPagination {
 
     if (this.pageButtons.indexOf(normalizedPage) < 0) {
       // update selection before changing page
-      this.__updateSelection(normalizedPage-2,normalizedPage);
+      this.__updateSelection(normalizedPage - 2, normalizedPage);
     }
 
     return normalizedPage;
@@ -402,7 +402,7 @@ class OBiBaPagination {
     this.pageSize = pageSize;
     this.numberOfPages = Math.ceil(this.total / this.pageSize);
     this.numberOfButtons = Math.min(this.numberOfPages, 3);
-    this.pageButtons = this.__initializeSelection(1,this.numberOfButtons);
+    this.pageButtons = this.__initializeSelection(1, this.numberOfButtons);
     this.hasFirstLastButtons = !this.useFixedFirstLast && 2 < this.numberOfPages - this.numberOfButtons; // creates first/last button
     this.__createButtons();
     this.__doPageChange(this.__normalizePage(page));
@@ -418,7 +418,7 @@ class OBiBaPagination {
       throw new Error(`Invalid from value: ${from}. The valid value must be divisible by ${this.pageSize}.`);
     }
 
-    this.gotoPage((from/this.pageSize)+1)
+    this.gotoPage((from / this.pageSize) + 1)
   }
 
   changePageSize(pageSize) {
@@ -493,7 +493,7 @@ class MicaLocalStorage {
   /**
    * MicaLocalStorage constructor
    */
-  constructor (properties, namespace) {
+  constructor(properties, namespace) {
     this._properties = properties ? properties : {};
     this._namespace = namespace ? namespace + '.' : '';
     this._isSupported = true;
@@ -504,7 +504,7 @@ class MicaLocalStorage {
    *
    * @returns {string}
    */
-  get namespace () {
+  get namespace() {
     return this._namespace;
   }
 
@@ -513,7 +513,7 @@ class MicaLocalStorage {
    *
    * @param {string} value
    */
-  set namespace (value) {
+  set namespace(value) {
     this._namespace = value ? `${value}.` : '';
   }
 
@@ -524,7 +524,7 @@ class MicaLocalStorage {
    * @returns {string}
    * @private
    */
-  _getLsKey (lsKey) {
+  _getLsKey(lsKey) {
     return `${this._namespace}${lsKey}`;
   }
 
@@ -536,7 +536,7 @@ class MicaLocalStorage {
    * @param {*} type
    * @private
    */
-  _lsSet (lsKey, rawValue, type) {
+  _lsSet(lsKey, rawValue, type) {
     const key = this._getLsKey(lsKey);
     const value = type && [Array, Object].includes(type)
       ? JSON.stringify(rawValue)
@@ -552,7 +552,7 @@ class MicaLocalStorage {
    * @returns {any}
    * @private
    */
-  _lsGet (lsKey) {
+  _lsGet(lsKey) {
     const key = this._getLsKey(lsKey);
 
     return window.localStorage[key];
@@ -566,7 +566,7 @@ class MicaLocalStorage {
    * @param {*} defaultType
    * @returns {*}
    */
-  get (lsKey, defaultValue = null, defaultType = String) {
+  get(lsKey, defaultValue = null, defaultType = String) {
     if (!this._isSupported) {
       return null;
     }
@@ -594,7 +594,7 @@ class MicaLocalStorage {
    * @param {*} value
    * @returns {*}
    */
-  set (lsKey, value) {
+  set(lsKey, value) {
     if (!this._isSupported) {
       return null;
     }
@@ -619,7 +619,7 @@ class MicaLocalStorage {
    *
    * @param {String} lsKey
    */
-  remove (lsKey) {
+  remove(lsKey) {
     if (!this._isSupported) {
       return null;
     }
@@ -634,10 +634,10 @@ class MicaLocalStorage {
    * @param {function} type
    * @param {*} defaultValue
    */
-  addProperty (key, type, defaultValue = undefined) {
+  addProperty(key, type, defaultValue = undefined) {
     type = type || String;
 
-    this._properties[key] = { type };
+    this._properties[key] = {type};
 
     if (!this._lsGet(key) && defaultValue !== null) {
       this._lsSet(key, defaultValue, type);
@@ -652,7 +652,7 @@ class MicaLocalStorage {
    * @returns {*}
    * @private
    */
-  _process (type, value) {
+  _process(type, value) {
     switch (type) {
       case Boolean:
         return value === 'true';
@@ -685,7 +685,7 @@ class MicaSetStorage extends MicaLocalStorage {
   constructor(ns) {
     super({
       //'variables': { type: Object },
-      'selections': { type: Array }
+      'selections': {type: Array}
     }, 'mica.' + ns);
     this.deselectAll()
   }
@@ -865,8 +865,8 @@ class FilesService {
     let data = new FormData();
     data.append('file', file);
     let config = {
-      onUploadProgress: function(progressEvent) {
-        let percentCompleted = Math.round( (progressEvent.loaded * 100) / progressEvent.total );
+      onUploadProgress: function (progressEvent) {
+        let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
         onprogress(percentCompleted);
       }
     };
@@ -921,17 +921,17 @@ class UserService {
    * @param onFailure
    */
   static signin(formId, otpId, onFailure) {
-    const toggleSubmitButton = function(enable)  {
+    const toggleSubmitButton = function (enable) {
       const submitSelect = '#' + formId + ' button[type="submit"]';
       if (enable) {
-        $(submitSelect).prop("disabled",false);
-        $( submitSelect + ' i').hide();
+        $(submitSelect).prop("disabled", false);
+        $(submitSelect + ' i').hide();
       } else {
-        $(submitSelect).prop("disabled",true);
-        $( submitSelect + ' i').show();
+        $(submitSelect).prop("disabled", true);
+        $(submitSelect + ' i').show();
       }
     };
-    $('#' + formId).submit(function(e) {
+    $('#' + formId).submit(function (e) {
       e.preventDefault(); // avoid to execute the actual submit of the form.
       let form = $(this);
       let url = '/ws/auth/sessions';
@@ -974,17 +974,17 @@ class UserService {
    * @param onFailure
    */
   static signup(formId, requiredFields, onFailure) {
-    const toggleSubmitButton = function(enable)  {
+    const toggleSubmitButton = function (enable) {
       const submitSelect = '#' + formId + ' button[type="submit"]';
       if (enable) {
-        $(submitSelect).prop("disabled",false);
-        $( submitSelect + ' i').hide();
+        $(submitSelect).prop("disabled", false);
+        $(submitSelect + ' i').hide();
       } else {
-        $(submitSelect).prop("disabled",true);
-        $( submitSelect + ' i').show();
+        $(submitSelect).prop("disabled", true);
+        $(submitSelect + ' i').show();
       }
     };
-    $('#' + formId).submit(function(e) {
+    $('#' + formId).submit(function (e) {
       e.preventDefault(); // avoid to execute the actual submit of the form.
       let form = document.querySelector('#' + formId);
       let url = '/ws/users';
@@ -993,13 +993,13 @@ class UserService {
 
       if (requiredFields) {
         let missingFields = [];
-        requiredFields.forEach(function(item) {
+        requiredFields.forEach(function (item) {
           let found = json[item.name];
           if (!found) {
             missingFields.push(item.title);
           }
         });
-        if (missingFields.length>0) {
+        if (missingFields.length > 0) {
           onFailure(missingFields);
           return;
         }
@@ -1040,7 +1040,7 @@ class UserService {
             onFailure('server.error.email-already-assigned');
           } else if (handle.response.data?.message === 'Invalid reCaptcha response') {
             onFailure('server.error.bad-captcha');
-          }else if (handle.response.data?.messageTemplate) {
+          } else if (handle.response.data?.messageTemplate) {
             onFailure(handle.response.data.messageTemplate);
           } else {
             onFailure('server.error.bad-request');
@@ -1059,7 +1059,7 @@ class UserService {
       type: 'DELETE',
       url: MicaService.normalizeUrl('/ws/auth/session/_current')
     })
-      .always(function() {
+      .always(function () {
         MicaService.redirect(redirect || MicaService.normalizeUrl('/'));
       });
   }
@@ -1071,7 +1071,7 @@ class UserService {
    * @param onFailure
    */
   static forgotPassword(formId, onFailure) {
-    $(formId).submit(function(e) {
+    $(formId).submit(function (e) {
       e.preventDefault(); // avoid to execute the actual submit of the form.
       let form = $(this);
       let url = '/ws/users/_forgot_password';
@@ -1102,10 +1102,10 @@ class UserService {
     let key = 'language';
     let value = encodeURI(lang);
     let kvp = window.location.search.substr(1).split('&');
-    let i=kvp.length;
+    let i = kvp.length;
     let x;
 
-    while(i--) {
+    while (i--) {
       x = kvp[i].split('=');
       if (x[0] === key) {
         x[1] = value;
@@ -1114,8 +1114,8 @@ class UserService {
       }
     }
 
-    if (i<0) {
-      kvp[kvp.length] = [key,value].join('=');
+    if (i < 0) {
+      kvp[kvp.length] = [key, value].join('=');
     }
 
     //this will reload the page, it's likely better to store this until finished
@@ -1131,7 +1131,7 @@ class UserService {
    * @param onFailure
    */
   static contact(formId, requiredFields, onSuccess, onFailure) {
-    $(formId).submit(function(e) {
+    $(formId).submit(function (e) {
       e.preventDefault(); // avoid to execute the actual submit of the form.
       let form = $(this);
       let url = '/ws/users/_contact';
@@ -1139,8 +1139,8 @@ class UserService {
 
       let formData = form.serializeArray();
 
-      const getField = function(name) {
-        let fields = formData.filter(function(field) {
+      const getField = function (name) {
+        let fields = formData.filter(function (field) {
           return field.name === name;
         });
         return fields.length > 0 ? fields[0] : undefined;
@@ -1148,16 +1148,16 @@ class UserService {
 
       if (requiredFields) {
         let missingFields = [];
-        requiredFields.forEach(function(item) {
+        requiredFields.forEach(function (item) {
           $('#contact-' + item.name).removeClass('is-invalid');
-          let found = formData.filter(function(field) {
-            return field.name === item.name && field.value && field.value.trim().length>0;
+          let found = formData.filter(function (field) {
+            return field.name === item.name && field.value && field.value.trim().length > 0;
           }).length;
           if (found === 0) {
             missingFields.push(item);
           }
         });
-        if (missingFields.length>0) {
+        if (missingFields.length > 0) {
           onFailure(missingFields);
           return;
         }
@@ -1171,7 +1171,7 @@ class UserService {
           console.dir(handle);
           if (handle.response.data.message === 'Invalid reCaptcha response') {
             onFailure('server.error.bad-captcha');
-          }else if (handle.response.data.messageTemplate) {
+          } else if (handle.response.data.messageTemplate) {
             onFailure(handle.response.data.messageTemplate);
           } else {
             onFailure('server.error.bad-request');
@@ -1181,6 +1181,7 @@ class UserService {
   }
 
 }
+
 /**
  * Generic document set service.
  */
@@ -1216,11 +1217,11 @@ class SetService {
    * @param onfailure
    */
   static addToCart(type, ids, onsuccess, onfailure) {
-    this.getOrCreateCart(type,function(cart) {
+    this.getOrCreateCart(type, function (cart) {
       let url = '/ws/' + type + '/set/' + cart.id + '/documents/_import';
       axios({
         method: 'POST',
-        headers: { 'content-type': 'text/plain' },
+        headers: {'content-type': 'text/plain'},
         url: MicaService.normalizeUrl(url),
         data: ids.join('\n')
       })
@@ -1239,11 +1240,11 @@ class SetService {
   };
 
   static addToSet(type, setId, name, ids, onsuccess, onfailure) {
-    this.getOrCreateSet(type, setId, name, function(set) {
+    this.getOrCreateSet(type, setId, name, function (set) {
       let url = '/ws/' + type + '/set/' + set.id + '/documents/_import';
       axios({
         method: 'POST',
-        headers: { 'content-type': 'text/plain' },
+        headers: {'content-type': 'text/plain'},
         url: MicaService.normalizeUrl(url),
         data: ids.join('\n')
       })
@@ -1263,7 +1264,7 @@ class SetService {
   }
 
   static addQueryToCart(type, query, onsuccess, onfailure) {
-    this.getOrCreateCart(type,function(cart) {
+    this.getOrCreateCart(type, function (cart) {
       let url = '/ws/' + type + '/set/' + cart.id + '/documents/_rql';
       axios({
         method: 'POST',
@@ -1288,7 +1289,7 @@ class SetService {
   }
 
   static addQueryToSet(type, setId, name, query, onsuccess, onfailure) {
-    this.getOrCreateSet(type, setId, name, function(set) {
+    this.getOrCreateSet(type, setId, name, function (set) {
       let url = '/ws/' + type + '/set/' + set.id + '/documents/_rql';
       axios({
         method: 'POST',
@@ -1320,11 +1321,11 @@ class SetService {
    * @param onfailure
    */
   static removeFromCart(type, ids, onsuccess, onfailure) {
-    this.getOrCreateCart(type,function(cart) {
+    this.getOrCreateCart(type, function (cart) {
       let url = '/ws/' + type + '/set/' + cart.id + '/documents/_delete';
       axios({
         method: 'POST',
-        headers: { 'content-type': 'text/plain' },
+        headers: {'content-type': 'text/plain'},
         url: MicaService.normalizeUrl(url),
         data: ids.join('\n')
       })
@@ -1347,7 +1348,7 @@ class SetService {
 
     axios({
       method: 'DELETE',
-      headers: { 'content-type': 'text/plain' },
+      headers: {'content-type': 'text/plain'},
       url: MicaService.normalizeUrl(url)
     })
       .then(response => {
@@ -1411,11 +1412,11 @@ class SetService {
    */
   static deleteDocuments(type, id, selected, onsuccess, onfailure) {
     let url = '/ws/' + type + '/set/' + id + '/documents';
-    if (selected && selected.length>0) {
+    if (selected && selected.length > 0) {
       url = url + '/_delete';
       axios({
         method: 'POST',
-        headers: { 'content-type': 'text/plain' },
+        headers: {'content-type': 'text/plain'},
         url: MicaService.normalizeUrl(url),
         data: selected.join('\n')
       })
@@ -1512,6 +1513,7 @@ class SetService {
   };
 
 }
+
 /**
  * Networks set utils.
  */
@@ -1873,13 +1875,15 @@ class VariablesSetService extends SetService {
  * Helper class to perform sorting and decorating operations.
  */
 class TaxonomyHelper {
-  constructor() {}
-
-  static newInstance() {
-    return new TaxonomyHelper();
+  constructor() {
   }
 
-  __vocabularyAttributeValue(vocabulary, key, defaultValue) {
+  /** @deprectated Use TaxonomyHelper */
+  static newInstance() {
+    return TaxonomyHelper;
+  }
+
+  static __vocabularyAttributeValue(vocabulary, key, defaultValue) {
     let value = defaultValue;
     if (vocabulary.attributes) {
       vocabulary.attributes.some(function (attribute) {
@@ -1894,7 +1898,7 @@ class TaxonomyHelper {
     return value;
   }
 
-  sortVocabularyTerms(vocabulary, sortKey) {
+  static sortVocabularyTerms(vocabulary, sortKey) {
     const terms = vocabulary.terms || [];
     const termsSortKey = sortKey || this.__vocabularyAttributeValue(vocabulary, 'termsSortKey', null);
 
@@ -1916,7 +1920,41 @@ class TaxonomyHelper {
     }
   }
 
-  sortVocabulariesTerms(taxonomy, sortKey) {
+  static decorate(taxonomy) {
+    if (taxonomy && (taxonomy.vocabularies || []).length > 0) {
+      taxonomy.vocabularies = taxonomy.vocabularies.map(vocabulary => ({
+          ...vocabulary,
+          qualifiedName: `${taxonomy.name}.${vocabulary.name}`
+        })
+      )
+    }
+
+    return TaxonomyHelper;
+  }
+
+  static vocabularyBelongsToTaxonomy(taxonomy, vocabulary) {
+    if (!taxonomy || !vocabulary) return false;
+
+    if (vocabulary.qualifiedName) {
+      return vocabulary.qualifiedName.split(/\./)[0] === taxonomy.name
+    }
+
+    // Last attempt using field attribute
+    const attribute = (vocabulary.attributes || []).find(attribute => attribute.key === 'field');
+    if (attribute) {
+      const match = (attribute.value || "").match(/^attributes\.([A-Za-z0-9_]+)__/);
+      return match ? match[1] === taxonomy.name : false;
+    }
+
+    return false;
+  }
+
+  static equals(vocabulary, qName) {
+    if (typeof qName !== 'string' || !vocabulary) return false;
+    return qName === (vocabulary.qualifiedName ? vocabulary.qualifiedName : vocabulary.name);
+  }
+
+  static sortVocabulariesTerms(taxonomy, sortKey) {
     (taxonomy.vocabularies || []).forEach(vocabulary => this.sortVocabularyTerms(vocabulary, sortKey));
   }
 }

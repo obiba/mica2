@@ -64,7 +64,7 @@ class Criterion {
       type = "TERMS";
     } else if (Criterion.__isNumericQuery(vocabulary)) {
       type = "NUMERIC";
-    } else if(Criterion.__isMatchQuery(vocabulary)) {
+    } else if (Criterion.__isMatchQuery(vocabulary)) {
       type = "MATCH";
     }
 
@@ -77,17 +77,16 @@ class Criterion {
     let queries = (inputs || []).filter(input => {
       let found = false;
 
-      switch(type) {
+      switch (type) {
         case "TERMS":
         case "NUMERIC":
           let val = (input.args[0] || "");
           let res = (Array.isArray(val) && val.length > 0 ? val[0] : val);
-          found = typeof res.split !== 'undefined' ?  res.split(/\./)[1] === vocabulary.name : false;
+          found = typeof res.split !== 'undefined' ? TaxonomyHelper.equals(vocabulary, res) : false;
 
           break;
         case "MATCH":
-          found = (input.operator === "match" || input.name === "match") && (input.args[1] || "").split(/\./)[1] === vocabulary.name;
-
+          found = (input.operator === "match" || input.name === "match") && TaxonomyHelper.equals(vocabulary, (input.args[1] || ""));
           break;
       }
 
@@ -105,14 +104,17 @@ class Criterion {
 
   static associatedTaxonomyName(taxonomy, testVocabulary) {
     if (Array.isArray(taxonomy)) {
-      let result = taxonomy.filter((t) => {
-        let found = (t.vocabularies || []).filter((vocabulary) => {
-          return vocabulary.name === testVocabulary.name;
-        });
+      let result = taxonomy.find((t) => TaxonomyHelper.vocabularyBelongsToTaxonomy(t, testVocabulary));
+      if (!result) {
+        // Last resort, find associated taxonomy by vocabulary name
+        result = taxonomy.filter((t) => {
+          let found = (t.vocabularies || []).filter((vocabulary) => {
+            return vocabulary.name === testVocabulary.name;
+          });
 
-        return found.length > 0;
-      })[0];
-
+          return found.length > 0;
+        })[0];
+      }
       return result ? result.name : undefined;
     } else {
       return taxonomy.name;
@@ -170,7 +172,7 @@ class Criterion {
   set operator(value) {
     this._operator = value;
 
-    switch(this.type) {
+    switch (this.type) {
       case "TERMS":
         if (["missing", "exists"].indexOf(this.operator) > -1) {
           this.value = [...this.terms];
@@ -204,7 +206,7 @@ class Criterion {
     this._operator = input.operator;
     if (!this._operator) this.operator = input.name;
 
-    switch(this.type) {
+    switch (this.type) {
       case "TERMS":
         if (["missing", "exists"].indexOf(this.operator) > -1) {
           this.value = [...this.terms];
@@ -234,7 +236,7 @@ class Criterion {
   asQuery(taxonomy) {
     let query = new RQL.Query(this.operator);
 
-    switch(this.type) {
+    switch (this.type) {
       case "TERMS":
         query.push(`${taxonomy}.${this.vocabulary.name}`);
 
