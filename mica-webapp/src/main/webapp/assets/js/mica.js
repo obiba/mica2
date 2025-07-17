@@ -1928,8 +1928,6 @@ class TaxonomyHelper {
         })
       )
     }
-
-    return TaxonomyHelper;
   }
 
   static vocabularyBelongsToTaxonomy(taxonomy, vocabulary) {
