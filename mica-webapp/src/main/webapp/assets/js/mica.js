@@ -1898,6 +1898,39 @@ class TaxonomyHelper {
     return value;
   }
 
+  /**
+   * Preferred way to get taxonomies for a list of targets to make sure its vocabularies are properly decorated.
+   *
+   * @param targets
+   * @returns
+   */
+  static getTargetTaxonomies(targets) {
+    if (!Array.isArray(targets) || targets.length === 0) {
+      return Promise.resolve([]);
+    }
+
+    const transformResponse = [
+      ...axios.defaults.transformResponse,
+      data => {
+        if (Array.isArray(data)) {
+          data.forEach(TaxonomyHelper.decorate);
+        } else {
+          TaxonomyHelper.decorate(data);
+        }
+        return data;
+      }
+    ];
+
+    const requests = targets.map(t =>
+      axios.get(
+        `${contextPath}/ws/taxonomies/_filter?target=${encodeURIComponent(t.name)}`,
+        { transformResponse }
+      )
+    );
+
+    return axios.all(requests);
+  }
+
   static sortVocabularyTerms(vocabulary, sortKey) {
     const terms = vocabulary.terms || [];
     const termsSortKey = sortKey || this.__vocabularyAttributeValue(vocabulary, 'termsSortKey', null);
@@ -1920,6 +1953,11 @@ class TaxonomyHelper {
     }
   }
 
+  /**
+   * The qualified name helps identify the parent taxonomy of a vocabulary.
+   *
+   * @param  taxonomy
+   */
   static decorate(taxonomy) {
     if (taxonomy && (taxonomy.vocabularies || []).length > 0) {
       taxonomy.vocabularies = taxonomy.vocabularies.map(vocabulary => ({
