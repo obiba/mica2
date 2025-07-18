@@ -1366,17 +1366,10 @@ class TableFixedHeaderUtility {
 
           EventBus.$emit('mica-taxonomy', this.targets);
 
-          const targetQueries = [];
-
-          for (let target of this.targets) {
-            // then load the taxonomies
-            targetQueries.push(`${contextPath}/ws/taxonomies/_filter?target=${target.name}`);
-          }
-
-          return axios.all(targetQueries.map(query => axios.get(query))).then(axios.spread((...responses) => {
+          return TaxonomyHelper.getTargetTaxonomies(this.targets).then(axios.spread((...responses) => {
             responses.forEach((response) => {
               for (let taxo of response.data) {
-                TaxonomyHelper.newInstance().sortVocabulariesTerms(taxo);
+                TaxonomyHelper.sortVocabulariesTerms(taxo);
 
                 if (taxo.name === 'Mica_study') {
                   let studyClassNameVocabulary = taxo.vocabularies.find(vocabulary => vocabulary.name === "className");
