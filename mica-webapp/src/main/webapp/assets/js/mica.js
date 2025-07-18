@@ -1878,7 +1878,7 @@ class TaxonomyHelper {
   constructor() {
   }
 
-  /** @deprectated Use TaxonomyHelper */
+  /** @deprecated Use TaxonomyHelper */
   static newInstance() {
     return TaxonomyHelper;
   }
@@ -1933,7 +1933,7 @@ class TaxonomyHelper {
 
   static sortVocabularyTerms(vocabulary, sortKey) {
     const terms = vocabulary.terms || [];
-    const termsSortKey = sortKey || this.__vocabularyAttributeValue(vocabulary, 'termsSortKey', null);
+    const termsSortKey = sortKey || TaxonomyHelper.__vocabularyAttributeValue(vocabulary, 'termsSortKey', null);
 
     if (termsSortKey && terms.length > 0) {
       switch (termsSortKey) {
@@ -1991,7 +1991,7 @@ class TaxonomyHelper {
   }
 
   static sortVocabulariesTerms(taxonomy, sortKey) {
-    (taxonomy.vocabularies || []).forEach(vocabulary => this.sortVocabularyTerms(vocabulary, sortKey));
+    (taxonomy.vocabularies || []).forEach(vocabulary => TaxonomyHelper.sortVocabularyTerms(vocabulary, sortKey));
   }
 }
 
