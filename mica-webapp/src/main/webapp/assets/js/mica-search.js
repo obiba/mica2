@@ -255,7 +255,7 @@ Vue.component('study-filter-shortcut', {
   mounted() {
     EventBus.register(EVENTS.LOCATION_CHANGED, this.onLocationChanged.bind(this));
   },
-  beforeDestory() {
+  beforeDestroy() {
     EventBus.unregister(EVENTS.LOCATION_CHANGED, this.onLocationChanged);
   }
 });
@@ -1446,7 +1446,7 @@ class TableFixedHeaderUtility {
         this.coverageFixedHeaderHandler = TableFixedHeaderUtility.applyTo(coverageResultTableElement, $("#menubar").outerHeight() + $("#loginbar").outerHeight());
       }
     },
-    beforeDestory() {
+    beforeDestroy() {
       console.debug('Before destroy query builder');
       EventBus.unregister(EVENTS.LOCATION_CHANGED, this.onLocationChanged);
       EventBus.unregister('taxonomy-selection', this.onTaxonomySelection);

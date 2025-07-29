@@ -307,7 +307,7 @@
           beforeMount() {
             EventBus.register('query-type-graphics-results', this.onGraphicsResult.bind(this));
           },
-          beforeDestory() {
+          beforeDestroy() {
             EventBus.unregister('query-type-graphics-results', this.onGraphicsResult);
           }
         });
