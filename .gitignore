@@ -21,3 +21,4 @@ spring_loaded
 .vscode
 **/.attach_pid*
 ./package-lock.json
+.history

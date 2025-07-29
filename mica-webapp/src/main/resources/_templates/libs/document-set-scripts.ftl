@@ -652,7 +652,7 @@
             this.doQuery(setType);
           }));
       },
-      beforeDestory() {
+      beforeDestroy() {
         EventBus.unregister("variables-results", this.onResult.bind(this));
         EventBus.unregister("studies-results", this.onResult.bind(this));
         EventBus.unregister("networks-results", this.onResult.bind(this));
@@ -660,3 +660,5 @@
     });
   });
 </script>
+
+<#include "special-char-codec.ftl">
