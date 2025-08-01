@@ -31,7 +31,7 @@ public class SearchController extends BaseController {
   private Dtos dtos;
 
   @GetMapping("/search")
-  public ModelAndView search(@CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
+  public ModelAndView search(@CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "${locale.validatedLocale:en}") String locale,
                              @RequestParam(value = "language", required = false) String language, String searchContext) {
     MicaConfig config = micaConfigService.getConfig();
     Subject subject = SecurityUtils.getSubject();
@@ -49,13 +49,13 @@ public class SearchController extends BaseController {
   }
 
   @GetMapping("/individual-search")
-  public ModelAndView individualSearch(@CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
+  public ModelAndView individualSearch(@CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "${locale.validatedLocale:en}") String locale,
                                        @RequestParam(value = "language", required = false) String language) {
     return search(locale, language, "individual");
   }
 
   @GetMapping("/harmonization-search")
-  public ModelAndView harmonizationSearch(@CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
+  public ModelAndView harmonizationSearch(@CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "${locale.validatedLocale:en}") String locale,
                                           @RequestParam(value = "language", required = false) String language) {
     return search(locale, language, "harmonization");
   }

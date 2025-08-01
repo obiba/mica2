@@ -24,7 +24,6 @@ import org.springframework.web.util.WebUtils;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-import java.util.stream.Collectors;
 
 /**
  * Angular cookie saved the locale with a double quote (%22en%22).
@@ -41,22 +40,24 @@ public class AngularCookieLocaleResolver extends CookieLocaleResolver {
 
   private final MicaConfigService micaConfigService;
 
-  public AngularCookieLocaleResolver(MicaConfigService micaConfigService) {
+  public AngularCookieLocaleResolver(MicaConfigService micaConfigService, Locale defaultLocale) {
     super(NG_COOKIE_NAME);
     this.micaConfigService = micaConfigService;
+    this.setDefaultLocale(defaultLocale);
   }
 
   @Override
   protected Locale determineDefaultLocale(HttpServletRequest request) {
-    Locale defaultLocale = super.determineDefaultLocale(request);
-    // validate default locale, which could come from the Accept-Language header
-    List<Locale> configLocales = micaConfigService.getConfig().getLocales();
-    List<Locale> languageLocales = configLocales.stream()
-      .filter(locale -> locale.getLanguage().equalsIgnoreCase(defaultLocale.getLanguage()))
-      .collect(Collectors.toList());
-    if (languageLocales.isEmpty())
-      return configLocales.stream().findFirst().orElse(Locale.ENGLISH);
-    return languageLocales.get(0);
+    List<Locale> allowed = micaConfigService.getConfig().getLocales();
+    Locale candidate = getDefaultLocale();
+
+    return allowed.stream()
+      .filter(l -> l.getLanguage()
+        .equalsIgnoreCase(candidate.getLanguage()))
+      .findFirst()
+      .orElseGet(() -> allowed.isEmpty()
+        ? Locale.ENGLISH
+        : allowed.getFirst());
   }
 
   @Override
@@ -88,12 +89,12 @@ public class AngularCookieLocaleResolver extends CookieLocaleResolver {
 //  }
 
   private void parseLocaleCookieIfNecessary(HttpServletRequest request) {
-    if(request.getAttribute(LOCALE_REQUEST_ATTRIBUTE_NAME) == null) {
+    if (request.getAttribute(LOCALE_REQUEST_ATTRIBUTE_NAME) == null) {
       // Retrieve and parse cookie value.
       Cookie cookie = WebUtils.getCookie(request, NG_COOKIE_NAME);
       Locale locale = null;
       TimeZone timeZone = null;
-      if(cookie != null) {
+      if (cookie != null) {
         String value = cookie.getValue();
 
         // Remove the double quote
@@ -102,22 +103,22 @@ public class AngularCookieLocaleResolver extends CookieLocaleResolver {
         String localePart = value;
         String timeZonePart = null;
         int spaceIndex = localePart.indexOf(' ');
-        if(spaceIndex != -1) {
+        if (spaceIndex != -1) {
           localePart = value.substring(0, spaceIndex);
           timeZonePart = value.substring(spaceIndex + 1);
         }
         locale = "-".equals(localePart) ? null : StringUtils.parseLocaleString(localePart);
-        if(timeZonePart != null) {
+        if (timeZonePart != null) {
           timeZone = StringUtils.parseTimeZoneString(timeZonePart);
         }
-        if(logger.isTraceEnabled()) {
+        if (logger.isTraceEnabled()) {
           logger.trace("Parsed cookie value [" + cookie.getValue() + "] into locale '" + locale +
-              "'" + (timeZone != null ? " and time zone '" + timeZone.getID() + "'" : ""));
+            "'" + (timeZone != null ? " and time zone '" + timeZone.getID() + "'" : ""));
         }
       }
       request.setAttribute(LOCALE_REQUEST_ATTRIBUTE_NAME, locale == null ? determineDefaultLocale(request) : locale);
       request.setAttribute(TIME_ZONE_REQUEST_ATTRIBUTE_NAME,
-          timeZone == null ? determineDefaultTimeZone(request) : timeZone);
+        timeZone == null ? determineDefaultTimeZone(request) : timeZone);
     }
   }
 }

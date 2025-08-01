@@ -48,7 +48,7 @@ public class DataAccessMainFormController extends BaseDataAccessController {
   @GetMapping("/data-access-form/{id:.+}")
   public ModelAndView getForm(@PathVariable String id,
                               @RequestParam(value = "edit", defaultValue = "false") boolean edit,
-                              @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
+                              @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "${locale.validatedLocale:en}") String locale,
                               @RequestParam(value = "language", required = false) String language) {
     if (amendmentIdPattern.matcher(id).find()) {
       return new ModelAndView("redirect:/data-access-amendment-form/" + id);

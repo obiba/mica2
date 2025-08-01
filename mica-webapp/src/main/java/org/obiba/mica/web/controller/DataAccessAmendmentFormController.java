@@ -44,7 +44,7 @@ public class DataAccessAmendmentFormController extends BaseDataAccessController 
   @GetMapping("/data-access-amendment-form/{id:.+}")
   public ModelAndView getAmendmentForm(@PathVariable String id,
                                        @RequestParam(value = "edit", defaultValue = "false") boolean edit,
-                                       @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
+                                       @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "${locale.validatedLocale:en}") String locale,
                                        @RequestParam(value = "language", required = false) String language) {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
