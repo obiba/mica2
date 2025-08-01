@@ -15,6 +15,7 @@ import org.obiba.mica.config.locale.AngularCookieLocaleResolver;
 import org.obiba.mica.config.locale.ExtendedResourceBundleMessageSource;
 import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +29,9 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
 import jakarta.inject.Inject;
 
+import java.util.IllformedLocaleException;
+import java.util.Locale;
+
 @Configuration
 public class LocaleConfiguration implements WebMvcConfigurer, EnvironmentAware {
 
@@ -36,6 +40,9 @@ public class LocaleConfiguration implements WebMvcConfigurer, EnvironmentAware {
   private final MicaConfigService micaConfigService;
 
   private ExtendedResourceBundleMessageSource messageSource;
+
+  @Value("${locale.default:en}")
+  private String defaultLocale;
 
   @Inject
   public LocaleConfiguration(MicaConfigService micaConfigService) {
@@ -49,7 +56,7 @@ public class LocaleConfiguration implements WebMvcConfigurer, EnvironmentAware {
 
   @Bean(name = "localeResolver")
   public LocaleResolver localeResolver() {
-    AngularCookieLocaleResolver cookieLocaleResolver = new AngularCookieLocaleResolver(micaConfigService);
+    AngularCookieLocaleResolver cookieLocaleResolver = new AngularCookieLocaleResolver(micaConfigService, ensureDefaultLocale(defaultLocale));
 //    cookieLocaleResolver.setCookieName("NG_TRANSLATE_LANG_KEY");
     return cookieLocaleResolver;
   }
@@ -77,6 +84,14 @@ public class LocaleConfiguration implements WebMvcConfigurer, EnvironmentAware {
   public void micaConfigUpdated(MicaConfigUpdatedEvent event) {
     if (messageSource != null)
       messageSource.evict();
+  }
+
+  private static Locale ensureDefaultLocale(String tag) {
+    try {
+      return new Locale.Builder().setLanguageTag(tag).build(); // strict
+    } catch (IllformedLocaleException ex) {
+      return Locale.ENGLISH;
+    }
   }
 }
 
