@@ -41,6 +41,7 @@ import org.obiba.shiro.web.filter.AuthenticationExecutor;
 import org.obiba.shiro.web.filter.UserBannedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import jakarta.inject.Inject;
@@ -75,6 +76,9 @@ public class SessionsResource {
   @Inject
   private NetworkSetService networkSetService;
 
+  @Value("${locale.validatedLocale:${locale.default:en}}")
+  private String validatedLocale;
+
   @POST
   @Path("/sessions")
   public Response createSession(@SuppressWarnings("TypeMayBeWeakened") @Context HttpServletRequest request,
@@ -88,6 +92,9 @@ public class SessionsResource {
       String sessionId = subject.getSession().getId().toString();
       log.info("Successful session creation for user '{}' session ID is '{}'.", realUsername, sessionId);
       String locale = getPreferredLocale(subject);
+      if (locale == null || locale.isBlank()) {
+        locale = validatedLocale;
+      }
 
       mergeAnonymousUserCarts(request);
 

@@ -40,6 +40,7 @@ public class JerseyConfiguration extends ResourceConfig {
     register(AuditInterceptor.class);
     register(new CSRFInterceptor(environment.acceptsProfiles(Profiles.PROD), environment.getProperty("csrf.allowed", ""), environment.getProperty("csrf.allowed-agents", "")));
     register(MultiPartFeature.class);
+    register(DefaultLocaleFilter.class);
     // validation errors will be sent to the client
     property(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
   }

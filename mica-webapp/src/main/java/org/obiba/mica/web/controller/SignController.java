@@ -61,7 +61,7 @@ public class SignController extends BaseController {
 
   @GetMapping("/signin")
   public ModelAndView signin(HttpServletRequest request, @RequestParam(value = "redirect", required = false) String redirect,
-                             @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
+                             @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "${locale.validatedLocale:en}") String locale,
                              @RequestParam(value = "language", required = false) String language) {
     ModelAndView mv = new ModelAndView("signin");
 
@@ -74,7 +74,7 @@ public class SignController extends BaseController {
 
   @GetMapping("/signup")
   public ModelAndView signup(HttpServletRequest request, @RequestParam(value = "redirect", required = false) String redirect,
-                             @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
+                             @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "${locale.validatedLocale:en}") String locale,
                              @RequestParam(value = "language", required = false) String language) {
     if (!micaConfigService.getConfig().isSignupEnabled())
       return new ModelAndView("redirect:" + micaConfigService.getContextPath() + "/");

@@ -36,7 +36,7 @@ public class CartController extends BaseController {
 
   @GetMapping("/cart")
   public ModelAndView get(@RequestParam(required = false) String type,
-                          @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale) {
+                          @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "${locale.validatedLocale:en}") String locale) {
     MicaConfig config = micaConfigService.getConfig();
     if (!config.isCartEnabled()) {
       return new ModelAndView("redirect:/");
@@ -85,7 +85,7 @@ public class CartController extends BaseController {
   }
 
   @GetMapping("/list/{id:.+}")
-  public ModelAndView getNamed(@PathVariable String id, @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale) {
+  public ModelAndView getNamed(@PathVariable String id, @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "${locale.validatedLocale:en}") String locale) {
     MicaConfig config = micaConfigService.getConfig();
     if (!config.isCartEnabled()) {
       return new ModelAndView("redirect:/");

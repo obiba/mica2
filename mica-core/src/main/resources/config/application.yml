@@ -53,6 +53,11 @@ plugins:
   updateSite: https://plugins.obiba.org
 
 #
+# Default locale to be used by the Mica portal
+#
+locale:
+    default: en
+#
 # Security
 #
 

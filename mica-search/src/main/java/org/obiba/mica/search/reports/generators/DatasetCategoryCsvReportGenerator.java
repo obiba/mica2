@@ -28,6 +28,7 @@ class DatasetCategoryCsvReportGenerator extends DocumentCsvReportGenerator {
 
   private void initialize() {
     headers.add("variableId");
+    headers.add("variableName");
     headers.add("name");
     headers.add("missing");
     variables.stream()
@@ -53,6 +54,7 @@ class DatasetCategoryCsvReportGenerator extends DocumentCsvReportGenerator {
       .forEach(variable -> variable.getCategories().forEach(category -> {
         List<String> line = new ArrayList<>();
         line.add(variable.getId());
+        line.add(variable.getName());
         line.add(category.getName());
         line.add(category.isMissing() + "");
 
