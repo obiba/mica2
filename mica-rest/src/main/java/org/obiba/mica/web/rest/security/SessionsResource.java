@@ -76,7 +76,7 @@ public class SessionsResource {
   @Inject
   private NetworkSetService networkSetService;
 
-  @Value("${locale.validatedLocale:en}")
+  @Value("${locale.validatedLocale:${locale.default:en}}")
   private String validatedLocale;
 
   @POST

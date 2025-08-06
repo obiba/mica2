@@ -92,7 +92,7 @@ public class LocaleConfiguration implements WebMvcConfigurer, EnvironmentAware {
     validatedLocale = supported.stream()
       .filter(l -> l.equals(Locale.forLanguageTag(rawDefaultLocale)))
       .findFirst()
-      .orElse(Locale.ENGLISH);          // graceful fallback
+      .orElseGet(() -> supported.isEmpty() ? Locale.ENGLISH : supported.getFirst());
 
     if (environment instanceof ConfigurableEnvironment cfgEnv) {
       cfgEnv.getPropertySources().addFirst(
