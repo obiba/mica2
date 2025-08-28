@@ -919,8 +919,9 @@ class UserService {
    * @param formId
    * @param otpId
    * @param onFailure
+   * @param forceRedirct - when user based on its permission has to be redirected somewhere else
    */
-  static signin(formId, otpId, onFailure) {
+  static signin(formId, otpId, onFailure, forceRedirct) {
     const toggleSubmitButton = function (enable) {
       const submitSelect = '#' + formId + ' button[type="submit"]';
       if (enable) {
@@ -949,9 +950,13 @@ class UserService {
         .then(() => {
           //console.dir(response);
           let redirect = MicaService.normalizeUrl('/');
-          const q = new URLSearchParams(window.location.search);
-          if (q.get('redirect')) {
-            redirect = q.get('redirect');
+          if (typeof forceRedirct === 'string' && forceRedirct.trim().length > 0){
+            redirect = MicaService.normalizeUrl(forceRedirct);
+          } else {
+            const q = new URLSearchParams(window.location.search);
+            if (q.get('redirect')) {
+              redirect = q.get('redirect');
+            }
           }
           MicaService.redirect(redirect);
         })
