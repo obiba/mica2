@@ -2,6 +2,7 @@ package org.obiba.mica.web.controller;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import jakarta.inject.Inject;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.Membership;
@@ -15,7 +16,7 @@ import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.PublishedStudyService;
+import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.controller.support.AnnotationsCollector;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +24,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,7 +41,7 @@ public class NetworkController extends BaseController {
   private PublishedNetworkService publishedNetworkService;
 
   @Inject
-  private PublishedStudyService publishedStudyService;
+  private StudyService studyService;
 
   @Inject
   private PersonService personService;
@@ -51,18 +51,18 @@ public class NetworkController extends BaseController {
 
   @GetMapping("/network/{id:.+}")
   public ModelAndView network(@PathVariable String id, @RequestParam(value = "draft", required = false) String shareKey) {
-
+    boolean shared = !Strings.isNullOrEmpty(shareKey);
     Map<String, Object> params = newParameters();
     Network network = getNetwork(id, shareKey);
     params.put("network", network);
     params.put("draft", !Strings.isNullOrEmpty(shareKey));
 
-    List<Network> networks = publishedNetworkService.findByIds(network.getNetworkIds());
+    List<Network> networks = getNetworkNetworks(network, shared);
     params.put("networks", networks.stream()
       .filter(n -> subjectAclService.isAccessible("/network", n.getId()))
       .collect(Collectors.toList()));
 
-    List<BaseStudy> studies = publishedStudyService.findByIds(network.getStudyIds());
+    List<BaseStudy> studies = getNetworkStudies(network, shared);
 
     List<BaseStudy> individualStudies = studies.stream()
       .filter(s -> (s instanceof Study) && subjectAclService.isAccessible("/individual-study", s.getId()))
@@ -110,6 +110,14 @@ public class NetworkController extends BaseController {
       checkPermission("/draft/network", "VIEW", id, shareKey);
     }
     return network;
+  }
+
+  private List<Network> getNetworkNetworks(Network network, boolean shared) {
+    return shared ? draftNetworkService.findAllNetworks(network.getNetworkIds()) : publishedNetworkService.findByIds(network.getNetworkIds());
+  }
+
+  private List<BaseStudy> getNetworkStudies(Network network, boolean shared) {
+    return shared ? studyService.findAllDraftStudies(network.getStudyIds()) : studyService.findAllPublishedStudies(network.getStudyIds());
   }
 
 }

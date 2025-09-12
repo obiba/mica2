@@ -306,7 +306,7 @@
 
         <!-- Harmonization content -->
         <#if type == "Harmonized">
-          <div class="card card-info card-outline">
+          <div id="harmonization-card" class="card card-info card-outline d-none">
             <div class="card-header">
               <h3 class="card-title"><@message "harmonization"/></h3>
             </div>

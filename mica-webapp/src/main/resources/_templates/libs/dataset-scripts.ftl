@@ -71,7 +71,6 @@
     });
 
     <#if type == "Harmonized">
-      $('#harmonizedTable').show();
       const dataTableOpts = {
         drawCallback: function() {
           const pagination = $(this).closest('.dataTables_wrapper').find('.pagination-bar');
@@ -99,6 +98,7 @@
           const search = 'search' in data && data.search.value ? data.search.value : null;
           DatasetService.getHarmonizedVariables('${dataset.id}', search, data.start, data.length, function(response) {
             $('#loadingSummary').hide();
+            $('#harmonization-card').show();
             if (response.variableHarmonizations) {
               let rows = [];
               for (const i in response.variableHarmonizations) {
