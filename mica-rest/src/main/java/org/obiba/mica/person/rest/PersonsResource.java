@@ -94,7 +94,7 @@ public class PersonsResource {
 
   @POST
   @Path("/strict")
-  public PersonDto createPersonForStudy(PersonDto personDto) {
+  public PersonDto createPersonStrict(PersonDto personDto) {
     if (personDto == null) {
       return null;
     }
