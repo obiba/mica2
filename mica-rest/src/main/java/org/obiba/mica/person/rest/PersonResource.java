@@ -19,6 +19,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -96,6 +97,24 @@ public class PersonResource {
     return dtos.asDto(personService.save(dtos.fromDto(personDto)), true);
   }
 
+  @GET
+  @Path("/{id}/study/{studyId}")
+  public PersonDto getPersonForStudy(@PathParam("id") String id, @PathParam("studyId") String studyId) {
+    Person person = personService.findById(id);
+
+    if (person == null) {
+      throw new NotFoundException("Person with id \"" + id + "\" not found.");
+    }
+
+    if (studyService.isCollectionStudy(studyId)) {
+      subjectAclService.checkPermission("/draft/individual-study", "EDIT", studyId);
+    } else {
+      subjectAclService.checkPermission("/draft/harmonization-study", "EDIT", studyId);
+    }
+
+    return dtos.asDto(person, true);
+  }
+
   @DELETE
   @Path("/{id}/study/{studyId}")
   public PersonDto removeStudyFromPerson(@PathParam("id") String id, @PathParam("studyId") String studyId, @QueryParam("role") String role) {
@@ -132,6 +151,19 @@ public class PersonResource {
     person.addStudy(studyService.findStudy(studyId), role);
 
     return dtos.asDto(personService.save(person), true);
+  }
+
+  @GET
+  @Path("/{id}/network/{networkId}")
+  public PersonDto getPersonForNetwork(@PathParam("id") String id, @PathParam("networkId") String networkId) {
+    Person person = personService.findById(id);
+
+    if (person == null) {
+      throw new NotFoundException("Person with id \"" + id + "\" not found.");
+    }
+
+    subjectAclService.checkPermission("/draft/network", "EDIT", networkId);
+    return dtos.asDto(person, true);
   }
 
   @DELETE

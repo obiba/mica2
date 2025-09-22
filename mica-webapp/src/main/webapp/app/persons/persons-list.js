@@ -57,7 +57,7 @@
     }
 
     function getPersons(query, from, limit, exclude) {
-      const searchQuery = query ? mica.commons.cleanupQuery(query) : query;
+      const searchQuery = query ? mica.commons.cleanupQuery(query) : null;
       self.loading = true;
       self.ContactsSearchResource.search({
         query: searchQuery,
