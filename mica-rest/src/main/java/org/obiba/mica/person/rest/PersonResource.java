@@ -116,8 +116,8 @@ public class PersonResource {
   }
 
   @DELETE
-  @Path("/{id}/study/{studyId}")
-  public PersonDto removeStudyFromPerson(@PathParam("id") String id, @PathParam("studyId") String studyId, @QueryParam("role") String role) {
+  @Path("/{id}/study/{studyId}/role/{role}")
+  public PersonDto removePersonRoleFromStudy(@PathParam("id") String id, @PathParam("studyId") String studyId, @PathParam("role") String role) {
     Person person = personService.findById(id);
 
     if (studyService.isCollectionStudy(studyId)) {
@@ -126,13 +126,13 @@ public class PersonResource {
       subjectAclService.checkPermission("/draft/harmonization-study", "EDIT", studyId);
     }
 
-    person.getStudyMemberships().removeIf(m -> m.getParentId().equals(studyId));
+    person.getStudyMemberships().removeIf(m -> m.getParentId().equals(studyId) && m.getRole().equals(role));
     return dtos.asDto(personService.save(person), true);
   }
 
   @PUT
-  @Path("/{id}/study/{studyId}")
-  public PersonDto updatePersonWithStudy(@PathParam("id") String id, @PathParam("studyId") String studyId, PersonDto personDto, @QueryParam("role") String role) {
+  @Path("/{id}/study/{studyId}/role/{role}")
+  public PersonDto updatePersonRoleForStudy(@PathParam("id") String id, @PathParam("studyId") String studyId, PersonDto personDto, @PathParam("role") String role) {
     if (personDto == null) {
       return dtos.asDto(personService.findById(id), true);
     }
@@ -167,18 +167,22 @@ public class PersonResource {
   }
 
   @DELETE
-  @Path("/{id}/network/{networkId}")
-  public PersonDto removeNetworkFromPerson(@PathParam("id") String id, @PathParam("networkId") String networkId, @QueryParam("role") String role) {
+  @Path("/{id}/network/{networkId}/role/{role}")
+  public PersonDto removePersonRoleFromNetwork(@PathParam("id") String id, @PathParam("networkId") String networkId, @PathParam("role") String role) {
     Person person = personService.findById(id);
     subjectAclService.checkPermission("/draft/network", "EDIT", networkId);
-    person.getNetworkMemberships().removeIf(m -> m.getParentId().equals(networkId));
+    person.getNetworkMemberships().removeIf(m -> m.getParentId().equals(networkId) && m.getRole().equals(role));
     return dtos.asDto(personService.save(person), true);
   }
 
   @PUT
-  @Path("/{id}/network/{networkId}")
-  public PersonDto updatePersonWithNetwork(@PathParam("id") String id, @PathParam("networkId") String networkId, @QueryParam("role") String role) {
-    Person person = personService.findById(id);
+  @Path("/{id}/network/{networkId}/role/{role}")
+  public PersonDto updatePersonRoleForNetwork(@PathParam("id") String id, @PathParam("networkId") String networkId, PersonDto personDto, @PathParam("role") String role) {
+    if (personDto == null) {
+      return dtos.asDto(personService.findById(id), true);
+    }
+
+    Person person = dtos.fromDto(personDto);
     if (!micaConfigService.getRoles().contains(role)) {
       throw new IllegalArgumentException(String.format("'%s' is not a valid role", role));
     }

@@ -18,6 +18,7 @@
 
   <logger name="org.obiba" level="info"/>
   <logger name="org.obiba.es" level="debug"/>
+  <logger name="org.apache.shiro.authz" level="debug"/>
 
   <!--<logger name="com.codahale.metrics" level="warn"/>-->
   <!--<logger name="com.ryantenney" level="warn"/>-->

@@ -176,8 +176,8 @@ public abstract class AbstractGitPersistableResource<T extends EntityState, T1 e
   protected void removeExternalEditorPermissionsIfApplicable(String path) {
     if (SecurityUtils.getSubject().hasRole(Roles.MICA_EXTERNAL_EDITOR)) {
       subjectAclService.removePermission(path, "VIEW,EDIT", getId());
-      subjectAclService.removePermission(path + getId(), "EDIT", "_status");
-      subjectAclService.removePermission(path + getId() + "/_attachments", "EDIT", null);
+      subjectAclService.removePermission(java.nio.file.Path.of(path, getId()).toString(), "EDIT", "_status");
+      subjectAclService.removePermission(java.nio.file.Path.of(path, getId(), "_attachments").toString(), "EDIT", null);
     }
   }
 

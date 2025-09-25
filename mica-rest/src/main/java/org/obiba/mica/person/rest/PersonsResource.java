@@ -92,6 +92,19 @@ public class PersonsResource {
     return dtos.asDto(personService.save(dtos.fromDto(personDto)), true);
   }
 
+  /**
+   * Creates a new person with strict permission checks.
+   * <p>
+   * Unlike {@link #createPerson(PersonDto)}, this method enforces "EDIT" permissions
+   * for all study and network memberships included in the provided {@code personDto}.
+   * Permission checks are performed for each associated study and network before the person is created.
+   * <p>
+   * Use this endpoint when you require stricter access control for creating persons
+   * with memberships, ensuring the caller has the necessary permissions for all referenced entities.
+   *
+   * @param personDto the person to create, including memberships
+   * @return the created person, or {@code null} if input is {@code null}
+   */
   @POST
   @Path("/strict")
   public PersonDto createPersonStrict(PersonDto personDto) {
