@@ -97,6 +97,7 @@ public class DraftCollectedDatasetResource extends
   @DELETE
   public void delete() {
     checkPermission("/draft/collected-dataset", "DELETE");
+    removeExternalEditorPermissionsIfApplicable("/draft/collected-dataset");
     datasetService.delete(id);
   }
 

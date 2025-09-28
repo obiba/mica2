@@ -127,7 +127,7 @@ public class SubjectAclService {
   }
 
   public boolean hasMicaRole() {
-    return Stream.of(Roles.MICA_DAO, Roles.MICA_ADMIN, Roles.MICA_EDITOR, Roles.MICA_REVIEWER, Roles.MICA_USER)
+    return Stream.of(Roles.MICA_DAO, Roles.MICA_ADMIN, Roles.MICA_EDITOR, Roles.MICA_REVIEWER, Roles.MICA_USER, Roles.MICA_EXTERNAL_EDITOR)
       .anyMatch(SecurityUtils.getSubject()::hasRole);
   }
 
@@ -137,6 +137,10 @@ public class SubjectAclService {
 
   public boolean isDataAccessOfficer() {
     return SecurityUtils.getSubject().hasRole(Roles.MICA_DAO);
+  }
+
+  public boolean isExternalEditor() {
+    return SecurityUtils.getSubject().hasRole(Roles.MICA_EXTERNAL_EDITOR);
   }
 
   /**

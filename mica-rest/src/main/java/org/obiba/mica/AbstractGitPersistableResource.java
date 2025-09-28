@@ -20,6 +20,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.apache.shiro.SecurityUtils;
 import org.obiba.git.CommitInfo;
 import org.obiba.mica.comment.rest.CommentResource;
 import org.obiba.mica.comment.rest.CommentsResource;
@@ -30,6 +31,7 @@ import org.obiba.mica.core.service.DocumentDifferenceService;
 import org.obiba.mica.core.support.RegexHashMap;
 import org.obiba.mica.micaConfig.service.EntityConfigKeyTranslationService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -169,6 +171,14 @@ public abstract class AbstractGitPersistableResource<T extends EntityState, T1 e
 
   protected void checkPermission(@NotNull String resource, @NotNull String action) {
     checkPermission(resource, action, null);
+  }
+
+  protected void removeExternalEditorPermissionsIfApplicable(String path) {
+    if (SecurityUtils.getSubject().hasRole(Roles.MICA_EXTERNAL_EDITOR)) {
+      subjectAclService.removePermission(path, "VIEW,EDIT", getId());
+      subjectAclService.removePermission(java.nio.file.Path.of(path, getId()).toString(), "EDIT", "_status");
+      subjectAclService.removePermission(java.nio.file.Path.of(path, getId(), "_attachments").toString(), "EDIT", null);
+    }
   }
 
   //

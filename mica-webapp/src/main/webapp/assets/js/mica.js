@@ -914,13 +914,50 @@ class UserService {
   }
 
   /**
+   * Returns the profile of the current user.
+   */
+  static getProfile(onSuccess, onFailure) {
+    let url = '/ws/auth/session/_current';
+    return axios.get(MicaService.normalizeUrl(url))
+      .then((response) => {
+        url = `/ws/user/${encodeURIComponent(response.data.username)}`;
+        return axios.get(MicaService.normalizeUrl(url))
+          .then(response => {
+            if (onSuccess) {
+              onSuccess(response.data);
+            }
+          })
+          .catch(error => {
+            if (onFailure) {
+              onFailure(error.response);
+            }
+          });
+      })
+      .catch(error => {
+        if (onFailure) {
+          onFailure(error.response);
+        }
+      });
+  }
+
+  static defaultSigninOnSuccess() {
+    let redirect = MicaService.normalizeUrl('/');
+    const q = new URLSearchParams(window.location.search);
+    if (q.get('redirect')) {
+      redirect = q.get('redirect');
+    }
+    MicaService.redirect(redirect);
+  }
+
+  /**
    * Check and submit signin form.
    *
    * @param formId
    * @param otpId
    * @param onFailure
+   * @param onSuccess
    */
-  static signin(formId, otpId, onFailure) {
+  static signin(formId, otpId, onFailure, onSuccess) {
     const toggleSubmitButton = function (enable) {
       const submitSelect = '#' + formId + ' button[type="submit"]';
       if (enable) {
@@ -947,13 +984,11 @@ class UserService {
       }
       axios.post(MicaService.normalizeUrl(url), data, config)
         .then(() => {
-          //console.dir(response);
-          let redirect = MicaService.normalizeUrl('/');
-          const q = new URLSearchParams(window.location.search);
-          if (q.get('redirect')) {
-            redirect = q.get('redirect');
+          if (onSuccess) {
+            onSuccess();
+          } else {
+            UserService.defaultSigninOnSuccess();
           }
-          MicaService.redirect(redirect);
         })
         .catch(handle => {
           toggleSubmitButton(true);

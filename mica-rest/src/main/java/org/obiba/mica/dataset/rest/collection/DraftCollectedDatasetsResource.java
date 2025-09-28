@@ -11,7 +11,6 @@
 package org.obiba.mica.dataset.rest.collection;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 import jakarta.inject.Inject;
@@ -29,6 +28,8 @@ import jakarta.ws.rs.core.UriInfo;
 
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.collect.Lists;
+
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.core.domain.EntityStateFilter;
 import org.obiba.mica.core.service.DocumentService;
@@ -37,6 +38,7 @@ import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.service.DraftCollectedDatasetService;
 import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.search.AccessibleIdFilterBuilder;
+import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.Dtos;
@@ -136,6 +138,13 @@ public class DraftCollectedDatasetsResource {
     if(!(dataset instanceof StudyDataset)) throw new IllegalArgumentException("A collected dataset is expected");
 
     datasetService.save((StudyDataset) dataset, comment);
+
+    if (SecurityUtils.getSubject().hasRole(Roles.MICA_EXTERNAL_EDITOR)) {
+      subjectAclService.addPermission("/draft/collected-dataset", "VIEW,EDIT", dataset.getId());
+      subjectAclService.addPermission("/draft/collected-dataset/" + dataset.getId(), "EDIT", "_status");
+      subjectAclService.addPermission("/draft/collected-dataset/" + dataset.getId() + "/_attachments", "EDIT");
+    }
+
     return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "collected-dataset", dataset.getId()).build())
       .build();
   }
