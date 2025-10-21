@@ -63,7 +63,7 @@
     <json-path.version>2.9.0</json-path.version>
     <jsoup.version>1.17.2</jsoup.version>
     <jsr305.version>3.0.0</jsr305.version>
-    <logback.version>1.5.13</logback.version>
+    <logback.version>1.5.19</logback.version>
     <logstash-logback.version>7.4</logstash-logback.version>
     <magma.version>5.0.2</magma.version>
     <metrics-spring.version>3.0.0</metrics-spring.version>
