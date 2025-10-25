@@ -157,14 +157,39 @@ public class DataAccessEntityExporter {
       List<JsonNode> nodes = Lists.newArrayList();
       for (String k : keys) {
         if (nodes.isEmpty()) {
-          nodes.add(schema.get("properties").get(k));
+          nodes.add(getNestedProperty(schema, k));
         } else {
-          nodes.add(nodes.get(nodes.size() - 1).get("items").get("properties").get(k));
+          nodes.add(getNestedProperty(nodes.get(nodes.size() - 1).get("items"), k));
         }
       }
       return nodes.get(nodes.size() - 1);
     }
-    return schema.get("properties").get(key);
+    return getNestedProperty(schema, key);
+  }
+
+
+  private JsonNode getNestedProperty(JsonNode base, String path) {
+    JsonNode current = base;
+    for (String part : path.split("\\.")) {
+      if (current == null) return null;
+      current = current.has("properties") ? current.get("properties").get(part) : current.get(part);
+    }
+    return current;
+  }
+
+  private JsonNode getModelValue(JsonNode base, String key) {
+    if (key.contains("[]")) {
+      return base.get(getKeyField(key));
+    }
+    if (!key.contains(".")) {
+      return base.get(key);
+    }
+    JsonNode current = base;
+    for (String part : key.split("\\.")) {
+      if (current == null) return null;
+      current = current.get(part);
+    }
+    return current;
   }
 
   /**
@@ -178,8 +203,13 @@ public class DataAccessEntityExporter {
       List<String> keys = Splitter.on("[].").splitToList(key);
       return keys.get(keys.size() - 1);
     }
+    if (key.contains(".")) {
+      String[] parts = key.split("\\.");
+      return parts[parts.length - 1];
+    }
     return key;
   }
+
 
   /**
    * Append title and help texts without HTML formatting.
@@ -270,7 +300,8 @@ public class DataAccessEntityExporter {
   private void appendModelValue(XWPFDocument document, String key, JsonNode keyDescription, JsonNode modelObject) {
     JsonNode keySchema = getKeySchema(key);
     if (keySchema == null) return;
-    JsonNode value = modelObject.get(getKeyField(key));
+
+    JsonNode value = getModelValue(modelObject, key);
 
     if (value == null) {
       if (getEmptyValueConfig().getBoolean("visible")) {
@@ -296,7 +327,10 @@ public class DataAccessEntityExporter {
         if (keySchema.has("title")) {
           addLineBreak(document);
         }
-        if ("string".equals(keySchema.get("items").get("type").asText())) {
+        JsonNode items = keySchema.get("items");
+        if (items.has("enum")) {
+          // do nothing
+        } else if ("string".equals(items.get("type").asText())) {
           for (JsonNode itemValue : value) {
             addBulletedListItem(document, itemValue.asText());
           }
