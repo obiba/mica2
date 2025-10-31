@@ -51,4 +51,4 @@ fi
 JAVA_DEBUG=-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=n
 
 # Add $JAVA_DEBUG to this line to enable remote JVM debugging (for developers)
-java $JAVA_OPTS -cp "$CLASSPATH" -DMICA_HOME="${MICA_HOME}" -DMICA_DIST=${MICA_DIST} -DMICA_LOG=${MICA_LOG} org.obiba.mica.Application $@
+exec java $JAVA_OPTS -cp "$CLASSPATH" -DMICA_HOME="${MICA_HOME}" -DMICA_DIST=${MICA_DIST} -DMICA_LOG=${MICA_LOG} org.obiba.mica.Application $@
