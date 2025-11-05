@@ -93,9 +93,9 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
 
     T study = found.get();
 
-    if (locale != null) {
-      modelAwareTranslator.translateModel(locale, study);
-    }
+//    if (locale != null) {
+//      modelAwareTranslator.translateModel(locale, study);
+//    }
 
     return study;
   }
