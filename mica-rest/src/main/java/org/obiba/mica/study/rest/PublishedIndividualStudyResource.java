@@ -34,9 +34,9 @@ public class PublishedIndividualStudyResource extends AbstractPublishedStudyReso
 
   @GET
   @Timed
-  public Mica.StudyDto getStudyDto(@PathParam("id") String id, @QueryParam("locale") String locale) {
+  public Mica.StudyDto getStudyDto(@PathParam("id") String id) {
     checkAccess(id);
-    return dtos.asDto((Study) getStudy(id, locale));
+    return dtos.asDto((Study) getStudy(id));
   }
 
 

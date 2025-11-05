@@ -84,32 +84,13 @@ public abstract class AbstractPublishedStudyResource {
   }
 
   protected BaseStudy getStudy(String id) {
-    return getStudy(id, null);
-  }
-
-  protected BaseStudy getStudy(String id, String locale) {
     BaseStudy study = publishedStudyService.findById(id);
 
     if (study == null)
       throw NoSuchStudyException.withId(id);
 
-//    translateModels(locale, study);
-
     log.debug("Study acronym {}", study.getAcronym());
 
     return study;
-  }
-
-  protected void translateModels(String locale, BaseStudy study) {
-
-    ModelAwareTranslator.ForLocale modelTranslator = modelAwareTranslator.getModelAwareTranslatorForLocale(locale);
-
-    modelTranslator.translateModel(study);
-    if (study instanceof Study) {
-      study.getPopulations().forEach(modelTranslator::translateModel);
-      study.getPopulations()
-        .forEach(population -> population.getDataCollectionEvents()
-          .forEach(modelTranslator::translateModel));
-    }
   }
 }

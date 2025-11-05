@@ -51,7 +51,7 @@ public class PublishedStudyResource extends AbstractPublishedStudyResource {
   @Timed
   public Mica.StudyDto getStudyDto(@PathParam("id") String id, @QueryParam("locale") String locale) {
     checkAccess(id);
-    BaseStudy study = getStudy(id, locale);
+    BaseStudy study = getStudy(id);
     return study instanceof Study ? dtos.asDto((Study)study) : dtos.asDto((HarmonizationStudy)study);
   }
 
@@ -59,7 +59,7 @@ public class PublishedStudyResource extends AbstractPublishedStudyResource {
   @Path("/study-annotations")
   public List<Taxonomy> annotations(@PathParam("id") String id, @QueryParam("locale") String locale) {
     checkAccess(id);
-    BaseStudy study = getStudy(id, locale);
+    BaseStudy study = getStudy(id);
     final List<Taxonomy> variableTaxonomies = taxonomiesService.getVariableTaxonomies();
 
     LinkedHashMap<String, Map<String, List<LocalizedString>>> result = study.getMergedAttributes().stream().collect(

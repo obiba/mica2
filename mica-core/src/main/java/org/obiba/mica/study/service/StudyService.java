@@ -101,9 +101,9 @@ public class StudyService {
 
   public BaseStudy findDraft(@NotNull String id, String locale) throws NoSuchEntityException {
     try {
-      return individualStudyService.findDraft(id, locale);
+      return individualStudyService.findDraft(id);
     } catch(NoSuchEntityException ex) {
-      return harmonizationStudyService.findDraft(id, locale);
+      return harmonizationStudyService.findDraft(id);
     }
   }
 

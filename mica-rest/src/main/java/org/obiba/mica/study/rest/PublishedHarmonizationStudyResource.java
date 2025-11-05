@@ -51,7 +51,7 @@ public class PublishedHarmonizationStudyResource extends AbstractPublishedStudyR
       ? publishedDatasetService.getHarmonizationDatasetsByStudy(id)
       : Lists.newArrayList();
 
-    return dtos.asDto((HarmonizationStudy) getStudy(id, locale), false, datasets);
+    return dtos.asDto((HarmonizationStudy) getStudy(id), false, datasets);
   }
 
 

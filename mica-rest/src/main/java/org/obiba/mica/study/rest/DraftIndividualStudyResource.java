@@ -83,9 +83,9 @@ public class DraftIndividualStudyResource extends AbstractGitPersistableResource
 
   @GET
   @Timed
-  public Mica.StudyDto get(@QueryParam("locale") String locale, @QueryParam("key") String key) {
+  public Mica.StudyDto get(@QueryParam("key") String key) {
     checkPermission("/draft/individual-study", "VIEW", key);
-    return dtos.asDto(individualStudyService.findDraft(id, locale), true);
+    return dtos.asDto(individualStudyService.findDraft(id), true);
   }
 
   @GET
@@ -204,7 +204,7 @@ public class DraftIndividualStudyResource extends AbstractGitPersistableResource
   public FileResource file(@PathParam("fileId") String fileId, @QueryParam("key") String key) {
     checkPermission("/draft/individual-study", "VIEW", key);
     FileResource fileResource = applicationContext.getBean(FileResource.class);
-    Study study = individualStudyService.findDraft(id, null); // must compare un-cached study with un-cached study; findDraft(String) is cached
+    Study study = individualStudyService.findDraft(id); // must compare un-cached study with un-cached study; findDraft(String) is cached
 
     if (study.hasLogo() && study.getLogo().getId().equals(fileId)) {
       fileResource.setAttachment(study.getLogo());
