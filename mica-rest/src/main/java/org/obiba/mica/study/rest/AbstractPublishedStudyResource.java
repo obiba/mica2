@@ -93,7 +93,7 @@ public abstract class AbstractPublishedStudyResource {
     if (study == null)
       throw NoSuchStudyException.withId(id);
 
-    translateModels(locale, study);
+//    translateModels(locale, study);
 
     log.debug("Study acronym {}", study.getAcronym());
 
