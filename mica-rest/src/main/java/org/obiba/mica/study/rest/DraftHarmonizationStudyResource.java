@@ -89,14 +89,14 @@ public class DraftHarmonizationStudyResource extends AbstractGitPersistableResou
 
   @GET
   @Timed
-  public Mica.StudyDto get(@QueryParam("locale") String locale, @QueryParam("key") String key,
+  public Mica.StudyDto get(@QueryParam("key") String key,
                            @QueryParam("participatingStudies") @DefaultValue("false") boolean participatingStudies) {
     checkPermission("/draft/harmonization-study", "VIEW", key);
     List<HarmonizationDataset> datasets = participatingStudies
       ? harmonizedDatasetService.findAllDatasetsByHarmonizationStudy(id)
       : Lists.newArrayList();
 
-    return dtos.asDto(studyService.findDraft(id, locale), true, datasets);
+    return dtos.asDto(studyService.findDraft(id), true, datasets);
   }
 
   @GET

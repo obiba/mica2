@@ -80,10 +80,6 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
   @NotNull
   @Cacheable(value = "studies-draft", key = "#id")
   public T findDraft(String id) throws NoSuchEntityException {
-    return findDraft(id, null);
-  }
-
-  public T findDraft(@NotNull String id, String locale) throws NoSuchEntityException {
     // ensure study exists
     getEntityState(id);
 
@@ -92,10 +88,6 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
     if (!found.isPresent()) throw NoSuchEntityException.withId(getType(), id);
 
     T study = found.get();
-
-    if (locale != null) {
-      modelAwareTranslator.translateModel(locale, study);
-    }
 
     return study;
   }
