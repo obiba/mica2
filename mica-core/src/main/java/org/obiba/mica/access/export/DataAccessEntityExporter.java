@@ -329,7 +329,8 @@ public class DataAccessEntityExporter {
         }
         JsonNode items = keySchema.get("items");
         if (items.has("enum")) {
-          // do nothing
+          addEnumValues(document, keyDescription, value);
+          addLineBreak(document);
         } else if ("string".equals(items.get("type").asText())) {
           for (JsonNode itemValue : value) {
             addBulletedListItem(document, itemValue.asText());
@@ -383,6 +384,32 @@ public class DataAccessEntityExporter {
     } else {
       appendKeyTitle(document, key);
       appendModelValueAsText(document, keyDescription, value);
+    }
+  }
+
+  private void addEnumValues(XWPFDocument document, JsonNode keyDescription, JsonNode value) {
+    for (JsonNode itemValue : value) {
+      String txtValue;
+      if (itemValue.isTextual() || itemValue.isNumber() || itemValue.isBoolean() || itemValue.isNull()) {
+        txtValue = itemValue.asText();
+      } else {
+        txtValue = itemValue.toString();
+      }
+
+      if (keyDescription.has("titleMap")) {
+        for (JsonNode map : keyDescription.get("titleMap")) {
+          if (map.has("value") && map.has("name")) {
+            JsonNode mapValue = map.get("value");
+            if ((mapValue != null && mapValue.equals(itemValue)) ||
+              map.get("value").toString().equals(itemValue.toString())) {
+              txtValue = map.get("name").asText();
+              break;
+            }
+          }
+        }
+      }
+
+      addBulletedListItem(document, txtValue);
     }
   }
 
