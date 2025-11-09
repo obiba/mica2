@@ -387,21 +387,29 @@ public class DataAccessEntityExporter {
     }
   }
 
+  /**
+   * Add enum values from an array as bulleted list items, using titleMap definition if any.
+   *
+   * @param document The document to append to
+   * @param keyDescription The key description containing titleMap
+   * @param value The array of enum values to process
+   */
   private void addEnumValues(XWPFDocument document, JsonNode keyDescription, JsonNode value) {
     for (JsonNode itemValue : value) {
       String txtValue;
-      if (itemValue.isTextual() || itemValue.isNumber() || itemValue.isBoolean() || itemValue.isNull()) {
-        txtValue = itemValue.asText();
-      } else {
+      if (itemValue.isContainerNode()) {
+        // Need to convert to string for containers
         txtValue = itemValue.toString();
+      } else {
+        txtValue = itemValue.asText();
       }
 
-      if (keyDescription.has("titleMap")) {
-        for (JsonNode map : keyDescription.get("titleMap")) {
+      JsonNode titleMap = keyDescription.get("titleMap");
+      if (titleMap != null && titleMap.isArray()) {
+        for (JsonNode map : titleMap) {
           if (map.has("value") && map.has("name")) {
             JsonNode mapValue = map.get("value");
-            if ((mapValue != null && mapValue.equals(itemValue)) ||
-              map.get("value").toString().equals(itemValue.toString())) {
+            if (mapValue != null && (mapValue.equals(itemValue) || mapValue.toString().equals(itemValue.toString()))) {
               txtValue = map.get("name").asText();
               break;
             }
@@ -412,6 +420,7 @@ public class DataAccessEntityExporter {
       addBulletedListItem(document, txtValue);
     }
   }
+
 
   /**
    * Get the real list of child items, skipping the intermediate sections.
