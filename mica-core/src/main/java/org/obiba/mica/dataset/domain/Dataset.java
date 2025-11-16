@@ -10,8 +10,8 @@
 
 package org.obiba.mica.dataset.domain;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
+import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
 
 import com.google.common.collect.Maps;
 import org.obiba.mica.core.domain.AbstractModelAware;

@@ -20,7 +20,7 @@ import org.obiba.mica.spi.tables.AbstractStudyTableSource;
 import org.obiba.mica.spi.tables.StudyTableFileSource;
 import org.obiba.mica.spi.tables.StudyTableFileStreamProvider;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public class ExcelTableSource extends AbstractStudyTableSource implements StudyTableFileSource {

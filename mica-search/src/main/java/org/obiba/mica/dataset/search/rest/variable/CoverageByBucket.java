@@ -13,7 +13,7 @@ package org.obiba.mica.dataset.search.rest.variable;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
 
 import org.obiba.mica.micaConfig.service.TaxonomyConfigService;

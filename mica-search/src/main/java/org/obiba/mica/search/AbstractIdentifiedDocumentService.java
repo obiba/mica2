@@ -16,7 +16,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.core.service.IdentifiedDocumentService;

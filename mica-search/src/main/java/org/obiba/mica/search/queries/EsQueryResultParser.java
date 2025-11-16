@@ -21,7 +21,7 @@ import org.obiba.mica.web.model.MicaSearch.RangeAggregationResultDto;
 import org.obiba.mica.web.model.MicaSearch.StatsAggregationResultDto;
 import org.obiba.mica.web.model.MicaSearch.TermsAggregationResultDto;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public class EsQueryResultParser {

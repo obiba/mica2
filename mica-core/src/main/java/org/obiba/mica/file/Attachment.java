@@ -18,8 +18,8 @@ import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.Objects;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
+import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.core.domain.Attribute;

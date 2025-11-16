@@ -13,7 +13,7 @@ package org.obiba.mica.core.domain;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 public interface Timestamped {
 

@@ -10,7 +10,7 @@
 
 package org.obiba.mica.core.domain;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import org.obiba.mica.core.domain.Attribute;
 

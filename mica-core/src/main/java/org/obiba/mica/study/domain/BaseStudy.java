@@ -24,7 +24,7 @@ import org.obiba.mica.file.Attachment;
 import org.obiba.mica.spi.search.Indexable;
 import org.obiba.mica.spi.tables.IStudy;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.beans.Transient;
 import java.util.Comparator;
 import java.util.HashMap;

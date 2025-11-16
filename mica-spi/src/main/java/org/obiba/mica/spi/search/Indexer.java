@@ -10,9 +10,9 @@
 
 package org.obiba.mica.spi.search;
 
+import jakarta.annotation.Nullable;
 import org.springframework.data.domain.Persistable;
 
-import javax.annotation.Nullable;
 import java.util.Map;
 
 /**

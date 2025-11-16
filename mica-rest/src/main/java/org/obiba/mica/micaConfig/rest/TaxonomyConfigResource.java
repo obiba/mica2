@@ -27,7 +27,7 @@ import org.obiba.opal.web.taxonomy.Dtos;
 import org.springframework.stereotype.Component;
 
 import jakarta.inject.Inject;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 @Component
 @Path("/config/{target}/taxonomy")

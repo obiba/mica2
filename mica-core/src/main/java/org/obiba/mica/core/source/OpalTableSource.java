@@ -22,7 +22,7 @@ import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Math;
 import org.obiba.opal.web.model.Search;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Connector to an Opal server, to retrieve value table and summary statistics.

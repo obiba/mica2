@@ -15,7 +15,7 @@ import org.obiba.mica.spi.search.QueryMode;
 import org.obiba.mica.spi.search.QueryScope;
 import org.obiba.mica.spi.search.support.Query;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;

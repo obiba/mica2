@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
 
 import org.obiba.mica.dataset.domain.StudyDataset;

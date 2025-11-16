@@ -12,7 +12,7 @@ package org.obiba.mica;
 
 import java.util.NoSuchElementException;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 public class NoSuchEntityException extends NoSuchElementException {
 

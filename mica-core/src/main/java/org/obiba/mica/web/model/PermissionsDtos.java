@@ -10,9 +10,9 @@
 
 package org.obiba.mica.web.model;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;

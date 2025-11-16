@@ -15,8 +15,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.obiba.mica.spi.search.support.AttributeKey;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
+import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;

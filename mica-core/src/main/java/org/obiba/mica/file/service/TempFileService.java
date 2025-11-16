@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import jakarta.inject.Inject;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.obiba.mica.file.NoSuchTempFileException;
 import org.obiba.mica.file.TempFile;

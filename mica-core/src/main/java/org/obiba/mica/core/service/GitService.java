@@ -17,10 +17,10 @@ import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.List;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import org.apache.commons.math3.util.Pair;
 import org.eclipse.jgit.api.Git;

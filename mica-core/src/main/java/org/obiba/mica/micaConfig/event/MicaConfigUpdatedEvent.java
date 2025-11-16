@@ -12,7 +12,7 @@ package org.obiba.mica.micaConfig.event;
 
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.obiba.mica.core.event.PersistableUpdatedEvent;
 import org.obiba.mica.micaConfig.domain.MicaConfig;

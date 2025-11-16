@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Optional;
 
 import jakarta.inject.Inject;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;

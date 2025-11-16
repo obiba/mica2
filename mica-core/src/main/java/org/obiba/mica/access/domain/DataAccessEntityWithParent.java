@@ -10,7 +10,7 @@
 
 package org.obiba.mica.access.domain;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 public abstract class DataAccessEntityWithParent extends DataAccessEntity {
 

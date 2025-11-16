@@ -7,7 +7,7 @@ import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.domain.SchemaFormContentAware;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Collectors;
 

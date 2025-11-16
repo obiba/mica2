@@ -19,8 +19,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 
 import jakarta.inject.Inject;
+import jakarta.validation.constraints.NotNull;
+
 import javax.security.auth.callback.CallbackHandler;
-import javax.validation.constraints.NotNull;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;

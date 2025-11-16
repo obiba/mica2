@@ -10,7 +10,7 @@
 
 package org.obiba.mica.file;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.springframework.data.mongodb.core.mapping.Document;

@@ -12,7 +12,7 @@ package org.obiba.mica.dataset.rest.collection;
 
 import java.util.List;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.DefaultValue;

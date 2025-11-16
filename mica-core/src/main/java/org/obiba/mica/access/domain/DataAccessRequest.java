@@ -18,7 +18,7 @@ import org.obiba.mica.file.Attachment;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.ZoneId;
 import java.util.Date;

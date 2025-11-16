@@ -15,7 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
 import jakarta.inject.Inject;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import com.google.common.base.Strings;
 import org.obiba.mica.JSONUtils;

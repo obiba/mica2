@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import jakarta.inject.Inject;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.obiba.mica.dataset.service.KeyStoreService;
 import org.obiba.mica.micaConfig.AuthType;

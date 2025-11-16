@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import jakarta.inject.Inject;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.util.*;
 import java.util.stream.Collectors;
 

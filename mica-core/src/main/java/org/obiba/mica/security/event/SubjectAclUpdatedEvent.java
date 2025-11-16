@@ -10,7 +10,7 @@
 
 package org.obiba.mica.security.event;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import com.google.common.eventbus.Subscribe;
 import org.obiba.mica.security.domain.SubjectAcl;

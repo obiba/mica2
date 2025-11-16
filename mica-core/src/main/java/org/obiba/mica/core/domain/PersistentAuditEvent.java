@@ -13,7 +13,7 @@ package org.obiba.mica.core.domain;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.joda.time.LocalDateTime;
 import org.springframework.data.annotation.Id;

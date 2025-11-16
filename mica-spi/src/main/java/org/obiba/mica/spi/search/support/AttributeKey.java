@@ -13,10 +13,10 @@ package org.obiba.mica.spi.search.support;
 import java.io.Serializable;
 import java.util.Objects;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
+import jakarta.annotation.Nullable;
 
 import com.google.common.base.Strings;
+import jakarta.validation.constraints.NotNull;
 
 public class AttributeKey implements Serializable {
 

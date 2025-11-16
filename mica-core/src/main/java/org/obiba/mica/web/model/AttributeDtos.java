@@ -11,7 +11,7 @@
 package org.obiba.mica.web.model;
 
 import jakarta.inject.Inject;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.Attribute;
 import org.springframework.stereotype.Component;

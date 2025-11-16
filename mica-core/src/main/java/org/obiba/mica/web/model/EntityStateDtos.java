@@ -10,7 +10,7 @@
 
 package org.obiba.mica.web.model;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.EntityState;
 import org.springframework.stereotype.Component;

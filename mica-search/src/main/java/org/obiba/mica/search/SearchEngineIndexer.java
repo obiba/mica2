@@ -18,7 +18,7 @@ import org.obiba.mica.spi.search.Indexer;
 import org.springframework.data.domain.Persistable;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
 import java.util.Map;
 

@@ -10,7 +10,7 @@
 
 package org.obiba.mica.spi.search.support;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 

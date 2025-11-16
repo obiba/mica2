@@ -32,7 +32,7 @@ import org.springframework.context.ApplicationContext;
 
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

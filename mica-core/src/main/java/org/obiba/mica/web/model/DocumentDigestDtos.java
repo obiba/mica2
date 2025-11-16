@@ -17,7 +17,7 @@ import org.obiba.mica.study.domain.BaseStudy;
 import org.springframework.stereotype.Component;
 
 import jakarta.inject.Inject;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 import static org.obiba.mica.web.model.Mica.DocumentDigestDto;

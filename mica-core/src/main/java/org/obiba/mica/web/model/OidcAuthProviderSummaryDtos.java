@@ -4,7 +4,7 @@ import org.obiba.oidc.OIDCAuthProviderSummary;
 import org.obiba.web.model.OIDCDtos;
 import org.springframework.stereotype.Component;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.util.Optional;
 
 @Component

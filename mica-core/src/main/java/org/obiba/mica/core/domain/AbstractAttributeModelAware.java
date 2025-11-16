@@ -13,7 +13,7 @@ package org.obiba.mica.core.domain;
 import java.io.Serializable;
 import java.util.Map;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 public abstract class AbstractAttributeModelAware implements AttributeAware, ModelAware, Serializable {
 

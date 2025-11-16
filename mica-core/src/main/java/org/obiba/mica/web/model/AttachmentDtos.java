@@ -14,7 +14,7 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import jakarta.inject.Inject;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;

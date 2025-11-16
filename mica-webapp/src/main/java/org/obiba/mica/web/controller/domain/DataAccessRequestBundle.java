@@ -1,13 +1,11 @@
 package org.obiba.mica.web.controller.domain;
 
-import java.time.LocalDateTime;
-
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessPreliminary;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.domain.StatusChange;
 
-import javax.xml.crypto.Data;
+import java.time.LocalDateTime;
 
 public class DataAccessRequestBundle {
 

@@ -16,7 +16,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import jakarta.inject.Inject;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.service.AgateServerConfigService;

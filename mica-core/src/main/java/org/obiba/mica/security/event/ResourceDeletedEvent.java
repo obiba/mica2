@@ -10,7 +10,7 @@
 
 package org.obiba.mica.security.event;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 public class ResourceDeletedEvent {
 

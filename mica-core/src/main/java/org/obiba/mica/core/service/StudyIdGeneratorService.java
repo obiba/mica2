@@ -11,7 +11,7 @@
 package org.obiba.mica.core.service;
 
 import jakarta.inject.Inject;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.study.HarmonizationStudyStateRepository;

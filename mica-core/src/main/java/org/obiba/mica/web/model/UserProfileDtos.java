@@ -13,7 +13,7 @@ package org.obiba.mica.web.model;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.obiba.shiro.realm.ObibaRealm;
 import org.springframework.stereotype.Component;

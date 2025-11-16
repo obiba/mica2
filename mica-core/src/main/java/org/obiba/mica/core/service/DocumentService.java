@@ -13,7 +13,7 @@ package org.obiba.mica.core.service;
 import com.google.common.collect.Lists;
 import org.obiba.mica.spi.search.Searcher;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;

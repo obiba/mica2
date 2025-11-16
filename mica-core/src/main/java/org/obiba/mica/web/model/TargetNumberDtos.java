@@ -10,7 +10,7 @@
 
 package org.obiba.mica.web.model;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import static org.obiba.mica.study.domain.NumberOfParticipants.TargetNumber;
 import static org.obiba.mica.web.model.Mica.TargetNumberDto;
