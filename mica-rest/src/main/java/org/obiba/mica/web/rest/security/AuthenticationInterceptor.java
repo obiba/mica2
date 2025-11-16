@@ -10,22 +10,19 @@
 
 package org.obiba.mica.web.rest.security;
 
+import jakarta.annotation.Priority;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.NewCookie;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
-
-import jakarta.annotation.Priority;
 import org.springframework.stereotype.Component;
 
-import jakarta.inject.Inject;
 import java.io.IOException;
-import java.util.List;
 
 @Priority(Integer.MIN_VALUE)
 @Component
@@ -33,33 +30,49 @@ public class AuthenticationInterceptor implements ContainerResponseFilter {
 
   private static final String MICA_SESSION_ID_COOKIE_NAME = "micasid";
 
+  private final MicaConfigService micaConfigService;
+
+  private final CSRFTokenHelper csrfTokenHelper;
+
   @Inject
-  private MicaConfigService micaConfigService;
+  public AuthenticationInterceptor(MicaConfigService micaConfigService, CSRFTokenHelper csrfTokenHelper) {
+    this.micaConfigService = micaConfigService;
+    this.csrfTokenHelper = csrfTokenHelper;
+  }
 
   @Override
   public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
       throws IOException {
     // Set the cookie if the user is still authenticated
     String path = micaConfigService.getContextPath() + "/";
-    if(isUserAuthenticated()) {
+    if (isUserAuthenticated()) {
       Session session = SecurityUtils.getSubject().getSession();
       session.touch();
       int timeout = (int) (session.getTimeout() / 1000);
-      NewCookie sidCookie = new NewCookie(MICA_SESSION_ID_COOKIE_NAME, session.getId().toString(), path, null, null, timeout, true, true);
-      MultivaluedMap<String, Object> headers = responseContext.getHeaders();
-      List<Object> cookies = headers.get(HttpHeaders.SET_COOKIE);
-      if (cookies == null)
-        headers.putSingle(HttpHeaders.SET_COOKIE, sidCookie);
-      else
-        headers.add(HttpHeaders.SET_COOKIE, sidCookie);
-      Object cookieValue = session.getAttribute(HttpHeaders.SET_COOKIE);
-      if(cookieValue != null) {
-        headers.add(HttpHeaders.SET_COOKIE, NewCookie.valueOf(cookieValue.toString()));
-      }
+      responseContext.getHeaders().add(HttpHeaders.SET_COOKIE,
+        new NewCookie.Builder(MICA_SESSION_ID_COOKIE_NAME)
+          .value(session.getId().toString())
+          .path(path)
+          .maxAge(timeout)
+          .secure(true)
+          .httpOnly(true)
+          .sameSite(NewCookie.SameSite.LAX)
+          .build());
+      NewCookie csrfCookie = csrfTokenHelper.createCsrfTokenCookie();
+      if(csrfCookie != null)
+        responseContext.getHeaders().add(HttpHeaders.SET_COOKIE, csrfCookie);
     } else {
-      if(responseContext.getHeaders().get(HttpHeaders.SET_COOKIE) == null) {
+      if (responseContext.getHeaders().get(HttpHeaders.SET_COOKIE) == null) {
         responseContext.getHeaders().putSingle(HttpHeaders.SET_COOKIE,
-            new NewCookie(MICA_SESSION_ID_COOKIE_NAME, null, path, null, "Mica session deleted", 0, true, true));
+          new NewCookie.Builder(MICA_SESSION_ID_COOKIE_NAME)
+            .path(path)
+            .comment("Mica session deleted")
+            .maxAge(0)
+            .secure(true)
+            .httpOnly(true)
+            .sameSite(NewCookie.SameSite.LAX)
+            .build());
+        responseContext.getHeaders().add(HttpHeaders.SET_COOKIE, csrfTokenHelper.deleteCsrfTokenCookie());
       }
     }
   }

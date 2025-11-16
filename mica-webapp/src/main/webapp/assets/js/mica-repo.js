@@ -22,21 +22,16 @@ class QueryService {
       let query = Object.keys(params).map(key => key + '=' + params[key]).join('&');
       url = url + '?' + query;
     }
-    $.ajax({
-      url: MicaService.normalizeUrl(url),
-      type: 'GET',
-      dataType : 'json',
-    })
-      .done(function(json) {
-        //console.log(json);
+    axios.get(MicaService.normalizeUrl(url))
+      .then(response => {
         if (onSuccess) {
-          onSuccess(json);
+          onSuccess(response.data);
         }
       })
-      .fail(function(xhr, status, errorThrown) {
-        console.dir(xhr);
+      .catch(response => {
+        console.dir(response);
         if (onFailure) {
-          onFailure(xhr, errorThrown);
+          onFailure(response);
         }
       });
   }
@@ -139,7 +134,7 @@ class NetworkService {
     let url = '/ws/variables/charts/_coverage';
     let query = 'network(eq(Mica_network.id,' + id + ')),variable(sort(name),aggregate(re(' + taxonomies.map(tx => tx + '*').join(',') + '),bucket(studyId))),locale(' + lang + ')';
     url = url + '?query=' + query;
-    
+
     QueryService.getVariablesCoverage(url, onsuccess, onfailure);
   }
 
@@ -320,7 +315,7 @@ class DatasetService {
     let url = '/ws/variables/charts/_coverage';
     let query = 'variable(eq(datasetId,' + id + '),sort(name),aggregate(re(' + taxonomies.map(tx => tx + '*').join(',') + '),bucket(datasetId))),locale(' + lang + ')';
     url = url + '?query=' + query;
-    
+
     QueryService.getVariablesCoverage(url, onsuccess, onfailure);
   }
 
