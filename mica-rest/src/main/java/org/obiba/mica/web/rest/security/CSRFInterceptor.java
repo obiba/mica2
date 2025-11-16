@@ -38,22 +38,40 @@ public class CSRFInterceptor implements ContainerRequestFilter {
 
   private static final Pattern loopbackhostPattern = Pattern.compile("^http[s]?://127\\.0\\.0\\.1:");
 
+  private static final List<String> SAFE_METHODS = Lists.newArrayList("GET", "HEAD", "OPTIONS", "TRACE");
+
   private final boolean productionMode;
 
   private final List<String> csrfAllowedHosts;
 
   private final List<String> csrfAllowedAgents;
 
-  public CSRFInterceptor(boolean productionMode, String csrfAllowedHosts, String csrfAllowedAgents) {
+  private final CSRFTokenHelper csrfTokenHelper;
+
+  public CSRFInterceptor(boolean productionMode, String csrfAllowedHosts, String csrfAllowedAgents, CSRFTokenHelper csrfTokenHelper) {
     this.productionMode = productionMode;
     this.csrfAllowedHosts = Strings.isNullOrEmpty(csrfAllowedHosts) ? Lists.newArrayList() : Splitter.on(",").splitToList(csrfAllowedHosts.trim());
     this.csrfAllowedAgents = Strings.isNullOrEmpty(csrfAllowedAgents) ? Lists.newArrayList() : Splitter.on(",").splitToList(csrfAllowedAgents.trim());
+    this.csrfTokenHelper = csrfTokenHelper;
   }
 
   @Override
   public void filter(ContainerRequestContext requestContext)
     throws IOException {
-    if (!productionMode || csrfAllowedHosts.contains("*")) return;
+    if (!productionMode) return;
+
+    String method = requestContext.getMethod();
+    if (!SAFE_METHODS.contains(method)) {
+      String xsrfToken = requestContext.getHeaderString(CSRFTokenHelper.CSRF_TOKEN_HEADER);
+      log.debug("{}: {}", CSRFTokenHelper.CSRF_TOKEN_HEADER, xsrfToken);
+      if (!csrfTokenHelper.validateXsrfToken(xsrfToken)) {
+        log.warn("XSRF token validation failed. Are you sending the '{}' HTTP header with the XSRF token value?", CSRFTokenHelper.CSRF_TOKEN_HEADER);
+        throw new ForbiddenException("XSRF token validation failed");
+      }
+    }
+
+    if (csrfAllowedHosts.contains("*")) return;
+
 
     String host = requestContext.getHeaderString(HOST_HEADER);
     if (matchesLocalhost(host)) return;

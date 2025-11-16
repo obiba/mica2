@@ -15,10 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.NewCookie;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.*;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -102,7 +99,15 @@ public class SessionsResource {
         .created(UriBuilder.fromPath(JerseyConfiguration.WS_ROOT).path(SessionResource.class).build(sessionId));
 
       if (!Strings.isNullOrEmpty(locale))
-        builder.cookie(new NewCookie("NG_TRANSLATE_LANG_KEY", locale, micaConfigService.getContextPath() + "/", null, DEFAULT_VERSION, null, DEFAULT_MAX_AGE, null, false, false));
+        builder.cookie(new NewCookie.Builder("NG_TRANSLATE_LANG_KEY")
+          .value(locale)
+          .path(micaConfigService.getContextPath() + "/")
+          .version(DEFAULT_VERSION)
+          .maxAge(DEFAULT_MAX_AGE)
+          .httpOnly(false)
+          .secure(false)
+          .sameSite(NewCookie.SameSite.LAX)
+          .build());
 
       return builder.build();
     } catch (UserBannedException e) {

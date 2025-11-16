@@ -1,5 +1,9 @@
 'use strict';
 
+// Axios automatically reads XSRF-TOKEN cookie and sends as X-XSRF-TOKEN header
+axios.defaults.xsrfCookieName = 'XSRF-TOKEN';
+axios.defaults.xsrfHeaderName = 'X-XSRF-TOKEN';
+
 class LocalizedValues {
   static for(values, lang, keyLang, keyValue) {
     if (Array.isArray(values)) {
@@ -1090,11 +1094,11 @@ class UserService {
    * @param redirect
    */
   static signout(redirect) {
-    $.ajax({
-      type: 'DELETE',
-      url: MicaService.normalizeUrl('/ws/auth/session/_current')
-    })
-      .always(function () {
+    axios.delete(MicaService.normalizeUrl('/ws/auth/session/_current'))
+      .catch(handle => {
+        console.dir(handle);
+      })
+      .finally(() => {
         MicaService.redirect(redirect || MicaService.normalizeUrl('/'));
       });
   }

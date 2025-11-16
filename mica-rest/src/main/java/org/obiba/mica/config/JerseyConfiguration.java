@@ -21,6 +21,7 @@ import org.obiba.mica.micaConfig.rest.ConfigurationInterceptor;
 import org.obiba.mica.web.rest.security.AuditInterceptor;
 import org.obiba.mica.web.rest.security.AuthenticationInterceptor;
 import org.obiba.mica.web.rest.security.CSRFInterceptor;
+import org.obiba.mica.web.rest.security.CSRFTokenHelper;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -31,14 +32,19 @@ public class JerseyConfiguration extends ResourceConfig {
   public static final String WS_ROOT = "/ws";
 
   @Inject
-  public JerseyConfiguration(Environment environment) {
+  public JerseyConfiguration(Environment environment, CSRFTokenHelper csrfTokenHelper) {
     register(RequestContextFilter.class);
     packages("org.obiba.mica", "org.obiba.jersey", "com.fasterxml.jackson");
     // register(LoggingFeature.class);
     register(AuthenticationInterceptor.class);
     register(ConfigurationInterceptor.class);
     register(AuditInterceptor.class);
-    register(new CSRFInterceptor(environment.acceptsProfiles(Profiles.PROD), environment.getProperty("csrf.allowed", ""), environment.getProperty("csrf.allowed-agents", "")));
+    register(new CSRFInterceptor(
+      environment.matchesProfiles(Profiles.PROD),
+      environment.getProperty("csrf.allowed", ""),
+      environment.getProperty("csrf.allowed-agents", ""),
+      csrfTokenHelper
+      ));
     register(MultiPartFeature.class);
     register(DefaultLocaleFilter.class);
     // validation errors will be sent to the client
