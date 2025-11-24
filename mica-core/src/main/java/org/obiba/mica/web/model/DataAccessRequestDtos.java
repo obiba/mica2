@@ -106,6 +106,7 @@ class DataAccessRequestDtos {
     if (request.hasFormRevision())
       builder.setFormRevision(request.getFormRevision());
 
+    setEntityDtoType(request, builder);
     return builder;
   }
 
@@ -167,6 +168,8 @@ class DataAccessRequestDtos {
     } catch (NoSuchProjectException e) {
       // do nothing
     }
+
+    setEntityDtoType(request, builder);
 
     return builder.build();
   }
@@ -307,6 +310,20 @@ class DataAccessRequestDtos {
   List<Mica.DataAccessRequestDto.StatusChangeDto> asStatusChangeDtoList(@NotNull DataAccessEntity entity) {
     Map<String, Subject> micaProfiles = userProfileService.getProfilesByGroup(null).stream().collect(Collectors.toMap(Subject::getUsername, profile -> profile));
     return asStatusChangeDtoList(entity, micaProfiles);
+  }
+
+  private void setEntityDtoType(DataAccessEntity entity, Mica.DataAccessRequestDto.Builder builder) {
+    if (entity instanceof DataAccessRequest) {
+      builder.setType(Mica.DataAccessRequestDto.Type.REQUEST);
+    } else if (entity instanceof DataAccessPreliminary) {
+      builder.setType(Mica.DataAccessRequestDto.Type.PRELIMINARY);
+    } else if (entity instanceof DataAccessAgreement) {
+      builder.setType(Mica.DataAccessRequestDto.Type.AGREEMENT);
+    } else if (entity instanceof DataAccessAmendment) {
+      builder.setType(Mica.DataAccessRequestDto.Type.AMENDMENT);
+    } else if (entity instanceof DataAccessFeasibility) {
+      builder.setType(Mica.DataAccessRequestDto.Type.FEASIBILITY);
+    }
   }
 
   @NotNull
