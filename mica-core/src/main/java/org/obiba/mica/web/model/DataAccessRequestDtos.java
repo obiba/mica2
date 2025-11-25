@@ -378,6 +378,7 @@ class DataAccessRequestDtos {
       dataAccessEntity.getStatusChangeHistory().forEach(statusChange -> builder.addStatusChangeHistory(statusChangeDtos.asMinimalistDtoBuilder(statusChange)));
 
     setMinimalistActions(builder, dataAccessEntity);
+    setEntityDtoType(dataAccessEntity, builder);
 
     return builder;
   }

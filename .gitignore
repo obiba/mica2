@@ -22,3 +22,5 @@ spring_loaded
 **/.attach_pid*
 ./package-lock.json
 .history
+.claude
+.serena/
