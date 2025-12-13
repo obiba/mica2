@@ -86,9 +86,9 @@
 <link rel="shortcut icon" href="${faviconPath}" />
 
 <!-- Font Awesome Icons -->
-<link rel="stylesheet" href="${adminLTEPath}/plugins/fontawesome-free/css/all.min.css">
-<!-- Theme style -->
-<link rel="stylesheet" href="${adminLTEPath}/dist/css/adminlte.min.css">
+<link rel="stylesheet" href="${fontAwesomePath}/css/all.min.css">
+<!-- Mica Theme (includes Bootstrap 5 + AdminLTE 4 + custom overrides) -->
+<link rel="stylesheet" href="${assetsPath}/css/mica.min.css">
 <!-- Font: Source Sans Pro -->
 <style type="text/css">
   @font-face {
@@ -125,17 +125,17 @@
   }
 </style>
 <!-- DataTables -->
-<link rel="stylesheet" href="${adminLTEPath}/plugins/datatables-bs4/css/dataTables.bootstrap4.css">
-<link rel="stylesheet" href="${adminLTEPath}/plugins/datatables-fixedheader/css/fixedHeader.bootstrap4.css">
+<link rel="stylesheet" href="${datatablesBS5Path}/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="${datatablesFixedHeaderBS5Path}/css/fixedHeader.bootstrap5.min.css">
 <!-- Toastr -->
-<link rel="stylesheet" href="${adminLTEPath}/plugins/toastr/toastr.min.css">
+<link rel="stylesheet" href="${toastrPath}/build/toastr.min.css">
 <!-- Bootstrap 3 to 4 -->
 <link rel="stylesheet" href="${assetsPath}/css/bootstrap-3-4.css">
 <!-- Obiba style -->
 <link rel="stylesheet" href="${assetsPath}/css/obiba.css">
 <!-- Select2 -->
-<link rel="stylesheet" href="${adminLTEPath}/plugins/select2/css/select2.css">
-<link rel="stylesheet" href="${adminLTEPath}/plugins/select2-bootstrap4-theme/select2-bootstrap4.css">
+<link rel="stylesheet" href="${select2Path}/dist/css/select2.min.css">
+<link rel="stylesheet" href="${select2BS5ThemePath}/dist/select2-bootstrap-5-theme.min.css">
 
 <!-- Custom head -->
 <#include "../models/head.ftl"/>

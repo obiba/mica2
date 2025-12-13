@@ -14,6 +14,7 @@ node_modules
 mica-webapp/src/main/webapp/dist
 mica-webapp/src/main/webapp/bower_components
 mica-webapp/src/main/webapp/styles/mica.css.map
+mica-webapp/src/main/webapp/assets/css/mica.min.css*
 spring_loaded
 *.log
 .vagrant
