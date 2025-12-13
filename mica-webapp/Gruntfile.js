@@ -370,21 +370,40 @@ module.exports = function (grunt) {
       },
       assets: {
         files: [
+          // AdminLTE 4 (no longer bundles plugins)
           {expand: true, src: ['node_modules/admin-lte/dist/**'], dest: 'src/main/webapp/assets/libs/'},
-          {expand: true, src: ['node_modules/admin-lte/plugins/bootstrap/**'], dest: 'src/main/webapp/assets/libs/'},
-          {expand: true, src: ['node_modules/admin-lte/plugins/chart.js/**'], dest: 'src/main/webapp/assets/libs/'},
-          {expand: true, src: ['node_modules/admin-lte/plugins/datatables/**'], dest: 'src/main/webapp/assets/libs/'},
-          {expand: true, src: ['node_modules/admin-lte/plugins/datatables-buttons/**'], dest: 'src/main/webapp/assets/libs/'},
-          {expand: true, src: ['node_modules/admin-lte/plugins/datatables-select/**'], dest: 'src/main/webapp/assets/libs/'},
-          {expand: true, src: ['node_modules/admin-lte/plugins/datatables-bs4/**'], dest: 'src/main/webapp/assets/libs/'},
-          {expand: true, src: ['node_modules/admin-lte/plugins/datatables-fixedheader/**'], dest: 'src/main/webapp/assets/libs/'},
-          {expand: true, src: ['node_modules/admin-lte/plugins/fontawesome-free/**'], dest: 'src/main/webapp/assets/libs/'},
-          {expand: true, src: ['node_modules/admin-lte/plugins/jquery/**'], dest: 'src/main/webapp/assets/libs/'},
-          {expand: true, src: ['node_modules/admin-lte/plugins/moment/**'], dest: 'src/main/webapp/assets/libs/'},
-          {expand: true, src: ['node_modules/admin-lte/plugins/select2/**'], dest: 'src/main/webapp/assets/libs/'},
-          {expand: true, src: ['node_modules/admin-lte/plugins/select2-bootstrap4-theme/**'], dest: 'src/main/webapp/assets/libs/'},
-          {expand: true, src: ['node_modules/admin-lte/plugins/toastr/**'], dest: 'src/main/webapp/assets/libs/'},
-          {expand: true, src: ['node_modules/admin-lte/plugins/popper/**'], dest: 'src/main/webapp/assets/libs/'},
+          // Bootstrap 5
+          {expand: true, src: ['node_modules/bootstrap/dist/**'], dest: 'src/main/webapp/assets/libs/'},
+          // Popper
+          {expand: true, src: ['node_modules/@popperjs/core/dist/**'], dest: 'src/main/webapp/assets/libs/'},
+          // FontAwesome 6
+          {expand: true, src: ['node_modules/@fortawesome/fontawesome-free/**'], dest: 'src/main/webapp/assets/libs/'},
+          // jQuery
+          {expand: true, src: ['node_modules/jquery/dist/**'], dest: 'src/main/webapp/assets/libs/'},
+          // Moment
+          {expand: true, src: ['node_modules/moment/min/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/moment-timezone/builds/**'], dest: 'src/main/webapp/assets/libs/'},
+          // Chart.js 4
+          {expand: true, src: ['node_modules/chart.js/dist/**'], dest: 'src/main/webapp/assets/libs/'},
+          // DataTables with Bootstrap 5
+          {expand: true, src: ['node_modules/datatables.net/js/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/datatables.net-bs5/js/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/datatables.net-bs5/css/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/datatables.net-buttons/js/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/datatables.net-buttons-bs5/js/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/datatables.net-buttons-bs5/css/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/datatables.net-select/js/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/datatables.net-select-bs5/js/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/datatables.net-select-bs5/css/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/datatables.net-fixedheader/js/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/datatables.net-fixedheader-bs5/js/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/datatables.net-fixedheader-bs5/css/**'], dest: 'src/main/webapp/assets/libs/'},
+          // Select2 with Bootstrap 5 theme
+          {expand: true, src: ['node_modules/select2/dist/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/select2-bootstrap-5-theme/dist/**'], dest: 'src/main/webapp/assets/libs/'},
+          // Toastr
+          {expand: true, src: ['node_modules/toastr/build/**'], dest: 'src/main/webapp/assets/libs/'},
+          // Other libraries (unchanged)
           {expand: true, src: ['node_modules/simplemde/dist/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/vue/dist/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/rql/dist/**'], dest: 'src/main/webapp/assets/libs/'},
