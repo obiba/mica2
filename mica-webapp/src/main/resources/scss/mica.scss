@@ -1,0 +1,36 @@
+//
+// Mica Custom Styles for Bootstrap 5 + AdminLTE 4
+//
+// This file allows customization of Bootstrap and AdminLTE styles.
+// It will be compiled to src/main/webapp/assets/css/mica.min.css
+//
+
+// ========================================================================
+// Bootstrap 5 and AdminLTE 4 Variable Overrides
+// ========================================================================
+// Uncomment and customize Bootstrap/AdminLTE variables here
+// See: node_modules/bootstrap/scss/_variables.scss
+// See: node_modules/admin-lte/build/scss/_variables.scss
+
+// Example color customization:
+// $primary: #007bff;
+// $secondary: #6c757d;
+
+// Example spacing customization:
+// $spacer: 1rem;
+
+// ========================================================================
+// Import AdminLTE 4 (includes Bootstrap 5)
+// ========================================================================
+@import "admin-lte/dist/css/adminlte.css";
+
+// ========================================================================
+// Mica Custom Styles
+// ========================================================================
+// Add your custom CSS/SCSS below to override or extend AdminLTE/Bootstrap
+
+// Example custom class:
+// .mica-custom-header {
+//   background-color: $primary;
+//   padding: $spacer;
+// }
