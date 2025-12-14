@@ -12,7 +12,7 @@
 <!-- Moment -->
 <script src="${momentPath}/min/moment-with-locales.min.js"></script>
 <!-- DataTables -->
-<script src="${datatablesPath}/js/dataTables.min.js"></script>
+<script src="${datatablesPath}/js/jquery.dataTables.min.js"></script>
 <script src="${datatablesBS5Path}/js/dataTables.bootstrap5.min.js"></script>
 <script src="${datatablesFixedHeaderPath}/js/dataTables.fixedHeader.min.js"></script>
 <script src="${datatablesFixedHeaderBS5Path}/js/fixedHeader.bootstrap5.min.js"></script>
@@ -155,7 +155,7 @@
     }
 
     // bs tooltip
-    $('[data-toggle="tooltip"]').tooltip();
+    $('[data-bs-toggle="tooltip"]').tooltip();
     // apply markdown rendering
     $('.marked').each(function () {
       const template = $(this).find('template');

@@ -192,12 +192,12 @@
                   <div class="card-header">
                     <h3 class="card-title"><@message "members"/></h3>
                     <div class="card-tools float-right">
-                      <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
                         <i class="fas fa-minus"></i></button>
                     </div>
 
                       <#if affiliatedMembersQuery??>
-                        <button type="button" class="btn btn-primary float-right mr-2" data-toggle="modal" data-target="#affiliatedMembersModal">
+                        <button type="button" class="btn btn-primary float-right mr-2" data-bs-toggle="modal" data-bs-target="#affiliatedMembersModal">
                             <@message "network.associated-people"/>
                         </button>
                       </#if>
@@ -270,7 +270,7 @@
                   <div class="card-header">
                     <h3 class="card-title"><@message "networks"/></h3>
                     <div class="card-tools">
-                      <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
                         <i class="fas fa-minus"></i></button>
                     </div>
                   </div>
@@ -309,7 +309,7 @@
                   <div class="card-header">
                     <h3 class="card-title"><@message "individual-studies"/></h3>
                     <div class="card-tools">
-                      <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
                         <i class="fas fa-minus"></i></button>
                     </div>
                   </div>
@@ -348,7 +348,7 @@
                   <div class="card-header">
                     <h3 class="card-title"><@message "harmonization-studies"/></h3>
                     <div class="card-tools">
-                      <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
                         <i class="fas fa-minus"></i></button>
                     </div>
                   </div>
@@ -400,7 +400,7 @@
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title"><@message "network.associated-people"/></h5>
-                <button type="button" class="close" data-dismiss="modal">
+                <button type="button" class="close" data-bs-dismiss="modal">
                   <span>&times;</span>
                 </button>
               </div>

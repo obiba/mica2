@@ -82,7 +82,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title">${profile.fullName}</h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -90,7 +90,7 @@
           <@userProfile profile=profile/>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-dismiss="modal"><@message "close"/></button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><@message "close"/></button>
         </div>
       </div>
       <!-- /.modal-content -->

@@ -42,7 +42,7 @@
                     <@message "global.additional-information"/>
                 </h3>
                 <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
                     <i class="fas fa-minus"></i></button>
                 </div>
               </div>
@@ -113,7 +113,7 @@
         <@message "design"/>
       </h3>
       <div class="card-tools">
-        <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
+        <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
           <i class="fas fa-minus"></i></button>
       </div>
     </div>
@@ -163,7 +163,7 @@
           <@message "study.marker-paper"/>
       </h3>
       <div class="card-tools">
-        <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
+        <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
           <i class="fas fa-minus"></i></button>
       </div>
     </div>
@@ -188,7 +188,7 @@
           <@message "population.recruitment"/>
       </h3>
       <div class="card-tools">
-        <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
+        <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
           <i class="fas fa-minus"></i></button>
       </div>
     </div>
@@ -223,7 +223,7 @@
           <@message "numberOfParticipants.label"/>
       </h3>
       <div class="card-tools">
-        <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
+        <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
           <i class="fas fa-minus"></i></button>
       </div>
     </div>
@@ -296,7 +296,7 @@
           <@message "study.access.label"/>
       </h3>
       <div class="card-tools">
-        <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
+        <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
           <i class="fas fa-minus"></i></button>
       </div>
     </div>
@@ -308,20 +308,20 @@
           <div class="card-header p-0 border-bottom-0">
             <ul class="nav nav-tabs" id="access-tab" role="tablist">
               <li class="nav-item">
-                <a class="nav-link active" id="access-info-tab" data-toggle="pill" href="#access-info" role="tab" aria-controls="access-info" aria-selected="true">
+                <a class="nav-link active" id="access-info-tab" data-bs-toggle="pill" href="#access-info" role="tab" aria-controls="access-info" aria-selected="true">
                   <@message "study.general-info"/>
                 </a>
               </li>
                 <#if study.model.access_restrictions?? && study.model.access_restrictions == true>
                   <li class="nav-item">
-                    <a class="nav-link" id="access-restrictions-tab" data-toggle="pill" href="#access-restrictions" role="tab" aria-controls="access-restrictions" aria-selected="false">
+                    <a class="nav-link" id="access-restrictions-tab" data-bs-toggle="pill" href="#access-restrictions" role="tab" aria-controls="access-restrictions" aria-selected="false">
                         <@message "study.access.access_restrictions.title"/>
                     </a>
                   </li>
                 </#if>
                 <#if study.model.access_fees?? && study.model.access_fees == true>
                   <li class="nav-item">
-                    <a class="nav-link" id="access-fees-tab" data-toggle="pill" href="#access-fees" role="tab" aria-controls="access-fees" aria-selected="false">
+                    <a class="nav-link" id="access-fees-tab" data-bs-toggle="pill" href="#access-fees" role="tab" aria-controls="access-fees" aria-selected="false">
                         <@message "study.access.access_fees.title"/>
                     </a>
                   </li>
@@ -577,7 +577,7 @@
 
     <#if study.model.access_info_location?seq_contains("study_representative")>
       <p>
-        <a href="#" data-toggle="modal" data-target="#modal-rep">
+        <a href="#" data-bs-toggle="modal" data-bs-target="#modal-rep">
             <@message "study.access.external_researchers_obtaining_study_data_bio_info.access_info_location.study_representative"/>
           <i class="fas fa-info-circle"></i>
         </a>
@@ -587,7 +587,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <h4 class="modal-title">Representative</h4>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">×</span>
               </button>
             </div>
@@ -604,7 +604,7 @@
               </dl>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-primary" data-dismiss="modal"><@message "close"/></button>
+              <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><@message "close"/></button>
             </div>
           </div>
           <!-- /.modal-content -->

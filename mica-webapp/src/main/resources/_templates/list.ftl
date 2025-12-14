@@ -100,7 +100,7 @@
                 </#if>
             </h1>
             <#if !set.locked || isAdministrator>
-              <button type="button" class="btn btn-danger ml-4" data-toggle="modal" data-target="#modal-delete-list">
+              <button type="button" class="btn btn-danger ml-4" data-bs-toggle="modal" data-bs-target="#modal-delete-list">
                 <i class="fas fa-trash"></i> <@message "delete"/>
               </button>
             </#if>
@@ -116,7 +116,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title"><@message "cart-confirm-deletion-title"/> (${listName(set)})</h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
@@ -125,8 +125,8 @@
             <p id="delete-selected-message" style="display: none;"><@message "list-selected-confirm-deletion-text"/></p>
           </div>
           <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-            <button type="button" class="btn btn-primary" data-dismiss="modal"
+            <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                     onclick="VariablesSetService.deleteVariables('${set.id}', variablesCartStorage.getSelections(), function() { window.location.reload(); })"><@message "confirm"/>
             </button>
           </div>
@@ -143,7 +143,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title"><@message "cart-confirm-deletion-title"/> (${listName(set)})</h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
@@ -151,8 +151,8 @@
             <p><@message "list-confirm-complete-deletion-text"/></p>
           </div>
           <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-            <button type="button" class="btn btn-primary" data-dismiss="modal"
+            <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                     onclick="VariablesSetService.deleteSet('${set.id}', function () { window.location.replace('${contextPath}/lists'); })"><@message "confirm"/>
             </button>
           </div>
@@ -194,10 +194,10 @@
             <div class="float-left">
               <ul class="nav nav-pills" id="studyClassNameChoice" :title="countWarning ? '<@message "count-warning"/>' : ''" role="tablist" v-cloak>
                 <li class="nav-item" role="presentation">
-                  <a class="nav-link active" id="individual-tab" @click="onStudyClassNameChange('Study')" href="" data-toggle="tab" role="tab" aria-controls="home" aria-selected="true"><@message "individual-search"/> <span :class="{ 'badge-warning': countWarning, 'badge-light': !countWarning }" class="badge right">{{individualSubCount}}</span></a>
+                  <a class="nav-link active" id="individual-tab" @click="onStudyClassNameChange('Study')" href="" data-bs-toggle="tab" role="tab" aria-controls="home" aria-selected="true"><@message "individual-search"/> <span :class="{ 'badge-warning': countWarning, 'badge-light': !countWarning }" class="badge right">{{individualSubCount}}</span></a>
                 </li>
                 <li class="nav-item" role="presentation">
-                  <a class="nav-link" id="harmonization-tab" @click="onStudyClassNameChange('HarmonizationStudy')" href="" data-toggle="tab" role="tab" aria-controls="profile" aria-selected="false"><@message "harmonization-search"/> <span :class="{ 'badge-warning': countWarning, 'badge-light': !countWarning }" class="badge right">{{harmonizationSubCount}}</span></a>
+                  <a class="nav-link" id="harmonization-tab" @click="onStudyClassNameChange('HarmonizationStudy')" href="" data-bs-toggle="tab" role="tab" aria-controls="profile" aria-selected="false"><@message "harmonization-search"/> <span :class="{ 'badge-warning': countWarning, 'badge-light': !countWarning }" class="badge right">{{harmonizationSubCount}}</span></a>
                 </li>
               </ul>
             </div>
@@ -210,7 +210,7 @@
               <#if showCartDownload>
                 <#if showCartViewDownload>
                   <div class="btn-group ml-2" role="group">
-                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       <i class="fas fa-download"></i> <@message "download"/>
                     </button>
                     <div class="dropdown-menu">
@@ -226,7 +226,7 @@
                 </#if>
               </#if>
               <#if !set.locked || isAdministrator>
-                <button id="delete-all" type="button" class="btn btn-danger ml-2" data-toggle="modal" data-target="#modal-delete">
+                <button id="delete-all" type="button" class="btn btn-danger ml-2" data-bs-toggle="modal" data-bs-target="#modal-delete">
                   <i class="fas fa-trash"></i> <@message "delete"/> <span class="badge badge-light selection-count"></span>
                 </button>
               </#if>

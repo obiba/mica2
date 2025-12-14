@@ -51,12 +51,12 @@
             <div class="card-header p-0 border-bottom-0 ">
               <ul class="nav nav-tabs" id="tabs-tab" role="tablist">
                 <li class="nav-item">
-                  <a class="nav-link active" id="tabs-dars-tab" data-toggle="pill" href="#tabs-dars" role="tab" aria-controls="tabs-dars" aria-selected="true">
+                  <a class="nav-link active" id="tabs-dars-tab" data-bs-toggle="pill" href="#tabs-dars" role="tab" aria-controls="tabs-dars" aria-selected="true">
                     <@message "data-access-requests"/> <span class="badge badge-info">${dars?size}</span>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" id="tabs-users-tab" data-toggle="pill" href="#tabs-users" role="tab" aria-controls="tabs-users" aria-selected="false">
+                  <a class="nav-link" id="tabs-users-tab" data-bs-toggle="pill" href="#tabs-users" role="tab" aria-controls="tabs-users" aria-selected="false">
                     <@message "registered-users"/> <span class="badge badge-info">${users?size}</span>
                   </a>
                 </li>
@@ -71,7 +71,7 @@
 
             <#macro darList>
               <div class="mb-3">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-add">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-add">
                   <i class="fas fa-plus"></i> <@message "new-data-access-request"/>
                 </button>
               </div>
@@ -111,7 +111,7 @@
                         <td><a href="${contextPath}/data-access/${dar.id}">${dar.id}</a></td>
                         <#if isAdministrator || isDAO>
                           <td>
-                            <a href="#" data-toggle="modal" data-target="#modal-${dar.applicant?replace("\\W", "-", "r")}">${applicants[dar.applicant].fullName}</a>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${dar.applicant?replace("\\W", "-", "r")}">${applicants[dar.applicant].fullName}</a>
                           </td>
                         </#if>
                         <td>${dar.title!""}</td>
@@ -165,7 +165,7 @@
                         <#list users as profile>
                           <tr>
                             <td>
-                              <a href="#" data-toggle="modal" data-target="#modal-${profile.username?replace("\\W", "-", "r")}">${profile.fullName}</a>
+                              <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${profile.username?replace("\\W", "-", "r")}">${profile.fullName}</a>
                             </td>
                             <td>
                               <#list profile.groups as group>
@@ -210,7 +210,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title"><@message "confirm-creation"/></h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -218,8 +218,8 @@
           <p><@message "confirm-data-access-request-creation"/></p>
         </div>
         <div class="modal-footer justify-content-between">
-          <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-          <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="DataAccessService.create()"><@message "confirm"/></button>
+          <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="DataAccessService.create()"><@message "confirm"/></button>
         </div>
       </div>
       <!-- /.modal-content -->

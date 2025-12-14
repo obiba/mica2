@@ -169,7 +169,7 @@
                     <dt class="col-sm-4"><@message "population"/></dt>
                     <dd class="col-sm-8">
                       <#if studyPublished>
-                        <a href="#" data-toggle="modal" data-target="#modal-${population.id}">${localize(population.name, population.id)}</a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${population.id}">${localize(population.name, population.id)}</a>
                         <@populationDialog id=population.id population=population></@populationDialog>
                       <#else>
                         ${localize(population.name, population.id)}
@@ -180,7 +180,7 @@
                       <dd class="col-sm-8">
                         <#if studyPublished>
                         <#assign dceId="${population.id}-${dce.id}">
-                        <a href="#" data-toggle="modal" data-target="#modal-${dceId}">${localize(dce.name, dce.id)}</a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${dceId}">${localize(dce.name, dce.id)}</a>
                         <@dceDialog id=dceId dce=dce></@dceDialog>
                         <#else>
                           ${localize(dce.name, dce.id)}

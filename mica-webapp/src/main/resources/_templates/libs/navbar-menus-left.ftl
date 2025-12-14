@@ -5,7 +5,7 @@
     <#if config??>
         <#if config.repositoryEnabled>
           <li id="repoMenu" class="nav-item dropdown">
-            <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><@message "repository"/></a>
+            <a href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><@message "repository"/></a>
             <ul aria-labelledby="repoMenu" class="dropdown-menu border-0 shadow">
                 <#if config.networkEnabled>
                   <li>
@@ -43,7 +43,7 @@
               <#else>
 
               <li id="searchMenu" class="nav-item dropdown">
-                <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle btn btn-success text-white"><@message "search"/> <i class="fas fa-search"></i></a>
+                <a href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle btn btn-success text-white"><@message "search"/> <i class="fas fa-search"></i></a>
                 <ul aria-labelledby="searchMenu" class="dropdown-menu border-0 shadow">
                   <li>
                     <a href="<#if !config.openAccess && !user??>${contextPath}/signin?redirect=${contextPath}/individual-search${defaultIndividualSearchState?url('UTF-8')}<#else>${contextPath}/individual-search${defaultIndividualSearchState}</#if>" class="dropdown-item">
@@ -66,7 +66,7 @@
 
         <#if config.dataAccessEnabled && config.projectEnabled>
           <li id="researchMenu" class="nav-item dropdown">
-            <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><@message "research"/></a>
+            <a href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><@message "research"/></a>
             <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
               <li id="dataAccessProcessMenu" ><a href="${contextPath}/data-access-process" class="dropdown-item"><@message "data-access-process"/></a></li>
               <li id="projectMenu"><a href="${contextPath}/projects" class="dropdown-item"><@message "approved-projects"/></a></li>

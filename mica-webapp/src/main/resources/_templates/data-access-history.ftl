@@ -112,7 +112,7 @@
                 <h3 class="card-title"><@message "actions-log"/></h3>
                 <#if !dar.archived>
                   <div class="float-right">
-                    <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-add">
+                    <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-add">
                       <i class="fas fa-plus"></i> <@message "add"/></a>
                   </div>
                 </#if>
@@ -157,7 +157,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title"><@message "add-action"/></h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -177,7 +177,7 @@
           </div>
         </div>
         <div class="modal-footer justify-content-between">
-          <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
+          <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
           <button type="button" class="btn btn-primary" id="action-add-submit"><@message "submit"/></button>
         </div>
       </div>

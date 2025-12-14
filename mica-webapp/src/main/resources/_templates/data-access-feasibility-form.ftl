@@ -81,30 +81,30 @@
                 <#if feasibilityPermissions?seq_contains("EDIT_STATUS")>
                   <span class="float-right border-left ml-2 pl-2">
                     <#if feasibility.status == "OPENED">
-                      <button type="button" class="btn btn-info" ng-hide="!schema.readOnly" data-toggle="modal"
-                              data-target="#modal-submit"><@message "submit"/></button>
+                      <button type="button" class="btn btn-info" ng-hide="!schema.readOnly" data-bs-toggle="modal"
+                              data-bs-target="#modal-submit"><@message "submit"/></button>
                       <button type="button" class="btn btn-success"
                               ng-click="validate()"><@message "validate"/></button>
                     <#elseif feasibility.status == "SUBMITTED">
                       <button type="button" class="btn btn-primary"
                               onclick="DataAccessService.reopen('${dar.id}', 'feasibility', '${feasibility.id}')"><@message "reopen"/></button>
-                      <button type="button" class="btn btn-success" data-toggle="modal"
-                              data-target="#modal-approve"><@message "approve"/></button>
-                      <button type="button" class="btn btn-danger" data-toggle="modal"
-                              data-target="#modal-reject"><@message "reject"/></button>
+                      <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                              data-bs-target="#modal-approve"><@message "approve"/></button>
+                      <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                              data-bs-target="#modal-reject"><@message "reject"/></button>
                     <#elseif feasibility.status == "APPROVED" && !accessConfig.approvedFinal>
-                      <button type="button" class="btn btn-outline-secondary" data-toggle="modal"
-                              data-target="#modal-cancel-approve"><@message "cancel-approval"/></button>
+                      <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
+                              data-bs-target="#modal-cancel-approve"><@message "cancel-approval"/></button>
                     <#elseif feasibility.status == "REJECTED" && !accessConfig.rejectedFinal>
-                      <button type="button" class="btn btn-outline-secondary" data-toggle="modal"
-                              data-target="#modal-cancel-reject"><@message "cancel-rejection"/></button>
+                      <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
+                              data-bs-target="#modal-cancel-reject"><@message "cancel-rejection"/></button>
                     </#if>
                   </span>
                 </#if>
                 <span class="float-right" ng-if="schema.readOnly">
                   <#if diffs??>
-                    <button type="button" class="btn btn-outline-info" data-toggle="modal"
-                            data-target="#modal-diff"><i class="fas fa-code-branch"></i> <@message "form-diff"/></button>
+                    <button type="button" class="btn btn-outline-info" data-bs-toggle="modal"
+                            data-bs-target="#modal-diff"><i class="fas fa-code-branch"></i> <@message "form-diff"/></button>
                   </#if>
                   <#if isAdministrator || isDAO>
                     <a href="${contextPath}/ws/data-access-request/${dar.id}/feasibility/${feasibility.id}/_word?lang=${.lang}" class="btn btn-default">
@@ -149,7 +149,7 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title"><@message "confirm-submission-title"/></h4>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
@@ -157,8 +157,8 @@
                   <p><@message "confirm-feasibility-submission-text"/></p>
                 </div>
                 <div class="modal-footer justify-content-between">
-                  <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-                  <button type="button" class="btn btn-primary" data-dismiss="modal"
+                  <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                           ng-click="submit('${dar.id}', 'feasibility', '${feasibility.id}')"><@message "confirm"/></button>
                 </div>
               </div>
@@ -174,7 +174,7 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title"><@message "confirm-approval-title"/></h4>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
@@ -182,8 +182,8 @@
                   <p><@message "confirm-feasibility-approval-text"/></p>
                 </div>
                 <div class="modal-footer justify-content-between">
-                  <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-                  <button type="button" class="btn btn-primary" data-dismiss="modal"
+                  <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                           onclick="DataAccessService.approve('${dar.id}', 'feasibility', '${feasibility.id}')"><@message "confirm"/></button>
                 </div>
               </div>
@@ -199,7 +199,7 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title"><@message "confirm-rejection-title"/></h4>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
@@ -207,8 +207,8 @@
                   <p><@message "confirm-feasibility-rejection-text"/></p>
                 </div>
                 <div class="modal-footer justify-content-between">
-                  <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-                  <button type="button" class="btn btn-primary" data-dismiss="modal"
+                  <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                           onclick="DataAccessService.reject('${dar.id}', 'feasibility', '${feasibility.id}')"><@message "confirm"/></button>
                 </div>
               </div>
@@ -224,7 +224,7 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title"><@message "confirm-cancel-approval-title"/></h4>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
@@ -232,8 +232,8 @@
                   <p><@message "confirm-feasibility-cancel-approval-text"/></p>
                 </div>
                 <div class="modal-footer justify-content-between">
-                  <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-                  <button type="button" class="btn btn-primary" data-dismiss="modal"
+                  <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                           onclick="DataAccessService.submit('${dar.id}', 'feasibility', '${feasibility.id}')"><@message "confirm"/></button>
                 </div>
               </div>
@@ -249,7 +249,7 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title"><@message "confirm-cancel-rejection-title"/></h4>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
@@ -257,8 +257,8 @@
                   <p><@message "confirm-feasibility-cancel-rejection-text"/></p>
                 </div>
                 <div class="modal-footer justify-content-between">
-                  <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-                  <button type="button" class="btn btn-primary" data-dismiss="modal"
+                  <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                           onclick="DataAccessService.submit('${dar.id}', 'feasibility', '${feasibility.id}')"><@message "confirm"/></button>
                 </div>
               </div>

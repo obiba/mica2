@@ -54,7 +54,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title"><#if member.person.firstName??>${member.person.firstName} </#if>${member.person.lastName}</h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -62,7 +62,7 @@
           <@memberModel member=member/>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-dismiss="modal"><@message "close"/></button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><@message "close"/></button>
         </div>
       </div>
       <!-- /.modal-content -->
@@ -79,7 +79,7 @@
     <#list members as member>
       <li>
         <#assign i++>
-        <a href="#" data-toggle="modal" data-target="#modal-${role}-${i}">
+        <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${role}-${i}">
           ${member.person.title!""} ${member.person.firstName!""} ${member.person.lastName}
         </a>
         <#if member.person.institution?? && member.person.institution.name??>
