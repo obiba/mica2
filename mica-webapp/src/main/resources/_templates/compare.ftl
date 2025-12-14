@@ -64,7 +64,7 @@
             <div class="card-body">
               <#if ids?size gt (individualStudies?size + harmonizationStudies?size)>
                 <div class="alert alert-warning alert-dismissible">
-                  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                  <button type="button" class="close" data-bs-dismiss="alert" aria-hidden="true">×</button>
                   <@messageArgs code="compare-max-items" args=["${config.maxItemsPerCompare}"]/>
                 </div>
               </#if>
@@ -76,7 +76,7 @@
                   <ul id="studies-tabs" class="nav nav-pills mb-3">
                     <#if individualStudies?size gt 0>
                       <li class="nav-item">
-                        <a id="individual-studies-tab" class="nav-link active" href="#tab_individual_studies" data-toggle="tab">
+                        <a id="individual-studies-tab" class="nav-link active" href="#tab_individual_studies" data-bs-toggle="tab">
                             <@message "individual"/>
                           <span class="badge badge-light">${individualStudies?size}</span>
                         </a>
@@ -84,7 +84,7 @@
                     </#if>
                     <#if harmonizationStudies?size gt 0>
                       <li class="nav-item">
-                        <a id="harmonization-studies-tab" class="nav-link" href="#tab_harmonization_studies" data-toggle="tab">
+                        <a id="harmonization-studies-tab" class="nav-link" href="#tab_harmonization_studies" data-bs-toggle="tab">
                             <@message "harmonization"/>
                           <span class="badge badge-light">${harmonizationStudies?size}</span>
                         </a>
@@ -155,7 +155,7 @@
             <div class="card-body">
               <#if ids?size gt networks?size>
                 <div class="alert alert-warning alert-dismissible">
-                  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                  <button type="button" class="close" data-bs-dismiss="alert" aria-hidden="true">×</button>
                     <@messageArgs code="compare-max-items" args=["${config.maxItemsPerCompare}"]/>
                 </div>
               </#if>

@@ -90,7 +90,7 @@
             </a>
             <#if showCopyQuery>
               <div class="btn-group ml-2">
-                <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><@message "global.copy-query"/></button>
+                <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><@message "global.copy-query"/></button>
                 <ul class="dropdown-menu dropdown-menu-right" style="width: 400px;">
                   <li class="pr-3 pl-3 pt-3">
                     <div class="input-group mb-2">
@@ -108,7 +108,7 @@
                 </ul>
               </div>
             </#if>
-            <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip"
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip"
                     title="<@message "collapse"/>">
               <i class="fas fa-minus"></i></button>
           </div>
@@ -121,7 +121,7 @@
                 <div class="modal-content">
                   <div class="modal-header">
                     <h5 class="modal-title"><@message "select-criteria"/></h5>
-                    <button type="button" class="btn btn-sm btn-success" data-dismiss="modal"><span aria-hidden="true"><@message "display-results"/></span></button>
+                    <button type="button" class="btn btn-sm btn-success" data-bs-dismiss="modal"><span aria-hidden="true"><@message "display-results"/></span></button>
                   </div>
                   <div class="modal-body" v-if="selectedTarget">
                     <rql-panel v-bind:target="selectedTarget" v-bind:taxonomy="selectedTaxonomy" v-bind:query="selectedQuery" @update-query="onQueryUpdate" @remove-query="onQueryRemove"></rql-panel>
@@ -157,13 +157,13 @@
               </#if>
               <ul id="search-tabs" class="nav nav-pills ml-auto p-2">
                 <#if searchListDisplay>
-                  <li class="nav-item"><a id="lists-tab" class="nav-link active" href="#tab_lists" data-toggle="tab" @click="onSelectSearch()"><@message "lists"/></a></li>
+                  <li class="nav-item"><a id="lists-tab" class="nav-link active" href="#tab_lists" data-bs-toggle="tab" @click="onSelectSearch()"><@message "lists"/></a></li>
                 </#if>
                 <#if searchCoverageDisplay>
-                  <li class="nav-item"><a id="coverage-tab" class="nav-link" href="#tab_coverage" data-toggle="tab" @click="onSelectCoverage()"><@message "coverage"/></a></li>
+                  <li class="nav-item"><a id="coverage-tab" class="nav-link" href="#tab_coverage" data-bs-toggle="tab" @click="onSelectCoverage()"><@message "coverage"/></a></li>
                 </#if>
                 <#if searchGraphicsDisplay>
-                  <li v-show="currentStudyTypeSelection && !currentStudyTypeSelection.harmonization" class="nav-item"><a id="graphics-tab" class="nav-link" href="#tab_graphics" data-toggle="tab" @click="onSelectGraphics()"><@message "graphics"/></a></li>
+                  <li v-show="currentStudyTypeSelection && !currentStudyTypeSelection.harmonization" class="nav-item"><a id="graphics-tab" class="nav-link" href="#tab_graphics" data-bs-toggle="tab" @click="onSelectGraphics()"><@message "graphics"/></a></li>
                 </#if>
               </ul>
             </div><!-- /.card-header -->
@@ -180,25 +180,25 @@
                       <ul class="nav nav-pills float-left" id="results-tab" role="tablist">
                           <#if searchVariableListDisplay>
                             <li class="nav-item" v-if="showVariableAndDatasetTabsInIndividualMode">
-                              <a class="nav-link active" id="variables-tab" data-toggle="pill" href="#variables" role="tab" @click="onSelectResult('variables', 'variable')"
+                              <a class="nav-link active" id="variables-tab" data-bs-toggle="pill" href="#variables" role="tab" @click="onSelectResult('variables', 'variable')"
                                  aria-controls="variables" aria-selected="true"><@message "variables"/> <span id="variable-count" class="badge badge-light">{{counts.variables}}</span></a>
                             </li>
                           </#if>
                           <#if searchDatasetListDisplay>
                             <li class="nav-item" v-if="showVariableAndDatasetTabsInIndividualMode">
-                              <a class="nav-link" id="datasets-tab" data-toggle="pill" href="#datasets" role="tab" @click="onSelectResult('datasets', 'dataset')"
+                              <a class="nav-link" id="datasets-tab" data-bs-toggle="pill" href="#datasets" role="tab" @click="onSelectResult('datasets', 'dataset')"
                                  aria-controls="datasets" aria-selected="false"><span>{{currentStudyTypeSelection && currentStudyTypeSelection.harmonization ? '<@message "protocols"/>' : '<@message "datasets"/>'}}</span> <span id="dataset-count" class="badge badge-light">{{counts.datasets}}</span></a>
                             </li>
                           </#if>
                           <#if searchStudyListDisplay>
                             <li class="nav-item">
-                              <a class="nav-link" id="studies-tab" data-toggle="pill" href="#studies" role="tab" @click="onSelectResult('studies', 'study')"
+                              <a class="nav-link" id="studies-tab" data-bs-toggle="pill" href="#studies" role="tab" @click="onSelectResult('studies', 'study')"
                                  aria-controls="studies" aria-selected="false"><span>{{currentStudyTypeSelection && currentStudyTypeSelection.harmonization ? '<@message "initiatives"/>' : '<@message "studies"/>'}}</span> <span id="study-count" class="badge badge-light">{{counts.studies}}</span></a>
                             </li>
                           </#if>
                           <#if searchNetworkListDisplay>
                             <li class="nav-item">
-                              <a class="nav-link" id="networks-tab" data-toggle="pill" href="#networks" role="tab" @click="onSelectResult('networks', 'network')"
+                              <a class="nav-link" id="networks-tab" data-bs-toggle="pill" href="#networks" role="tab" @click="onSelectResult('networks', 'network')"
                                  aria-controls="networks" aria-selected="false"><@message "networks"/> <span id="network-count" class="badge badge-light">{{counts.networks}}</span></a>
                             </li>
                           </#if>
@@ -231,7 +231,7 @@
                                         <div class="btn-group" v-if="isVariablesToolsVisible">
                                           <button id="cart-add-variables" type="button" class="btn btn-sm btn-success" @click="onAddToCart" title="<@message "sets.cart.add-variables-to-cart"/>">
                                             <i class="fas fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
-                                          <button type="button" class="btn btn-sm btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown"></button>
+                                          <button type="button" class="btn btn-sm btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"></button>
                                           <div ref="listsDropdownMenu" class="dropdown-menu dropdown-menu-right" style="min-width: 24em;">
                                             <form class="px-3 py-3" v-if="numberOfSetsRemaining > 0">
                                               <div class="form-group mb-0">
@@ -347,7 +347,7 @@
                           <ul class="nav nav-pills float-left" role="tablist">
                             <li class="nav-item">
                               <a class="nav-link active"
-                                 data-toggle="pill"
+                                 data-bs-toggle="pill"
                                  id="bucket-study-tab"
                                  href role="tab"
                                  @click="onSelectBucket('study')"
@@ -356,7 +356,7 @@
                             </li>
                             <li class="nav-item">
                               <a class="nav-link"
-                                 data-toggle="pill"
+                                 data-bs-toggle="pill"
                                  id="bucket-dataset-tab"
                                  href role="tab"
                                  @click="onSelectBucket('dataset')"
@@ -380,7 +380,7 @@
                             </#if>
                             <li class="ml-3">
                               <div class="dropleft">
-                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><@message "search.filter"/></button>
+                                <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown"><@message "search.filter"/></button>
 
                                 <div class="dropdown-menu">
                                   <button type="button" @click="onFullCoverage()" class="dropdown-item" v-bind:class="{ disabled: !canDoFullCoverage }">

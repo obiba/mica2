@@ -66,7 +66,7 @@
               <h3 class="card-title"><@message "documents"/></h3>
               <#if !dar.archived>
                 <div class="float-right">
-                  <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-upload">
+                  <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-upload">
                     <i class="fas fa-upload"></i> <@message "upload-document"/></a>
                 </div>
               </#if>
@@ -127,7 +127,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title"><@message "upload-document"/></h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -148,7 +148,7 @@
           </form>
         </div>
         <div class="modal-footer justify-content-between">
-          <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
+          <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
           <button type="button" class="btn btn-primary" id="upload-document-submit"><@message "submit"/></button>
         </div>
       </div>

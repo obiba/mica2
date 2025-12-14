@@ -8,10 +8,10 @@
         <div class="card-header">
           <h3 class="card-title pt-2"><@message "classifications" /></h3>
           <ul class="nav nav-pills ml-auto float-right">
-            <li class="nav-item"><a class="nav-link active" title="<@message "summary-view" />" href="#summary" data-toggle="tab">
+            <li class="nav-item"><a class="nav-link active" title="<@message "summary-view" />" href="#summary" data-bs-toggle="tab">
                 <i class="fas fa-grip-lines"></i></a>
             </li>
-            <li class="nav-item"><a class="nav-link " title="<@message "detail-view" />" href="#detail" data-toggle="tab">
+            <li class="nav-item"><a class="nav-link " title="<@message "detail-view" />" href="#detail" data-bs-toggle="tab">
                 <i class="fas fa-grip-horizontal"></i></a>
             </li>
           </ul>
@@ -44,8 +44,8 @@
 
       <div class="card-header pr-2">
         <button type="button" class="${'btn btn-block text-navy text-left pl-0 ' + collapsedClass}"
-                data-toggle="collapse"
-                data-target="#${taxonomy}">${taxonomyLocalized} <span class="badge badge-light"><@itemCount item=taxonomyItem/></span></button>
+                data-bs-toggle="collapse"
+                data-bs-target="#${taxonomy}">${taxonomyLocalized} <span class="badge badge-light"><@itemCount item=taxonomyItem/></span></button>
       </div>
       <div id="${taxonomy}" class="${'collapse ' + showClass}" data-parent="#annotationsAccordion_${index}">
         <div class="card-body">

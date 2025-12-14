@@ -22,7 +22,8 @@
 // ========================================================================
 // Import AdminLTE 4 (includes Bootstrap 5)
 // ========================================================================
-@import "admin-lte/dist/css/adminlte.css";
+@use "bootstrap/scss/bootstrap" as *;
+@use "admin-lte/src/scss/adminlte" as lte;
 
 // ========================================================================
 // Mica Custom Styles

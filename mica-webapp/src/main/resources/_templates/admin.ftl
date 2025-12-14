@@ -61,7 +61,7 @@
   <div class="container">
     <div class="navbar-header">
       <a href="${contextPath}/" class="navbar-brand">{{micaConfig.name}}</a>
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+      <button type="button" class="navbar-toggle" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
         <span class="sr-only">Toggle navigation</span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -76,7 +76,7 @@
           </a>
         </li>
         <li class="dropdown clearfix" ng-if="authenticated && micaConfig.isRepositoryEnabled && micaConfig.isCollectedDatasetEnabled">
-          <a href="" class="dropdown-toggle" data-toggle="dropdown">
+          <a href="" class="dropdown-toggle" data-bs-toggle="dropdown">
             <span>{{ 'global.individual' | translate }}</span>
             <i class="fa fa-caret-down"></i></a>
           <ul class="dropdown-menu pull-left">
@@ -89,7 +89,7 @@
         </li>
 
         <li class="dropdown clearfix" ng-if="authenticated && micaConfig.isRepositoryEnabled && micaConfig.isHarmonizedDatasetEnabled">
-          <a href="" class="dropdown-toggle" data-toggle="dropdown">
+          <a href="" class="dropdown-toggle" data-bs-toggle="dropdown">
             <span>{{'global.harmonization' | translate }}</span>
             <i class="fa fa-caret-down"></i></a>
           <ul class="dropdown-menu pull-left">
@@ -99,7 +99,7 @@
         </li>
 
         <li class="dropdown clearfix" ng-if="authenticated && (micaConfig.isDataAccessEnabled || micaConfig.isProjectEnabled)">
-          <a href="" class="dropdown-toggle" data-toggle="dropdown">
+          <a href="" class="dropdown-toggle" data-bs-toggle="dropdown">
             <span translate>research</span>
             <i class="fa fa-caret-down"></i></a>
           <ul class="dropdown-menu pull-left">
@@ -130,7 +130,7 @@
           </a>
         </li>
         <li class="dropdown">
-          <a href="" class="dropdown-toggle" data-toggle="dropdown">
+          <a href="" class="dropdown-toggle" data-bs-toggle="dropdown">
             <i class="fa fa-user"></i>
             {{UserProfileService.getFullName(subject.profile) || subject.login}}
             <i class="fa fa-caret-down"></i></a>

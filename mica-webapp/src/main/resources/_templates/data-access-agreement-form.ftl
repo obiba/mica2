@@ -82,13 +82,13 @@
                   <#if agreementPermissions?seq_contains("EDIT_STATUS")>
                     <span class="float-right">
                       <#if agreement.status == "OPENED">
-                        <button type="button" class="btn btn-info" ng-if="schema.readOnly" data-toggle="modal"
-                                data-target="#modal-submit"><@message "submit"/></button>
+                        <button type="button" class="btn btn-info" ng-if="schema.readOnly" data-bs-toggle="modal"
+                                data-bs-target="#modal-submit"><@message "submit"/></button>
                         <button type="button" class="btn btn-success"
                                 ng-click="validate()"><@message "validate"/></button>
                       <#elseif agreement.status == "APPROVED" && !accessConfig.approvedFinal>
-                        <button type="button" class="btn btn-primary border-left ml-2 pl-2" data-toggle="modal"
-                                data-target="#modal-reopen"><@message "reopen"/></button>
+                        <button type="button" class="btn btn-primary border-left ml-2 pl-2" data-bs-toggle="modal"
+                                data-bs-target="#modal-reopen"><@message "reopen"/></button>
                       </#if>
                     </span>
                   </#if>
@@ -131,7 +131,7 @@
                 <div class="modal-content">
                   <div class="modal-header">
                     <h4 class="modal-title"><@message "confirm-submission-title"/></h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
                   </div>
@@ -139,8 +139,8 @@
                     <p><@message "confirm-agreement-submission-text"/></p>
                   </div>
                   <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal"
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                             ng-click="approveAgreement('${dar.id}', '${agreement.id}')"><@message "confirm"/></button>
                   </div>
                 </div>
@@ -156,7 +156,7 @@
                 <div class="modal-content">
                   <div class="modal-header">
                     <h4 class="modal-title"><@message "confirm-rejection-title"/></h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
                   </div>
@@ -164,8 +164,8 @@
                     <p><@message "confirm-agreement-rejection-text"/></p>
                   </div>
                   <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal"
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                             onclick="DataAccessService.reject('${dar.id}', 'agreement', '${agreement.id}')"><@message "confirm"/></button>
                   </div>
                 </div>
@@ -181,7 +181,7 @@
                 <div class="modal-content">
                   <div class="modal-header">
                     <h4 class="modal-title"><@message "confirm-reopen-title"/></h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
                   </div>
@@ -189,8 +189,8 @@
                     <p><@message "confirm-agreement-reopen-text"/></p>
                   </div>
                   <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal"
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                             onclick="DataAccessService.reopen('${dar.id}', 'agreement', '${agreement.id}')"><@message "confirm"/></button>
                   </div>
                 </div>

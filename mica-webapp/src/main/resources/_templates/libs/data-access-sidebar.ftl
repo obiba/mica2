@@ -65,7 +65,7 @@
               </#list>
               <#if !dar.archived && (user.username == dar.applicant || isAdministrator)>
                 <li class="nav-item">
-                  <a class="nav-link" data-toggle="modal" data-target="#modal-feasibility-add">
+                  <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modal-feasibility-add">
                     <i class="fas fa-plus nav-icon"></i>
                     <p><@message "new-feasibility"/></p>
                   </a>
@@ -162,7 +162,7 @@
               </#list>
               <#if !dar.archived && (user.username == dar.applicant || isAdministrator)>
                 <li class="nav-item">
-                  <a class="nav-link" data-toggle="modal" data-target="#modal-amendment-add">
+                  <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modal-amendment-add">
                     <i class="fas fa-plus nav-icon"></i>
                     <p><@message "new-amendment"/></p>
                   </a>
@@ -271,7 +271,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title"><@message "confirm-creation"/></h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -279,8 +279,8 @@
           <p><@message "confirm-data-access-feasibility-creation"/></p>
         </div>
         <div class="modal-footer justify-content-between">
-          <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-          <button type="button" class="btn btn-primary" data-dismiss="modal"
+          <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                   onclick="DataAccessService.create('${dar.id}', 'feasibility')"><@message "confirm"/>
           </button>
         </div>
@@ -299,7 +299,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title"><@message "confirm-creation"/></h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -307,8 +307,8 @@
           <p><@message "confirm-data-access-amendment-creation"/></p>
         </div>
         <div class="modal-footer justify-content-between">
-          <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-          <button type="button" class="btn btn-primary" data-dismiss="modal"
+          <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                   onclick="DataAccessService.create('${dar.id}', 'amendment')"><@message "confirm"/>
           </button>
         </div>

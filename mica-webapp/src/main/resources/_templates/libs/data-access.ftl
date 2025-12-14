@@ -41,7 +41,7 @@
           <#if isDAO || isAdministrator>
             <p><@message "start-date-dao-text"/></p>
             <div>
-              <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-start-date" <#if dar.archived>disabled</#if>>
+              <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-start-date" <#if dar.archived>disabled</#if>>
                 <i class="fas fa-clock"></i> <@message "start-date"/>
               </button>
             </div>
@@ -195,7 +195,7 @@
             <#if permissions?seq_contains("ADD_COLLABORATORS") || permissions?seq_contains("DELETE_COLLABORATORS")>
               <td>
                 <div class="btn-group">
-                  <button type="button" class="btn text-muted" data-toggle="dropdown" aria-expanded="false">
+                  <button type="button" class="btn text-muted" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                   </button>
                   <ul class="dropdown-menu" style="">
@@ -203,7 +203,7 @@
                       <li><a class="dropdown-item" href="#" onclick="DataAccessService.reinviteCollaborator('${dar.id}', '${collaborator.email}', '<@message "invitation-resent"/>')"><i class="fa fa-paper-plane mr-2"></i> <@message "invite"/></a></li>
                     </#if>
                     <#if permissions?seq_contains("DELETE_COLLABORATORS")>
-                      <li><a class="dropdown-item" href="#" onclick="$('#collaborator-to-delete').text('${collaborator.email}')" data-toggle="modal" data-target="#modal-collaborator-delete"><i class="fa fa-trash mr-2"></i> <@message "remove"/></a></li>
+                      <li><a class="dropdown-item" href="#" onclick="$('#collaborator-to-delete').text('${collaborator.email}')" data-bs-toggle="modal" data-bs-target="#modal-collaborator-delete"><i class="fa fa-trash mr-2"></i> <@message "remove"/></a></li>
                     </#if>
                   </ul>
                 </div>

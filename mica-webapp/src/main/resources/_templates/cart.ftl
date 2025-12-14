@@ -37,7 +37,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title"><@message "cart-confirm-deletion-title"/></h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
@@ -46,8 +46,8 @@
             <p id="delete-selected-message" style="display: none;"><@message "cart-selected-confirm-deletion-text"/></p>
           </div>
           <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-            <button type="button" class="btn btn-primary" data-dismiss="modal"
+            <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                     onclick="VariablesSetService.deleteVariables('${sets.variablesCart.id}', variablesCartStorage.getSelections(), function() { window.location.replace('${contextPath}/cart?type=variables'); })"><@message "confirm"/>
             </button>
           </div>
@@ -64,7 +64,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title"><@message "cart-confirm-deletion-title"/></h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
@@ -73,8 +73,8 @@
             <p id="delete-selected-studies-message" style="display: none;"><@message "studies-cart-selected-confirm-deletion-text"/></p>
           </div>
           <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-            <button type="button" class="btn btn-primary" data-dismiss="modal"
+            <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                     onclick="StudiesSetService.deleteStudies('${sets.studiesCart.id}', studiesCartStorage.getSelections(), function() { window.location.replace('${contextPath}/cart?type=studies'); })"><@message "confirm"/>
             </button>
           </div>
@@ -91,7 +91,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title"><@message "cart-confirm-deletion-title"/></h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
@@ -100,8 +100,8 @@
             <p id="delete-selected-networks-message" style="display: none;"><@message "networks-cart-selected-confirm-deletion-text"/></p>
           </div>
           <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-            <button type="button" class="btn btn-primary" data-dismiss="modal"
+            <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                     onclick="NetworksSetService.deleteNetworks('${sets.networksCart.id}', networksCartStorage.getSelections(), function() { window.location.replace('${contextPath}/cart?type=networks'); })"><@message "confirm"/>
             </button>
           </div>
@@ -122,7 +122,7 @@
               <#if variablesCartEnabled>
                 <li class="nav-item">
                   <a id="variables-tab" @click="onTabChanged('variables')" class="nav-link <#if showCartType == "variables">active</#if>"
-                     <#if showCartType == "variables">href="#tab_variables" data-toggle="tab"<#else>href="${contextPath}/cart?type=variables"</#if>>
+                     <#if showCartType == "variables">href="#tab_variables" data-bs-toggle="tab"<#else>href="${contextPath}/cart?type=variables"</#if>>
                       <@message "variables"/>
                     <span class="badge badge-light">${sets.variablesCart.count}</span>
                   </a>
@@ -131,7 +131,7 @@
               <#if studiesCartEnabled>
                 <li class="nav-item">
                   <a id="studies-tab" @click="onTabChanged('studies')" class="nav-link <#if showCartType == "studies">active</#if>"
-                     <#if showCartType == "studies">href="#tab_studies" data-toggle="tab"<#else>href="${contextPath}/cart?type=studies"</#if>>
+                     <#if showCartType == "studies">href="#tab_studies" data-bs-toggle="tab"<#else>href="${contextPath}/cart?type=studies"</#if>>
                       <@message "studies"/>
                     <span class="badge badge-light">${sets.studiesCart.count}</span>
                   </a>
@@ -140,7 +140,7 @@
               <#if networksCartEnabled>
                 <li class="nav-item">
                   <a id="networks-tab" @click="onTabChanged('networks')" class="nav-link <#if showCartType == "networks">active</#if>"
-                     <#if showCartType == "networks">href="#tab_networks" data-toggle="tab"<#else>href="${contextPath}/cart?type=networks"</#if>>
+                     <#if showCartType == "networks">href="#tab_networks" data-bs-toggle="tab"<#else>href="${contextPath}/cart?type=networks"</#if>>
                       <@message "networks"/>
                     <span class="badge badge-light">${sets.networksCart.count}</span>
                   </a>
@@ -165,10 +165,10 @@
                   <div class="float-left">
                     <ul class="nav nav-pills" id="studyClassNameChoice" :title="countWarning ? '<@message "count-warning"/>' : ''" role="tablist" v-cloak>
                       <li class="nav-item" role="presentation">
-                        <a class="nav-link active" id="individual-tab" @click="onStudyClassNameChange('Study')" href="" data-toggle="tab" role="tab" aria-controls="home" aria-selected="true"><@message "individual-search"/> <span :class="{ 'badge-warning': countWarning, 'badge-light': !countWarning }" class="badge right">{{individualSubCount}}</span></a>
+                        <a class="nav-link active" id="individual-tab" @click="onStudyClassNameChange('Study')" href="" data-bs-toggle="tab" role="tab" aria-controls="home" aria-selected="true"><@message "individual-search"/> <span :class="{ 'badge-warning': countWarning, 'badge-light': !countWarning }" class="badge right">{{individualSubCount}}</span></a>
                       </li>
                       <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="harmonization-tab" @click="onStudyClassNameChange('HarmonizationStudy')" href="" data-toggle="tab" role="tab" aria-controls="profile" aria-selected="false"><@message "harmonization-search"/> <span :class="{ 'badge-warning': countWarning, 'badge-light': !countWarning }" class="badge right">{{harmonizationSubCount}}</span></a>
+                        <a class="nav-link" id="harmonization-tab" @click="onStudyClassNameChange('HarmonizationStudy')" href="" data-bs-toggle="tab" role="tab" aria-controls="profile" aria-selected="false"><@message "harmonization-search"/> <span :class="{ 'badge-warning': countWarning, 'badge-light': !countWarning }" class="badge right">{{harmonizationSubCount}}</span></a>
                       </li>
                     </ul>
                   </div>
@@ -179,7 +179,7 @@
                 <div class="float-right">
                   <#if canCreateDAR>
                     <#if user??>
-                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-add">
+                      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-add">
                         <i class="fas fa-plus"></i> <@message "new-data-access-request"/>
                       </button>
                     <#else>
@@ -191,7 +191,7 @@
 
                   <#if sets.variablesLists?? && sets.variablesLists?size lt maxNumberOfSets>
                     <div class="btn-group ml-2" role="group">
-                      <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+                      <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown">
                           <@message "sets.add.button.set-label"/>
                         <span class="badge badge-light selection-count"></span>
                       </button>
@@ -230,7 +230,7 @@
                   <#if showCartDownload>
                     <#if showCartViewDownload>
                       <div class="btn-group ml-2" role="group">
-                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                           <i class="fas fa-download"></i> <@message "download"/>
                         </button>
                         <div class="dropdown-menu">
@@ -244,7 +244,7 @@
                       </a>
                     </#if>
                   </#if>
-                  <button id="delete-all" type="button" class="btn btn-danger ml-2" data-toggle="modal" data-target="#modal-delete">
+                  <button id="delete-all" type="button" class="btn btn-danger ml-2" data-bs-toggle="modal" data-bs-target="#modal-delete">
                     <i class="fas fa-trash"></i> <@message "delete"/> <span class="badge badge-light selection-count"></span>
                   </button>
                 </div>
@@ -303,10 +303,10 @@
                   <div class="float-left">
                     <ul class="nav nav-pills" id="studyClassNameChoice" :title="countWarning ? '<@message "count-warning"/>' : ''" role="tablist" v-cloak>
                       <li class="nav-item" role="presentation">
-                        <a class="nav-link active" id="individual-tab" @click="onStudyClassNameChange('Study')" href="" data-toggle="tab" role="tab" aria-controls="home" aria-selected="true"><@message "individual-search"/> <span :class="{ 'badge-warning': countWarning, 'badge-light': !countWarning }" class="badge right">{{individualSubCount}}</span></a>
+                        <a class="nav-link active" id="individual-tab" @click="onStudyClassNameChange('Study')" href="" data-bs-toggle="tab" role="tab" aria-controls="home" aria-selected="true"><@message "individual-search"/> <span :class="{ 'badge-warning': countWarning, 'badge-light': !countWarning }" class="badge right">{{individualSubCount}}</span></a>
                       </li>
                       <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="harmonization-tab" @click="onStudyClassNameChange('HarmonizationStudy')" href="" data-toggle="tab" role="tab" aria-controls="profile" aria-selected="false"><@message "harmonization-search"/> <span :class="{ 'badge-warning': countWarning, 'badge-light': !countWarning }" class="badge right">{{harmonizationSubCount}}</span></a>
+                        <a class="nav-link" id="harmonization-tab" @click="onStudyClassNameChange('HarmonizationStudy')" href="" data-bs-toggle="tab" role="tab" aria-controls="profile" aria-selected="false"><@message "harmonization-search"/> <span :class="{ 'badge-warning': countWarning, 'badge-light': !countWarning }" class="badge right">{{harmonizationSubCount}}</span></a>
                       </li>
                     </ul>
                   </div>
@@ -324,7 +324,7 @@
                       <i class="fas fa-download"></i> <@message "download-cart-export"/>
                     </a>
                   </#if>
-                  <button id="delete-all" type="button" class="btn btn-danger ml-2" data-toggle="modal" data-target="#modal-delete-studies">
+                  <button id="delete-all" type="button" class="btn btn-danger ml-2" data-bs-toggle="modal" data-bs-target="#modal-delete-studies">
                     <i class="fas fa-trash"></i> <@message "delete"/> <span class="badge badge-light studies-selection-count"></span>
                   </button>
                 </div>
@@ -391,7 +391,7 @@
                       <i class="fas fa-download"></i> <@message "download-cart-export"/>
                     </a>
                   </#if>
-                  <button id="delete-all" type="button" class="btn btn-danger ml-2" data-toggle="modal" data-target="#modal-delete-networks">
+                  <button id="delete-all" type="button" class="btn btn-danger ml-2" data-bs-toggle="modal" data-bs-target="#modal-delete-networks">
                     <i class="fas fa-trash"></i> <@message "delete"/> <span class="badge badge-light networks-selection-count"></span>
                   </button>
                 </div>
@@ -445,7 +445,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title"><@message "confirm-creation"/></h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
@@ -453,8 +453,8 @@
             <p><@message "confirm-data-access-request-creation-from-cart"/></p>
           </div>
           <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="DataAccessService.createFromCart()"><@message "confirm"/></button>
+            <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="DataAccessService.createFromCart()"><@message "confirm"/></button>
           </div>
         </div>
         <!-- /.modal-content -->

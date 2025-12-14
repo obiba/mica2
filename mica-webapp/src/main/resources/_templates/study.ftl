@@ -160,7 +160,7 @@
                 <div class="card-header">
                   <h3 class="card-title"><@message "members"/></h3>
                   <div class="card-tools float-right">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
                       <i class="fas fa-minus"></i></button>
                   </div>
                   <a href="${contextPath}/ws/persons/_search/_download?limit=1000&query=studyMemberships.parentId:(${study.id})" class="btn btn-primary float-right mr-2">
@@ -237,7 +237,7 @@
                     <#else>
                       <ul class="nav nav-pills mb-3">
                         <#list study.populationsSorted as pop>
-                          <li class="nav-item"><a class="nav-link <#if pop?index == 0>active</#if>" href="#population-${pop.id}" data-toggle="tab">
+                          <li class="nav-item"><a class="nav-link <#if pop?index == 0>active</#if>" href="#population-${pop.id}" data-bs-toggle="tab">
                             ${localize(pop.name)}</a>
                           </li>
                         </#list>

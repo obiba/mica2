@@ -187,7 +187,7 @@
                   <@populationDialog id=population.id population=population></@populationDialog>
                 </div>
                 <div class="card-footer">
-                  <a href="#" data-toggle="modal" data-target="#modal-${population.id}"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
+                  <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${population.id}"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
               </div>
             </div>
@@ -205,7 +205,7 @@
                   <@dceDialog id=dceId dce=dce></@dceDialog>
                 </div>
                 <div class="card-footer">
-                  <a href="#" data-toggle="modal" data-target="#modal-${dceId}"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
+                  <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${dceId}"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
               </div>
             </div>
@@ -215,7 +215,7 @@
                 <div class="card-header">
                   <h3 class="card-title"><@message "studies-included"/></h3>
                   <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
                       <i class="fas fa-minus"></i></button>
                   </div>
                 </div>
@@ -242,7 +242,7 @@
                               <#if table.population??>
                                 <#assign popId="${table.study.id}-${table.population.id}">
                                 <@populationDialog id=popId population=table.population></@populationDialog>
-                                <a href="#" data-toggle="modal" data-target="#modal-${popId}">
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${popId}">
                                   ${localize(table.population.name)}
                                 </a>
                               </#if>
@@ -251,7 +251,7 @@
                               <#if table.population?? && table.dce??>
                                 <#assign dceId="${table.study.id}-${table.population.id}-${table.dce.id}">
                                 <@dceDialog id=dceId dce=table.dce></@dceDialog>
-                                <a href="#" data-toggle="modal" data-target="#modal-${dceId}">
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${dceId}">
                                   ${localize(table.dce.name)}
                                 </a>
                               </#if>
@@ -268,7 +268,7 @@
                 <div class="card-header">
                   <h3 class="card-title"><@message "initiatives-included"/></h3>
                   <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
                       <i class="fas fa-minus"></i></button>
                   </div>
                 </div>
@@ -333,11 +333,11 @@
                           <a href="javascript:void(0)"
                              id="popover-${table?counter}"
                              data-html="true"
-                             data-toggle="popover"
+                             data-bs-toggle="popover"
                              data-trigger="hover"
-                             data-placement="top"
+                             data-bs-placement="top"
                              data-boundary="viewport"
-                             data-content="${localize(table.description)}"
+                             data-bs-content="${localize(table.description)}"
                              title="<@message "dataset.harmonized-table" />">
                               <span class="d-inline-block marked"><template>${localize(allStudies[table.studyId].acronym)}</template></span>
                           </a>
@@ -378,7 +378,7 @@
 <#include "libs/scripts.ftl">
 <#include "libs/dataset-scripts.ftl">
 <script>
-  $('#harmonizedTable tr [data-toggle="popover"]').popover({html: true, delay: { show: 250, hide: 750 }});
+  $('#harmonizedTable tr [data-bs-toggle="popover"]').popover({html: true, delay: { show: 250, hide: 750 }});
   document.querySelectorAll("[id^='popover-']").forEach(element => {
     element.dataset.content=marked.parse(element.dataset.content).replaceAll('"', "'");
   })
