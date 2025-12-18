@@ -29,31 +29,20 @@
       <form id="form" method="post">
         <div class="input-group mb-3">
           <input name="username" type="text" class="form-control" placeholder="<@message "sign-in-username"/>">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fa-solid fa-envelope"></span>
-            </div>
-          </div>
+          <span class="input-group-text">
+            <i class="fa-solid fa-envelope"></i>
+          </span>
         </div>
         <div class="input-group mb-3">
           <input name="password" type="password" autocomplete="off" class="form-control" placeholder="<@message "password"/>">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fa-solid fa-lock"></span>
-            </div>
-          </div>
+          <span class="input-group-text">
+            <i class="fa-solid fa-lock"></i>
+          </span>
         </div>
-        <div class="row">
-          <div class="col-6">
-
-          </div>
-          <!-- /.col -->
-          <div class="col-6">
-            <button type="submit" class="btn btn-primary btn-block">
-              <i class="spinner-border spinner-border-sm" style="display: none;"></i> <@message "sign-in-submit"/>
-            </button>
-          </div>
-          <!-- /.col -->
+        <div class="d-flex justify-content-end">
+          <button type="submit" class="btn btn-primary w-50">
+            <i class="spinner-border spinner-border-sm" style="display: none;"></i> <@message "sign-in-submit"/>
+          </button>
         </div>
       </form>
 
@@ -61,7 +50,7 @@
         <div class="social-auth-links text-center mb-3">
           <p>- <@message "sign-in-or"/> -</p>
           <#list oidcProviders as oidc>
-            <a href="${oidc.url}" class="btn btn-block btn-primary">
+            <a href="${oidc.url}" class="btn btn-primary w-100">
               <@message "sign-in-with"/> ${oidc.title}
             </a>
           </#list>
@@ -92,21 +81,19 @@
       <div>
         <div class="input-group mb-3">
           <input id="otp" name="otp" type="number" class="form-control"/>
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fa-solid fa-mobile"></span>
-            </div>
-          </div>
+          <span class="input-group-text">
+            <i class="fa-solid fa-mobile"></i>
+          </span>
         </div>
         <div class="row">
           <div class="col-6">
-            <button class="btn btn-primary btn-block" onclick="validateOtp()">
+            <button class="btn btn-primary w-100" onclick="validateOtp()">
               <i class="spinner-border spinner-border-sm" style="display: none;"></i> <@message "validate"/>
             </button>
           </div>
           <!-- /.col -->
           <div class="col-6">
-            <button class="btn btn-default btn-block" onclick="cancelOtp()">
+            <button class="btn btn-default w-100" onclick="cancelOtp()">
                 <@message "cancel"/>
             </button>
           </div>

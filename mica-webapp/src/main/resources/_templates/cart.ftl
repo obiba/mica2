@@ -201,11 +201,9 @@
                           <div class="form-group mb-0">
                             <div class="input-group">
                               <input id="newVariableSetName" type="text" class="form-control" placeholder="<@message "sets.add.modal.create-new"/>">
-                              <div class="input-group-append">
-                                <button id="addToNewSetButton" class="btn btn-success disabled" type="button" onclick="onClickAddToNewSet()">
-                                  <i class="fa fa-plus"></i> <@message "global.add"/>
-                                </button>
-                              </div>
+                              <button id="addToNewSetButton" class="btn btn-success disabled" type="button" onclick="onClickAddToNewSet()">
+                                <i class="fa fa-plus"></i> <@message "global.add"/>
+                              </button>
                             </div>
                           </div>
 
