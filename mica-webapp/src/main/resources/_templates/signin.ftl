@@ -93,7 +93,7 @@
           </div>
           <!-- /.col -->
           <div class="col-6">
-            <button class="btn btn-default w-100" onclick="cancelOtp()">
+            <button class="btn btn-secondary w-100" onclick="cancelOtp()">
                 <@message "cancel"/>
             </button>
           </div>

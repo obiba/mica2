@@ -90,7 +90,7 @@
             </a>
             <#if showCopyQuery>
               <div class="btn-group ms-2">
-                <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><@message "global.copy-query"/></button>
+                <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><@message "global.copy-query"/></button>
                 <ul class="dropdown-menu dropdown-menu-right" style="width: 400px;">
                   <li class="pe-3 ps-3 pt-3">
                     <div class="input-group mb-2">

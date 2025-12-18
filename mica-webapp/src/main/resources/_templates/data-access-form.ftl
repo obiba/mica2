@@ -77,7 +77,7 @@
                   </span>
                   <span class="float-end border-left ms-2 ps-2" ng-hide="schema.readOnly">
                     <a class="btn btn-primary" href="#" ng-click="save('${dar.id}')"><@message "save"/></a>
-                    <a class="btn btn-default" href="${dar.id}"><@message "cancel"/></a>
+                    <a class="btn btn-secondary" href="${dar.id}"><@message "cancel"/></a>
                   </span>
                 </#if>
                 <#if permissions?seq_contains("EDIT_STATUS")>
@@ -118,16 +118,16 @@
                             data-bs-target="#modal-diff"><i class="fa-solid fa-code-branch"></i> <@message "form-diff"/></button>
                   </#if>
                   <#if accessConfig.downloadPdf>
-                    <a href="${contextPath}/ws/data-access-request/${dar.id}/_pdf?lang=${.lang}" class="btn btn-default">
+                    <a href="${contextPath}/ws/data-access-request/${dar.id}/_pdf?lang=${.lang}" class="btn btn-secondary">
                       <i class="fa-solid fa-file-pdf"></i> <@message "download"/>
                     </a>
                   <#else>
                     <#if isAdministrator || isDAO>
-                      <a href="${contextPath}/ws/data-access-request/${dar.id}/_word?lang=${.lang}" class="btn btn-default">
+                      <a href="${contextPath}/ws/data-access-request/${dar.id}/_word?lang=${.lang}" class="btn btn-secondary">
                         <i class="fa-solid fa-file-word"></i> <@message "download"/>
                       </a>
                     </#if>
-                    <a href="#" onclick="window.print()" class="btn btn-default">
+                    <a href="#" onclick="window.print()" class="btn btn-secondary">
                       <i class="fa-solid fa-print"></i> <@message "global.print"/>
                     </a>
                   </#if>
@@ -149,7 +149,7 @@
               <div class="card-footer" ng-hide="schema.readOnly" ng-cloak>
                 <span class="float-end">
                   <a class="btn btn-primary" href="#" ng-click="save('${dar.id}')"><@message "save"/></a>
-                  <a class="btn btn-default" href="${dar.id}"><@message "cancel"/></a>
+                  <a class="btn btn-secondary" href="${dar.id}"><@message "cancel"/></a>
                 </span>
               </div>
             </#if>
@@ -174,7 +174,7 @@
                   <p><@message "confirm-submission-text"/></p>
                 </div>
                 <div class="modal-footer justify-content-between">
-                  <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
                   <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                           ng-click="submit('${dar.id}')"><@message "confirm"/></button>
                 </div>
@@ -199,7 +199,7 @@
                   <p><@message "confirm-approval-text"/></p>
                 </div>
                 <div class="modal-footer justify-content-between">
-                  <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
                   <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                           onclick="DataAccessService.approve('${dar.id}')"><@message "confirm"/></button>
                 </div>
@@ -224,7 +224,7 @@
                   <p><@message "confirm-conditional-approval-text"/></p>
                 </div>
                 <div class="modal-footer justify-content-between">
-                  <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
                   <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                           onclick="DataAccessService.conditionally('${dar.id}')"><@message "confirm"/></button>
                 </div>
@@ -249,7 +249,7 @@
                   <p><@message "confirm-rejection-text"/></p>
                 </div>
                 <div class="modal-footer justify-content-between">
-                  <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
                   <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                           onclick="DataAccessService.reject('${dar.id}')"><@message "confirm"/></button>
                 </div>
@@ -274,7 +274,7 @@
                   <p><@message "confirm-cancel-approval-text"/></p>
                 </div>
                 <div class="modal-footer justify-content-between">
-                  <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
                     <#if accessConfig.withReview>
                       <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                               onclick="DataAccessService.review('${dar.id}')"><@message "confirm"/></button>
@@ -304,7 +304,7 @@
                   <p><@message "confirm-cancel-rejection-text"/></p>
                 </div>
                 <div class="modal-footer justify-content-between">
-                  <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
                     <#if accessConfig.withReview>
                       <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                               onclick="DataAccessService.review('${dar.id}')"><@message "confirm"/></button>

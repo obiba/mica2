@@ -46,7 +46,7 @@
               </div>
               <div class="col-3">
                 <a id="submit" class="btn btn-primary" href="#"><@message "submit"/></a>
-                <button id="clear" class="btn btn-default" onclick="clearCrosstab()"><@message "clear"/></button>
+                <button id="clear" class="btn btn-secondary" onclick="clearCrosstab()"><@message "clear"/></button>
               </div>
             </div>
           </div>
@@ -69,7 +69,7 @@
             <a id="download" href="#" class="btn btn-primary float-end">
               <i class="fa-solid fa-download"></i> <@message "download"/>
             </a>
-            <button id="transpose" class="btn btn-default float-end me-2" onclick="transposeCrosstab()">
+            <button id="transpose" class="btn btn-secondary float-end me-2" onclick="transposeCrosstab()">
               <i class="fa-solid fa-exchange-alt"></i>
               <@message "transpose"/>
             </button>
