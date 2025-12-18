@@ -73,7 +73,7 @@ Vue.component('search-criteria', {
         </a>
         <ul class="nav nav-treeview">
           <li class="nav-item" :key="menu.name" v-for="menu in criteriaMenu.items[name].menus" v-if="!(studyTypeSelection && studyTypeSelection.harmonization) || !menu.hideHarmo">
-            <a href="#" class="nav-link" data-toggle="modal" data-target="#taxonomy-modal"
+            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#taxonomy-modal"
               :title="menu.description | localize-string"
               @click.prevent="onTaxonomySelection(menu.name, name)"><i class="far fa-circle nav-icon"></i><p>{{ menu.title | localize-string }}</p>
             </a>
@@ -856,8 +856,16 @@ class TableFixedHeaderUtility {
         this.refreshQueries();
 
         // result
-        $(`.nav-pills #${payload.display}-tab`).tab('show');
-        $(`.nav-pills #${payload.type}-tab`).tab('show');
+        const displayTabEl = document.querySelector(`.nav-pills #${payload.display}-tab`);
+        if (displayTabEl) {
+          const displayTab = new bootstrap.Tab(displayTabEl);
+          displayTab.show();
+        }
+        const typeTabEl = document.querySelector(`.nav-pills #${payload.type}-tab`);
+        if (typeTabEl) {
+          const typeTab = new bootstrap.Tab(typeTabEl);
+          typeTab.show();
+        }
 
         if (payload.bucket) {
           this.selectedBucket = TARGET_ID_BUCKET_MAP[payload.bucket];
@@ -865,7 +873,11 @@ class TableFixedHeaderUtility {
             ? TARGET_ID_BUCKET_MAP.studyId
             : TARGET_ID_BUCKET_MAP.datasetId;
           this.dceChecked = TARGET_ID_BUCKET_MAP.dceId === this.selectedBucket;
-          $(`.nav-pills #bucket-${tabPill}-tab`).tab('show');
+          const bucketTabEl = document.querySelector(`.nav-pills #bucket-${tabPill}-tab`);
+          if (bucketTabEl) {
+            const bucketTab = new bootstrap.Tab(bucketTabEl);
+            bucketTab.show();
+          }
         }
 
         const targetQueries = MicaTreeQueryUrl.getTreeQueries();

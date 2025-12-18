@@ -1,7 +1,7 @@
 const RqlQuery = {
   template: `
   <div class="btn-group btn-sm dropdown my-0">
-    <button type="button" class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown">
+    <button type="button" class="btn btn-info btn-sm dropdown-toggle" data-bs-toggle="dropdown">
       <i class="fa fa-info-circle" v-bind:title="vocabulary.title | localize-string"></i>
       <span class="pl-1">{{ getCriterionAsString() }}</span>
     </button>
@@ -183,7 +183,7 @@ const RqlNode = {
 
     <span v-if="advancedMode && firstArgIsShown && otherArgsAreShown" class="d-flex my-auto">
       <div class="dropdown">
-        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">{{ "search." + name | translate }}</button>
+        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-bs-toggle="dropdown">{{ "search." + name | translate }}</button>
 
         <div class="dropdown-menu">
           <button class="dropdown-item" type="button" v-if="name !== 'and'" v-on:click="updateNodeName('and')">{{ "search.and" | translate }}</button>

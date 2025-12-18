@@ -446,7 +446,9 @@
             data: dataset
           });
 
-          $('#affiliatedMembersModal').modal('handleUpdate');
+          const modalEl = document.getElementById('affiliatedMembersModal');
+          const modal = bootstrap.Modal.getInstance(modalEl);
+          if (modal) modal.handleUpdate();
         }
       }, function(response) {
 
