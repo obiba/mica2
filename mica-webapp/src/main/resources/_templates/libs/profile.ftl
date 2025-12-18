@@ -19,7 +19,7 @@
       <dt class="col-sm-4"><@message "groups"/></dt>
       <dd class="col-sm-8">
         <#list profile.groups as group>
-          <span class="badge badge-info">${group}</span>
+          <span class="badge badge text-bg-info">${group}</span>
         </#list>
       </dd>
     </#if>
@@ -28,7 +28,7 @@
         <dt class="col-sm-4"><@message "roles"/></dt>
         <dd class="col-sm-8">
           <#list profile.roles as role>
-            <span class="badge badge-primary">${role}</span>
+            <span class="badge badge text-bg-primary">${role}</span>
           </#list>
         </dd>
       </#if>

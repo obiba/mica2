@@ -334,7 +334,7 @@
                     <a class="btn btn-info" href="${contextPath}/list/${dar.variablesSet.id}">
                       <i class="fa-regular fa-list-alt"></i>
                       <span><@message "list-linked-variables"/></span>
-                      <span class="badge badge-light">${dar.variablesSet.identifiers?size}</span>
+                      <span class="badge badge text-bg-light">${dar.variablesSet.identifiers?size}</span>
                     </a>
                     <#if permissions?seq_contains("EDIT")>
                       <a class="ms-3" href="javascript:void(0)" onclick="DataAccessService.unlinkVariables('${dar.id}')">

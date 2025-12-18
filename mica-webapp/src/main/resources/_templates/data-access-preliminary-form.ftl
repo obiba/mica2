@@ -301,7 +301,7 @@
                       <a class="btn btn-info" href="${contextPath}/list/${preliminary.variablesSet.id}">
                         <i class="fa-regular fa-list-alt"></i>
                         <span><@message "list-linked-variables"/></span>
-                        <span class="badge badge-light">${preliminary.variablesSet.identifiers?size}</span>
+                        <span class="badge badge text-bg-light">${preliminary.variablesSet.identifiers?size}</span>
                       </a>
                       <#if preliminaryPermissions?seq_contains("EDIT")>
                         <a class="ms-3" href="javascript:void(0)" onclick="DataAccessService.unlinkVariables('${preliminary.parentId}', 'preliminary', '${preliminary.id}')">

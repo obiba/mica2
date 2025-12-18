@@ -68,7 +68,7 @@
           <i class="fa-solid fa-file <#if isPast(date)>bg-secondary<#else>bg-blue</#if>"></i>
           <div class="timeline-item">
             <div class="timeline-body">
-              <span class="badge badge-info">${date?counter}</span>
+              <span class="badge badge text-bg-info">${date?counter}</span>
               <#if isDAO || isAdministrator>
                 <span><@message "intermediate-date-dao-text"/></span>
               <#else>

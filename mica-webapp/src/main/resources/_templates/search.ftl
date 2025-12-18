@@ -179,25 +179,25 @@
                           <#if searchVariableListDisplay>
                             <li class="nav-item" v-if="showVariableAndDatasetTabsInIndividualMode">
                               <a class="nav-link active" id="variables-tab" data-bs-toggle="pill" href="#variables" role="tab" @click="onSelectResult('variables', 'variable')"
-                                 aria-controls="variables" aria-selected="true"><@message "variables"/> <span id="variable-count" class="badge badge-light">{{counts.variables}}</span></a>
+                                 aria-controls="variables" aria-selected="true"><@message "variables"/> <span id="variable-count" class="badge badge text-bg-light">{{counts.variables}}</span></a>
                             </li>
                           </#if>
                           <#if searchDatasetListDisplay>
                             <li class="nav-item" v-if="showVariableAndDatasetTabsInIndividualMode">
                               <a class="nav-link" id="datasets-tab" data-bs-toggle="pill" href="#datasets" role="tab" @click="onSelectResult('datasets', 'dataset')"
-                                 aria-controls="datasets" aria-selected="false"><span>{{currentStudyTypeSelection && currentStudyTypeSelection.harmonization ? '<@message "protocols"/>' : '<@message "datasets"/>'}}</span> <span id="dataset-count" class="badge badge-light">{{counts.datasets}}</span></a>
+                                 aria-controls="datasets" aria-selected="false"><span>{{currentStudyTypeSelection && currentStudyTypeSelection.harmonization ? '<@message "protocols"/>' : '<@message "datasets"/>'}}</span> <span id="dataset-count" class="badge badge text-bg-light">{{counts.datasets}}</span></a>
                             </li>
                           </#if>
                           <#if searchStudyListDisplay>
                             <li class="nav-item">
                               <a class="nav-link" id="studies-tab" data-bs-toggle="pill" href="#studies" role="tab" @click="onSelectResult('studies', 'study')"
-                                 aria-controls="studies" aria-selected="false"><span>{{currentStudyTypeSelection && currentStudyTypeSelection.harmonization ? '<@message "initiatives"/>' : '<@message "studies"/>'}}</span> <span id="study-count" class="badge badge-light">{{counts.studies}}</span></a>
+                                 aria-controls="studies" aria-selected="false"><span>{{currentStudyTypeSelection && currentStudyTypeSelection.harmonization ? '<@message "initiatives"/>' : '<@message "studies"/>'}}</span> <span id="study-count" class="badge badge text-bg-light">{{counts.studies}}</span></a>
                             </li>
                           </#if>
                           <#if searchNetworkListDisplay>
                             <li class="nav-item">
                               <a class="nav-link" id="networks-tab" data-bs-toggle="pill" href="#networks" role="tab" @click="onSelectResult('networks', 'network')"
-                                 aria-controls="networks" aria-selected="false"><@message "networks"/> <span id="network-count" class="badge badge-light">{{counts.networks}}</span></a>
+                                 aria-controls="networks" aria-selected="false"><@message "networks"/> <span id="network-count" class="badge badge text-bg-light">{{counts.networks}}</span></a>
                             </li>
                           </#if>
                       </ul>
@@ -219,7 +219,7 @@
                           </#if>
                           <#if networksCompareEnabled>
                             <button id="compare-networks" type="button" class="btn btn-info btn-sm ms-2" v-if="isNetworksToolsVisible" @click="onCompare">
-                              <i class="fa-solid fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge badge-light studies-selection-count"></span>
+                              <i class="fa-solid fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge badge text-bg-light studies-selection-count"></span>
                             </button>
                           </#if>
                           <#if cartEnabled>
@@ -244,7 +244,7 @@
                                             <div class="dropdown-divider" v-if="variableSets.length > 0 && numberOfSetsRemaining > 0"></div>
                                             <button type="button" class="dropdown-item" v-for="set in variableSets" v-bind:key="set.id" @click="onAddToSet(set.id)">
                                               {{ normalizeSetName(set) }}
-                                              <span class="badge badge-light float-end">{{ set.count }}</span>
+                                              <span class="badge badge text-bg-light float-end">{{ set.count }}</span>
                                             </button>
                                           </div>
                                         </div>
