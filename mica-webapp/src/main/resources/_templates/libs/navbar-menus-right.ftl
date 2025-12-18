@@ -4,14 +4,14 @@
     <li class="nav-item">
       <a href="${contextPath}/cart<#if defaultCartType??>?type=${defaultCartType}</#if>" class="nav-link" title="<@message "sets.cart.title"/>">
         <i class="fa-solid fa-shopping-cart"></i>
-        <span id="cart-count" class="badge badge-danger navbar-badge"></span>
+        <span id="cart-count" class="badge badge text-bg-danger navbar-badge"></span>
       </a>
     </li>
     <#if listsEnabled && user??>
       <li class="nav-item">
         <a href="${contextPath}/lists" class="nav-link" title="<@message "sets.set.title"/>">
           <i class="fa-regular fa-list-alt"></i>
-          <span id="list-count" class="badge badge-danger navbar-badge" <#if !(sets?? && sets.variablesLists?has_content)>style="display: none"</#if>>
+          <span id="list-count" class="badge badge text-bg-danger navbar-badge" <#if !(sets?? && sets.variablesLists?has_content)>style="display: none"</#if>>
             <#if sets?? && sets.variablesLists?has_content>${sets.variablesLists?size}</#if>
           </span>
         </a>

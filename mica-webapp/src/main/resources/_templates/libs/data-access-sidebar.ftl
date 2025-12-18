@@ -47,7 +47,7 @@
               <i class="nav-icon far fa-question-circle"></i>
               <p>
                 <@message "feasibilities"/>
-                <span class="badge badge-info right">${feasibilities?size}</span>
+                <span class="badge badge text-bg-info right">${feasibilities?size}</span>
                 <#if feasibilities?size != 0 || user.username == dar.applicant || isAdministrator>
                   <i class="fa-solid fa-angle-left right me-1"></i>
                 </#if>
@@ -144,7 +144,7 @@
               <i class="nav-icon fas fa-file-import"></i>
               <p>
                 <@message "amendments"/>
-                <span class="badge badge-info right">${amendments?size}</span>
+                <span class="badge badge text-bg-info right">${amendments?size}</span>
                 <#if amendments?size != 0 || user.username == dar.applicant || isAdministrator>
                   <i class="fa-solid fa-angle-left right me-1"></i>
                 </#if>
@@ -180,7 +180,7 @@
                 <i class="nav-icon fa fa-gavel"></i>
                 <p>
                   <@message "agreements"/>
-                  <span class="badge badge-info right">${agreements?size}</span>
+                  <span class="badge badge text-bg-info right">${agreements?size}</span>
                   <#if agreements?size != 0>
                     <i class="fa-solid fa-angle-left right me-1"></i>
                   </#if>
@@ -219,7 +219,7 @@
             <i class="fa-solid fa-copy nav-icon"></i>
             <p><@message "documents"/></p>
             <#if dar.attachments?size != 0>
-              <span class="badge badge-info right">${dar.attachments?size}</span>
+              <span class="badge badge text-bg-info right">${dar.attachments?size}</span>
             </#if>
           </a>
         </li>
@@ -230,7 +230,7 @@
             <i class="fa-solid fa-comments nav-icon"></i>
             <p><@message "comments"/></p>
             <#if commentsCount != 0>
-              <span class="badge badge-info right">${commentsCount}</span>
+              <span class="badge badge text-bg-info right">${commentsCount}</span>
             </#if>
           </a>
         </li>
@@ -242,7 +242,7 @@
               <i class="fa-solid fa-lock nav-icon"></i>
               <p><@message "private-comments"/></p>
               <#if privateCommentsCount != 0>
-                <span class="badge badge-info right">${privateCommentsCount}</span>
+                <span class="badge badge text-bg-info right">${privateCommentsCount}</span>
               </#if>
             </a>
           </li>

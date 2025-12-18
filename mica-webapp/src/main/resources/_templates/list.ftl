@@ -60,7 +60,7 @@
                     <#if variableList.locked>
                       <i class="fa-solid fa-lock ms-2"></i>
                     </#if>
-                    <span class="badge badge-light right">${variableList.identifiers?size}</span>
+                    <span class="badge badge text-bg-light right">${variableList.identifiers?size}</span>
                   </p>
                 </a>
               </li>
@@ -194,10 +194,10 @@
             <div class="float-start">
               <ul class="nav nav-pills" id="studyClassNameChoice" :title="countWarning ? '<@message "count-warning"/>' : ''" role="tablist" v-cloak>
                 <li class="nav-item" role="presentation">
-                  <a class="nav-link active" id="individual-tab" @click="onStudyClassNameChange('Study')" href="" data-bs-toggle="tab" role="tab" aria-controls="home" aria-selected="true"><@message "individual-search"/> <span :class="{ 'badge-warning': countWarning, 'badge-light': !countWarning }" class="badge right">{{individualSubCount}}</span></a>
+                  <a class="nav-link active" id="individual-tab" @click="onStudyClassNameChange('Study')" href="" data-bs-toggle="tab" role="tab" aria-controls="home" aria-selected="true"><@message "individual-search"/> <span :class="{ 'badge text-bg-warning': countWarning, 'badge text-bg-light': !countWarning }" class="badge right">{{individualSubCount}}</span></a>
                 </li>
                 <li class="nav-item" role="presentation">
-                  <a class="nav-link" id="harmonization-tab" @click="onStudyClassNameChange('HarmonizationStudy')" href="" data-bs-toggle="tab" role="tab" aria-controls="profile" aria-selected="false"><@message "harmonization-search"/> <span :class="{ 'badge-warning': countWarning, 'badge-light': !countWarning }" class="badge right">{{harmonizationSubCount}}</span></a>
+                  <a class="nav-link" id="harmonization-tab" @click="onStudyClassNameChange('HarmonizationStudy')" href="" data-bs-toggle="tab" role="tab" aria-controls="profile" aria-selected="false"><@message "harmonization-search"/> <span :class="{ 'badge text-bg-warning': countWarning, 'badge text-bg-light': !countWarning }" class="badge right">{{harmonizationSubCount}}</span></a>
                 </li>
               </ul>
             </div>
@@ -227,7 +227,7 @@
               </#if>
               <#if !set.locked || isAdministrator>
                 <button id="delete-all" type="button" class="btn btn-danger ms-2" data-bs-toggle="modal" data-bs-target="#modal-delete">
-                  <i class="fa-solid fa-trash"></i> <@message "delete"/> <span class="badge badge-light selection-count"></span>
+                  <i class="fa-solid fa-trash"></i> <@message "delete"/> <span class="badge badge text-bg-light selection-count"></span>
                 </button>
               </#if>
             </div>

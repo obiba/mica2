@@ -282,7 +282,7 @@
                       <a class="btn btn-info" href="${contextPath}/list/${feasibility.variablesSet.id}">
                         <i class="fa-regular fa-list-alt"></i>
                         <span><@message "list-linked-variables"/></span>
-                        <span class="badge badge-light">${feasibility.variablesSet.identifiers?size}</span>
+                        <span class="badge badge text-bg-light">${feasibility.variablesSet.identifiers?size}</span>
                       </a>
                       <#if feasibilityPermissions?seq_contains("EDIT")>
                         <a class="ms-3" href="javascript:void(0)" onclick="DataAccessService.unlinkVariables('${feasibility.parentId}', 'feasibility', '${feasibility.id}')">
