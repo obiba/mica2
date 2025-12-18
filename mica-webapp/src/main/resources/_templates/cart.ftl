@@ -261,7 +261,7 @@
                     <div class="d-inline-block">
                       <div class="d-inline-flex">
                         <span class="me-2">
-                          <select class="custom-select" id="obiba-page-size-selector-top"></select>
+                          <select class="form-select" id="obiba-page-size-selector-top"></select>
                         </span>
                         <nav id="obiba-pagination-top" aria-label="Top pagination" class="mt-0">
                           <ul class="pagination mb-0"></ul>
@@ -341,7 +341,7 @@
                     <div class="d-inline-block">
                       <div class="d-inline-flex">
                         <span class="me-2">
-                          <select class="custom-select" id="obiba-page-size-selector-top"></select>
+                          <select class="form-select" id="obiba-page-size-selector-top"></select>
                         </span>
                         <nav id="obiba-pagination-top" aria-label="Top pagination" class="mt-0">
                           <ul class="pagination mb-0"></ul>
@@ -406,7 +406,7 @@
                     <div class="d-inline-block">
                       <div class="d-inline-flex">
                         <span class="me-2">
-                          <select class="custom-select" id="obiba-page-size-selector-top"></select>
+                          <select class="form-select" id="obiba-page-size-selector-top"></select>
                         </span>
                         <nav id="obiba-pagination-top" aria-label="Top pagination" class="mt-0">
                           <ul class="pagination mb-0"></ul>

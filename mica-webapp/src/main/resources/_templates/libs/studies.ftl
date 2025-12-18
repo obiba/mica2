@@ -100,7 +100,7 @@
       <div class="d-inline-flex float-end mt-3 mb-3">
         <sorting @sort-update="onSortUpdate" :initial-choice="initialSort" :options-translations="sortOptionsTranslations"></sorting>
         <span class="ms-2">
-          <select class="custom-select" id="obiba-page-size-selector-top"></select>
+          <select class="form-select" id="obiba-page-size-selector-top"></select>
         </span>
         <nav id="obiba-pagination-top" aria-label="Top pagination" class="ms-2 mt-0">
           <ul class="pagination mb-0"></ul>
@@ -172,7 +172,7 @@
 
   <div class="d-inline-flex pt-0 ms-auto">
     <span>
-      <select class="custom-select" id="obiba-page-size-selector-bottom"></select>
+      <select class="form-select" id="obiba-page-size-selector-bottom"></select>
     </span>
     <nav id="obiba-pagination-bottom" aria-label="Bottom pagination" class="ms-2 mt-0">
       <ul class="pagination"></ul>
