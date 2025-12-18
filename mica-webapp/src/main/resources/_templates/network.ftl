@@ -168,14 +168,14 @@
                   <div class="card-footer">
                       <#if user?? || cartAnonymousEnabled>
                         <a id="cart-add" href="javascript:void(0)" onclick="onNetworksCartAdd('${network.id}')" style="display: none;">
-                            <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
+                            <@message "sets.cart.add-to-cart"/> <i class="fa-solid fa-cart-plus"></i>
                         </a>
                         <a id="cart-remove" href="javascript:void(0)" onclick="onNetworksCartRemove('${network.id}')" style="display: none;">
-                            <@message "sets.cart.remove-from-cart"/> <i class="fas fa-cart-arrow-down"></i>
+                            <@message "sets.cart.remove-from-cart"/> <i class="fa-solid fa-cart-arrow-down"></i>
                         </a>
                       <#else>
                         <a href="${contextPath}/signin?redirect=${contextPath}/network/${network.id}">
-                            <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
+                            <@message "sets.cart.add-to-cart"/> <i class="fa-solid fa-cart-plus"></i>
                         </a>
                       </#if>
                   </div>
@@ -193,7 +193,7 @@
                     <h3 class="card-title"><@message "members"/></h3>
                     <div class="card-tools float-right">
                       <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
-                        <i class="fas fa-minus"></i></button>
+                        <i class="fa-solid fa-minus"></i></button>
                     </div>
 
                       <#if affiliatedMembersQuery??>
@@ -271,7 +271,7 @@
                     <h3 class="card-title"><@message "networks"/></h3>
                     <div class="card-tools">
                       <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
-                        <i class="fas fa-minus"></i></button>
+                        <i class="fa-solid fa-minus"></i></button>
                     </div>
                   </div>
                   <div class="card-body">
@@ -310,7 +310,7 @@
                     <h3 class="card-title"><@message "individual-studies"/></h3>
                     <div class="card-tools">
                       <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
-                        <i class="fas fa-minus"></i></button>
+                        <i class="fa-solid fa-minus"></i></button>
                     </div>
                   </div>
                   <div class="card-body">
@@ -349,7 +349,7 @@
                     <h3 class="card-title"><@message "harmonization-studies"/></h3>
                     <div class="card-tools">
                       <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
-                        <i class="fas fa-minus"></i></button>
+                        <i class="fa-solid fa-minus"></i></button>
                     </div>
                   </div>
                   <div class="card-body">
@@ -409,7 +409,7 @@
                 <div class="container-fluid">
                   <div class="row">
                     <a href="${contextPath}/ws/persons/_search/_download?limit=1000&query=${affiliatedMembersQuery?url('utf-8')}" class="btn btn-primary mb-2">
-                      <i class="fas fa-download"></i> <@message "download"/>
+                      <i class="fa-solid fa-download"></i> <@message "download"/>
                     </a>
                   </div>
 

@@ -32,7 +32,7 @@
             </h1>
               <#if amendmentPermissions?seq_contains("DELETE")>
                 <button type="button" class="btn btn-danger ml-4" data-bs-toggle="modal" data-bs-target="#modal-delete">
-                  <i class="fas fa-trash"></i> <@message "delete"/>
+                  <i class="fa-solid fa-trash"></i> <@message "delete"/>
                 </button>
               </#if>
           </div>
@@ -102,7 +102,7 @@
               <div ng-cloak>
                 <#if amendmentPermissions?seq_contains("EDIT")>
                   <span class="float-right border-left ml-2 pl-2" ng-if="schema.readOnly">
-                    <a class="btn btn-primary" href="${amendment.id}?edit=true"><i class="fas fa-pen"></i> <@message "edit"/></a>
+                    <a class="btn btn-primary" href="${amendment.id}?edit=true"><i class="fa-solid fa-pen"></i> <@message "edit"/></a>
                   </span>
                   <span class="float-right border-left ml-2 pl-2" ng-hide="schema.readOnly">
                     <a class="btn btn-primary" href="#" ng-click="save('${dar.id}', 'amendment', '${amendment.id}')"><@message "save"/></a>
@@ -144,15 +144,15 @@
                 <span class="float-right" ng-if="schema.readOnly">
                   <#if diffs??>
                     <button type="button" class="btn btn-outline-info" data-bs-toggle="modal"
-                            data-bs-target="#modal-diff"><i class="fas fa-code-branch"></i> <@message "form-diff"/></button>
+                            data-bs-target="#modal-diff"><i class="fa-solid fa-code-branch"></i> <@message "form-diff"/></button>
                   </#if>
                   <#if isAdministrator || isDAO>
                     <a href="${contextPath}/ws/data-access-request/${dar.id}/amendment/${amendment.id}/_word?lang=${.lang}" class="btn btn-default">
-                      <i class="fas fa-file-word"></i> <@message "download"/>
+                      <i class="fa-solid fa-file-word"></i> <@message "download"/>
                     </a>
                   </#if>
                   <a href="#" onclick="window.print()" class="btn btn-default">
-                    <i class="fas fa-print"></i> <@message "global.print"/>
+                    <i class="fa-solid fa-print"></i> <@message "global.print"/>
                   </a>
                 </span>
               </div>
@@ -355,18 +355,18 @@
                 <div class="card-body">
                     <#if amendment.variablesSet??>
                       <a class="btn btn-info" href="${contextPath}/list/${amendment.variablesSet.id}">
-                        <i class="far fa-list-alt"></i>
+                        <i class="fa-regular fa-list-alt"></i>
                         <span><@message "list-linked-variables"/></span>
                         <span class="badge badge-light">${amendment.variablesSet.identifiers?size}</span>
                       </a>
                       <#if amendmentPermissions?seq_contains("EDIT")>
                         <a class="ml-3" href="javascript:void(0)" onclick="DataAccessService.unlinkVariables('${amendment.parentId}', 'amendment', '${amendment.id}')">
-                          <i class="fas fa-unlink"></i> <@message "unlink-variables"/>
+                          <i class="fa-solid fa-unlink"></i> <@message "unlink-variables"/>
                         </a>
                       </#if>
                     <#elseif amendmentVariablesEnabled && amendmentPermissions?seq_contains("EDIT")>
                       <a class="btn btn-primary" href="javascript:void(0)" onclick="DataAccessService.linkVariables('${amendment.parentId}', 'amendment', '${amendment.id}')">
-                        <i class="fas fa-link"></i> <@message "link-cart-variables"/> <i class="fas fa-shopping-cart fa-xs"></i>
+                        <i class="fa-solid fa-link"></i> <@message "link-cart-variables"/> <i class="fa-solid fa-shopping-cart fa-xs"></i>
                       </a>
                     <#else>
                       <span><@message "no-linked-variables"/></span>

@@ -34,7 +34,7 @@
     <!-- /.timeline-label -->
     <!-- timeline item -->
     <div>
-      <i class="fas fa-info <#if isPast(reportTimeline.startDate)>bg-secondary<#else>bg-blue</#if>"></i>
+      <i class="fa-solid fa-info <#if isPast(reportTimeline.startDate)>bg-secondary<#else>bg-blue</#if>"></i>
       <div class="timeline-item">
         <div class="timeline-body">
 
@@ -42,13 +42,13 @@
             <p><@message "start-date-dao-text"/></p>
             <div>
               <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-start-date" <#if dar.archived>disabled</#if>>
-                <i class="fas fa-clock"></i> <@message "start-date"/>
+                <i class="fa-solid fa-clock"></i> <@message "start-date"/>
               </button>
             </div>
           <#else>
             <p><@message "start-date-applicant-text"/></p>
             <a href="${contextPath}/data-access-comments/${dar.id}"><@message "send-message"/> <i
-                class="fas fa-arrow-circle-right ml-1"></i></a>
+                class="fa-solid fa-arrow-circle-right ml-1"></i></a>
           </#if>
         </div>
       </div>
@@ -65,7 +65,7 @@
 
         <!-- timeline item -->
         <div>
-          <i class="fas fa-file <#if isPast(date)>bg-secondary<#else>bg-blue</#if>"></i>
+          <i class="fa-solid fa-file <#if isPast(date)>bg-secondary<#else>bg-blue</#if>"></i>
           <div class="timeline-item">
             <div class="timeline-body">
               <span class="badge badge-info">${date?counter}</span>
@@ -88,7 +88,7 @@
     <!-- /.timeline-label -->
     <!-- timeline item -->
     <div>
-      <i class="fas fa-book <#if isPast(reportTimeline.endDate)>bg-secondary<#else>bg-blue</#if>"></i>
+      <i class="fa-solid fa-book <#if isPast(reportTimeline.endDate)>bg-secondary<#else>bg-blue</#if>"></i>
       <div class="timeline-item">
         <div class="timeline-body">
 
@@ -103,7 +103,7 @@
     <!-- END timeline item -->
 
     <div>
-      <i class="fas fa-circle bg-gray"></i>
+      <i class="fa-solid fa-circle bg-gray"></i>
     </div>
   </div>
   <!-- END Timeline -->
@@ -114,7 +114,7 @@
     <#if agreement.applicant == user.username>
       <p>
         <a class="btn btn-outline-secondary" href="${contextPath}/data-access-agreement-form/${agreement.id}">
-          <i class="fas fa-circle nav-icon text-${statusColor(agreement.status.toString())}"
+          <i class="fa-solid fa-circle nav-icon text-${statusColor(agreement.status.toString())}"
              title="<@message agreement.status.toString()/>"></i>
             <@message "agreement-current-user"/>
         </a>
@@ -134,7 +134,7 @@
         </p>
         <p>
           <a href="${contextPath}/data-access-comments/${dar.id}"><@message "send-message"/> <i
-              class="fas fa-arrow-circle-right ml-1"></i></a>
+              class="fa-solid fa-arrow-circle-right ml-1"></i></a>
         </p>
       </div>
     <#elseif agreementsOpened?size gt 0>
@@ -185,7 +185,7 @@
                   <#list agreements as agreement>
                       <#if collaborator.principal?? && agreement.applicant == collaborator.principal>
                         <a href="${contextPath}/data-access-agreement-form/${agreement.id}">
-                          <i class="fas fa-circle nav-icon text-${statusColor(agreement.status.toString())}"
+                          <i class="fa-solid fa-circle nav-icon text-${statusColor(agreement.status.toString())}"
                              title="<@message agreement.status.toString()/>"></i>
                         </a>
                       </#if>
@@ -382,7 +382,7 @@
       <p><@message "conditionally-approved-applicant-text"/></p>
       <div>
         <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
-          <i class="fas fa-pen"></i> <#if accessConfig.preliminaryEnabled><@message "main-form"/><#else><@message "application-form"/></#if>
+          <i class="fa-solid fa-pen"></i> <#if accessConfig.preliminaryEnabled><@message "main-form"/><#else><@message "application-form"/></#if>
         </a>
       </div>
     <#else>
@@ -398,7 +398,7 @@
       <p><@message "submitted-dao-text"/></p>
       <div>
         <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
-          <i class="fas fa-pen"></i> <#if accessConfig.preliminaryEnabled><@message "main-form"/><#else><@message "application-form"/></#if>
+          <i class="fa-solid fa-pen"></i> <#if accessConfig.preliminaryEnabled><@message "main-form"/><#else><@message "application-form"/></#if>
         </a>
       </div>
     </#if>
@@ -412,7 +412,7 @@
       <p><@message "reviewed-dao-text"/></p>
       <div>
         <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
-          <i class="fas fa-pen"></i> <#if accessConfig.preliminaryEnabled><@message "main-form"/><#else><@message "application-form"/></#if>
+          <i class="fa-solid fa-pen"></i> <#if accessConfig.preliminaryEnabled><@message "main-form"/><#else><@message "application-form"/></#if>
         </a>
       </div>
     </#if>
@@ -436,7 +436,7 @@
         <p><@message "approved-dao-text"/></p>
         <div>
           <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
-            <i class="fas fa-eye"></i> <#if accessConfig.preliminaryEnabled><@message "main-form"/><#else><@message "application-form"/></#if>
+            <i class="fa-solid fa-eye"></i> <#if accessConfig.preliminaryEnabled><@message "main-form"/><#else><@message "application-form"/></#if>
           </a>
         </div>
       </#if>
@@ -451,7 +451,7 @@
       <p><@message "rejected-dao-text"/></p>
       <div>
         <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
-          <i class="fas fa-eye"></i> <#if accessConfig.preliminaryEnabled><@message "main-form"/><#else><@message "application-form"/></#if>
+          <i class="fa-solid fa-eye"></i> <#if accessConfig.preliminaryEnabled><@message "main-form"/><#else><@message "application-form"/></#if>
         </a>
       </div>
     </#if>
@@ -463,7 +463,7 @@
         <p><@message "conditionally-approved-preliminary-applicant-text"/></p>
         <div>
           <a href="${contextPath}/data-access-preliminary-form/${dar.id}" class="btn btn-primary" >
-            <i class="fas fa-pen"></i> <#if accessConfig.preliminaryEnabled><@message "main-form"/><#else><@message "application-form"/></#if>
+            <i class="fa-solid fa-pen"></i> <#if accessConfig.preliminaryEnabled><@message "main-form"/><#else><@message "application-form"/></#if>
           </a>
         </div>
       <#else>
@@ -479,7 +479,7 @@
         <p><@message "submitted-preliminary-dao-text"/></p>
         <div>
           <a href="${contextPath}/data-access-preliminary-form/${dar.id}" class="btn btn-primary" >
-            <i class="fas fa-pen"></i> <@message "preliminary-form"/>
+            <i class="fa-solid fa-pen"></i> <@message "preliminary-form"/>
           </a>
         </div>
         <div class="mt-md-3">
@@ -505,7 +505,7 @@
         <p><@message "reviewed-preliminary-dao-text"/></p>
         <div>
           <a href="${contextPath}/data-access-preliminary-form/${dar.id}" class="btn btn-primary" >
-            <i class="fas fa-pen"></i> <@message "preliminary-form"/>
+            <i class="fa-solid fa-pen"></i> <@message "preliminary-form"/>
           </a>
         </div>
         <div class="mt-md-3">
@@ -531,7 +531,7 @@
         <p><@message "rejected-preliminary-dao-text"/></p>
         <div>
           <a href="${contextPath}/data-access-preliminary-form/${preliminary.id}" class="btn btn-primary" >
-            <i class="fas fa-eye"></i> <@message "preliminary-form"/>
+            <i class="fa-solid fa-eye"></i> <@message "preliminary-form"/>
           </a>
         </div>
       </#if>
@@ -543,7 +543,7 @@
         <p><@message "opened-preliminary-applicant-text"/></p>
         <div>
           <a href="${contextPath}/data-access-preliminary-form/${dar.id}" class="btn btn-primary" >
-            <i class="fas fa-pen"></i> <@message "preliminary-form"/>
+            <i class="fa-solid fa-pen"></i> <@message "preliminary-form"/>
           </a>
         </div>
       <#else>
@@ -569,7 +569,7 @@
         <p><@message "opened-applicant-text"/></p>
         <div>
           <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
-            <i class="fas fa-pen"></i> <#if accessConfig.preliminaryEnabled><@message "main-form"/><#else><@message "application-form"/></#if>
+            <i class="fa-solid fa-pen"></i> <#if accessConfig.preliminaryEnabled><@message "main-form"/><#else><@message "application-form"/></#if>
           </a>
         </div>
       <#else>

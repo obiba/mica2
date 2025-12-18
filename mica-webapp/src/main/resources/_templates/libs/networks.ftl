@@ -54,7 +54,7 @@
     </div>
     <div class="col-3 ml-auto">
       <a href="${contextPath}/search#lists?type=networks" class="btn btn-sm btn-primary float-right">
-        <@message "global.search"/> <i class="fas fa-search"></i>
+        <@message "global.search"/> <i class="fa-solid fa-search"></i>
       </a>
     </div>
   </div>

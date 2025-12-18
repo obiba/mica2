@@ -180,11 +180,11 @@
                   <#if canCreateDAR>
                     <#if user??>
                       <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-add">
-                        <i class="fas fa-plus"></i> <@message "new-data-access-request"/>
+                        <i class="fa-solid fa-plus"></i> <@message "new-data-access-request"/>
                       </button>
                     <#else>
                       <button type="button" onclick="location.href='${contextPath}/signin?redirect=${contextPath}/cart';" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> <@message "sign-in-new-data-access-request"/>
+                        <i class="fa-solid fa-plus"></i> <@message "sign-in-new-data-access-request"/>
                       </button>
                     </#if>
                   </#if>
@@ -231,7 +231,7 @@
                     <#if showCartViewDownload>
                       <div class="btn-group ml-2" role="group">
                         <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="fas fa-download"></i> <@message "download"/>
+                          <i class="fa-solid fa-download"></i> <@message "download"/>
                         </button>
                         <div class="dropdown-menu">
                           <a class="dropdown-item" href="${contextPath}/ws/variables/set/${sets.variablesCart.id}/documents/_report?locale=${.locale}" download><@message "download-cart-export"/></a>
@@ -240,12 +240,12 @@
                       </div>
                     <#else>
                       <a href="${contextPath}/ws/variables/set/${sets.variablesCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
-                        <i class="fas fa-download"></i> <@message "download-cart-export"/>
+                        <i class="fa-solid fa-download"></i> <@message "download-cart-export"/>
                       </a>
                     </#if>
                   </#if>
                   <button id="delete-all" type="button" class="btn btn-danger ml-2" data-bs-toggle="modal" data-bs-target="#modal-delete">
-                    <i class="fas fa-trash"></i> <@message "delete"/> <span class="badge badge-light selection-count"></span>
+                    <i class="fa-solid fa-trash"></i> <@message "delete"/> <span class="badge badge-light selection-count"></span>
                   </button>
                 </div>
               <#else>
@@ -272,10 +272,10 @@
                   <#if config.setsSearchEnabled>
                     <div class="float-right">
                       <a class="btn btn-info ml-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=variables&query=variable(in(Mica_variable.sets,${sets.variablesCart.id})),study(in(Mica_study.className,Study))">
-                        <i class="fas fa-search"></i>
+                        <i class="fa-solid fa-search"></i>
                       </a>
                       <a class="btn btn-info ml-2" v-else href="${contextPath}/harmonization-search#lists?type=variables&query=variable(in(Mica_variable.sets,${sets.variablesCart.id})),study(in(Mica_study.className,HarmonizationStudy))">
-                        <i class="fas fa-search"></i>
+                        <i class="fa-solid fa-search"></i>
                       </a>
                     </div>
                   </#if>
@@ -316,16 +316,16 @@
                 <div class="float-right">
                   <#if studiesCompareEnabled>
                     <button type="button" class="btn btn-info ml-2" onclick="onCompareStudies()">
-                      <i class="fas fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge badge-light studies-selection-count"></span>
+                      <i class="fa-solid fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge badge-light studies-selection-count"></span>
                     </button>
                   </#if>
                   <#if showCartDownload>
                     <a href="${contextPath}/ws/studies/set/${sets.studiesCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
-                      <i class="fas fa-download"></i> <@message "download-cart-export"/>
+                      <i class="fa-solid fa-download"></i> <@message "download-cart-export"/>
                     </a>
                   </#if>
                   <button id="delete-all" type="button" class="btn btn-danger ml-2" data-bs-toggle="modal" data-bs-target="#modal-delete-studies">
-                    <i class="fas fa-trash"></i> <@message "delete"/> <span class="badge badge-light studies-selection-count"></span>
+                    <i class="fa-solid fa-trash"></i> <@message "delete"/> <span class="badge badge-light studies-selection-count"></span>
                   </button>
                 </div>
               <#else>
@@ -352,10 +352,10 @@
                   <#if config.setsSearchEnabled>
                     <div class="float-right">
                       <a class="btn btn-info ml-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=studies&query=study(and(in(Mica_study.sets,${sets.studiesCart.id}),in(Mica_study.className,Study)))">
-                        <i class="fas fa-search"></i>
+                        <i class="fa-solid fa-search"></i>
                       </a>
                       <a class="btn btn-info ml-2" v-else href="${contextPath}/harmonization-search#lists?type=studies&query=study(and(in(Mica_study.sets,${sets.studiesCart.id}),in(Mica_study.className,HarmonizationStudy)))">
-                        <i class="fas fa-search"></i>
+                        <i class="fa-solid fa-search"></i>
                       </a>
                     </div>
                   </#if>
@@ -383,16 +383,16 @@
                 <div class="float-right">
                   <#if networksCompareEnabled>
                     <button type="button" class="btn btn-info ml-2" onclick="onCompareNetworks()">
-                      <i class="fas fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge badge-light networks-selection-count"></span>
+                      <i class="fa-solid fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge badge-light networks-selection-count"></span>
                     </button>
                   </#if>
                   <#if showCartDownload>
                     <a href="${contextPath}/ws/networks/set/${sets.networksCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
-                      <i class="fas fa-download"></i> <@message "download-cart-export"/>
+                      <i class="fa-solid fa-download"></i> <@message "download-cart-export"/>
                     </a>
                   </#if>
                   <button id="delete-all" type="button" class="btn btn-danger ml-2" data-bs-toggle="modal" data-bs-target="#modal-delete-networks">
-                    <i class="fas fa-trash"></i> <@message "delete"/> <span class="badge badge-light networks-selection-count"></span>
+                    <i class="fa-solid fa-trash"></i> <@message "delete"/> <span class="badge badge-light networks-selection-count"></span>
                   </button>
                 </div>
               </#if>
@@ -417,7 +417,7 @@
                   <#if config.setsSearchEnabled>
                     <div class="float-right">
                       <a class="btn btn-info ml-2" href="${contextPath}/search#lists?type=networks&query=network(in(Mica_network.sets,${sets.networksCart.id}))">
-                        <i class="fas fa-search"></i>
+                        <i class="fa-solid fa-search"></i>
                       </a>
                     </div>
                   </#if>

@@ -31,7 +31,7 @@
           <input name="username" type="text" class="form-control" placeholder="<@message "sign-in-username"/>">
           <div class="input-group-append">
             <div class="input-group-text">
-              <span class="fas fa-envelope"></span>
+              <span class="fa-solid fa-envelope"></span>
             </div>
           </div>
         </div>
@@ -39,7 +39,7 @@
           <input name="password" type="password" autocomplete="off" class="form-control" placeholder="<@message "password"/>">
           <div class="input-group-append">
             <div class="input-group-text">
-              <span class="fas fa-lock"></span>
+              <span class="fa-solid fa-lock"></span>
             </div>
           </div>
         </div>
@@ -94,7 +94,7 @@
           <input id="otp" name="otp" type="number" class="form-control"/>
           <div class="input-group-append">
             <div class="input-group-text">
-              <span class="fas fa-mobile"></span>
+              <span class="fa-solid fa-mobile"></span>
             </div>
           </div>
         </div>

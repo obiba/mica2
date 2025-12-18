@@ -35,7 +35,7 @@
           <h2 class="headline text-warning"> ${status!"404"}</h2>
 
           <div class="error-content">
-            <h3><i class="fas fa-exclamation-triangle text-warning"></i>
+            <h3><i class="fa-solid fa-exclamation-triangle text-warning"></i>
               <#if msg??>
                   <@message msg/>
               <#else >

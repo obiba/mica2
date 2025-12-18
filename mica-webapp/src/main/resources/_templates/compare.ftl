@@ -97,7 +97,7 @@
                     <#if individualQuery??>
                       <div class="float-right">
                         <a class="btn btn-sm btn-info ml-2" href="${contextPath}/individual-search#lists?type=${type}&query=${individualQuery}">
-                          <i class="fas fa-search"></i>
+                          <i class="fa-solid fa-search"></i>
                         </a>
                       </div>
                     </#if>
@@ -121,7 +121,7 @@
                     <#if harmonizationQuery??>
                       <div class="float-right">
                         <a class="btn btn-sm btn-info ml-2" href="${contextPath}/harmonization-search#lists?type=${type}&query=${harmonizationQuery}">
-                          <i class="fas fa-search"></i>
+                          <i class="fa-solid fa-search"></i>
                         </a>
                       </div>
                     </#if>
@@ -165,7 +165,7 @@
                 <#if query??>
                   <div class="float-right">
                     <a class="btn btn-sm btn-info ml-2" href="${contextPath}/search#lists?type=${type}&query=${query}">
-                      <i class="fas fa-search"></i>
+                      <i class="fa-solid fa-search"></i>
                     </a>
                   </div>
                 </#if>

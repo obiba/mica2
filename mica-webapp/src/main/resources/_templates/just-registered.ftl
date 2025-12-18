@@ -36,7 +36,7 @@
           <#if canSignin>
             <p><@message "just-registered-signin-callout"/></p>
             <button type="button" onclick="location.href='${contextPath}/signin';" class="btn btn-success btn-lg">
-              <i class="fas fa-sign-in-alt"></i> <@message "sign-in"/>
+              <i class="fa-solid fa-sign-in-alt"></i> <@message "sign-in"/>
             </button>
           <#else>
             <p><@message "just-registered-callout"/></p>

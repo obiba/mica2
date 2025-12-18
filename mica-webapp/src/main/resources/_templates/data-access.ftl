@@ -33,18 +33,18 @@
             </h1>
               <#if permissions?seq_contains("DELETE")>
                 <button type="button" class="btn btn-danger ml-4" data-bs-toggle="modal" data-bs-target="#modal-delete">
-                  <i class="fas fa-trash"></i> <@message "delete"/>
+                  <i class="fa-solid fa-trash"></i> <@message "delete"/>
                 </button>
               </#if>
               <#if dataAccessArchiveEnabled>
                 <#if permissions?seq_contains("ARCHIVE")>
                   <button type="button" class="btn btn-warning ml-4" data-bs-toggle="modal" data-bs-target="#modal-archive">
-                    <i class="fas fa-box"></i> <@message "archive"/>
+                    <i class="fa-solid fa-box"></i> <@message "archive"/>
                   </button>
                 </#if>
                 <#if permissions?seq_contains("UNARCHIVE")>
                   <button type="button" class="btn btn-warning ml-4" data-bs-toggle="modal" data-bs-target="#modal-unarchive">
-                    <i class="fas fa-box-open"></i> <@message "unarchive"/>
+                    <i class="fa-solid fa-box-open"></i> <@message "unarchive"/>
                   </button>
                 </#if>
               </#if>
@@ -153,7 +153,7 @@
               <input id="collaborator-email" name="collaborator-email" type="email" class="form-control" placeholder="<@message "email"/>">
               <div class="input-group-append">
                 <div class="input-group-text">
-                  <span class="fas fa-envelope"></span>
+                  <span class="fa-solid fa-envelope"></span>
                 </div>
               </div>
             </div>
@@ -264,7 +264,7 @@
                   <div class="float-right">
                     <#if permissions?seq_contains("ADD_COLLABORATORS")>
                       <button type="button" class="btn btn-primary ml-4" data-bs-toggle="modal" data-bs-target="#modal-collaborator-add">
-                        <i class="fas fa-plus"></i> <@message "new-collaborator"/>
+                        <i class="fa-solid fa-plus"></i> <@message "new-collaborator"/>
                       </button>
                     </#if>
                   </div>
@@ -287,7 +287,7 @@
                 <div class="float-right">
                   <#if !dar.archived && (user.username == dar.applicant || isAdministrator)>
                     <button type="button" class="btn btn-primary ml-4" data-bs-toggle="modal" data-bs-target="#modal-feasibility-add">
-                      <i class="fas fa-plus"></i> <@message "new-feasibility"/>
+                      <i class="fa-solid fa-plus"></i> <@message "new-feasibility"/>
                     </button>
                   </#if>
                 </div>
@@ -310,7 +310,7 @@
                           <td><a href="${contextPath}/data-access-feasibility-form/${feasibility.id}">${feasibility.id}</a></td>
                           <td data-sort="${feasibility.lastModifiedDate.get().toString()}" class="moment-datetime">${feasibility.lastModifiedDate.get().toString()}</td>
                           <td data-sort="<#if feasibility.lastSubmission?? && feasibility.lastSubmission.changedOn??>${feasibility.lastSubmission.changedOn.toString()}</#if>" class="moment-datetime"><#if feasibility.lastSubmission?? && feasibility.lastSubmission.changedOn??>${feasibility.lastSubmission.changedOn.toString()}</#if></td>
-                          <td><i class="fas fa-circle text-${statusColor(feasibility.status.toString())}"></i> <@message feasibility.status.toString()/></td>
+                          <td><i class="fa-solid fa-circle text-${statusColor(feasibility.status.toString())}"></i> <@message feasibility.status.toString()/></td>
                         </tr>
                       </#list>
                       </tbody>
@@ -330,7 +330,7 @@
                 <div class="float-right">
                   <#if !dar.archived && (user.username == dar.applicant || isAdministrator)>
                     <button type="button" class="btn btn-primary ml-4" data-bs-toggle="modal" data-bs-target="#modal-amendment-add">
-                      <i class="fas fa-plus"></i> <@message "new-amendment"/>
+                      <i class="fa-solid fa-plus"></i> <@message "new-amendment"/>
                     </button>
                   </#if>
                 </div>
@@ -353,7 +353,7 @@
                         <td><a href="${contextPath}/data-access-amendment-form/${amendment.id}">${amendment.id}</a></td>
                         <td data-sort="${amendment.lastModifiedDate.get().toString()}" class="moment-datetime">${amendment.lastModifiedDate.get().toString()}</td>
                         <td data-sort="<#if amendment.lastSubmission?? && amendment.lastSubmission.changedOn??>${amendment.lastSubmission.changedOn.toString()}</#if>" class="moment-datetime"><#if amendment.lastSubmission?? && amendment.lastSubmission.changedOn??>${amendment.lastSubmission.changedOn.toString()}</#if></td>
-                        <td><i class="fas fa-circle text-${statusColor(amendment.status.toString())}"></i> <@message amendment.status.toString()/></td>
+                        <td><i class="fa-solid fa-circle text-${statusColor(amendment.status.toString())}"></i> <@message amendment.status.toString()/></td>
                       </tr>
                       </#list>
                       </tbody>
@@ -377,7 +377,7 @@
               <#if !dar.archived>
                 <div class="card-footer">
                   <a href="${contextPath}/data-access-comments/${dar.id}"><@message "send-message"/> <i
-                            class="fas fa-arrow-circle-right ml-1"></i></a>
+                            class="fa-solid fa-arrow-circle-right ml-1"></i></a>
                 </div>
               </#if>
             </div>
@@ -409,7 +409,7 @@
             <div class="input-group">
               <input type="text" id="start-date" class="form-control">
               <div class="input-group-append">
-                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                <span class="input-group-text"><i class="fa-solid fa-calendar-alt"></i></span>
               </div>
             </div>
           </div>

@@ -72,7 +72,7 @@
             <#macro darList>
               <div class="mb-3">
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-add">
-                  <i class="fas fa-plus"></i> <@message "new-data-access-request"/>
+                  <i class="fa-solid fa-plus"></i> <@message "new-data-access-request"/>
                 </button>
               </div>
               <#if dars?? && dars?size gt 0>
@@ -127,11 +127,11 @@
                           <td>${dar.pendingAgreements}/${dar.totalAgreements}</td>
                         </#if>
                         <#if accessConfig.preliminaryEnabled>
-                          <td><i class="fas fa-circle text-${statusColor(dar.preliminary.status.toString())}"></i> <@message dar.preliminary.status.toString()/></td>
+                          <td><i class="fa-solid fa-circle text-${statusColor(dar.preliminary.status.toString())}"></i> <@message dar.preliminary.status.toString()/></td>
                         </#if>
-                        <td><i class="fas fa-circle text-${statusColor(dar.status.toString())}"></i> <@message dar.status.toString()/></td>
+                        <td><i class="fa-solid fa-circle text-${statusColor(dar.status.toString())}"></i> <@message dar.status.toString()/></td>
                         <#if dataAccessArchiveEnabled>
-                          <td><#if dar.archived><i class="fas fa-check"></i></#if></td>
+                          <td><#if dar.archived><i class="fa-solid fa-check"></i></#if></td>
                         </#if>
                       </tr>
                     </#list>
