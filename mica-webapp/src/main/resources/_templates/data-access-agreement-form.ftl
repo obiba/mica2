@@ -71,10 +71,10 @@
                 <h3 class="card-title"><@message "agreement-form"/></h3>
                 <div ng-cloak>
                   <#if agreementPermissions?seq_contains("EDIT")>
-                    <span class="float-right border-left ms-2 pl-2" ng-if="schema.readOnly">
+                    <span class="float-right border-left ms-2 ps-2" ng-if="schema.readOnly">
                       <a class="btn btn-primary" href="${agreement.id}?edit=true"><i class="fa-solid fa-pen"></i> <@message "edit"/></a>
                     </span>
-                    <span class="float-right border-left ms-2 pl-2" ng-hide="schema.readOnly">
+                    <span class="float-right border-left ms-2 ps-2" ng-hide="schema.readOnly">
                       <a class="btn btn-primary" href="#" ng-click="save('${dar.id}', 'agreement', '${agreement.id}')"><@message "save"/></a>
                       <a class="btn btn-default" href="${agreement.id}"><@message "cancel"/></a>
                     </span>
@@ -87,12 +87,12 @@
                         <button type="button" class="btn btn-success"
                                 ng-click="validate()"><@message "validate"/></button>
                       <#elseif agreement.status == "APPROVED" && !accessConfig.approvedFinal>
-                        <button type="button" class="btn btn-primary border-left ms-2 pl-2" data-bs-toggle="modal"
+                        <button type="button" class="btn btn-primary border-left ms-2 ps-2" data-bs-toggle="modal"
                                 data-bs-target="#modal-reopen"><@message "reopen"/></button>
                       </#if>
                     </span>
                   </#if>
-                  <span class="float-right <#if agreementPermissions?seq_contains("EDIT_STATUS") && agreement.status == "OPENED">border-right me-2 pr-2</#if>" ng-if="schema.readOnly">
+                  <span class="float-right <#if agreementPermissions?seq_contains("EDIT_STATUS") && agreement.status == "OPENED">border-right me-2 pe-2</#if>" ng-if="schema.readOnly">
                     <#if isAdministrator || isDAO>
                       <a href="${contextPath}/ws/data-access-request/${dar.id}/agreement/${agreement.id}/_word?lang=${.lang}" class="btn btn-default">
                         <i class="fa-solid fa-file-word"></i> <@message "download"/>

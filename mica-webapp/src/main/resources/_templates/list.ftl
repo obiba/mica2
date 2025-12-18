@@ -67,7 +67,7 @@
             </#list>
           </ul>
         <#else >
-          <span class="pl-2 text-white-50">
+          <span class="ps-2 text-white-50">
             <em>
               <@message "no-personal-list"/>
             </em>

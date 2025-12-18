@@ -50,7 +50,7 @@
         </div>
 
         <div class="row">
-          <div class="col-xs-12 col-lg-6 pl-2">
+          <div class="col-xs-12 col-lg-6 ps-2">
             <div class="card card-info card-outline">
               <div class="card-header">
                 <h3 class="card-title"><@message "overview"/></h3>
@@ -131,7 +131,7 @@
               </#if>
             </div>
           </div>
-          <div class="col-xs-12 col-lg-6 pr-2">
+          <div class="col-xs-12 col-lg-6 pe-2">
             <div class="card card-info card-outline">
               <div class="card-header">
                 <h3 class="card-title"><@message "definition"/></h3>
@@ -211,7 +211,7 @@
 
 
         <div class="row">
-          <div class="col-sm-12 col-lg-6 pl-2">
+          <div class="col-sm-12 col-lg-6 ps-2">
             <#if annotations?? && annotations?size != 0>
               <div class="card card-info card-outline">
                 <div class="card-header">
@@ -237,7 +237,7 @@
               </div>
             </#if>
           </div>
-          <div class="col-sm-12 col-lg-6 pr-2">
+          <div class="col-sm-12 col-lg-6 pe-2">
             <#if type == "Harmonized">
               <div class="card card-${harmoAnnotations.statusClass} card-outline">
                 <div class="card-header">

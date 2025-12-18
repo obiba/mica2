@@ -51,7 +51,7 @@
                   <@message "study.selection-criteria.pregnant-women"/>
                 </dt>
                 <dd class="col-sm-8">
-                  <ul class="pl-3">
+                  <ul class="ps-3">
                       <#list population.model.selectionCriteria.pregnantWomen as type>
                         <li>
                           <#assign text = "study_taxonomy.vocabulary.populations-selectionCriteria-pregnantWomen.term." + type + ".title"/>
@@ -89,7 +89,7 @@
                     <@message "client.label.countries"/>
                 </dt>
                 <dd class="col-sm-8">
-                  <ul class="pl-3">
+                  <ul class="ps-3">
                     <#list population.model.selectionCriteria.countriesIso as country>
                       <li>
                         <@message country/>
@@ -113,7 +113,7 @@
                   <@message "study.selection-criteria.ethnic-origin"/>
                 </dt>
                 <dd class="col-sm-8">
-                  <ul class="pl-3">
+                  <ul class="ps-3">
                     <#list population.model.selectionCriteria.ethnicOrigin as item>
                       <li>${localize(item)}</li>
                     </#list>
@@ -126,7 +126,7 @@
                   <@message "study.selection-criteria.health-status"/>
                 </dt>
                 <dd class="col-sm-8">
-                  <ul class="pl-3">
+                  <ul class="ps-3">
                     <#list population.model.selectionCriteria.healthStatus as item>
                       <li>${localize(item)}</li>
                     </#list>
@@ -177,7 +177,7 @@
                       <@message "study_taxonomy.vocabulary.populations-recruitment-dataSources.title"/>
                   </dt>
                   <dd class="col-sm-6">
-                    <ul class="pl-3">
+                    <ul class="ps-3">
                       <#list population.model.recruitment.dataSources as type>
                         <li>
                           <#assign text = "study_taxonomy.vocabulary.populations-recruitment-dataSources.term." + type + ".title"/>
@@ -196,7 +196,7 @@
                     <@message "study.recruitment-sources.general-population"/>
                   </dt>
                   <dd class="col-sm-6">
-                    <ul class="pl-3">
+                    <ul class="ps-3">
                       <#list population.model.recruitment.generalPopulationSources as type>
                         <li>
                           <#assign text = "study_taxonomy.vocabulary.populations-recruitment-generalPopulationSources.term." + type + ".title"/>
@@ -212,7 +212,7 @@
                     <@message "study.recruitment-sources.specific-population"/>
                   </dt>
                   <dd class="col-sm-6">
-                    <ul class="pl-3">
+                    <ul class="ps-3">
                       <#list population.model.recruitment.specificPopulationSources as type>
                         <li>
                           <#assign text = "study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.term." + type + ".title"/>
@@ -240,7 +240,7 @@
                     <@message "study.recruitment-sources.studies"/>
                   </dt>
                   <dd class="col-sm-6">
-                    <ul class="pl-3">
+                    <ul class="ps-3">
                       <#list population.model.recruitment.studies as item>
                         <li>${localize(item)}</li>
                       </#list>
