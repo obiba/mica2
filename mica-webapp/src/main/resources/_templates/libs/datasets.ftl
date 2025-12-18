@@ -145,7 +145,7 @@
                 </template>
                 <template v-else>
                   <!-- HACK used 'datasetsWithVariables' with opacity ZERO to have the same height as the longest stat item -->
-                  <a href="javascript:void(0)" class="btn btn-sm text-left" style="cursor: initial; opacity: 0">
+                  <a href="javascript:void(0)" class="btn btn-sm text-start" style="cursor: initial; opacity: 0">
                     <span class="h6 pb-0 mb-0 d-block">0</span>
                     <span class="text-muted"><small><@message "analysis.empty"/></small></span>
                   </a>

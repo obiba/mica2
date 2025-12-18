@@ -43,7 +43,7 @@
         <#assign showClass = (index == 0)?then('show', '') />
 
       <div class="card-header pe-2">
-        <button type="button" class="${'btn btn-block text-navy text-left ps-0 ' + collapsedClass}"
+        <button type="button" class="${'btn btn-block text-navy text-start ps-0 ' + collapsedClass}"
                 data-bs-toggle="collapse"
                 data-bs-target="#${taxonomy}">${taxonomyLocalized} <span class="badge badge-light"><@itemCount item=taxonomyItem/></span></button>
       </div>

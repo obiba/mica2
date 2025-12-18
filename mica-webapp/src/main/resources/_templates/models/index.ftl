@@ -58,7 +58,7 @@
             </p>
           </div><!-- /.col -->
           <div class="col-sm-2">
-            <div class="text-right">
+            <div class="text-end">
               <button type="button"  onclick="location.href='${contextPath}/signin';" class="btn btn-primary btn-lg">
                 <i class="fa-solid fa-sign-in-alt"></i> <@message "sign-in"/>
               </button>
@@ -77,7 +77,7 @@
             </p>
           </div><!-- /.col -->
           <div class="col-sm-2">
-            <div class="text-right">
+            <div class="text-end">
               <button type="button"  onclick="location.href='<#if !config.openAccess && !user??>${contextPath}/signin?redirect=${contextPath}/search${defaultSearchState?url('UTF-8')}<#else>${contextPath}/search${defaultSearchState}</#if>';" class="btn btn-success btn-lg">
                 <i class="fa-solid fa-search"></i> <@message "search"/>
               </button>
@@ -97,7 +97,7 @@
           </p>
         </div><!-- /.col -->
         <div class="col-sm-4">
-          <div class="text-right">
+          <div class="text-end">
             <button type="button"  onclick="location.href='${contextPath}/data-access-process';" class="btn btn-info btn-lg">
               <i class="fa-solid fa-info-circle"></i> <@message "data-access-process"/>
             </button>

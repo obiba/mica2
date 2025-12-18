@@ -55,11 +55,11 @@
 </#macro>
 
 <#macro studyCardModelStats>
-  <a v-if="study.model && study.model.methods" href="javascript:void(0)" style="cursor: initial;" class="btn btn-sm col text-left">
+  <a v-if="study.model && study.model.methods" href="javascript:void(0)" style="cursor: initial;" class="btn btn-sm col text-start">
     <span class="h6 pb-0 mb-0 d-block">{{study.model.methods.design | translate}}</span>
     <span class="text-muted"><small><@message "study_taxonomy.vocabulary.methods-design.title"/></small></span>
   </a>
-  <a v-if="study.model && study.model.numberOfParticipants" href="javascript:void(0)" style="cursor: initial;" class="btn btn-sm col text-left">
+  <a v-if="study.model && study.model.numberOfParticipants" href="javascript:void(0)" style="cursor: initial;" class="btn btn-sm col text-start">
     <span class="h6 pb-0 mb-0 d-block">{{study.model.numberOfParticipants.participant.number | localize-number}}</span>
     <span class="text-muted"><small><@message "study_taxonomy.vocabulary.numberOfParticipants-participant-number.title"/></small></span>
   </a>
