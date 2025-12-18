@@ -49,7 +49,7 @@
                 <@message "feasibilities"/>
                 <span class="badge badge-info right">${feasibilities?size}</span>
                 <#if feasibilities?size != 0 || user.username == dar.applicant || isAdministrator>
-                  <i class="fa-solid fa-angle-left right mr-1"></i>
+                  <i class="fa-solid fa-angle-left right me-1"></i>
                 </#if>
               </p>
             </a>
@@ -82,7 +82,7 @@
               <i class="nav-icon fas fa-book"></i>
               <p>
                 <@message "application-forms"/>
-                <i class="fa-solid fa-angle-left right mr-1"></i>
+                <i class="fa-solid fa-angle-left right me-1"></i>
               </p>
             </a>
             <ul class="nav nav-treeview">
@@ -146,7 +146,7 @@
                 <@message "amendments"/>
                 <span class="badge badge-info right">${amendments?size}</span>
                 <#if amendments?size != 0 || user.username == dar.applicant || isAdministrator>
-                  <i class="fa-solid fa-angle-left right mr-1"></i>
+                  <i class="fa-solid fa-angle-left right me-1"></i>
                 </#if>
               </p>
             </a>
@@ -182,7 +182,7 @@
                   <@message "agreements"/>
                   <span class="badge badge-info right">${agreements?size}</span>
                   <#if agreements?size != 0>
-                    <i class="fa-solid fa-angle-left right mr-1"></i>
+                    <i class="fa-solid fa-angle-left right me-1"></i>
                   </#if>
                 </p>
               </a>
@@ -271,8 +271,8 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title"><@message "confirm-creation"/></h4>
-          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            
           </button>
         </div>
         <div class="modal-body">
@@ -299,8 +299,8 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title"><@message "confirm-creation"/></h4>
-          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            
           </button>
         </div>
         <div class="modal-body">

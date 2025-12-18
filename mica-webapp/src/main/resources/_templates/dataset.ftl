@@ -115,11 +115,11 @@
                 <#if study??>
                   <div class="card-footer">
                     <#if type == "Harmonized"><@message "associated-initiative"/><#else><@message "associated-study"/></#if>
-                    <a class="btn btn-success ml-2" href="${contextPath}/study/${study.id}">
+                    <a class="btn btn-success ms-2" href="${contextPath}/study/${study.id}">
                       <i class="<#if type == "Harmonized">${initiativeIcon}<#else>${studyIcon}</#if>"></i> ${localize(study.acronym)}
                     </a>
                     <#if showVariableStatistics && showDatasetContingencyLink>
-                      <a class="btn btn-primary float-right ml-2" href="${contextPath}/dataset-crosstab/${dataset.id}">
+                      <a class="btn btn-primary float-right ms-2" href="${contextPath}/dataset-crosstab/${dataset.id}">
                         <i class="fa-solid fa-cog"></i> <@message "dataset.crosstab.title"/>
                       </a>
                     </#if>

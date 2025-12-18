@@ -52,7 +52,7 @@
           </div>
           <div class="card-footer">
               <#if type == "Harmonized"><@message "associated-protocol"/><#else><@message "associated-dataset"/></#if>
-            <a class="btn btn-success ml-2" href="${contextPath}/dataset/${dataset.id}">
+            <a class="btn btn-success ms-2" href="${contextPath}/dataset/${dataset.id}">
               <#if type == "Collected">
                 <i class="${datasetIcon}"></i>
               <#else>
@@ -69,7 +69,7 @@
             <a id="download" href="#" class="btn btn-primary float-right">
               <i class="fa-solid fa-download"></i> <@message "download"/>
             </a>
-            <button id="transpose" class="btn btn-default float-right mr-2" onclick="transposeCrosstab()">
+            <button id="transpose" class="btn btn-default float-right me-2" onclick="transposeCrosstab()">
               <i class="fa-solid fa-exchange-alt"></i>
               <@message "transpose"/>
             </button>

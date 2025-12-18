@@ -84,12 +84,12 @@
         <div class="card-header">
           <h3 class="card-title"><@message "query"/></h3>
           <div class="card-tools">
-            <a class="btn btn-secondary btn-sm ml-2" href="javascript:void(0)" @click="onSearchModeToggle" v-cloak>
+            <a class="btn btn-secondary btn-sm ms-2" href="javascript:void(0)" @click="onSearchModeToggle" v-cloak>
               <span v-if="advanceQueryMode" title="<@message "search.basic-help"/>"><@message "search-basic-mode"/></span>
               <span v-else title="<@message "search.advanced-help"/>"><@message "search-advanced-mode"/></span>
             </a>
             <#if showCopyQuery>
-              <div class="btn-group ml-2">
+              <div class="btn-group ms-2">
                 <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><@message "global.copy-query"/></button>
                 <ul class="dropdown-menu dropdown-menu-right" style="width: 400px;">
                   <li class="pr-3 pl-3 pt-3">
@@ -121,7 +121,7 @@
                 <div class="modal-content">
                   <div class="modal-header">
                     <h5 class="modal-title"><@message "select-criteria"/></h5>
-                    <button type="button" class="btn btn-sm btn-success" data-bs-dismiss="modal"><span aria-hidden="true"><@message "display-results"/></span></button>
+                    <button type="button" class="btn btn-sm btn-success ms-auto" data-bs-dismiss="modal"><span aria-hidden="true"><@message "display-results"/></span></button>
                   </div>
                   <div class="modal-body" v-if="selectedTarget">
                     <rql-panel v-bind:target="selectedTarget" v-bind:taxonomy="selectedTaxonomy" v-bind:query="selectedQuery" @update-query="onQueryUpdate" @remove-query="onQueryRemove"></rql-panel>
@@ -152,10 +152,10 @@
               <h3 class="card-title p-3"><@message "results"/></h3>
               <#if downloadQueryEnabled>
                 <div class="mt-2 pt-1">
-                  <a id="download-query" href="javascript:void(0)" class="btn btn-sm btn-info ml-2" @click="onDownloadQueryResult"><i class="fa-solid fa-download"></i> <@message "download"/></a>
+                  <a id="download-query" href="javascript:void(0)" class="btn btn-sm btn-info ms-2" @click="onDownloadQueryResult"><i class="fa-solid fa-download"></i> <@message "download"/></a>
                 </div>
               </#if>
-              <ul id="search-tabs" class="nav nav-pills ml-auto p-2">
+              <ul id="search-tabs" class="nav nav-pills ms-auto p-2">
                 <#if searchListDisplay>
                   <li class="nav-item"><a id="lists-tab" class="nav-link active" href="#tab_lists" data-bs-toggle="tab" @click="onSelectSearch()"><@message "lists"/></a></li>
                 </#if>
@@ -210,7 +210,7 @@
                             </button>
                           </#if>
                           <#if studiesCompareEnabled>
-                            <button id="compare-studies" type="button" class="btn btn-info btn-sm ml-2" v-if="isStudiesToolsVisible" @click="onCompare">
+                            <button id="compare-studies" type="button" class="btn btn-info btn-sm ms-2" v-if="isStudiesToolsVisible" @click="onCompare">
                               <i class="fa-solid fa-grip-lines-vertical"></i> <@message "compare"/></span>
                             </button>
                           </#if>
@@ -220,7 +220,7 @@
                             </button>
                           </#if>
                           <#if networksCompareEnabled>
-                            <button id="compare-networks" type="button" class="btn btn-info btn-sm ml-2" v-if="isNetworksToolsVisible" @click="onCompare">
+                            <button id="compare-networks" type="button" class="btn btn-info btn-sm ms-2" v-if="isNetworksToolsVisible" @click="onCompare">
                               <i class="fa-solid fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge badge-light studies-selection-count"></span>
                             </button>
                           </#if>
@@ -258,11 +258,11 @@
                                       </#if>
                                   </#if>
                                   <#if studiesCartEnabled>
-                                    <button id="cart-add-studies" type="button" class="btn btn-sm btn-success ml-2" v-if="isStudiesToolsVisible" @click="onAddToCart" title="<@message "sets.cart.add-studies-to-cart"/>">
+                                    <button id="cart-add-studies" type="button" class="btn btn-sm btn-success ms-2" v-if="isStudiesToolsVisible" @click="onAddToCart" title="<@message "sets.cart.add-studies-to-cart"/>">
                                       <i class="fa-solid fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
                                   </#if>
                                   <#if networksCartEnabled>
-                                    <button id="cart-add-networks" type="button" class="btn btn-sm btn-success ml-2" v-if="isNetworksToolsVisible" @click="onAddToCart" title="<@message "sets.cart.add-networks-to-cart"/>">
+                                    <button id="cart-add-networks" type="button" class="btn btn-sm btn-success ms-2" v-if="isNetworksToolsVisible" @click="onAddToCart" title="<@message "sets.cart.add-networks-to-cart"/>">
                                       <i class="fa-solid fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
                                   </#if>
                               <#else>
@@ -278,7 +278,7 @@
                     <div class="row">
                       <div class="col d-flex align-items-center justify-content-end">
                         <div class="d-inline-flex">
-                          <span class="ml-2 mr-2">
+                          <span class="ms-2 me-2">
                             <select class="custom-select" id="obiba-page-size-selector-top"></select>
                           </span>
                           <nav id="obiba-pagination-top" aria-label="Top pagination" class="mt-0">
@@ -378,7 +378,7 @@
                                 </div>
                               </li>
                             </#if>
-                            <li class="ml-3">
+                            <li class="ms-3">
                               <div class="dropleft">
                                 <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown"><@message "search.filter"/></button>
 

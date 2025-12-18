@@ -88,7 +88,7 @@
     <div class="col-6">
       <typeahead @typing="onType" @select="onSelect" :items="suggestions" :external-text="initialFilter"></typeahead>
     </div>
-    <div class="col-3 ml-auto">
+    <div class="col-3 ms-auto">
       <a href="${contextPath}/${listPageSearchMode}#lists?type=studies&query=study(in(Mica_study.className,(${className})))" class="btn btn-sm btn-primary float-right">
         <@message "global.search"/> <i class="fa-solid fa-search"></i>
       </a>
@@ -99,10 +99,10 @@
     <div class="col-12">
       <div class="d-inline-flex float-right mt-3 mb-3">
         <sorting @sort-update="onSortUpdate" :initial-choice="initialSort" :options-translations="sortOptionsTranslations"></sorting>
-        <span class="ml-2">
+        <span class="ms-2">
           <select class="custom-select" id="obiba-page-size-selector-top"></select>
         </span>
-        <nav id="obiba-pagination-top" aria-label="Top pagination" class="ml-2 mt-0">
+        <nav id="obiba-pagination-top" aria-label="Top pagination" class="ms-2 mt-0">
           <ul class="pagination mb-0"></ul>
         </nav>
       </div>
@@ -170,11 +170,11 @@
     </div>
   </div>
 
-  <div class="d-inline-flex pt-0 ml-auto">
+  <div class="d-inline-flex pt-0 ms-auto">
     <span>
       <select class="custom-select" id="obiba-page-size-selector-bottom"></select>
     </span>
-    <nav id="obiba-pagination-bottom" aria-label="Bottom pagination" class="ml-2 mt-0">
+    <nav id="obiba-pagination-bottom" aria-label="Bottom pagination" class="ms-2 mt-0">
       <ul class="pagination"></ul>
     </nav>
   </div>

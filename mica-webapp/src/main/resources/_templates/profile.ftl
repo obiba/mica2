@@ -76,7 +76,7 @@
                           <#assign isOidc = true/>
                           <p><@message "credentials-info"/></p>
                           <@message "user-account-at"/>
-                          <a href="${oidc.providerUrl}" class="btn btn-primary ml-2" target="_blank"><i class="fa-solid fa-user"></i> ${oidc.title}</a>
+                          <a href="${oidc.providerUrl}" class="btn btn-primary ms-2" target="_blank"><i class="fa-solid fa-user"></i> ${oidc.title}</a>
                         </#if>
                       </#list>
                     </#if>

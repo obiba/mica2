@@ -70,16 +70,16 @@
               <h3 class="card-title"><@message "feasibility-inquiry-form"/></h3>
               <div ng-cloak>
                 <#if feasibilityPermissions?seq_contains("EDIT")>
-                  <span class="float-right border-left ml-2 pl-2" ng-if="schema.readOnly">
+                  <span class="float-right border-left ms-2 pl-2" ng-if="schema.readOnly">
                     <a class="btn btn-primary" href="${feasibility.id}?edit=true"><i class="fa-solid fa-pen"></i> <@message "edit"/></a>
                   </span>
-                  <span class="float-right border-left ml-2 pl-2" ng-hide="schema.readOnly">
+                  <span class="float-right border-left ms-2 pl-2" ng-hide="schema.readOnly">
                     <a class="btn btn-primary" href="#" ng-click="save('${dar.id}', 'feasibility', '${feasibility.id}')"><@message "save"/></a>
                     <a class="btn btn-default" href="${feasibility.id}"><@message "cancel"/></a>
                   </span>
                 </#if>
                 <#if feasibilityPermissions?seq_contains("EDIT_STATUS")>
-                  <span class="float-right border-left ml-2 pl-2">
+                  <span class="float-right border-left ms-2 pl-2">
                     <#if feasibility.status == "OPENED">
                       <button type="button" class="btn btn-info" ng-hide="!schema.readOnly" data-bs-toggle="modal"
                               data-bs-target="#modal-submit"><@message "submit"/></button>
@@ -149,8 +149,8 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title"><@message "confirm-submission-title"/></h4>
-                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    
                   </button>
                 </div>
                 <div class="modal-body">
@@ -174,8 +174,8 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title"><@message "confirm-approval-title"/></h4>
-                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    
                   </button>
                 </div>
                 <div class="modal-body">
@@ -199,8 +199,8 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title"><@message "confirm-rejection-title"/></h4>
-                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    
                   </button>
                 </div>
                 <div class="modal-body">
@@ -224,8 +224,8 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title"><@message "confirm-cancel-approval-title"/></h4>
-                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    
                   </button>
                 </div>
                 <div class="modal-body">
@@ -249,8 +249,8 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title"><@message "confirm-cancel-rejection-title"/></h4>
-                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    
                   </button>
                 </div>
                 <div class="modal-body">
@@ -285,7 +285,7 @@
                         <span class="badge badge-light">${feasibility.variablesSet.identifiers?size}</span>
                       </a>
                       <#if feasibilityPermissions?seq_contains("EDIT")>
-                        <a class="ml-3" href="javascript:void(0)" onclick="DataAccessService.unlinkVariables('${feasibility.parentId}', 'feasibility', '${feasibility.id}')">
+                        <a class="ms-3" href="javascript:void(0)" onclick="DataAccessService.unlinkVariables('${feasibility.parentId}', 'feasibility', '${feasibility.id}')">
                           <i class="fa-solid fa-unlink"></i> <@message "unlink-variables"/>
                         </a>
                       </#if>

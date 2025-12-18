@@ -7,7 +7,7 @@
       <div class="card card-primary card-outline">
         <div class="card-header">
           <h3 class="card-title pt-2"><@message "classifications" /></h3>
-          <ul class="nav nav-pills ml-auto float-right">
+          <ul class="nav nav-pills ms-auto float-right">
             <li class="nav-item"><a class="nav-link active" title="<@message "summary-view" />" href="#summary" data-bs-toggle="tab">
                 <i class="fa-solid fa-grip-lines"></i></a>
             </li>
@@ -102,5 +102,5 @@
 </#macro>
 
 <#macro vocabularyColorLabel vocabulary="">
-  <span class="p-1 mr-1 ${vocabulary}"></span>
+  <span class="p-1 me-1 ${vocabulary}"></span>
 </#macro>
