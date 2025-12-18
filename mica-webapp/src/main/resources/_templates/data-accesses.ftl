@@ -30,7 +30,7 @@
           <div class="alert alert-info">
             <h6><i class="icon fas fa-lock"></i> <@message "security-info"/></h6>
               <@message "2fa-info"/>
-              <a href="${contextPath}/profile" class="ml-2">
+              <a href="${contextPath}/profile" class="ms-2">
                   <i class="fa fa-arrow-right"></i> <@message "profile"/>
               </a>
           </div>
@@ -210,8 +210,8 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title"><@message "confirm-creation"/></h4>
-          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            
           </button>
         </div>
         <div class="modal-body">

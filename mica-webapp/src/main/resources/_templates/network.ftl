@@ -197,7 +197,7 @@
                     </div>
 
                       <#if affiliatedMembersQuery??>
-                        <button type="button" class="btn btn-primary float-right mr-2" data-bs-toggle="modal" data-bs-target="#affiliatedMembersModal">
+                        <button type="button" class="btn btn-primary float-right me-2" data-bs-toggle="modal" data-bs-target="#affiliatedMembersModal">
                             <@message "network.associated-people"/>
                         </button>
                       </#if>
@@ -400,7 +400,7 @@
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title"><@message "network.associated-people"/></h5>
-                <button type="button" class="close" data-bs-dismiss="modal">
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
                   <span>&times;</span>
                 </button>
               </div>

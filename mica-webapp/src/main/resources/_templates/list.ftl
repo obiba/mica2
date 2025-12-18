@@ -53,12 +53,12 @@
                         ${listName(variableList)?truncate_c(20, "...")}
                     </span>
                     <#if variableList.name?starts_with("dar:")>
-                      <i class="fa-solid fa-link ml-2"></i>
+                      <i class="fa-solid fa-link ms-2"></i>
                     <#else>
                       <span></span>
                     </#if>
                     <#if variableList.locked>
-                      <i class="fa-solid fa-lock ml-2"></i>
+                      <i class="fa-solid fa-lock ms-2"></i>
                     </#if>
                     <span class="badge badge-light right">${variableList.identifiers?size}</span>
                   </p>
@@ -100,7 +100,7 @@
                 </#if>
             </h1>
             <#if !set.locked || isAdministrator>
-              <button type="button" class="btn btn-danger ml-4" data-bs-toggle="modal" data-bs-target="#modal-delete-list">
+              <button type="button" class="btn btn-danger ms-4" data-bs-toggle="modal" data-bs-target="#modal-delete-list">
                 <i class="fa-solid fa-trash"></i> <@message "delete"/>
               </button>
             </#if>
@@ -116,8 +116,8 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title"><@message "cart-confirm-deletion-title"/> (${listName(set)})</h4>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+              
             </button>
           </div>
           <div class="modal-body">
@@ -143,8 +143,8 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title"><@message "cart-confirm-deletion-title"/> (${listName(set)})</h4>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+              
             </button>
           </div>
           <div class="modal-body">
@@ -204,12 +204,12 @@
             </#if>
 
             <div class="float-right">
-              <button class="btn btn-success ml-2" onclick="onVariablesCartAdd('${set.id}')">
+              <button class="btn btn-success ms-2" onclick="onVariablesCartAdd('${set.id}')">
                 <i class="fa-solid fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/>
               </button>
               <#if showCartDownload>
                 <#if showCartViewDownload>
-                  <div class="btn-group ml-2" role="group">
+                  <div class="btn-group ms-2" role="group">
                     <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       <i class="fa-solid fa-download"></i> <@message "download"/>
                     </button>
@@ -220,13 +220,13 @@
                     </div>
                   </div>
                 <#else>
-                  <a href="${contextPath}/ws/variables/set/${set.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
+                  <a href="${contextPath}/ws/variables/set/${set.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ms-2">
                     <i class="fa-solid fa-download"></i> <@message "download"/>
                   </a>
                 </#if>
               </#if>
               <#if !set.locked || isAdministrator>
-                <button id="delete-all" type="button" class="btn btn-danger ml-2" data-bs-toggle="modal" data-bs-target="#modal-delete">
+                <button id="delete-all" type="button" class="btn btn-danger ms-2" data-bs-toggle="modal" data-bs-target="#modal-delete">
                   <i class="fa-solid fa-trash"></i> <@message "delete"/> <span class="badge badge-light selection-count"></span>
                 </button>
               </#if>
@@ -240,7 +240,7 @@
                 <div class="float-left">
                   <div class="d-inline-block">
                     <div class="d-inline-flex">
-                      <span class="mr-2">
+                      <span class="me-2">
                         <select class="custom-select" id="obiba-page-size-selector-top"></select>
                       </span>
                       <nav id="obiba-pagination-top" aria-label="Top pagination" class="mt-0">
@@ -251,10 +251,10 @@
                 </div>
                 <#if config.setsSearchEnabled>
                   <div class="float-right">
-                    <a class="btn btn-info ml-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=variables&query=variable(in(Mica_variable.sets,${set.id})),study(in(Mica_study.className,Study))">
+                    <a class="btn btn-info ms-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=variables&query=variable(in(Mica_variable.sets,${set.id})),study(in(Mica_study.className,Study))">
                       <i class="fa-solid fa-search"></i>
                     </a>
-                    <a class="btn btn-info ml-2" v-else href="${contextPath}/harmonization-search#lists?type=variables&query=variable(in(Mica_variable.sets,${set.id})),study(in(Mica_study.className,HarmonizationStudy))">
+                    <a class="btn btn-info ms-2" v-else href="${contextPath}/harmonization-search#lists?type=variables&query=variable(in(Mica_variable.sets,${set.id})),study(in(Mica_study.className,HarmonizationStudy))">
                       <i class="fa-solid fa-search"></i>
                     </a>
                   </div>

@@ -59,7 +59,7 @@
                 <#else>
                   <a href="${contextPath}/data-access-form/${event.form.id}"><i class="fa-solid fa-book"></i> ${event.form.id}</a>
                 </#if>
-                <i class="fa-solid fa-arrow-right ml-2 mr-2"></i>
+                <i class="fa-solid fa-arrow-right ms-2 me-2"></i>
                 <@message event.status.toString()/>
               </div>
             </div>

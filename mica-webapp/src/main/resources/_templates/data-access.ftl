@@ -32,18 +32,18 @@
               <span class="text-white-50"><@message "data-access"/> /</span> ${dar.id}
             </h1>
               <#if permissions?seq_contains("DELETE")>
-                <button type="button" class="btn btn-danger ml-4" data-bs-toggle="modal" data-bs-target="#modal-delete">
+                <button type="button" class="btn btn-danger ms-4" data-bs-toggle="modal" data-bs-target="#modal-delete">
                   <i class="fa-solid fa-trash"></i> <@message "delete"/>
                 </button>
               </#if>
               <#if dataAccessArchiveEnabled>
                 <#if permissions?seq_contains("ARCHIVE")>
-                  <button type="button" class="btn btn-warning ml-4" data-bs-toggle="modal" data-bs-target="#modal-archive">
+                  <button type="button" class="btn btn-warning ms-4" data-bs-toggle="modal" data-bs-target="#modal-archive">
                     <i class="fa-solid fa-box"></i> <@message "archive"/>
                   </button>
                 </#if>
                 <#if permissions?seq_contains("UNARCHIVE")>
-                  <button type="button" class="btn btn-warning ml-4" data-bs-toggle="modal" data-bs-target="#modal-unarchive">
+                  <button type="button" class="btn btn-warning ms-4" data-bs-toggle="modal" data-bs-target="#modal-unarchive">
                     <i class="fa-solid fa-box-open"></i> <@message "unarchive"/>
                   </button>
                 </#if>
@@ -62,8 +62,8 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title"><@message "confirm-deletion-title"/></h4>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+              
             </button>
           </div>
           <div class="modal-body">
@@ -88,8 +88,8 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title"><@message "confirm-archive-title"/></h4>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+              
             </button>
           </div>
           <div class="modal-body">
@@ -114,8 +114,8 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title"><@message "confirm-unarchive-title"/></h4>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+              
             </button>
           </div>
           <div class="modal-body">
@@ -140,8 +140,8 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title"><@message "collaborator-invite-title"/></h4>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+              
             </button>
           </div>
           <div class="modal-body">
@@ -178,8 +178,8 @@
           <div class="modal-content">
             <div class="modal-header">
               <h4 class="modal-title"><@message "confirm-collaborator-delete-title"/></h4>
-              <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                
               </button>
             </div>
             <div class="modal-body">
@@ -263,7 +263,7 @@
                 <#if accessConfig.collaboratorsEnabled>
                   <div class="float-right">
                     <#if permissions?seq_contains("ADD_COLLABORATORS")>
-                      <button type="button" class="btn btn-primary ml-4" data-bs-toggle="modal" data-bs-target="#modal-collaborator-add">
+                      <button type="button" class="btn btn-primary ms-4" data-bs-toggle="modal" data-bs-target="#modal-collaborator-add">
                         <i class="fa-solid fa-plus"></i> <@message "new-collaborator"/>
                       </button>
                     </#if>
@@ -286,7 +286,7 @@
                 <h3 class="card-title"><@message "feasibilities"/></h3>
                 <div class="float-right">
                   <#if !dar.archived && (user.username == dar.applicant || isAdministrator)>
-                    <button type="button" class="btn btn-primary ml-4" data-bs-toggle="modal" data-bs-target="#modal-feasibility-add">
+                    <button type="button" class="btn btn-primary ms-4" data-bs-toggle="modal" data-bs-target="#modal-feasibility-add">
                       <i class="fa-solid fa-plus"></i> <@message "new-feasibility"/>
                     </button>
                   </#if>
@@ -329,7 +329,7 @@
                 <h3 class="card-title"><@message "amendments"/></h3>
                 <div class="float-right">
                   <#if !dar.archived && (user.username == dar.applicant || isAdministrator)>
-                    <button type="button" class="btn btn-primary ml-4" data-bs-toggle="modal" data-bs-target="#modal-amendment-add">
+                    <button type="button" class="btn btn-primary ms-4" data-bs-toggle="modal" data-bs-target="#modal-amendment-add">
                       <i class="fa-solid fa-plus"></i> <@message "new-amendment"/>
                     </button>
                   </#if>
@@ -377,7 +377,7 @@
               <#if !dar.archived>
                 <div class="card-footer">
                   <a href="${contextPath}/data-access-comments/${dar.id}"><@message "send-message"/> <i
-                            class="fa-solid fa-arrow-circle-right ml-1"></i></a>
+                            class="fa-solid fa-arrow-circle-right ms-1"></i></a>
                 </div>
               </#if>
             </div>
@@ -399,8 +399,8 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title"><@message "start-date"/></h4>
-          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            
           </button>
         </div>
         <div class="modal-body">

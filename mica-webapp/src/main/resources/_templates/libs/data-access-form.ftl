@@ -66,7 +66,7 @@
 <#macro dataAccessFormPrintHeader form type>
   <div class="clearfix border-bottom pb-3 mb-3">
     <div class="float-left">
-      <img src="${brandImageSrc}" alt="Logo" class="brand-image ${brandImageClass} mr-2" style="opacity: .8; max-height: 33px">
+      <img src="${brandImageSrc}" alt="Logo" class="brand-image ${brandImageClass} me-2" style="opacity: .8; max-height: 33px">
       <span class="brand-text ${brandTextClass}" style="font-size: larger">
         <#if brandTextEnabled>
           ${config.name!""}
@@ -97,8 +97,8 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title"><@message "form-diff"/></h4>
-          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            
           </button>
         </div>
         <div class="modal-body">

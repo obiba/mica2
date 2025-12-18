@@ -37,8 +37,8 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title"><@message "cart-confirm-deletion-title"/></h4>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+              
             </button>
           </div>
           <div class="modal-body">
@@ -64,8 +64,8 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title"><@message "cart-confirm-deletion-title"/></h4>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+              
             </button>
           </div>
           <div class="modal-body">
@@ -91,8 +91,8 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title"><@message "cart-confirm-deletion-title"/></h4>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+              
             </button>
           </div>
           <div class="modal-body">
@@ -190,7 +190,7 @@
                   </#if>
 
                   <#if sets.variablesLists?? && sets.variablesLists?size lt maxNumberOfSets>
-                    <div class="btn-group ml-2" role="group">
+                    <div class="btn-group ms-2" role="group">
                       <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown">
                           <@message "sets.add.button.set-label"/>
                         <span class="badge badge-light selection-count"></span>
@@ -229,7 +229,7 @@
 
                   <#if showCartDownload>
                     <#if showCartViewDownload>
-                      <div class="btn-group ml-2" role="group">
+                      <div class="btn-group ms-2" role="group">
                         <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                           <i class="fa-solid fa-download"></i> <@message "download"/>
                         </button>
@@ -239,12 +239,12 @@
                         </div>
                       </div>
                     <#else>
-                      <a href="${contextPath}/ws/variables/set/${sets.variablesCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
+                      <a href="${contextPath}/ws/variables/set/${sets.variablesCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ms-2">
                         <i class="fa-solid fa-download"></i> <@message "download-cart-export"/>
                       </a>
                     </#if>
                   </#if>
-                  <button id="delete-all" type="button" class="btn btn-danger ml-2" data-bs-toggle="modal" data-bs-target="#modal-delete">
+                  <button id="delete-all" type="button" class="btn btn-danger ms-2" data-bs-toggle="modal" data-bs-target="#modal-delete">
                     <i class="fa-solid fa-trash"></i> <@message "delete"/> <span class="badge badge-light selection-count"></span>
                   </button>
                 </div>
@@ -260,7 +260,7 @@
                   <div class="float-left">
                     <div class="d-inline-block">
                       <div class="d-inline-flex">
-                        <span class="mr-2">
+                        <span class="me-2">
                           <select class="custom-select" id="obiba-page-size-selector-top"></select>
                         </span>
                         <nav id="obiba-pagination-top" aria-label="Top pagination" class="mt-0">
@@ -271,10 +271,10 @@
                   </div>
                   <#if config.setsSearchEnabled>
                     <div class="float-right">
-                      <a class="btn btn-info ml-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=variables&query=variable(in(Mica_variable.sets,${sets.variablesCart.id})),study(in(Mica_study.className,Study))">
+                      <a class="btn btn-info ms-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=variables&query=variable(in(Mica_variable.sets,${sets.variablesCart.id})),study(in(Mica_study.className,Study))">
                         <i class="fa-solid fa-search"></i>
                       </a>
-                      <a class="btn btn-info ml-2" v-else href="${contextPath}/harmonization-search#lists?type=variables&query=variable(in(Mica_variable.sets,${sets.variablesCart.id})),study(in(Mica_study.className,HarmonizationStudy))">
+                      <a class="btn btn-info ms-2" v-else href="${contextPath}/harmonization-search#lists?type=variables&query=variable(in(Mica_variable.sets,${sets.variablesCart.id})),study(in(Mica_study.className,HarmonizationStudy))">
                         <i class="fa-solid fa-search"></i>
                       </a>
                     </div>
@@ -315,16 +315,16 @@
                 </#if>
                 <div class="float-right">
                   <#if studiesCompareEnabled>
-                    <button type="button" class="btn btn-info ml-2" onclick="onCompareStudies()">
+                    <button type="button" class="btn btn-info ms-2" onclick="onCompareStudies()">
                       <i class="fa-solid fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge badge-light studies-selection-count"></span>
                     </button>
                   </#if>
                   <#if showCartDownload>
-                    <a href="${contextPath}/ws/studies/set/${sets.studiesCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
+                    <a href="${contextPath}/ws/studies/set/${sets.studiesCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ms-2">
                       <i class="fa-solid fa-download"></i> <@message "download-cart-export"/>
                     </a>
                   </#if>
-                  <button id="delete-all" type="button" class="btn btn-danger ml-2" data-bs-toggle="modal" data-bs-target="#modal-delete-studies">
+                  <button id="delete-all" type="button" class="btn btn-danger ms-2" data-bs-toggle="modal" data-bs-target="#modal-delete-studies">
                     <i class="fa-solid fa-trash"></i> <@message "delete"/> <span class="badge badge-light studies-selection-count"></span>
                   </button>
                 </div>
@@ -340,7 +340,7 @@
                   <div class="float-left">
                     <div class="d-inline-block">
                       <div class="d-inline-flex">
-                        <span class="mr-2">
+                        <span class="me-2">
                           <select class="custom-select" id="obiba-page-size-selector-top"></select>
                         </span>
                         <nav id="obiba-pagination-top" aria-label="Top pagination" class="mt-0">
@@ -351,10 +351,10 @@
                   </div>
                   <#if config.setsSearchEnabled>
                     <div class="float-right">
-                      <a class="btn btn-info ml-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=studies&query=study(and(in(Mica_study.sets,${sets.studiesCart.id}),in(Mica_study.className,Study)))">
+                      <a class="btn btn-info ms-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=studies&query=study(and(in(Mica_study.sets,${sets.studiesCart.id}),in(Mica_study.className,Study)))">
                         <i class="fa-solid fa-search"></i>
                       </a>
-                      <a class="btn btn-info ml-2" v-else href="${contextPath}/harmonization-search#lists?type=studies&query=study(and(in(Mica_study.sets,${sets.studiesCart.id}),in(Mica_study.className,HarmonizationStudy)))">
+                      <a class="btn btn-info ms-2" v-else href="${contextPath}/harmonization-search#lists?type=studies&query=study(and(in(Mica_study.sets,${sets.studiesCart.id}),in(Mica_study.className,HarmonizationStudy)))">
                         <i class="fa-solid fa-search"></i>
                       </a>
                     </div>
@@ -382,16 +382,16 @@
               <#if sets.networksCart?? && sets.networksCart.count gt 0>
                 <div class="float-right">
                   <#if networksCompareEnabled>
-                    <button type="button" class="btn btn-info ml-2" onclick="onCompareNetworks()">
+                    <button type="button" class="btn btn-info ms-2" onclick="onCompareNetworks()">
                       <i class="fa-solid fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge badge-light networks-selection-count"></span>
                     </button>
                   </#if>
                   <#if showCartDownload>
-                    <a href="${contextPath}/ws/networks/set/${sets.networksCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
+                    <a href="${contextPath}/ws/networks/set/${sets.networksCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ms-2">
                       <i class="fa-solid fa-download"></i> <@message "download-cart-export"/>
                     </a>
                   </#if>
-                  <button id="delete-all" type="button" class="btn btn-danger ml-2" data-bs-toggle="modal" data-bs-target="#modal-delete-networks">
+                  <button id="delete-all" type="button" class="btn btn-danger ms-2" data-bs-toggle="modal" data-bs-target="#modal-delete-networks">
                     <i class="fa-solid fa-trash"></i> <@message "delete"/> <span class="badge badge-light networks-selection-count"></span>
                   </button>
                 </div>
@@ -405,7 +405,7 @@
                   <div class="float-left">
                     <div class="d-inline-block">
                       <div class="d-inline-flex">
-                        <span class="mr-2">
+                        <span class="me-2">
                           <select class="custom-select" id="obiba-page-size-selector-top"></select>
                         </span>
                         <nav id="obiba-pagination-top" aria-label="Top pagination" class="mt-0">
@@ -416,7 +416,7 @@
                   </div>
                   <#if config.setsSearchEnabled>
                     <div class="float-right">
-                      <a class="btn btn-info ml-2" href="${contextPath}/search#lists?type=networks&query=network(in(Mica_network.sets,${sets.networksCart.id}))">
+                      <a class="btn btn-info ms-2" href="${contextPath}/search#lists?type=networks&query=network(in(Mica_network.sets,${sets.networksCart.id}))">
                         <i class="fa-solid fa-search"></i>
                       </a>
                     </div>
@@ -445,8 +445,8 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title"><@message "confirm-creation"/></h4>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+              
             </button>
           </div>
           <div class="modal-body">

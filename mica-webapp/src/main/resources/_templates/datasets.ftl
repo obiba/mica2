@@ -44,7 +44,7 @@
             <div class="card-header">
               <h3 class="card-title <#if datasetListDisplays?size gt 1>pt-2</#if>"><span>${datasets?size} <@message title/></span></h3>
               <#if datasetListDisplays?size gt 1>
-                <ul class="nav nav-pills ml-auto float-right">
+                <ul class="nav nav-pills ms-auto float-right">
                   <#list datasetListDisplays as display>
                     <#if display == "table">
                       <li class="nav-item"><a class="nav-link <#if datasetListDefaultDisplay == "table">active</#if>" href="#table" data-bs-toggle="tab">

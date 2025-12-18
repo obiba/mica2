@@ -64,7 +64,7 @@
             <div class="card-body">
               <#if ids?size gt (individualStudies?size + harmonizationStudies?size)>
                 <div class="alert alert-warning alert-dismissible">
-                  <button type="button" class="close" data-bs-dismiss="alert" aria-hidden="true">×</button>
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-hidden="true">×</button>
                   <@messageArgs code="compare-max-items" args=["${config.maxItemsPerCompare}"]/>
                 </div>
               </#if>
@@ -96,7 +96,7 @@
                   <div class="tab-pane active" id="tab_individual_studies">
                     <#if individualQuery??>
                       <div class="float-right">
-                        <a class="btn btn-sm btn-info ml-2" href="${contextPath}/individual-search#lists?type=${type}&query=${individualQuery}">
+                        <a class="btn btn-sm btn-info ms-2" href="${contextPath}/individual-search#lists?type=${type}&query=${individualQuery}">
                           <i class="fa-solid fa-search"></i>
                         </a>
                       </div>
@@ -120,7 +120,7 @@
                   <div class="tab-pane <#if individualStudies?size == 0>active</#if>" id="tab_harmonization_studies">
                     <#if harmonizationQuery??>
                       <div class="float-right">
-                        <a class="btn btn-sm btn-info ml-2" href="${contextPath}/harmonization-search#lists?type=${type}&query=${harmonizationQuery}">
+                        <a class="btn btn-sm btn-info ms-2" href="${contextPath}/harmonization-search#lists?type=${type}&query=${harmonizationQuery}">
                           <i class="fa-solid fa-search"></i>
                         </a>
                       </div>
@@ -155,7 +155,7 @@
             <div class="card-body">
               <#if ids?size gt networks?size>
                 <div class="alert alert-warning alert-dismissible">
-                  <button type="button" class="close" data-bs-dismiss="alert" aria-hidden="true">×</button>
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-hidden="true">×</button>
                     <@messageArgs code="compare-max-items" args=["${config.maxItemsPerCompare}"]/>
                 </div>
               </#if>
@@ -164,7 +164,7 @@
               <#else>
                 <#if query??>
                   <div class="float-right">
-                    <a class="btn btn-sm btn-info ml-2" href="${contextPath}/search#lists?type=${type}&query=${query}">
+                    <a class="btn btn-sm btn-info ms-2" href="${contextPath}/search#lists?type=${type}&query=${query}">
                       <i class="fa-solid fa-search"></i>
                     </a>
                   </div>

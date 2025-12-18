@@ -31,7 +31,7 @@
               <span class="text-white-50"><@message "data-access-amendment"/> /</span> ${amendment.id}
             </h1>
               <#if amendmentPermissions?seq_contains("DELETE")>
-                <button type="button" class="btn btn-danger ml-4" data-bs-toggle="modal" data-bs-target="#modal-delete">
+                <button type="button" class="btn btn-danger ms-4" data-bs-toggle="modal" data-bs-target="#modal-delete">
                   <i class="fa-solid fa-trash"></i> <@message "delete"/>
                 </button>
               </#if>
@@ -49,8 +49,8 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title"><@message "confirm-deletion-title"/></h4>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+              
             </button>
           </div>
           <div class="modal-body">
@@ -101,16 +101,16 @@
               <h3 class="card-title"><@message "amendment-form"/></h3>
               <div ng-cloak>
                 <#if amendmentPermissions?seq_contains("EDIT")>
-                  <span class="float-right border-left ml-2 pl-2" ng-if="schema.readOnly">
+                  <span class="float-right border-left ms-2 pl-2" ng-if="schema.readOnly">
                     <a class="btn btn-primary" href="${amendment.id}?edit=true"><i class="fa-solid fa-pen"></i> <@message "edit"/></a>
                   </span>
-                  <span class="float-right border-left ml-2 pl-2" ng-hide="schema.readOnly">
+                  <span class="float-right border-left ms-2 pl-2" ng-hide="schema.readOnly">
                     <a class="btn btn-primary" href="#" ng-click="save('${dar.id}', 'amendment', '${amendment.id}')"><@message "save"/></a>
                     <a class="btn btn-default" href="${amendment.id}"><@message "cancel"/></a>
                   </span>
                 </#if>
                 <#if amendmentPermissions?seq_contains("EDIT_STATUS")>
-                  <span class="float-right border-left ml-2 pl-2">
+                  <span class="float-right border-left ms-2 pl-2">
                     <#if amendment.status == "OPENED" || amendment.status == "CONDITIONALLY_APPROVED">
                       <button type="button" class="btn btn-info" ng-hide="!schema.readOnly" data-bs-toggle="modal"
                               data-bs-target="#modal-submit"><@message "submit"/></button>
@@ -189,8 +189,8 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title"><@message "confirm-submission-title"/></h4>
-                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    
                   </button>
                 </div>
                 <div class="modal-body">
@@ -214,8 +214,8 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title"><@message "confirm-approval-title"/></h4>
-                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    
                   </button>
                 </div>
                 <div class="modal-body">
@@ -239,8 +239,8 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title"><@message "confirm-conditional-approval-title"/></h4>
-                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    
                   </button>
                 </div>
                 <div class="modal-body">
@@ -264,8 +264,8 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title"><@message "confirm-rejection-title"/></h4>
-                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    
                   </button>
                 </div>
                 <div class="modal-body">
@@ -289,8 +289,8 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title"><@message "confirm-cancel-approval-title"/></h4>
-                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    
                   </button>
                 </div>
                 <div class="modal-body">
@@ -319,8 +319,8 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title"><@message "confirm-cancel-rejection-title"/></h4>
-                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    
                   </button>
                 </div>
                 <div class="modal-body">
@@ -360,7 +360,7 @@
                         <span class="badge badge-light">${amendment.variablesSet.identifiers?size}</span>
                       </a>
                       <#if amendmentPermissions?seq_contains("EDIT")>
-                        <a class="ml-3" href="javascript:void(0)" onclick="DataAccessService.unlinkVariables('${amendment.parentId}', 'amendment', '${amendment.id}')">
+                        <a class="ms-3" href="javascript:void(0)" onclick="DataAccessService.unlinkVariables('${amendment.parentId}', 'amendment', '${amendment.id}')">
                           <i class="fa-solid fa-unlink"></i> <@message "unlink-variables"/>
                         </a>
                       </#if>

@@ -48,7 +48,7 @@
           <#else>
             <p><@message "start-date-applicant-text"/></p>
             <a href="${contextPath}/data-access-comments/${dar.id}"><@message "send-message"/> <i
-                class="fa-solid fa-arrow-circle-right ml-1"></i></a>
+                class="fa-solid fa-arrow-circle-right ms-1"></i></a>
           </#if>
         </div>
       </div>
@@ -134,7 +134,7 @@
         </p>
         <p>
           <a href="${contextPath}/data-access-comments/${dar.id}"><@message "send-message"/> <i
-              class="fa-solid fa-arrow-circle-right ml-1"></i></a>
+              class="fa-solid fa-arrow-circle-right ms-1"></i></a>
         </p>
       </div>
     <#elseif agreementsOpened?size gt 0>
@@ -200,10 +200,10 @@
                   </button>
                   <ul class="dropdown-menu" style="">
                     <#if permissions?seq_contains("ADD_COLLABORATORS") && collaborator.invitationPending>
-                      <li><a class="dropdown-item" href="#" onclick="DataAccessService.reinviteCollaborator('${dar.id}', '${collaborator.email}', '<@message "invitation-resent"/>')"><i class="fa fa-paper-plane mr-2"></i> <@message "invite"/></a></li>
+                      <li><a class="dropdown-item" href="#" onclick="DataAccessService.reinviteCollaborator('${dar.id}', '${collaborator.email}', '<@message "invitation-resent"/>')"><i class="fa fa-paper-plane me-2"></i> <@message "invite"/></a></li>
                     </#if>
                     <#if permissions?seq_contains("DELETE_COLLABORATORS")>
-                      <li><a class="dropdown-item" href="#" onclick="$('#collaborator-to-delete').text('${collaborator.email}')" data-bs-toggle="modal" data-bs-target="#modal-collaborator-delete"><i class="fa fa-trash mr-2"></i> <@message "remove"/></a></li>
+                      <li><a class="dropdown-item" href="#" onclick="$('#collaborator-to-delete').text('${collaborator.email}')" data-bs-toggle="modal" data-bs-target="#modal-collaborator-delete"><i class="fa fa-trash me-2"></i> <@message "remove"/></a></li>
                     </#if>
                   </ul>
                 </div>

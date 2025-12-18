@@ -399,7 +399,7 @@
     return (Object.keys(memberships) || []).map(key => {
       let url = MicaService.normalizeUrl(urlPrefix + key);
       let acronym = memberships[key].acronym;
-      let roles = '<span class="ml-1">(' + (memberships[key].roles || []).join(", ") + ')</span>';
+      let roles = '<span class="ms-1">(' + (memberships[key].roles || []).join(", ") + ')</span>';
 
       return '<a href="' + url + '">' + acronym + '</a>' + roles;
     });

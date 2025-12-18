@@ -163,7 +163,7 @@
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
                       <i class="fa-solid fa-minus"></i></button>
                   </div>
-                  <a href="${contextPath}/ws/persons/_search/_download?limit=1000&query=studyMemberships.parentId:(${study.id})" class="btn btn-primary float-right mr-2">
+                  <a href="${contextPath}/ws/persons/_search/_download?limit=1000&query=studyMemberships.parentId:(${study.id})" class="btn btn-primary float-right me-2">
                     <i class="fa-solid fa-download"></i> <@message "download"/>
                   </a>
                 </div>
