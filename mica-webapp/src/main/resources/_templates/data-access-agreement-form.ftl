@@ -71,16 +71,16 @@
                 <h3 class="card-title"><@message "agreement-form"/></h3>
                 <div ng-cloak>
                   <#if agreementPermissions?seq_contains("EDIT")>
-                    <span class="float-right border-left ms-2 ps-2" ng-if="schema.readOnly">
+                    <span class="float-end border-left ms-2 ps-2" ng-if="schema.readOnly">
                       <a class="btn btn-primary" href="${agreement.id}?edit=true"><i class="fa-solid fa-pen"></i> <@message "edit"/></a>
                     </span>
-                    <span class="float-right border-left ms-2 ps-2" ng-hide="schema.readOnly">
+                    <span class="float-end border-left ms-2 ps-2" ng-hide="schema.readOnly">
                       <a class="btn btn-primary" href="#" ng-click="save('${dar.id}', 'agreement', '${agreement.id}')"><@message "save"/></a>
                       <a class="btn btn-default" href="${agreement.id}"><@message "cancel"/></a>
                     </span>
                   </#if>
                   <#if agreementPermissions?seq_contains("EDIT_STATUS")>
-                    <span class="float-right">
+                    <span class="float-end">
                       <#if agreement.status == "OPENED">
                         <button type="button" class="btn btn-info" ng-if="schema.readOnly" data-bs-toggle="modal"
                                 data-bs-target="#modal-submit"><@message "submit"/></button>
@@ -92,7 +92,7 @@
                       </#if>
                     </span>
                   </#if>
-                  <span class="float-right <#if agreementPermissions?seq_contains("EDIT_STATUS") && agreement.status == "OPENED">border-right me-2 pe-2</#if>" ng-if="schema.readOnly">
+                  <span class="float-end <#if agreementPermissions?seq_contains("EDIT_STATUS") && agreement.status == "OPENED">border-right me-2 pe-2</#if>" ng-if="schema.readOnly">
                     <#if isAdministrator || isDAO>
                       <a href="${contextPath}/ws/data-access-request/${dar.id}/agreement/${agreement.id}/_word?lang=${.lang}" class="btn btn-default">
                         <i class="fa-solid fa-file-word"></i> <@message "download"/>
@@ -117,7 +117,7 @@
               </div>
               <#if agreementPermissions?seq_contains("EDIT")>
                 <div class="card-footer" ng-hide="schema.readOnly" ng-cloak>
-                  <span class="float-right">
+                  <span class="float-end">
                     <a class="btn btn-primary" href="#" ng-click="save('${dar.id}', 'agreement', '${agreement.id}')"><@message "save"/></a>
                     <a class="btn btn-default" href="${agreement.id}"><@message "cancel"/></a>
                   </span>

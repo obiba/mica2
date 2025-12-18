@@ -79,7 +79,7 @@
                 <textarea id="comment-add-write-text"></textarea>
               </div><!-- /.card-body -->
               <div class="card-footer">
-                <button id="send-comment" type="button" class="btn btn-secondary float-right">
+                <button id="send-comment" type="button" class="btn btn-secondary float-end">
                   <i class="fa fa-paper-plane"></i> <@message "send-comment"/>
                 </button>
               </div><!-- /.card-footer -->

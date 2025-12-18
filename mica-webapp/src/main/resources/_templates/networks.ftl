@@ -34,7 +34,7 @@
             <div class="card-header">
               <h3 class="card-title <#if networkListDisplays?size gt 1>pt-2</#if>"><span>${networks?size} <@message "networks"/></span></h3>
               <#if networkListDisplays?size gt 1>
-                <ul class="nav nav-pills ms-auto float-right">
+                <ul class="nav nav-pills ms-auto float-end">
                   <#list networkListDisplays as display>
                     <#if display == "table">
                       <li class="nav-item"><a class="nav-link <#if networkListDefaultDisplay == "table">active</#if>" href="#table" data-bs-toggle="tab">

@@ -65,7 +65,7 @@
             <div class="card-header">
               <h3 class="card-title"><@message "documents"/></h3>
               <#if !dar.archived>
-                <div class="float-right">
+                <div class="float-end">
                   <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-upload">
                     <i class="fa-solid fa-upload"></i> <@message "upload-document"/></a>
                 </div>

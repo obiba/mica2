@@ -7,7 +7,7 @@
       <div class="card card-primary card-outline">
         <div class="card-header">
           <h3 class="card-title pt-2"><@message "classifications" /></h3>
-          <ul class="nav nav-pills ms-auto float-right">
+          <ul class="nav nav-pills ms-auto float-end">
             <li class="nav-item"><a class="nav-link active" title="<@message "summary-view" />" href="#summary" data-bs-toggle="tab">
                 <i class="fa-solid fa-grip-lines"></i></a>
             </li>
@@ -64,11 +64,11 @@
     <#list vocabularies as vocabulary>
         <#if !vocabulary.missing>
             <#assign vocabularyId = taxonomyId + 'vocabulary' + vocabulary?index />
-          <p class="mb-1 ps-1 py-2 bg-light font-weight-bold"><@vocabularyColorLabel vocabulary=vocabulary.name/> ${localize(vocabulary.title)} <span class="float-right pe-2"><@itemCount item=vocabulary/></span></p>
+          <p class="mb-1 ps-1 py-2 bg-light font-weight-bold"><@vocabularyColorLabel vocabulary=vocabulary.name/> ${localize(vocabulary.title)} <span class="float-end pe-2"><@itemCount item=vocabulary/></span></p>
           <div class="pt-1 pb-1 ps-1">
             <div class="row ">
                 <#list vocabulary.terms as termItem>
-                  <div class="col-xs-12 col-md-6 font-weight-normal">${localize(termItem.title)} <span class="float-right"><@itemCount item=termItem/></span></div>
+                  <div class="col-xs-12 col-md-6 font-weight-normal">${localize(termItem.title)} <span class="float-end"><@itemCount item=termItem/></span></div>
                 </#list>
             </div>
           </div>
@@ -83,13 +83,13 @@
             <@vocabularyColorLabel vocabulary=vocabulary.name/>
           <span class="<#if vocabulary.missing>text-muted</#if>">${localize(vocabulary.title)}</span>
             <#if vocabulary.missing>
-              <span><i class="fa-solid float-right text-muted fa-minus"></i></span>
+              <span><i class="fa-solid float-end text-muted fa-minus"></i></span>
             <#elseif vocabulary.count == -1>
-              <span><i class="fa-solid fa-check float-right text-success"></i></span>
+              <span><i class="fa-solid fa-check float-end text-success"></i></span>
             <#else>
-              <span class="float-right"><@itemCount item=vocabulary/></span>
+              <span class="float-end"><@itemCount item=vocabulary/></span>
             </#if>
-            <#--          <span><i class="fa-solid float-right <#if vocabularyItem.missing>text-muted fa-minus<#else>text-success fa-check</#if>"></i></span>-->
+            <#--          <span><i class="fa-solid float-end <#if vocabularyItem.missing>text-muted fa-minus<#else>text-success fa-check</#if>"></i></span>-->
         </dt>
       </#list>
   </dl>

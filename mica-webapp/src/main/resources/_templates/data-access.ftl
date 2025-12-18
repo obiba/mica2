@@ -28,7 +28,7 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-sm-6">
-            <h1 class="m-0 float-left">
+            <h1 class="m-0 float-start">
               <span class="text-white-50"><@message "data-access"/> /</span> ${dar.id}
             </h1>
               <#if permissions?seq_contains("DELETE")>
@@ -261,7 +261,7 @@
               <div class="card-header">
                 <h3 class="card-title"><@message "collaborators"/></h3>
                 <#if accessConfig.collaboratorsEnabled>
-                  <div class="float-right">
+                  <div class="float-end">
                     <#if permissions?seq_contains("ADD_COLLABORATORS")>
                       <button type="button" class="btn btn-primary ms-4" data-bs-toggle="modal" data-bs-target="#modal-collaborator-add">
                         <i class="fa-solid fa-plus"></i> <@message "new-collaborator"/>
@@ -284,7 +284,7 @@
             <div class="card card-info card-outline">
               <div class="card-header">
                 <h3 class="card-title"><@message "feasibilities"/></h3>
-                <div class="float-right">
+                <div class="float-end">
                   <#if !dar.archived && (user.username == dar.applicant || isAdministrator)>
                     <button type="button" class="btn btn-primary ms-4" data-bs-toggle="modal" data-bs-target="#modal-feasibility-add">
                       <i class="fa-solid fa-plus"></i> <@message "new-feasibility"/>
@@ -327,7 +327,7 @@
             <div class="card card-info card-outline">
               <div class="card-header">
                 <h3 class="card-title"><@message "amendments"/></h3>
-                <div class="float-right">
+                <div class="float-end">
                   <#if !dar.archived && (user.username == dar.applicant || isAdministrator)>
                     <button type="button" class="btn btn-primary ms-4" data-bs-toggle="modal" data-bs-target="#modal-amendment-add">
                       <i class="fa-solid fa-plus"></i> <@message "new-amendment"/>

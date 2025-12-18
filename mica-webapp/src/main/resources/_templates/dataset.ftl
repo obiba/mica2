@@ -119,12 +119,12 @@
                       <i class="<#if type == "Harmonized">${initiativeIcon}<#else>${studyIcon}</#if>"></i> ${localize(study.acronym)}
                     </a>
                     <#if showVariableStatistics && showDatasetContingencyLink>
-                      <a class="btn btn-primary float-right ms-2" href="${contextPath}/dataset-crosstab/${dataset.id}">
+                      <a class="btn btn-primary float-end ms-2" href="${contextPath}/dataset-crosstab/${dataset.id}">
                         <i class="fa-solid fa-cog"></i> <@message "dataset.crosstab.title"/>
                       </a>
                     </#if>
                     <#if cartEnabled && variablesCartEnabled>
-                      <div id="cart-add" class="float-right">
+                      <div id="cart-add" class="float-end">
                         <#if user?? || cartAnonymousEnabled>
                           <button type="button" class="btn btn-link" onclick="onVariablesCartAdd('${dataset.id}')">
                             <@message "sets.cart.add-to-cart"/> <i class="fa-solid fa-cart-plus"></i>
@@ -316,7 +316,7 @@
                   <@harmonizationLegend/>
                 </div>
                 <div class="col-lg-4 col-sm-6">
-                  <a href="${contextPath}/ws/harmonized-dataset/${dataset.id}/variables/harmonizations/_export" class="btn btn-primary float-right mb-3">
+                  <a href="${contextPath}/ws/harmonized-dataset/${dataset.id}/variables/harmonizations/_export" class="btn btn-primary float-end mb-3">
                     <i class="fa-solid fa-download"></i> <@message "download"/>
                   </a>
                 </div>

@@ -92,7 +92,7 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-sm-12">
-            <h1 class="m-0 float-left">
+            <h1 class="m-0 float-start">
               <span class="text-white-50"><@message "search.list"/> /</span>
                 ${listName(set)}
                 <#if set.name?starts_with("dar:")>
@@ -191,7 +191,7 @@
           <div class="card-header">
 
             <#if config.harmonizationDatasetEnabled && config.studyDatasetEnabled>
-            <div class="float-left">
+            <div class="float-start">
               <ul class="nav nav-pills" id="studyClassNameChoice" :title="countWarning ? '<@message "count-warning"/>' : ''" role="tablist" v-cloak>
                 <li class="nav-item" role="presentation">
                   <a class="nav-link active" id="individual-tab" @click="onStudyClassNameChange('Study')" href="" data-bs-toggle="tab" role="tab" aria-controls="home" aria-selected="true"><@message "individual-search"/> <span :class="{ 'badge-warning': countWarning, 'badge-light': !countWarning }" class="badge right">{{individualSubCount}}</span></a>
@@ -203,7 +203,7 @@
             </div>
             </#if>
 
-            <div class="float-right">
+            <div class="float-end">
               <button class="btn btn-success ms-2" onclick="onVariablesCartAdd('${set.id}')">
                 <i class="fa-solid fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/>
               </button>
@@ -237,7 +237,7 @@
               <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
               <div class="mt-3 text-muted" v-show="!hasResult"><@message "empty-list"/></div>
               <div v-show="hasResult" class="clearfix mb-3">
-                <div class="float-left">
+                <div class="float-start">
                   <div class="d-inline-block">
                     <div class="d-inline-flex">
                       <span class="me-2">
@@ -250,7 +250,7 @@
                   </div>
                 </div>
                 <#if config.setsSearchEnabled>
-                  <div class="float-right">
+                  <div class="float-end">
                     <a class="btn btn-info ms-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=variables&query=variable(in(Mica_variable.sets,${set.id})),study(in(Mica_study.className,Study))">
                       <i class="fa-solid fa-search"></i>
                     </a>

@@ -46,7 +46,7 @@
             <div class="card-header">
               <h3 class="card-title <#if studyListDisplays?size gt 1>pt-2</#if>"><span>${studies?size} <@message title/></span></h3>
               <#if studyListDisplays?size gt 1>
-                <ul class="nav nav-pills ms-auto float-right">
+                <ul class="nav nav-pills ms-auto float-end">
                   <#list studyListDisplays as display>
                     <#if display == "table">
                       <li class="nav-item"><a class="nav-link <#if studyListDefaultDisplay == "table">active</#if>" href="#table" data-bs-toggle="tab">

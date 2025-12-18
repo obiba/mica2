@@ -70,16 +70,16 @@
               <h3 class="card-title"><@message "preliminary-form"/></h3>
               <div ng-cloak>
                 <#if preliminaryPermissions?seq_contains("EDIT")>
-                  <span class="float-right border-left ms-2 ps-2" ng-if="schema.readOnly">
+                  <span class="float-end border-left ms-2 ps-2" ng-if="schema.readOnly">
                     <a class="btn btn-primary" href="${preliminary.id}?edit=true"><i class="fa-solid fa-pen"></i> <@message "edit"/></a>
                   </span>
-                  <span class="float-right border-left ms-2 ps-2" ng-hide="schema.readOnly">
+                  <span class="float-end border-left ms-2 ps-2" ng-hide="schema.readOnly">
                     <a class="btn btn-primary" href="#" ng-click="save('${dar.id}', 'preliminary', '${preliminary.id}')"><@message "save"/></a>
                     <a class="btn btn-default" href="${preliminary.id}"><@message "cancel"/></a>
                   </span>
                 </#if>
                 <#if preliminaryPermissions?seq_contains("EDIT_STATUS")>
-                  <span class="float-right border-left ms-2 ps-2">
+                  <span class="float-end border-left ms-2 ps-2">
                     <#if preliminary.status == "OPENED">
                       <button type="button" class="btn btn-info" ng-hide="!schema.readOnly" data-bs-toggle="modal"
                               data-bs-target="#modal-submit"><@message "submit"/></button>
@@ -110,7 +110,7 @@
                     </#if>
                   </span>
                 </#if>
-                <span class="float-right" ng-if="schema.readOnly">
+                <span class="float-end" ng-if="schema.readOnly">
                   <#if diffs??>
                     <button type="button" class="btn btn-outline-info" data-bs-toggle="modal"
                             data-bs-target="#modal-diff"><i class="fa-solid fa-code-branch"></i> <@message "form-diff"/></button>
@@ -139,7 +139,7 @@
             </div>
             <#if preliminaryPermissions?seq_contains("EDIT")>
               <div class="card-footer" ng-hide="schema.readOnly" ng-cloak>
-                <span class="float-right">
+                <span class="float-end">
                   <a class="btn btn-primary" href="#" ng-click="save('${dar.id}', 'preliminary', '${preliminary.id}')"><@message "save"/></a>
                   <a class="btn btn-default" href="${preliminary.id}"><@message "cancel"/></a>
                 </span>
