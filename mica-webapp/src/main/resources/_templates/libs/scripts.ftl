@@ -154,8 +154,12 @@
       return d.innerHTML;
     }
 
-    // bs tooltip
-    $('[data-bs-toggle="tooltip"]').tooltip();
+    // bs tooltip and popover initialization (Bootstrap 5 vanilla JS)
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+    const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+    const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
     // apply markdown rendering
     $('.marked').each(function () {
       const template = $(this).find('template');

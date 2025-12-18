@@ -332,11 +332,9 @@
                           <#if localizedStringNotEmpty(table.description)>
                           <a href="javascript:void(0)"
                              id="popover-${table?counter}"
-                             data-html="true"
                              data-bs-toggle="popover"
-                             data-trigger="hover"
+                             data-bs-trigger="hover"
                              data-bs-placement="top"
-                             data-boundary="viewport"
                              data-bs-content="${localize(table.description)}"
                              title="<@message "dataset.harmonized-table" />">
                               <span class="d-inline-block marked"><template>${localize(allStudies[table.studyId].acronym)}</template></span>
@@ -378,7 +376,12 @@
 <#include "libs/scripts.ftl">
 <#include "libs/dataset-scripts.ftl">
 <script>
-  $('#harmonizedTable tr [data-bs-toggle="popover"]').popover({html: true, delay: { show: 250, hide: 750 }});
+  document.querySelectorAll('#harmonizedTable tr [data-bs-toggle="popover"]').forEach(el => {
+    new bootstrap.Popover(el, {
+      html: true,
+      delay: { show: 250, hide: 750 }
+    });
+  });
   document.querySelectorAll("[id^='popover-']").forEach(element => {
     element.dataset.content=marked.parse(element.dataset.content).replaceAll('"', "'");
   })

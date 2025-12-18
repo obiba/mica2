@@ -242,9 +242,17 @@
         }, 250);
 
         setTimeout(() => {
-          $('a[href="#population-'+populationId+'"]').tab('show');
+          const tabEl = document.querySelector('a[href="#population-'+populationId+'"]');
+          if (tabEl) {
+            const tab = new bootstrap.Tab(tabEl);
+            tab.show();
+          }
           if (dceId) {
-            $('#modal-'+populationId+'-'+dceId).modal();
+            const modalEl = document.getElementById('modal-'+populationId+'-'+dceId);
+            if (modalEl) {
+              const modal = new bootstrap.Modal(modalEl);
+              modal.show();
+            }
           }
         }, 250);
 

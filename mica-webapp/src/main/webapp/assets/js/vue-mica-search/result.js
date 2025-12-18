@@ -252,7 +252,7 @@ const GraphicResult = {
     <div v-if="!hideHeader" class="card-header">
       <h3 class="card-title">{{chartDataset.options.title | translate}}</h3>
       <div class="card-tools float-right">
-        <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" v-bind:title="'collapse' | translate">
+        <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" v-bind:title="'collapse' | translate">
           <i class="fas fa-minus"></i>
         </button>
         </div>
@@ -705,8 +705,8 @@ const StudiesResult = {
       console.debug('Study onAnchorClicked');
       event.preventDefault();
       const anchor = $(event.target);
-      const target = anchor.attr('data-target');
-      const targetId = anchor.attr('data-target-id');
+      const target = anchor.attr('data-bs-target');
+      const targetId = anchor.attr('data-bs-target-id');
       const type = anchor.attr('data-type');
       const studyType = anchor.attr('data-study-type');
 
@@ -862,8 +862,8 @@ const NetworksResult = {
       console.debug('Network onAnchorClicked');
       event.preventDefault();
       const anchor = $(event.target);
-      const target = anchor.attr('data-target');
-      const targetId = anchor.attr('data-target-id');
+      const target = anchor.attr('data-bs-target');
+      const targetId = anchor.attr('data-bs-target-id');
       const type = anchor.attr('data-type');
       const studyType = anchor.attr('data-study-type');
 
@@ -946,16 +946,16 @@ const DatasetsResult = {
      onAnchorClicked(event) {
       event.preventDefault();
       const anchor = $(event.target);
-      const query = new RQL.Query('in', ['Mica_dataset.id', `${anchor.attr('data-target-id')}`]);
+      const query = new RQL.Query('in', ['Mica_dataset.id', `${anchor.attr('data-bs-target-id')}`]);
       this.getEventBus().$emit(
         'query-type-update',
         {
           type: `${anchor.attr('data-type')}`,
-          target: `${anchor.attr('data-target')}`,
+          target: `${anchor.attr('data-bs-target')}`,
           query
         });
 
-      console.debug(`${anchor.attr('data-target')} - ${anchor.attr('data-target-id')}`);
+      console.debug(`${anchor.attr('data-bs-target')} - ${anchor.attr('data-bs-target-id')}`);
     }
   },
   mounted() {
@@ -1240,7 +1240,7 @@ const CoverageResult = {
       const dTable = $('#' + tableId).DataTable(mergedOptions);
       dTable.on('draw.dt', function() {
         // bs tooltip
-        $('[data-toggle="tooltip"]').tooltip();
+        $('[data-bs-toggle="tooltip"]').tooltip();
       });
 
       // checkboxes only for variables
