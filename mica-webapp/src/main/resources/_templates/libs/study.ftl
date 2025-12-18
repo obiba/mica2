@@ -199,7 +199,7 @@
             <@message "study.recruitment-sources.label"/>
         </dt>
         <dd class="col-sm-6">
-          <ul class="pl-3">
+          <ul class="ps-3">
               <#list study.model.methods.recruitments as type>
                 <li>
                     <#assign text = "study_taxonomy.vocabulary.methods-recruitments.term." + type + ".title"/>

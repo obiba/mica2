@@ -8,7 +8,7 @@
         <@message "study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.title"/>
       </dt>
       <dd class="col-sm-8">
-        <ul class="pl-3">
+        <ul class="ps-3">
           <#list dce.model.dataSources as item>
             <li>
               <#assign txt = "study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term." + item + ".title"/>
@@ -27,7 +27,7 @@
           <@message "study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.title"/>
       </dt>
       <dd class="col-sm-8">
-        <ul class="pl-3">
+        <ul class="ps-3">
           <#list dce.model.bioSamples as item>
             <li>
               <#assign txt = "study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term." + item + ".title"/>
@@ -48,7 +48,7 @@
           <@message "study_taxonomy.vocabulary.populations-dataCollectionEvents-administrativeDatabases.title"/>
       </dt>
       <dd class="col-sm-8">
-        <ul class="pl-3">
+        <ul class="ps-3">
           <#list dce.model.administrativeDatabases as item>
             <li>
               <#assign txt = "study_taxonomy.vocabulary.populations-dataCollectionEvents-administrativeDatabases.term." + item + ".title"/>

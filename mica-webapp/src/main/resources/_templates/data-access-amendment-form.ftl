@@ -101,16 +101,16 @@
               <h3 class="card-title"><@message "amendment-form"/></h3>
               <div ng-cloak>
                 <#if amendmentPermissions?seq_contains("EDIT")>
-                  <span class="float-right border-left ms-2 pl-2" ng-if="schema.readOnly">
+                  <span class="float-right border-left ms-2 ps-2" ng-if="schema.readOnly">
                     <a class="btn btn-primary" href="${amendment.id}?edit=true"><i class="fa-solid fa-pen"></i> <@message "edit"/></a>
                   </span>
-                  <span class="float-right border-left ms-2 pl-2" ng-hide="schema.readOnly">
+                  <span class="float-right border-left ms-2 ps-2" ng-hide="schema.readOnly">
                     <a class="btn btn-primary" href="#" ng-click="save('${dar.id}', 'amendment', '${amendment.id}')"><@message "save"/></a>
                     <a class="btn btn-default" href="${amendment.id}"><@message "cancel"/></a>
                   </span>
                 </#if>
                 <#if amendmentPermissions?seq_contains("EDIT_STATUS")>
-                  <span class="float-right border-left ms-2 pl-2">
+                  <span class="float-right border-left ms-2 ps-2">
                     <#if amendment.status == "OPENED" || amendment.status == "CONDITIONALLY_APPROVED">
                       <button type="button" class="btn btn-info" ng-hide="!schema.readOnly" data-bs-toggle="modal"
                               data-bs-target="#modal-submit"><@message "submit"/></button>

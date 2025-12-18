@@ -24,7 +24,7 @@
     <div class="user-panel mt-3 pb-3 mb-3 d-flex">
       <div>
         <span title="<@message dar.status.toString()/>"><i
-            class="fa-solid fa-circle fa-2x pl-2 text-${statusColor(dar.status.toString())}"></i></span>
+            class="fa-solid fa-circle fa-2x ps-2 text-${statusColor(dar.status.toString())}"></i></span>
       </div>
       <div class="info">
         <a href="${contextPath}/data-access/${dar.id}" class="d-inline">${mainApplicant.fullName} </a>
