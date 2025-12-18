@@ -81,7 +81,7 @@
     </div>
     <#if searchDatasetListDisplay>
       <div class="col-3 ms-auto">
-        <a href="${contextPath}/${listPageSearchMode}#lists?type=datasets&query=study(in(Mica_study.className,(${className})))" class="btn btn-sm btn-primary float-right">
+        <a href="${contextPath}/${listPageSearchMode}#lists?type=datasets&query=study(in(Mica_study.className,(${className})))" class="btn btn-sm btn-primary float-end">
           <@message "global.search"/> <i class="fa-solid fa-search"></i>
         </a>
       </div>
@@ -90,7 +90,7 @@
 
   <div class="row">
     <div class="col-12">
-      <div class="d-inline-flex float-right mt-3 mb-3">
+      <div class="d-inline-flex float-end mt-3 mb-3">
         <sorting @sort-update="onSortUpdate" :initial-choice="initialSort" :options-translations="sortOptionsTranslations"></sorting>
         <span class="ms-2">
           <select class="custom-select" id="obiba-page-size-selector-top"></select>

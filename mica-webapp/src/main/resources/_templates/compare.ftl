@@ -95,7 +95,7 @@
                 <div class="tab-content">
                   <div class="tab-pane active" id="tab_individual_studies">
                     <#if individualQuery??>
-                      <div class="float-right">
+                      <div class="float-end">
                         <a class="btn btn-sm btn-info ms-2" href="${contextPath}/individual-search#lists?type=${type}&query=${individualQuery}">
                           <i class="fa-solid fa-search"></i>
                         </a>
@@ -119,7 +119,7 @@
                   </div>
                   <div class="tab-pane <#if individualStudies?size == 0>active</#if>" id="tab_harmonization_studies">
                     <#if harmonizationQuery??>
-                      <div class="float-right">
+                      <div class="float-end">
                         <a class="btn btn-sm btn-info ms-2" href="${contextPath}/harmonization-search#lists?type=${type}&query=${harmonizationQuery}">
                           <i class="fa-solid fa-search"></i>
                         </a>
@@ -163,7 +163,7 @@
                 <span class="text-muted"><@message "compare-networks-none"/></span>
               <#else>
                 <#if query??>
-                  <div class="float-right">
+                  <div class="float-end">
                     <a class="btn btn-sm btn-info ms-2" href="${contextPath}/search#lists?type=${type}&query=${query}">
                       <i class="fa-solid fa-search"></i>
                     </a>

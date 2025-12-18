@@ -3,7 +3,7 @@
 
   <#if showHarmonizedVariableSummarySelector>
     <div style="display: none;" class="mb-4">
-      <select id="select-study" class="form-control select2 float-right" style="width: 100%;"></select>
+      <select id="select-study" class="form-control select2 float-end" style="width: 100%;"></select>
     </div>
   </#if>
 

@@ -191,13 +191,13 @@
                 <div class="card card-primary card-outline">
                   <div class="card-header">
                     <h3 class="card-title"><@message "members"/></h3>
-                    <div class="card-tools float-right">
+                    <div class="card-tools float-end">
                       <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
                         <i class="fa-solid fa-minus"></i></button>
                     </div>
 
                       <#if affiliatedMembersQuery??>
-                        <button type="button" class="btn btn-primary float-right me-2" data-bs-toggle="modal" data-bs-target="#affiliatedMembersModal">
+                        <button type="button" class="btn btn-primary float-end me-2" data-bs-toggle="modal" data-bs-target="#affiliatedMembersModal">
                             <@message "network.associated-people"/>
                         </button>
                       </#if>

@@ -177,7 +177,7 @@
 
                   <div class="row">
                     <div class="mt-3 col clearfix" v-cloak>
-                      <ul class="nav nav-pills float-left" id="results-tab" role="tablist">
+                      <ul class="nav nav-pills float-start" id="results-tab" role="tablist">
                           <#if searchVariableListDisplay>
                             <li class="nav-item" v-if="showVariableAndDatasetTabsInIndividualMode">
                               <a class="nav-link active" id="variables-tab" data-bs-toggle="pill" href="#variables" role="tab" @click="onSelectResult('variables', 'variable')"
@@ -203,7 +203,7 @@
                             </li>
                           </#if>
                       </ul>
-                      <div class="float-right mt-1">
+                      <div class="float-end mt-1">
                           <#if exportStudiesQueryEnabled>
                             <button id="export-studies" type="button" class="btn btn-info btn-sm" v-if="isStudiesToolsVisible" @click="onDownloadExportQueryResult">
                               <i class="fa-solid fa-download"></i> <@message "export"/></span>
@@ -248,7 +248,7 @@
                                             <div class="dropdown-divider" v-if="variableSets.length > 0 && numberOfSetsRemaining > 0"></div>
                                             <button type="button" class="dropdown-item" v-for="set in variableSets" v-bind:key="set.id" @click="onAddToSet(set.id)">
                                               {{ normalizeSetName(set) }}
-                                              <span class="badge badge-light float-right">{{ set.count }}</span>
+                                              <span class="badge badge-light float-end">{{ set.count }}</span>
                                             </button>
                                           </div>
                                         </div>
@@ -344,7 +344,7 @@
                     <div v-show="hasVariableQuery">
                       <div id="coverage">
                         <div class="mt-4 mb-2 clearfix">
-                          <ul class="nav nav-pills float-left" role="tablist">
+                          <ul class="nav nav-pills float-start" role="tablist">
                             <li class="nav-item">
                               <a class="nav-link active"
                                  data-bs-toggle="pill"
@@ -365,7 +365,7 @@
                             </li>
                           </ul>
 
-                          <ul class="nav nav-pills float-right" role="tablist">
+                          <ul class="nav nav-pills float-end" role="tablist">
                             <#if searchContext == "individual">
                               <li v-if="selectedBucket !==' dataset'" class="mt-auto mb-auto">
                                 <div class="custom-control custom-switch">

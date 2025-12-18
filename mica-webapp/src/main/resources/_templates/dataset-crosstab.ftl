@@ -66,10 +66,10 @@
         <div id="results" class="card" style="display: none;">
           <div class="card-header">
             <h3 class="card-title"><@message "results"/></h3>
-            <a id="download" href="#" class="btn btn-primary float-right">
+            <a id="download" href="#" class="btn btn-primary float-end">
               <i class="fa-solid fa-download"></i> <@message "download"/>
             </a>
-            <button id="transpose" class="btn btn-default float-right me-2" onclick="transposeCrosstab()">
+            <button id="transpose" class="btn btn-default float-end me-2" onclick="transposeCrosstab()">
               <i class="fa-solid fa-exchange-alt"></i>
               <@message "transpose"/>
             </button>
@@ -81,7 +81,7 @@
             </div>
             <div id="result-panel" style="overflow-x: auto;">
               <div style="display: none;" class="mb-4">
-                <select id="select-study" class="form-control select2 float-right" style="width: 100%;"></select>
+                <select id="select-study" class="form-control select2 float-end" style="width: 100%;"></select>
               </div>
               <div class="table-responsive">
                 <table id="crosstab" class="table table-striped"></table>

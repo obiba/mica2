@@ -162,7 +162,7 @@
               <#if sets.variablesCart?? && sets.variablesCart.count gt 0>
 
                 <#if config.harmonizationDatasetEnabled && config.studyDatasetEnabled>
-                  <div class="float-left">
+                  <div class="float-start">
                     <ul class="nav nav-pills" id="studyClassNameChoice" :title="countWarning ? '<@message "count-warning"/>' : ''" role="tablist" v-cloak>
                       <li class="nav-item" role="presentation">
                         <a class="nav-link active" id="individual-tab" @click="onStudyClassNameChange('Study')" href="" data-bs-toggle="tab" role="tab" aria-controls="home" aria-selected="true"><@message "individual-search"/> <span :class="{ 'badge-warning': countWarning, 'badge-light': !countWarning }" class="badge right">{{individualSubCount}}</span></a>
@@ -176,7 +176,7 @@
                   <h3 class="card-title mt-2"><@message "variables"/></h3>
                 </#if>
 
-                <div class="float-right">
+                <div class="float-end">
                   <#if canCreateDAR>
                     <#if user??>
                       <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-add">
@@ -217,7 +217,7 @@
                               <#if !variableList.locked>
                                 <button type="button" class="dropdown-item"
                                         onclick="onClickAddToSet('${variableList.id}', '${variableList.name}')">
-                                    ${listName(variableList)} <#if variableList.name?starts_with("dar:")>[<@message "data-access-request"/>]</#if> <span class="badge badge-light float-right">${variableList.identifiers?size}</span>
+                                    ${listName(variableList)} <#if variableList.name?starts_with("dar:")>[<@message "data-access-request"/>]</#if> <span class="badge badge-light float-end">${variableList.identifiers?size}</span>
                                 </button>
                               </#if>
                             </#list>
@@ -257,7 +257,7 @@
                 <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
                 <div class="mt-3 text-muted" v-show="!hasResult"><@message "empty-list"/></div>
                 <div v-show="hasResult" class="clearfix mb-3">
-                  <div class="float-left">
+                  <div class="float-start">
                     <div class="d-inline-block">
                       <div class="d-inline-flex">
                         <span class="me-2">
@@ -270,7 +270,7 @@
                     </div>
                   </div>
                   <#if config.setsSearchEnabled>
-                    <div class="float-right">
+                    <div class="float-end">
                       <a class="btn btn-info ms-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=variables&query=variable(in(Mica_variable.sets,${sets.variablesCart.id})),study(in(Mica_study.className,Study))">
                         <i class="fa-solid fa-search"></i>
                       </a>
@@ -300,7 +300,7 @@
             <div class="card-header">
               <#if sets.studiesCart?? && sets.studiesCart.count gt 0>
                 <#if config.harmonizationDatasetEnabled>
-                  <div class="float-left">
+                  <div class="float-start">
                     <ul class="nav nav-pills" id="studyClassNameChoice" :title="countWarning ? '<@message "count-warning"/>' : ''" role="tablist" v-cloak>
                       <li class="nav-item" role="presentation">
                         <a class="nav-link active" id="individual-tab" @click="onStudyClassNameChange('Study')" href="" data-bs-toggle="tab" role="tab" aria-controls="home" aria-selected="true"><@message "individual-search"/> <span :class="{ 'badge-warning': countWarning, 'badge-light': !countWarning }" class="badge right">{{individualSubCount}}</span></a>
@@ -313,7 +313,7 @@
                 <#else>
                   <h3 class="card-title mt-2"><@message "studies"/></h3>
                 </#if>
-                <div class="float-right">
+                <div class="float-end">
                   <#if studiesCompareEnabled>
                     <button type="button" class="btn btn-info ms-2" onclick="onCompareStudies()">
                       <i class="fa-solid fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge badge-light studies-selection-count"></span>
@@ -337,7 +337,7 @@
                 <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
                 <div class="mt-3 text-muted" v-show="!hasResult"><@message "empty-list"/></div>
                 <div v-show="hasResult" class="clearfix mb-3">
-                  <div class="float-left">
+                  <div class="float-start">
                     <div class="d-inline-block">
                       <div class="d-inline-flex">
                         <span class="me-2">
@@ -350,7 +350,7 @@
                     </div>
                   </div>
                   <#if config.setsSearchEnabled>
-                    <div class="float-right">
+                    <div class="float-end">
                       <a class="btn btn-info ms-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=studies&query=study(and(in(Mica_study.sets,${sets.studiesCart.id}),in(Mica_study.className,Study)))">
                         <i class="fa-solid fa-search"></i>
                       </a>
@@ -380,7 +380,7 @@
             <div class="card-header">
               <h3 class="card-title mt-2"><@message "networks"/></h3>
               <#if sets.networksCart?? && sets.networksCart.count gt 0>
-                <div class="float-right">
+                <div class="float-end">
                   <#if networksCompareEnabled>
                     <button type="button" class="btn btn-info ms-2" onclick="onCompareNetworks()">
                       <i class="fa-solid fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge badge-light networks-selection-count"></span>
@@ -402,7 +402,7 @@
                 <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
                 <div class="mt-3 text-muted" v-show="!hasResult"><@message "empty-list"/></div>
                 <div v-show="hasResult" class="clearfix mb-3">
-                  <div class="float-left">
+                  <div class="float-start">
                     <div class="d-inline-block">
                       <div class="d-inline-flex">
                         <span class="me-2">
@@ -415,7 +415,7 @@
                     </div>
                   </div>
                   <#if config.setsSearchEnabled>
-                    <div class="float-right">
+                    <div class="float-end">
                       <a class="btn btn-info ms-2" href="${contextPath}/search#lists?type=networks&query=network(in(Mica_network.sets,${sets.networksCart.id}))">
                         <i class="fa-solid fa-search"></i>
                       </a>

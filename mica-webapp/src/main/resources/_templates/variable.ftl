@@ -297,11 +297,11 @@
                   <h3 class="card-title"><@message "summary-statistics"/></h3>
                   <#if showDatasetContingencyLink>
                     <#if variable.nature == "CATEGORICAL">
-                      <a class="btn btn-primary float-right" href="${contextPath}/dataset-crosstab/${variable.datasetId}?var1=${variable.name}">
+                      <a class="btn btn-primary float-end" href="${contextPath}/dataset-crosstab/${variable.datasetId}?var1=${variable.name}">
                         <i class="fa-solid fa-cog"></i> <@message "dataset.crosstab.title"/>
                       </a>
                     <#elseif variable.nature == "CONTINUOUS">
-                      <a class="btn btn-primary float-right" href="${contextPath}/dataset-crosstab/${variable.datasetId}?var2=${variable.name}">
+                      <a class="btn btn-primary float-end" href="${contextPath}/dataset-crosstab/${variable.datasetId}?var2=${variable.name}">
                         <i class="fa-solid fa-cog"></i> <@message "dataset.crosstab.title"/>
                       </a>
                     </#if>

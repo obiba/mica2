@@ -27,7 +27,7 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-sm-8">
-            <h1 class="m-0 float-left">
+            <h1 class="m-0 float-start">
               <span class="text-white-50"><@message "data-access-amendment"/> /</span> ${amendment.id}
             </h1>
               <#if amendmentPermissions?seq_contains("DELETE")>
@@ -101,16 +101,16 @@
               <h3 class="card-title"><@message "amendment-form"/></h3>
               <div ng-cloak>
                 <#if amendmentPermissions?seq_contains("EDIT")>
-                  <span class="float-right border-left ms-2 ps-2" ng-if="schema.readOnly">
+                  <span class="float-end border-left ms-2 ps-2" ng-if="schema.readOnly">
                     <a class="btn btn-primary" href="${amendment.id}?edit=true"><i class="fa-solid fa-pen"></i> <@message "edit"/></a>
                   </span>
-                  <span class="float-right border-left ms-2 ps-2" ng-hide="schema.readOnly">
+                  <span class="float-end border-left ms-2 ps-2" ng-hide="schema.readOnly">
                     <a class="btn btn-primary" href="#" ng-click="save('${dar.id}', 'amendment', '${amendment.id}')"><@message "save"/></a>
                     <a class="btn btn-default" href="${amendment.id}"><@message "cancel"/></a>
                   </span>
                 </#if>
                 <#if amendmentPermissions?seq_contains("EDIT_STATUS")>
-                  <span class="float-right border-left ms-2 ps-2">
+                  <span class="float-end border-left ms-2 ps-2">
                     <#if amendment.status == "OPENED" || amendment.status == "CONDITIONALLY_APPROVED">
                       <button type="button" class="btn btn-info" ng-hide="!schema.readOnly" data-bs-toggle="modal"
                               data-bs-target="#modal-submit"><@message "submit"/></button>
@@ -141,7 +141,7 @@
                     </#if>
                   </span>
                 </#if>
-                <span class="float-right" ng-if="schema.readOnly">
+                <span class="float-end" ng-if="schema.readOnly">
                   <#if diffs??>
                     <button type="button" class="btn btn-outline-info" data-bs-toggle="modal"
                             data-bs-target="#modal-diff"><i class="fa-solid fa-code-branch"></i> <@message "form-diff"/></button>
@@ -170,7 +170,7 @@
             </div>
             <#if amendmentPermissions?seq_contains("EDIT")>
               <div class="card-footer" ng-hide="schema.readOnly" ng-cloak>
-                <span class="float-right">
+                <span class="float-end">
                   <a class="btn btn-primary" href="#" ng-click="save('${dar.id}', 'amendment', '${amendment.id}')"><@message "save"/></a>
                   <a class="btn btn-default" href="${amendment.id}"><@message "cancel"/></a>
                 </span>

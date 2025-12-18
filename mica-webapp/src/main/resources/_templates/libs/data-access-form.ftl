@@ -65,7 +65,7 @@
 <!-- Form print header and footer, not visible on screen -->
 <#macro dataAccessFormPrintHeader form type>
   <div class="clearfix border-bottom pb-3 mb-3">
-    <div class="float-left">
+    <div class="float-start">
       <img src="${brandImageSrc}" alt="Logo" class="brand-image ${brandImageClass} me-2" style="opacity: .8; max-height: 33px">
       <span class="brand-text ${brandTextClass}" style="font-size: larger">
         <#if brandTextEnabled>
@@ -73,17 +73,17 @@
         </#if>
       </span>
     </div>
-    <div class="float-right text-muted">
+    <div class="float-end text-muted">
       <span><@message type/> - ${form.id} - [<@message form.status.toString()/>] - ${applicant.fullName}</span>
     </div>
   </div>
 </#macro>
 <#macro dataAccessFormPrintFooter form>
   <div class="border-top mt-3 pt-3">
-    <div class="float-left">
+    <div class="float-start">
       <small><span class="moment-datetime text-muted">${.now?iso_utc}</span></small>
     </div>
-    <div class="float-right">
+    <div class="float-end">
         <#if form.lastSubmission??>
           <small><@message "form-submitted-on"/> <span class="moment-datetime text-muted">${form.lastSubmission.changedOn.toString()}</span></small>
         </#if>
