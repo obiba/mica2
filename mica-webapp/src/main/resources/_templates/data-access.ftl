@@ -151,11 +151,7 @@
             </#if>
             <div class="input-group mb-3">
               <input id="collaborator-email" name="collaborator-email" type="email" class="form-control" placeholder="<@message "email"/>">
-              <div class="input-group-append">
-                <div class="input-group-text">
-                  <span class="fa-solid fa-envelope"></span>
-                </div>
-              </div>
+              <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
             </div>
           </div>
           <div class="modal-footer justify-content-between">

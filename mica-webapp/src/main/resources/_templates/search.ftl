@@ -95,11 +95,9 @@
                   <li class="pe-3 ps-3 pt-3">
                     <div class="input-group mb-2">
                       <input v-model="queryToCopy" disabled type="text" class="form-control" style="width: 300px;">
-                      <div class="input-group-append">
                         <button class="btn btn-outline-secondary" type="button" @click="onCopyQuery"
                                 title="<@message "global.copy-to-clipboard"/>">
                           <i class="fa-solid fa-copy"></i></button>
-                      </div>
                     </div>
                     <div class="text-muted">
                       <small><@message "search.query-copy-help"/></small>
@@ -237,11 +235,9 @@
                                               <div class="form-group mb-0">
                                                 <div class="input-group">
                                                   <input type="text" class="form-control" placeholder="<@message "sets.add.modal.create-new"/>" v-model="newVariableSetName" @keyup.enter.prevent.stop="onAddToSet()">
-                                                  <div class="input-group-append">
-                                                    <button v-bind:class="{ disabled: !newVariableSetName }" class="btn btn-success" type="button" @click="onAddToSet()">
-                                                      <i class="fa fa-plus"></i> <@message "global.add"/>
-                                                    </button>
-                                                  </div>
+                                                  <button v-bind:class="{ disabled: !newVariableSetName }" class="btn btn-success" type="button" @click="onAddToSet()">
+                                                    <i class="fa fa-plus"></i> <@message "global.add"/>
+                                                  </button>
                                                 </div>
                                               </div>
                                             </form>

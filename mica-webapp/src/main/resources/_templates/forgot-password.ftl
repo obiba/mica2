@@ -24,20 +24,12 @@
       <form id="form" method="post">
         <div class="input-group mb-3">
           <input name="username" type="text" class="form-control" placeholder="<@message "sign-in-username"/>">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fa-solid fa-envelope"></span>
-            </div>
-          </div>
+          <span class="input-group-text">
+            <span class="fa-solid fa-envelope"></span>
+          </span>
         </div>
-        <div class="row">
-          <div class="col-6">
-          </div>
-          <!-- /.col -->
-          <div class="col-6">
-            <button type="submit" class="btn btn-primary btn-block"><@message "reset"/></button>
-          </div>
-          <!-- /.col -->
+        <div class="d-flex justify-content-end">
+          <button type="submit" class="btn btn-primary w-50"><@message "reset"/></button>
         </div>
       </form>
 

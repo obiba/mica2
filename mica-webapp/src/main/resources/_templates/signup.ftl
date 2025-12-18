@@ -34,29 +34,23 @@
         <#if authConfig.joinWithUsername>
           <div class="input-group mb-3">
             <input name="username" type="text" class="form-control" placeholder="<@message "username"/>">
-            <div class="input-group-append">
-              <div class="input-group-text">
-                <span class="fa-solid fa-user"></span>
-              </div>
-            </div>
+            <span class="input-group-text">
+              <i class="fa-solid fa-user"></i>
+            </span>
           </div>
         </#if>
         <div class="input-group mb-3">
           <input name="email" type="email" class="form-control" placeholder="<@message "email"/>">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fa-solid fa-envelope"></span>
-            </div>
-          </div>
+          <span class="input-group-text">
+            <i class="fa-solid fa-envelope"></i>
+          </span>
         </div>
         <#if config.signupWithPassword>
           <div class="input-group mb-3">
             <input name="password" type="password" class="form-control" placeholder="<@message "password"/>">
-            <div class="input-group-append">
-              <div class="input-group-text">
-                <span class="fa-solid fa-lock"></span>
-              </div>
-            </div>
+            <span class="input-group-text">
+              <i class="fa-solid fa-lock"></i>
+            </span>
           </div>
           <p class="text-sm"><@message "password-helper"/></p>
         </#if>
@@ -67,19 +61,15 @@
 
         <div class="input-group mb-3">
           <input name="firstname" type="text" class="form-control" placeholder="<@message "firstname"/>">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fa-solid fa-user"></span>
-            </div>
-          </div>
+          <span class="input-group-text">
+            <i class="fa-solid fa-user"></i>
+          </span>
         </div>
         <div class="input-group mb-3">
           <input name="lastname" type="text" class="form-control" placeholder="<@message "lastname"/>">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fa-solid fa-user"></span>
-            </div>
-          </div>
+          <span class="input-group-text">
+            <i class="fa-solid fa-user"></i>
+          </span>
         </div>
 
         <#if authConfig.languages?size gt 1>
@@ -116,16 +106,10 @@
         </#list>
 
         <div id="html_element" class="mb-3"></div>
-        <div class="row">
-          <div class="col-6">
-          </div>
-          <!-- /.col -->
-          <div class="col-6">
-            <button type="submit" class="btn btn-primary btn-block">
-              <i class="spinner-border spinner-border-sm" style="display: none;"></i> <@message "sign-up-submit"/>
-            </button>
-          </div>
-          <!-- /.col -->
+        <div class="d-flex justify-content-end">
+          <button type="submit" class="btn btn-primary w-50">
+            <i class="spinner-border spinner-border-sm" style="display: none;"></i> <@message "sign-up-submit"/>
+          </button>
         </div>
       </form>
 
@@ -137,7 +121,7 @@
         <div class="social-auth-links text-center mb-3">
           <p>- <@message "sign-up-or"/> -</p>
           <#list oidcProviders as oidc>
-            <a href="${oidc.url}" class="btn btn-block btn-primary">
+            <a href="${oidc.url}" class="btn\ btn-primary w-100">
               <@message "sign-up-with"/> ${oidc.title}
             </a>
           </#list>
