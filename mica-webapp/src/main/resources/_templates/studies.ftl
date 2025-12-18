@@ -50,17 +50,17 @@
                   <#list studyListDisplays as display>
                     <#if display == "table">
                       <li class="nav-item"><a class="nav-link <#if studyListDefaultDisplay == "table">active</#if>" href="#table" data-bs-toggle="tab">
-                          <i class="fas fa-table"></i></a>
+                          <i class="fa-solid fa-table"></i></a>
                       </li>
                     </#if>
                     <#if display == "lines">
                       <li class="nav-item"><a class="nav-link <#if studyListDefaultDisplay == "lines">active</#if>" href="#lines" data-bs-toggle="tab">
-                          <i class="fas fa-grip-lines"></i></a>
+                          <i class="fa-solid fa-grip-lines"></i></a>
                       </li>
                     </#if>
                     <#if display == "cards">
                       <li class="nav-item"><a class="nav-link <#if studyListDefaultDisplay == "cards">active</#if>" href="#cards" data-bs-toggle="tab">
-                          <i class="fas fa-grip-horizontal"></i></a>
+                          <i class="fa-solid fa-grip-horizontal"></i></a>
                       </li>
                     </#if>
                   </#list>
@@ -129,7 +129,7 @@
               <#else>
                 <p class="text-muted"><@message "sign-in-studies"/></p>
                 <button type="button" onclick="location.href='${contextPath}/signin?redirect=${contextPath}/<#if type??>${type?lower_case}-</#if>studies';" class="btn btn-success btn-lg">
-                  <i class="fas fa-sign-in-alt"></i> <@message "sign-in"/>
+                  <i class="fa-solid fa-sign-in-alt"></i> <@message "sign-in"/>
                 </button>
               </#if>
             </div>

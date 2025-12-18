@@ -17,7 +17,7 @@
             <!-- /.timeline-label -->
             <!-- timeline item -->
             <div>
-              <i class="fas fa-sign-in-alt bg-secondary"></i>
+              <i class="fa-solid fa-sign-in-alt bg-secondary"></i>
               <div class="timeline-item">
                 <div class="timeline-body">
                   <p class="lead">Create an account</p>
@@ -38,7 +38,7 @@
 
             <!-- timeline item -->
             <div>
-              <i class="fas fa-edit bg-blue"></i>
+              <i class="fa-solid fa-edit bg-blue"></i>
               <div class="timeline-item">
                 <div class="timeline-body">
                   <p class="lead">Complete and submit your access request form</p>
@@ -65,7 +65,7 @@
             <!-- /.timeline-label -->
             <!-- timeline item -->
             <div>
-              <i class="fas fa-history bg-blue"></i>
+              <i class="fa-solid fa-history bg-blue"></i>
               <div class="timeline-item">
                 <div class="timeline-body">
                   <p class="lead">Track your request</p>
@@ -88,7 +88,7 @@
             <!-- /.timeline-label -->
             <!-- timeline item -->
             <div>
-              <i class="fas fa-book bg-blue"></i>
+              <i class="fa-solid fa-book bg-blue"></i>
               <div class="timeline-item">
                 <div class="timeline-body">
                   <p class="lead">Report on project progress</p>
@@ -105,7 +105,7 @@
             <!-- END timeline item -->
 
             <div>
-              <i class="fas fa-circle bg-gray"></i>
+              <i class="fa-solid fa-circle bg-gray"></i>
             </div>
           </div>
         </div>

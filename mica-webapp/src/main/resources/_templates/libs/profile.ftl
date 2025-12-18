@@ -46,9 +46,9 @@
               <#elseif key == "locale">
                 <@message profile.attributes[key]/>
               <#elseif profile.attributes[key] == "true">
-                <i class="fas fa-check"></i>
+                <i class="fa-solid fa-check"></i>
               <#elseif profile.attributes[key] == "false">
-                <i class="fas fa-times"></i>
+                <i class="fa-solid fa-times"></i>
               <#elseif key == "realm">
                 <code>${profile.attributes[key]}</code>
               <#else>

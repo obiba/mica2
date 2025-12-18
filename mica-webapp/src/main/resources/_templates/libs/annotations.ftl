@@ -9,10 +9,10 @@
           <h3 class="card-title pt-2"><@message "classifications" /></h3>
           <ul class="nav nav-pills ml-auto float-right">
             <li class="nav-item"><a class="nav-link active" title="<@message "summary-view" />" href="#summary" data-bs-toggle="tab">
-                <i class="fas fa-grip-lines"></i></a>
+                <i class="fa-solid fa-grip-lines"></i></a>
             </li>
             <li class="nav-item"><a class="nav-link " title="<@message "detail-view" />" href="#detail" data-bs-toggle="tab">
-                <i class="fas fa-grip-horizontal"></i></a>
+                <i class="fa-solid fa-grip-horizontal"></i></a>
             </li>
           </ul>
         </div>
@@ -83,13 +83,13 @@
             <@vocabularyColorLabel vocabulary=vocabulary.name/>
           <span class="<#if vocabulary.missing>text-muted</#if>">${localize(vocabulary.title)}</span>
             <#if vocabulary.missing>
-              <span><i class="fas float-right text-muted fa-minus"></i></span>
+              <span><i class="fa-solid float-right text-muted fa-minus"></i></span>
             <#elseif vocabulary.count == -1>
-              <span><i class="fas fa-check float-right text-success"></i></span>
+              <span><i class="fa-solid fa-check float-right text-success"></i></span>
             <#else>
               <span class="float-right"><@itemCount item=vocabulary/></span>
             </#if>
-            <#--          <span><i class="fas float-right <#if vocabularyItem.missing>text-muted fa-minus<#else>text-success fa-check</#if>"></i></span>-->
+            <#--          <span><i class="fa-solid float-right <#if vocabularyItem.missing>text-muted fa-minus<#else>text-success fa-check</#if>"></i></span>-->
         </dt>
       </#list>
   </dl>

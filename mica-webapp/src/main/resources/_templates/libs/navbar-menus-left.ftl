@@ -38,12 +38,12 @@
 
               <#if !config.harmonizationDatasetEnabled>
                 <li id="searchMenu" class="nav-item">
-                  <a href="<#if !config.openAccess && !user??>${contextPath}/signin?redirect=${contextPath}/search<#else>${contextPath}/search</#if>" aria-haspopup="true" aria-expanded="false" class="nav-link btn btn-success text-white"><@message "search"/> <i class="fas fa-search"></i></a>
+                  <a href="<#if !config.openAccess && !user??>${contextPath}/signin?redirect=${contextPath}/search<#else>${contextPath}/search</#if>" aria-haspopup="true" aria-expanded="false" class="nav-link btn btn-success text-white"><@message "search"/> <i class="fa-solid fa-search"></i></a>
                 </li>
               <#else>
 
               <li id="searchMenu" class="nav-item dropdown">
-                <a href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle btn btn-success text-white"><@message "search"/> <i class="fas fa-search"></i></a>
+                <a href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle btn btn-success text-white"><@message "search"/> <i class="fa-solid fa-search"></i></a>
                 <ul aria-labelledby="searchMenu" class="dropdown-menu border-0 shadow">
                   <li>
                     <a href="<#if !config.openAccess && !user??>${contextPath}/signin?redirect=${contextPath}/individual-search${defaultIndividualSearchState?url('UTF-8')}<#else>${contextPath}/individual-search${defaultIndividualSearchState}</#if>" class="dropdown-item">
@@ -80,7 +80,7 @@
 
         <#if config.dataAccessEnabled>
           <li id="dataAccessMenu" class="nav-item <#if config.repositoryEnabled && !config.projectEnabled>ml-3</#if>">
-            <a href="${contextPath}/data-accesses" class="btn btn-warning"><@message "data-access"/> <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="${contextPath}/data-accesses" class="btn btn-warning"><@message "data-access"/> <i class="fa-solid fa-arrow-circle-right"></i></a>
           </li>
         </#if>
     </#if>

@@ -43,7 +43,7 @@
                 </h3>
                 <div class="card-tools">
                   <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
-                    <i class="fas fa-minus"></i></button>
+                    <i class="fa-solid fa-minus"></i></button>
                 </div>
               </div>
               <!-- /.card-header -->
@@ -114,7 +114,7 @@
       </h3>
       <div class="card-tools">
         <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
-          <i class="fas fa-minus"></i></button>
+          <i class="fa-solid fa-minus"></i></button>
       </div>
     </div>
     <!-- /.card-header -->
@@ -164,7 +164,7 @@
       </h3>
       <div class="card-tools">
         <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
-          <i class="fas fa-minus"></i></button>
+          <i class="fa-solid fa-minus"></i></button>
       </div>
     </div>
     <!-- /.card-header -->
@@ -189,7 +189,7 @@
       </h3>
       <div class="card-tools">
         <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
-          <i class="fas fa-minus"></i></button>
+          <i class="fa-solid fa-minus"></i></button>
       </div>
     </div>
     <!-- /.card-header -->
@@ -224,7 +224,7 @@
       </h3>
       <div class="card-tools">
         <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
-          <i class="fas fa-minus"></i></button>
+          <i class="fa-solid fa-minus"></i></button>
       </div>
     </div>
     <!-- /.card-header -->
@@ -248,7 +248,7 @@
                 <#if study.model.numberOfParticipants.participant.noLimit?? && study.model.numberOfParticipants.participant.noLimit == true>
                     <@message "numberOfParticipants.no-limit"/>
                 <#else>
-                  <i class="fas fa-minus"></i>
+                  <i class="fa-solid fa-minus"></i>
                 </#if>
             </dd>
           </#if>
@@ -271,7 +271,7 @@
                 <#if study.model.numberOfParticipants.sample.noLimit?? && study.model.numberOfParticipants.sample.noLimit == true>
                     <@message "numberOfParticipants.no-limit"/>
                 <#else>
-                  <i class="fas fa-minus"></i>
+                  <i class="fa-solid fa-minus"></i>
                 </#if>
             </dd>
           </#if>
@@ -297,7 +297,7 @@
       </h3>
       <div class="card-tools">
         <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
-          <i class="fas fa-minus"></i></button>
+          <i class="fa-solid fa-minus"></i></button>
       </div>
     </div>
     <!-- /.card-header -->
@@ -517,10 +517,10 @@
     </div>
     <div class="card-footer">
       <div class="row">
-        <div class="col-md-3"><small><i class="fas fa-check"></i> <@message "yes"/></small></div>
-        <div class="col-md-3"><small><i class="fas fa-times"></i> <@message "no"/></small></div>
-        <div class="col-md-3"><small><i class="fas fa-minus"></i> <@message "na"/></small></div>
-        <div class="col-md-3"><small><i class="fas fa-question"></i> <@message "dont-know"/></small></div>
+        <div class="col-md-3"><small><i class="fa-solid fa-check"></i> <@message "yes"/></small></div>
+        <div class="col-md-3"><small><i class="fa-solid fa-times"></i> <@message "no"/></small></div>
+        <div class="col-md-3"><small><i class="fa-solid fa-minus"></i> <@message "na"/></small></div>
+        <div class="col-md-3"><small><i class="fa-solid fa-question"></i> <@message "dont-know"/></small></div>
       </div>
     </div>
   </div>
@@ -579,7 +579,7 @@
       <p>
         <a href="#" data-bs-toggle="modal" data-bs-target="#modal-rep">
             <@message "study.access.external_researchers_obtaining_study_data_bio_info.access_info_location.study_representative"/>
-          <i class="fas fa-info-circle"></i>
+          <i class="fa-solid fa-info-circle"></i>
         </a>
       </p>
       <div class="modal fade" id="modal-rep">
@@ -620,18 +620,18 @@
 <#macro yesnoToIcon value="">
   <#if value??>
     <#if value == "yes">
-      <i class="fas fa-check"></i>
+      <i class="fa-solid fa-check"></i>
     <#elseif value == "no">
-      <i class="fas fa-times"></i>
+      <i class="fa-solid fa-times"></i>
     <#elseif value == "na">
-      <i class="fas fa-minus"></i>
+      <i class="fa-solid fa-minus"></i>
     <#elseif value == "dk">
-      <i class="fas fa-question"></i>
+      <i class="fa-solid fa-question"></i>
     <#else>
       <@message value/>
     </#if>
   <#else>
-    <i class="fas fa-times"></i>
+    <i class="fa-solid fa-times"></i>
   </#if>
 </#macro>
 

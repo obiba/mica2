@@ -47,18 +47,18 @@
               <#assign variableListActiveClass = (variableList.id == set.id)?then("active", "") />
               <li class="nav-item">
                 <a class="nav-link ${variableListActiveClass}" href="${contextPath}/list/${variableList.id}">
-                  <i class="far fa-circle nav-icon"></i>
+                  <i class="fa-regular fa-circle nav-icon"></i>
                   <p>
                     <span title="${listName(variableList)} <#if variableList.name?starts_with("dar:")>[<@message "data-access-request"/>]</#if>">
                         ${listName(variableList)?truncate_c(20, "...")}
                     </span>
                     <#if variableList.name?starts_with("dar:")>
-                      <i class="fas fa-link ml-2"></i>
+                      <i class="fa-solid fa-link ml-2"></i>
                     <#else>
                       <span></span>
                     </#if>
                     <#if variableList.locked>
-                      <i class="fas fa-lock ml-2"></i>
+                      <i class="fa-solid fa-lock ml-2"></i>
                     </#if>
                     <span class="badge badge-light right">${variableList.identifiers?size}</span>
                   </p>
@@ -101,7 +101,7 @@
             </h1>
             <#if !set.locked || isAdministrator>
               <button type="button" class="btn btn-danger ml-4" data-bs-toggle="modal" data-bs-target="#modal-delete-list">
-                <i class="fas fa-trash"></i> <@message "delete"/>
+                <i class="fa-solid fa-trash"></i> <@message "delete"/>
               </button>
             </#if>
           </div><!-- /.col -->
@@ -171,7 +171,7 @@
           <div id="dar-list-callout" class="callout callout-info">
             <p><@message "sets.set.dar-help"/></p>
             <button class="btn btn-info" onclick="location.href='${contextPath}/data-access-form/${set.name?replace("dar:", "")}'">
-              <i class="fas fa-link"></i>
+              <i class="fa-solid fa-link"></i>
                 <#if set.name?matches(".+-F\\d+$")>
                   <@message "data-access-feasibility"/>
                 <#elseif set.name?matches(".+-A\\d+$")>
@@ -205,13 +205,13 @@
 
             <div class="float-right">
               <button class="btn btn-success ml-2" onclick="onVariablesCartAdd('${set.id}')">
-                <i class="fas fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/>
+                <i class="fa-solid fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/>
               </button>
               <#if showCartDownload>
                 <#if showCartViewDownload>
                   <div class="btn-group ml-2" role="group">
                     <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      <i class="fas fa-download"></i> <@message "download"/>
+                      <i class="fa-solid fa-download"></i> <@message "download"/>
                     </button>
                     <div class="dropdown-menu">
                       <a class="dropdown-item" href="${contextPath}/ws/variables/set/${set.id}/documents/_report?locale=${.locale}" download><@message "download-cart-report"/></a>
@@ -221,13 +221,13 @@
                   </div>
                 <#else>
                   <a href="${contextPath}/ws/variables/set/${set.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
-                    <i class="fas fa-download"></i> <@message "download"/>
+                    <i class="fa-solid fa-download"></i> <@message "download"/>
                   </a>
                 </#if>
               </#if>
               <#if !set.locked || isAdministrator>
                 <button id="delete-all" type="button" class="btn btn-danger ml-2" data-bs-toggle="modal" data-bs-target="#modal-delete">
-                  <i class="fas fa-trash"></i> <@message "delete"/> <span class="badge badge-light selection-count"></span>
+                  <i class="fa-solid fa-trash"></i> <@message "delete"/> <span class="badge badge-light selection-count"></span>
                 </button>
               </#if>
             </div>
@@ -252,10 +252,10 @@
                 <#if config.setsSearchEnabled>
                   <div class="float-right">
                     <a class="btn btn-info ml-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=variables&query=variable(in(Mica_variable.sets,${set.id})),study(in(Mica_study.className,Study))">
-                      <i class="fas fa-search"></i>
+                      <i class="fa-solid fa-search"></i>
                     </a>
                     <a class="btn btn-info ml-2" v-else href="${contextPath}/harmonization-search#lists?type=variables&query=variable(in(Mica_variable.sets,${set.id})),study(in(Mica_study.className,HarmonizationStudy))">
-                      <i class="fas fa-search"></i>
+                      <i class="fa-solid fa-search"></i>
                     </a>
                   </div>
                 </#if>

@@ -46,7 +46,7 @@
               <#if user?? && user.realm == "obiba-realm">
                 <div class="card-footer">
                   <div class="float-right">
-                    <a href="${authConfig.userAccountUrl}" class="btn btn-primary" target="_blank"><i class="fas fa-pen"></i> <@message "personal-information"/></a>
+                    <a href="${authConfig.userAccountUrl}" class="btn btn-primary" target="_blank"><i class="fa-solid fa-pen"></i> <@message "personal-information"/></a>
                   </div>
                 </div>
               </#if>
@@ -67,7 +67,7 @@
                         <@message "2fa-info"/>
                       </div>
                     </#if>
-                    <a href="${authConfig.userAccountUrl}" class="btn btn-primary" target="_blank"><i class="fas fa-pen"></i> <@message "user-account"/></a>
+                    <a href="${authConfig.userAccountUrl}" class="btn btn-primary" target="_blank"><i class="fa-solid fa-pen"></i> <@message "user-account"/></a>
                   <#else>
                     <#assign isOidc = false/>
                     <#if oidcProviders??>
@@ -76,7 +76,7 @@
                           <#assign isOidc = true/>
                           <p><@message "credentials-info"/></p>
                           <@message "user-account-at"/>
-                          <a href="${oidc.providerUrl}" class="btn btn-primary ml-2" target="_blank"><i class="fas fa-user"></i> ${oidc.title}</a>
+                          <a href="${oidc.providerUrl}" class="btn btn-primary ml-2" target="_blank"><i class="fa-solid fa-user"></i> ${oidc.title}</a>
                         </#if>
                       </#list>
                     </#if>

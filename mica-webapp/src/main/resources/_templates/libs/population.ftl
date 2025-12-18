@@ -67,9 +67,9 @@
               </dt>
               <dd class="col-sm-8">
                 <#if population.model.selectionCriteria.newborn?? && population.model.selectionCriteria.newborn == true>
-                  <i class="fas fa-check"></i>
+                  <i class="fa-solid fa-check"></i>
                 <#else>
-                  <i class="fas fa-times"></i>
+                  <i class="fa-solid fa-times"></i>
                 </#if>
               </dd>
 
@@ -78,9 +78,9 @@
               </dt>
               <dd class="col-sm-8">
                 <#if population.model.selectionCriteria.twins?? && population.model.selectionCriteria.twins == true>
-                  <i class="fas fa-check"></i>
+                  <i class="fa-solid fa-check"></i>
                 <#else>
-                  <i class="fas fa-times"></i>
+                  <i class="fa-solid fa-times"></i>
                 </#if>
               </dd>
 
@@ -282,7 +282,7 @@
                     <#if population.model.numberOfParticipants.participant.noLimit?? && population.model.numberOfParticipants.participant.noLimit == true>
                       <@message "numberOfParticipants.no-limit"/>
                     <#else>
-                      <i class="fas fa-minus"></i>
+                      <i class="fa-solid fa-minus"></i>
                     </#if>
                   </dd>
                 </#if>
@@ -305,7 +305,7 @@
                     <#if population.model.numberOfParticipants.sample.noLimit?? && population.model.numberOfParticipants.sample.noLimit == true>
                       <@message "numberOfParticipants.no-limit"/>
                     <#else>
-                      <i class="fas fa-minus"></i>
+                      <i class="fa-solid fa-minus"></i>
                     </#if>
                   </dd>
                 </#if>

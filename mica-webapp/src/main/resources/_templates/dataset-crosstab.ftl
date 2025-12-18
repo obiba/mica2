@@ -67,17 +67,17 @@
           <div class="card-header">
             <h3 class="card-title"><@message "results"/></h3>
             <a id="download" href="#" class="btn btn-primary float-right">
-              <i class="fas fa-download"></i> <@message "download"/>
+              <i class="fa-solid fa-download"></i> <@message "download"/>
             </a>
             <button id="transpose" class="btn btn-default float-right mr-2" onclick="transposeCrosstab()">
-              <i class="fas fa-exchange-alt"></i>
+              <i class="fa-solid fa-exchange-alt"></i>
               <@message "transpose"/>
             </button>
           </div>
           <div class="card-body">
             <div id="loadingCrosstab" class="spinner-border spinner-border-sm" role="status"></div>
             <div id="privacy-alert" class="alert alert-warning" style="display: none;">
-              <i class="fas fa-exclamation-triangle"></i> <@message "privacy-threshold-applies"/>
+              <i class="fa-solid fa-exclamation-triangle"></i> <@message "privacy-threshold-applies"/>
             </div>
             <div id="result-panel" style="overflow-x: auto;">
               <div style="display: none;" class="mb-4">

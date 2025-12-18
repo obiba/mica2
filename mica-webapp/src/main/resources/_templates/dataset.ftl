@@ -120,18 +120,18 @@
                     </a>
                     <#if showVariableStatistics && showDatasetContingencyLink>
                       <a class="btn btn-primary float-right ml-2" href="${contextPath}/dataset-crosstab/${dataset.id}">
-                        <i class="fas fa-cog"></i> <@message "dataset.crosstab.title"/>
+                        <i class="fa-solid fa-cog"></i> <@message "dataset.crosstab.title"/>
                       </a>
                     </#if>
                     <#if cartEnabled && variablesCartEnabled>
                       <div id="cart-add" class="float-right">
                         <#if user?? || cartAnonymousEnabled>
                           <button type="button" class="btn btn-link" onclick="onVariablesCartAdd('${dataset.id}')">
-                            <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
+                            <@message "sets.cart.add-to-cart"/> <i class="fa-solid fa-cart-plus"></i>
                           </button>
                         <#else>
                           <button type="button" class="btn btn-link" onclick="window.location.href='${contextPath}/signin?redirect=${contextPath}/dataset/${dataset.id}';">
-                            <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
+                            <@message "sets.cart.add-to-cart"/> <i class="fa-solid fa-cart-plus"></i>
                           </button>
                         </#if>
                       </div>
@@ -187,7 +187,7 @@
                   <@populationDialog id=population.id population=population></@populationDialog>
                 </div>
                 <div class="card-footer">
-                  <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${population.id}"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
+                  <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${population.id}"><@message "more-info"/> <i class="fa-solid fa-arrow-circle-right"></i></a>
                 </div>
               </div>
             </div>
@@ -205,7 +205,7 @@
                   <@dceDialog id=dceId dce=dce></@dceDialog>
                 </div>
                 <div class="card-footer">
-                  <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${dceId}"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
+                  <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${dceId}"><@message "more-info"/> <i class="fa-solid fa-arrow-circle-right"></i></a>
                 </div>
               </div>
             </div>
@@ -216,7 +216,7 @@
                   <h3 class="card-title"><@message "studies-included"/></h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
-                      <i class="fas fa-minus"></i></button>
+                      <i class="fa-solid fa-minus"></i></button>
                   </div>
                 </div>
                 <div class="card-body">
@@ -269,7 +269,7 @@
                   <h3 class="card-title"><@message "initiatives-included"/></h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
-                      <i class="fas fa-minus"></i></button>
+                      <i class="fa-solid fa-minus"></i></button>
                   </div>
                 </div>
                 <div class="card-body">
@@ -317,7 +317,7 @@
                 </div>
                 <div class="col-lg-4 col-sm-6">
                   <a href="${contextPath}/ws/harmonized-dataset/${dataset.id}/variables/harmonizations/_export" class="btn btn-primary float-right mb-3">
-                    <i class="fas fa-download"></i> <@message "download"/>
+                    <i class="fa-solid fa-download"></i> <@message "download"/>
                   </a>
                 </div>
               </div>

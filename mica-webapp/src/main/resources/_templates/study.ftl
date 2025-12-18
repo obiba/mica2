@@ -136,14 +136,14 @@
                 <div class="card-footer">
                   <#if user?? || cartAnonymousEnabled>
                     <a id="cart-add" href="javascript:void(0)" onclick="onStudiesCartAdd('${study.id}')" style="display: none;">
-                        <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
+                        <@message "sets.cart.add-to-cart"/> <i class="fa-solid fa-cart-plus"></i>
                     </a>
                     <a id="cart-remove" href="javascript:void(0)" onclick="onStudiesCartRemove('${study.id}')" style="display: none;">
-                        <@message "sets.cart.remove-from-cart"/> <i class="fas fa-cart-arrow-down"></i>
+                        <@message "sets.cart.remove-from-cart"/> <i class="fa-solid fa-cart-arrow-down"></i>
                     </a>
                   <#else>
                     <a href="${contextPath}/signin?redirect=${contextPath}/study/${study.id}">
-                        <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
+                        <@message "sets.cart.add-to-cart"/> <i class="fa-solid fa-cart-plus"></i>
                     </a>
                   </#if>
                 </div>
@@ -161,10 +161,10 @@
                   <h3 class="card-title"><@message "members"/></h3>
                   <div class="card-tools float-right">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
-                      <i class="fas fa-minus"></i></button>
+                      <i class="fa-solid fa-minus"></i></button>
                   </div>
                   <a href="${contextPath}/ws/persons/_search/_download?limit=1000&query=studyMemberships.parentId:(${study.id})" class="btn btn-primary float-right mr-2">
-                    <i class="fas fa-download"></i> <@message "download"/>
+                    <i class="fa-solid fa-download"></i> <@message "download"/>
                   </a>
                 </div>
                 <div class="card-body">

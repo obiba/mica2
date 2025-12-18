@@ -35,7 +35,7 @@
           <input name="username" type="text" class="form-control" placeholder="<@message "username"/>" value="${uAuth.username?default("")}" readonly>
           <div class="input-group-append">
             <div class="input-group-text">
-              <span class="fas fa-user"></span>
+              <span class="fa-solid fa-user"></span>
             </div>
           </div>
         </div>
@@ -43,7 +43,7 @@
           <input name="email" type="email" class="form-control" placeholder="<@message "email"/>" value="${uAuth.email?default("")}" readonly>
           <div class="input-group-append">
             <div class="input-group-text">
-              <span class="fas fa-envelope"></span>
+              <span class="fa-solid fa-envelope"></span>
             </div>
           </div>
         </div>
@@ -57,7 +57,7 @@
           <input name="firstname" type="text" class="form-control" placeholder="<@message "firstname"/>" value="${uAuth.firstname?default("")}">
           <div class="input-group-append">
             <div class="input-group-text">
-              <span class="fas fa-user"></span>
+              <span class="fa-solid fa-user"></span>
             </div>
           </div>
         </div>
@@ -65,7 +65,7 @@
           <input name="lastname" type="text" class="form-control" placeholder="<@message "lastname"/>"  value="${uAuth.lastname?default("")}">
           <div class="input-group-append">
             <div class="input-group-text">
-              <span class="fas fa-user"></span>
+              <span class="fa-solid fa-user"></span>
             </div>
           </div>
         </div>

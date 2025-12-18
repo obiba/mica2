@@ -42,10 +42,10 @@
                 <p><@message "admin-content"/></p>
               </div>
               <div class="icon">
-                <i class="fas fa-cogs"></i>
+                <i class="fa-solid fa-cogs"></i>
               </div>
               <a href="${contextPath}/admin" class="small-box-footer">
-                <@message "more-info"/> <i class="fas fa-arrow-circle-right"></i>
+                <@message "more-info"/> <i class="fa-solid fa-arrow-circle-right"></i>
               </a>
             </div>
           </div>
@@ -57,10 +57,10 @@
                   <p><@message "admin-users"/></p>
                 </div>
                 <div class="icon">
-                  <i class="fas fa-users"></i>
+                  <i class="fa-solid fa-users"></i>
                 </div>
                 <a href="${agateUrl}/admin" class="small-box-footer">
-                  <@message "more-info"/> <i class="fas fa-arrow-circle-right"></i>
+                  <@message "more-info"/> <i class="fa-solid fa-arrow-circle-right"></i>
                 </a>
               </div>
             </#if>

@@ -11,7 +11,7 @@
     <div class="icon">
       <i class="${networkIcon}"></i>
     </div>
-    <a href="${networksLink}" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
+    <a href="${networksLink}" class="small-box-footer"><@message "more-info"/> <i class="fa-solid fa-arrow-circle-right"></i></a>
   </div>
 </#macro>
 
@@ -26,7 +26,7 @@
     <div class="icon">
       <i class="${studyIcon}"></i>
     </div>
-    <a href="${studiesLink}" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
+    <a href="${studiesLink}" class="small-box-footer"><@message "more-info"/> <i class="fa-solid fa-arrow-circle-right"></i></a>
   </div>
 </#macro>
 
@@ -41,7 +41,7 @@
     <div class="icon">
       <i class="${initiativeIcon}"></i>
     </div>
-    <a href="${initiativesLink}" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
+    <a href="${initiativesLink}" class="small-box-footer"><@message "more-info"/> <i class="fa-solid fa-arrow-circle-right"></i></a>
   </div>
 </#macro>
 
@@ -56,7 +56,7 @@
     <div class="icon">
       <i class="${datasetIcon}"></i>
     </div>
-    <a href="${datasetsLink}" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
+    <a href="${datasetsLink}" class="small-box-footer"><@message "more-info"/> <i class="fa-solid fa-arrow-circle-right"></i></a>
   </div>
 </#macro>
 
@@ -71,7 +71,7 @@
     <div class="icon">
       <i class="${harmoDatasetIcon}"></i>
     </div>
-    <a href="${protocolsLink}" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
+    <a href="${protocolsLink}" class="small-box-footer"><@message "more-info"/> <i class="fa-solid fa-arrow-circle-right"></i></a>
   </div>
 </#macro>
 
@@ -86,6 +86,6 @@
     <div class="icon">
       <i class="${variableIcon}"></i>
     </div>
-    <a href="${contextPath}/search#lists?type=variables" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
+    <a href="${contextPath}/search#lists?type=variables" class="small-box-footer"><@message "more-info"/> <i class="fa-solid fa-arrow-circle-right"></i></a>
   </div>
 </#macro>

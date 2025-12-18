@@ -36,7 +36,7 @@
             <input name="username" type="text" class="form-control" placeholder="<@message "username"/>">
             <div class="input-group-append">
               <div class="input-group-text">
-                <span class="fas fa-user"></span>
+                <span class="fa-solid fa-user"></span>
               </div>
             </div>
           </div>
@@ -45,7 +45,7 @@
           <input name="email" type="email" class="form-control" placeholder="<@message "email"/>">
           <div class="input-group-append">
             <div class="input-group-text">
-              <span class="fas fa-envelope"></span>
+              <span class="fa-solid fa-envelope"></span>
             </div>
           </div>
         </div>
@@ -54,7 +54,7 @@
             <input name="password" type="password" class="form-control" placeholder="<@message "password"/>">
             <div class="input-group-append">
               <div class="input-group-text">
-                <span class="fas fa-lock"></span>
+                <span class="fa-solid fa-lock"></span>
               </div>
             </div>
           </div>
@@ -69,7 +69,7 @@
           <input name="firstname" type="text" class="form-control" placeholder="<@message "firstname"/>">
           <div class="input-group-append">
             <div class="input-group-text">
-              <span class="fas fa-user"></span>
+              <span class="fa-solid fa-user"></span>
             </div>
           </div>
         </div>
@@ -77,7 +77,7 @@
           <input name="lastname" type="text" class="form-control" placeholder="<@message "lastname"/>">
           <div class="input-group-append">
             <div class="input-group-text">
-              <span class="fas fa-user"></span>
+              <span class="fa-solid fa-user"></span>
             </div>
           </div>
         </div>

@@ -98,7 +98,7 @@
                       <div class="input-group-append">
                         <button class="btn btn-outline-secondary" type="button" @click="onCopyQuery"
                                 title="<@message "global.copy-to-clipboard"/>">
-                          <i class="fas fa-copy"></i></button>
+                          <i class="fa-solid fa-copy"></i></button>
                       </div>
                     </div>
                     <div class="text-muted">
@@ -110,7 +110,7 @@
             </#if>
             <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip"
                     title="<@message "collapse"/>">
-              <i class="fas fa-minus"></i></button>
+              <i class="fa-solid fa-minus"></i></button>
           </div>
         </div>
         <div class="card-body">
@@ -152,7 +152,7 @@
               <h3 class="card-title p-3"><@message "results"/></h3>
               <#if downloadQueryEnabled>
                 <div class="mt-2 pt-1">
-                  <a id="download-query" href="javascript:void(0)" class="btn btn-sm btn-info ml-2" @click="onDownloadQueryResult"><i class="fas fa-download"></i> <@message "download"/></a>
+                  <a id="download-query" href="javascript:void(0)" class="btn btn-sm btn-info ml-2" @click="onDownloadQueryResult"><i class="fa-solid fa-download"></i> <@message "download"/></a>
                 </div>
               </#if>
               <ul id="search-tabs" class="nav nav-pills ml-auto p-2">
@@ -206,22 +206,22 @@
                       <div class="float-right mt-1">
                           <#if exportStudiesQueryEnabled>
                             <button id="export-studies" type="button" class="btn btn-info btn-sm" v-if="isStudiesToolsVisible" @click="onDownloadExportQueryResult">
-                              <i class="fas fa-download"></i> <@message "export"/></span>
+                              <i class="fa-solid fa-download"></i> <@message "export"/></span>
                             </button>
                           </#if>
                           <#if studiesCompareEnabled>
                             <button id="compare-studies" type="button" class="btn btn-info btn-sm ml-2" v-if="isStudiesToolsVisible" @click="onCompare">
-                              <i class="fas fa-grip-lines-vertical"></i> <@message "compare"/></span>
+                              <i class="fa-solid fa-grip-lines-vertical"></i> <@message "compare"/></span>
                             </button>
                           </#if>
                           <#if exportNetworksQueryEnabled>
                             <button id="export-networks" type="button" class="btn btn-info btn-sm" v-if="isNetworksToolsVisible" @click="onDownloadExportQueryResult">
-                              <i class="fas fa-download"></i> <@message "export"/></span>
+                              <i class="fa-solid fa-download"></i> <@message "export"/></span>
                             </button>
                           </#if>
                           <#if networksCompareEnabled>
                             <button id="compare-networks" type="button" class="btn btn-info btn-sm ml-2" v-if="isNetworksToolsVisible" @click="onCompare">
-                              <i class="fas fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge badge-light studies-selection-count"></span>
+                              <i class="fa-solid fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge badge-light studies-selection-count"></span>
                             </button>
                           </#if>
                           <#if cartEnabled>
@@ -230,7 +230,7 @@
                                       <#if listsEnabled>
                                         <div class="btn-group" v-if="isVariablesToolsVisible">
                                           <button id="cart-add-variables" type="button" class="btn btn-sm btn-success" @click="onAddToCart" title="<@message "sets.cart.add-variables-to-cart"/>">
-                                            <i class="fas fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
+                                            <i class="fa-solid fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
                                           <button type="button" class="btn btn-sm btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"></button>
                                           <div ref="listsDropdownMenu" class="dropdown-menu dropdown-menu-right" style="min-width: 24em;">
                                             <form class="px-3 py-3" v-if="numberOfSetsRemaining > 0">
@@ -254,20 +254,20 @@
                                         </div>
                                       <#else>
                                         <button id="cart-add-variables" type="button" class="btn btn-sm btn-success" v-if="isVariablesToolsVisible" @click="onAddToCart" title="<@message "sets.cart.add-variables-to-cart"/>">
-                                          <i class="fas fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
+                                          <i class="fa-solid fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
                                       </#if>
                                   </#if>
                                   <#if studiesCartEnabled>
                                     <button id="cart-add-studies" type="button" class="btn btn-sm btn-success ml-2" v-if="isStudiesToolsVisible" @click="onAddToCart" title="<@message "sets.cart.add-studies-to-cart"/>">
-                                      <i class="fas fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
+                                      <i class="fa-solid fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
                                   </#if>
                                   <#if networksCartEnabled>
                                     <button id="cart-add-networks" type="button" class="btn btn-sm btn-success ml-2" v-if="isNetworksToolsVisible" @click="onAddToCart" title="<@message "sets.cart.add-networks-to-cart"/>">
-                                      <i class="fas fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
+                                      <i class="fa-solid fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
                                   </#if>
                               <#else>
                                 <a href="${contextPath}/signin?redirect=${contextPath}/search" class="btn btn-sm btn-success" title="<@message "sets.cart.signin-to-add-to-cart"/>">
-                                  <i class="fas fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></a>
+                                  <i class="fa-solid fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></a>
                               </#if>
                           </#if>
                       </div>

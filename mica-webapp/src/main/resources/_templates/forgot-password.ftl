@@ -26,7 +26,7 @@
           <input name="username" type="text" class="form-control" placeholder="<@message "sign-in-username"/>">
           <div class="input-group-append">
             <div class="input-group-text">
-              <span class="fas fa-envelope"></span>
+              <span class="fa-solid fa-envelope"></span>
             </div>
           </div>
         </div>

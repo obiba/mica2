@@ -82,18 +82,18 @@
                     <tr>
                       <td>
                         <#if event.amendment>
-                          <a href="${contextPath}/data-access-amendment-form/${event.form.id}"><i class="fas fa-file-import"></i> ${event.form.id}</a>
+                          <a href="${contextPath}/data-access-amendment-form/${event.form.id}"><i class="fa-solid fa-file-import"></i> ${event.form.id}</a>
                         <#elseif event.feasibility>
-                          <a href="${contextPath}/data-access-feasibility-form/${event.form.id}"><i class="far fa-question-circle"></i> ${event.form.id}</a>
+                          <a href="${contextPath}/data-access-feasibility-form/${event.form.id}"><i class="fa-regular fa-question-circle"></i> ${event.form.id}</a>
                         <#elseif event.preliminary>
-                          <a href="${contextPath}/data-access-preliminary-form/${event.form.id}"><i class="far fa-play-circle"></i> ${event.form.id}</a>
+                          <a href="${contextPath}/data-access-preliminary-form/${event.form.id}"><i class="fa-regular fa-play-circle"></i> ${event.form.id}</a>
                         <#elseif event.agreement>
                           <a href="${contextPath}/data-access-agreement-form/${event.form.id}"><i class="fa fa-gavel"></i> ${event.form.id}</a>
                         <#else>
-                          <a href="${contextPath}/data-access-form/${event.form.id}"><i class="fas fa-book"></i> ${event.form.id}</a>
+                          <a href="${contextPath}/data-access-form/${event.form.id}"><i class="fa-solid fa-book"></i> ${event.form.id}</a>
                         </#if>
                       </td>
-                      <td><i class="fas fa-circle text-${statusColor(event.status.toString())}"></i> <@message event.status.toString()/></td>
+                      <td><i class="fa-solid fa-circle text-${statusColor(event.status.toString())}"></i> <@message event.status.toString()/></td>
                       <td>${event.profile.fullName}</td>
                       <td data-sort="${event.date.toString()}" class="moment-datetime">${event.date.toString()}</td>
                     </tr>
@@ -113,7 +113,7 @@
                 <#if !dar.archived>
                   <div class="float-right">
                     <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-add">
-                      <i class="fas fa-plus"></i> <@message "add"/></a>
+                      <i class="fa-solid fa-plus"></i> <@message "add"/></a>
                   </div>
                 </#if>
               </div>
@@ -171,7 +171,7 @@
             <div class="input-group">
               <input type="text" id="action-date" class="form-control">
               <div class="input-group-append">
-                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                <span class="input-group-text"><i class="fa-solid fa-calendar-alt"></i></span>
               </div>
             </div>
           </div>

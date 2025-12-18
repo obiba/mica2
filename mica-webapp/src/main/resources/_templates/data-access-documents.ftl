@@ -67,7 +67,7 @@
               <#if !dar.archived>
                 <div class="float-right">
                   <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-upload">
-                    <i class="fas fa-upload"></i> <@message "upload-document"/></a>
+                    <i class="fa-solid fa-upload"></i> <@message "upload-document"/></a>
                 </div>
               </#if>
             </div>
@@ -101,7 +101,7 @@
                       <td>${si(attachment.size)}</td>
                       <#if !dar.archived>
                         <td>
-                          <a href="#" onclick="DataAccessService.deleteAttachment('${dar.id}','${attachment.id}')"><i class="fas fa-trash text-danger"></i></a>
+                          <a href="#" onclick="DataAccessService.deleteAttachment('${dar.id}','${attachment.id}')"><i class="fa-solid fa-trash text-danger"></i></a>
                         </td>
                       </#if>
                     </tr>

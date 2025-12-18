@@ -24,7 +24,7 @@
     <div class="user-panel mt-3 pb-3 mb-3 d-flex">
       <div>
         <span title="<@message dar.status.toString()/>"><i
-            class="fas fa-circle fa-2x pl-2 text-${statusColor(dar.status.toString())}"></i></span>
+            class="fa-solid fa-circle fa-2x pl-2 text-${statusColor(dar.status.toString())}"></i></span>
       </div>
       <div class="info">
         <a href="${contextPath}/data-access/${dar.id}" class="d-inline">${mainApplicant.fullName} </a>
@@ -35,7 +35,7 @@
       <ul data-widget="treeview" role="menu" data-accordion="false" class="nav nav-pills nav-sidebar flex-column">
         <li class="nav-item">
           <a id="dashboard-menu" href="${contextPath}/data-access/${dar.id}" class="nav-link">
-            <i class="fas fa-tachometer-alt nav-icon"></i>
+            <i class="fa-solid fa-tachometer-alt nav-icon"></i>
             <p><@message "dashboard"/></p>
           </a>
         </li>
@@ -49,7 +49,7 @@
                 <@message "feasibilities"/>
                 <span class="badge badge-info right">${feasibilities?size}</span>
                 <#if feasibilities?size != 0 || user.username == dar.applicant || isAdministrator>
-                  <i class="fas fa-angle-left right mr-1"></i>
+                  <i class="fa-solid fa-angle-left right mr-1"></i>
                 </#if>
               </p>
             </a>
@@ -57,7 +57,7 @@
               <#list feasibilities as feasibility>
                 <li class="nav-item">
                   <a id="feasibility-form-menu-${feasibility.id}" href="${contextPath}/data-access-feasibility-form/${feasibility.id}" class="nav-link">
-                    <i class="fas fa-circle nav-icon text-${statusColor(feasibility.status.toString())}"
+                    <i class="fa-solid fa-circle nav-icon text-${statusColor(feasibility.status.toString())}"
                        title="<@message feasibility.status.toString()/>"></i>
                     <p>${feasibility.id}</p>
                   </a>
@@ -66,7 +66,7 @@
               <#if !dar.archived && (user.username == dar.applicant || isAdministrator)>
                 <li class="nav-item">
                   <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modal-feasibility-add">
-                    <i class="fas fa-plus nav-icon"></i>
+                    <i class="fa-solid fa-plus nav-icon"></i>
                     <p><@message "new-feasibility"/></p>
                   </a>
                 </li>
@@ -82,13 +82,13 @@
               <i class="nav-icon fas fa-book"></i>
               <p>
                 <@message "application-forms"/>
-                <i class="fas fa-angle-left right mr-1"></i>
+                <i class="fa-solid fa-angle-left right mr-1"></i>
               </p>
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
                 <a id="preliminary-form-menu" href="${contextPath}/data-access-preliminary-form/${dar.id}" class="nav-link">
-                  <i class="fas fa-circle nav-icon text-${statusColor(preliminary.status.toString())}"></i>
+                  <i class="fa-solid fa-circle nav-icon text-${statusColor(preliminary.status.toString())}"></i>
                   <p>
                     <@message "preliminary-form"/>
                     <#if preliminary.status.toString() == "OPENED" || preliminary.status.toString() == "CONDITIONALLY_APPROVED">
@@ -102,7 +102,7 @@
               <li class="nav-item">
                 <#if preliminary.status.toString() == "APPROVED" || dar.status.toString() != "OPENED" || !dar.lockedByPreliminary>
                   <a id="form-menu" href="${contextPath}/data-access-form/${dar.id}" class="nav-link">
-                    <i class="fas fa-circle nav-icon text-${statusColor(dar.status.toString())}"></i>
+                    <i class="fa-solid fa-circle nav-icon text-${statusColor(dar.status.toString())}"></i>
                     <p>
                       <@message "main-form"/>
                       <#if dar.status.toString() == "OPENED" || dar.status.toString() == "CONDITIONALLY_APPROVED">
@@ -114,7 +114,7 @@
                   </a>
                 <#else>
                   <div id="form-menu" class="nav-link text-muted">
-                    <i class="fas fa-circle nav-icon"></i>
+                    <i class="fa-solid fa-circle nav-icon"></i>
                     <p><@message "main-form"/></p>
                   </div>
                 </#if>
@@ -124,7 +124,7 @@
         <#else>
           <li class="nav-item">
             <a id="form-menu" href="${contextPath}/data-access-form/${dar.id}" class="nav-link">
-              <i class="fas fa-book nav-icon"></i>
+              <i class="fa-solid fa-book nav-icon"></i>
               <p>
                 <@message "application-form"/>
                 <#if dar.status.toString() == "OPENED" || dar.status.toString() == "CONDITIONALLY_APPROVED">
@@ -146,7 +146,7 @@
                 <@message "amendments"/>
                 <span class="badge badge-info right">${amendments?size}</span>
                 <#if amendments?size != 0 || user.username == dar.applicant || isAdministrator>
-                  <i class="fas fa-angle-left right mr-1"></i>
+                  <i class="fa-solid fa-angle-left right mr-1"></i>
                 </#if>
               </p>
             </a>
@@ -154,7 +154,7 @@
               <#list amendments as amendment>
                 <li class="nav-item">
                   <a id="amendment-form-menu-${amendment.id}" href="${contextPath}/data-access-amendment-form/${amendment.id}" class="nav-link">
-                    <i class="fas fa-circle nav-icon text-${statusColor(amendment.status.toString())}"
+                    <i class="fa-solid fa-circle nav-icon text-${statusColor(amendment.status.toString())}"
                        title="<@message amendment.status.toString()/>"></i>
                     <p>${amendment.id}</p>
                   </a>
@@ -163,7 +163,7 @@
               <#if !dar.archived && (user.username == dar.applicant || isAdministrator)>
                 <li class="nav-item">
                   <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modal-amendment-add">
-                    <i class="fas fa-plus nav-icon"></i>
+                    <i class="fa-solid fa-plus nav-icon"></i>
                     <p><@message "new-amendment"/></p>
                   </a>
                 </li>
@@ -182,7 +182,7 @@
                   <@message "agreements"/>
                   <span class="badge badge-info right">${agreements?size}</span>
                   <#if agreements?size != 0>
-                    <i class="fas fa-angle-left right mr-1"></i>
+                    <i class="fa-solid fa-angle-left right mr-1"></i>
                   </#if>
                 </p>
               </a>
@@ -190,7 +190,7 @@
                 <#list agreements as agreement>
                   <li class="nav-item">
                     <a id="agreement-form-menu-${agreement.id}" href="${contextPath}/data-access-agreement-form/${agreement.id}" class="nav-link">
-                      <i class="fas fa-circle nav-icon text-${statusColor(agreement.status.toString())}"
+                      <i class="fa-solid fa-circle nav-icon text-${statusColor(agreement.status.toString())}"
                          title="<@message agreement.status.toString()/>"></i>
                       <p>${agreement.id}</p>
                       <#if agreement.applicant == user.username>
@@ -216,7 +216,7 @@
         <!-- Documents -->
         <li class="nav-item">
           <a id="documents-menu" href="${contextPath}/data-access-documents/${dar.id}" class="nav-link">
-            <i class="fas fa-copy nav-icon"></i>
+            <i class="fa-solid fa-copy nav-icon"></i>
             <p><@message "documents"/></p>
             <#if dar.attachments?size != 0>
               <span class="badge badge-info right">${dar.attachments?size}</span>
@@ -227,7 +227,7 @@
         <!-- Comments -->
         <li class="nav-item">
           <a id="comments-menu" href="${contextPath}/data-access-comments/${dar.id}" class="nav-link">
-            <i class="fas fa-comments nav-icon"></i>
+            <i class="fa-solid fa-comments nav-icon"></i>
             <p><@message "comments"/></p>
             <#if commentsCount != 0>
               <span class="badge badge-info right">${commentsCount}</span>
@@ -239,7 +239,7 @@
         <#if isAdministrator || isDAO || permissions?seq_contains("VIEW_PRIVATE_COMMENTS")>
           <li class="nav-item">
             <a id="private-comments-menu" href="${contextPath}/data-access-private-comments/${dar.id}" class="nav-link">
-              <i class="fas fa-lock nav-icon"></i>
+              <i class="fa-solid fa-lock nav-icon"></i>
               <p><@message "private-comments"/></p>
               <#if privateCommentsCount != 0>
                 <span class="badge badge-info right">${privateCommentsCount}</span>
@@ -251,7 +251,7 @@
         <!-- History -->
         <li class="nav-item">
           <a id="history-menu" href="${contextPath}/data-access-history/${dar.id}" class="nav-link">
-            <i class="fas fa-calendar-alt nav-icon"></i>
+            <i class="fa-solid fa-calendar-alt nav-icon"></i>
             <p><@message "history"/></p>
           </a>
         </li>

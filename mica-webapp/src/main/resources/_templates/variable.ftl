@@ -45,7 +45,7 @@
             <p class="text-muted"><@message "no-label"/></p>
           </#if>
           <#if variable.attributes?? && variable.attributes.description??>
-            <p class="marked text-muted"><template><i class="fas fa-info-circle"></i> ${localize(variable.attributes.description)}</template></p>
+            <p class="marked text-muted"><template><i class="fa-solid fa-info-circle"></i> ${localize(variable.attributes.description)}</template></p>
           </#if>
         </div>
 
@@ -77,7 +77,7 @@
                   </#if>
                   <#if variable.repeatable?? && variable.repeatable>
                     <dt class="col-sm-4"><@message "repeatable"/></dt>
-                    <dd class="col-sm-8"><i class="fas fa-check"></i></dd>
+                    <dd class="col-sm-8"><i class="fa-solid fa-check"></i></dd>
                     <dt class="col-sm-4"><@message "occurrence-group"/></dt>
                     <dd class="col-sm-8">${variable.occurrenceGroup}</dd>
                   </#if>
@@ -104,7 +104,7 @@
                                 ${localize(category.attributes.label)}
                               </#if>
                             </td>
-                            <td><#if category.missing><i class="fas fa-check"></i></#if></td>
+                            <td><#if category.missing><i class="fa-solid fa-check"></i></#if></td>
                           </tr>
                         </#list>
                         </tbody>
@@ -117,14 +117,14 @@
                 <div class="card-footer">
                   <#if user?? || cartAnonymousEnabled>
                     <a id="cart-add" href="javascript:void(0)" onclick="onVariablesCartAdd('${variableCartId}')" style="display: none;">
-                      <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
+                      <@message "sets.cart.add-to-cart"/> <i class="fa-solid fa-cart-plus"></i>
                     </a>
                     <a id="cart-remove" href="javascript:void(0)" onclick="onVariablesCartRemove('${variableCartId}')" style="display: none;">
-                      <@message "sets.cart.remove-from-cart"/> <i class="fas fa-cart-arrow-down"></i>
+                      <@message "sets.cart.remove-from-cart"/> <i class="fa-solid fa-cart-arrow-down"></i>
                     </a>
                   <#else>
                     <a href="${contextPath}/signin?redirect=${contextPath}/variable/${variable.id}">
-                      <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
+                      <@message "sets.cart.add-to-cart"/> <i class="fa-solid fa-cart-plus"></i>
                     </a>
                   </#if>
                 </div>
@@ -231,7 +231,7 @@
                 </div>
                 <div class="card-footer">
                   <a href="${contextPath}/<#if type != "Collected">harmonization-search<#else>individual-search</#if>#lists?type=variables&query=${query}">
-                    <@message "find-similar-variables"/> <i class="fas fa-search"></i>
+                    <@message "find-similar-variables"/> <i class="fa-solid fa-search"></i>
                   </a>
                 </div>
               </div>
@@ -298,11 +298,11 @@
                   <#if showDatasetContingencyLink>
                     <#if variable.nature == "CATEGORICAL">
                       <a class="btn btn-primary float-right" href="${contextPath}/dataset-crosstab/${variable.datasetId}?var1=${variable.name}">
-                        <i class="fas fa-cog"></i> <@message "dataset.crosstab.title"/>
+                        <i class="fa-solid fa-cog"></i> <@message "dataset.crosstab.title"/>
                       </a>
                     <#elseif variable.nature == "CONTINUOUS">
                       <a class="btn btn-primary float-right" href="${contextPath}/dataset-crosstab/${variable.datasetId}?var2=${variable.name}">
-                        <i class="fas fa-cog"></i> <@message "dataset.crosstab.title"/>
+                        <i class="fa-solid fa-cog"></i> <@message "dataset.crosstab.title"/>
                       </a>
                     </#if>
                   </#if>
