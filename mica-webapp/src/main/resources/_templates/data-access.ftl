@@ -70,7 +70,7 @@
             <p><@message "confirm-deletion-text"/></p>
           </div>
           <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
             <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                     onclick="DataAccessService.delete('${dar.id}')"><@message "confirm"/>
             </button>
@@ -96,7 +96,7 @@
             <p><@message "confirm-archive-text"/></p>
           </div>
           <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
             <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                     onclick="DataAccessService.archive('${dar.id}')"><@message "confirm"/>
             </button>
@@ -122,7 +122,7 @@
             <p><@message "confirm-unarchive-text"/></p>
           </div>
           <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
             <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                     onclick="DataAccessService.unarchive('${dar.id}')"><@message "confirm"/>
             </button>
@@ -155,7 +155,7 @@
             </div>
           </div>
           <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
             <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                     onclick="DataAccessService.inviteCollaborator('${dar.id}', $('input[name=collaborator-email]').val())"><@message "invite"/>
             </button>
@@ -185,7 +185,7 @@
               </p>
             </div>
             <div class="modal-footer justify-content-between">
-              <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
               <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                       onclick="DataAccessService.deleteCollaborator('${dar.id}', $('#collaborator-to-delete').text())"><@message "confirm"/>
               </button>
@@ -411,7 +411,7 @@
           </div>
         </div>
         <div class="modal-footer justify-content-between">
-          <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
           <button type="button" class="btn btn-primary" id="start-date-submit"><@message "submit"/></button>
         </div>
       </div>

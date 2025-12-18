@@ -46,7 +46,7 @@
             <p id="delete-selected-message" style="display: none;"><@message "cart-selected-confirm-deletion-text"/></p>
           </div>
           <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
             <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                     onclick="VariablesSetService.deleteVariables('${sets.variablesCart.id}', variablesCartStorage.getSelections(), function() { window.location.replace('${contextPath}/cart?type=variables'); })"><@message "confirm"/>
             </button>
@@ -73,7 +73,7 @@
             <p id="delete-selected-studies-message" style="display: none;"><@message "studies-cart-selected-confirm-deletion-text"/></p>
           </div>
           <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
             <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                     onclick="StudiesSetService.deleteStudies('${sets.studiesCart.id}', studiesCartStorage.getSelections(), function() { window.location.replace('${contextPath}/cart?type=studies'); })"><@message "confirm"/>
             </button>
@@ -100,7 +100,7 @@
             <p id="delete-selected-networks-message" style="display: none;"><@message "networks-cart-selected-confirm-deletion-text"/></p>
           </div>
           <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
             <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                     onclick="NetworksSetService.deleteNetworks('${sets.networksCart.id}', networksCartStorage.getSelections(), function() { window.location.replace('${contextPath}/cart?type=networks'); })"><@message "confirm"/>
             </button>
@@ -451,7 +451,7 @@
             <p><@message "confirm-data-access-request-creation-from-cart"/></p>
           </div>
           <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
             <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="DataAccessService.createFromCart()"><@message "confirm"/></button>
           </div>
         </div>

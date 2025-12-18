@@ -125,7 +125,7 @@
             <p id="delete-selected-message" style="display: none;"><@message "list-selected-confirm-deletion-text"/></p>
           </div>
           <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
             <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                     onclick="VariablesSetService.deleteVariables('${set.id}', variablesCartStorage.getSelections(), function() { window.location.reload(); })"><@message "confirm"/>
             </button>
@@ -151,7 +151,7 @@
             <p><@message "list-confirm-complete-deletion-text"/></p>
           </div>
           <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
             <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                     onclick="VariablesSetService.deleteSet('${set.id}', function () { window.location.replace('${contextPath}/lists'); })"><@message "confirm"/>
             </button>

@@ -141,7 +141,7 @@
           </div>
         </div>
         <div class="modal-footer justify-content-between">
-          <button type="button" class="btn btn-default" data-bs-dismiss="modal"><@message "close"/></button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "close"/></button>
         </div>
       </div>
       <!-- /.modal-content -->
