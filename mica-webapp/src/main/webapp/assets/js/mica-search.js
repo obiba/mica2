@@ -67,15 +67,15 @@ Vue.component('search-criteria', {
       <li class="nav-item has-treeview menu-open">
         <a href="#" class="nav-link">
           <i class="nav-icon" v-bind:class="criteriaMenu.items[name].icon"></i>
-          <p>
+          <span>
            {{studyTypeSelection && studyTypeSelection.harmonization ? criteriaMenu.items[name].harmoTitle : criteriaMenu.items[name].title}}
-          </p>
+          </span>
         </a>
         <ul class="nav nav-treeview">
           <li class="nav-item" :key="menu.name" v-for="menu in criteriaMenu.items[name].menus" v-if="!(studyTypeSelection && studyTypeSelection.harmonization) || !menu.hideHarmo">
             <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#taxonomy-modal"
               :title="menu.description | localize-string"
-              @click.prevent="onTaxonomySelection(menu.name, name)"><i class="far fa-circle nav-icon"></i><p>{{ menu.title | localize-string }}</p>
+              @click.prevent="onTaxonomySelection(menu.name, name)"><i class="far fa-circle nav-icon me-1"></i><span>{{ menu.title | localize-string }}</span>
             </a>
           </li>
         </ul>

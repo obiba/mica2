@@ -9,30 +9,32 @@
 </head>
 <body id="search-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
 <!-- Site wrapper -->
-<div id="search-application" class="wrapper" :class="{'harmoMode': currentStudyTypeSelection && currentStudyTypeSelection.harmonization}" v-cloak>
+<div id="search-application" class="app-wrapper" :class="{'harmoMode': currentStudyTypeSelection && currentStudyTypeSelection.harmonization}" v-cloak>
 
   <!-- Navbar -->
   <#include "libs/aside-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Main Sidebar Container -->
-  <aside class="main-sidebar sidebar-dark-primary">
+  <aside class="app-sidebar bg-body-secondary" data-bs-theme="dark">
     <!-- Brand Logo -->
-    <a href="${portalLink}" class="brand-link bg-white">
-      <img src="${brandImageSrc}"
-           alt="Logo"
-           class="brand-image ${brandImageClass}"
-           style="opacity: .8">
-      <span class="brand-text ${brandTextClass}">
-        <#if brandTextEnabled>
-          ${config.name!""}
+    <div class="sidebar-brand">
+      <a href="${portalLink}" class="brand-link">
+        <img src="${brandImageSrc}"
+            alt="Logo"
+            class="brand-image ${brandImageClass}"
+            style="opacity: .8">
+        <span class="brand-text ${brandTextClass}">
+          <#if brandTextEnabled>
+            ${config.name!""}
           <#else>&nbsp;
-        </#if>
-      </span>
-    </a>
+          </#if>
+        </span>
+      </a>
+    </div>
 
     <!-- Sidebar -->
-    <div class="sidebar">
+    <div class="sidebar-wrapper">
       <!-- Sidebar user (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="info">
@@ -42,14 +44,16 @@
 
       <!-- Sidebar Menu -->
       <nav class="mt-2">
-
-        <ul data-widget="treeview" role="menu" data-accordion="false" class="nav nav-pills nav-sidebar flex-column"></ul>
+        <ul data-lte-toggle="treeview"
+            role="menu"
+            data-accordion="false"
+            class="nav sidebar-menu flex-column"></ul>
 
         <search-criteria :study-type-selection="currentStudyTypeSelection"></search-criteria>
       </nav>
       <!-- /.sidebar-menu -->
     </div>
-    <!-- /.sidebar -->
+    <!-- /.sidebar-wrapper -->
   </aside>
 
   <!-- Content Wrapper. Contains page content -->
