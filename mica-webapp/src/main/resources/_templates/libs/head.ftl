@@ -88,7 +88,6 @@
 <!-- Font Awesome Icons -->
 <link rel="stylesheet" href="${fontAwesomePath}/css/all.min.css">
 <!-- Mica Theme (includes Bootstrap 5 + AdminLTE 4 + custom overrides) -->
-<link rel="stylesheet" href="${assetsPath}/css/mica.min.css">
 <!-- Font: Source Sans Pro -->
 <style type="text/css">
   @font-face {
@@ -136,6 +135,7 @@
 <!-- Select2 -->
 <link rel="stylesheet" href="${select2Path}/dist/css/select2.min.css">
 <link rel="stylesheet" href="${select2BS5ThemePath}/dist/select2-bootstrap-5-theme.min.css">
+<link rel="stylesheet" href="${assetsPath}/css/mica.min.css">
 
 <!-- Custom head -->
 <#include "../models/head.ftl"/>

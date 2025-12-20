@@ -15,7 +15,7 @@
         </div><!-- /.col -->
         <#if breadcrumb?? && breadcrumb?size != 0>
           <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
+            <ol class="breadcrumb float-sm-end">
               <#list breadcrumb as item>
                 <#if item?size == 2>
                   <li class="breadcrumb-item"><a class="text-white-50" href="${item[0]}">

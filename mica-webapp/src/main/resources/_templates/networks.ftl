@@ -9,14 +9,14 @@
   <title>${config.name!""} | <@message "networks"/></title>
 </head>
 <body id="networks-page" class="hold-transition layout-top-nav layout-navbar-fixed">
-<div class="wrapper">
+<div class="app-wrapper d-flex flex-column min-vh-100">
 
   <!-- Navbar -->
   <#include "libs/top-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
+ <div class="app-main flex-fill">
     <!-- Content Header (Page header) -->
     <@header title="networks" breadcrumb=[["${contextPath}/", "home"], ["networks"]]/>
     <!-- /.content-header -->

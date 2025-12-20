@@ -9,7 +9,7 @@
 </head>
 <body id="list-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
 <!-- Site wrapper -->
-<div class="wrapper">
+<div class="app-wrapper d-flex flex-column min-vh-100">
   <!-- Navbar -->
   <#include "libs/aside-navbar.ftl">
   <!-- /.navbar -->

@@ -9,7 +9,7 @@
   <#include "libs/head.ftl">
 </head>
 <body id="index-page" class="hold-transition layout-top-nav layout-navbar-fixed">
-<div class="wrapper">
+<div class="app-wrapper d-flex flex-column min-vh-100">
 
   <!-- Navbar -->
   <#include "libs/top-navbar.ftl">
@@ -17,9 +17,9 @@
 
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
+  <div class="app-main flex-fill">
 
-    <div class="jumbotron jumbotron-fluid">
+    <div class="py-5 mb-4 bg-body-secondary">
       <div class="container">
         <#if config.repositoryEnabled && config.dataAccessEnabled>
           <h1 class="display-4"><@message "data-portal-title"/></h1>

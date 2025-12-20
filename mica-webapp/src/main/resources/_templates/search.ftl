@@ -53,7 +53,7 @@
   </aside>
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
+ <div class="app-main flex-fill">
     <!-- Content Header (Page header) -->
     <section class="content-header bg-info mb-4">
       <div class="container-fluid">

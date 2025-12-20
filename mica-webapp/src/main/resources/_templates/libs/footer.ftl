@@ -1,5 +1,5 @@
 <!-- Main Footer -->
-<footer class="main-footer d-print-none">
+<footer class="app-footer d-print-none">
   <!-- To the right -->
   <#if config??>
     <div class="float-end d-none d-sm-inline border-left ps-2 ms-2">

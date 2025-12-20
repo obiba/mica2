@@ -62,7 +62,7 @@
     <div class="navbar-header">
       <a href="${contextPath}/" class="navbar-brand">{{micaConfig.name}}</a>
       <button type="button" class="navbar-toggle" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
-        <span class="sr-only">Toggle navigation</span>
+        <span class="visually-hidden">Toggle navigation</span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
