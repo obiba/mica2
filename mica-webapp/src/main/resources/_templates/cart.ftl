@@ -8,7 +8,7 @@
   <title>${config.name!""} | <@message "sets.cart.title"/></title>
 </head>
 <body id="cart-page" class="hold-transition layout-top-nav layout-navbar-fixed">
-<div class="wrapper">
+<div class="app-wrapper d-flex flex-column min-vh-100">
 
   <!-- Navbar -->
   <#include "libs/top-navbar.ftl">

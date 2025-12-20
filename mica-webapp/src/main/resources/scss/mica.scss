@@ -25,13 +25,113 @@
 @use "bootstrap/scss/bootstrap" as *;
 @use "admin-lte/src/scss/adminlte" as lte;
 
-// ========================================================================
-// Mica Custom Styles
-// ========================================================================
-// Add your custom CSS/SCSS below to override or extend AdminLTE/Bootstrap
+:root {
+  --bs-info: #17a2b8;
+  --bs-info-rgb: 23, 162, 184;      /* needed so .bg-info updates */
+  --bs-info-bg-subtle: #d1ecf1;      /* alerts, badges subtle */
+  --bs-info-border-subtle: #bee5eb;
+  --bs-info-text-emphasis: #0c5460;
+  --bs-tertiary-bg-rgb: 233, 236, 239;
+}
 
-// Example custom class:
-// .mica-custom-header {
-//   background-color: $primary;
-//   padding: $spacer;
-// }
+h1 {
+  font-size: 1.8rem;
+}
+
+a {
+  text-decoration: none;
+}
+
+.bg-info {
+  color: #ffffff;
+ }
+
+.content-header {
+  padding: 15px .5rem;
+}
+
+.login-page {
+  background-color: #e9ecef;
+}
+
+.app-main {
+  background-color: #f4f6f9;
+}
+
+.error-page {
+  margin: 20px auto 0;
+  width: 600px;
+
+  @include media-breakpoint-down(sm) {
+    width: 100%;
+  }
+
+  //For the error number e.g: 404
+  > .headline {
+    float: left;
+    font-size: 100px;
+    font-weight: 300;
+
+    @include media-breakpoint-down(sm) {
+      float: none;
+      text-align: center;
+    }
+  }
+
+  //For the message
+  > .error-content {
+    display: block;
+    margin-left: 190px;
+
+    @include media-breakpoint-down(sm) {
+      margin-left: 0;
+    }
+
+    > h3 {
+      font-size: 25px;
+      font-weight: 300;
+
+      @include media-breakpoint-down(sm) {
+        text-align: center;
+      }
+    }
+  }
+}
+
+.navbar-brand .brand-image {
+  height: 32px;
+  width: auto;
+}
+
+.main-header,
+.navbar {
+  .nav-link {
+    position: relative; // anchor for absolute badge positioning
+  }
+
+  // Works with your existing markup: class="... navbar-badge"
+  .navbar-badge {
+    position: absolute;
+    inset-block-start: .25rem;   // top (logical)
+    inset-inline-end: .35rem;    // right (logical)
+
+    transform: translate(50%, -50%);
+    z-index: 2;
+
+    // make it look like a small count pill
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 1.25rem;
+    height: 1.25rem;
+    padding: 0 .35rem;
+
+    font-size: .70rem;
+    line-height: 1;
+    border-radius: 999px;
+
+    pointer-events: none; // clicking badge still clicks the link
+    white-space: nowrap;
+  }
+}
