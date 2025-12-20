@@ -6,20 +6,6 @@
 //
 
 // ========================================================================
-// Bootstrap 5 and AdminLTE 4 Variable Overrides
-// ========================================================================
-// Uncomment and customize Bootstrap/AdminLTE variables here
-// See: node_modules/bootstrap/scss/_variables.scss
-// See: node_modules/admin-lte/build/scss/_variables.scss
-
-// Example color customization:
-// $primary: #007bff;
-// $secondary: #6c757d;
-
-// Example spacing customization:
-// $spacer: 1rem;
-
-// ========================================================================
 // Import AdminLTE 4 (includes Bootstrap 5)
 // ========================================================================
 @use "bootstrap/scss/bootstrap" as *;
@@ -32,41 +18,47 @@
   --bs-info-border-subtle: #bee5eb;
   --bs-info-text-emphasis: #0c5460;
   --bs-tertiary-bg-rgb: 233, 236, 239;
+
+  --mica-brand-bg: #fff;
+  --mica-brand-text: #6c757d;
 }
 
-h1 {
-  font-size: 1.8rem;
+// Make unchecked checkboxes/radios visible (Bootstrap 5.3)
+.form-check-input {
+  // stronger outline + consistent unchecked background
+  --bs-border-color: rgba(0, 0, 0, .35);
+  --bs-form-check-bg: #fff;
 }
 
-a {
-  text-decoration: none;
+.form-check-input:focus {
+  // keep focus visible (optional but recommended)
+  box-shadow: 0 0 0 .2rem rgba(var(--bs-primary-rgb), .25);
 }
 
-.bg-info {
-  color: #ffffff;
- }
-
-.content-header {
-  padding: 15px .5rem;
+// If a checkbox is inside a dark theme container, boost contrast there too
+[data-bs-theme="dark"] .form-check-input {
+  --bs-border-color: rgba(255, 255, 255, .45);
+  --bs-form-check-bg: rgba(255, 255, 255, .08);
 }
 
-.login-page {
-  background-color: #e9ecef;
-}
+h1 { font-size: 1.8rem; }
 
-.app-main {
-  background-color: #f4f6f9;
-}
+a { text-decoration: none; }
+
+.bg-info { color: #ffffff; }
+
+.content-header { padding: 15px .5rem; }
+
+.login-page { background-color: #e9ecef; }
+
+.app-main { background-color: #f4f6f9; }
 
 .error-page {
   margin: 20px auto 0;
   width: 600px;
 
-  @include media-breakpoint-down(sm) {
-    width: 100%;
-  }
+  @include media-breakpoint-down(sm) { width: 100%; }
 
-  //For the error number e.g: 404
   > .headline {
     float: left;
     font-size: 100px;
@@ -78,22 +70,17 @@ a {
     }
   }
 
-  //For the message
   > .error-content {
     display: block;
     margin-left: 190px;
 
-    @include media-breakpoint-down(sm) {
-      margin-left: 0;
-    }
+    @include media-breakpoint-down(sm) { margin-left: 0; }
 
     > h3 {
       font-size: 25px;
       font-weight: 300;
 
-      @include media-breakpoint-down(sm) {
-        text-align: center;
-      }
+      @include media-breakpoint-down(sm) { text-align: center; }
     }
   }
 }
@@ -103,22 +90,20 @@ a {
   width: auto;
 }
 
+// Navbar badges (top navbar)
 .main-header,
 .navbar {
   .nav-link {
     position: relative; // anchor for absolute badge positioning
   }
 
-  // Works with your existing markup: class="... navbar-badge"
   .navbar-badge {
     position: absolute;
-    inset-block-start: .25rem;   // top (logical)
-    inset-inline-end: .35rem;    // right (logical)
-
+    inset-block-start: .25rem;
+    inset-inline-end: .35rem;
     transform: translate(50%, -50%);
     z-index: 2;
 
-    // make it look like a small count pill
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -131,7 +116,57 @@ a {
     line-height: 1;
     border-radius: 999px;
 
-    pointer-events: none; // clicking badge still clicks the link
+    pointer-events: none;
     white-space: nowrap;
+  }
+}
+
+.app-sidebar {
+  .sidebar-brand {
+    background-color: var(--mica-brand-bg);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+
+    .brand-link {
+      background-color: transparent; // avoid needing bg-white on <a>
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+
+      width: 100%;                  // avoid needing w-100
+      padding: .75rem 1rem;
+      text-decoration: none;
+    }
+
+    .brand-image {
+      height: 32px;
+      width: auto;
+      border-radius: 50%;           // avoid needing img-circle
+      box-shadow: 0 .5rem 1rem rgba(0, 0, 0, 0.15); // avoid needing elevation-3
+      opacity: .8;                  // avoid inline opacity if you want
+    }
+
+    .brand-text {
+      color: var(--mica-brand-text);
+      font-weight: 300;             // “light” feel
+      white-space: nowrap;
+    }
+  }
+
+  .sidebar-wrapper {
+    .sidebar-menu {
+      .nav-link {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+      }
+
+      .nav-link > p {
+        margin: 0;
+      }
+
+      .nav-link .nav-icon {
+        line-height: 1;
+      }
+    }
   }
 }

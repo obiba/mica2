@@ -1,5 +1,5 @@
 <#include "navbar-menus.ftl">
-<nav class="main-header navbar navbar-expand navbar-white navbar-light">
+<nav class="main-header navbar navbar-expand" data-bs-theme="light">
   <!-- Left navbar links -->
   <ul class="navbar-nav">
     <li class="nav-item">
