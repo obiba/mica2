@@ -13,8 +13,8 @@
 
 :root {
   --bs-info: #17a2b8;
-  --bs-info-rgb: 23, 162, 184;      /* needed so .bg-info updates */
-  --bs-info-bg-subtle: #d1ecf1;      /* alerts, badges subtle */
+  --bs-info-rgb: 23, 162, 184; /* needed so .bg-info updates */
+  --bs-info-bg-subtle: #d1ecf1; /* alerts, badges subtle */
   --bs-info-border-subtle: #bee5eb;
   --bs-info-text-emphasis: #0c5460;
   --bs-tertiary-bg-rgb: 233, 236, 239;
@@ -26,38 +26,52 @@
 // Make unchecked checkboxes/radios visible (Bootstrap 5.3)
 .form-check-input {
   // stronger outline + consistent unchecked background
-  --bs-border-color: rgba(0, 0, 0, .35);
+  --bs-border-color: rgba(0, 0, 0, 0.35);
   --bs-form-check-bg: #fff;
 }
 
 .form-check-input:focus {
   // keep focus visible (optional but recommended)
-  box-shadow: 0 0 0 .2rem rgba(var(--bs-primary-rgb), .25);
+  box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
 }
 
 // If a checkbox is inside a dark theme container, boost contrast there too
 [data-bs-theme="dark"] .form-check-input {
-  --bs-border-color: rgba(255, 255, 255, .45);
-  --bs-form-check-bg: rgba(255, 255, 255, .08);
+  --bs-border-color: rgba(255, 255, 255, 0.45);
+  --bs-form-check-bg: rgba(255, 255, 255, 0.08);
 }
 
-h1 { font-size: 1.8rem; }
+h1 {
+  font-size: 1.8rem;
+}
 
-a { text-decoration: none; }
+a {
+  text-decoration: none;
+}
 
-.bg-info { color: #ffffff; }
+.bg-info {
+  color: #ffffff;
+}
 
-.content-header { padding: 15px .5rem; }
+.content-header {
+  padding: 15px 0.5rem;
+}
 
-.login-page { background-color: #e9ecef; }
+.login-page {
+  background-color: #e9ecef;
+}
 
-.app-main { background-color: #f4f6f9; }
+.app-main {
+  background-color: #f4f6f9;
+}
 
 .error-page {
   margin: 20px auto 0;
   width: 600px;
 
-  @include media-breakpoint-down(sm) { width: 100%; }
+  @include media-breakpoint-down(sm) {
+    width: 100%;
+  }
 
   > .headline {
     float: left;
@@ -74,13 +88,17 @@ a { text-decoration: none; }
     display: block;
     margin-left: 190px;
 
-    @include media-breakpoint-down(sm) { margin-left: 0; }
+    @include media-breakpoint-down(sm) {
+      margin-left: 0;
+    }
 
     > h3 {
       font-size: 25px;
       font-weight: 300;
 
-      @include media-breakpoint-down(sm) { text-align: center; }
+      @include media-breakpoint-down(sm) {
+        text-align: center;
+      }
     }
   }
 }
@@ -99,8 +117,8 @@ a { text-decoration: none; }
 
   .navbar-badge {
     position: absolute;
-    inset-block-start: .25rem;
-    inset-inline-end: .35rem;
+    inset-block-start: 0.25rem;
+    inset-inline-end: 0.35rem;
     transform: translate(50%, -50%);
     z-index: 2;
 
@@ -110,9 +128,9 @@ a { text-decoration: none; }
 
     min-width: 1.25rem;
     height: 1.25rem;
-    padding: 0 .35rem;
+    padding: 0 0.35rem;
 
-    font-size: .70rem;
+    font-size: 0.7rem;
     line-height: 1;
     border-radius: 999px;
 
@@ -130,24 +148,24 @@ a { text-decoration: none; }
       background-color: transparent; // avoid needing bg-white on <a>
       display: flex;
       align-items: center;
-      gap: .5rem;
+      gap: 0.5rem;
 
-      width: 100%;                  // avoid needing w-100
-      padding: .75rem 1rem;
+      width: 100%; // avoid needing w-100
+      padding: 0.75rem 1rem;
       text-decoration: none;
     }
 
     .brand-image {
       height: 32px;
       width: auto;
-      border-radius: 50%;           // avoid needing img-circle
-      box-shadow: 0 .5rem 1rem rgba(0, 0, 0, 0.15); // avoid needing elevation-3
-      opacity: .8;                  // avoid inline opacity if you want
+      border-radius: 50%; // avoid needing img-circle
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); // avoid needing elevation-3
+      opacity: 0.8; // avoid inline opacity if you want
     }
 
     .brand-text {
       color: var(--mica-brand-text);
-      font-weight: 300;             // “light” feel
+      font-weight: 300; // “light” feel
       white-space: nowrap;
     }
   }
@@ -157,7 +175,7 @@ a { text-decoration: none; }
       .nav-link {
         display: flex;
         align-items: center;
-        gap: .5rem;
+        gap: 0.5rem;
       }
 
       .nav-link > p {
@@ -169,4 +187,40 @@ a { text-decoration: none; }
       }
     }
   }
+}
+
+.callout {
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  border-left: 0.35rem solid transparent;
+  border-radius: 0.25rem;
+  padding: 1rem;
+
+  // avoid any “washed out” effect from inherited styles
+  opacity: 1;
+}
+
+// Left-border colors (match Bootstrap theme colors)
+.callout-info {
+  border-left-color: var(--bs-info);
+}
+.callout-success {
+  border-left-color: var(--bs-success);
+}
+.callout-warning {
+  border-left-color: var(--bs-warning);
+}
+.callout-danger {
+  border-left-color: var(--bs-danger);
+}
+.callout-primary {
+  border-left-color: var(--bs-primary);
+}
+.callout-secondary {
+  border-left-color: var(--bs-secondary);
+}
+
+
+.pagination {
+  --bs-pagination-border-radius: 0;
 }

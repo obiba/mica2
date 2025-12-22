@@ -72,9 +72,9 @@
         <div id="search-portal-callout" class="callout callout-info">
         <div class="row">
           <div class="col-sm-10">
-            <p class="text-justify">
+            <span class="text-justify">
               <@message "search-portal-callout"/>
-            </p>
+            </span>
           </div><!-- /.col -->
           <div class="col-sm-2">
             <div class="text-end">
@@ -89,12 +89,12 @@
   </#if>
 
   <#if config.dataAccessEnabled>
-    <div id="data-access-process-portal-callout" class="callout callout-info">
+    <div id="data-access-process-portal-callout" class="callout callout-info mt-3">
       <div class="row">
         <div class="col-sm-8">
-          <p class="text-justify">
+          <span class="text-justify">
             <@message "data-access-process-portal-callout"/>
-          </p>
+          </span>
         </div><!-- /.col -->
         <div class="col-sm-4">
           <div class="text-end">
