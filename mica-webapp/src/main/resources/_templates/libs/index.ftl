@@ -8,7 +8,7 @@
       <h3 id="network-hits">-</h3>
       <p><@message "networks"/></p>
     </div>
-    <div class="icon">
+    <div class="icon position-absolute top-0 end-0 pt-2 pe-3 opacity-25">
       <i class="${networkIcon}"></i>
     </div>
     <a href="${networksLink}" class="small-box-footer"><@message "more-info"/> <i class="fa-solid fa-arrow-circle-right"></i></a>
@@ -23,7 +23,7 @@
       <h3 id="study-hits">-</h3>
       <p><@message "global.individual-studies"/></p>
     </div>
-    <div class="icon">
+    <div class="icon position-absolute top-0 end-0 pt-2 pe-3 opacity-25">
       <i class="${studyIcon}"></i>
     </div>
     <a href="${studiesLink}" class="small-box-footer"><@message "more-info"/> <i class="fa-solid fa-arrow-circle-right"></i></a>
@@ -38,7 +38,7 @@
       <h3 id="initiative-hits">-</h3>
       <p><@message "harmonization-studies"/></p>
     </div>
-    <div class="icon">
+    <div class="icon position-absolute top-0 end-0 pt-2 pe-3 opacity-25">
       <i class="${initiativeIcon}"></i>
     </div>
     <a href="${initiativesLink}" class="small-box-footer"><@message "more-info"/> <i class="fa-solid fa-arrow-circle-right"></i></a>
@@ -53,7 +53,7 @@
       <h3 id="dataset-hits">-</h3>
       <p><@message "collected-datasets"/></p>
     </div>
-    <div class="icon">
+    <div class="icon position-absolute top-0 end-0 pt-2 pe-3 opacity-25">
       <i class="${datasetIcon}"></i>
     </div>
     <a href="${datasetsLink}" class="small-box-footer"><@message "more-info"/> <i class="fa-solid fa-arrow-circle-right"></i></a>
@@ -68,7 +68,7 @@
       <h3 id="protocols-hits">-</h3>
       <p><@message "harmonized-datasets"/></p>
     </div>
-    <div class="icon">
+    <div class="icon position-absolute top-0 end-0 pt-2 pe-3 opacity-25">
       <i class="${harmoDatasetIcon}"></i>
     </div>
     <a href="${protocolsLink}" class="small-box-footer"><@message "more-info"/> <i class="fa-solid fa-arrow-circle-right"></i></a>
@@ -83,7 +83,7 @@
       <h3 id="variable-hits">-</h3>
       <p><@message "variables"/></p>
     </div>
-    <div class="icon">
+    <div class="icon position-absolute top-0 end-0 pt-2 pe-3 opacity-25">
       <i class="${variableIcon}"></i>
     </div>
     <a href="${contextPath}/search#lists?type=variables" class="small-box-footer"><@message "more-info"/> <i class="fa-solid fa-arrow-circle-right"></i></a>
