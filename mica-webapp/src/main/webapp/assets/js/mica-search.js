@@ -255,7 +255,7 @@ Vue.component('study-filter-shortcut', {
   mounted() {
     EventBus.register(EVENTS.LOCATION_CHANGED, this.onLocationChanged.bind(this));
   },
-  beforeDestroy() {
+  beforeUnmount() {
     EventBus.unregister(EVENTS.LOCATION_CHANGED, this.onLocationChanged);
   }
 });
@@ -514,8 +514,8 @@ class TableFixedHeaderUtility {
   }
 
   class MicaQueryChangeListener {
-    constructor() {
-      this.loading = true;
+    constructor(loading) {
+      this.loading = loading;
 
       EventBus.register(EVENTS.QUERY_TYPE_SELECTION, this.__onQueryExecute.bind(this));
       EventBus.register(EVENTS.QUERY_TYPE_UPDATE, this.__onQueryExecute.bind(this));
@@ -534,11 +534,11 @@ class TableFixedHeaderUtility {
     }
 
     __onQueryExecute() {
-      this.loading = true;
+      this.loading.state = true;
     }
 
     __onQueryResult() {
-      this.loading = false;
+      this.loading.state = false;
     }
   }
 
@@ -589,7 +589,8 @@ class TableFixedHeaderUtility {
     el: '#search-application',
     data() {
       return {
-        queryChangeListener: new MicaQueryChangeListener(),
+        loading: { state: true },
+        queryChangeListener: null,
         taxonomies: {},
         targets: [],
         display: DISPLAYS.LISTS,
@@ -1306,9 +1307,6 @@ class TableFixedHeaderUtility {
       }
     },
     computed: {
-      loading() {
-        return this.queryChangeListener.loading;
-      },
       selectedQuery() {
         if (this.selectedTarget) {
           return this.queries[this.selectedTarget];
@@ -1340,6 +1338,9 @@ class TableFixedHeaderUtility {
       EventBus.register("networks-results", this.onResult.bind(this));
       EventBus.register('coverage-results', this.onCoverageResult.bind(this));
       EventBus.register(EVENTS.QUERY_TYPE_GRAPHICS_RESULTS, this.onGraphicsResult.bind(this));
+    },
+    created() {
+      this.queryChangeListener = new MicaQueryChangeListener(this.loading);
     },
     mounted() {
       console.debug('Mounted QueryBuilder');
@@ -1458,8 +1459,8 @@ class TableFixedHeaderUtility {
         this.coverageFixedHeaderHandler = TableFixedHeaderUtility.applyTo(coverageResultTableElement, $("#menubar").outerHeight() + $("#loginbar").outerHeight());
       }
     },
-    beforeDestroy() {
-      console.debug('Before destroy query builder');
+    beforeUnmount() {
+      console.debug('Before unmount query builder');
       EventBus.unregister(EVENTS.LOCATION_CHANGED, this.onLocationChanged);
       EventBus.unregister('taxonomy-selection', this.onTaxonomySelection);
       EventBus.unregister(EVENTS.QUERY_TYPE_SELECTION, this.onQueryTypeSelection);

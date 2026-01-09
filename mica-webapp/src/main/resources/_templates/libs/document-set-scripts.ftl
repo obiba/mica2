@@ -1,7 +1,15 @@
 <!-- Script for the cart and the documents list pages -->
 <script src="${assetsPath}/js/mica-tables.js"></script>
 
-<script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>
+<script src="${assetsPath}/libs/node_modules/@vue/compat/dist/vue.global.js"></script>
+<script>
+  // Configure Vue 3 compat mode to allow Vue 2 APIs
+  if (Vue && Vue.configureCompat) {
+    Vue.configureCompat({
+      MODE: 2  // Use Vue 2 compatibility mode
+    });
+  }
+</script>
 <script src="${assetsPath}/libs/node_modules/rql/dist/rql.js"></script>
 <script src="${assetsPath}/js/vue-mica-search/libs/result-parsers.js"></script>
 <script src="${assetsPath}/js/vue-mica-search/result.js"></script>
@@ -652,7 +660,7 @@
             this.doQuery(setType);
           }));
       },
-      beforeDestroy() {
+      beforeUnmount() {
         EventBus.unregister("variables-results", this.onResult.bind(this));
         EventBus.unregister("studies-results", this.onResult.bind(this));
         EventBus.unregister("networks-results", this.onResult.bind(this));

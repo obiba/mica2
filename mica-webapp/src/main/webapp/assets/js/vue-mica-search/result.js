@@ -239,7 +239,7 @@ const EntityResult = {
     this.getEventBus().register(`${this.type}-results`,this.onResults.bind(this));
     this.getEventBus().register("clear-results-selections", this.clearSelections.bind(this));
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.dataTable = null;
     this.getEventBus().unregister(`${this.type}-results`, this.onResults);
     this.getEventBus().unregister("clear-results-selections", this.clearSelections);
@@ -484,7 +484,7 @@ const GraphicsResult = {
     console.debug(`Prop ${this.options} AGGS ${this.aggs}`);
     this.getEventBus().register('query-type-graphics-results',this.onResults.bind(this));
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.getEventBus().unregister('query-type-graphics-results', this.onResults);
   }
 };
@@ -1051,7 +1051,7 @@ const RowPopup = {
       this.content = this.typeSelection && this.typeSelection.harmonization ? [content[0]] : content;
       this.headers = this.typeSelection && this.typeSelection.harmonization ? this.headersMap['harmonization'] : this.headersMap[model.field].slice(0);
     },
-    beforeDestroy() {
+    beforeUnmount() {
       clearTimeout(this.timeoutId);
       this.container.removeEventListener("scroll", this.scrollHandler);
       window.removeEventListener("mousemove", this.mouseMoveHandler);
@@ -1350,7 +1350,7 @@ const CoverageResult = {
     console.debug('Mounted CoverageResult');
     this.getEventBus().register('coverage-results',this.onResults.bind(this));
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.dataTable = null;
     this.getEventBus().unregister('coverage-results', this.onResults);
   }
