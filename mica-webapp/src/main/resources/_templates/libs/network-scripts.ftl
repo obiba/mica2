@@ -1,12 +1,29 @@
 <!-- ChartJS -->
-<script src="${adminLTEPath}/plugins/chart.js/Chart.min.js"></script>
+<script src="${assetsPath}/libs/node_modules/chart.js/dist/chart.umd.js"></script>
 <script src="${assetsPath}/js/mica-charts.js"></script>
 <!-- Select2 -->
-<script src="${adminLTEPath}/plugins/select2/js/select2.js"></script>
-<script src="${adminLTEPath}/plugins/select2/js/i18n/${.lang}.js"></script>
+<script src="${assetsPath}/libs/node_modules/select2/dist/js/select2.full.js"></script>
+<script src="${assetsPath}/libs/node_modules/select2/dist/js/i18n/${.lang}.js"></script>
 
 <!-- Files -->
-<script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>
+<script src="${assetsPath}/libs/node_modules/@vue/compat/dist/vue.global.js"></script>
+<script>
+  // Configure Vue 3 compat mode to allow Vue 2 APIs
+  if (Vue && Vue.configureCompat) {
+    Vue.configureCompat({
+      MODE: 2  // Use Vue 2 compatibility mode
+    });
+  }
+  
+  // Global translate filter for compatibility with existing components
+  // This will be removed once all components are migrated
+  if (Vue && Vue.filter) {
+    Vue.filter("translate", (key) => {
+      let value = Mica.tr[key];
+      return typeof value === "string" ? value : key;
+    });
+  }
+</script>
 <script src="${assetsPath}/js/mica-files.js"></script>
 
 <!-- Repository -->
@@ -93,11 +110,7 @@
       topo: data
     });
 
-  // global translate filter for use in imported components
-  Vue.filter("translate", (key) => {
-    let value = Mica.tr[key];
-    return typeof value === "string" ? value : key;
-  });
+  // Note: translate filter converted to component method in Vue 3
 
   class ChartTableTermSorters {
     initialize(taxonomy) {
@@ -265,8 +278,9 @@
         const studyTaxonomy = (responses[0].data||[]).pop();
         chartTableTermSorters.initialize(studyTaxonomy);
 
-        new Vue({
-          el: '#summary-statistics',
+        const { createApp } = Vue;
+
+        const app = createApp({
           data() {
             return {
               hasGraphicsResult: false,
@@ -275,6 +289,10 @@
             };
           },
           methods: {
+            translate(key) {
+              let value = Mica.tr[key];
+              return typeof value === "string" ? value : key;
+            },
             onGraphicsResult(payload) {
               this.hasGraphicsResult = payload.response.studyResultDto.totalHits > 0;
               if (!this.hasGraphicsResult) {
@@ -307,10 +325,12 @@
           beforeMount() {
             EventBus.register('query-type-graphics-results', this.onGraphicsResult.bind(this));
           },
-          beforeDestroy() {
+          beforeUnmount() {
             EventBus.unregister('query-type-graphics-results', this.onGraphicsResult);
           }
         });
+
+        app.mount('#summary-statistics');
 
         return responses[1].data;
       }))

@@ -7,7 +7,7 @@
   <#include "libs/head.ftl">
   <title>${config.name!""} | <@message "search"/></title>
 </head>
-<body id="search-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
+<body id="search-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed sidebar-expand-lg">
 <!-- Site wrapper -->
 <div id="search-application" class="app-wrapper" :class="{'harmoMode': currentStudyTypeSelection && currentStudyTypeSelection.harmonization}" v-cloak>
 
@@ -292,14 +292,14 @@
                   <div class="mt-3">
                     <div class="tab-content" id="results-tabContent">
 
-                      <div v-show="loading" class="spinner-border spinner-border-sm" role="status"></div>
+                      <div v-show="loading.state" class="spinner-border spinner-border-sm" role="status"></div>
 
                       <#if searchVariableListDisplay>
                         <div class="tab-pane fade show active" v-if="showVariableAndDatasetTabsInIndividualMode" id="variables" role="tabpanel" aria-labelledby="variables-tab">
                           <p class="text-muted"><@message "results-list-of-variables-text"/></p>
                           <div id="list-variables">
-                            <div class="mt-3 text-muted" v-show="!loading && !hasListResult">{{ "no-variable-found" | translate }}</div>
-                            <variables-result v-show="!loading && hasListResult"></variables-result>
+                            <div class="mt-3 text-muted" v-show="!loading.state && !hasListResult">{{ "no-variable-found" | translate }}</div>
+                            <variables-result v-show="!loading.state && hasListResult"></variables-result>
                           </div>
                         </div>
                       </#if>
@@ -307,8 +307,8 @@
                         <div class="tab-pane fade" v-if="showVariableAndDatasetTabsInIndividualMode" id="datasets" role="tabpanel" aria-labelledby="datasets-tab">
                           <p class="text-muted"><@message "results-list-of-datasets-text"/></p>
                           <div id="list-datasets">
-                            <div class="mt-3 text-muted" v-show="!loading && !hasListResult">{{ "no-dataset-found" | translate }}</div>
-                            <datasets-result v-show="!loading && hasListResult"></datasets-result>
+                            <div class="mt-3 text-muted" v-show="!loading.state && !hasListResult">{{ "no-dataset-found" | translate }}</div>
+                            <datasets-result v-show="!loading.state && hasListResult"></datasets-result>
                           </div>
                         </div>
                       </#if>
@@ -316,8 +316,8 @@
                         <div class="tab-pane fade" id="studies" role="tabpanel" aria-labelledby="studies-tab">
                           <p class="text-muted"><@message "results-list-of-studies-text"/></p>
                           <div id="list-studies">
-                            <div class="mt-3 text-muted" v-show="!loading && !hasListResult">{{ "no-study-found" | translate }}</div>
-                            <studies-result v-show="!loading && hasListResult" :show-checkboxes="studyHasCheckboxes"></studies-result>
+                            <div class="mt-3 text-muted" v-show="!loading.state && !hasListResult">{{ "no-study-found" | translate }}</div>
+                            <studies-result v-show="!loading.state && hasListResult" :show-checkboxes="studyHasCheckboxes"></studies-result>
                           </div>
                         </div>
                       </#if>
@@ -325,8 +325,8 @@
                         <div class="tab-pane fade" id="networks" role="tabpanel" aria-labelledby="networks-tab">
                           <p class="text-muted"><@message "results-list-of-networks-text"/></p>
                           <div id="list-networks">
-                            <div class="mt-3 text-muted" v-show="!loading && !hasListResult">{{ "no-network-found" | translate }}</div>
-                            <networks-result v-show="!loading && hasListResult" :show-checkboxes="networkHasCheckboxes"></networks-result>
+                            <div class="mt-3 text-muted" v-show="!loading.state && !hasListResult">{{ "no-network-found" | translate }}</div>
+                            <networks-result v-show="!loading.state && hasListResult" :show-checkboxes="networkHasCheckboxes"></networks-result>
                           </div>
                         </div>
                       </#if>
@@ -395,9 +395,9 @@
                           </ul>
                         </div>
 
-                        <div v-show="loading" class="spinner-border spinner-border-sm mt-3" role="status"></div>
-                        <div class="mt-3 text-muted" v-show="!loading && !hasCoverageResult">{{ "no-coverage-available" | translate }}</div>
-                        <coverage-result v-show="!loading && hasCoverageResult" class="mt-2"></coverage-result>
+                        <div v-show="loading.state" class="spinner-border spinner-border-sm mt-3" role="status"></div>
+                        <div class="mt-3 text-muted" v-show="!loading.state && !hasCoverageResult">{{ "no-coverage-available" | translate }}</div>
+                        <coverage-result v-show="!loading.state && hasCoverageResult" class="mt-2"></coverage-result>
                       </div>
                     </div>
 
@@ -411,9 +411,9 @@
                       <@message "results-graphics-text"/>
                     </p>
                     <div id="graphics">
-                      <div v-show="loading" class="spinner-border spinner-border-sm" role="status"></div>
-                      <div class="mt-3 text-muted" v-show="!loading && !hasGraphicsResult">{{ "no-graphics-result" | translate }}</div>
-                      <graphics-result v-show="!loading && hasGraphicsResult" v-bind:chart-options="chartOptions" :taxonomy="taxonomies['Mica_study']"></graphics-result>
+                      <div v-show="loading.state" class="spinner-border spinner-border-sm" role="status"></div>
+                      <div class="mt-3 text-muted" v-show="!loading.state && !hasGraphicsResult">{{ "no-graphics-result" | translate }}</div>
+                      <graphics-result v-show="!loading.state && hasGraphicsResult" v-bind:chart-options="chartOptions" :taxonomy="taxonomies['Mica_study']"></graphics-result>
                     </div>
                   </div>
                 </#if>
