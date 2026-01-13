@@ -9,29 +9,31 @@
 </head>
 <body id="list-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
 <!-- Site wrapper -->
-<div class="app-wrapper d-flex flex-column min-vh-100">
+<div class="app-wrapper">
   <!-- Navbar -->
   <#include "libs/aside-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Main Sidebar Container -->
-  <aside class="main-sidebar sidebar-dark-primary">
+  <aside class="app-sidebar bg-body-secondary" data-bs-theme="dark">
     <!-- Brand Logo -->
-    <a href="${portalLink}" class="brand-link bg-white">
+    <div class="sidebar-brand">
+      <a href="${portalLink}" class="brand-link">
       <img src="${brandImageSrc}"
            alt="Logo"
            class="brand-image ${brandImageClass}"
            style="opacity: .8">
-      <span class="brand-text ${brandTextClass}">
-        <#if brandTextEnabled>
-          ${config.name!""}
-        <#else>&nbsp;
-        </#if>
-      </span>
-    </a>
+        <span class="brand-text ${brandTextClass}">
+          <#if brandTextEnabled>
+            ${config.name!""}
+          <#else>&nbsp;
+          </#if>
+        </span>
+      </a>
+    </div>
 
     <!-- Sidebar -->
-    <div class="sidebar">
+    <div class="sidebar-wrapper">
       <!-- Sidebar user (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="info">
@@ -46,22 +48,20 @@
             <#list sets.variablesLists as variableList>
               <#assign variableListActiveClass = (variableList.id == set.id)?then("active", "") />
               <li class="nav-item">
-                <a class="nav-link ${variableListActiveClass}" href="${contextPath}/list/${variableList.id}">
+                <a class="nav-link ${variableListActiveClass} d-flex align-items-center" href="${contextPath}/list/${variableList.id}">
                   <i class="fa-regular fa-circle nav-icon"></i>
-                  <p>
+                  <p class="mb-0">
                     <span title="${listName(variableList)} <#if variableList.name?starts_with("dar:")>[<@message "data-access-request"/>]</#if>">
                         ${listName(variableList)?truncate_c(20, "...")}
                     </span>
                     <#if variableList.name?starts_with("dar:")>
                       <i class="fa-solid fa-link ms-2"></i>
-                    <#else>
-                      <span></span>
                     </#if>
                     <#if variableList.locked>
                       <i class="fa-solid fa-lock ms-2"></i>
                     </#if>
-                    <span class="badge badge text-bg-light right">${variableList.identifiers?size}</span>
                   </p>
+                  <span class="badge badge text-bg-light ms-auto">${variableList.identifiers?size}</span>
                 </a>
               </li>
             </#list>
@@ -76,7 +76,7 @@
       </nav>
       <!-- /.sidebar-menu -->
     </div>
-    <!-- /.sidebar -->
+    <!-- /.sidebar-wrapper -->
   </aside>
 
   <!-- Control Sidebar -->
@@ -86,9 +86,9 @@
   <!-- /.control-sidebar -->
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper" id="query-vue-container">
+  <div class="app-main flex-fill" id="query-vue-container">
     <!-- Content Header (Page header) -->
-    <div class="content-header bg-info mb-4">
+    <section class="content-header bg-info mb-4">
       <div class="container-fluid">
         <div class="row">
           <div class="col-sm-12">
@@ -107,7 +107,7 @@
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
-    </div>
+    </section>
     <!-- /.content-header -->
 
     <!-- Confirm delete modal -->
@@ -164,7 +164,7 @@
     <!-- /.modal -->
 
     <!-- Main content -->
-    <div class="content">
+    <section class="content">
       <div class="container-fluid">
 
         <#if set.name?starts_with("dar:")>
@@ -268,10 +268,10 @@
         </div>
 
       </div><!-- /.container-fluid -->
-    </div>
+    </section>
     <!-- /.content -->
   </div>
-  <!-- /.content-wrapper -->
+  <!-- /.app-main -->
 
   <#include "libs/footer.ftl">
 </div>
