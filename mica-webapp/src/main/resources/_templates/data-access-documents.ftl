@@ -6,7 +6,7 @@
 </head>
 <body id="data-access-documents-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
 <!-- Site wrapper -->
-<div class="app-wrapper d-flex flex-column min-vh-100">
+<div class="app-wrapper">
 
   <!-- Navbar -->
   <#include "libs/aside-navbar.ftl">
@@ -36,6 +36,7 @@
 
     <!-- Main content -->
     <section class="content">
+      <div class="container-fluid">
 
       <#if dar.archived>
         <div class="ribbon-wrapper ribbon-xl">
@@ -116,6 +117,7 @@
       </div>
       <!-- /.row -->
 
+      </div><!-- /.container-fluid -->
     </section>
     <!-- /.content -->
   </div>

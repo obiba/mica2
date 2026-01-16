@@ -165,7 +165,7 @@ a {
 
     .brand-text {
       color: var(--mica-brand-text);
-      font-weight: 300; // “light” feel
+      font-weight: 300; // "light" feel
       white-space: nowrap;
     }
   }
@@ -195,8 +195,9 @@ a {
   border-left: 0.35rem solid transparent;
   border-radius: 0.25rem;
   padding: 1rem;
+  margin-bottom: 1rem;
 
-  // avoid any “washed out” effect from inherited styles
+  // avoid any "washed out" effect from inherited styles
   opacity: 1;
 }
 
@@ -220,7 +221,33 @@ a {
   border-left-color: var(--bs-secondary);
 }
 
+.card {
+  margin-bottom: 1rem;
+}
 
 .pagination {
   --bs-pagination-border-radius: 0;
+}
+
+// ========================================================================
+// Additional Background Colors (for timeline and other components)
+// ========================================================================
+.bg-blue {
+  background-color: #007bff !important;
+  color: #fff;
+}
+
+.bg-green {
+  background-color: #28a745 !important;
+  color: #fff;
+}
+
+.bg-red {
+  background-color: #dc3545 !important;
+  color: #fff;
+}
+
+.bg-gray {
+  background-color: #6c757d !important;
+  color: #fff;
 }

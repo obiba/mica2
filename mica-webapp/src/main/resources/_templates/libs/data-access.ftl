@@ -34,7 +34,9 @@
     <!-- /.timeline-label -->
     <!-- timeline item -->
     <div>
-      <i class="fa-solid fa-info <#if isPast(reportTimeline.startDate)>bg-secondary<#else>bg-blue</#if>"></i>
+      <div class="timeline-icon <#if isPast(reportTimeline.startDate)>bg-secondary<#else>bg-blue</#if>">
+        <i class="fa-solid fa-info"></i>
+      </div>
       <div class="timeline-item">
         <div class="timeline-body">
 
@@ -65,10 +67,12 @@
 
         <!-- timeline item -->
         <div>
-          <i class="fa-solid fa-file <#if isPast(date)>bg-secondary<#else>bg-blue</#if>"></i>
+          <div class="timeline-icon <#if isPast(date)>bg-secondary<#else>bg-blue</#if>">
+            <i class="fa-solid fa-file"></i>
+          </div>
           <div class="timeline-item">
             <div class="timeline-body">
-              <span class="badge badge text-bg-info">${date?counter}</span>
+              <span class="badge bg-info">${date?counter}</span>
               <#if isDAO || isAdministrator>
                 <span><@message "intermediate-date-dao-text"/></span>
               <#else>
@@ -88,7 +92,9 @@
     <!-- /.timeline-label -->
     <!-- timeline item -->
     <div>
-      <i class="fa-solid fa-book <#if isPast(reportTimeline.endDate)>bg-secondary<#else>bg-blue</#if>"></i>
+      <div class="timeline-icon <#if isPast(reportTimeline.endDate)>bg-secondary<#else>bg-blue</#if>">
+        <i class="fa-solid fa-book"></i>
+      </div>
       <div class="timeline-item">
         <div class="timeline-body">
 
@@ -103,7 +109,9 @@
     <!-- END timeline item -->
 
     <div>
-      <i class="fa-solid fa-circle bg-gray"></i>
+      <div class="timeline-icon bg-gray">
+        <i class="fa-solid fa-circle"></i>
+      </div>
     </div>
   </div>
   <!-- END Timeline -->

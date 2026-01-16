@@ -21,9 +21,13 @@
           <#if item.isCommentItem()>
             <#assign comment = item.comment/>
             <#if item.author == "administrator" || authors[item.author].groups?? && (authors[item.author].groups?seq_contains("mica-administrator") || authors[item.author].groups?seq_contains("mica-data-access-officer"))>
-              <i class="fa-solid fa-user-shield bg-warning"></i>
+              <div class="timeline-icon bg-warning">
+                <i class="fa-solid fa-user-shield"></i>
+              </div>
             <#else>
-              <i class="fa-solid fa-user bg-blue"></i>
+              <div class="timeline-icon bg-blue">
+                <i class="fa-solid fa-user"></i>
+              </div>
             </#if>
 
             <div class="timeline-item timeline-comment-item">
@@ -40,7 +44,9 @@
             </div>
           <#elseif item.isEventItem()>
             <#assign event = item.event/>
-            <i class="fa-solid fa-bolt bg-${statusColor(event.status.toString())}"></i>
+            <div class="timeline-icon bg-${statusColor(event.status.toString())}">
+              <i class="fa-solid fa-bolt"></i>
+            </div>
 
             <div class="timeline-item timeline-event-item">
               <span class="time"><i class="fa-solid fa-clock"></i> <span
@@ -73,7 +79,9 @@
     </#list>
 
     <div>
-      <i class="fa-solid fa-clock bg-gray"></i>
+      <div class="timeline-icon bg-gray">
+        <i class="fa-solid fa-clock"></i>
+      </div>
         <#if !items?? || items?size == 0>
           <span class="timeline-block"><@message "no-comments"/></span>
         </#if>
