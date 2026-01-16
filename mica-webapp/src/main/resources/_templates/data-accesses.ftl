@@ -52,12 +52,12 @@
               <ul class="nav nav-tabs" id="tabs-tab" role="tablist">
                 <li class="nav-item">
                   <a class="nav-link active" id="tabs-dars-tab" data-bs-toggle="pill" href="#tabs-dars" role="tab" aria-controls="tabs-dars" aria-selected="true">
-                    <@message "data-access-requests"/> <span class="badge badge text-bg-info">${dars?size}</span>
+                    <@message "data-access-requests"/> <span class="badge bg-info">${dars?size}</span>
                   </a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" id="tabs-users-tab" data-bs-toggle="pill" href="#tabs-users" role="tab" aria-controls="tabs-users" aria-selected="false">
-                    <@message "registered-users"/> <span class="badge badge text-bg-info">${users?size}</span>
+                    <@message "registered-users"/> <span class="badge bg-info">${users?size}</span>
                   </a>
                 </li>
               </ul>
@@ -169,7 +169,7 @@
                             </td>
                             <td>
                               <#list profile.groups as group>
-                                <span class="badge badge text-bg-info">${group}</span>
+                                <span class="badge bg-info">${group}</span>
                               </#list>
                             </td>
                             <td data-sort="${profile.attributes["createdDate"].toString()}" class="moment-datetime">${profile.attributes["createdDate"].toString()}</td>
