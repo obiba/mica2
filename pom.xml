@@ -39,7 +39,7 @@
     <maven.compiler.target>21</maven.compiler.target>
     <maven.compiler.source>21</maven.compiler.source>
 
-    <assertj-core.version>3.8.0</assertj-core.version>
+    <assertj-core.version>3.27.7</assertj-core.version>
     <awaitility.version>4.2.1</awaitility.version>
     <carrotsearch.version>0.7.1</carrotsearch.version>
     <dropwizard-metrics.version>4.2.23</dropwizard-metrics.version>
