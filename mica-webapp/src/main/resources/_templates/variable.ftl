@@ -243,7 +243,7 @@
                 <div class="card-header">
                   <h3 class="card-title"><@message "harmonization"/>
                   <#if harmoAnnotations.hasStatus()>
-                    <span class=" badge badge-${harmoAnnotations.statusClass}">
+                    <span class="badge text-bg-${harmoAnnotations.statusClass}">
                       ${localize(harmoAnnotations.statusValueTitle, harmoAnnotations.statusValue!"-")}
                     </span>
                   </#if>
