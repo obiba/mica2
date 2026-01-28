@@ -1415,7 +1415,8 @@ class SetService {
     }
     let count = Carts.map(c => c.count).reduce((prev, curr) => prev + curr, 0);
     $(elem).text(count > 0 ? (count > 50 ? '50+' : count) : '')
-      .attr('title', count > 50 ? count.toLocaleString(lang) : '');
+      .attr('title', count > 50 ? count.toLocaleString(lang) : '')
+      .toggle(count > 0);
   }
 
   /**

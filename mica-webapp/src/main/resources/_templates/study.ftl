@@ -275,6 +275,7 @@
 
         <!-- Variables classifications -->
         <#if studyVariablesClassificationsTaxonomies?? && studyVariablesClassificationsTaxonomies?size gt 0>
+            <span>TEST</span>
           <@variablesClassifications study=study/>
         </#if>
 

@@ -4,7 +4,24 @@
 <script src="${assetsPath}/libs/node_modules/plotly.js-dist-min/plotly.min.js"></script>
 
 <!-- Files -->
-<script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>
+<script src="${assetsPath}/libs/node_modules/@vue/compat/dist/vue.global.js"></script>
+<script>
+  // Configure Vue 3 compat mode to allow Vue 2 APIs
+  if (Vue && Vue.configureCompat) {
+    Vue.configureCompat({
+      MODE: 2  // Use Vue 2 compatibility mode
+    });
+  }
+  
+  // Global translate filter for compatibility with existing components
+  // This will be removed once all components are migrated
+  if (Vue && Vue.filter) {
+    Vue.filter("translate", (key) => {
+      let value = Mica.tr[key];
+      return typeof value === "string" ? value : key;
+    });
+  }
+</script>
 <script src="${assetsPath}/js/mica-files.js"></script>
 
 <!-- Repository -->
