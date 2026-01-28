@@ -61,7 +61,7 @@
                       <i class="fa-solid fa-lock ms-2"></i>
                     </#if>
                   </p>
-                  <span class="badge badge text-bg-light ms-auto">${variableList.identifiers?size}</span>
+                  <span class="badge text-bg-light ms-auto">${variableList.identifiers?size}</span>
                 </a>
               </li>
             </#list>
@@ -227,7 +227,7 @@
               </#if>
               <#if !set.locked || isAdministrator>
                 <button id="delete-all" type="button" class="btn btn-danger ms-2" data-bs-toggle="modal" data-bs-target="#modal-delete">
-                  <i class="fa-solid fa-trash"></i> <@message "delete"/> <span class="badge badge text-bg-light selection-count"></span>
+                  <i class="fa-solid fa-trash"></i> <@message "delete"/> <span class="badge text-bg-light selection-count"></span>
                 </button>
               </#if>
             </div>

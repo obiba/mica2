@@ -358,7 +358,7 @@
                       <a class="btn btn-info" href="${contextPath}/list/${amendment.variablesSet.id}">
                         <i class="fa-regular fa-list-alt"></i>
                         <span><@message "list-linked-variables"/></span>
-                        <span class="badge badge text-bg-light">${amendment.variablesSet.identifiers?size}</span>
+                        <span class="badge text-bg-light">${amendment.variablesSet.identifiers?size}</span>
                       </a>
                       <#if amendmentPermissions?seq_contains("EDIT")>
                         <a class="ms-3" href="javascript:void(0)" onclick="DataAccessService.unlinkVariables('${amendment.parentId}', 'amendment', '${amendment.id}')">

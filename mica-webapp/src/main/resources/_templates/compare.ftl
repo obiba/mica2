@@ -78,7 +78,7 @@
                       <li class="nav-item">
                         <a id="individual-studies-tab" class="nav-link active" href="#tab_individual_studies" data-bs-toggle="tab">
                             <@message "individual"/>
-                          <span class="badge badge text-bg-light">${individualStudies?size}</span>
+                          <span class="badge text-bg-light">${individualStudies?size}</span>
                         </a>
                       </li>
                     </#if>
@@ -86,7 +86,7 @@
                       <li class="nav-item">
                         <a id="harmonization-studies-tab" class="nav-link" href="#tab_harmonization_studies" data-bs-toggle="tab">
                             <@message "harmonization"/>
-                          <span class="badge badge text-bg-light">${harmonizationStudies?size}</span>
+                          <span class="badge text-bg-light">${harmonizationStudies?size}</span>
                         </a>
                       </li>
                     </#if>

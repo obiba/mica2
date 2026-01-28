@@ -45,7 +45,7 @@
       <div class="card-header pe-2">
         <button type="button" class="${'btn w-100 text-navy text-start ps-0 ' + collapsedClass}"
                 data-bs-toggle="collapse"
-                data-bs-target="#${taxonomy}">${taxonomyLocalized} <span class="badge badge text-bg-light"><@itemCount item=taxonomyItem/></span></button>
+                data-bs-target="#${taxonomy}">${taxonomyLocalized} <span class="badge text-bg-light"><@itemCount item=taxonomyItem/></span></button>
       </div>
       <div id="${taxonomy}" class="${'collapse ' + showClass}" data-parent="#annotationsAccordion_${index}">
         <div class="card-body">

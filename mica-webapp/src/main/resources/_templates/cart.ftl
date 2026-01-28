@@ -124,7 +124,7 @@
                   <a id="variables-tab" @click="onTabChanged('variables')" class="nav-link <#if showCartType == "variables">active</#if>"
                      <#if showCartType == "variables">href="#tab_variables" data-bs-toggle="tab"<#else>href="${contextPath}/cart?type=variables"</#if>>
                       <@message "variables"/>
-                    <span class="badge badge text-bg-light">${sets.variablesCart.count}</span>
+                    <span class="badge text-bg-light">${sets.variablesCart.count}</span>
                   </a>
                 </li>
               </#if>
@@ -133,7 +133,7 @@
                   <a id="studies-tab" @click="onTabChanged('studies')" class="nav-link <#if showCartType == "studies">active</#if>"
                      <#if showCartType == "studies">href="#tab_studies" data-bs-toggle="tab"<#else>href="${contextPath}/cart?type=studies"</#if>>
                       <@message "studies"/>
-                    <span class="badge badge text-bg-light">${sets.studiesCart.count}</span>
+                    <span class="badge text-bg-light">${sets.studiesCart.count}</span>
                   </a>
                 </li>
               </#if>
@@ -142,7 +142,7 @@
                   <a id="networks-tab" @click="onTabChanged('networks')" class="nav-link <#if showCartType == "networks">active</#if>"
                      <#if showCartType == "networks">href="#tab_networks" data-bs-toggle="tab"<#else>href="${contextPath}/cart?type=networks"</#if>>
                       <@message "networks"/>
-                    <span class="badge badge text-bg-light">${sets.networksCart.count}</span>
+                    <span class="badge text-bg-light">${sets.networksCart.count}</span>
                   </a>
                 </li>
               </#if>
@@ -193,7 +193,7 @@
                     <div class="btn-group ms-2" role="group">
                       <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown">
                           <@message "sets.add.button.set-label"/>
-                        <span class="badge badge text-bg-light selection-count"></span>
+                        <span class="badge text-bg-light selection-count"></span>
                       </button>
                       <div id="listsDropdownMenu" class="dropdown-menu" style="min-width: 24em;">
                         <div class="px-3 py-3">
@@ -215,7 +215,7 @@
                               <#if !variableList.locked>
                                 <button type="button" class="dropdown-item"
                                         onclick="onClickAddToSet('${variableList.id}', '${variableList.name}')">
-                                    ${listName(variableList)} <#if variableList.name?starts_with("dar:")>[<@message "data-access-request"/>]</#if> <span class="badge badge text-bg-light float-end">${variableList.identifiers?size}</span>
+                                    ${listName(variableList)} <#if variableList.name?starts_with("dar:")>[<@message "data-access-request"/>]</#if> <span class="badge text-bg-light float-end">${variableList.identifiers?size}</span>
                                 </button>
                               </#if>
                             </#list>
@@ -243,7 +243,7 @@
                     </#if>
                   </#if>
                   <button id="delete-all" type="button" class="btn btn-danger ms-2" data-bs-toggle="modal" data-bs-target="#modal-delete">
-                    <i class="fa-solid fa-trash"></i> <@message "delete"/> <span class="badge badge text-bg-light selection-count"></span>
+                    <i class="fa-solid fa-trash"></i> <@message "delete"/> <span class="badge text-bg-light selection-count"></span>
                   </button>
                 </div>
               <#else>
@@ -314,7 +314,7 @@
                 <div class="float-end">
                   <#if studiesCompareEnabled>
                     <button type="button" class="btn btn-info ms-2" onclick="onCompareStudies()">
-                      <i class="fa-solid fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge badge text-bg-light studies-selection-count"></span>
+                      <i class="fa-solid fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge text-bg-light studies-selection-count"></span>
                     </button>
                   </#if>
                   <#if showCartDownload>
@@ -323,7 +323,7 @@
                     </a>
                   </#if>
                   <button id="delete-all" type="button" class="btn btn-danger ms-2" data-bs-toggle="modal" data-bs-target="#modal-delete-studies">
-                    <i class="fa-solid fa-trash"></i> <@message "delete"/> <span class="badge badge text-bg-light studies-selection-count"></span>
+                    <i class="fa-solid fa-trash"></i> <@message "delete"/> <span class="badge text-bg-light studies-selection-count"></span>
                   </button>
                 </div>
               <#else>
@@ -381,7 +381,7 @@
                 <div class="float-end">
                   <#if networksCompareEnabled>
                     <button type="button" class="btn btn-info ms-2" onclick="onCompareNetworks()">
-                      <i class="fa-solid fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge badge text-bg-light networks-selection-count"></span>
+                      <i class="fa-solid fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge text-bg-light networks-selection-count"></span>
                     </button>
                   </#if>
                   <#if showCartDownload>
@@ -390,7 +390,7 @@
                     </a>
                   </#if>
                   <button id="delete-all" type="button" class="btn btn-danger ms-2" data-bs-toggle="modal" data-bs-target="#modal-delete-networks">
-                    <i class="fa-solid fa-trash"></i> <@message "delete"/> <span class="badge badge text-bg-light networks-selection-count"></span>
+                    <i class="fa-solid fa-trash"></i> <@message "delete"/> <span class="badge text-bg-light networks-selection-count"></span>
                   </button>
                 </div>
               </#if>

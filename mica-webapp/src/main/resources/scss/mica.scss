@@ -53,6 +53,28 @@ a {
   color: #ffffff;
 }
 
+.bg-secondary {
+  color: #ffffff;
+}
+
+// Override Bootstrap 5 text-bg-* utilities for badges to match AdminLTE 3 colors
+// Bootstrap 5's text-bg-* uses subtle backgrounds with dark text for accessibility,
+// but AdminLTE 3 badges used vibrant backgrounds with white text.
+.badge.text-bg-info {
+  background-color: var(--bs-info) !important;
+  color: #ffffff !important;
+}
+
+.badge.text-bg-primary {
+  background-color: var(--bs-primary) !important;
+  color: #ffffff !important;
+}
+
+.badge.text-bg-danger {
+  background-color: var(--bs-danger) !important;
+  color: #ffffff !important;
+}
+
 .content-header {
   padding: 15px 0.5rem;
 }

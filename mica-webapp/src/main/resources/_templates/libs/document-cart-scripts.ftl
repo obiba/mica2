@@ -68,7 +68,7 @@
         sets.filter(set => !set.locked).forEach(set => {
           const btn = "<button type=\"button\" class=\"dropdown-item\"" +
                   "            onclick=\"onClickAddToSet('" + set.id + "', '" + normalizeSetName(set) + "')\">" +
-                  "          " + normalizeSetName(set) + " <span class=\"badge badge text-bg-light float-end\">" + set.count + "</span>" +
+                  "          " + normalizeSetName(set) + " <span class=\"badge text-bg-light float-end\">" + set.count + "</span>" +
                   "</button>";
           choicesElem.append(btn);
         });
