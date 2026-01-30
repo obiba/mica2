@@ -75,7 +75,7 @@
         <#if authConfig.languages?size gt 1>
           <div class="form-group mb-3">
             <label><@message "preferred-language"/></label>
-            <select class="form-control" name="locale">
+            <select class="form-select" name="locale">
               <#list authConfig.languages as language>
                 <option value="${language}"><@message language/></option>
               </#list>
@@ -94,7 +94,7 @@
               </div>
             <#elseif attribute.values?size != 0>
               <label><@message attribute.name/></label>
-              <select class="form-control" name="${attribute.name}">
+              <select class="form-select" name="${attribute.name}">
                 <#list attribute.values as value>
                   <option value="${value}"><@message value/></option>
                 </#list>

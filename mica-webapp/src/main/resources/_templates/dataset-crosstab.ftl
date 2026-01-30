@@ -36,13 +36,13 @@
           <div class="card-body">
             <div class="row">
               <div class="col-3">
-                <select id="select-var1" class="form-control select2" style="width: 100%;"></select>
+                <select id="select-var1" class="form-select" style="width: 100%;"></select>
               </div>
               <div class="col-1 text-center">
                 <i class="fa fa-2x fa-times"></i>
               </div>
               <div class="col-3">
-                <select id="select-var2" class="form-control select2" style="width: 100%;"></select>
+                <select id="select-var2" class="form-select" style="width: 100%;"></select>
               </div>
               <div class="col-3">
                 <a id="submit" class="btn btn-primary" href="#"><@message "submit"/></a>
@@ -81,7 +81,7 @@
             </div>
             <div id="result-panel" style="overflow-x: auto;">
               <div style="display: none;" class="mb-4">
-                <select id="select-study" class="form-control select2 float-end" style="width: 100%;"></select>
+                <select id="select-study" class="form-select float-end" style="width: 100%;"></select>
               </div>
               <div class="table-responsive">
                 <table id="crosstab" class="table table-striped"></table>

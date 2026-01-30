@@ -672,7 +672,7 @@
       <#if type == "Individual">
         <div class="row">
           <div class="col mb-4">
-            <select id="select-bucket" class="form-control select2">
+            <select id="select-bucket" class="form-select">
               <option value="_all" selected><@message "all-dces"/></option>
             </select>
           </div>

@@ -59,7 +59,7 @@
                           <div class="col-md-4 col-12">
                             <div class="info-box">
                               <span class="info-box-icon bg-success">
-                                <a href="${contextPath}/individual-search#lists?type=studies&query=study(in(Mica_study.className,Study)),network(in(Mica_network.id,${network.id}))">
+                                <a href="${contextPath}/individual-search#lists?type=studies&query=study(in(Mica_study.className,Study)),network(in(Mica_network.id,${network.id}))" class="text-white">
                                   <i class="${studyIcon}"></i>
                                 </a>
                               </span>
@@ -76,7 +76,7 @@
                           <div class="col-md-4 col-12">
                             <div class="info-box">
                               <span class="info-box-icon bg-warning">
-                                <a href="${contextPath}/individual-search#lists?type=datasets&query=study(in(Mica_study.className,Study)),network(in(Mica_network.id,${network.id}))">
+                                <a href="${contextPath}/individual-search#lists?type=datasets&query=study(in(Mica_study.className,Study)),network(in(Mica_network.id,${network.id}))" class="text-dark">
                                   <i class="${datasetIcon}"></i>
                                 </a>
                               </span>
@@ -90,7 +90,7 @@
                           <div class="col-md-4 col-12">
                             <div class="info-box">
                               <span class="info-box-icon bg-danger">
-                                <a href="${contextPath}/individual-search#lists?type=variables&query=study(in(Mica_study.className,Study)),network(in(Mica_network.id,${network.id}))">
+                                <a href="${contextPath}/individual-search#lists?type=variables&query=study(in(Mica_study.className,Study)),network(in(Mica_network.id,${network.id}))" class="text-white">
                                   <i class="${variableIcon}"></i>
                                 </a>
                               </span>
@@ -108,7 +108,7 @@
                           <div class="col-md-4 col-12">
                             <div class="info-box">
                             <span class="info-box-icon bg-success">
-                              <a href="${contextPath}/harmonization-search#lists?type=studies&query=study(in(Mica_study.className,HarmonizationStudy)),network(in(Mica_network.id,${network.id}))">
+                              <a href="${contextPath}/harmonization-search#lists?type=studies&query=study(in(Mica_study.className,HarmonizationStudy)),network(in(Mica_network.id,${network.id}))" class="text-white">
                                 <i class="${initiativeIcon}"></i>
                               </a>
                             </span>
@@ -123,7 +123,7 @@
                           <div class="col-md-4 col-12">
                             <div class="info-box">
                           <span class="info-box-icon bg-warning">
-                            <a href="${contextPath}/harmonization-search#lists?type=datasets&query=study(in(Mica_study.className,HarmonizationStudy)),network(in(Mica_network.id,${network.id}))">
+                            <a href="${contextPath}/harmonization-search#lists?type=datasets&query=study(in(Mica_study.className,HarmonizationStudy)),network(in(Mica_network.id,${network.id}))" class="text-dark">
                               <i class="${harmoDatasetIcon}"></i>
                             </a>
                           </span>
@@ -138,7 +138,7 @@
                           <div class="col-md-4 col-12">
                             <div class="info-box">
                           <span class="info-box-icon bg-danger">
-                            <a href="${contextPath}/harmonization-search#lists?type=variables&query=study(in(Mica_study.className,HarmonizationStudy)),network(in(Mica_network.id,${network.id}))">
+                            <a href="${contextPath}/harmonization-search#lists?type=variables&query=study(in(Mica_study.className,HarmonizationStudy)),network(in(Mica_network.id,${network.id}))" class="text-white">
                               <i class="${dataschemaIcon}"></i>
                             </a>
                           </span>

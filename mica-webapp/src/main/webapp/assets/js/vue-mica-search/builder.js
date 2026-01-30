@@ -1,9 +1,9 @@
 const RqlQuery = {
   template: `
-  <div class="btn-group btn-sm dropdown my-0">
-    <button type="button" class="btn btn-info btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+  <div class="btn-group btn-group-sm dropdown my-0">
+    <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown">
       <i class="fa fa-info-circle" v-bind:title="vocabulary.title | localize-string"></i>
-      <span class="pl-1">{{ getCriterionAsString() }}</span>
+      <span class="ps-1">{{ getCriterionAsString() }}</span>
     </button>
 
     <div ref="menu" class="dropdown-menu" style="width: 25em;">
@@ -172,7 +172,7 @@ const RqlQuery = {
 
 const RqlNode = {
   template: `
-  <div class="d-flex flex-wrap">
+  <div class="d-flex flex-wrap gap-2">
     <template v-if="isNode(firstArg)">
     <rql-node v-bind:name="firstArg.name" v-bind:args="firstArg.args" v-bind:taxonomy="taxonomy" v-on:update-node="onUpdateNode($event)" v-bind:advanced-mode="advancedMode" v-on:update-query="updateQuery($event, firstArg.taxonomyName)" v-on:remove-query="removeQuery($event, firstArg.taxonomyName)"></rql-node>
     </template>
@@ -304,7 +304,7 @@ const RqlNode = {
 
 const RqlQueryBuilder = {
   template: `
-  <div v-bind:class="target" class="d-flex">
+  <div v-bind:class="target" class="d-flex gap-2">
     <span v-if="showTarget" class="my-auto text-muted" v-show="items.length > 0">
       <h4 class="mb-0"><i class="align-middle io" v-bind:class="targetIcon"></i></h4>
     </span>

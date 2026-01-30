@@ -26,7 +26,7 @@ const makeSummary = function(summaryStatisticsAccessPolicy, showHarmonizedVariab
         });
       }
       selectStudy.select2({
-        theme: 'bootstrap4'
+        theme: 'bootstrap-5'
       }).on('select2:select', function (e) {
         let selId = e.params.data.id;
         //console.log(sel);
