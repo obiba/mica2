@@ -74,7 +74,7 @@
                     <div class="col-md-3 col-sm-6 col-12">
                       <div class="info-box">
                         <span class="info-box-icon bg-info">
-                          <a href="${contextPath}/${detailsPageSearchMode}#lists?type=networks&query=${searchPageQuery}">
+                          <a href="${contextPath}/${detailsPageSearchMode}#lists?type=networks&query=${searchPageQuery}" class="text-white">
                             <i class="${networkIcon}"></i>
                           </a>
                         </span>
@@ -90,7 +90,7 @@
                   <div class="col-md-3 col-sm-6 col-12">
                     <div class="info-box">
                       <span class="info-box-icon bg-danger">
-                        <a href="${contextPath}/${detailsPageSearchMode}#lists?type=variables&query=${searchPageQuery}">
+                        <a href="${contextPath}/${detailsPageSearchMode}#lists?type=variables&query=${searchPageQuery}" class="text-white">
                           <i class="<#if type == "Harmonized">${dataschemaIcon}<#else>${variableIcon}</#if>"></i>
                         </a>
                       </span>

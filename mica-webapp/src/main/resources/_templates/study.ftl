@@ -75,7 +75,7 @@
                     <div class="col-md-3 col-sm-6 col-12">
                       <div class="info-box">
                         <span class="info-box-icon bg-info">
-                          <a href="${contextPath}/${detailsPageSearchMode}#lists?type=networks&query=${searchPageQuery}">
+                          <a href="${contextPath}/${detailsPageSearchMode}#lists?type=networks&query=${searchPageQuery}" class="text-white">
                             <i class="${networkIcon}"></i>
                           </a>
                         </span>
@@ -92,7 +92,7 @@
                     <div class="col-md-3 col-sm-6 col-12">
                       <div class="info-box">
                         <span class="info-box-icon bg-warning">
-                          <a href="${contextPath}/${detailsPageSearchMode}#lists?type=datasets&query=${searchPageQuery}">
+                          <a href="${contextPath}/${detailsPageSearchMode}#lists?type=datasets&query=${searchPageQuery}" class="text-dark">
                             <i class="<#if type == "Harmonization">${dataschemaIcon}<#else>${variableIcon}</#if>"></i>
                           </a>
                         </span>
@@ -109,7 +109,7 @@
                     <div class="col-md-3 col-sm-6 col-12">
                       <div class="info-box">
                         <span class="info-box-icon bg-danger">
-                          <a href="${contextPath}/${detailsPageSearchMode}#lists?type=variables&query=${searchPageQuery}">
+                          <a href="${contextPath}/${detailsPageSearchMode}#lists?type=variables&query=${searchPageQuery}" class="text-white">
                             <i class="<#if type == "Harmonization">${dataschemaIcon}<#else>${variableIcon}</#if>"></i>
                           </a>
                         </span>
@@ -275,7 +275,6 @@
 
         <!-- Variables classifications -->
         <#if studyVariablesClassificationsTaxonomies?? && studyVariablesClassificationsTaxonomies?size gt 0>
-            <span>TEST</span>
           <@variablesClassifications study=study/>
         </#if>
 

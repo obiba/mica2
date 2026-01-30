@@ -384,13 +384,9 @@
         });
       });
       const selectBucketElem = $('#select-bucket');
-      selectBucketElem.select2({
-        theme: 'bootstrap4'
-      }).on('select2:select', function (e) {
-        let data = e.params.data;
-        //console.log(data);
+      selectBucketElem.on('change', function (e) {
         $('#classificationsContainer').hide();
-        renderVariablesClassifications(data.id);
+        renderVariablesClassifications($(this).val());
       });
       buckets.forEach(k => {
         let newOption = new Option(Mica.options[k], k, false, false);

@@ -116,7 +116,7 @@
           </div>
         </div>
         <div class="card-body">
-          <div>
+          <div class="row gap-1">
 
             <div class="modal fade" id="taxonomy-modal">
               <div class="modal-dialog modal-xl" role="document">

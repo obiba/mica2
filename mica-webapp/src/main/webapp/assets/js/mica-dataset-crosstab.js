@@ -398,7 +398,7 @@ const initVariableSelectors = function() {
     minimumInputLength: 1,
     templateResult: formatVariable,
     templateSelection: formatVariableSelection,
-    theme: 'bootstrap4'
+    theme: 'bootstrap-5'
   };
 
   // var1 selector
@@ -480,7 +480,7 @@ const initVariableSelectors = function() {
 
 const initStudySelector = function() {
   $('#select-study').select2({
-    theme: 'bootstrap4'
+    theme: 'bootstrap-5'
   }).on('select2:select', function (e) {
     let data = e.params.data;
     //console.log(data);
