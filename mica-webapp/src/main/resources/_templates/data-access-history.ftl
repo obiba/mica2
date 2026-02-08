@@ -89,7 +89,7 @@
                         <#elseif event.preliminary>
                           <a href="${contextPath}/data-access-preliminary-form/${event.form.id}"><i class="fa-regular fa-play-circle"></i> ${event.form.id}</a>
                         <#elseif event.agreement>
-                          <a href="${contextPath}/data-access-agreement-form/${event.form.id}"><i class="fa fa-gavel"></i> ${event.form.id}</a>
+                          <a href="${contextPath}/data-access-agreement-form/${event.form.id}"><i class="fa-solid fa-gavel"></i> ${event.form.id}</a>
                         <#else>
                           <a href="${contextPath}/data-access-form/${event.form.id}"><i class="fa-solid fa-book"></i> ${event.form.id}</a>
                         </#if>

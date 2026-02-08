@@ -15,7 +15,7 @@
   <!-- /.navbar -->
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper" id="query-vue-container">
+  <div class="content-wrapper flex-fill" id="query-vue-container">
     <!-- Content Header (Page header) -->
     <div class="content-header bg-info mb-4">
       <div class="container">
@@ -202,7 +202,7 @@
                             <div class="input-group">
                               <input id="newVariableSetName" type="text" class="form-control" placeholder="<@message "sets.add.modal.create-new"/>">
                               <button id="addToNewSetButton" class="btn btn-success disabled" type="button" onclick="onClickAddToNewSet()">
-                                <i class="fa fa-plus"></i> <@message "global.add"/>
+                                <i class="fa-solid fa-plus"></i> <@message "global.add"/>
                               </button>
                             </div>
                           </div>

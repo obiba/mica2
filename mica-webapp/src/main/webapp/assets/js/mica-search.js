@@ -62,7 +62,7 @@ Vue.component('search-criteria', {
   template: `
   <div class="">
     <ul v-for="name in criteriaMenu.order"
-        class="nav nav-pills nav-sidebar flex-column" data-widget="treeview"
+        class="nav nav-pills nav-sidebar flex-column" data-lte-toggle="treeview"
         role="menu" data-accordion="false">
       <li class="nav-item has-treeview menu-open">
         <a href="#" class="nav-link">
@@ -72,7 +72,7 @@ Vue.component('search-criteria', {
           </span>
         </a>
         <ul class="nav nav-treeview">
-          <li class="nav-item" :key="menu.name" v-for="menu in criteriaMenu.items[name].menus" v-if="!(studyTypeSelection && studyTypeSelection.harmonization) || !menu.hideHarmo">
+          <li class="nav-item" v-for="menu in getFilteredMenus(name)" :key="menu.name">
             <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#taxonomy-modal"
               :title="menu.description | localize-string"
               @click.prevent="onTaxonomySelection(menu.name, name)"><i class="far fa-circle nav-icon me-1"></i><span>{{ menu.title | localize-string }}</span>
@@ -85,6 +85,15 @@ Vue.component('search-criteria', {
   `,
   props: {
     studyTypeSelection: Object
+  },
+  watch: {
+    studyTypeSelection: {
+      handler() {
+        // Recalculate treeview heights when study type selection changes
+        this.recalculateTreeview();
+      },
+      deep: true
+    }
   },
   data() {
     return {
@@ -120,6 +129,35 @@ Vue.component('search-criteria', {
     };
   },
   methods: {
+    // Filter menus based on study type selection and hideHarmo flag
+    getFilteredMenus(name) {
+      const menus = this.criteriaMenu.items[name]?.menus || [];
+      if (!menus.length) return [];
+
+      // If harmonization mode is selected, filter out menus with hideHarmo flag
+      if (this.studyTypeSelection && this.studyTypeSelection.harmonization) {
+        return menus.filter(menu => !menu.hideHarmo);
+      }
+
+      return menus;
+    },
+    // Recalculate treeview heights after DOM updates
+    recalculateTreeview() {
+      this.$nextTick(() => {
+        bindTreeview(); // Rebind treeview click handlers to ensure they work with new content
+        const treeviews = document.querySelectorAll('.nav-treeview');
+        treeviews.forEach(ul => {
+          if (ul.style.height) {
+            // Remove fixed height to allow natural height
+            ul.style.height = 'auto';
+            // Get the natural height
+            const newHeight = ul.scrollHeight;
+            // Reapply height for animation
+            ul.style.height = newHeight + 'px';
+          }
+        });
+      });
+    },
     // make the menu
     onMicaTaxonomies: function (payload) {
       // sort and include configured targets
@@ -155,9 +193,8 @@ Vue.component('search-criteria', {
             }
 
             this.criteriaMenu.items.variable.menus.forEach(m =>  {
-              if (m.name === 'Mlstr_additional') {
-                m.hideHarmo = true;
-              }
+              // Set hideHarmo property directly (Vue 3 doesn't need Vue.set)
+              m.hideHarmo = (m.name === 'Mlstr_additional');
             });
             break;
           case 'dataset':
@@ -170,6 +207,9 @@ Vue.component('search-criteria', {
           this.criteriaMenu.order.push(target.name);
         }
       }
+
+      // Recalculate treeview heights after menus are populated
+      this.recalculateTreeview();
     },
     // forward taxonomy selection
     onTaxonomySelection: function (payload, target) {
@@ -180,6 +220,35 @@ Vue.component('search-criteria', {
     EventBus.register('mica-taxonomy', this.onMicaTaxonomies);
   }
 });
+
+function bindTreeview(root = document) {
+  root.querySelectorAll('[data-lte-toggle="treeview"]').forEach((ul) => {
+    if (ul.__treeviewBound) return;
+    ul.__treeviewBound = true;
+
+    // Ensure initially-open menus are visible
+    ul.querySelectorAll('.nav-item.menu-open > .nav-treeview').forEach((sub) => {
+      sub.style.display = '';
+    });
+
+    ul.addEventListener('click', (event) => {
+      const targetItem = event.target.closest('.nav-item');
+      if (!targetItem) return;
+
+      const submenu = targetItem.querySelector(':scope > .nav-treeview');
+      if (!submenu) return; // not a tree node
+
+      const link = event.target.closest('.nav-link');
+      if (link && (link.getAttribute('href') === '#')) {
+        event.preventDefault();
+      }
+
+      targetItem.classList.toggle('menu-open');
+      // Let CSS handle display if you want; but this makes it deterministic:
+      submenu.style.display = targetItem.classList.contains('menu-open') ? '' : 'none';
+    });
+  });
+}
 
 /**
  * Component used to filter results by Study className vocabulary

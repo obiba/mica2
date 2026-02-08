@@ -406,9 +406,7 @@
             <label><@message "date"/></label>
             <div class="input-group">
               <input type="text" id="start-date" class="form-control">
-              <div class="input-group-append">
-                <span class="input-group-text"><i class="fa-solid fa-calendar-alt"></i></span>
-              </div>
+              <span class="input-group-text"><i class="fa-solid fa-calendar-alt"></i></span>
             </div>
           </div>
         </div>

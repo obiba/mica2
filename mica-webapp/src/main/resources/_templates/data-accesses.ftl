@@ -31,7 +31,7 @@
             <h6><i class="icon fas fa-lock"></i> <@message "security-info"/></h6>
               <@message "2fa-info"/>
               <a href="${contextPath}/profile" class="ms-2">
-                  <i class="fa fa-arrow-right"></i> <@message "profile"/>
+                  <i class="fa-solid fa-arrow-right"></i> <@message "profile"/>
               </a>
           </div>
         </#if>

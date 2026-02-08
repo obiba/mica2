@@ -61,7 +61,7 @@
   <div class="container">
     <div class="navbar-header">
       <a href="${contextPath}/" class="navbar-brand">{{micaConfig.name}}</a>
-      <button type="button" class="navbar-toggle" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+      <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
         <span class="visually-hidden">Toggle navigation</span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -78,8 +78,8 @@
         <li class="dropdown clearfix" ng-if="authenticated && micaConfig.isRepositoryEnabled && micaConfig.isCollectedDatasetEnabled">
           <a href="" class="dropdown-toggle" data-bs-toggle="dropdown">
             <span>{{ 'global.individual' | translate }}</span>
-            <i class="fa fa-caret-down"></i></a>
-          <ul class="dropdown-menu pull-left">
+            <i class="fa-solid fa-caret-down"></i></a>
+          <ul class="dropdown-menu dropdown-menu-start">
             <li><a href="#/individual-study">{{micaConfig.isSingleStudyEnabled ? 'global.study' : 'global.individual-studies' | translate}}</a></li>
             <li ng-if="micaConfig.isCollectedDatasetEnabled"><a href="#/collected-dataset"><span translate>collected-datasets</span></a></li>
           </ul>
@@ -91,8 +91,8 @@
         <li class="dropdown clearfix" ng-if="authenticated && micaConfig.isRepositoryEnabled && micaConfig.isHarmonizedDatasetEnabled">
           <a href="" class="dropdown-toggle" data-bs-toggle="dropdown">
             <span>{{'global.harmonization' | translate }}</span>
-            <i class="fa fa-caret-down"></i></a>
-          <ul class="dropdown-menu pull-left">
+            <i class="fa-solid fa-caret-down"></i></a>
+          <ul class="dropdown-menu dropdown-menu-start">
             <li><a href="#/harmonization-study">{{'global.harmonization-studies' | translate}}</a></li>
             <li><a href="#/harmonized-dataset"><span>{{'harmonized-datasets' | translate}}</span></a></li>
           </ul>
@@ -101,8 +101,8 @@
         <li class="dropdown clearfix" ng-if="authenticated && (micaConfig.isDataAccessEnabled || micaConfig.isProjectEnabled)">
           <a href="" class="dropdown-toggle" data-bs-toggle="dropdown">
             <span translate>research</span>
-            <i class="fa fa-caret-down"></i></a>
-          <ul class="dropdown-menu pull-left">
+            <i class="fa-solid fa-caret-down"></i></a>
+          <ul class="dropdown-menu dropdown-menu-start">
             <li ng-if="micaConfig.isProjectEnabled">
               <a href="#/project">
                 <span translate>research-projects</span>
@@ -131,17 +131,17 @@
         </li>
         <li class="dropdown">
           <a href="" class="dropdown-toggle" data-bs-toggle="dropdown">
-            <i class="fa fa-user"></i>
+            <i class="fa-solid fa-user"></i>
             {{UserProfileService.getFullName(subject.profile) || subject.login}}
-            <i class="fa fa-caret-down"></i></a>
-          <ul class="dropdown-menu pull-right" ng-controller="LanguageController">
-            <!--<li><a href="#/profile"><i class="fa fa-cog"></i> <span translate>global.menu.myProfile</span></a></li>-->
+            <i class="fa-solid fa-caret-down"></i></a>
+          <ul class="dropdown-menu dropdown-menu-end" ng-controller="LanguageController">
+            <!--<li><a href="#/profile"><i class="fa-solid fa-cog"></i> <span translate>global.menu.myProfile</span></a></li>-->
             <li ng-repeat="lang in languages">
               <a href ng-click="changeLanguage(lang)">
-                <span>{{'language.' + lang | translate}}</span> <i class="fa fa-check" aria-hidden="true" ng-show="getCurrentLanguage() === lang"></i></a>
+                <span>{{'language.' + lang | translate}}</span> <i class="fa-solid fa-check" aria-hidden="true" ng-show="getCurrentLanguage() === lang"></i></a>
             </li>
             <li class="divider"></li>
-            <li><a href="#/logout"><i class="fa fa-sign-out"></i> <span translate>global.menu.logout</span></a></li>
+            <li><a href="#/logout"><i class="fa-solid fa-sign-out"></i> <span translate>global.menu.logout</span></a></li>
           </ul>
         </li>
       </ul>
@@ -166,11 +166,11 @@
 
   <div ng-view=""></div>
 
-  <footer class="hidden-print" ng-hide="!authenticated">
+  <footer class="d-print-none" ng-hide="!authenticated">
     <div class="row">
       <div class="col-lg-12">
         <ul class="list-unstyled list-inline">
-          <li class="pull-right">{{micaConfig.version}}</li>
+          <li class="float-end">{{micaConfig.version}}</li>
           <li>© 2025</li>
           <li><a href="http://obiba.org" target="_blank"> OBiBa </a></li>
           <li><a href="http://micadoc.obiba.org" target="_blank" translate>

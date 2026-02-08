@@ -240,7 +240,7 @@
                                                 <div class="input-group">
                                                   <input type="text" class="form-control" placeholder="<@message "sets.add.modal.create-new"/>" v-model="newVariableSetName" @keyup.enter.prevent.stop="onAddToSet()">
                                                   <button v-bind:class="{ disabled: !newVariableSetName }" class="btn btn-success" type="button" @click="onAddToSet()">
-                                                    <i class="fa fa-plus"></i> <@message "global.add"/>
+                                                    <i class="fa-solid fa-plus"></i> <@message "global.add"/>
                                                   </button>
                                                 </div>
                                               </div>

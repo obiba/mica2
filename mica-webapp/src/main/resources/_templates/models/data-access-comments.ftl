@@ -32,7 +32,7 @@
 
             <div class="timeline-item timeline-comment-item">
               <#if item.canRemove>
-                <a class="time text-danger" onclick="DataAccessService.deleteComment('${dar.id}', '${comment.id}', ${isPrivate})"><i class="fa fa-trash"></i></a>
+                <a class="time text-danger" onclick="DataAccessService.deleteComment('${dar.id}', '${comment.id}', ${isPrivate})"><i class="fa-solid fa-trash"></i></a>
               </#if>
               <span class="time"><i class="fa-solid fa-clock"></i> <span
                         class="moment-datetime">${item.date.toString()}</span></span>
@@ -61,7 +61,7 @@
                 <#elseif event.preliminary>
                   <a href="${contextPath}/data-access-preliminary-form/${event.form.id}"><i class="fa-regular fa-play-circle"></i> ${event.form.id}</a>
                 <#elseif event.agreement>
-                  <a href="${contextPath}/data-access-agreement-form/${event.form.id}"><i class="fa fa-gavel"></i> ${event.form.id}</a>
+                  <a href="${contextPath}/data-access-agreement-form/${event.form.id}"><i class="fa-solid fa-gavel"></i> ${event.form.id}</a>
                 <#else>
                   <a href="${contextPath}/data-access-form/${event.form.id}"><i class="fa-solid fa-book"></i> ${event.form.id}</a>
                 </#if>
