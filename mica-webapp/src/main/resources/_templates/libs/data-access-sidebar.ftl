@@ -95,9 +95,9 @@
                     <@message "preliminary-form"/>
                   </p>
                   <#if preliminary.status.toString() == "OPENED" || preliminary.status.toString() == "CONDITIONALLY_APPROVED">
-                    <i class="fa fa-pen ms-auto"></i>
+                    <i class="fa-solid fa-pen ms-auto"></i>
                   <#elseif preliminary.status.toString() != "APPROVED" && preliminary.status.toString() != "REJECTED">
-                    <i class="fa fa-clock ms-auto"></i>
+                    <i class="fa-solid fa-clock ms-auto"></i>
                   </#if>
                 </a>
               </li>
@@ -109,9 +109,9 @@
                       <@message "main-form"/>
                     </p>
                     <#if dar.status.toString() == "OPENED" || dar.status.toString() == "CONDITIONALLY_APPROVED">
-                      <i class="fa fa-pen ms-auto"></i>
+                      <i class="fa-solid fa-pen ms-auto"></i>
                     <#elseif dar.status.toString() != "APPROVED" && dar.status.toString() != "REJECTED">
-                      <i class="fa fa-clock ms-auto"></i>
+                      <i class="fa-solid fa-clock ms-auto"></i>
                     </#if>
                   </a>
                 <#else>
@@ -131,9 +131,9 @@
                 <@message "application-form"/>
               </p>
               <#if dar.status.toString() == "OPENED" || dar.status.toString() == "CONDITIONALLY_APPROVED">
-                <i class="fa fa-pen ms-auto"></i>
+                <i class="fa-solid fa-pen ms-auto"></i>
               <#elseif dar.status.toString() != "APPROVED" && dar.status.toString() != "REJECTED">
-                <i class="fa fa-clock ms-auto"></i>
+                <i class="fa-solid fa-clock ms-auto"></i>
               </#if>
             </a>
           </li>
@@ -196,7 +196,7 @@
                          title="<@message agreement.status.toString()/>"></i>
                       <p class="mb-0">${agreement.id}</p>
                       <#if agreement.applicant == user.username>
-                        <i class="fa fa-star ms-auto"></i>
+                        <i class="fa-solid fa-star ms-auto"></i>
                       </#if>
                     </a>
                   </li>

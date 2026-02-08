@@ -39,7 +39,7 @@
                 <select id="select-var1" class="form-select" style="width: 100%;"></select>
               </div>
               <div class="col-1 text-center">
-                <i class="fa fa-2x fa-times"></i>
+                <i class="fa-solid fa-2x fa-times"></i>
               </div>
               <div class="col-3">
                 <select id="select-var2" class="form-select" style="width: 100%;"></select>

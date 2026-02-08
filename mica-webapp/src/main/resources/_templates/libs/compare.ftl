@@ -5,7 +5,7 @@
   <tr id="name">
     <td class="font-weight-bold">
         <@message "name"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('name')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('name')"><i class="fa-solid fa-times"></i></a></small>
     </td>
     <#list studies as study>
       <td>${localize(study.name)}</td>
@@ -14,7 +14,7 @@
   <tr id="objectives">
     <td class="font-weight-bold">
         <@message "study.objectives"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('objectives')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('objectives')"><i class="fa-solid fa-times"></i></a></small>
     </td>
     <#list studies as study>
       <td>
@@ -26,7 +26,7 @@
   <tr id="start-year">
     <td class="font-weight-bold">
         <@message "study.start-year"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('start-year')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('start-year')"><i class="fa-solid fa-times"></i></a></small>
     </td>
     <#list studies as study>
       <td>
@@ -39,7 +39,7 @@
   <tr id="end-year">
     <td class="font-weight-bold">
         <@message "study.end-year"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('end-year')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('end-year')"><i class="fa-solid fa-times"></i></a></small>
     </td>
     <#list studies as study>
       <td>
@@ -52,7 +52,7 @@
   <tr id="funding">
     <td class="font-weight-bold">
         <@message "funding"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('funding')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('funding')"><i class="fa-solid fa-times"></i></a></small>
     </td>
     <#list studies as study>
       <td>${localize(study.funding)}</td>
@@ -61,7 +61,7 @@
   <tr id="website">
     <td class="font-weight-bold">
       <@message "website"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('website')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('website')"><i class="fa-solid fa-times"></i></a></small>
     </td>
     <#list studies as study>
       <td>
@@ -74,7 +74,7 @@
   <tr id="methods-design">
     <td class="font-weight-bold">
       <@message "study_taxonomy.vocabulary.methods-design.title"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('methods-design')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('methods-design')"><i class="fa-solid fa-times"></i></a></small>
     </td>
     <#list studies as study>
       <td>
@@ -91,7 +91,7 @@
   <tr id="methods-follow-up">
     <td class="font-weight-bold">
         <@message "study.follow-up"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('methods-follow-up')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('methods-follow-up')"><i class="fa-solid fa-times"></i></a></small>
     </td>
     <#list studies as study>
       <td>
@@ -104,7 +104,7 @@
   <tr id="marker-paper">
     <td class="font-weight-bold">
       <@message "study.marker-paper"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('marker-paper')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('marker-paper')"><i class="fa-solid fa-times"></i></a></small>
     </td>
     <#list studies as study>
       <td>
@@ -122,7 +122,7 @@
   <tr id="methods-recruitments">
     <td class="font-weight-bold">
       <@message "study.recruitment-sources.label"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('methods-recruitments')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('methods-recruitments')"><i class="fa-solid fa-times"></i></a></small>
     </td>
     <#list studies as study>
       <td>
@@ -144,7 +144,7 @@
   <tr id="numberOfParticipants-participants">
     <td class="font-weight-bold">
         <@message "numberOfParticipants.participants"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('numberOfParticipants-participants')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('numberOfParticipants-participants')"><i class="fa-solid fa-times"></i></a></small>
     </td>
     <#list studies as study>
       <td>
@@ -166,7 +166,7 @@
   <tr id="numberOfParticipants-sample">
     <td class="font-weight-bold">
       <@message "numberOfParticipants.sample"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('numberOfParticipants-sample')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('numberOfParticipants-sample')"><i class="fa-solid fa-times"></i></a></small>
     </td>
     <#list studies as study>
       <td>
@@ -188,7 +188,7 @@
   <tr id="populations">
     <td class="font-weight-bold">
       <@message "study.populations"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations')"><i class="fa-solid fa-times"></i></a></small>
     </td>
     <#list studies as study>
       <td>
@@ -206,7 +206,7 @@
   <tr id="populations-gender">
     <td class="font-weight-bold">
         <@message "study.populations"/> - <@message "population.gender"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-gender')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-gender')"><i class="fa-solid fa-times"></i></a></small>
     </td>
       <#list studies as study>
         <td>
@@ -229,7 +229,7 @@
   <tr id="populations-ageMin">
     <td class="font-weight-bold">
         <@message "study.populations"/> - <@message "population.ageMin"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-ageMin')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-ageMin')"><i class="fa-solid fa-times"></i></a></small>
     </td>
       <#list studies as study>
         <td>
@@ -251,7 +251,7 @@
   <tr id="populations-ageMax">
     <td class="font-weight-bold">
         <@message "study.populations"/> - <@message "population.ageMax"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-ageMax')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-ageMax')"><i class="fa-solid fa-times"></i></a></small>
     </td>
     <#list studies as study>
       <td>
@@ -273,7 +273,7 @@
   <tr id="populations-pregnantWomen">
     <td class="font-weight-bold">
         <@message "study.populations"/> - <@message "study.selection-criteria.pregnant-women"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-pregnantWomen')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-pregnantWomen')"><i class="fa-solid fa-times"></i></a></small>
     </td>
     <#list studies as study>
       <td>
@@ -301,7 +301,7 @@
   <tr id="populations-newborn">
     <td class="font-weight-bold">
         <@message "study.populations"/> - <@message "study.selection-criteria.newborn"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-newborn')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-newborn')"><i class="fa-solid fa-times"></i></a></small>
     </td>
       <#list studies as study>
         <td>
@@ -327,7 +327,7 @@
   <tr id="populations-twins">
     <td class="font-weight-bold">
       <@message "study.populations"/> - <@message "study.selection-criteria.twins"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-twins')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-twins')"><i class="fa-solid fa-times"></i></a></small>
     </td>
     <#list studies as study>
       <td>
@@ -353,7 +353,7 @@
   <tr id="populations-countriesIso">
     <td class="font-weight-bold">
         <@message "study.populations"/> - <@message "client.label.countries"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-countriesIso')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-countriesIso')"><i class="fa-solid fa-times"></i></a></small>
     </td>
     <#list studies as study>
       <td>
@@ -380,7 +380,7 @@
   <tr id="populations-territory">
     <td class="font-weight-bold">
         <@message "study.populations"/> - <@message "study.selection-criteria.territory"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-territory')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-territory')"><i class="fa-solid fa-times"></i></a></small>
     </td>
     <#list studies as study>
       <td>
@@ -404,7 +404,7 @@
   <tr id="populations-ethnicOrigin">
     <td class="font-weight-bold">
         <@message "study.populations"/> - <@message "study.selection-criteria.ethnic-origin"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-ethnicOrigin')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-ethnicOrigin')"><i class="fa-solid fa-times"></i></a></small>
     </td>
     <#list studies as study>
       <td>
@@ -431,7 +431,7 @@
   <tr id="populations-healthStatus">
     <td class="font-weight-bold">
         <@message "study.populations"/> - <@message "study.selection-criteria.health-status"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-healthStatus')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-healthStatus')"><i class="fa-solid fa-times"></i></a></small>
     </td>
     <#list studies as study>
       <td>
@@ -458,7 +458,7 @@
   <tr id="populations-otherCriteria">
     <td class="font-weight-bold">
         <@message "study.populations"/> - <@message "population.otherCriteria"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-otherCriteria')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-otherCriteria')"><i class="fa-solid fa-times"></i></a></small>
     </td>
     <#list studies as study>
       <td>
@@ -486,7 +486,7 @@
   <tr id="harmo-name">
     <td class="font-weight-bold">
       <@message "name"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('harmo-name')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('harmo-name')"><i class="fa-solid fa-times"></i></a></small>
     </td>
       <#list studies as study>
         <td>${localize(study.name)}</td>
@@ -495,7 +495,7 @@
   <tr id="harmo-objectives">
     <td class="font-weight-bold">
       <@message "study.objectives"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('harmo-objectives')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('harmo-objectives')"><i class="fa-solid fa-times"></i></a></small>
     </td>
       <#list studies as study>
         <td>
@@ -507,7 +507,7 @@
   <tr id="harmo-design">
     <td class="font-weight-bold">
       <@message "study_taxonomy.vocabulary.harmonizationDesign.title"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('harmo-design')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('harmo-design')"><i class="fa-solid fa-times"></i></a></small>
     </td>
     <#list studies as study>
       <td>
@@ -525,7 +525,7 @@
   <tr id="name">
     <td class="font-weight-bold">
         <@message "name"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('name')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('name')"><i class="fa-solid fa-times"></i></a></small>
     </td>
     <#list networks as network>
       <td>${localize(network.name)}</td>
@@ -534,7 +534,7 @@
   <tr id="description">
     <td class="font-weight-bold">
         <@message "network.description"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('description')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('description')"><i class="fa-solid fa-times"></i></a></small>
     </td>
     <#list networks as network>
       <td>
@@ -546,7 +546,7 @@
   <tr id="website">
     <td class="font-weight-bold">
         <@message "website"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('website')"><i class="fa fa-times"></i></a></small>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('website')"><i class="fa-solid fa-times"></i></a></small>
     </td>
     <#list networks as network>
       <td>
