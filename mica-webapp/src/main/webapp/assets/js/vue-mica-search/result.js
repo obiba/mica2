@@ -1182,7 +1182,7 @@ const CoverageResult = {
 
                 <td v-for="(h, hindex) in table.termHeaders" v-bind:key="'h'+hindex">
                   <a href="" v-on:click="updateQuery($event, row.value, h, 'variables')">
-                    <span class="badge badge-primary" v-show="row.hitsTitles[hindex]">{{row.hitsTitles[hindex]}}</span>
+                    <span class="badge text-bg-primary" v-show="row.hitsTitles[hindex]">{{row.hitsTitles[hindex]}}</span>
                   </a>
                   <span v-show="!row.hitsTitles[hindex]">0</span>
                 </td>

@@ -144,17 +144,18 @@ Vue.component('search-criteria', {
     // Recalculate treeview heights after DOM updates
     recalculateTreeview() {
       this.$nextTick(() => {
-        bindTreeview(); // Rebind treeview click handlers to ensure they work with new content
-        const treeviews = document.querySelectorAll('.nav-treeview');
-        treeviews.forEach(ul => {
-          if (ul.style.height) {
-            // Remove fixed height to allow natural height
-            ul.style.height = 'auto';
-            // Get the natural height
-            const newHeight = ul.scrollHeight;
-            // Reapply height for animation
-            ul.style.height = newHeight + 'px';
-          }
+        // Clear stale inline styles left by AdminLTE's slideDown/slideUp
+        this.$el.querySelectorAll('.nav-treeview').forEach(sub => {
+          sub.style.removeProperty('height');
+          sub.style.removeProperty('overflow');
+          sub.style.removeProperty('padding-top');
+          sub.style.removeProperty('padding-bottom');
+          sub.style.removeProperty('margin-top');
+          sub.style.removeProperty('margin-bottom');
+          sub.style.removeProperty('display');
+          sub.style.removeProperty('transition-property');
+          sub.style.removeProperty('transition-duration');
+          sub.style.removeProperty('box-sizing');
         });
       });
     },
@@ -220,35 +221,6 @@ Vue.component('search-criteria', {
     EventBus.register('mica-taxonomy', this.onMicaTaxonomies);
   }
 });
-
-function bindTreeview(root = document) {
-  root.querySelectorAll('[data-lte-toggle="treeview"]').forEach((ul) => {
-    if (ul.__treeviewBound) return;
-    ul.__treeviewBound = true;
-
-    // Ensure initially-open menus are visible
-    ul.querySelectorAll('.nav-item.menu-open > .nav-treeview').forEach((sub) => {
-      sub.style.display = '';
-    });
-
-    ul.addEventListener('click', (event) => {
-      const targetItem = event.target.closest('.nav-item');
-      if (!targetItem) return;
-
-      const submenu = targetItem.querySelector(':scope > .nav-treeview');
-      if (!submenu) return; // not a tree node
-
-      const link = event.target.closest('.nav-link');
-      if (link && (link.getAttribute('href') === '#')) {
-        event.preventDefault();
-      }
-
-      targetItem.classList.toggle('menu-open');
-      // Let CSS handle display if you want; but this makes it deterministic:
-      submenu.style.display = targetItem.classList.contains('menu-open') ? '' : 'none';
-    });
-  });
-}
 
 /**
  * Component used to filter results by Study className vocabulary
@@ -654,8 +626,7 @@ class TableFixedHeaderUtility {
     return taxonomy;
   }
 
-  new Vue({
-    el: '#search-application',
+  Vue.createApp({
     data() {
       return {
         loading: { state: true },
@@ -713,6 +684,15 @@ class TableFixedHeaderUtility {
         showStudyShortcut: (Mica.isHarmonizedDatasetEnabled && !Mica.isSingleStudyEnabled) || !this.currentStudyTypeSelection || this.currentStudyTypeSelection.all,
         showVariableAndDatasetTabsInIndividualMode: '/individual-search' !== window.location.pathname || ('/individual-search' === window.location.pathname && Mica.config.isCollectedDatasetEnabled),
       };
+    },
+    watch: {
+      currentStudyTypeSelection: {
+        handler(val) {
+          document.getElementById('search-application')
+            .classList.toggle('harmoMode', !!(val && val.harmonization));
+        },
+        deep: true
+      }
     },
     methods: {
       updateStudyTypeFilter() {
@@ -1542,6 +1522,6 @@ class TableFixedHeaderUtility {
       EventBus.unregister("coverage-results", this.onCoverageResult);
       EventBus.unregister(EVENTS.QUERY_TYPE_GRAPHICS_RESULTS, this.onGraphicsResult);
     }
-  });
+  }).mount('#search-application');
 
 })();

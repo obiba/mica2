@@ -114,7 +114,7 @@ Vue.component('file-row', {
   },
   template: '<tr>' +
     '<td><i v-bind:class="iconClass"></i></td>' +
-    '<td v-if="isFile">{{ file.name }} <span class="badge badge-info" v-if="hasMediaType">{{ file.mediaType }}</span></td>' +
+    '<td v-if="isFile">{{ file.name }} <span class="badge text-bg-info" v-if="hasMediaType">{{ file.mediaType }}</span></td>' +
     '<td v-else>' +
     '  <a v-if="file.size>0" href="javascript:void(0)" v-on:click="$emit(\'select-folder\', file.path)">{{ file.name }}</a>' +
     '  <span v-else>{{ file.name }}</span></td>' +
