@@ -122,6 +122,7 @@
     url("${assetsPath}/fonts/Source_Sans_Pro/sourcesanspro-italic-webfont.woff2") format("woff2"),
     url("${assetsPath}/fonts/Source_Sans_Pro/sourcesanspro-italic-webfont.woff") format("woff");
   }
+
 </style>
 <!-- DataTables -->
 <link rel="stylesheet" href="${datatablesBS5Path}/css/dataTables.bootstrap5.min.css">

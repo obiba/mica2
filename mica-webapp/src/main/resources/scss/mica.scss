@@ -21,6 +21,11 @@
 
   --mica-brand-bg: #fff;
   --mica-brand-text: #6c757d;
+
+  // Use Source Sans Pro (AdminLTE 3 default) instead of system font stack
+  --bs-font-sans-serif: "Source Sans Pro", system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans",
+    sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 // Override btn-info to use our custom --bs-info color
@@ -354,4 +359,53 @@ a {
 .bg-gray {
   background-color: #6c757d !important;
   color: #fff;
+}
+
+// Fix toastr styling - prevent Bootstrap 5 .toast styles from overriding toastr
+#toast-container > .toast {
+  opacity: 1;
+  background-color: initial;
+  border: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  color: #fff;
+
+  &.toast-success {
+    background-color: var(--bs-success);
+  }
+  &.toast-error {
+    background-color: var(--bs-danger);
+  }
+  &.toast-info {
+    background-color: var(--bs-info);
+  }
+  &.toast-warning {
+    background-color: var(--bs-warning);
+    color: #000;
+  }
+}
+
+// Bootstrap 4 → 5 badge backward compatibility
+.badge.badge-primary {
+  background-color: var(--bs-primary) !important;
+  color: #fff !important;
+}
+.badge.badge-info {
+  background-color: var(--bs-info) !important;
+  color: #fff !important;
+}
+.badge.badge-success {
+  background-color: var(--bs-success) !important;
+  color: #fff !important;
+}
+.badge.badge-warning {
+  background-color: var(--bs-warning) !important;
+  color: #000 !important;
+}
+.badge.badge-danger {
+  background-color: var(--bs-danger) !important;
+  color: #fff !important;
+}
+.badge.badge-secondary {
+  background-color: var(--bs-secondary) !important;
+  color: #fff !important;
 }

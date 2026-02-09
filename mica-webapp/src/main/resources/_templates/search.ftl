@@ -9,7 +9,7 @@
 </head>
 <body id="search-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed sidebar-expand-lg">
 <!-- Site wrapper -->
-<div id="search-application" class="app-wrapper" :class="{'harmoMode': currentStudyTypeSelection && currentStudyTypeSelection.harmonization}" v-cloak>
+<div id="search-application" class="app-wrapper" v-cloak>
 
   <!-- Navbar -->
   <#include "libs/aside-navbar.ftl">
@@ -290,7 +290,7 @@
                   </div>
 
                   <div class="mt-3">
-                    <div class="tab-content" id="results-tabContent">
+                    <div class="tab-content" id="results-tabContent" v-cloak>
 
                       <div v-show="loading.state" class="spinner-border spinner-border-sm" role="status"></div>
 
