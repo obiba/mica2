@@ -76,7 +76,7 @@
     <protobuf.version>3.25.5</protobuf.version>
     <protobuf-java-format.version>1.2.1-obiba</protobuf-java-format.version>
     <rql-parser.version>0.3.3-obiba</rql-parser.version>
-    <shiro.version>1.13.0</shiro.version>
+    <shiro.version>2.1.0</shiro.version>
     <shiro-extras.version>1.1.0</shiro-extras.version>
     <lang-tag.version>1.4.4</lang-tag.version>
     <servlet-api.version>6.1.0-M2</servlet-api.version>
