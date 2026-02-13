@@ -2,12 +2,12 @@ const RqlQuery = {
   template: `
   <div class="btn-group btn-group-sm dropdown my-0">
     <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown">
-      <i class="fa fa-info-circle" v-bind:title="vocabulary.title | localize-string"></i>
+      <i class="fa fa-info-circle" v-bind:title="localizeString(vocabulary.title)"></i>
       <span class="ps-1">{{ getCriterionAsString() }}</span>
     </button>
 
     <div ref="menu" class="dropdown-menu" style="width: 25em;">
-      <div class="container" v-bind:title="vocabulary.description | localize-string"><i class="fa fa-info-circle"></i> {{ vocabulary.title | localize-string }}</div>
+      <div class="container" v-bind:title="localizeString(vocabulary.description)"><i class="fa fa-info-circle"></i> {{ localizeString(vocabulary.title) }}</div>
       <div class="dropdown-divider"></div>
 
       <template v-if="criterion.type === 'TERMS'">
@@ -15,23 +15,23 @@ const RqlQuery = {
       <div class="container" v-if="!termQueryIsReadOnly">
         <div class="form-check">
           <input class="form-check-input" type="radio" v-bind:id="'radio-' + vocabulary.name + '-all'" v-bind:name="vocabulary.name + '-terms-choice'" value="exists" v-model="criterion.operator" v-on:change="onInput()">
-          <label class="form-check-label" v-bind:for="'radio-' + vocabulary.name + '-all'">{{ "search.any" | translate }}</label>
+          <label class="form-check-label" v-bind:for="'radio-' + vocabulary.name + '-all'">{{ translate("search.any") }}</label>
         </div>
         <div class="form-check">
           <input class="form-check-input" type="radio" v-bind:id="'radio-' + vocabulary.name + '-none'" v-bind:name="vocabulary.name + '-terms-choice'" value="missing" v-model="criterion.operator" v-on:change="onInput()">
-          <label class="form-check-label" v-bind:for="'radio-' + vocabulary.name + '-none'">{{ "search.none" | translate }}</label>
+          <label class="form-check-label" v-bind:for="'radio-' + vocabulary.name + '-none'">{{ translate("search.none") }}</label>
         </div>
         <div class="form-check">
           <input class="form-check-input" type="radio" v-bind:id="'radio-' + vocabulary.name + '-in'" v-bind:name="vocabulary.name + '-terms-choice'" value="in" v-model="criterion.operator" v-on:change="onInput()">
-          <label class="form-check-label" v-bind:for="'radio-' + vocabulary.name + '-in'">{{ "search.in" | translate }}</label>
+          <label class="form-check-label" v-bind:for="'radio-' + vocabulary.name + '-in'">{{ translate("search.in") }}</label>
         </div>
         <div class="form-check">
           <input class="form-check-input" type="radio" v-bind:id="'radio-' + vocabulary.name + '-not-in'" v-bind:name="vocabulary.name + '-terms-choice'" value="out" v-model="criterion.operator" v-on:change="onInput()">
-          <label class="form-check-label" v-bind:for="'radio-' + vocabulary.name + '-not-in'">{{ "search.out" | translate }}</label>
+          <label class="form-check-label" v-bind:for="'radio-' + vocabulary.name + '-not-in'">{{ translate("search.out") }}</label>
         </div>
       </div>
       <div class="container" v-else>
-        {{ ( "search." + criterion.operator ) | translate }}
+        {{ translate( "search." + criterion.operator ) }}
       </div>
 
       <div class="dropdown-divider"></div>
@@ -40,28 +40,28 @@ const RqlQuery = {
         <div class="input-group mb-2">
           <input type="text" class="form-control" v-model="termsFilter">
           <div class="input-group-append">
-            <span class="input-group-text">{{ "search.filter" | translate }}</span>
+            <span class="input-group-text">{{ translate("search.filter") }}</span>
           </div>
         </div>
         <ul class="list-unstyled" style="max-height: 24em; overflow-y: auto;">
           <li v-for="term in checkedTerms" v-bind:key="term.name">
             <div class="form-check">
               <input class="form-check-input" type="checkbox" v-bind:id="vocabulary.name + '-' + term.name" v-bind:value="term.name" v-bind:name="vocabulary.name + 'terms[]'" v-model="criterion.value" v-on:change="onInput()">
-              <label class="form-check-label" v-bind:for="vocabulary.name + '-' + term.name" v-bind:title="term.description | localize-string">{{ term.title | localize-string }}</label>
+              <label class="form-check-label" v-bind:for="vocabulary.name + '-' + term.name" v-bind:title="localizeString(term.description)">{{ localizeString(term.title) }}</label>
             </div>
           </li>
 
           <li v-for="term in uncheckedTerms" v-bind:key="term.name">
             <div class="form-check">
               <input class="form-check-input" type="checkbox" v-bind:id="vocabulary.name + '-' + term.name" v-bind:value="term.name" v-bind:name="vocabulary.name + 'terms[]'" v-model="criterion.value" v-on:change="onInput()">
-              <label class="form-check-label" v-bind:for="vocabulary.name + '-' + term.name" v-bind:title="term.description | localize-string">{{ term.title | localize-string }}</label>
+              <label class="form-check-label" v-bind:for="vocabulary.name + '-' + term.name" v-bind:title="localizeString(term.description)">{{ localizeString(term.title) }}</label>
             </div>
           </li>
         </ul>
       </div>
       <div class="container" v-else>
         <li v-for="term in checkedTerms" v-bind:key="term.name">
-          <label class="form-check-label" v-bind:for="vocabulary.name + '-' + term.name" v-bind:title="term.description | localize-string">{{ term.title | localize-string }}</label>
+          <label class="form-check-label" v-bind:for="vocabulary.name + '-' + term.name" v-bind:title="localizeString(term.description)">{{ localizeString(term.title) }}</label>
         </li>
       </div>
 
@@ -71,21 +71,21 @@ const RqlQuery = {
 
       <div class="container" v-if="!termQueryIsReadOnly">
         <div class="form-group">
-          <label v-bind:for="vocabulary.name + 'from'">{{ "search.from" | translate }}</label>
+          <label v-bind:for="vocabulary.name + 'from'">{{ translate("search.from") }}</label>
           <input type="number" class="form-control" v-bind:id="vocabulary.name + '-from'" v-model="criterion.value[0]" v-on:change="onInput()">
         </div>
         <div class="form-group">
-          <label v-bind:for="vocabulary.name + 'to'">{{ "search.to" | translate }}</label>
+          <label v-bind:for="vocabulary.name + 'to'">{{ translate("search.to") }}</label>
           <input type="number" class="form-control" v-bind:id="vocabulary.name + '-to'" v-model="criterion.value[1]" v-on:change="onInput()">
         </div>
       </div>
       <div class="container" v-else>
         <div>
-          <label v-bind:for="vocabulary.name + 'from'">{{ "search.from" | translate }}</label> {{criterion.value[0]}}
+          <label v-bind:for="vocabulary.name + 'from'">{{ translate("search.from") }}</label> {{criterion.value[0]}}
         </div>
 
         <div>
-          <label v-bind:for="vocabulary.name + 'to'">{{ "search.to" | translate }}</label> {{criterion.value[1]}}
+          <label v-bind:for="vocabulary.name + 'to'">{{ translate("search.to") }}</label> {{criterion.value[1]}}
         </div>
       </div>
 
@@ -137,7 +137,7 @@ const RqlQuery = {
       return uiTermsReadOnlyVocabularyAttributes && uiTermsReadOnlyVocabularyAttributes.value === "true";
     },
     terms() {
-      const localizeStringFunction = Vue.filter("localize-string") || ((val) => val[0].text);
+      const localizeStringFunction = MicaFilters.localizeString;
 
       return (this.vocabulary.terms || []).filter(term => {
         return (!this.termsFilter || this.termsFilter.trim().length === 0) || localizeStringFunction(term.title).toLowerCase().indexOf(this.termsFilter.toLowerCase()) > -1;
@@ -152,7 +152,7 @@ const RqlQuery = {
   },
   methods: {
     getCriterionAsString() {
-      const localizeStringFunction = Vue.filter("localize-string") || ((val) => val[0].text);
+      const localizeStringFunction = MicaFilters.localizeString;
       return this.criterion.asString(localizeStringFunction);
     },
     onInput() {
@@ -183,11 +183,11 @@ const RqlNode = {
 
     <span v-if="advancedMode && firstArgIsShown && otherArgsAreShown" class="d-flex my-auto">
       <div class="dropdown">
-        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-bs-toggle="dropdown">{{ "search." + name | translate }}</button>
+        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-bs-toggle="dropdown">{{ translate("search." + name) }}</button>
 
         <div class="dropdown-menu">
-          <button class="dropdown-item" type="button" v-if="name !== 'and'" v-on:click="updateNodeName('and')">{{ "search.and" | translate }}</button>
-          <button class="dropdown-item" type="button" v-if="name !== 'or'" v-on:click="updateNodeName('or')">{{ "search.or" | translate }}</button>
+          <button class="dropdown-item" type="button" v-if="name !== 'and'" v-on:click="updateNodeName('and')">{{ translate("search.and") }}</button>
+          <button class="dropdown-item" type="button" v-if="name !== 'or'" v-on:click="updateNodeName('or')">{{ translate("search.or") }}</button>
         </div>
       </div>
     </span>

@@ -116,10 +116,10 @@
                 <div class="col-12">
                   <h4 class="lead">
                     <a v-bind:href="'${contextPath}/dataset/' + dataset.id" class="mt-2">
-                      <b>{{dataset.name | localize-string}}</b>
+                      <b>{{localizeString(dataset.name)}}</b>
                     </a>
                   </h4>
-                  <span class="marked"><small :inner-html.prop="dataset.description | localize-string | ellipsis(300) | markdown"></small></span>
+                  <span class="marked"><small :inner-html.prop="markdown(ellipsis(localizeString(dataset.description), 300))"></small></span>
                 </div>
               </div>
             </div>
@@ -128,8 +128,8 @@
                 <template v-if="hasStats(dataset)">
                   <stat-item
                     v-bind:count="dataset.countStats.networks"
-                    v-bind:singular="'network' | translate"
-                    v-bind:plural="'networks' | translate"
+                    v-bind:singular="translate('network')"
+                    v-bind:plural="translate('networks')"
                     v-bind:url="networks(dataset)">
                   </stat-item>
                   <study-stat-item

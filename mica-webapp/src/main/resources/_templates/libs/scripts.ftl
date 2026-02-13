@@ -31,6 +31,7 @@
 <script src="${assetsPath}/libs/node_modules/jquery.redirect/jquery.redirect.js"></script>
 <script src="${assetsPath}/libs/node_modules/js-cookie/src/js.cookie.js"></script>
 <script src="${assetsPath}/js/mica.js"></script>
+<script src="${assetsPath}/js/mica-filters.js"></script>
 
 <!-- Custom js -->
 <#include "../models/scripts.ftl"/>

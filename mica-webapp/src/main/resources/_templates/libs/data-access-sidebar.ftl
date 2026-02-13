@@ -23,7 +23,7 @@
   <div class="sidebar-wrapper">
     <!-- Sidebar Menu -->
 
-    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+    <div class="user-panel mt-3 pb-3 mb-3 d-flex align-items-center gap-2">
       <div>
         <span title="<@message dar.status.toString()/>"><i
             class="fa-solid fa-circle fa-2x ps-2 text-${statusColor(dar.status.toString())}"></i></span>
@@ -34,7 +34,7 @@
     </div>
 
     <nav class="mt-2">
-      <ul data-widget="treeview" role="menu" data-accordion="false" class="nav nav-pills nav-sidebar flex-column">
+      <ul data-lte-toggle="treeview" role="menu" data-accordion="false" class="nav nav-pills nav-sidebar flex-column sidebar-menu">
         <li class="nav-item">
           <a id="dashboard-menu" href="${contextPath}/data-access/${dar.id}" class="nav-link d-flex align-items-center">
             <i class="fa-solid fa-tachometer-alt nav-icon"></i>
@@ -44,7 +44,7 @@
 
         <!-- Feasibilities -->
         <#if accessConfig.feasibilityEnabled>
-          <li class="nav-item has-treeview <#if feasibility??>menu-open</#if>">
+          <li class="nav-item <#if feasibility??>menu-open</#if>">
             <a id="feasibility-form-menu" href="#" class="nav-link d-flex align-items-center">
               <i class="nav-icon far fa-question-circle"></i>
               <p class="mb-0">
@@ -55,7 +55,7 @@
               </p>
               <span class="badge bg-info ms-auto">${feasibilities?size}</span>
             </a>
-            <ul class="nav nav-treeview">
+            <ul class="nav-treeview">
               <#list feasibilities as feasibility>
                 <li class="nav-item">
                   <a id="feasibility-form-menu-${feasibility.id}" href="${contextPath}/data-access-feasibility-form/${feasibility.id}" class="nav-link d-flex align-items-center">
@@ -79,7 +79,7 @@
 
         <!-- Main/Preliminary -->
         <#if accessConfig.preliminaryEnabled>
-          <li class="nav-item has-treeview menu-open">
+          <li class="nav-item menu-open">
             <a id="application-forms-menu" href="#" class="nav-link d-flex align-items-center">
               <i class="nav-icon fas fa-book"></i>
               <p class="mb-0">
@@ -87,7 +87,7 @@
                 <i class="fa-solid fa-angle-left ms-2"></i>
               </p>
             </a>
-            <ul class="nav nav-treeview">
+            <ul class="nav-treeview">
               <li class="nav-item">
                 <a id="preliminary-form-menu" href="${contextPath}/data-access-preliminary-form/${dar.id}" class="nav-link d-flex align-items-center">
                   <i class="fa-solid fa-circle nav-icon text-${statusColor(preliminary.status.toString())}"></i>
@@ -141,18 +141,18 @@
 
         <!-- Amendments -->
         <#if accessConfig.amendmentsEnabled && dar.status.toString() == "APPROVED">
-          <li class="nav-item has-treeview <#if amendment??>menu-open</#if>">
+          <li class="nav-item <#if amendment??>menu-open</#if>">
             <a id="amendment-form-menu" href="#" class="nav-link">
               <i class="nav-icon fas fa-file-import"></i>
               <p>
                 <@message "amendments"/>
                 <span class="badge bg-info ms-auto">${amendments?size}</span>
                 <#if amendments?size != 0 || user.username == dar.applicant || isAdministrator>
-                  <i class="fa-solid fa-angle-left right me-1"></i>
+                  <i class="fa-solid fa-angle-left ms-2"></i>
                 </#if>
               </p>
             </a>
-            <ul class="nav nav-treeview">
+            <ul class="nav-treeview">
               <#list amendments as amendment>
                 <li class="nav-item">
                   <a id="amendment-form-menu-${amendment.id}" href="${contextPath}/data-access-amendment-form/${amendment.id}" class="nav-link d-flex align-items-center">
@@ -177,18 +177,18 @@
         <!-- Agreements -->
         <#if accessConfig.agreementEnabled>
           <#if agreements?size != 0>
-            <li class="nav-item has-treeview <#if agreement??>menu-open</#if>">
+            <li class="nav-item <#if agreement??>menu-open</#if>">
               <a id="agreement-form-menu" href="#" class="nav-link">
                 <i class="nav-icon fa fa-gavel"></i>
                 <p>
                   <@message "agreements"/>
                   <span class="badge bg-info ms-auto">${agreements?size}</span>
                   <#if agreements?size != 0>
-                    <i class="fa-solid fa-angle-left right me-1"></i>
+                    <i class="fa-solid fa-angle-left ms-2"></i>
                   </#if>
                 </p>
               </a>
-              <ul class="nav nav-treeview">
+              <ul class="nav-treeview">
                 <#list agreements as agreement>
                   <li class="nav-item">
                     <a id="agreement-form-menu-${agreement.id}" href="${contextPath}/data-access-agreement-form/${agreement.id}" class="nav-link d-flex align-items-center">
@@ -274,7 +274,7 @@
         <div class="modal-header">
           <h4 class="modal-title"><@message "confirm-creation"/></h4>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-            
+
           </button>
         </div>
         <div class="modal-body">
@@ -302,7 +302,7 @@
         <div class="modal-header">
           <h4 class="modal-title"><@message "confirm-creation"/></h4>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-            
+
           </button>
         </div>
         <div class="modal-body">

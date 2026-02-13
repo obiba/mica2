@@ -9,6 +9,8 @@
       MODE: 2  // Use Vue 2 compatibility mode
     });
   }
+
+  Vue.mixin(MicaFilters.asMixin());
 </script>
 <script src="${assetsPath}/libs/node_modules/rql/dist/rql.js"></script>
 <script src="${assetsPath}/js/vue-mica-search/libs/result-parsers.js"></script>
@@ -118,30 +120,6 @@
 
   Mica.defaultSearchMode = "${defaultSearchMode}";
 
-  class StringLocalizer {
-      static __localizeInternal(entries, locale) {
-        const result = (Array.isArray(entries) ? entries : [entries]).filter((entry) => entry && (locale === entry.lang || locale === entry.locale)).pop();
-
-        if (result) {
-          let value = result.value ? result.value : result.text;
-          return value ? value : null;
-        }
-        return null;
-      }
-
-      static localize(entries) {
-        if (entries) {
-          const result = StringLocalizer.__localizeInternal(entries, Mica.locale)
-            || StringLocalizer.__localizeInternal(entries, Mica.defaultLocale)
-            || StringLocalizer.__localizeInternal(entries, 'und');
-
-          return result ? result : '';
-        } else {
-          return '';
-        }
-      }
-    }
-
   class TaxonomyTitleFinder {
     initialize(taxonomies) {
       this.taxonomies = taxonomies;
@@ -212,22 +190,6 @@
   </#if>
 
   $(function () {
-    // global translate filter for use in imported components
-    Vue.filter("translate", (key) => {
-      let value = Mica.tr[key];
-      return typeof value === "string" ? value : key;
-    });
-
-    Vue.filter("localize-string", (input) => {
-      if (typeof input === "string") return input;
-      return StringLocalizer.localize(input);
-    });
-
-    // temporary, until overritten by rest call
-    Vue.filter("taxonomy-title", (input) => {
-      return input;
-    });
-
     // base documents data table options
     const dataTableOpts = {
       paging: true,

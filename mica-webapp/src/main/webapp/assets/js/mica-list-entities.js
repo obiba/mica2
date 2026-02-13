@@ -1,61 +1,4 @@
-class StringLocalizer {
-  static __localizeInternal(entries, locale) {
-    const result = (Array.isArray(entries) ? entries : [entries]).filter((entry) => entry && (locale === entry.lang || locale === entry.locale)).pop();
-
-    if (result) {
-      let value = result.value ? result.value : result.text;
-      return value ? value : null;
-    }
-    return null;
-  }
-
-  static localize(entries) {
-    if (entries) {
-      const result = StringLocalizer.__localizeInternal(entries, Mica.locale)
-        || StringLocalizer.__localizeInternal(entries, Mica.defaultLocale)
-        || StringLocalizer.__localizeInternal(entries, 'und');
-
-      return result ? result : '';
-    } else {
-      return '';
-    }
-  }
-}
-
-// Register all filters
-
-Vue.filter("ellipsis", (input, n, link) => {
-  if (input.length <= n) { return input; }
-  const subString = input.substr(0, n-1); // the original check
-  const anchor = link ? ` <a href="${link}">...</a>` : " ...";
-  return subString.substr(0, subString.lastIndexOf(" ")) + anchor;
-});
-
-Vue.filter("readmore", (input, link, text) => {
-  return `${input} <a href="${link}" class="clearfix btn-link">${text}</a>`;
-});
-
-Vue.filter("concat", (input, suffix) => {
-  return input + suffix;
-});
-
-Vue.filter("localize-string", (input) => {
-  if (typeof input === "string") return input;
-  return StringLocalizer.localize(input);
-});
-
-Vue.filter("markdown", (input) => {
-  return marked.parse(input);
-});
-
-Vue.filter("localize-number", (input) => {
-  return (input || 0).toLocaleString();
-});
-
-Vue.filter("translate", (key) => {
-  let value = Mica.tr[key];
-  return typeof value === "string" ? value : key;
-});
+// Filter functions are now provided by mica-filters.js (MicaFilters)
 
 /**
  * Base class for all entities (Srtudies, Networks, Datasets)
@@ -372,7 +315,7 @@ const StatItemComponent = {
   },
   template: `
     <a v-if="count" v-bind:href="url" class="btn btn-sm btn-link col text-left">
-      <span class="h6 pb-0 mb-0 d-block">{{count | localize-number}}</span>
+      <span class="h6 pb-0 mb-0 d-block">{{localizeNumber(count)}}</span>
       <span class="text-muted"><small>{{count < 2 ? this.singular : this.plural}}</small></span>
     </a>
   `
@@ -395,7 +338,7 @@ const VariableStatItemComponent =  {
   },
   template: `
     <a v-if="count" v-bind:href="url" class="btn btn-sm btn-link col text-left">
-      <span class="h6 pb-0 mb-0 d-block">{{count | localize-number}}</span>
+      <span class="h6 pb-0 mb-0 d-block">{{localizeNumber(count)}}</span>
       <span class="text-muted"><small>{{this.countLabel}}</small></span>
     </a>
   `,
@@ -430,7 +373,7 @@ const DatasetStatItemComponent =  {
   },
   template: `
     <a v-if="count" href="javascript:void(0)" style="cursor: initial;" class="btn btn-sm col text-left">
-      <span class="h6 pb-0 mb-0 d-block">{{count | localize-number}}</span>
+      <span class="h6 pb-0 mb-0 d-block">{{localizeNumber(count)}}</span>
       <span class="text-muted"><small>{{this.countLabel}}</small></span>
     </a>
   `,
@@ -459,7 +402,7 @@ const StudyStatItemComponent =  {
   },
   template: `
     <a v-if="count" href="javascript:void(0)" style="cursor: initial;" class="btn btn-sm col text-left">
-      <span class="h6 pb-0 mb-0 d-block">{{count | localize-number}}</span>
+      <span class="h6 pb-0 mb-0 d-block">{{localizeNumber(count)}}</span>
       <span class="text-muted"><small>{{this.countLabel}}</small></span>
     </a>
   `,
@@ -543,7 +486,7 @@ const TypeaheadComponent = {
   template: `
     <div class="typeahead w-100 position-relative">
       <div class="input-group">
-        <input type="text" :placeholder="'listing-typeahead-placeholder'   | translate" class="form-control form-control-sm" v-model="text" @keyup="typing($event)">
+        <input type="text" :placeholder="translate('listing-typeahead-placeholder')" class="form-control form-control-sm" v-model="text" @keyup="typing($event)">
         <div class="input-group-append">
           <button type="button" class="btn btn-primary btn-sm" @click="select(text)"><i class="fas fa-filter"></i></button>
         </div>

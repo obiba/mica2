@@ -49,14 +49,8 @@
     });
   }
 
-  // Global translate filter for compatibility with existing components
-  // This will be removed once all components are migrated
-  if (Vue && Vue.filter) {
-    Vue.filter("translate", (key) => {
-      let value = Mica.tr[key];
-      return typeof value === "string" ? value : key;
-    });
-  }
+  // Register filter functions as a global mixin so they are available in all component templates
+  Vue.mixin(MicaFilters.asMixin());
 </script>
 <script src="${assetsPath}/libs/node_modules/rql/dist/rql.js"></script>
 <script src="${assetsPath}/js/mica-list-entities.js"></script>

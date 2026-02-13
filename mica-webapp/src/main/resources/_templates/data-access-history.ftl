@@ -5,7 +5,7 @@
   <link rel="stylesheet" href="${assetsPath}/libs/node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css"></link>
   <title>${config.name!""} | <@message "data-access-history"/> ${dar.id}</title>
 </head>
-<body id="data-access-history-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
+<body id="data-access-history-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed sidebar-expand-lg">
 <!-- Site wrapper -->
 <div class="app-wrapper">
 
@@ -160,7 +160,7 @@
         <div class="modal-header">
           <h4 class="modal-title"><@message "add-action"/></h4>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-            
+
           </button>
         </div>
         <div class="modal-body">
