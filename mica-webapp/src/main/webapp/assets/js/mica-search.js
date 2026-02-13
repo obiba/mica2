@@ -1,44 +1,6 @@
 'use strict';
 
-// global translate filter for use in imported components
-Vue.filter("translate", (key) => {
-  let value = Mica.tr[key];
-  return typeof value === "string" ? value : key;
-});
-
-Vue.filter("localize-string", (input) => {
-  if (typeof input === "string") return input;
-  return StringLocalizer.localize(input);
-});
-
-// temporary, until overritten by rest call
-Vue.filter("taxonomy-title", (input) => {
-  return input;
-});
-
-class StringLocalizer {
-  static __localizeInternal(entries, locale) {
-    const result = (Array.isArray(entries) ? entries : [entries]).filter((entry) => entry && (locale === entry.lang || locale === entry.locale)).pop();
-
-    if (result) {
-      let value = result.value ? result.value : result.text;
-      return value ? value : null;
-    }
-    return null;
-  }
-
-  static localize(entries) {
-    if (entries) {
-      const result = StringLocalizer.__localizeInternal(entries, Mica.locale)
-        || StringLocalizer.__localizeInternal(entries, Mica.defaultLocale)
-        || StringLocalizer.__localizeInternal(entries, 'und');
-
-      return result ? result : '';
-    } else {
-      return '';
-    }
-  }
-}
+// Filter functions and StringLocalizer are now provided by mica-filters.js (MicaFilters)
 
 const MINIMUM_STUDY_TAXONOMY = {
   name: "Mica_study",
@@ -74,8 +36,8 @@ Vue.component('search-criteria', {
         <ul class="nav nav-treeview">
           <li class="nav-item" v-for="menu in getFilteredMenus(name)" :key="menu.name">
             <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#taxonomy-modal"
-              :title="menu.description | localize-string"
-              @click.prevent="onTaxonomySelection(menu.name, name)"><i class="far fa-circle nav-icon me-1"></i><span>{{ menu.title | localize-string }}</span>
+              :title="localizeString(menu.description)"
+              @click.prevent="onTaxonomySelection(menu.name, name)"><i class="far fa-circle nav-icon me-1"></i><span>{{ localizeString(menu.title) }}</span>
             </a>
           </li>
         </ul>
@@ -1458,10 +1420,10 @@ class TableFixedHeaderUtility {
             taxonomyTitleFinder.initialize(this.taxonomies);
             chartTableTermSorters.initialize(this.taxonomies['Mica_study']);
 
-            Vue.filter("taxonomy-title", (input) => {
+            MicaFilters.taxonomyTitle = (input) => {
               const [taxonomy, vocabulary, term] = input.split(/\./);
               return  taxonomyTitleFinder.title(taxonomy, vocabulary, term) || input;
-            });
+            };
 
             // Emit 'query-type-selection' to pickup a URL query to be executed; if nothing found a Variable query is executed
             EventBus.$emit(EVENTS.QUERY_TYPE_SELECTION, {});

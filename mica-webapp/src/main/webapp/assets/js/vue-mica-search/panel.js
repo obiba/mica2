@@ -4,18 +4,18 @@ const RqlPanelVocabulary = {
     <template v-if="criterion.type === 'TERMS'">
 
       <ul class="list-unstyled row">
-        <li class="list-item col-sm-4" v-for="term in terms" v-bind:key="term.name" v-bind:title="term.description | localize-string">
+        <li class="list-item col-sm-4" v-for="term in terms" v-bind:key="term.name" v-bind:title="localizeString(term.description)">
           <div class="form-check">
             <input class="form-check-input" type="checkbox" v-bind:id="vocabulary.name + '-' + term.name" v-bind:value="term.name" v-model="criterion.value" v-on:change="onInput()">
-            <label class="form-check-label text-break" v-bind:for="vocabulary.name + '-' + term.name">{{ term.title | localize-string }}</label>
+            <label class="form-check-label text-break" v-bind:for="vocabulary.name + '-' + term.name">{{ localizeString(term.title) }}</label>
           </div>
         </li>
       </ul>
 
       <div v-if="showMoreLess()" class="float-right">
         <button type="button" class="btn btn-link btn-sm" v-on:click="switchMoreLess()">
-          <span v-if="!showAll" aria-hidden="true"><i class="fas fa-caret-down"></i> {{ "more" | translate }}</span>
-          <span v-if="showAll" aria-hidden="true"><i class="fas fa-caret-up"></i> {{ "less" | translate }}</span>
+          <span v-if="!showAll" aria-hidden="true"><i class="fas fa-caret-down"></i> {{ translate("more") }}</span>
+          <span v-if="showAll" aria-hidden="true"><i class="fas fa-caret-up"></i> {{ translate("less") }}</span>
         </button>
       </div>
 
@@ -24,11 +24,11 @@ const RqlPanelVocabulary = {
     <template v-else-if="criterion.type === 'NUMERIC'">
       <div class="row">
         <div class="form-group col-6 d-inline-block">
-          <label v-bind:for="vocabulary.name + 'from'">{{ "search.from" | translate }}</label>
+          <label v-bind:for="vocabulary.name + 'from'">{{ translate("search.from") }}</label>
           <input type="number" class="form-control" v-bind:id="vocabulary.name + '-from'" v-model="criterion.value[0]" v-on:change="onInput()">
         </div>
         <div class="form-group col-6 d-inline-block">
-          <label v-bind:for="vocabulary.name + 'to'">{{ "search.to" | translate }}</label>
+          <label v-bind:for="vocabulary.name + 'to'">{{ translate("search.to") }}</label>
           <input type="number" class="form-control" v-bind:id="vocabulary.name + '-to'" v-model="criterion.value[1]" v-on:change="onInput()">
         </div>
       </div>
@@ -72,7 +72,7 @@ const RqlPanelVocabulary = {
     filteredTerms() {
       if (this.criterion.type !== "TERMS") return [];
 
-      const localizeStringFunction = Vue.filter("localize-string") || ((val) => val[0].text);
+      const localizeStringFunction = MicaFilters.localizeString;
 
       return (this.vocabulary.terms || []).filter(term => {
         return (!this.termsFilter || this.termsFilter.trim().length === 0) ||
@@ -114,9 +114,9 @@ const RqlPanel = {
   <div>
     <template v-if="!hasExternalFilter">
     <div class="input-group mb-4">
-      <input type="text" class="form-control" :placeholder="'search.filter-help' | translate" v-model="panelFilter">
+      <input type="text" class="form-control" :placeholder="translate('search.filter-help')" v-model="panelFilter">
       <div class="input-group-append">
-        <span class="input-group-text">{{ "search.filter" | translate }}</span>
+        <span class="input-group-text">{{ translate("search.filter") }}</span>
       </div>
     </div>
     </template>
@@ -128,25 +128,25 @@ const RqlPanel = {
     </template>
 
     <template v-else>
-    <h4 class="mt-3 panel-taxonomy-title" v-if="vocabularies.length > 0" v-bind:title="taxonomy.description | localize-string">
-      {{ taxonomy.title | localize-string }}
+    <h4 class="mt-3 panel-taxonomy-title" v-if="vocabularies.length > 0" v-bind:title="localizeString(taxonomy.description)">
+      {{ localizeString(taxonomy.title) }}
     </h4>
 
-    <p class="text-muted panel-taxonomy-description" v-if="vocabularies.length > 0">{{ taxonomy.description | localize-string }}</p>
+    <p class="text-muted panel-taxonomy-description" v-if="vocabularies.length > 0">{{ localizeString(taxonomy.description) }}</p>
 
     <div class="row d-flex align-items-stretch">
       <div class="col-12 col-sm-12 col-md-6 d-flex align-items-stretch" v-for="vocabulary in vocabularies" v-bind:key="vocabulary.name">
         <div class="card mb-2 w-100">
           <div class="card-header bg-light">
-            <span class="panel-vocabulary-title" v-bind:title="vocabulary.description | localize-string">{{ vocabulary.title | localize-string }}</span>
+            <span class="panel-vocabulary-title" v-bind:title="localizeString(vocabulary.description)">{{ localizeString(vocabulary.title) }}</span>
             <span class="float-right">
-              <button type="button" v-bind:id="vocabulary.name + '-select-all'" class="btn btn-link btn-sm pt-0 pb-0" v-if="canDoSelectAll(vocabulary)" v-on:click="selectAll(vocabulary)"><span aria-hidden="true">{{ "select-all" | translate }}</span></button>
-              <button type="button" v-bind:id="vocabulary.name + '-clear-selection'" class="btn btn-link btn-sm pt-0 pb-0" v-if="hasAssociatedQuery(vocabulary)" v-on:click="clear(vocabulary)"><span aria-hidden="true">{{ "clear-selection" | translate }}</span></button>
+              <button type="button" v-bind:id="vocabulary.name + '-select-all'" class="btn btn-link btn-sm pt-0 pb-0" v-if="canDoSelectAll(vocabulary)" v-on:click="selectAll(vocabulary)"><span aria-hidden="true">{{ translate("select-all") }}</span></button>
+              <button type="button" v-bind:id="vocabulary.name + '-clear-selection'" class="btn btn-link btn-sm pt-0 pb-0" v-if="hasAssociatedQuery(vocabulary)" v-on:click="clear(vocabulary)"><span aria-hidden="true">{{ translate("clear-selection") }}</span></button>
             </span>
           </div>
           <div class="card-body">
             <div v-if="vocabulary.description" class="panel-vocabulary-description text-muted mb-4">
-              {{ vocabulary.description | localize-string }}
+              {{ localizeString(vocabulary.description) }}
             </div>
             <rql-panel-vocabulary v-bind:vocabulary="vocabulary" v-bind:query="getAssociatedQuery(vocabulary)" v-bind:termsFilter="theFilter" v-on:update-query="updateQuery"></rql-panel-vocabulary>
           </div>
@@ -183,7 +183,7 @@ const RqlPanel = {
     vocabularies() {
       if (!this.taxonomy) return [];
 
-      const localizeStringFunction = Vue.filter("localize-string") || ((val) => val[0].text);
+      const localizeStringFunction = MicaFilters.localizeString;
 
       return (this.taxonomy.vocabularies || [])
       .filter(vocabulary => {

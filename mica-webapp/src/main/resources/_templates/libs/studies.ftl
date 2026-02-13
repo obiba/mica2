@@ -56,11 +56,11 @@
 
 <#macro studyCardModelStats>
   <a v-if="study.model && study.model.methods" href="javascript:void(0)" style="cursor: initial;" class="btn btn-sm col text-start">
-    <span class="h6 pb-0 mb-0 d-block">{{study.model.methods.design | translate}}</span>
+    <span class="h6 pb-0 mb-0 d-block">{{translate(study.model.methods.design)}}</span>
     <span class="text-muted"><small><@message "study_taxonomy.vocabulary.methods-design.title"/></small></span>
   </a>
   <a v-if="study.model && study.model.numberOfParticipants" href="javascript:void(0)" style="cursor: initial;" class="btn btn-sm col text-start">
-    <span class="h6 pb-0 mb-0 d-block">{{study.model.numberOfParticipants.participant.number | localize-number}}</span>
+    <span class="h6 pb-0 mb-0 d-block">{{localizeNumber(study.model.numberOfParticipants.participant.number)}}</span>
     <span class="text-muted"><small><@message "study_taxonomy.vocabulary.numberOfParticipants-participant-number.title"/></small></span>
   </a>
 </#macro>
@@ -122,14 +122,14 @@
                 <div class="col-xs-12 col">
                   <h4 class="lead">
                     <a v-bind:href="'${contextPath}/study/' + study.id" class="mt-2">
-                      <b>{{study.name | localize-string}}</b>
+                      <b>{{localizeString(study.name)}}</b>
                     </a>
                   </h4>
-                  <span class="marked"><small :inner-html.prop="study.objectives | localize-string | ellipsis(300, ('${contextPath}/study/' + study.id)) | markdown"></small></span>
+                  <span class="marked"><small :inner-html.prop="markdown(ellipsis(localizeString(study.objectives), 300, ('${contextPath}/study/' + study.id)))"></small></span>
                 </div>
                 <div class="col-3 mx-auto my-auto" v-if="study.logo">
                   <a v-bind:href="'${contextPath}/study/' + study.id" class="text-decoration-none text-center">
-                    <img class="img-fluid" style="max-height: 10em;" v-bind:alt="study.acronym | localize-string | concat(' logo')" v-bind:src="'${contextPath}/ws/study/' + study.id + '/file/' + study.logo.id + '/_download'"/>
+                    <img class="img-fluid" style="max-height: 10em;" v-bind:alt="concat(localizeString(study.acronym), ' logo')" v-bind:src="'${contextPath}/ws/study/' + study.id + '/file/' + study.logo.id + '/_download'"/>
                   </a>
                 </div>
               </div>

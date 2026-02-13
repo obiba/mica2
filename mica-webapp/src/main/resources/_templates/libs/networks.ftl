@@ -87,14 +87,14 @@
                 <div class="col-xs-12 col">
                   <h4 class="lead">
                     <a v-bind:href="'${contextPath}/network/' + network.id" class="mt-2">
-                      <b>{{network.name | localize-string}}</b>
+                      <b>{{localizeString(network.name)}}</b>
                     </a>
                   </h4>
-                  <span class="marked"><small :inner-html.prop="network.description | localize-string | ellipsis(300, ('${contextPath}/network/' + network.id)) | markdown"></small></span>
+                  <span class="marked"><small :inner-html.prop="markdown(ellipsis(localizeString(network.description), 300, ('${contextPath}/network/' + network.id)))"></small></span>
                 </div>
                 <div class="col-3 mx-auto my-auto" v-if="network.logo">
                   <a v-bind:href="'${contextPath}/network/' + network.id" class="text-decoration-none text-center">
-                    <img class="img-fluid" style="max-height: 10em;" v-bind:alt="network.acronym | localize-string | concat(' logo')" v-bind:src="'${contextPath}/ws/network/' + network.id + '/file/' + network.logo.id + '/_download'"/>
+                    <img class="img-fluid" style="max-height: 10em;" v-bind:alt="concat(localizeString(network.acronym), ' logo')" v-bind:src="'${contextPath}/ws/network/' + network.id + '/file/' + network.logo.id + '/_download'"/>
                   </a>
                 </div>
               </div>
@@ -103,35 +103,35 @@
               <div v-if="hasStats(network.countStats)" class="row pt-1 row-cols-5">
                 <stat-item
                         v-bind:count="network.countStats.individualStudies"
-                        v-bind:singular="'individual-study' | translate"
-                        v-bind:plural="'individual-studies' | translate"
+                        v-bind:singular="translate('individual-study')"
+                        v-bind:plural="translate('individual-studies')"
                         v-bind:url="individualStudies(network.id)">
                 </stat-item>
                 <#if config.studyDatasetEnabled>
                   <stat-item
                           v-bind:count="network.countStats.studiesWithVariables"
-                          v-bind:singular="'study-with-variables' | translate"
-                          v-bind:plural="'studies-with-variables' | translate"
+                          v-bind:singular="translate('study-with-variables')"
+                          v-bind:plural="translate('studies-with-variables')"
                           v-bind:url="individualStudiesWithVariables(network.id)">
                   </stat-item>
                   <stat-item
                           v-bind:count="network.countStats.studyVariables"
-                          v-bind:singular="'study-variable' | translate"
-                          v-bind:plural="'study-variables' | translate"
+                          v-bind:singular="translate('study-variable')"
+                          v-bind:plural="translate('study-variables')"
                           v-bind:url="individualStudyVariables(network.id)">
                   </stat-item>
                 </#if>
                 <stat-item
                         v-bind:count="network.countStats.harmonizationStudies"
-                        v-bind:singular="'harmonization-study' | translate"
-                        v-bind:plural="'harmonization-studies' | translate"
+                        v-bind:singular="translate('harmonization-study')"
+                        v-bind:plural="translate('harmonization-studies')"
                         v-bind:url="harmonizationStudies(network.id)">
                 </stat-item>
                 <#if config.harmonizationDatasetEnabled>
                   <stat-item
                           v-bind:count="network.countStats.dataschemaVariables"
-                          v-bind:singular="'harmonization-study-variable' | translate"
-                          v-bind:plural="'harmonization-study-variables' | translate"
+                          v-bind:singular="translate('harmonization-study-variable')"
+                          v-bind:plural="translate('harmonization-study-variables')"
                           v-bind:url="harmonizationStudyVariables(network.id)">>
                   </stat-item>
                 </#if>

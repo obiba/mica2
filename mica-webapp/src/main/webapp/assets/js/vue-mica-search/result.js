@@ -250,15 +250,15 @@ const GraphicResult = {
   template: `
   <div v-bind:id="cardId" class="card card-primary card-outline">
     <div v-if="!hideHeader" class="card-header">
-      <h3 class="card-title">{{chartDataset.options.title | translate}}</h3>
+      <h3 class="card-title">{{translate(chartDataset.options.title)}}</h3>
       <div class="card-tools float-right">
-        <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" v-bind:title="'collapse' | translate">
+        <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" v-bind:title="translate('collapse')">
           <i class="fas fa-minus"></i>
         </button>
         </div>
     </div>
     <div class="card-body" style="min-height: 24em">
-      <p class="text-muted">{{chartDataset.options.text | translate}}</p>
+      <p class="text-muted">{{translate(chartDataset.options.text)}}</p>
       <div v-bind:id="containerId" class="row">
         <div v-bind:id="chartContainerId" class="col-sm-12 col-xl-6 my-auto"></div>
 
@@ -293,7 +293,7 @@ const GraphicResult = {
             </tbody>
             <tfoot v-if="totals">
               <tr class="row">
-                  <th class="col">{{ 'graphics.total' | translate }}</th>
+                  <th class="col">{{ translate('graphics.total') }}</th>
                   <th class="col">
                     <span>{{totals.countTotal.toLocaleString()}}</span>
                     <small class="ml-1 d-inline-block" style="width: 4rem;" v-if="chartDataset.options.withTotals && chartDataset.options.withPercentages">({{(100).toFixed(2) + '%'}})</small>
@@ -498,8 +498,8 @@ const VariablesResult = {
           <thead>
             <tr>
               <th v-if="showCheckboxes"><i class="far fa-square"></i></th>
-              <th class="column-name">{{ "name" | translate }}</th>
-              <th v-for="(column, index) in variableColumnNames" :key="index" :class="'column-'+ column" >{{ column | translate }}</th>
+              <th class="column-name">{{ translate("name") }}</th>
+              <th v-for="(column, index) in variableColumnNames" :key="index" :class="'column-'+ column" >{{ translate(column) }}</th>
             </tr>
           </thead>
           <tbody>
@@ -557,19 +557,19 @@ const StudiesResult = {
           <thead>
             <tr>
               <th v-if="showCheckboxes" rowspan="2"><i class="far fa-square"></i></th>
-              <th class="column-acronym" rowspan="2">{{ "acronym"  | translate }}</th>
+              <th class="column-acronym" rowspan="2">{{ translate("acronym") }}</th>
               <th v-for="(item, index) in studyColumnItems" :key="index"
                 :class="'column-'+ item.name"
                 :rowspan="item.rowspan"
                 :colspan="item.colspan">
-                {{ item.name | translate }}
+                {{ translate(item.name) }}
               </th>
             </tr>
             <tr>
-              <th v-for="(item, index) in studyColumnItems2" :key="index" :class="'column-'+ item.name" :title="item.title | taxonomy-title">
+              <th v-for="(item, index) in studyColumnItems2" :key="index" :class="'column-'+ item.name" :title="taxonomyTitle(item.title)">
               <span>
                 <i v-if="item.icon" :class="item.icon"></i>
-                {{ item.name | translate }}
+                {{ translate(item.name) }}
               </span>
               </th>
             </tr>
@@ -734,26 +734,26 @@ const NetworksResult = {
           <thead v-if="withCollectedDatasets && withHarmonizedDatasets">
             <tr>
               <th v-if="showCheckboxes" rowspan="2"><i class="far fa-square"></i></th>
-              <th class="column-acronym" rowspan="2">{{ "acronym" | translate }}</th>
+              <th class="column-acronym" rowspan="2">{{ translate("acronym") }}</th>
               <th v-for="(item, index) in networkColumnItems" :key="index"
                 :class="'column-' + item.name"
                 :rowspan="item.rowspan"
                 :colspan="item.colspan">
-                {{ item.name | translate }}
+                {{ translate(item.name) }}
               </th>
             </tr>
             <tr v-if="withCollectedDatasets || withHarmonizedDatasets">
               <th v-for="(item, index) in networkColumnItems2" :key="index" :class="'column-' + item.name">
-                {{ item.name | translate }}
+                {{ translate(item.name) }}
               </th>
             </tr>
           </thead>
           <thead v-else>
             <tr>
               <th v-if="showCheckboxes"><i class="far fa-square"></i></th>
-              <th>{{ "acronym" | translate }}</th>
+              <th>{{ translate("acronym") }}</th>
               <th v-for="(item, index) in networkColumnItems" :key="index" :class="'column-' + item.name">
-                {{ item.name | translate }}
+                {{ translate(item.name) }}
               </th>
             </tr>
           </thead>
@@ -890,8 +890,8 @@ const DatasetsResult = {
         <table id="vosr-datasets-result" class="table table-striped" width="100%">
           <thead>
             <tr>
-              <th class="column-acronym" >{{ "acronym" | translate }}</th>
-              <th v-for="(column, index) in datasetColumnNames" :key="index" :class="'column-' + column">{{ column | translate }}</th>
+              <th class="column-acronym" >{{ translate("acronym") }}</th>
+              <th v-for="(column, index) in datasetColumnNames" :key="index" :class="'column-' + column">{{ translate(column) }}</th>
             </tr>
           </thead>
           <tbody>
@@ -1030,7 +1030,7 @@ const RowPopup = {
     this.scrollHandler = this.onScroll.bind(this);
     this.mouseMoveHandler = this.onMouseMove.bind(this);
 
-    const translate = (key) => Vue.filter('translate')(key);
+    const translate = (key) => MicaFilters.translate(key);
 
     this.headersMap = {
       dceId: [
@@ -1103,12 +1103,12 @@ const CoverageResult = {
             <thead>
               <tr>
                 <th v-bind:rowspan="bucketStartsWithDce ? 1 : 2" v-bind:colspan="studyTypeSelection && studyTypeSelection.harmonization ? 3 : table.cols.colSpan">
-                  <span v-if="!studyTypeSelection || !studyTypeSelection.harmonization">{{ (bucketName === 'dce' ? '' : ('coverage-buckets-' + bucketName)) | translate}}</span>
-                  <span v-else>{{ 'coverage-buckets-harmonization' | translate}}</span>
+                  <span v-if="!studyTypeSelection || !studyTypeSelection.harmonization">{{ translate(bucketName === 'dce' ? '' : ('coverage-buckets-' + bucketName))}}</span>
+                  <span v-else>{{ translate('coverage-buckets-harmonization')}}</span>
                 </th>
                 <th v-for="(header, index) in table.vocabularyHeaders" v-bind:key="index" v-bind:colspan="header.termsCount">
                   <!-- TODO popover -->
-                  <span>{{ header.entity.titles | localize-string }} </span>
+                  <span>{{ localizeString(header.entity.titles) }} </span>
                   <small>
                     <a href v-on:click="removeVocabulary($event, header)">
                       <i class="fa fa-times"></i>
@@ -1117,13 +1117,13 @@ const CoverageResult = {
                 </th>
               </tr>
               <tr>
-                <th v-if="bucketStartsWithDce" v-bind:colspan="studyTypeSelection && studyTypeSelection.harmonization ? 3 : 1">{{ (studyTypeSelection && studyTypeSelection.harmonization ? "coverage-buckets-harmonization" : "study") | translate }}</th>
-                <th v-if="bucketStartsWithDce" v-show="!studyTypeSelection.harmonization">{{ "population" | translate }}</th>
-                <th v-if="bucketStartsWithDce" v-show="!studyTypeSelection.harmonization">{{ "data-collection-event" | translate }}</th>
+                <th v-if="bucketStartsWithDce" v-bind:colspan="studyTypeSelection && studyTypeSelection.harmonization ? 3 : 1">{{ translate(studyTypeSelection && studyTypeSelection.harmonization ? "coverage-buckets-harmonization" : "study") }}</th>
+                <th v-if="bucketStartsWithDce" v-show="!studyTypeSelection.harmonization">{{ translate("population") }}</th>
+                <th v-if="bucketStartsWithDce" v-show="!studyTypeSelection.harmonization">{{ translate("data-collection-event") }}</th>
 
                 <th v-for="(header, index) in table.termHeaders" v-bind:key="index">
                   <!-- TODO popover -->
-                  <span>{{ header.entity.titles | localize-string }} </span>
+                  <span>{{ localizeString(header.entity.titles) }} </span>
                   <small>
                     <a ng-if="header.canRemove" href v-on:click="removeTerm($event, header)">
                       <i class="fa fa-times"></i>
@@ -1133,7 +1133,7 @@ const CoverageResult = {
               </tr>
               <tr>
                 <th v-bind:colspan="studyTypeSelection && studyTypeSelection.harmonization ? 3 : table.cols.colSpan"></th>
-                <th v-for="(header, index) in table.termHeaders" v-bind:key="index" v-bind:title="header.entity.descriptions | localize-string">
+                <th v-for="(header, index) in table.termHeaders" v-bind:key="index" v-bind:title="localizeString(header.entity.descriptions)">
                   <a href v-on:click="updateQuery($event, null, header, 'variables')">
                     <span>{{header.hits.toLocaleString()}}</span>
                   </a>
@@ -1163,10 +1163,10 @@ const CoverageResult = {
                   <div style="text-align: center" v-show="col.start && bucketStartsWithDce">
                     <div>
                       <small class="help-block no-margin" v-show="col.end">
-                        {{col.start}} {{'to' | translate }} {{col.end}}
+                        {{col.start}} {{translate('to') }} {{col.end}}
                       </small>
                       <small class="help-block no-margin" v-show="!col.end">
-                        {{col.start}}, {{'coverage-end-date-ongoing' | translate}}
+                        {{col.start}}, {{translate('coverage-end-date-ongoing')}}
                       </small>
                     </div>
                     <div class="progress no-margin" style="height: 0.5em">

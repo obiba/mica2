@@ -9,7 +9,7 @@
   <#include "libs/data-access-form-head.ftl">
   <title>${config.name!""} | <@message "data-access-agreement"/> ${agreement.id}</title>
 </head>
-<body id="data-access-agreement-page" ng-app="formModule" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
+<body id="data-access-agreement-page" ng-app="formModule" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed sidebar-expand-lg">
 <!-- Site wrapper -->
 <div class="app-wrapper">
 
@@ -133,7 +133,7 @@
                   <div class="modal-header">
                     <h4 class="modal-title"><@message "confirm-submission-title"/></h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                      
+
                     </button>
                   </div>
                   <div class="modal-body">
@@ -158,7 +158,7 @@
                   <div class="modal-header">
                     <h4 class="modal-title"><@message "confirm-rejection-title"/></h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                      
+
                     </button>
                   </div>
                   <div class="modal-body">
@@ -183,7 +183,7 @@
                   <div class="modal-header">
                     <h4 class="modal-title"><@message "confirm-reopen-title"/></h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                      
+
                     </button>
                   </div>
                   <div class="modal-body">

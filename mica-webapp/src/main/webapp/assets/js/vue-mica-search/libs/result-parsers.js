@@ -203,7 +203,7 @@ class GraphicsResultParser {
       return;
     }
 
-    const tr = Vue.filter('translate') || (value => value);
+    const tr = MicaFilters.translate;
     const labelStudies = tr('studies');
     const aggData = chartData[chartOptions.dataKey];
 
@@ -239,8 +239,8 @@ class VariablesResultParser {
 
   parse(data, micaConfig, localize, displayOptions, studyTypeSelection) {
     const variablesResult = data.variableResultDto;
-    const tr = Vue.filter('translate') || (value => value);
-    const taxonomyTitle = Vue.filter('taxonomy-title') || (value => value);
+    const tr = MicaFilters.translate;
+    const taxonomyTitle = MicaFilters.taxonomyTitle;
 
     let columnKey = 'variableColumns';
     if (studyTypeSelection) {
@@ -418,7 +418,7 @@ class StudiesResultParser {
       totalHits: dtoResult.totalHits
     }
 
-    const taxonomyFilter = Vue.filter('taxonomy-title') || (title => title);
+    const taxonomyFilter = MicaFilters.taxonomyTitle;
     const checkIcon = `<i class="fa fa-check">`;
     const summaries = result.summaries || [];
 
@@ -550,8 +550,8 @@ class DatasetsResultParser {
 
   parse(data, micaConfig, localize, displayOptions, studyTypeSelection) {
     const resultDto = data.datasetResultDto;
-    const tr = Vue.filter('translate') || (value => value);
-    const taxonomyFilter = Vue.filter('taxonomy-title') || (value => value);
+    const tr = MicaFilters.translate;
+    const taxonomyFilter = MicaFilters.taxonomyTitle;
 
     let columnKey = 'datasetColumns';
     if (studyTypeSelection) {

@@ -298,7 +298,7 @@
                         <div class="tab-pane fade show active" v-if="showVariableAndDatasetTabsInIndividualMode" id="variables" role="tabpanel" aria-labelledby="variables-tab">
                           <p class="text-muted"><@message "results-list-of-variables-text"/></p>
                           <div id="list-variables">
-                            <div class="mt-3 text-muted" v-show="!loading.state && !hasListResult">{{ "no-variable-found" | translate }}</div>
+                            <div class="mt-3 text-muted" v-show="!loading.state && !hasListResult">{{ translate("no-variable-found") }}</div>
                             <variables-result v-show="!loading.state && hasListResult"></variables-result>
                           </div>
                         </div>
@@ -307,7 +307,7 @@
                         <div class="tab-pane fade" v-if="showVariableAndDatasetTabsInIndividualMode" id="datasets" role="tabpanel" aria-labelledby="datasets-tab">
                           <p class="text-muted"><@message "results-list-of-datasets-text"/></p>
                           <div id="list-datasets">
-                            <div class="mt-3 text-muted" v-show="!loading.state && !hasListResult">{{ "no-dataset-found" | translate }}</div>
+                            <div class="mt-3 text-muted" v-show="!loading.state && !hasListResult">{{ translate("no-dataset-found") }}</div>
                             <datasets-result v-show="!loading.state && hasListResult"></datasets-result>
                           </div>
                         </div>
@@ -316,7 +316,7 @@
                         <div class="tab-pane fade" id="studies" role="tabpanel" aria-labelledby="studies-tab">
                           <p class="text-muted"><@message "results-list-of-studies-text"/></p>
                           <div id="list-studies">
-                            <div class="mt-3 text-muted" v-show="!loading.state && !hasListResult">{{ "no-study-found" | translate }}</div>
+                            <div class="mt-3 text-muted" v-show="!loading.state && !hasListResult">{{ translate("no-study-found") }}</div>
                             <studies-result v-show="!loading.state && hasListResult" :show-checkboxes="studyHasCheckboxes"></studies-result>
                           </div>
                         </div>
@@ -325,7 +325,7 @@
                         <div class="tab-pane fade" id="networks" role="tabpanel" aria-labelledby="networks-tab">
                           <p class="text-muted"><@message "results-list-of-networks-text"/></p>
                           <div id="list-networks">
-                            <div class="mt-3 text-muted" v-show="!loading.state && !hasListResult">{{ "no-network-found" | translate }}</div>
+                            <div class="mt-3 text-muted" v-show="!loading.state && !hasListResult">{{ translate("no-network-found") }}</div>
                             <networks-result v-show="!loading.state && hasListResult" :show-checkboxes="networkHasCheckboxes"></networks-result>
                           </div>
                         </div>
@@ -339,7 +339,7 @@
 
                   <div class="tab-pane" id="tab_coverage">
 
-                    <div class="mt-3 text-muted" v-show="!hasVariableQuery">{{ "missing-variable-query" | translate }}</div>
+                    <div class="mt-3 text-muted" v-show="!hasVariableQuery">{{ translate("missing-variable-query") }}</div>
 
                     <div v-show="hasVariableQuery">
                       <div id="coverage">
@@ -396,7 +396,7 @@
                         </div>
 
                         <div v-show="loading.state" class="spinner-border spinner-border-sm mt-3" role="status"></div>
-                        <div class="mt-3 text-muted" v-show="!loading.state && !hasCoverageResult">{{ "no-coverage-available" | translate }}</div>
+                        <div class="mt-3 text-muted" v-show="!loading.state && !hasCoverageResult">{{ translate("no-coverage-available") }}</div>
                         <coverage-result v-show="!loading.state && hasCoverageResult" class="mt-2"></coverage-result>
                       </div>
                     </div>
@@ -412,7 +412,7 @@
                     </p>
                     <div id="graphics">
                       <div v-show="loading.state" class="spinner-border spinner-border-sm" role="status"></div>
-                      <div class="mt-3 text-muted" v-show="!loading.state && !hasGraphicsResult">{{ "no-graphics-result" | translate }}</div>
+                      <div class="mt-3 text-muted" v-show="!loading.state && !hasGraphicsResult">{{ translate("no-graphics-result") }}</div>
                       <graphics-result v-show="!loading.state && hasGraphicsResult" v-bind:chart-options="chartOptions" :taxonomy="taxonomies['Mica_study']"></graphics-result>
                     </div>
                   </div>

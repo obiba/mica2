@@ -8,7 +8,7 @@
     <#include "libs/data-access-comments-head.ftl">
   <title>${config.name!""} | <@message "data-access-comments"/> ${dar.id}</title>
 </head>
-<body id="data-access-comments-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
+<body id="data-access-comments-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed sidebar-expand-lg">
 <!-- Site wrapper -->
 <div class="app-wrapper">
 
