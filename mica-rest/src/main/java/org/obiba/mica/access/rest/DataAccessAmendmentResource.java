@@ -26,6 +26,7 @@ import org.obiba.mica.access.service.DataAccessAmendmentService;
 import org.obiba.mica.access.service.DataAccessEntityService;
 import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
+import org.obiba.mica.core.service.SchemaFormContentFileService;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.domain.AbstractDataAccessEntityForm;
@@ -42,6 +43,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import jakarta.inject.Inject;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -75,8 +77,9 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
     DataAccessAmendmentFormService dataAccessAmendmentFormService,
     VariableSetService variableSetService,
     DataAccessRequestUtilService dataAccessRequestUtilService,
-    SchemaFormConfigService schemaFormConfigService) {
-    super(subjectAclService, fileStoreService, dataAccessConfigService, variableSetService, dataAccessRequestUtilService, schemaFormConfigService);
+    SchemaFormConfigService schemaFormConfigService,
+    SchemaFormContentFileService schemaFormContentFileService) {
+    super(subjectAclService, fileStoreService, dataAccessConfigService, variableSetService, dataAccessRequestUtilService, schemaFormConfigService, schemaFormContentFileService);
     this.dtos = dtos;
     this.dataAccessRequestService = dataAccessRequestService;
     this.dataAccessAmendmentService = dataAccessAmendmentService;
@@ -164,6 +167,14 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
       .header("Content-Disposition", "attachment; filename=\"" + "data-access-request-amendment-" + id + ".docx" + "\"").build();
   }
 
+  @GET
+  @Timed
+  @Path("/files/_download")
+  public Response getAttachment() {
+    subjectAclService.checkPermission(getResourcePath(), "VIEW", id);
+    return downloadEntityFiles(getService().findById(id), "data-access-request-amendment");
+  }
+
   @PUT
   @Path("/_status")
   public Response updateStatus(@QueryParam("to") String status) {
@@ -182,7 +193,7 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
 
     Map<String, Map<String, List<Object>>> data = submissions.stream()
       .reduce((first, second) -> second)
-      .map(change ->  dataAccessRequestUtilService.getContentDiff("data-access-amendment", change.getContent(), amendment.getContent(), locale))
+      .map(change -> dataAccessRequestUtilService.getContentDiff("data-access-amendment", change.getContent(), amendment.getContent(), locale))
       .orElse(null);
 
     return Response.ok(data, MediaType.APPLICATION_JSON_TYPE).build();

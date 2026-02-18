@@ -20,18 +20,24 @@ import com.jayway.jsonpath.internal.JsonContext;
 import net.minidev.json.JSONArray;
 import org.obiba.mica.core.domain.SchemaFormContentAware;
 import org.obiba.mica.file.FileStoreService;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import jakarta.inject.Inject;
 import jakarta.validation.constraints.NotNull;
+
+import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.jayway.jsonpath.Configuration.defaultConfiguration;
+import static org.slf4j.LoggerFactory.getLogger;
 
 @Service
 public class SchemaFormContentFileService {
+
+  private static final Logger log = getLogger(SchemaFormContentFileService.class);
 
   @Inject
   private FileStoreService fileStoreService;
@@ -39,6 +45,8 @@ public class SchemaFormContentFileService {
   public void save(@NotNull SchemaFormContentAware newEntity, Optional<? extends SchemaFormContentAware> oldEntity, String entityPath) {
     Assert.notNull(newEntity, "New content cannot be null");
     if (newEntity.getContent() == null) return;
+
+    getFiles(newEntity);
 
     Object json = defaultConfiguration().jsonProvider().parse(newEntity.getContent());
     DocumentContext newContext = JsonPath.using(defaultConfiguration().addOptions(Option.AS_PATH_LIST)).parse(json);
@@ -65,6 +73,40 @@ public class SchemaFormContentFileService {
     newEntity.setContent(newContext.jsonString());
   }
 
+  public Map<String, InputStream> getFiles(@NotNull SchemaFormContentAware entity) {
+    Map<String, InputStream> files = new LinkedHashMap<>();
+
+    String content = entity.getContent();
+    if (content != null) {
+      Object json = defaultConfiguration().jsonProvider().parse(entity.getContent());
+      DocumentContext newContext = JsonPath.using(defaultConfiguration().addOptions(Option.AS_PATH_LIST)).parse(json);
+      Map<String, JSONArray> paths = getPathFilesMap(newContext, json);
+
+      if (paths != null) {
+        paths.values().stream()
+          .flatMap(Collection::stream)
+          .forEach(o -> {
+            LinkedHashMap<String, Object> fileMap = (LinkedHashMap<String, Object>) o;
+            Object fileId = fileMap.get("id");
+            if (fileId != null) {
+              try {
+                String name = fileMap.getOrDefault("fileName", fileId).toString();
+                if (files.containsKey(name)) {
+                  // In case of duplicates, append file ID
+                  name += "_" + fileId;
+                }
+                files.put(name, fileStoreService.getFile(fileId.toString()));
+              } catch (Exception e) {
+                log.warn("Failed to retrieve file {}: {}", fileId, e.getMessage());
+              }
+            }
+          });
+      }
+    }
+
+    return files;
+  }
+
   public void deleteFiles(SchemaFormContentAware entity) {
     String content = Strings.isNullOrEmpty(entity.getContent()) ? "{}" : entity.getContent();
     Object json = defaultConfiguration().jsonProvider().parse(content);
@@ -73,11 +115,11 @@ public class SchemaFormContentFileService {
       JsonPath.using(defaultConfiguration().addOptions(Option.REQUIRE_PROPERTIES)).parse(json);
 
     try {
-      ((JSONArray)context.read("$..obibaFiles")).stream()
-          .map(p -> (JSONArray) reader.read(p.toString()))
-          .flatMap(Collection::stream)
-          .forEach(file -> fileStoreService.delete(((LinkedHashMap)file).get("id").toString()));
-    } catch(PathNotFoundException e) {
+      ((JSONArray) context.read("$..obibaFiles")).stream()
+        .map(p -> (JSONArray) reader.read(p.toString()))
+        .flatMap(Collection::stream)
+        .forEach(file -> fileStoreService.delete(((LinkedHashMap) file).get("id").toString()));
+    } catch (PathNotFoundException e) {
     }
   }
 
@@ -112,7 +154,7 @@ public class SchemaFormContentFileService {
     JSONArray paths = null;
     try {
       paths = context.read("$..obibaFiles");
-    } catch(PathNotFoundException e) {
+    } catch (PathNotFoundException e) {
       return null;
     }
 
@@ -124,7 +166,7 @@ public class SchemaFormContentFileService {
     Iterable<Object> toDelete = Sets.difference(Sets.newHashSet(oldFiles), Sets.newHashSet(newFiles));
     Iterable<Object> toSave = Sets.difference(Sets.newHashSet(newFiles), Sets.newHashSet(oldFiles));
 
-    toDelete.forEach(file -> fileStoreService.delete(((LinkedHashMap)file).get("id").toString()));
+    toDelete.forEach(file -> fileStoreService.delete(((LinkedHashMap) file).get("id").toString()));
     saveFiles(toSave, entityPath);
     return toDelete;
   }
@@ -141,8 +183,8 @@ public class SchemaFormContentFileService {
   }
 
   private void saveFiles(Iterable files, String entityPath) {
-    if(files != null) files.forEach(file -> {
-      LinkedHashMap map = (LinkedHashMap)file;
+    if (files != null) files.forEach(file -> {
+      LinkedHashMap map = (LinkedHashMap) file;
       map.put("path", entityPath);
       fileStoreService.save(map.get("id").toString());
     });
