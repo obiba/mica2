@@ -106,14 +106,7 @@
                     <button type="button" class="btn btn-outline-info" data-toggle="modal"
                             data-target="#modal-diff"><i class="fas fa-code-branch"></i> <@message "form-diff"/></button>
                   </#if>
-                  <#if isAdministrator || isDAO>
-                    <a href="${contextPath}/ws/data-access-request/${dar.id}/feasibility/${feasibility.id}/_word?lang=${.lang}" class="btn btn-default">
-                      <i class="fas fa-file-word"></i> <@message "download"/>
-                    </a>
-                  </#if>
-                  <a href="#" onclick="window.print()" class="btn btn-default">
-                    <i class="fas fa-print"></i> <@message "global.print"/>
-                  </a>
+                  <@dataAccessDownloadButtons wordUrl="${contextPath}/ws/data-access-request/${dar.id}/feasibility/${feasibility.id}/_word?lang=${.lang}" filesUrl="${contextPath}/ws/data-access-request/${dar.id}/feasibility/${feasibility.id}/files/_download"/>
                 </span>
               </div>
             </div>

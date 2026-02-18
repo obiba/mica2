@@ -118,14 +118,40 @@
                             data-target="#modal-diff"><i class="fas fa-code-branch"></i> <@message "form-diff"/></button>
                   </#if>
                   <#if accessConfig.downloadPdf>
-                    <a href="${contextPath}/ws/data-access-request/${dar.id}/_pdf?lang=${.lang}" class="btn btn-default">
-                      <i class="fas fa-file-pdf"></i> <@message "download"/>
-                    </a>
+                    <#if isAdministrator || isDAO>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <i class="fas fa-download"></i> <@message "download"/>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                          <a class="dropdown-item" href="${contextPath}/ws/data-access-request/${dar.id}/_pdf?lang=${.lang}">
+                            <i class="fas fa-file-pdf"></i> <@message "form"/>
+                          </a>
+                          <a class="dropdown-item" href="${contextPath}/ws/data-access-request/${dar.id}/files/_download">
+                            <i class="fas fa-file-archive"></i> <@message "files"/>
+                          </a>
+                        </div>
+                      </div>
+                    <#else>
+                      <a href="${contextPath}/ws/data-access-request/${dar.id}/_pdf?lang=${.lang}" class="btn btn-default">
+                        <i class="fas fa-file-pdf"></i> <@message "download"/>
+                      </a>
+                    </#if>
                   <#else>
                     <#if isAdministrator || isDAO>
-                      <a href="${contextPath}/ws/data-access-request/${dar.id}/_word?lang=${.lang}" class="btn btn-default">
-                        <i class="fas fa-file-word"></i> <@message "download"/>
-                      </a>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <i class="fas fa-download"></i> <@message "download"/>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                          <a class="dropdown-item" href="${contextPath}/ws/data-access-request/${dar.id}/_word?lang=${.lang}">
+                            <i class="fas fa-file-word"></i> <@message "form"/>
+                          </a>
+                          <a class="dropdown-item" href="${contextPath}/ws/data-access-request/${dar.id}/files/_download">
+                            <i class="fas fa-file-archive"></i> <@message "files"/>
+                          </a>
+                        </div>
+                      </div>
                     </#if>
                     <a href="#" onclick="window.print()" class="btn btn-default">
                       <i class="fas fa-print"></i> <@message "global.print"/>
