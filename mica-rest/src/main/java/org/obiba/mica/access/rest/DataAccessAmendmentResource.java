@@ -26,6 +26,7 @@ import org.obiba.mica.access.service.DataAccessAmendmentService;
 import org.obiba.mica.access.service.DataAccessEntityService;
 import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
+import org.obiba.mica.core.service.SchemaFormContentFileService;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.domain.AbstractDataAccessEntityForm;
@@ -75,8 +76,9 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
     DataAccessAmendmentFormService dataAccessAmendmentFormService,
     VariableSetService variableSetService,
     DataAccessRequestUtilService dataAccessRequestUtilService,
-    SchemaFormConfigService schemaFormConfigService) {
-    super(subjectAclService, fileStoreService, dataAccessConfigService, variableSetService, dataAccessRequestUtilService, schemaFormConfigService);
+    SchemaFormConfigService schemaFormConfigService,
+    SchemaFormContentFileService schemaFormContentFileService) {
+    super(subjectAclService, fileStoreService, dataAccessConfigService, variableSetService, dataAccessRequestUtilService, schemaFormConfigService, schemaFormContentFileService);
     this.dtos = dtos;
     this.dataAccessRequestService = dataAccessRequestService;
     this.dataAccessAmendmentService = dataAccessAmendmentService;
@@ -162,6 +164,14 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
     String status = schemaFormConfigService.getTranslator(lang).translate(entity.getStatus().toString());
     return Response.ok(exporter.export(title, status, id).toByteArray())
       .header("Content-Disposition", "attachment; filename=\"" + "data-access-request-amendment-" + id + ".docx" + "\"").build();
+  }
+
+  @GET
+  @Timed
+  @Path("/files/_download")
+  public Response downloadFiles() {
+    subjectAclService.checkPermission(getResourcePath(), "VIEW", id);
+    return downloadEntityFiles(getService().findById(id), "data-access-request-amendment");
   }
 
   @PUT

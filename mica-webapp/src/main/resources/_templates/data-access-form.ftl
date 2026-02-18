@@ -118,19 +118,41 @@
                     <button type="button" class="btn btn-outline-info" data-bs-toggle="modal"
                             data-bs-target="#modal-diff"><i class="fa-solid fa-code-branch"></i> <@message "form-diff"/></button>
                   </#if>
-                  <#if accessConfig.downloadPdf>
-                    <a href="${contextPath}/ws/data-access-request/${dar.id}/_pdf?lang=${.lang}" class="btn btn-secondary">
-                      <i class="fa-solid fa-file-pdf"></i> <@message "download"/>
-                    </a>
-                  <#else>
-                    <#if isAdministrator || isDAO>
-                      <a href="${contextPath}/ws/data-access-request/${dar.id}/_word?lang=${.lang}" class="btn btn-secondary">
-                        <i class="fa-solid fa-file-word"></i> <@message "download"/>
+                  <#if isAdministrator || isDAO>
+                    <#if !accessConfig.downloadPdf>
+                      <a href="#" onclick="window.print()" class="btn btn-secondary">
+                        <i class="fa-solid fa-print"></i> <@message "global.print"/>
                       </a>
                     </#if>
-                    <a href="#" onclick="window.print()" class="btn btn-secondary">
-                      <i class="fa-solid fa-print"></i> <@message "global.print"/>
-                    </a>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa-solid fa-download"></i> <@message "download"/>
+                      </button>
+                      <div class="dropdown-menu dropdown-menu-end">
+                        <#if accessConfig.downloadPdf>
+                          <a class="dropdown-item" href="${contextPath}/ws/data-access-request/${dar.id}/_pdf?lang=${.lang}">
+                            <i class="fa-solid fa-file-pdf"></i> <@message "form"/>
+                          </a>
+                        <#else>
+                          <a class="dropdown-item" href="${contextPath}/ws/data-access-request/${dar.id}/_word?lang=${.lang}">
+                            <i class="fa-solid fa-file-word"></i> <@message "form"/>
+                          </a>
+                        </#if>
+                        <a class="dropdown-item" href="#" ng-click="downloadFiles('${contextPath}/ws/data-access-request/${dar.id}/files/_download')">
+                          <i class="fa-solid fa-file-zipper"></i> <@message "files"/>
+                        </a>
+                      </div>
+                    </div>
+                  <#else>
+                    <#if accessConfig.downloadPdf>
+                      <a href="${contextPath}/ws/data-access-request/${dar.id}/_pdf?lang=${.lang}" class="btn btn-secondary">
+                        <i class="fa-solid fa-file-pdf"></i> <@message "download"/>
+                      </a>
+                    <#else>
+                      <a href="#" onclick="window.print()" class="btn btn-secondary">
+                        <i class="fa-solid fa-print"></i> <@message "global.print"/>
+                      </a>
+                    </#if>
                   </#if>
                 </span>
               </div>

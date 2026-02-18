@@ -19,19 +19,29 @@ import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.internal.JsonContext;
 import net.minidev.json.JSONArray;
 import org.obiba.mica.core.domain.SchemaFormContentAware;
+import org.obiba.mica.file.FileRuntimeException;
 import org.obiba.mica.file.FileStoreService;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import jakarta.inject.Inject;
 import jakarta.validation.constraints.NotNull;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static com.jayway.jsonpath.Configuration.defaultConfiguration;
+import static org.slf4j.LoggerFactory.getLogger;
 
 @Service
 public class SchemaFormContentFileService {
+
+  private static final Logger log = getLogger(SchemaFormContentFileService.class);
 
   @Inject
   private FileStoreService fileStoreService;
@@ -63,6 +73,87 @@ public class SchemaFormContentFileService {
 
     cleanup(newPaths, newContext);
     newEntity.setContent(newContext.jsonString());
+  }
+
+  /**
+   * Collects the ZIP entry name to file ID for each obibaFiles field of the entity's content, without
+   * opening any file. Names are de-duplicated by inserting the file ID before the extension.
+   *
+   * @param entity
+   * @return entry name -> file ID, in document order
+   */
+  public Map<String, String> getFileEntries(@NotNull SchemaFormContentAware entity) {
+    Map<String, String> entries = new LinkedHashMap<>();
+
+    String content = entity.getContent();
+    if (Strings.isNullOrEmpty(content)) return entries;
+
+    Object json = defaultConfiguration().jsonProvider().parse(content);
+    DocumentContext context = JsonPath.using(defaultConfiguration().addOptions(Option.AS_PATH_LIST)).parse(json);
+    Map<String, JSONArray> paths = getPathFilesMap(context, json);
+    if (paths == null) return entries;
+
+    paths.values().stream()
+      .flatMap(Collection::stream)
+      .forEach(o -> {
+        LinkedHashMap<String, Object> fileMap = (LinkedHashMap<String, Object>) o;
+        Object fileId = fileMap.get("id");
+        if (fileId == null) return;
+
+        String id = fileId.toString();
+        Object fileName = fileMap.get("fileName");
+        String name = sanitizeEntryName(fileName == null ? null : fileName.toString(), id);
+        if (entries.containsKey(name)) {
+          // In case of duplicates, insert the file ID before the extension
+          int dot = name.lastIndexOf('.');
+          name = dot > 0 ? name.substring(0, dot) + "_" + id + name.substring(dot) : name + "_" + id;
+        }
+        entries.put(name, id);
+      });
+
+    return entries;
+  }
+
+  /**
+   * Strips any directory part and control characters from a file name, so it is safe to use as a ZIP
+   * entry name. Falls back to {@code fallback} when the result would be empty, "." or "..".
+   *
+   * @param name
+   * @param fallback
+   * @return a safe, non-empty entry name
+   */
+  private static String sanitizeEntryName(String name, String fallback) {
+    if (Strings.isNullOrEmpty(name)) return fallback;
+    String base = name.replace('\\', '/');
+    base = base.substring(base.lastIndexOf('/') + 1);
+    base = base.replaceAll("\\p{Cntrl}", "").trim();
+    return base.isEmpty() || base.equals(".") || base.equals("..") ? fallback : base;
+  }
+
+  /**
+   * Streams a ZIP archive of all the files attached to the entity's content. Each file is opened only
+   * when its entry is written; a file that fails to open is skipped and logged, the rest of the archive
+   * is still produced.
+   *
+   * @param entity
+   * @param output
+   */
+  public void writeZip(@NotNull SchemaFormContentAware entity, OutputStream output) throws IOException {
+    Map<String, String> entries = getFileEntries(entity);
+
+    try (ZipOutputStream zos = new ZipOutputStream(output)) {
+      for (Map.Entry<String, String> entry : entries.entrySet()) {
+        String name = entry.getKey();
+        String fileId = entry.getValue();
+        try (InputStream is = fileStoreService.getFile(fileId)) {
+          zos.putNextEntry(new ZipEntry(name));
+          is.transferTo(zos);
+          zos.closeEntry();
+        } catch (FileRuntimeException e) {
+          log.warn("Failed to retrieve file {}: {}", fileId, e.getMessage());
+        }
+      }
+    }
   }
 
   public void deleteFiles(SchemaFormContentAware entity) {

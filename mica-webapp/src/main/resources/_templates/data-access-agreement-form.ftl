@@ -94,14 +94,10 @@
                     </span>
                   </#if>
                   <span class="float-end <#if agreementPermissions?seq_contains("EDIT_STATUS") && agreement.status == "OPENED">border-end me-2 pe-2</#if>" ng-if="schema.readOnly">
-                    <#if isAdministrator || isDAO>
-                      <a href="${contextPath}/ws/data-access-request/${dar.id}/agreement/${agreement.id}/_word?lang=${.lang}" class="btn btn-secondary">
-                        <i class="fa-solid fa-file-word"></i> <@message "download"/>
-                      </a>
-                    </#if>
                     <a href="#" onclick="window.print()" class="btn btn-secondary">
                       <i class="fa-solid fa-print"></i> <@message "global.print"/>
                     </a>
+                    <@dataAccessDownloadButtons wordUrl="${contextPath}/ws/data-access-request/${dar.id}/agreement/${agreement.id}/_word?lang=${.lang}" filesUrl="${contextPath}/ws/data-access-request/${dar.id}/agreement/${agreement.id}/files/_download"/>
                   </span>
                 </div>
               </div>

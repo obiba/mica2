@@ -444,4 +444,24 @@ angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schem
         MicaService.toastError(formMessages.validationErrorOnSubmit);
       }
     };
+    $scope.downloadFiles = function (url) {
+      axios.get(url, {responseType: 'blob'}).then(function (response) {
+        if (response.status === 204) {
+          MicaService.toastWarning(formMessages.noFiles);
+          return;
+        }
+        const disposition = response.headers['content-disposition'];
+        const match = disposition && disposition.match(/filename="?([^"]+)"?/);
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(response.data);
+        link.download = match ? match[1] : 'files.zip';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(link.href);
+      }).catch(function (response) {
+        MicaService.toastError(formMessages.errorOnSave);
+        console.dir(response);
+      });
+    };
   }]);

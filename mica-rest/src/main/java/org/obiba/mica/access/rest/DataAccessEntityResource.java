@@ -8,6 +8,7 @@ import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.service.DataAccessEntityService;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.core.domain.DocumentSet;
+import org.obiba.mica.core.service.SchemaFormContentFileService;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.event.DataAccessConfigUpdatedEvent;
@@ -19,6 +20,8 @@ import org.obiba.mica.security.service.SubjectAclService;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.StreamingOutput;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -40,6 +43,8 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
 
   protected final DataAccessRequestUtilService dataAccessRequestUtilService;
 
+  protected final SchemaFormContentFileService schemaFormContentFileService;
+
   protected abstract DataAccessEntityService<T> getService();
 
   protected abstract int getFormLatestRevision();
@@ -52,13 +57,15 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
     DataAccessConfigService dataAccessConfigService,
     VariableSetService variableSetService,
     DataAccessRequestUtilService dataAccessRequestUtilService,
-    SchemaFormConfigService schemaFormConfigService) {
+    SchemaFormConfigService schemaFormConfigService,
+    SchemaFormContentFileService schemaFormContentFileService) {
     this.subjectAclService = subjectAclService;
     this.fileStoreService = fileStoreService;
     this.dataAccessConfigService = dataAccessConfigService;
     this.variableSetService = variableSetService;
     this.dataAccessRequestUtilService = dataAccessRequestUtilService;
     this.schemaFormConfigService = schemaFormConfigService;
+    this.schemaFormContentFileService = schemaFormContentFileService;
   }
 
   @Subscribe
@@ -79,6 +86,17 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
   //
   // Private methods
   //
+
+  protected Response downloadEntityFiles(DataAccessEntity entity, String prefix) {
+    if (schemaFormContentFileService.getFileEntries(entity).isEmpty()) return Response.noContent().build();
+
+    StreamingOutput streamingOutput = output -> schemaFormContentFileService.writeZip(entity, output);
+
+    return Response.ok(streamingOutput)
+      .header("Content-Disposition", "attachment; filename=\"" + prefix + "-" + entity.getId() + "-files.zip\"")
+      .header("Content-Type", "application/zip")
+      .build();
+  }
 
   /**
    * Create or update a variables set from user's cart.

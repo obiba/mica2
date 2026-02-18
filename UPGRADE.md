@@ -20,11 +20,16 @@ authorization added on two administration endpoints.
    ```sh
    cd $MICA_HOME/conf/templates
    ls signin.ftl libs/signin-scripts.ftl libs/scripts.ftl compare.ftl dataset.ftl variable.ftl \
-      project.ftl libs/project.ftl libs/settings.ftl
+      project.ftl libs/project.ftl libs/settings.ftl \
+      data-access-form.ftl data-access-preliminary-form.ftl data-access-feasibility-form.ftl \
+      data-access-amendment-form.ftl data-access-agreement-form.ftl libs/data-access-form.ftl \
+      libs/data-access-form-scripts.ftl
    ```
 
    If any exists, keep a copy of the current bundled version
    (`$MICA_DIST/WEB-INF/classes/_templates`) to compare against.
+   If your portal also serves its own copy of `assets/js/mica-data-access-form.js` (outside of
+   `$MICA_HOME/conf/templates`, e.g. a themed/rebuilt webapp), keep a copy of that too.
 3. **Check custom page names.** Custom pages (`$MICA_HOME/conf/templates/<name>.ftl` served
    at `/page/<name>`) are now only reachable when `<name>` is made of letters, digits, `_`
    and `-`, starts with a letter or digit, and is not the name of a bundled template.
@@ -72,8 +77,21 @@ Install the new version and restart as usual. No database migration runs at star
      include of the new `libs/project-scripts.ftl` (nothing to reconcile there, the file
      is new). If your copy of `project.ftl` or `libs/project.ftl` is not updated, the file
      browser stays absent from the project page, same as before this release.
-2. **Custom translations**: the message `sign-in-otp-failed` was added, bundled in English
-   and French. Add it to any other language you provide.
+   - `data-access-form.ftl`, `data-access-{preliminary,feasibility,amendment,agreement}-form.ftl`,
+     `libs/data-access-form.ftl` and `libs/data-access-form-scripts.ftl`: administrators and DAOs
+     get a **Download** menu on data access forms offering the form (Word or PDF, as before) and
+     a new ZIP download of all the files attached to it (macro `dataAccessDownloadButtons` in
+     `libs/data-access-form.ftl`, used by the 4 sub-form templates). The download is triggered by
+     a new `downloadFiles()` function added to `FormController` in the bundled
+     `assets/js/mica-data-access-form.js`, wired from the templates above via `ng-click`; it shows
+     a warning toast instead of downloading when the form has no files. If your copies of the
+     templates are not updated, the ZIP download is not offered in the UI (the underlying
+     `/files/_download` endpoints still work regardless). If you serve your own copy of
+     `mica-data-access-form.js` (rather than the bundled one), merge in the `downloadFiles()`
+     function as well — with the templates updated but not the JS, the Files menu item does
+     nothing when clicked, with no error shown.
+2. **Custom translations**: the messages `sign-in-otp-failed` and `files` were added, bundled
+   in English and French. Add them to any other language you provide.
 3. **Response headers.** Mica now sends `X-Content-Type-Options: nosniff`,
    `Referrer-Policy: strict-origin-when-cross-origin` and, when the request reaches Mica
    over TLS, `Strict-Transport-Security: max-age=31536000; includeSubDomains`. If your
