@@ -39,6 +39,7 @@ import org.obiba.mica.access.service.DataAccessEntityService;
 import org.obiba.mica.access.service.DataAccessPreliminaryService;
 import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
+import org.obiba.mica.core.service.SchemaFormContentFileService;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.domain.AbstractDataAccessEntityForm;
@@ -88,8 +89,9 @@ public class DataAccessPreliminaryResource extends DataAccessEntityResource<Data
     DataAccessPreliminaryFormService dataAccessPreliminaryFormService,
     VariableSetService variableSetService,
     DataAccessRequestUtilService dataAccessRequestUtilService,
-    SchemaFormConfigService schemaFormConfigService) {
-    super(subjectAclService, fileStoreService, dataAccessConfigService, variableSetService, dataAccessRequestUtilService, schemaFormConfigService);
+    SchemaFormConfigService schemaFormConfigService,
+    SchemaFormContentFileService schemaFormContentFileService) {
+    super(subjectAclService, fileStoreService, dataAccessConfigService, variableSetService, dataAccessRequestUtilService, schemaFormConfigService, schemaFormContentFileService);
     this.dtos = dtos;
     this.dataAccessRequestService = dataAccessRequestService;
     this.dataAccessPreliminaryService = dataAccessPreliminaryService;
@@ -210,6 +212,14 @@ public class DataAccessPreliminaryResource extends DataAccessEntityResource<Data
     return Response.ok(fileStoreService.getFile(attachmentId)).header("Content-Disposition",
         "attachment; filename=\"" + attachmentName + "\"")
       .build();
+  }
+
+  @GET
+  @Timed
+  @Path("/files/_download")
+  public Response getAttachment() {
+    subjectAclService.checkPermission(getResourcePath(), "VIEW", id);
+    return downloadEntityFiles(getService().findById(id), "data-access-preliminary");
   }
 
   @PUT

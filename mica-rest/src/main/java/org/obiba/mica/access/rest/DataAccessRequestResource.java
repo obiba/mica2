@@ -45,6 +45,7 @@ import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.domain.NoSuchCommentException;
 import org.obiba.mica.core.domain.UnauthorizedCommentException;
 import org.obiba.mica.core.service.CommentsService;
+import org.obiba.mica.core.service.SchemaFormContentFileService;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileStoreService;
@@ -120,8 +121,9 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     TempFileService tempFileService,
     VariableSetService variableSetService,
     DataAccessRequestUtilService dataAccessRequestUtilService,
-    SchemaFormConfigService schemaFormConfigService) {
-    super(subjectAclService, fileStoreService, dataAccessConfigService, variableSetService, dataAccessRequestUtilService, schemaFormConfigService);
+    SchemaFormConfigService schemaFormConfigService,
+    SchemaFormContentFileService schemaFormContentFileService) {
+    super(subjectAclService, fileStoreService, dataAccessConfigService, variableSetService, dataAccessRequestUtilService, schemaFormConfigService, schemaFormContentFileService);
     this.dataAccessRequestService = dataAccessRequestService;
     this.commentMailNotification = commentMailNotification;
     this.dataAccessFormService = dataAccessFormService;
@@ -387,6 +389,15 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     DataAccessRequest request = dtos.fromDto(dto);
     dataAccessRequestService.saveAttachments(request);
     return Response.noContent().build();
+  }
+
+  @GET
+  @Timed
+  @Path("/files/_download")
+  public Response getAttachment(@PathParam("id") String id) {
+    subjectAclService.checkPermission("/data-access-request", "VIEW", id);
+    DataAccessRequest request = dataAccessRequestService.findById(id);
+    return downloadEntityFiles(request, "data-access-request");
   }
 
   @GET
