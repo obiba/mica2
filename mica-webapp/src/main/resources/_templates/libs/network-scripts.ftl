@@ -273,9 +273,7 @@
         const studyTaxonomy = (responses[0].data||[]).pop();
         chartTableTermSorters.initialize(studyTaxonomy);
 
-        const { createApp } = Vue;
-
-        const app = createApp({
+        const app = Vue.createApp({
           data() {
             return {
               hasGraphicsResult: false,
@@ -325,6 +323,7 @@
           }
         });
 
+        app.config.compilerOptions.whitespace = 'condense';
         app.mount('#summary-statistics');
 
         return responses[1].data;

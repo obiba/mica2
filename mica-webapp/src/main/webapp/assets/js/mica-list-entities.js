@@ -726,7 +726,7 @@ const ObibaEntitiesAppMixin = {
 class ObibaDatasetsApp {
 
   static build(element, type, locale, sortOptionsTranslations) {
-    return Vue.createApp({
+    const app = Vue.createApp({
       mixins: [ObibaEntitiesAppMixin],
       data() {
         return {
@@ -787,14 +787,16 @@ class ObibaDatasetsApp {
           }
         }
       }
-    }).mount(element);
+    });
+    app.config.compilerOptions.whitespace = 'condense';
+    return app.mount(element);
   }
 }
 
 class ObibaStudiesApp {
 
   static build(element, type, locale, sortOptionsTranslations, initialSort) {
-    return Vue.createApp({
+    const app = Vue.createApp({
       mixins: [ObibaEntitiesAppMixin],
       data() {
         return {
@@ -845,14 +847,16 @@ class ObibaStudiesApp {
           }
         }
       }
-    }).mount(element);
+    });
+    app.config.compilerOptions.whitespace = 'condense';
+    return app.mount(element);
   }
 }
 
 class ObibaNetworksApp {
 
   static build(element, locale, sortOptionsTranslations) {
-    return Vue.createApp({
+    const app = Vue.createApp({
       mixins: [ObibaEntitiesAppMixin],
       data() {
         return {
@@ -909,6 +913,8 @@ class ObibaNetworksApp {
           }
         }
       }
-    }).mount(element);
+    });
+    app.config.compilerOptions.whitespace = 'condense';
+    return app.mount(element);
   }
 }

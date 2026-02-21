@@ -161,7 +161,7 @@
   };
   </#if>
 
-  Vue.createApp({
+  const app = Vue.createApp({
     // Mount target: #query-vue-container
       data() {
         return {
@@ -565,7 +565,9 @@
         EventBus.unregister("studies-results", this.onResult.bind(this));
         EventBus.unregister("networks-results", this.onResult.bind(this));
       }
-    }).mount('#query-vue-container');
+    });
+  app.config.compilerOptions.whitespace = 'condense';
+  app.mount('#query-vue-container');
 </script>
 
 <#include "special-char-codec.ftl">

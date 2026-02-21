@@ -163,6 +163,7 @@ const makeFilesVue = function(el, data, childrenFilter) {
       }
     }
   });
+  app.config.compilerOptions.whitespace = 'condense';
   const vm = app.mount(el);
   $(el + '-container').hide();
   FilesService.getFolder(vm.type, vm.id, vm.basePath + vm.path, function(data) {
