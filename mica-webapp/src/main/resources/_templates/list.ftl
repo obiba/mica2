@@ -7,7 +7,7 @@
   <#include "libs/head.ftl">
   <title>${config.name!""} | ${listName(set)}</title>
 </head>
-<body id="list-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
+<body id="list-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed sidebar-expand-lg">
 <!-- Site wrapper -->
 <div class="app-wrapper">
   <!-- Navbar -->
@@ -117,7 +117,7 @@
           <div class="modal-header">
             <h4 class="modal-title"><@message "cart-confirm-deletion-title"/> (${listName(set)})</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-              
+
             </button>
           </div>
           <div class="modal-body">
@@ -144,7 +144,7 @@
           <div class="modal-header">
             <h4 class="modal-title"><@message "cart-confirm-deletion-title"/> (${listName(set)})</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-              
+
             </button>
           </div>
           <div class="modal-body">

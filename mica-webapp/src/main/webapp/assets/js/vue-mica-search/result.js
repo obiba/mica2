@@ -1,27 +1,30 @@
-// an EventBus is a Vue app without element
-// its data are callback functions, registered by event name
-const EventBus = new Vue({
-  data: {
-    callbacks: {}
+// EventBus: plain JS event emitter (replaces Vue 2 instance-based bus, $on/$emit removed in Vue 3)
+const EventBus = {
+  _callbacks: {},
+  register(eventName, callback) {
+    if (!this._callbacks[eventName]) {
+      this._callbacks[eventName] = [];
+    }
+    this._callbacks[eventName].push(callback);
   },
-  methods: {
-    register: function (eventName, callback) {
-      if (!this.callbacks[eventName]) {
-        this.callbacks[eventName] = [];
-        this.$on(eventName, function (payload) {
-          for (let callback of this.callbacks[eventName]) {
-            callback(payload);
-          }
-        });
+  unregister(eventName, callback) {
+    if (callback) {
+      // remove specific callback
+      const cbs = this._callbacks[eventName];
+      if (cbs) this._callbacks[eventName] = cbs.filter(cb => cb !== callback);
+    } else {
+      this._callbacks[eventName] = undefined;
+    }
+  },
+  $emit(eventName, payload) {
+    const cbs = this._callbacks[eventName];
+    if (cbs) {
+      for (const cb of cbs) {
+        cb(payload);
       }
-      this.callbacks[eventName].push(callback);
-      //console.dir(this.callbacks)
-    },
-    unregister: function (eventName) {
-      this.callbacks[eventName] = undefined;
     }
   }
-});
+};
 
 const COVERAGE_PAGE_SIZE = 48;
 const ROW_POPUP_MARGIN = 15;
