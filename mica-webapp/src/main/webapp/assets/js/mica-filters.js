@@ -47,6 +47,40 @@ const StringLocalizer = {
 };
 
 /**
+ * TaxonomyTitleFinder - resolves human-readable titles for taxonomy/vocabulary/term names.
+ * Shared between search page (mica-search.js) and list/cart pages (document-set-scripts.ftl).
+ * Usage: const finder = new TaxonomyTitleFinder(); finder.initialize(taxonomies); finder.title(...)
+ */
+class TaxonomyTitleFinder {
+  initialize(taxonomies) {
+    this.taxonomies = taxonomies;
+  }
+
+  title(taxonomyName, vocabularyName, termName) {
+    if (taxonomyName) {
+      const taxonomy = this.taxonomies[taxonomyName];
+      if (taxonomy) {
+        if (!vocabularyName && !termName) return StringLocalizer.localize(taxonomy.title);
+        else if (vocabularyName) {
+          let foundVocabulary = (taxonomy.vocabularies || []).filter(vocabulary => vocabulary.name === vocabularyName)[0];
+
+          if (foundVocabulary) {
+            if (!termName) return StringLocalizer.localize(foundVocabulary.title);
+            else {
+              let foundTerm = (foundVocabulary.terms || []).filter(term => term.name === termName)[0];
+
+              if (foundTerm) return StringLocalizer.localize(foundTerm.title);
+            }
+          }
+        }
+      }
+    }
+
+    return null;
+  }
+}
+
+/**
  * MicaFilters - central filter/utility object for Vue 3 migration.
  *
  * In Vue 2, filters like "translate" and "localizeString" were registered globally.

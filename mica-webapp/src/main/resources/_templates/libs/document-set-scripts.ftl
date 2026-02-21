@@ -120,36 +120,7 @@
 
   Mica.defaultSearchMode = "${defaultSearchMode}";
 
-  class TaxonomyTitleFinder {
-    initialize(taxonomies) {
-      this.taxonomies = taxonomies;
-    }
-
-    title(taxonomyName, vocabularyName, termName) {
-      if (taxonomyName) {
-        const taxonomy = this.taxonomies[taxonomyName];
-        if (taxonomy) {
-          if (!vocabularyName && !termName) return StringLocalizer.localize(taxonomy.title);
-          else if (vocabularyName) {
-            let foundVocabulary = (taxonomy.vocabularies || []).filter(vocabulary => vocabulary.name === vocabularyName)[0];
-
-            if (foundVocabulary) {
-              if (!termName) return StringLocalizer.localize(foundVocabulary.title);
-              else {
-                let foundTerm = (foundVocabulary.terms || []).filter(term => term.name === termName)[0];
-
-                if (foundTerm) return StringLocalizer.localize(foundTerm.title);
-              }
-            }
-          }
-        }
-      }
-
-      return null;
-    }
-  }
-
-  const taxonomyTitleFinder  = new TaxonomyTitleFinder(); // important initialisation
+  const taxonomyTitleFinder = new TaxonomyTitleFinder();
 
   // clear any previous selections from local storage
   const variablesCartStorage = new MicaSetStorage('cart');
