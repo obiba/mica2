@@ -47,6 +47,7 @@
     Vue.configureCompat({
       MODE: 2  // Use Vue 2 compatibility mode
     });
+    Vue.config.compilerOptions = { whitespace: 'condense' };
   }
 
   // Register filter functions as a global mixin so they are available in all component templates

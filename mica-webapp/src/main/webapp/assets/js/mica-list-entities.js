@@ -604,7 +604,7 @@ const TypeaheadComponent = {
  */
 const NAVIGATION_POSITIONS = ['bottom', 'top'];
 
-const ObibaEntitiesApp = {
+const ObibaEntitiesAppMixin = {
   data() {
     return {
       loading: false,
@@ -726,12 +726,11 @@ const ObibaEntitiesApp = {
 class ObibaDatasetsApp {
 
   static build(element, type, locale, sortOptionsTranslations) {
-    return new Vue({
-      locale,
-      el: element,
-      extends: ObibaEntitiesApp,
+    return Vue.createApp({
+      mixins: [ObibaEntitiesAppMixin],
       data() {
         return {
+          locale,
           sortOptionsTranslations,
           initialSort: 'name'
         };
@@ -788,16 +787,15 @@ class ObibaDatasetsApp {
           }
         }
       }
-    });
+    }).mount(element);
   }
 }
 
 class ObibaStudiesApp {
 
   static build(element, type, locale, sortOptionsTranslations, initialSort) {
-    return new Vue({
-      el: element,
-      extends: ObibaEntitiesApp,
+    return Vue.createApp({
+      mixins: [ObibaEntitiesAppMixin],
       data() {
         return {
           locale,
@@ -847,16 +845,15 @@ class ObibaStudiesApp {
           }
         }
       }
-    });
+    }).mount(element);
   }
 }
 
 class ObibaNetworksApp {
 
   static build(element, locale, sortOptionsTranslations) {
-    return new Vue({
-      el: element,
-      extends: ObibaEntitiesApp,
+    return Vue.createApp({
+      mixins: [ObibaEntitiesAppMixin],
       data() {
         return {
           locale,
@@ -912,6 +909,6 @@ class ObibaNetworksApp {
           }
         }
       }
-    });
+    }).mount(element);
   }
 }

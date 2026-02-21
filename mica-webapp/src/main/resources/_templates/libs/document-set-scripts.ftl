@@ -8,6 +8,7 @@
     Vue.configureCompat({
       MODE: 2  // Use Vue 2 compatibility mode
     });
+    Vue.config.compilerOptions = { whitespace: 'condense' };
   }
 
   Vue.mixin(MicaFilters.asMixin());

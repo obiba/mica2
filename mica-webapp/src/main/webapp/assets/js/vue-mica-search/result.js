@@ -999,12 +999,16 @@ const RowPopup = {
   <div v-show="visible === true" class="coverage-row-popup" id="row-popup">
     <div class="coverage-row-popup-content">
         <table class="table table-striped table-condensed p-0 m-0">
-          <tr>
-            <th v-for="(value, index) in headers" v-bind:key="index">{{value}}</th>
-          </tr>
-          <tr>
-            <td v-for="(value, index) in content" v-bind:key="index">{{value}}</td>
-          </tr>
+          <thead>
+            <tr>
+              <th v-for="(value, index) in headers" v-bind:key="index">{{value}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td v-for="(value, index) in content" v-bind:key="index">{{value}}</td>
+            </tr>
+          </tbody>
         </table>
     </div>
   </div>

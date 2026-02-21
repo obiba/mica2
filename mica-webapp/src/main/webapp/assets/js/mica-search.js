@@ -559,7 +559,7 @@ class TableFixedHeaderUtility {
     return taxonomy;
   }
 
-  Vue.createApp({
+  const app = Vue.createApp({
     data() {
       return {
         loading: { state: true },
@@ -1455,6 +1455,9 @@ class TableFixedHeaderUtility {
       EventBus.unregister("coverage-results", this.onCoverageResult);
       EventBus.unregister(EVENTS.QUERY_TYPE_GRAPHICS_RESULTS, this.onGraphicsResult);
     }
-  }).mount('#search-application');
+  });
+
+  app.config.compilerOptions.whitespace = 'condense';
+  app.mount('#search-application');
 
 })();

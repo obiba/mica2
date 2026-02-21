@@ -192,7 +192,8 @@ const RqlNode = {
       </div>
     </span>
 
-    <span v-for="(arg, index) in otherArgs" v-bind:key="index" v-if="otherArgsAreShown" class="d-flex">
+    <template v-if="otherArgsAreShown">
+    <span v-for="(arg, index) in otherArgs" v-bind:key="index" class="d-flex">
       <template v-if="isNode(arg)">
       <rql-node v-bind:name="arg.name" v-bind:args="arg.args" v-bind:taxonomy="taxonomy" v-on:update-node="onUpdateNode($event)" v-bind:advanced-mode="advancedMode" v-on:update-query="updateQuery($event, arg.taxonomyName)" v-on:remove-query="removeQuery($event, arg.taxonomyName)"></rql-node>
       </template>
@@ -201,6 +202,7 @@ const RqlNode = {
       <rql-query v-if="arg && arg.vocabulary" v-bind:vocabulary="arg.vocabulary" v-bind:query="arg.associatedQuery" v-on:update-query="updateQuery($event, arg.taxonomyName)" v-on:remove-query="removeQuery($event, arg.taxonomyName)"></rql-query>
       </template>
     </span>
+    </template>
   </div>
   `,
   name: "rql-node",
@@ -309,7 +311,9 @@ const RqlQueryBuilder = {
       <h4 class="mb-0"><i class="align-middle io" v-bind:class="targetIcon"></i></h4>
     </span>
 
-    <rql-node v-if="showTarget" v-for="(arg, index) in query.args" v-bind:key="index" v-bind:name="arg.name" v-bind:args="arg.args" v-bind:taxonomy="taxonomy" v-bind:advanced-mode="advancedMode" v-on:update-node="updateNode($event)" v-on:update-query="updateNodeQuery($event)" v-on:remove-query="removeNodeQuery($event)"></rql-node>
+    <template v-if="showTarget">
+      <rql-node v-for="(arg, index) in query.args" v-bind:key="index" v-bind:name="arg.name" v-bind:args="arg.args" v-bind:taxonomy="taxonomy" v-bind:advanced-mode="advancedMode" v-on:update-node="updateNode($event)" v-on:update-query="updateNodeQuery($event)" v-on:remove-query="removeNodeQuery($event)"></rql-node>
+    </template>
   </div>
   `,
   name: "rql-query-builder",

@@ -247,12 +247,12 @@
                 <div id="summary-statistics">
                   <div class="mt-3 text-muted" v-show="!hasGraphicsResult"><@message "no-graphics-result"/></div>
 
-                  <template v-show="hasGraphicsResult">
+                  <div v-show="hasGraphicsResult">
                     <ul class="nav nav-tabs">
                       <li class="nav-item" v-for="(option, index) in chartOptions" v-bind:key="option.id"><a href="" class="nav-link" @click.prevent="onTabClick(index)">{{option.title}}</a></li>
                     </ul>
                     <graphics-result v-bind:chart-options="chartOptions" v-bind:hide-header="true" :taxonomy="studyTaxonomy"></graphics-result>
-                  </template>
+                  </div>
                 </div>
               </div>
             </div>

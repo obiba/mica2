@@ -61,8 +61,8 @@
   <div class="container">
     <div class="navbar-header">
       <a href="${contextPath}/" class="navbar-brand">{{micaConfig.name}}</a>
-      <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
-        <span class="visually-hidden">Toggle navigation</span>
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -72,37 +72,37 @@
       <ul class="nav navbar-nav">
         <li ng-if="authenticated && micaConfig.isRepositoryEnabled && micaConfig.isNetworkEnabled">
           <a href="#/network">
-            <span>{{micaConfig.isSingleNetworkEnabled ? 'network.label' : 'networks' translate(translate)}}</span>
+            <span>{{micaConfig.isSingleNetworkEnabled ? 'network.label' : 'networks' | translate}}</span>
           </a>
         </li>
         <li class="dropdown clearfix" ng-if="authenticated && micaConfig.isRepositoryEnabled && micaConfig.isCollectedDatasetEnabled">
-          <a href="" class="dropdown-toggle" data-bs-toggle="dropdown">
-            <span>{{ 'global.individual' translate(translate) }}</span>
-            <i class="fa-solid fa-caret-down"></i></a>
-          <ul class="dropdown-menu dropdown-menu-start">
-            <li><a href="#/individual-study">{{micaConfig.isSingleStudyEnabled ? 'global.study' : 'global.individual-studies' translate(translate)}}</a></li>
+          <a href="" class="dropdown-toggle" data-toggle="dropdown">
+            <span>{{ 'global.individual' | translate }}</span>
+            <i class="fa fa-caret-down"></i></a>
+          <ul class="dropdown-menu pull-left">
+            <li><a href="#/individual-study">{{micaConfig.isSingleStudyEnabled ? 'global.study' : 'global.individual-studies' | translate}}</a></li>
             <li ng-if="micaConfig.isCollectedDatasetEnabled"><a href="#/collected-dataset"><span translate>collected-datasets</span></a></li>
           </ul>
         </li>
         <li ng-if="authenticated && micaConfig.isRepositoryEnabled && !micaConfig.isCollectedDatasetEnabled">
-          <a href="#/individual-study">{{micaConfig.isSingleStudyEnabled ? 'global.individual-study' : 'global.individual-studies' translate(translate)}}</a>
+          <a href="#/individual-study">{{micaConfig.isSingleStudyEnabled ? 'global.individual-study' : 'global.individual-studies' | translate}}</a>
         </li>
 
         <li class="dropdown clearfix" ng-if="authenticated && micaConfig.isRepositoryEnabled && micaConfig.isHarmonizedDatasetEnabled">
-          <a href="" class="dropdown-toggle" data-bs-toggle="dropdown">
-            <span>{{'global.harmonization' translate(translate) }}</span>
-            <i class="fa-solid fa-caret-down"></i></a>
-          <ul class="dropdown-menu dropdown-menu-start">
-            <li><a href="#/harmonization-study">{{'global.harmonization-studies' translate(translate)}}</a></li>
-            <li><a href="#/harmonized-dataset"><span>{{'harmonized-datasets' translate(translate)}}</span></a></li>
+          <a href="" class="dropdown-toggle" data-toggle="dropdown">
+            <span>{{'global.harmonization' | translate }}</span>
+            <i class="fa fa-caret-down"></i></a>
+          <ul class="dropdown-menu pull-left">
+            <li><a href="#/harmonization-study">{{'global.harmonization-studies' | translate}}</a></li>
+            <li><a href="#/harmonized-dataset"><span>{{'harmonized-datasets' | translate}}</span></a></li>
           </ul>
         </li>
 
         <li class="dropdown clearfix" ng-if="authenticated && (micaConfig.isDataAccessEnabled || micaConfig.isProjectEnabled)">
-          <a href="" class="dropdown-toggle" data-bs-toggle="dropdown">
+          <a href="" class="dropdown-toggle" data-toggle="dropdown">
             <span translate>research</span>
-            <i class="fa-solid fa-caret-down"></i></a>
-          <ul class="dropdown-menu dropdown-menu-start">
+            <i class="fa fa-caret-down"></i></a>
+          <ul class="dropdown-menu pull-left">
             <li ng-if="micaConfig.isProjectEnabled">
               <a href="#/project">
                 <span translate>research-projects</span>
@@ -111,10 +111,10 @@
           </ul>
         </li>
         <li ng-if="authenticated">
-          <a href="#/files"><span>{{'files' translate(translate)}}</span></a>
+          <a href="#/files"><span>{{'files' | translate}}</span></a>
         </li>
         <li ng-if="authenticated && hasRole(['mica-administrator'])">
-          <a href="#/persons"><span>{{'persons.title' translate(translate)}}</span></a>
+          <a href="#/persons"><span>{{'persons.title' | translate}}</span></a>
         </li>
       </ul>
 
@@ -130,18 +130,18 @@
           </a>
         </li>
         <li class="dropdown">
-          <a href="" class="dropdown-toggle" data-bs-toggle="dropdown">
-            <i class="fa-solid fa-user"></i>
+          <a href="" class="dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-user"></i>
             {{UserProfileService.getFullName(subject.profile) || subject.login}}
-            <i class="fa-solid fa-caret-down"></i></a>
-          <ul class="dropdown-menu dropdown-menu-end" ng-controller="LanguageController">
-            <!--<li><a href="#/profile"><i class="fa-solid fa-cog"></i> <span translate>global.menu.myProfile</span></a></li>-->
+            <i class="fa fa-caret-down"></i></a>
+          <ul class="dropdown-menu pull-right" ng-controller="LanguageController">
+            <!--<li><a href="#/profile"><i class="fa fa-cog"></i> <span translate>global.menu.myProfile</span></a></li>-->
             <li ng-repeat="lang in languages">
               <a href ng-click="changeLanguage(lang)">
-                <span>{{'language.' + lang translate(translate)}}</span> <i class="fa-solid fa-check" aria-hidden="true" ng-show="getCurrentLanguage() === lang"></i></a>
+                <span>{{'language.' + lang | translate}}</span> <i class="fa fa-check" aria-hidden="true" ng-show="getCurrentLanguage() === lang"></i></a>
             </li>
             <li class="divider"></li>
-            <li><a href="#/logout"><i class="fa-solid fa-sign-out"></i> <span translate>global.menu.logout</span></a></li>
+            <li><a href="#/logout"><i class="fa fa-sign-out"></i> <span translate>global.menu.logout</span></a></li>
           </ul>
         </li>
       </ul>

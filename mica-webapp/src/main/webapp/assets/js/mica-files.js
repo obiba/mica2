@@ -1,6 +1,6 @@
 'use strict';
 
-Vue.component('folder-breadcrumb', {
+const FolderBreadcrumbComponent = {
   props: {
     path: String,   // relative path
     folder: Object, // current folder
@@ -49,9 +49,9 @@ Vue.component('folder-breadcrumb', {
     '</ol>' +
     '<a :href="contextPath + \'/ws/file-dl\' + folder.path" class="btn btn-sm btn-info float-right"><i class="fa fa-download"></i> {{ tr.download }}</a>' +
     '</div>'
-});
+};
 
-Vue.component('file-row', {
+const FileRowComponent = {
   data: function() {
     return {
       textMaxLength: 100
@@ -122,12 +122,17 @@ Vue.component('file-row', {
     '<td>{{ sizeLabel }}</td>' +
     '<td><a v-if="file.size>0" download :href="contextPath + \'/ws/file-dl\' + file.path"><i class="fa fa-download"></i></a></td>' +
     '</tr>'
-});
+};
 
 const makeFilesVue = function(el, data, childrenFilter) {
-  const vm = new Vue({
-    el: el,
-    data: data,
+  const app = Vue.createApp({
+    data() {
+      return data;
+    },
+    components: {
+      'folder-breadcrumb': FolderBreadcrumbComponent,
+      'file-row': FileRowComponent
+    },
     computed: {
       rawFolder: {
         get: function() { return this.folder; },
@@ -148,7 +153,6 @@ const makeFilesVue = function(el, data, childrenFilter) {
         const relativePath = folderPath === '/' ?
           this.basePath :
           (folderPath.replace('/' + this.type + '/' + this.id, ''));
-        //console.log(relativePath);
         const that = this;
         FilesService.getFolder(this.type, this.id, relativePath, function(data) {
           that.rawFolder = data;
@@ -159,6 +163,7 @@ const makeFilesVue = function(el, data, childrenFilter) {
       }
     }
   });
+  const vm = app.mount(el);
   $(el + '-container').hide();
   FilesService.getFolder(vm.type, vm.id, vm.basePath + vm.path, function(data) {
     vm.rawFolder = data;
