@@ -88,6 +88,7 @@
 <!-- Font Awesome Icons -->
 <link rel="stylesheet" href="${fontAwesomePath}/css/all.min.css">
 <!-- Mica Theme (includes Bootstrap 5 + AdminLTE 4 + custom overrides) -->
+<link rel="stylesheet" href="${adminLTEPath}/dist/css/adminlte.min.css">
 <!-- Font: Source Sans Pro -->
 <style type="text/css">
   @font-face {
