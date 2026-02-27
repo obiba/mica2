@@ -164,11 +164,11 @@
           </button>
         </div>
         <div class="modal-body">
-          <div class="form-group">
+          <div class="mb-3">
             <label><@message "action"/></label>
             <input type="text" id="action-text" class="form-control">
           </div>
-          <div class="form-group">
+          <div class="mb-3">
             <label><@message "date"/></label>
             <div class="input-group">
               <input type="text" id="action-date" class="form-control">

@@ -135,9 +135,9 @@
         </div>
         <div class="modal-body">
           <form>
-            <div class="form-group">
+            <div class="mb-3">
               <label for="file-field"><@message "select-file-to-upload"/></label>
-              <input type="file" id="file-field" class="form-control-file" accept="${filesExtensions}" onchange="handleFiles(this.files)">
+              <input type="file" id="file-field" class="form-control" accept="${filesExtensions}" onchange="handleFiles(this.files)">
               <input type="hidden" id="file-id">
             </div>
             <div>
