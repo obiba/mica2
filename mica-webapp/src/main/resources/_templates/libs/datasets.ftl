@@ -16,7 +16,7 @@
   <tr>
     <td><a href="${contextPath}/dataset/${dataset.id}">${localize(dataset.acronym)}</a></td>
     <td><small>${localize(dataset.name)}</small></td>
-    <td class="marked"><template><small>${localize(dataset.description)?trim?truncate_w(100, "...")}</small></template></td>
+    <td class="marked"><small>${localize(dataset.description)?trim?truncate_w(100, "...")}</small></td>
     <#if showTypeColumn>
       <td>
         <#if dataset.class.simpleName == "HarmonizationDataset">
@@ -45,9 +45,7 @@
   <div class="col-lg-9 col-sm-12">
     <h2 class="lead"><b>${localize(dataset.acronym)}</b></h2>
     <p class="text-muted text-sm">${localize(dataset.name)}</p>
-    <div class="marked">
-      <template>${localize(dataset.description)?trim?truncate_w(200, "...")}</template>
-    </div>
+    <div class="marked">${localize(dataset.description)?trim?truncate_w(200, "...")}</div>
     <div class="mt-2">
       <a href="${contextPath}/dataset/${dataset.id}" class="btn btn-sm btn-outline-info">
         <@message "global.read-more"/>
@@ -119,7 +117,7 @@
                       <b>{{localizeString(dataset.name)}}</b>
                     </a>
                   </h4>
-                  <span class="marked"><small :inner-html.prop="markdown(ellipsis(localizeString(dataset.description), 300))"></small></span>
+                  <span class="marked"><small v-html="markdown(ellipsis(localizeString(dataset.description), 300))"></small></span>
                 </div>
               </div>
             </div>

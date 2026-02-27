@@ -314,7 +314,7 @@ const StatItemComponent = {
     url: String
   },
   template: `
-    <a v-if="count" v-bind:href="url" class="btn btn-sm btn-link col text-left">
+    <a v-if="count" v-bind:href="url" class="btn btn-sm btn-link col text-start">
       <span class="h6 pb-0 mb-0 d-block">{{localizeNumber(count)}}</span>
       <span class="text-muted"><small>{{count < 2 ? this.singular : this.plural}}</small></span>
     </a>
@@ -337,7 +337,7 @@ const VariableStatItemComponent =  {
     }
   },
   template: `
-    <a v-if="count" v-bind:href="url" class="btn btn-sm btn-link col text-left">
+    <a v-if="count" v-bind:href="url" class="btn btn-sm btn-link col text-start">
       <span class="h6 pb-0 mb-0 d-block">{{localizeNumber(count)}}</span>
       <span class="text-muted"><small>{{this.countLabel}}</small></span>
     </a>
@@ -372,7 +372,7 @@ const DatasetStatItemComponent =  {
     }
   },
   template: `
-    <a v-if="count" href="javascript:void(0)" style="cursor: initial;" class="btn btn-sm col text-left">
+    <a v-if="count" href="javascript:void(0)" style="cursor: initial;" class="btn btn-sm col text-start">
       <span class="h6 pb-0 mb-0 d-block">{{localizeNumber(count)}}</span>
       <span class="text-muted"><small>{{this.countLabel}}</small></span>
     </a>
@@ -401,7 +401,7 @@ const StudyStatItemComponent =  {
     }
   },
   template: `
-    <a v-if="count" href="javascript:void(0)" style="cursor: initial;" class="btn btn-sm col text-left">
+    <a v-if="count" href="javascript:void(0)" style="cursor: initial;" class="btn btn-sm col text-start">
       <span class="h6 pb-0 mb-0 d-block">{{localizeNumber(count)}}</span>
       <span class="text-muted"><small>{{this.countLabel}}</small></span>
     </a>
@@ -483,14 +483,15 @@ const EntitiesSortingComponent = {
  * Typeahead UI component
  */
 const TypeaheadComponent = {
+  emits: ['typing', 'select'],
   template: `
     <div class="typeahead w-100 position-relative">
       <div class="input-group">
-        <input type="text" :placeholder="translate('listing-typeahead-placeholder')" class="form-control form-control-sm" v-model="text" @keyup="typing($event)">
-        <div class="input-group-append">
-          <button type="button" class="btn btn-primary btn-sm" @click="select(text)"><i class="fas fa-filter"></i></button>
+        <div class="position-relative flex-grow-1">
+          <input type="text" :placeholder="translate('listing-typeahead-placeholder')" class="form-control form-control-sm" :class="{'pe-4': text.length > 0}" v-model="text" @keyup="typing($event)" @input="onInput">
+          <button type="button" class="btn btn-link btn-sm text-muted position-absolute top-50 end-0 translate-middle-y px-2 py-0" v-show="text.length > 0" @click="clear" style="z-index:5;"><i class="fas fa-times"></i></button>
         </div>
-        <button type="button" class="close position-absolute" style="right: 2em; top: 0.25em;" v-if="text.length > 0" @click="clear"><span aria-hidden="true">&times;</span></button>
+        <button type="button" class="btn btn-primary btn-sm" @click="select(text)"><i class="fas fa-filter"></i></button>
       </div>
 
       <div class="list-group position-absolute mt-1 ml-1 shadow" style="z-index: 100; overflow-y: auto; max-height: 16em;" v-if="showChoices && typeaheadItems.length > 0">
@@ -511,7 +512,7 @@ const TypeaheadComponent = {
   },
   data() {
     return {
-      text: this.externalText || "",
+      text: String(this.externalText || ""),
       showChoices: false,
       currentIndexSelection: -1,
     };
@@ -522,19 +523,24 @@ const TypeaheadComponent = {
     },
   },
   methods: {
+    onInput() {
+      if (this.text.length === 0) {
+        this.$emit('select', '');
+      }
+    },
     typing(event) {
-      if (event.keyCode === 13) {
+      if (event.key === 'Enter') {
         this.select(this.text);
         return;
       }
 
-      if (event.keyCode === 27) { // escape
+      if (event.key === 'Escape') { // escape
         this.clear();
         return;
       }
 
-      if (event.keyCode === 37 || event.keyCode === 38 || event.keyCode === 39 || event.keyCode === 40) { // arrows
-        this.changeIndexSelection(event.keyCode);
+      if (['ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown'].includes(event.key)) { // arrows
+        this.changeIndexSelection(event.key);
         return;
       }
 
@@ -553,14 +559,14 @@ const TypeaheadComponent = {
     clear() {
       this.select('');
     },
-    changeIndexSelection(keyCode) {
-      if (keyCode === 37 || keyCode === 38) { // up
+    changeIndexSelection(key) {
+      if (key === 'ArrowLeft' || key === 'ArrowUp') { // up
         if (this.currentIndexSelection <= 0) {
           this.currentIndexSelection = this.typeaheadItems.length;
         }
 
         this.currentIndexSelection--;
-      } else if (keyCode === 39 || keyCode === 40) { // down
+      } else if (key === 'ArrowRight' || key === 'ArrowDown') { // down
         if (this.currentIndexSelection >= this.typeaheadItems.length - 1) {
           this.currentIndexSelection = -1;
         }
@@ -585,7 +591,7 @@ const TypeaheadComponent = {
       return text;
     },
     cleanUnclosedDoubleQuotes(text) {
-      let output = (text || "").trim();
+      let output = (String(text == null ? '' : text)).trim();
       const doubleQuotesRegxp = /"/g;
       const instancesOfDoubleQuoteCharacters = (output.match(doubleQuotesRegxp) || []).length;
 
@@ -726,7 +732,7 @@ const ObibaEntitiesAppMixin = {
 class ObibaDatasetsApp {
 
   static build(element, type, locale, sortOptionsTranslations) {
-    const app = Vue.createApp({
+    const app = MicaVueApp.createApp({
       mixins: [ObibaEntitiesAppMixin],
       data() {
         return {
@@ -788,7 +794,6 @@ class ObibaDatasetsApp {
         }
       }
     });
-    app.config.compilerOptions.whitespace = 'condense';
     return app.mount(element);
   }
 }
@@ -796,7 +801,7 @@ class ObibaDatasetsApp {
 class ObibaStudiesApp {
 
   static build(element, type, locale, sortOptionsTranslations, initialSort) {
-    const app = Vue.createApp({
+    const app = MicaVueApp.createApp({
       mixins: [ObibaEntitiesAppMixin],
       data() {
         return {
@@ -848,7 +853,6 @@ class ObibaStudiesApp {
         }
       }
     });
-    app.config.compilerOptions.whitespace = 'condense';
     return app.mount(element);
   }
 }
@@ -856,7 +860,7 @@ class ObibaStudiesApp {
 class ObibaNetworksApp {
 
   static build(element, locale, sortOptionsTranslations) {
-    const app = Vue.createApp({
+    const app = MicaVueApp.createApp({
       mixins: [ObibaEntitiesAppMixin],
       data() {
         return {
@@ -914,7 +918,6 @@ class ObibaNetworksApp {
         }
       }
     });
-    app.config.compilerOptions.whitespace = 'condense';
     return app.mount(element);
   }
 }

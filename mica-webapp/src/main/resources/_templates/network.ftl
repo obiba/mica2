@@ -192,7 +192,7 @@
                   <div class="card-header">
                     <h3 class="card-title"><@message "members"/></h3>
                     <div class="card-tools float-end">
-                      <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
+                      <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#member-card"  data-bs-toggle="tooltip" title="<@message "collapse"/>">
                         <i class="fa-solid fa-minus"></i></button>
                     </div>
 
@@ -202,7 +202,7 @@
                         </button>
                       </#if>
                   </div>
-                  <div class="card-body">
+                  <div id="member-card" class="card-body collapse show">
                     <div class="table-responsive">
                       <table class="table">
                         <thead>
@@ -270,11 +270,11 @@
                   <div class="card-header">
                     <h3 class="card-title"><@message "networks"/></h3>
                     <div class="card-tools">
-                      <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
+                      <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#networks-card"  data-bs-toggle="tooltip" title="<@message "collapse"/>">
                         <i class="fa-solid fa-minus"></i></button>
                     </div>
                   </div>
-                  <div class="card-body">
+                  <div id="networks-card" class="card-body collapse show">
                     <div class="table-responsive">
                       <table id="networks" class="table table-bordered table-striped">
                         <thead>
@@ -309,11 +309,11 @@
                   <div class="card-header">
                     <h3 class="card-title"><@message "individual-studies"/></h3>
                     <div class="card-tools">
-                      <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
+                      <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#individual-studies-card"  data-bs-toggle="tooltip" title="<@message "collapse"/>">
                         <i class="fa-solid fa-minus"></i></button>
                     </div>
                   </div>
-                  <div class="card-body">
+                  <div id="individual-studies-card" class="card-body collapse show">
                     <div class="table-responsive">
                       <table id="individual-studies" class="table table-bordered table-striped">
                         <thead>
@@ -348,11 +348,11 @@
                   <div class="card-header">
                     <h3 class="card-title"><@message "harmonization-studies"/></h3>
                     <div class="card-tools">
-                      <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
+                      <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#harmonization-studies-card"  data-bs-toggle="tooltip" title="<@message "collapse"/>">
                         <i class="fa-solid fa-minus"></i></button>
                     </div>
                   </div>
-                  <div class="card-body">
+                  <div id="harmonization-studies-card" class="card-body collapse show">
                     <div class="table-responsive">
                       <table id="harmonization-studies" class="table table-bordered table-striped">
                         <thead>
@@ -400,14 +400,12 @@
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title"><@message "network.associated-people"/></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal">
-                  <span>&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
               </div>
 
               <div class="modal-body">
                 <div class="container-fluid">
-                  <div class="row">
+                  <div class="mb-2">
                     <a href="${contextPath}/ws/persons/_search/_download?limit=1000&query=${affiliatedMembersQuery?url('utf-8')}" class="btn btn-primary mb-2">
                       <i class="fa-solid fa-download"></i> <@message "download"/>
                     </a>
@@ -415,7 +413,7 @@
 
                   <div class="row">
                     <div class="table-responsive">
-                      <table id="affiliatedMembersTable" class="table" style="width: 100%"></table>
+                      <table id="affiliatedMembersTable" class="table table-striped" style="width: 100%"></table>
                     </div>
                   </div>
                 </div>

@@ -52,6 +52,7 @@ const FolderBreadcrumbComponent = {
 };
 
 const FileRowComponent = {
+  emits: ['select-folder'],
   data: function() {
     return {
       textMaxLength: 100
@@ -124,14 +125,41 @@ const FileRowComponent = {
     '</tr>'
 };
 
+const FilesTableComponent = {
+  emits: ['select-folder'],
+  props: {
+    folder: Object,
+    tr: Object,
+    locale: String,
+    contextPath: String
+  },
+  components: {
+    'file-row': FileRowComponent
+  },
+  template:
+    '<div>' +
+    '<table class="table table-sm table-striped">' +
+    '<thead><tr>' +
+    '<th>#</th><th>{{ tr.name }}</th><th>{{ tr.description }}</th><th>{{ tr.size }}</th><th>{{ tr.actions }}</th>' +
+    '</tr></thead>' +
+    '<tbody>' +
+    '<file-row v-for="file in folder.children" v-bind:key="file.name"' +
+    '  v-bind:file="file" v-bind:tr="tr" v-bind:locale="locale" v-bind:context-path="contextPath"' +
+    '  v-on:select-folder="$emit(\'select-folder\', $event)">' +
+    '</file-row>' +
+    '</tbody>' +
+    '</table>' +
+    '</div>'
+};
+
 const makeFilesVue = function(el, data, childrenFilter) {
-  const app = Vue.createApp({
+  const app = MicaVueApp.createApp({
     data() {
       return data;
     },
     components: {
       'folder-breadcrumb': FolderBreadcrumbComponent,
-      'file-row': FileRowComponent
+      'files-table': FilesTableComponent
     },
     computed: {
       rawFolder: {

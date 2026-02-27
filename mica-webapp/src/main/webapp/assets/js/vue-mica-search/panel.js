@@ -266,4 +266,4 @@ const RqlPanel = {
   }
 };
 
-Vue.component(RqlPanel.name, RqlPanel);
+MicaVueApp.component(RqlPanel.name, RqlPanel);

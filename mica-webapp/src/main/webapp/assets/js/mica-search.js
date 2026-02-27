@@ -20,7 +20,7 @@ const MINIMUM_STUDY_TAXONOMY = {
 /**
  * Taxonomy sidebar menu component
 */
-Vue.component('search-criteria', {
+MicaVueApp.component('search-criteria', {
   template: `
   <div class="">
     <ul v-for="name in criteriaMenu.order"
@@ -187,7 +187,7 @@ Vue.component('search-criteria', {
 /**
  * Component used to filter results by Study className vocabulary
  */
-Vue.component('study-filter-shortcut', {
+MicaVueApp.component('study-filter-shortcut', {
   name: 'StudyFilterShortcut',
   template: `
   <div>
@@ -559,7 +559,7 @@ class TableFixedHeaderUtility {
     return taxonomy;
   }
 
-  const app = Vue.createApp({
+  const app = MicaVueApp.createApp({
     data() {
       return {
         loading: { state: true },

@@ -13,7 +13,7 @@
   <tr>
     <td><a href="${contextPath}/network/${network.id}">${localize(network.acronym)}</a></td>
     <td><small>${localize(network.name)}</small></td>
-    <td class="marked"><template><small>${localize(network.description)?trim?truncate_w(100, "...")}</small></template></td>
+    <td class="marked"><small>${localize(network.description)?trim?truncate_w(100, "...")}</small></td>
   </tr>
 </#macro>
 
@@ -31,9 +31,7 @@
   <div class="col-lg-9 col-sm-12">
     <h2 class="lead"><b>${localize(network.acronym)}</b></h2>
     <p class="text-muted text-sm">${localize(network.name)}</p>
-    <div class="marked">
-      <template>${localize(network.description)?trim?truncate_w(200, "...")}</template>
-    </div>
+    <div class="marked">${localize(network.description)?trim?truncate_w(200, "...")}</div>
     <div class="mt-2">
       <a href="${contextPath}/network/${network.id}" class="btn btn-sm btn-outline-info">
         <@message "global.read-more"/>
@@ -90,7 +88,7 @@
                       <b>{{localizeString(network.name)}}</b>
                     </a>
                   </h4>
-                  <span class="marked"><small :inner-html.prop="markdown(ellipsis(localizeString(network.description), 300, ('${contextPath}/network/' + network.id)))"></small></span>
+                  <span class="marked"><small v-html="markdown(ellipsis(localizeString(network.description), 300, ('${contextPath}/network/' + network.id)))"></small></span>
                 </div>
                 <div class="col-3 mx-auto my-auto" v-if="network.logo">
                   <a v-bind:href="'${contextPath}/network/' + network.id" class="text-decoration-none text-center">

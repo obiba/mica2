@@ -16,7 +16,7 @@
   <tr>
     <td><a href="${contextPath}/study/${study.id}">${localize(study.acronym)}</a></td>
     <td><small>${localize(study.name)}</small></td>
-    <td class="marked"><template><small>${localize(study.objectives)?trim?truncate_w(100, "...")}</small></template></td>
+    <td class="marked"><small>${localize(study.objectives)?trim?truncate_w(100, "...")}</small></td>
     <#if showTypeColumn>
       <td>
         <#if study.class.simpleName == "HarmonizationStudy">
@@ -43,9 +43,7 @@
   <div class="col-lg-9 col-sm-12">
     <h2 class="lead"><b>${localize(study.acronym)}</b></h2>
     <p class="text-muted text-sm">${localize(study.name)}</p>
-    <div class="marked">
-      <template>${localize(study.objectives)?trim?truncate_w(200, "...")}</template>
-    </div>
+    <div class="marked">${localize(study.objectives)?trim?truncate_w(200, "...")}</div>
     <div class="mt-2">
       <a href="${contextPath}/study/${study.id}" class="btn btn-sm btn-outline-info">
         <@message "global.read-more"/>
@@ -125,7 +123,7 @@
                       <b>{{localizeString(study.name)}}</b>
                     </a>
                   </h4>
-                  <span class="marked"><small :inner-html.prop="markdown(ellipsis(localizeString(study.objectives), 300, ('${contextPath}/study/' + study.id)))"></small></span>
+                  <span class="marked"><small v-html="markdown(ellipsis(localizeString(study.objectives), 300, ('${contextPath}/study/' + study.id)))"></small></span>
                 </div>
                 <div class="col-3 mx-auto my-auto" v-if="study.logo">
                   <a v-bind:href="'${contextPath}/study/' + study.id" class="text-decoration-none text-center">

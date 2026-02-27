@@ -80,6 +80,7 @@
 
     <!-- Main content -->
     <section class="content">
+      <div class="container-fluid">
 
       <@searchInfo/>
 
@@ -110,12 +111,12 @@
                 </ul>
               </div>
             </#if>
-            <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip"
+            <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#query-card"  data-bs-toggle="tooltip"
                     title="<@message "collapse"/>">
               <i class="fa-solid fa-minus"></i></button>
           </div>
         </div>
-        <div class="card-body">
+        <div id="query-card" class="card-body collapse show">
           <div class="row gap-1">
 
             <div class="modal fade" id="taxonomy-modal">
@@ -177,8 +178,7 @@
                     <@message "results-lists-text"/>
                   </p>
 
-                  <div class="row">
-                    <div class="mt-3 col clearfix" v-cloak>
+                  <div class="clearfix mt-3" v-cloak>
                       <ul class="nav nav-pills float-start" id="results-tab" role="tablist">
                           <#if searchVariableListDisplay>
                             <li class="nav-item" v-if="showVariableAndDatasetTabsInIndividualMode">
@@ -205,14 +205,14 @@
                             </li>
                           </#if>
                       </ul>
-                      <div class="float-end mt-1">
+                      <div class="float-end mt-1 d-flex gap-2 align-items-center">
                           <#if exportStudiesQueryEnabled>
                             <button id="export-studies" type="button" class="btn btn-info btn-sm" v-if="isStudiesToolsVisible" @click="onDownloadExportQueryResult">
                               <i class="fa-solid fa-download"></i> <@message "export"/></span>
                             </button>
                           </#if>
                           <#if studiesCompareEnabled>
-                            <button id="compare-studies" type="button" class="btn btn-info btn-sm ms-2" v-if="isStudiesToolsVisible" @click="onCompare">
+                            <button id="compare-studies" type="button" class="btn btn-info btn-sm" v-if="isStudiesToolsVisible" @click="onCompare">
                               <i class="fa-solid fa-grip-lines-vertical"></i> <@message "compare"/></span>
                             </button>
                           </#if>
@@ -222,7 +222,7 @@
                             </button>
                           </#if>
                           <#if networksCompareEnabled>
-                            <button id="compare-networks" type="button" class="btn btn-info btn-sm ms-2" v-if="isNetworksToolsVisible" @click="onCompare">
+                            <button id="compare-networks" type="button" class="btn btn-info btn-sm" v-if="isNetworksToolsVisible" @click="onCompare">
                               <i class="fa-solid fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge text-bg-light studies-selection-count"></span>
                             </button>
                           </#if>
@@ -258,11 +258,11 @@
                                       </#if>
                                   </#if>
                                   <#if studiesCartEnabled>
-                                    <button id="cart-add-studies" type="button" class="btn btn-sm btn-success ms-2" v-if="isStudiesToolsVisible" @click="onAddToCart" title="<@message "sets.cart.add-studies-to-cart"/>">
+                                    <button id="cart-add-studies" type="button" class="btn btn-sm btn-success" v-if="isStudiesToolsVisible" @click="onAddToCart" title="<@message "sets.cart.add-studies-to-cart"/>">
                                       <i class="fa-solid fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
                                   </#if>
                                   <#if networksCartEnabled>
-                                    <button id="cart-add-networks" type="button" class="btn btn-sm btn-success ms-2" v-if="isNetworksToolsVisible" @click="onAddToCart" title="<@message "sets.cart.add-networks-to-cart"/>">
+                                    <button id="cart-add-networks" type="button" class="btn btn-sm btn-success" v-if="isNetworksToolsVisible" @click="onAddToCart" title="<@message "sets.cart.add-networks-to-cart"/>">
                                       <i class="fa-solid fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
                                   </#if>
                               <#else>
@@ -271,7 +271,6 @@
                               </#if>
                           </#if>
                       </div>
-                    </div>
                   </div>
 
                   <div id="paging-sorting-container" class="mt-2">
@@ -426,14 +425,9 @@
         </div>
         <!-- /.col -->
       </div>
-
-      <div class="row">
-        <div class="col-12">
-        </div>
-        <!-- /.col-12 -->
-      </div>
       <!-- /.row -->
 
+      </div><!-- /.container-fluid -->
     </section>
     <!-- /.content -->
   </div>

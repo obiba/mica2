@@ -231,7 +231,7 @@
                       <@message "suppl-info"/>
                   </dt>
                   <dd class="col-sm-6">
-                    <div class="marked"><template>${localize(population.model.recruitment.info)}</template></div>
+                    <div class="marked">${localize(population.model.recruitment.info)}</div>
                   </dd>
                 </#if>
 

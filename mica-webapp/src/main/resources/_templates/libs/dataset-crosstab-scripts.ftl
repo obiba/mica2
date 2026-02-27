@@ -22,6 +22,6 @@
 </script>
 
 <!-- Mica crosstabs and dependencies -->
-<script src="${adminLTEPath}/plugins/select2/js/select2.js"></script>
-<script src="${adminLTEPath}/plugins/select2/js/i18n/${.lang}.js"></script>
+<script src="${assetsPath}/libs/node_modules/select2/dist/js/select2.full.js"></script>
+<script src="${assetsPath}/libs/node_modules/select2/dist/js/i18n/${.lang}.js"></script>
 <script src="${assetsPath}/js/mica-dataset-crosstab.js"></script>

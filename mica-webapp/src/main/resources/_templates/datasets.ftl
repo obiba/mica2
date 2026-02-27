@@ -107,7 +107,7 @@
                 </#if>
 
                 <#if datasetListDisplays?seq_contains("cards")>
-                  <div class="tab-pane <#if datasetListDefaultDisplay == "cards">active</#if>" id="cards">
+                  <div class="tab-pane <#if datasetListDefaultDisplay == "cards">active</#if>" id="cards" v-cloak>
                     <@datasetCardModel/>
                   </div>
                 </#if>

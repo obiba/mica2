@@ -210,9 +210,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title"><@message "confirm-creation"/></h4>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-            
-          </button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">          </button>
         </div>
         <div class="modal-body">
           <p><@message "confirm-data-access-request-creation"/></p>

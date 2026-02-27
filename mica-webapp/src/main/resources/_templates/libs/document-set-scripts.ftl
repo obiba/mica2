@@ -1,18 +1,7 @@
 <!-- Script for the cart and the documents list pages -->
 <script src="${assetsPath}/js/mica-tables.js"></script>
 
-<script src="${assetsPath}/libs/node_modules/@vue/compat/dist/vue.global.js"></script>
-<script>
-  // Configure Vue 3 compat mode to allow Vue 2 APIs
-  if (Vue && Vue.configureCompat) {
-    Vue.configureCompat({
-      MODE: 2  // Use Vue 2 compatibility mode
-    });
-    Vue.config.compilerOptions = { whitespace: 'condense' };
-  }
-
-  Vue.mixin(MicaFilters.asMixin());
-</script>
+<script src="${assetsPath}/libs/node_modules/vue/dist/vue.global.js"></script>
 <script src="${assetsPath}/libs/node_modules/rql/dist/rql.js"></script>
 <script src="${assetsPath}/js/vue-mica-search/libs/result-parsers.js"></script>
 <script src="${assetsPath}/js/vue-mica-search/result.js"></script>
@@ -161,7 +150,7 @@
   };
   </#if>
 
-  const app = Vue.createApp({
+  const app = MicaVueApp.createApp({
     // Mount target: #query-vue-container
       data() {
         return {

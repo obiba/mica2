@@ -152,7 +152,7 @@
                         <h3 class="card-title"><@message "harmonization-protocol.information-content"/></h3>
                       </div>
                       <div class="card-body">
-                        <div class="marked"><template>${localize(dataset.model.informationContent)}</template></div>
+                        <div class="marked">${localize(dataset.model.informationContent)}</div>
                       </div>
                     </div>
                   </div>
@@ -164,7 +164,7 @@
                         <h3 class="card-title"><@message "global.additional-information"/></h3>
                       </div>
                       <div class="card-body">
-                        <div class="marked"><template>${localize(dataset.model.additionalInformation)}</template></div>
+                        <div class="marked">${localize(dataset.model.additionalInformation)}</div>
                       </div>
                     </div>
                   </div>
@@ -183,7 +183,7 @@
                 </div>
                 <div class="card-body">
                   <h5>${localize(population.name)}</h5>
-                  <div class="marked"><template>${localize(population.description)}</template></div>
+                  <div class="marked">${localize(population.description)}</div>
                   <@populationDialog id=population.id population=population></@populationDialog>
                 </div>
                 <div class="card-footer">
@@ -200,7 +200,7 @@
                 </div>
                 <div class="card-body">
                   <h5>${localize(dce.name)}</h5>
-                  <div class="marked"><template>${localize(dce.description)}</template></div>
+                  <div class="marked">${localize(dce.description)}</div>
                   <#assign dceId="${population.id}-${dce.id}">
                   <@dceDialog id=dceId dce=dce></@dceDialog>
                 </div>
@@ -215,11 +215,11 @@
                 <div class="card-header">
                   <h3 class="card-title"><@message "studies-included"/></h3>
                   <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
+                    <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#pop-dce-card"  data-bs-toggle="tooltip" title="<@message "collapse"/>">
                       <i class="fa-solid fa-minus"></i></button>
                   </div>
                 </div>
-                <div class="card-body">
+                <div id="pop-dce-card" class="card-body collapse show">
                   <#if studyTables?? && studyTables?size != 0>
                     <div class="table-responsive">
                       <table class="table table-striped mb-3">
@@ -268,11 +268,11 @@
                 <div class="card-header">
                   <h3 class="card-title"><@message "initiatives-included"/></h3>
                   <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
+                    <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#initiatives-card"  data-bs-toggle="tooltip" title="<@message "collapse"/>">
                       <i class="fa-solid fa-minus"></i></button>
                   </div>
                 </div>
-                <div class="card-body">
+                <div id="initiatives-card" class="card-body collapse show">
                   <#if harmonizationTables?? && harmonizationTables?size != 0>
                     <div class="table-responsive">
                       <table class="table table-striped">
@@ -376,15 +376,12 @@
 <#include "libs/scripts.ftl">
 <#include "libs/dataset-scripts.ftl">
 <script>
-  document.querySelectorAll('#harmonizedTable tr [data-bs-toggle="popover"]').forEach(el => {
-    new bootstrap.Popover(el, {
-      html: true,
-      delay: { show: 250, hide: 750 }
-    });
-  });
   document.querySelectorAll("[id^='popover-']").forEach(element => {
-    element.dataset.content=marked.parse(element.dataset.content).replaceAll('"', "'");
-  })
+    const content = element.dataset.bsContent;
+    if (content) {
+      element.dataset.bsContent = marked.parse(content);
+    }
+  });
 
 </script>
 </body>

@@ -182,7 +182,7 @@
                 </a>
                 <@dceDialog id=dceId dce=dce></@dceDialog>
               </td>
-              <td class="marked"><template>${localize(dce.description)?trim?truncate(200, "...")}</template></td>
+              <td class="marked">${localize(dce.description)?trim?truncate(200, "...")}</td>
               <td><#if dce.start?? && dce.start.yearMonth??>${dce.start.yearMonth}</#if></td>
               <td><#if dce.end?? && dce.end.yearMonth??>${dce.end.yearMonth}</#if></td>
             </tr>

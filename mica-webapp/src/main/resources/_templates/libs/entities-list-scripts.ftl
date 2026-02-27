@@ -40,18 +40,6 @@
     "listing-typeahead-placeholder": "<@message "global.list-search-placeholder"/>",
   };
 </script>
-<script src="${assetsPath}/libs/node_modules/@vue/compat/dist/vue.global.js"></script>
-<script>
-  // Configure Vue 3 compat mode to allow Vue 2 APIs
-  if (Vue && Vue.configureCompat) {
-    Vue.configureCompat({
-      MODE: 2  // Use Vue 2 compatibility mode
-    });
-    Vue.config.compilerOptions = { whitespace: 'condense' };
-  }
-
-  // Register filter functions as a global mixin so they are available in all component templates
-  Vue.mixin(MicaFilters.asMixin());
-</script>
+<script src="${assetsPath}/libs/node_modules/vue/dist/vue.global.js"></script>
 <script src="${assetsPath}/libs/node_modules/rql/dist/rql.js"></script>
 <script src="${assetsPath}/js/mica-list-entities.js"></script>

@@ -74,14 +74,23 @@ class GraphicsResultParser {
           },
           hoverinfo: "label+value",
           values,
-          labels
+          labels,
+          showlegend: true,
+          domain: { x: [0, 0.55], y: [0, 1] }
         }];
       },
       layoutObject: {
         height: 360,
+        showlegend: true,
+        legend: {
+          x: 0.6,
+          y: 0.5,
+          xanchor: 'left',
+          yanchor: 'middle'
+        },
         margin: {
-          t: 50,
-          b: 40
+          t: 20,
+          b: 20
         }
       }
     },

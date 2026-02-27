@@ -126,11 +126,10 @@ const MicaFilters = {
     if (!text) return '';
     const str = String(text);
     if (!maxLength || str.length <= maxLength) return str;
-    const truncated = str.substring(0, maxLength) + '...';
-    if (readMoreUrl) {
-      return truncated + ' <a href="' + readMoreUrl + '">' + (MicaFilters.translate('read-more') || 'Read more') + '</a>';
-    }
-    return truncated;
+    const sub = str.substr(0, maxLength - 1);
+    const trimmed = sub.substr(0, sub.lastIndexOf(' '));
+    const anchor = readMoreUrl ? ` <a href="${readMoreUrl}">...</a>` : ' ...';
+    return trimmed + anchor;
   },
 
   /**
@@ -164,7 +163,6 @@ const MicaFilters = {
 
   /**
    * Returns a Vue mixin object that exposes filter functions as component methods.
-   * Used via: Vue.mixin(MicaFilters.asMixin())
    */
   asMixin() {
     const self = this;
@@ -193,5 +191,25 @@ const MicaFilters = {
         }
       }
     };
+  }
+};
+
+/**
+ * MicaVueApp - replaces Vue.createApp() calls throughout the codebase.
+ * Automatically applies MicaFilters as a mixin on every app instance,
+ * since Vue 3 removed the global Vue.mixin() API.
+ */
+const MicaVueApp = {
+  _components: {},
+
+  component(name, definition) {
+    this._components[name] = definition;
+  },
+
+  createApp(options) {
+    const app = Vue.createApp(options);
+    app.mixin(MicaFilters.asMixin());
+    Object.entries(this._components).forEach(([name, def]) => app.component(name, def));
+    return app;
   }
 };

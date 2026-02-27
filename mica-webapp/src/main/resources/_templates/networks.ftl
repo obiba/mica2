@@ -88,7 +88,7 @@
                 </#if>
 
                 <#if networkListDisplays?seq_contains("cards")>
-                  <div class="tab-pane <#if networkListDefaultDisplay == "cards">active</#if>" id="cards">
+                  <div class="tab-pane <#if networkListDefaultDisplay == "cards">active</#if>" id="cards" v-cloak>
                     <@networkCardModel/>
                   </div>
                 </#if>

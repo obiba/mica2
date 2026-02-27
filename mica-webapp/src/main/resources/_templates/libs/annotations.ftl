@@ -64,11 +64,11 @@
     <#list vocabularies as vocabulary>
         <#if !vocabulary.missing>
             <#assign vocabularyId = taxonomyId + 'vocabulary' + vocabulary?index />
-          <p class="mb-1 ps-1 py-2 bg-light font-weight-bold"><@vocabularyColorLabel vocabulary=vocabulary.name/> ${localize(vocabulary.title)} <span class="float-end pe-2"><@itemCount item=vocabulary/></span></p>
+          <p class="mb-1 ps-1 py-2 bg-light fw-bold"><@vocabularyColorLabel vocabulary=vocabulary.name/> ${localize(vocabulary.title)} <span class="float-end pe-2"><@itemCount item=vocabulary/></span></p>
           <div class="pt-1 pb-1 ps-1">
             <div class="row ">
                 <#list vocabulary.terms as termItem>
-                  <div class="col-xs-12 col-md-6 font-weight-normal">${localize(termItem.title)} <span class="float-end"><@itemCount item=termItem/></span></div>
+                  <div class="col-xs-12 col-md-6 fw-normal">${localize(termItem.title)} <span class="float-end pe-2"><@itemCount item=termItem/></span></div>
                 </#list>
             </div>
           </div>

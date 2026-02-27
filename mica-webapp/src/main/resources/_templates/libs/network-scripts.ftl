@@ -6,19 +6,7 @@
 <script src="${assetsPath}/libs/node_modules/select2/dist/js/i18n/${.lang}.js"></script>
 
 <!-- Files -->
-<script src="${assetsPath}/libs/node_modules/@vue/compat/dist/vue.global.js"></script>
-<script>
-  // Configure Vue 3 compat mode to allow Vue 2 APIs
-  if (Vue && Vue.configureCompat) {
-    Vue.configureCompat({
-      MODE: 2  // Use Vue 2 compatibility mode
-    });
-    Vue.config.compilerOptions = { whitespace: 'condense' };
-  }
-  
-  // Register filter functions as a global mixin so they are available in all component templates
-  Vue.mixin(MicaFilters.asMixin());
-</script>
+<script src="${assetsPath}/libs/node_modules/vue/dist/vue.global.js"></script>
 <script src="${assetsPath}/js/mica-files.js"></script>
 
 <!-- Repository -->
@@ -273,7 +261,7 @@
         const studyTaxonomy = (responses[0].data||[]).pop();
         chartTableTermSorters.initialize(studyTaxonomy);
 
-        const app = Vue.createApp({
+        const app = MicaVueApp.createApp({
           data() {
             return {
               hasGraphicsResult: false,
@@ -476,7 +464,11 @@
         tr: {
           "item": "<@message "item"/>",
           "items": "<@message "items"/>",
-          "download": "<@message "download"/>"
+          "download": "<@message "download"/>",
+          "name": "<@message "name"/>",
+          "description": "<@message "description"/>",
+          "size": "<@message "size"/>",
+          "actions": "<@message "actions"/>"
         },
         locale: '${.lang}',
         contextPath: '${contextPath}'

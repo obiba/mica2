@@ -65,7 +65,7 @@ const makeSummary = function(summaryStatisticsAccessPolicy, showHarmonizedVariab
       });
 
       if (frequencyChartElem.length) {
-        Plotly.newPlot("frequencyChart", chartData, null, {responsive: true});
+        Plotly.newPlot("frequencyChart", chartData, {showlegend: true}, {responsive: true});
         frequencyChartElem.show();
       }
 

@@ -3,7 +3,7 @@
 <script src="${contextPath}/bower_components/mica-study-timeline/dist/mica-study-timeline.js"></script>
 
 <!-- ChartJS -->
-<script src="${adminLTEPath}/plugins/chart.js/Chart.min.js"></script>
+<script src="${assetsPath}/libs/node_modules/chart.js/dist/chart.umd.js"></script>
 <script src="${assetsPath}/js/mica-charts.js"></script>
 <script src="${assetsPath}/libs/node_modules/plotly.js-dist-min/plotly.min.js"></script>
 <!-- Select2 -->
@@ -11,19 +11,7 @@
 <script src="${assetsPath}/libs/node_modules/select2/dist/js/i18n/${.lang}.js"></script>
 
 <!-- Files -->
-<script src="${assetsPath}/libs/node_modules/@vue/compat/dist/vue.global.js"></script>
-<script>
-  // Configure Vue 3 compat mode to allow Vue 2 APIs
-  if (Vue && Vue.configureCompat) {
-    Vue.configureCompat({
-      MODE: 2  // Use Vue 2 compatibility mode
-    });
-    Vue.config.compilerOptions = { whitespace: 'condense' };
-  }
-  
-  // Register filter functions as a global mixin so they are available in all component templates
-  Vue.mixin(MicaFilters.asMixin());
-</script>
+<script src="${assetsPath}/libs/node_modules/vue/dist/vue.global.js"></script>
 <script src="${assetsPath}/js/mica-files.js"></script>
 
 <!-- Repository -->
@@ -139,10 +127,12 @@
   };
 
   $(function () {
-    let options = dataTablesDefaultOpts;
-    options.columnDefs = [
-      { "type": "num", "targets": 0, "visible": false }
-    ];
+    let options = Object.assign({}, dataTablesDefaultOpts, {
+      autoWidth: false,
+      columnDefs: [
+        { "type": "num", "targets": 0, "visible": false }
+      ]
+    });
     <#list study.populations as pop>
       $("#population-${pop.id}-dces").DataTable(options);
     </#list>
@@ -162,7 +152,11 @@
     const filesTr = {
       "item": "<@message "item"/>",
       "items": "<@message "items"/>",
-      "download": "<@message "download"/>"
+      "download": "<@message "download"/>",
+      "name": "<@message "name"/>",
+      "description": "<@message "description"/>",
+      "size": "<@message "size"/>",
+      "actions": "<@message "actions"/>"
     };
     <#if showStudyFiles>
       makeFilesVue('#study-files-app', {

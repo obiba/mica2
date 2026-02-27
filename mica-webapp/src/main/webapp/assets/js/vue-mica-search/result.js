@@ -33,6 +33,7 @@ const DataTableDefaults = {
   searching: false,
   ordering: false,
   destroy: true,
+  autoWidth: false,
   lengthMenu: [10, 20, 50, 100],
   pageLength: 20,
   dom: "<<'toolbar d-inline-block'><'float-right'<'d-inline-block pr-2'l><'d-inline-block'p>>> <''<'table-responsive 'tr> > <<'float-right'<'d-inline-block pr-2'l><'d-inline-block'p>>>",
@@ -255,12 +256,12 @@ const GraphicResult = {
     <div v-if="!hideHeader" class="card-header">
       <h3 class="card-title">{{translate(chartDataset.options.title)}}</h3>
       <div class="card-tools float-right">
-        <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" v-bind:title="translate('collapse')">
+        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" :data-bs-target="'#' + cardId + '-card'"  title="tooltip" v-bind:title="translate('collapse')">
           <i class="fas fa-minus"></i>
         </button>
         </div>
     </div>
-    <div class="card-body" style="min-height: 24em">
+    <div :id="cardId + '-card'" class="card-body collapse show" style="min-height: 24em">
       <p class="text-muted">{{translate(chartDataset.options.text)}}</p>
       <div v-bind:id="containerId" class="row">
         <div v-bind:id="chartContainerId" class="col-sm-12 col-xl-6 my-auto"></div>
@@ -271,7 +272,7 @@ const GraphicResult = {
               <tr class="row" v-on:click.prevent="resetSort()">
                 <th class="col" v-for="(col, index) in chartDataset.tableData.cols" v-bind:key="index">
                   <span>{{ col }}</span>
-                  <button v-if="chartDataset.options.withSort" v-on:click.stop="toggleSortColumn(index)" type="button" class="btn btn-xs ml-1"><i :class="'fas fa-' + sortClass(index)"></i></button>
+                  <button v-if="chartDataset.options.withSort" v-on:click.stop="toggleSortColumn(index)" type="button" class="btn btn-sm ms-1 p-0 lh-1"><i :class="'fas fa-' + sortClass(index)"></i></button>
                 </th>
               </tr>
             </thead>
@@ -419,13 +420,34 @@ const GraphicResult = {
     }
   },
   mounted() {
-    this.renderCanvas();
-
     if (this.chartDataset.options.initialSortIndex !== undefined) {
       this.toggleSortColumn(this.chartDataset.options.initialSortIndex, this.chartDataset.options.initialSortDirection === 'down');
     }
+
+    const el = document.getElementById(this.chartContainerId);
+
+    if (el && window.ResizeObserver) {
+      this._resizeObserver = new ResizeObserver((entries) => {
+        const width = entries[0].contentRect.width;
+        if (width === 0) return;
+        if (!this._rendered) {
+          this._rendered = true;
+          this.renderCanvas();
+        } else {
+          if (this._rafId) cancelAnimationFrame(this._rafId);
+          this._rafId = requestAnimationFrame(() => Plotly.Plots.resize(el));
+        }
+      });
+      this._resizeObserver.observe(el);
+    } else {
+      this.renderCanvas();
+    }
   },
-   watch: {
+  beforeUnmount() {
+    if (this._resizeObserver) this._resizeObserver.disconnect();
+    if (this._rafId) cancelAnimationFrame(this._rafId);
+  },
+  watch: {
     chartDataset(val) {
       if (val) this.renderCanvas();
     }
@@ -495,8 +517,7 @@ const GraphicsResult = {
 const VariablesResult = {
   template: `
   <div>
-    <div class="row" v-show="showResult">
-      <div class="col">
+    <div class="table-responsive" v-show="showResult">
         <table id="vosr-variables-result" class="table table-striped" width="100%">
           <thead>
             <tr>
@@ -511,7 +532,6 @@ const VariablesResult = {
             </tr>
           </tbody>
         </table>
-      </div>
     </div>
   </div>
   `,
@@ -554,8 +574,7 @@ const VariablesResult = {
 const StudiesResult = {
   template: `
   <div>
-    <div class="row" v-show="showResult">
-      <div class="col">
+    <div class="table-responsive" v-show="showResult">
         <table id="vosr-studies-result" class="table table-striped" width="100%">
           <thead>
             <tr>
@@ -583,7 +602,6 @@ const StudiesResult = {
             </tr>
           </tbody>
         </table>
-      </div>
     </div>
   </div>
   `,
@@ -731,8 +749,7 @@ const StudiesResult = {
 const NetworksResult = {
   template: `
   <div>
-    <div class="row" v-show="showResult">
-      <div class="col">
+    <div class="table-responsive" v-show="showResult">
         <table id="vosr-networks-result" class="table table-striped" width="100%">
           <thead v-if="withCollectedDatasets && withHarmonizedDatasets">
             <tr>
@@ -766,7 +783,6 @@ const NetworksResult = {
             </tr>
           </tbody>
         </table>
-      </div>
     </div>
   </div>
   `,
@@ -888,8 +904,7 @@ const NetworksResult = {
 const DatasetsResult = {
   template: `
   <div>
-    <div class="row" v-show="showResult">
-      <div class="col">
+    <div class="table-responsive" v-show="showResult">
         <table id="vosr-datasets-result" class="table table-striped" width="100%">
           <thead>
             <tr>
@@ -903,7 +918,6 @@ const DatasetsResult = {
             </tr>
           </tbody>
         </table>
-      </div>
     </div>
   </div>
   `,
@@ -1363,9 +1377,9 @@ const CoverageResult = {
   }
 }
 
-Vue.component(GraphicsResult.name, GraphicsResult);
-Vue.component(VariablesResult.name, VariablesResult);
-Vue.component(StudiesResult.name, StudiesResult);
-Vue.component(NetworksResult.name, NetworksResult);
-Vue.component(DatasetsResult.name, DatasetsResult);
-Vue.component(CoverageResult.name, CoverageResult);
+MicaVueApp.component(GraphicsResult.name, GraphicsResult);
+MicaVueApp.component(VariablesResult.name, VariablesResult);
+MicaVueApp.component(StudiesResult.name, StudiesResult);
+MicaVueApp.component(NetworksResult.name, NetworksResult);
+MicaVueApp.component(DatasetsResult.name, DatasetsResult);
+MicaVueApp.component(CoverageResult.name, CoverageResult);

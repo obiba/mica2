@@ -147,7 +147,7 @@
       </div>
     <#elseif agreementsOpened?size gt 0>
       <div class="alert alert-info">
-        <p><i class="icon fas fa-info"></i> <@message "agreements-opened-text"/></p>
+        <p><i class="icon fas fa-info pe-2"></i> <@message "agreements-opened-text"/></p>
       </div>
     <#elseif agreementsApproved?size == agreements?size>
       <div class="alert alert-success">

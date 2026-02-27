@@ -110,7 +110,7 @@
                 </#if>
 
                 <#if studyListDisplays?seq_contains("cards")>
-                  <div class="tab-pane <#if studyListDefaultDisplay == "cards">active</#if>" id="cards">
+                  <div class="tab-pane <#if studyListDefaultDisplay == "cards">active</#if>" id="cards" v-cloak>
                     <@studyCardModel/>
                   </div>
                 </#if>

@@ -183,7 +183,7 @@ const RqlNode = {
 
     <span v-if="advancedMode && firstArgIsShown && otherArgsAreShown" class="d-flex my-auto">
       <div class="dropdown">
-        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-bs-toggle="dropdown">{{ translate("search." + name) }}</button>
+        <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">{{ translate("search." + name) }}</button>
 
         <div class="dropdown-menu">
           <button class="dropdown-item" type="button" v-if="name !== 'and'" v-on:click="updateNodeName('and')">{{ translate("search.and") }}</button>
@@ -404,4 +404,4 @@ const RqlQueryBuilder = {
   }
 };
 
-Vue.component(RqlQueryBuilder.name, RqlQueryBuilder);
+MicaVueApp.component(RqlQueryBuilder.name, RqlQueryBuilder);

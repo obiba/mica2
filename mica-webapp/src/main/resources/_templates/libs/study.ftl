@@ -42,12 +42,12 @@
                     <@message "global.additional-information"/>
                 </h3>
                 <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
+                  <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#additional-card" data-bs-toggle="tooltip" title="<@message "collapse"/>">
                     <i class="fa-solid fa-minus"></i></button>
                 </div>
               </div>
               <!-- /.card-header -->
-              <div class="card-body marked">
+              <div id="additional-card" class="card-body marked collapse show">
                   <template>${localize(study.model.additionalInformation)}</template>
               </div>
             </div>
@@ -113,12 +113,12 @@
         <@message "design"/>
       </h3>
       <div class="card-tools">
-        <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
+        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#study-design-card"  data-bs-toggle="tooltip" title="<@message "collapse"/>">
           <i class="fa-solid fa-minus"></i></button>
       </div>
     </div>
     <!-- /.card-header -->
-    <div class="card-body">
+    <div id="study-design-card" class="card-body collapse show">
 
       <dl class="row">
         <#if study.model.methods.design??>
@@ -163,12 +163,12 @@
           <@message "study.marker-paper"/>
       </h3>
       <div class="card-tools">
-        <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
+        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#publication-card"  data-bs-toggle="tooltip" title="<@message "collapse"/>">
           <i class="fa-solid fa-minus"></i></button>
       </div>
     </div>
     <!-- /.card-header -->
-    <div class="card-body">
+    <div id="publication-card" class="card-body collapse show">
       <p>
           ${study.model.markerPaper}
       </p>
@@ -188,12 +188,12 @@
           <@message "population.recruitment"/>
       </h3>
       <div class="card-tools">
-        <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
+        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#recruitment-card"  data-bs-toggle="tooltip" title="<@message "collapse"/>">
           <i class="fa-solid fa-minus"></i></button>
       </div>
     </div>
     <!-- /.card-header -->
-    <div class="card-body">
+    <div id="recruitment-card" class="card-body collapse show">
       <dl class="row">
         <dt class="col-sm-6" title="<@message "study_taxonomy.vocabulary.methods-recruitments.description"/>">
             <@message "study.recruitment-sources.label"/>
@@ -223,12 +223,12 @@
           <@message "numberOfParticipants.label"/>
       </h3>
       <div class="card-tools">
-        <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
+        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#participants-card"  data-bs-toggle="tooltip" title="<@message "collapse"/>">
           <i class="fa-solid fa-minus"></i></button>
       </div>
     </div>
     <!-- /.card-header -->
-    <div class="card-body">
+    <div id="participants-card" class="card-body collapse show">
       <dl class="row">
           <#if study.model.numberOfParticipants.participant.number??>
             <dt class="col-sm-6">
@@ -296,12 +296,12 @@
           <@message "study.access.label"/>
       </h3>
       <div class="card-tools">
-        <button type="button" class="btn btn-tool" data-card-widget="collapse" data-bs-toggle="tooltip" title="<@message "collapse"/>">
+        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#access-card"  data-bs-toggle="tooltip" title="<@message "collapse"/>">
           <i class="fa-solid fa-minus"></i></button>
       </div>
     </div>
     <!-- /.card-header -->
-    <div class="card-body">
+    <div id="access-card" class="card-body collapse show">
 
       <#if study.model.access_restrictions?? || study.model.access_fees??>
         <div class="card card-primary card-outline card-outline-tabs">
