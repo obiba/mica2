@@ -36,7 +36,7 @@ const DataTableDefaults = {
   autoWidth: false,
   lengthMenu: [10, 20, 50, 100],
   pageLength: 20,
-  dom: "<<'toolbar d-inline-block'><'float-right'<'d-inline-block pr-2'l><'d-inline-block'p>>> <''<'table-responsive 'tr> > <<'float-right'<'d-inline-block pr-2'l><'d-inline-block'p>>>",
+  dom: "<<'toolbar d-inline-block'><'float-end'<'d-inline-block pe-2'l><'d-inline-block'p>>> <''<'table-responsive 'tr> > <<'float-end'<'d-inline-block pe-2'l><'d-inline-block'p>>>",
   preDrawCallback: function (settings) {
     const api = new $.fn.dataTable.Api(settings);
     const data  = api.data();
@@ -255,7 +255,7 @@ const GraphicResult = {
   <div v-bind:id="cardId" class="card card-primary card-outline">
     <div v-if="!hideHeader" class="card-header">
       <h3 class="card-title">{{translate(chartDataset.options.title)}}</h3>
-      <div class="card-tools float-right">
+      <div class="card-tools float-end">
         <button type="button" class="btn btn-tool" data-bs-toggle="collapse" :data-bs-target="'#' + cardId + '-card'"  title="tooltip" v-bind:title="translate('collapse')">
           <i class="fas fa-minus"></i>
         </button>
@@ -282,12 +282,12 @@ const GraphicResult = {
 
                   <td class="col" v-bind:title="totals ? (100 * row.count/totals.countTotal).toFixed(2) + '%' : ''" v-if="row.count > 0">
                     <a href="" v-on:click="onCountClick($event, row.vocabulary, row.key, row.queryOverride)" class="query-anchor">{{row.count}}</a>
-                    <small class="ml-1 d-inline-block" style="width: 4rem;" v-if="chartDataset.options.withTotals && chartDataset.options.withPercentages">({{totals ? (100 * row.count/totals.countTotal).toFixed(2) + '%' : ''}})</small>
+                    <small class="ms-1 d-inline-block" style="width: 4rem;" v-if="chartDataset.options.withTotals && chartDataset.options.withPercentages">({{totals ? (100 * row.count/totals.countTotal).toFixed(2) + '%' : ''}})</small>
                   </td>
 
                   <td class="col" v-bind:title="totals ? (0).toFixed(2) + '%' : ''" v-if="row.count === 0">
                     <span class="text-muted">{{row.count}}</span>
-                    <small v-if="chartDataset.options.withTotals && chartDataset.options.withPercentages" class="ml-1 text-muted d-inline-block" style="width: 4rem;">({{totals ? (0).toFixed(2) + '%' : ''}})</small>
+                    <small v-if="chartDataset.options.withTotals && chartDataset.options.withPercentages" class="ms-1 text-muted d-inline-block" style="width: 4rem;">({{totals ? (0).toFixed(2) + '%' : ''}})</small>
                   </td>
 
                   <td class="col" v-bind:title="totals ? (100 * row.subAgg/totals.subAggTotal).toFixed(2) + '%' : ''" v-if="row.subAgg !== undefined">
@@ -300,7 +300,7 @@ const GraphicResult = {
                   <th class="col">{{ translate('graphics.total') }}</th>
                   <th class="col">
                     <span>{{totals.countTotal.toLocaleString()}}</span>
-                    <small class="ml-1 d-inline-block" style="width: 4rem;" v-if="chartDataset.options.withTotals && chartDataset.options.withPercentages">({{(100).toFixed(2) + '%'}})</small>
+                    <small class="ms-1 d-inline-block" style="width: 4rem;" v-if="chartDataset.options.withTotals && chartDataset.options.withPercentages">({{(100).toFixed(2) + '%'}})</small>
                   </th>
                   <th class="col" v-if="totals.subAggTotal !== undefined">{{totals.subAggTotal.toLocaleString()}}</th>
                 </tr>
@@ -336,7 +336,21 @@ const GraphicResult = {
   },
   computed: {
     rows() {
-      return this.chartDataset.tableData.rows.map(r => r);
+      const source = this.chartDataset.tableData.rows;
+      if (this.sort.index == null) return source;
+
+      const sortFields = ['title', 'count', 'subAgg'];
+      const field = sortFields[this.sort.index];
+      const multiplier = this.sort.direction === 'up' ? -1 : 1;
+
+      return source.slice().sort((rowA, rowB) => {
+        const a = rowA[field];
+        const b = rowB[field];
+        if (typeof a === 'number' || typeof b === 'number') {
+          return (a - b) * multiplier;
+        }
+        return a.toString().localeCompare(b.toString()) * multiplier;
+      });
     },
     totals() {
       let totals = this.chartDataset.options.withTotals ? {countTotal: 0, subAggTotal: 0} : null;
@@ -377,8 +391,6 @@ const GraphicResult = {
     resetSort() {
       this.sort.index = null;
       this.sort.direction = null;
-
-      this.rows = this.chartDataset.tableData.rows.map(r => r);
     },
     sortClass(index) {
       if (this.sort.index !== index) {
@@ -398,25 +410,6 @@ const GraphicResult = {
       if (goDown) {
         this.sort.direction = 'down';
       }
-
-      const sortFields = ['title', 'count', 'subAgg'];
-
-      this.rows.sort((rowA, rowB) => {
-        let multiplier = 1;
-
-        if (this.sort.direction === 'up') {
-          multiplier = -1;
-        }
-
-        const a = rowA[sortFields[this.sort.index]];
-        const b = rowB[sortFields[this.sort.index]];
-
-        if (typeof a === 'number' || typeof b === 'number') {
-          return (a - b) * multiplier;
-        } else {
-          return a.toString().localeCompare(b.toString()) * multiplier;
-        }
-      });
     }
   },
   mounted() {

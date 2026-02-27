@@ -406,7 +406,6 @@ module.exports = function (grunt) {
           // Other libraries (unchanged)
           {expand: true, src: ['node_modules/simplemde/dist/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/vue/dist/**'], dest: 'src/main/webapp/assets/libs/'},
-          {expand: true, src: ['node_modules/@vue/compat/dist/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/rql/dist/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/plotly.js-dist-min/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/axios/dist/**'], dest: 'src/main/webapp/assets/libs/'},

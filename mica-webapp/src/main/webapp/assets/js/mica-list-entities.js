@@ -429,7 +429,7 @@ const StudyStatItemComponent =  {
  */
 const EntitiesSortingComponent = {
   template: `
-    <div class="sorting position-relative float-left">
+    <div class="sorting position-relative float-start">
       <div class="dropdown">
         <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
           <span v-html="sortLabel(selectedChoice)"></span>
@@ -494,7 +494,7 @@ const TypeaheadComponent = {
         <button type="button" class="btn btn-primary btn-sm" @click="select(text)"><i class="fas fa-filter"></i></button>
       </div>
 
-      <div class="list-group position-absolute mt-1 ml-1 shadow" style="z-index: 100; overflow-y: auto; max-height: 16em;" v-if="showChoices && typeaheadItems.length > 0">
+      <div class="list-group position-absolute mt-1 ms-1 shadow" style="z-index: 100; overflow-y: auto; max-height: 16em;" v-if="showChoices && typeaheadItems.length > 0">
         <button type="button" class="list-group-item list-group-item-action" :class="{ active: index === currentIndexSelection }" v-for="(item, index) in typeaheadItems" :key="item" v-html="highlight(item)" @click="select(quote(item))"></button>
       </div>
     </div>

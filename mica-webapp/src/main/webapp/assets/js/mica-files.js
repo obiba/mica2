@@ -39,7 +39,7 @@ const FolderBreadcrumbComponent = {
   },
   template:
     '<div>' +
-    '<ol class="breadcrumb breadcrumb-sm float-left">' +
+    '<ol class="breadcrumb breadcrumb-sm float-start">' +
     '<li v-if="isRoot" class="breadcrumb-item active"><i class="fas fa-home"></i></li>' +
     '<li v-else class="breadcrumb-item"><a href="javascript:void(0)" v-on:click="$emit(\'select-folder\', \'/\')"><i class="fas fa-home"></i></a></li>' +
     '<li v-for="segment in segments" v-bind:class="segment.class">' +
@@ -47,7 +47,7 @@ const FolderBreadcrumbComponent = {
     '  <span v-else>{{ segment.token }}</span>' +
     '</li>' +
     '</ol>' +
-    '<a :href="contextPath + \'/ws/file-dl\' + folder.path" class="btn btn-sm btn-info float-right"><i class="fa fa-download"></i> {{ tr.download }}</a>' +
+    '<a :href="contextPath + \'/ws/file-dl\' + folder.path" class="btn btn-sm btn-info float-end"><i class="fa fa-download"></i> {{ tr.download }}</a>' +
     '</div>'
 };
 

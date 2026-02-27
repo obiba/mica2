@@ -12,7 +12,7 @@ const RqlPanelVocabulary = {
         </li>
       </ul>
 
-      <div v-if="showMoreLess()" class="float-right">
+      <div v-if="showMoreLess()" class="float-end">
         <button type="button" class="btn btn-link btn-sm" v-on:click="switchMoreLess()">
           <span v-if="!showAll" aria-hidden="true"><i class="fas fa-caret-down"></i> {{ translate("more") }}</span>
           <span v-if="showAll" aria-hidden="true"><i class="fas fa-caret-up"></i> {{ translate("less") }}</span>
@@ -139,7 +139,7 @@ const RqlPanel = {
         <div class="card mb-2 w-100">
           <div class="card-header bg-light">
             <span class="panel-vocabulary-title" v-bind:title="localizeString(vocabulary.description)">{{ localizeString(vocabulary.title) }}</span>
-            <span class="float-right">
+            <span class="float-end">
               <button type="button" v-bind:id="vocabulary.name + '-select-all'" class="btn btn-link btn-sm pt-0 pb-0" v-if="canDoSelectAll(vocabulary)" v-on:click="selectAll(vocabulary)"><span aria-hidden="true">{{ translate("select-all") }}</span></button>
               <button type="button" v-bind:id="vocabulary.name + '-clear-selection'" class="btn btn-link btn-sm pt-0 pb-0" v-if="hasAssociatedQuery(vocabulary)" v-on:click="clear(vocabulary)"><span aria-hidden="true">{{ translate("clear-selection") }}</span></button>
             </span>
