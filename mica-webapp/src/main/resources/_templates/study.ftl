@@ -160,7 +160,7 @@
                 <div class="card-header">
                   <h3 class="card-title"><@message "members"/></h3>
                   <div class="card-tools float-end">
-                    <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#member-card" aria-expanded="true" data-bs-toggle="tooltip" title="<@message "collapse"/>">
+                    <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#member-card" aria-expanded="true" title="<@message "collapse"/>">
                       <i class="fa-solid fa-minus"></i></button>
                   </div>
                   <a href="${contextPath}/ws/persons/_search/_download?limit=1000&query=studyMemberships.parentId:(${study.id})" class="btn btn-primary float-end me-2">

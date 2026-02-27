@@ -42,7 +42,7 @@
                     <@message "global.additional-information"/>
                 </h3>
                 <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#additional-card" data-bs-toggle="tooltip" title="<@message "collapse"/>">
+                  <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#additional-card" title="<@message "collapse"/>">
                     <i class="fa-solid fa-minus"></i></button>
                 </div>
               </div>
@@ -113,7 +113,7 @@
         <@message "design"/>
       </h3>
       <div class="card-tools">
-        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#study-design-card"  data-bs-toggle="tooltip" title="<@message "collapse"/>">
+        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#study-design-card" title="<@message "collapse"/>">
           <i class="fa-solid fa-minus"></i></button>
       </div>
     </div>
@@ -163,7 +163,7 @@
           <@message "study.marker-paper"/>
       </h3>
       <div class="card-tools">
-        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#publication-card"  data-bs-toggle="tooltip" title="<@message "collapse"/>">
+        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#publication-card" title="<@message "collapse"/>">
           <i class="fa-solid fa-minus"></i></button>
       </div>
     </div>
@@ -188,7 +188,7 @@
           <@message "population.recruitment"/>
       </h3>
       <div class="card-tools">
-        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#recruitment-card"  data-bs-toggle="tooltip" title="<@message "collapse"/>">
+        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#recruitment-card" title="<@message "collapse"/>">
           <i class="fa-solid fa-minus"></i></button>
       </div>
     </div>
@@ -223,7 +223,7 @@
           <@message "numberOfParticipants.label"/>
       </h3>
       <div class="card-tools">
-        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#participants-card"  data-bs-toggle="tooltip" title="<@message "collapse"/>">
+        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#participants-card" title="<@message "collapse"/>">
           <i class="fa-solid fa-minus"></i></button>
       </div>
     </div>
@@ -296,7 +296,7 @@
           <@message "study.access.label"/>
       </h3>
       <div class="card-tools">
-        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#access-card"  data-bs-toggle="tooltip" title="<@message "collapse"/>">
+        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#access-card" title="<@message "collapse"/>">
           <i class="fa-solid fa-minus"></i></button>
       </div>
     </div>

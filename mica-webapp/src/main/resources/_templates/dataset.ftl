@@ -215,7 +215,7 @@
                 <div class="card-header">
                   <h3 class="card-title"><@message "studies-included"/></h3>
                   <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#pop-dce-card"  data-bs-toggle="tooltip" title="<@message "collapse"/>">
+                    <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#pop-dce-card" title="<@message "collapse"/>">
                       <i class="fa-solid fa-minus"></i></button>
                   </div>
                 </div>
@@ -268,7 +268,7 @@
                 <div class="card-header">
                   <h3 class="card-title"><@message "initiatives-included"/></h3>
                   <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#initiatives-card"  data-bs-toggle="tooltip" title="<@message "collapse"/>">
+                    <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#initiatives-card" title="<@message "collapse"/>">
                       <i class="fa-solid fa-minus"></i></button>
                   </div>
                 </div>

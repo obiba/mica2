@@ -192,7 +192,7 @@
                   <div class="card-header">
                     <h3 class="card-title"><@message "members"/></h3>
                     <div class="card-tools float-end">
-                      <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#member-card"  data-bs-toggle="tooltip" title="<@message "collapse"/>">
+                      <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#member-card" title="<@message "collapse"/>">
                         <i class="fa-solid fa-minus"></i></button>
                     </div>
 
@@ -270,7 +270,7 @@
                   <div class="card-header">
                     <h3 class="card-title"><@message "networks"/></h3>
                     <div class="card-tools">
-                      <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#networks-card"  data-bs-toggle="tooltip" title="<@message "collapse"/>">
+                      <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#networks-card" title="<@message "collapse"/>">
                         <i class="fa-solid fa-minus"></i></button>
                     </div>
                   </div>
@@ -309,7 +309,7 @@
                   <div class="card-header">
                     <h3 class="card-title"><@message "individual-studies"/></h3>
                     <div class="card-tools">
-                      <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#individual-studies-card"  data-bs-toggle="tooltip" title="<@message "collapse"/>">
+                      <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#individual-studies-card" title="<@message "collapse"/>">
                         <i class="fa-solid fa-minus"></i></button>
                     </div>
                   </div>
@@ -348,7 +348,7 @@
                   <div class="card-header">
                     <h3 class="card-title"><@message "harmonization-studies"/></h3>
                     <div class="card-tools">
-                      <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#harmonization-studies-card"  data-bs-toggle="tooltip" title="<@message "collapse"/>">
+                      <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#harmonization-studies-card" title="<@message "collapse"/>">
                         <i class="fa-solid fa-minus"></i></button>
                     </div>
                   </div>

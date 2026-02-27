@@ -111,7 +111,7 @@
                 </ul>
               </div>
             </#if>
-            <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#query-card"  data-bs-toggle="tooltip"
+            <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#query-card"
                     title="<@message "collapse"/>">
               <i class="fa-solid fa-minus"></i></button>
           </div>
