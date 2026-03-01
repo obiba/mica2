@@ -304,10 +304,11 @@
             this.onTabClick(0);
           },
           beforeMount() {
-            EventBus.register('query-type-graphics-results', this.onGraphicsResult.bind(this));
+            this._onGraphicsResultHandler = this.onGraphicsResult.bind(this);
+            EventBus.register('query-type-graphics-results', this._onGraphicsResultHandler);
           },
           beforeUnmount() {
-            EventBus.unregister('query-type-graphics-results', this.onGraphicsResult);
+            EventBus.unregister('query-type-graphics-results', this._onGraphicsResultHandler);
           }
         });
 

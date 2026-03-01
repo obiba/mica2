@@ -121,7 +121,7 @@
         <div class="social-auth-links text-center mb-3">
           <p>- <@message "sign-up-or"/> -</p>
           <#list oidcProviders as oidc>
-            <a href="${oidc.url}" class="btn\ btn-primary w-100">
+            <a href="${oidc.url}" class="btn btn-primary w-100">
               <@message "sign-up-with"/> ${oidc.title}
             </a>
           </#list>

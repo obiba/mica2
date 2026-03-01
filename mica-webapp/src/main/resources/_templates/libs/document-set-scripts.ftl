@@ -502,17 +502,19 @@
         }
       },
       beforeMount() {
-        EventBus.register("variables-results", this.onResult.bind(this));
-        EventBus.register("studies-results", this.onResult.bind(this));
-        EventBus.register("networks-results", this.onResult.bind(this));
+        this._onResultHandler = this.onResult.bind(this);
+        EventBus.register("variables-results", this._onResultHandler);
+        EventBus.register("studies-results", this._onResultHandler);
+        EventBus.register("networks-results", this._onResultHandler);
       },
       mounted() {
         this.pagination = new OBiBaPagination('obiba-pagination-top', true, this.onPagination),
         this.pageSizeSelector = new OBiBaPageSizeSelector('obiba-page-size-selector-top', DEFAULT_PAGE_SIZES, DEFAULT_PAGE_SIZE, this.onPageSizeChanged);
 
-        EventBus.register('variables-selections-updated', this.onSelectionChanged.bind(this));
-        EventBus.register('studies-selections-updated', this.onSelectionChanged.bind(this));
-        EventBus.register('networks-selections-updated', this.onSelectionChanged.bind(this));
+        this._onSelectionChangedHandler = this.onSelectionChanged.bind(this);
+        EventBus.register('variables-selections-updated', this._onSelectionChangedHandler);
+        EventBus.register('studies-selections-updated', this._onSelectionChangedHandler);
+        EventBus.register('networks-selections-updated', this._onSelectionChangedHandler);
 
         let url = '/ws/taxonomies/_filter?target=' + TARGETS.VARIABLE;
         let studyTaxonomyurl = '/ws/taxonomies/_filter?target=' + TARGETS.STUDY;
@@ -550,9 +552,12 @@
           }));
       },
       beforeUnmount() {
-        EventBus.unregister("variables-results", this.onResult.bind(this));
-        EventBus.unregister("studies-results", this.onResult.bind(this));
-        EventBus.unregister("networks-results", this.onResult.bind(this));
+        EventBus.unregister("variables-results", this._onResultHandler);
+        EventBus.unregister("studies-results", this._onResultHandler);
+        EventBus.unregister("networks-results", this._onResultHandler);
+        EventBus.unregister('variables-selections-updated', this._onSelectionChangedHandler);
+        EventBus.unregister('studies-selections-updated', this._onSelectionChangedHandler);
+        EventBus.unregister('networks-selections-updated', this._onSelectionChangedHandler);
       }
     });
   app.config.compilerOptions.whitespace = 'condense';

@@ -32,11 +32,15 @@
       <form id="form" method="post">
 
         <div class="input-group mb-3">
-          <span class="fa-solid fa-user"></span>
+          <span class="input-group-text">
+            <i class="fa-solid fa-user"></i>
+          </span>
           <input name="username" type="text" class="form-control" placeholder="<@message "username"/>" value="${uAuth.username?default("")}" readonly>
         </div>
         <div class="input-group mb-3">
-          <span class="fa-solid fa-envelope"></span>
+          <span class="input-group-text">
+            <i class="fa-solid fa-envelope"></i>
+          </span>
           <input name="email" type="email" class="form-control" placeholder="<@message "email"/>" value="${uAuth.email?default("")}" readonly>
         </div>
         <input type="hidden" name="realm" value="${uAuth.realm?default("")}"/>
