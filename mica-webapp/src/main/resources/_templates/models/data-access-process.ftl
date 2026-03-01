@@ -17,7 +17,9 @@
             <!-- /.timeline-label -->
             <!-- timeline item -->
             <div>
-              <i class="fas fa-sign-in-alt bg-secondary"></i>
+              <div class="timeline-icon bg-secondary">
+                <i class="fa-solid fa-sign-in-alt"></i>
+              </div>
               <div class="timeline-item">
                 <div class="timeline-body">
                   <p class="lead">Create an account</p>
@@ -38,7 +40,9 @@
 
             <!-- timeline item -->
             <div>
-              <i class="fas fa-edit bg-blue"></i>
+              <div class="timeline-icon bg-blue">
+                <i class="fa-solid fa-edit"></i>
+              </div>
               <div class="timeline-item">
                 <div class="timeline-body">
                   <p class="lead">Complete and submit your access request form</p>
@@ -65,7 +69,9 @@
             <!-- /.timeline-label -->
             <!-- timeline item -->
             <div>
-              <i class="fas fa-history bg-blue"></i>
+              <div class="timeline-icon bg-blue">
+                <i class="fa-solid fa-history"></i>
+              </div>
               <div class="timeline-item">
                 <div class="timeline-body">
                   <p class="lead">Track your request</p>
@@ -88,7 +94,9 @@
             <!-- /.timeline-label -->
             <!-- timeline item -->
             <div>
-              <i class="fas fa-book bg-blue"></i>
+              <div class="timeline-icon bg-blue">
+                <i class="fa-solid fa-book"></i>
+              </div>
               <div class="timeline-item">
                 <div class="timeline-body">
                   <p class="lead">Report on project progress</p>
@@ -105,7 +113,9 @@
             <!-- END timeline item -->
 
             <div>
-              <i class="fas fa-circle bg-gray"></i>
+              <div class="timeline-icon bg-gray">
+                <i class="fa-solid fa-circle"></i>
+              </div>
             </div>
           </div>
         </div>

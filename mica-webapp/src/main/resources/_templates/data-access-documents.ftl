@@ -4,9 +4,9 @@
     <#include "libs/head.ftl">
   <title>${config.name!""} | Data Access Documents ${dar.id}</title>
 </head>
-<body id="data-access-documents-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
+<body id="data-access-documents-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed sidebar-expand-lg">
 <!-- Site wrapper -->
-<div class="wrapper">
+<div class="app-wrapper">
 
   <!-- Navbar -->
   <#include "libs/aside-navbar.ftl">
@@ -17,7 +17,7 @@
   <!-- /.sidebar -->
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
+ <div class="app-main flex-fill">
     <!-- Content Header (Page header) -->
     <section class="content-header bg-info mb-4">
       <div class="container-fluid">
@@ -36,6 +36,7 @@
 
     <!-- Main content -->
     <section class="content">
+      <div class="container-fluid">
 
       <#if dar.archived>
         <div class="ribbon-wrapper ribbon-xl">
@@ -65,9 +66,9 @@
             <div class="card-header">
               <h3 class="card-title"><@message "documents"/></h3>
               <#if !dar.archived>
-                <div class="float-right">
-                  <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-upload">
-                    <i class="fas fa-upload"></i> <@message "upload-document"/></a>
+                <div class="float-end">
+                  <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-upload">
+                    <i class="fa-solid fa-upload"></i> <@message "upload-document"/></a>
                 </div>
               </#if>
             </div>
@@ -101,7 +102,7 @@
                       <td>${si(attachment.size)}</td>
                       <#if !dar.archived>
                         <td>
-                          <a href="#" onclick="DataAccessService.deleteAttachment('${dar.id}','${attachment.id}')"><i class="fas fa-trash text-danger"></i></a>
+                          <a href="#" onclick="DataAccessService.deleteAttachment('${dar.id}','${attachment.id}')"><i class="fa-solid fa-trash text-danger"></i></a>
                         </td>
                       </#if>
                     </tr>
@@ -116,6 +117,7 @@
       </div>
       <!-- /.row -->
 
+      </div><!-- /.container-fluid -->
     </section>
     <!-- /.content -->
   </div>
@@ -127,15 +129,15 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title"><@message "upload-document"/></h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
           </button>
         </div>
         <div class="modal-body">
           <form>
-            <div class="form-group">
+            <div class="mb-3">
               <label for="file-field"><@message "select-file-to-upload"/></label>
-              <input type="file" id="file-field" class="form-control-file" accept="${filesExtensions}" onchange="handleFiles(this.files)">
+              <input type="file" id="file-field" class="form-control" accept="${filesExtensions}" onchange="handleFiles(this.files)">
               <input type="hidden" id="file-id">
             </div>
             <div>
@@ -148,7 +150,7 @@
           </form>
         </div>
         <div class="modal-footer justify-content-between">
-          <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
           <button type="button" class="btn btn-primary" id="upload-document-submit"><@message "submit"/></button>
         </div>
       </div>

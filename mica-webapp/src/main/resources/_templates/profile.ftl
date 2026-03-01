@@ -8,14 +8,14 @@
   <title>${config.name!""} | <@message "profile"/></title>
 </head>
 <body id="profile-page" class="hold-transition layout-top-nav layout-navbar-fixed">
-<div class="wrapper">
+<div class="app-wrapper d-flex flex-column min-vh-100">
 
   <!-- Navbar -->
   <#include "libs/top-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
+ <div class="app-main flex-fill">
     <!-- Content Header (Page header) -->
     <div class="content-header bg-info mb-4">
       <div class="container">
@@ -45,8 +45,8 @@
               </div>
               <#if user?? && user.realm == "obiba-realm">
                 <div class="card-footer">
-                  <div class="float-right">
-                    <a href="${authConfig.userAccountUrl}" class="btn btn-primary" target="_blank"><i class="fas fa-pen"></i> <@message "personal-information"/></a>
+                  <div class="float-end">
+                    <a href="${authConfig.userAccountUrl}" class="btn btn-primary" target="_blank"><i class="fa-solid fa-pen"></i> <@message "personal-information"/></a>
                   </div>
                 </div>
               </#if>
@@ -67,7 +67,7 @@
                         <@message "2fa-info"/>
                       </div>
                     </#if>
-                    <a href="${authConfig.userAccountUrl}" class="btn btn-primary" target="_blank"><i class="fas fa-pen"></i> <@message "user-account"/></a>
+                    <a href="${authConfig.userAccountUrl}" class="btn btn-primary" target="_blank"><i class="fa-solid fa-pen"></i> <@message "user-account"/></a>
                   <#else>
                     <#assign isOidc = false/>
                     <#if oidcProviders??>
@@ -76,7 +76,7 @@
                           <#assign isOidc = true/>
                           <p><@message "credentials-info"/></p>
                           <@message "user-account-at"/>
-                          <a href="${oidc.providerUrl}" class="btn btn-primary ml-2" target="_blank"><i class="fas fa-user"></i> ${oidc.title}</a>
+                          <a href="${oidc.providerUrl}" class="btn btn-primary ms-2" target="_blank"><i class="fa-solid fa-user"></i> ${oidc.title}</a>
                         </#if>
                       </#list>
                     </#if>

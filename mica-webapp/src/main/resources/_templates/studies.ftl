@@ -21,14 +21,14 @@
   <title>${config.name!""} | <@message title/></title>
 </head>
 <body id="${title}-page" class="hold-transition layout-top-nav layout-navbar-fixed">
-<div class="wrapper">
+<div class="app-wrapper d-flex flex-column min-vh-100">
 
   <!-- Navbar -->
   <#include "libs/top-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
+ <div class="app-main flex-fill">
     <!-- Content Header (Page header) -->
     <@header title=title breadcrumb=[["${contextPath}/", "home"], [title]]/>
     <!-- /.content-header -->
@@ -46,21 +46,21 @@
             <div class="card-header">
               <h3 class="card-title <#if studyListDisplays?size gt 1>pt-2</#if>"><span>${studies?size} <@message title/></span></h3>
               <#if studyListDisplays?size gt 1>
-                <ul class="nav nav-pills ml-auto float-right">
+                <ul class="nav nav-pills ms-auto float-end">
                   <#list studyListDisplays as display>
                     <#if display == "table">
-                      <li class="nav-item"><a class="nav-link <#if studyListDefaultDisplay == "table">active</#if>" href="#table" data-toggle="tab">
-                          <i class="fas fa-table"></i></a>
+                      <li class="nav-item"><a class="nav-link <#if studyListDefaultDisplay == "table">active</#if>" href="#table" data-bs-toggle="tab">
+                          <i class="fa-solid fa-table"></i></a>
                       </li>
                     </#if>
                     <#if display == "lines">
-                      <li class="nav-item"><a class="nav-link <#if studyListDefaultDisplay == "lines">active</#if>" href="#lines" data-toggle="tab">
-                          <i class="fas fa-grip-lines"></i></a>
+                      <li class="nav-item"><a class="nav-link <#if studyListDefaultDisplay == "lines">active</#if>" href="#lines" data-bs-toggle="tab">
+                          <i class="fa-solid fa-grip-lines"></i></a>
                       </li>
                     </#if>
                     <#if display == "cards">
-                      <li class="nav-item"><a class="nav-link <#if studyListDefaultDisplay == "cards">active</#if>" href="#cards" data-toggle="tab">
-                          <i class="fas fa-grip-horizontal"></i></a>
+                      <li class="nav-item"><a class="nav-link <#if studyListDefaultDisplay == "cards">active</#if>" href="#cards" data-bs-toggle="tab">
+                          <i class="fa-solid fa-grip-horizontal"></i></a>
                       </li>
                     </#if>
                   </#list>
@@ -110,7 +110,7 @@
                 </#if>
 
                 <#if studyListDisplays?seq_contains("cards")>
-                  <div class="tab-pane <#if studyListDefaultDisplay == "cards">active</#if>" id="cards">
+                  <div class="tab-pane <#if studyListDefaultDisplay == "cards">active</#if>" id="cards" v-cloak>
                     <@studyCardModel/>
                   </div>
                 </#if>
@@ -129,7 +129,7 @@
               <#else>
                 <p class="text-muted"><@message "sign-in-studies"/></p>
                 <button type="button" onclick="location.href='${contextPath}/signin?redirect=${contextPath}/<#if type??>${type?lower_case}-</#if>studies';" class="btn btn-success btn-lg">
-                  <i class="fas fa-sign-in-alt"></i> <@message "sign-in"/>
+                  <i class="fa-solid fa-sign-in-alt"></i> <@message "sign-in"/>
                 </button>
               </#if>
             </div>

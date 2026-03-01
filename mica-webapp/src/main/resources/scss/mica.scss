@@ -1,0 +1,439 @@
+//
+// Mica Custom Styles for Bootstrap 5 + AdminLTE 4
+//
+// This file allows customization of Bootstrap and AdminLTE styles.
+// It will be compiled to src/main/webapp/assets/css/mica.min.css
+//
+
+// ========================================================================
+// Import AdminLTE 4 (includes Bootstrap 5)
+// ========================================================================
+@use "bootstrap/scss/bootstrap" as *;
+@use "admin-lte/src/scss/adminlte" as lte;
+
+:root {
+  --bs-info: #17a2b8;
+  --bs-info-rgb: 23, 162, 184; /* needed so .bg-info updates */
+  --bs-info-bg-subtle: #d1ecf1; /* alerts, badges subtle */
+  --bs-info-border-subtle: #bee5eb;
+  --bs-info-text-emphasis: #0c5460;
+  --bs-tertiary-bg-rgb: 233, 236, 239;
+
+  --mica-brand-bg: #fff;
+  --mica-brand-text: #6c757d;
+
+  // Use Source Sans Pro (AdminLTE 3 default) instead of system font stack
+  --bs-font-sans-serif: "Source Sans Pro", system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans",
+    sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+// Override btn-info to use our custom --bs-info color
+.btn-info {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #17a2b8;
+  --bs-btn-border-color: #17a2b8;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #138496;
+  --bs-btn-hover-border-color: #117a8b;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #117a8b;
+  --bs-btn-active-border-color: #10707f;
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: #17a2b8;
+  --bs-btn-disabled-border-color: #17a2b8;
+}
+
+// Make unchecked checkboxes/radios visible (Bootstrap 5.3)
+.form-check-input {
+  // stronger outline + consistent unchecked background
+  --bs-border-color: rgba(0, 0, 0, 0.35);
+  --bs-form-check-bg: #fff;
+}
+
+.form-check-input:focus {
+  // keep focus visible (optional but recommended)
+  box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
+}
+
+// If a checkbox is inside a dark theme container, boost contrast there too
+[data-bs-theme="dark"] .form-check-input {
+  --bs-border-color: rgba(255, 255, 255, 0.45);
+  --bs-form-check-bg: rgba(255, 255, 255, 0.08);
+}
+
+h1 {
+  font-size: 1.8rem;
+}
+
+a {
+  text-decoration: none;
+}
+
+// Bootstrap 4 / AdminLTE 3 used 80% (12.8px at 16px base); Bootstrap 5 changed to 0.875em (14px)
+small,
+.small {
+  font-size: 80%;
+}
+
+// AdminLTE3 compatibility: bg-* implies white text
+.bg-info,
+.bg-success,
+.bg-primary,
+.bg-secondary,
+.bg-danger {
+  color: #fff;
+
+  a {
+    color: inherit;
+  }
+}
+
+
+// Override Bootstrap 5 text-bg-* utilities for badges to match AdminLTE 3 colors
+// Bootstrap 5's text-bg-* uses subtle backgrounds with dark text for accessibility,
+// but AdminLTE 3 badges used vibrant backgrounds with white text.
+.badge.text-bg-info {
+  background-color: var(--bs-info) !important;
+  color: #ffffff !important;
+}
+
+.badge.text-bg-primary {
+  background-color: var(--bs-primary) !important;
+  color: #ffffff !important;
+}
+
+.badge.text-bg-danger {
+  background-color: var(--bs-danger) !important;
+  color: #ffffff !important;
+}
+
+.content-header {
+  padding: 15px 0.5rem;
+}
+
+.login-page {
+  background-color: #e9ecef;
+}
+
+.app-main {
+  background-color: #f4f6f9;
+}
+
+.error-page {
+  margin: 20px auto 0;
+  width: 600px;
+
+  @include media-breakpoint-down(sm) {
+    width: 100%;
+  }
+
+  > .headline {
+    float: left;
+    font-size: 100px;
+    font-weight: 300;
+
+    @include media-breakpoint-down(sm) {
+      float: none;
+      text-align: center;
+    }
+  }
+
+  > .error-content {
+    display: block;
+    margin-left: 190px;
+
+    @include media-breakpoint-down(sm) {
+      margin-left: 0;
+    }
+
+    > h3 {
+      font-size: 25px;
+      font-weight: 300;
+
+      @include media-breakpoint-down(sm) {
+        text-align: center;
+      }
+    }
+  }
+}
+
+.navbar-brand .brand-image {
+  height: 32px;
+  width: auto;
+}
+
+// Navbar badges (top navbar)
+.navbar {
+  .nav-link {
+    position: relative; // anchor for absolute badge positioning
+  }
+
+  .navbar-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(-25%, 25%);
+    z-index: 2;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 1rem;
+    height: 1rem;
+    padding: 0 0.25rem;
+
+    font-size: 0.6rem;
+    font-weight: 700;
+    line-height: 1;
+    border-radius: 3px;
+
+    pointer-events: none;
+    white-space: nowrap;
+  }
+}
+
+.app-sidebar {
+  .user-panel {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .sidebar-brand {
+    background-color: var(--mica-brand-bg);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+
+    .brand-link {
+      background-color: transparent; // avoid needing bg-white on <a>
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      width: 100%; // avoid needing w-100
+      padding: 0.75rem 1rem;
+      text-decoration: none;
+    }
+
+    .brand-image {
+      height: 32px;
+      width: auto;
+      border-radius: 50%; // avoid needing img-circle
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); // avoid needing elevation-3
+      opacity: 0.8; // avoid inline opacity if you want
+    }
+
+    .brand-text {
+      color: var(--mica-brand-text);
+      font-weight: 300; // "light" feel
+      white-space: nowrap;
+    }
+  }
+
+  .sidebar-wrapper {
+    .sidebar-menu {
+      .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .nav-link > p {
+        margin: 0;
+      }
+
+      .nav-link .nav-icon {
+        line-height: 1;
+      }
+    }
+  }
+
+  // Dark sidebar nav-item hover/active states (matching AdminLTE 3 behavior)
+  &[data-bs-theme="dark"] {
+    .nav-sidebar {
+      .nav-item {
+        > .nav-link {
+          &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+          }
+
+          &:active,
+          &.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+          }
+        }
+
+        // Active nav-item (also applies to parent container)
+        &.active {
+          > .nav-link {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+          }
+        }
+
+        // Parent nav-link should have background and white text when menu is open
+        &.menu-open,
+        &.menu-is-opening {
+          > .nav-link {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+          }
+        }
+      }
+
+      // Also handle treeview (nested menu) active states
+      .nav-treeview {
+        .nav-item {
+          > .nav-link {
+            &:hover {
+              background-color: rgba(255, 255, 255, 0.05);
+            }
+
+            &.active {
+              background-color: rgba(255, 255, 255, 0.09);
+              color: #fff;
+            }
+          }
+
+          // Active nested nav-item
+          &.active {
+            > .nav-link {
+              background-color: rgba(255, 255, 255, 0.09);
+              color: #fff;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.callout {
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  border-left: 0.35rem solid transparent;
+  border-radius: 0.25rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  color: var(--bs-body-color);
+}
+
+// Left-border colors (match Bootstrap theme colors)
+.callout-info {
+  border-left-color: var(--bs-info);
+}
+.callout-success {
+  border-left-color: var(--bs-success);
+}
+.callout-warning {
+  border-left-color: var(--bs-warning);
+}
+.callout-danger {
+  border-left-color: var(--bs-danger);
+}
+.callout-primary {
+  border-left-color: var(--bs-primary);
+}
+.callout-secondary {
+  border-left-color: var(--bs-secondary);
+}
+
+.card {
+  margin-bottom: 1rem;
+}
+
+.card-footer {
+  a {
+    text-decoration: none !important;
+  }
+}
+
+.pagination {
+  --bs-pagination-border-radius: 0;
+}
+
+// ========================================================================
+// Additional Background Colors (for timeline and other components)
+// ========================================================================
+.bg-blue {
+  background-color: #007bff !important;
+  color: #fff;
+}
+
+.bg-green {
+  background-color: #28a745 !important;
+  color: #fff;
+}
+
+.bg-red {
+  background-color: #dc3545 !important;
+  color: #fff;
+}
+
+.bg-gray {
+  background-color: #6c757d !important;
+  color: #fff;
+}
+
+// Fix toastr styling - prevent Bootstrap 5 .toast styles from overriding toastr
+#toast-container > .toast {
+  opacity: 1;
+  background-color: initial;
+  border: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  color: #fff;
+
+  &.toast-success {
+    background-color: var(--bs-success);
+  }
+  &.toast-error {
+    background-color: var(--bs-danger);
+  }
+  &.toast-info {
+    background-color: var(--bs-info);
+  }
+  &.toast-warning {
+    background-color: #e6a817;
+  }
+}
+
+// Bootstrap 4 → 5 badge backward compatibility
+.badge.badge-primary {
+  background-color: var(--bs-primary) !important;
+  color: #fff !important;
+}
+.badge.badge-info {
+  background-color: var(--bs-info) !important;
+  color: #fff !important;
+}
+.badge.badge-success {
+  background-color: var(--bs-success) !important;
+  color: #fff !important;
+}
+.badge.badge-warning {
+  background-color: var(--bs-warning) !important;
+  color: #000 !important;
+}
+.badge.badge-danger {
+  background-color: var(--bs-danger) !important;
+  color: #fff !important;
+}
+.badge.badge-secondary {
+  background-color: var(--bs-secondary) !important;
+  color: #fff !important;
+}
+
+// Restore Bootstrap 4 / AdminLTE 3 blockquote left-border bar
+blockquote {
+    background-color: #fff;
+    border-left: .7rem solid #007bff;
+    margin: 1.5em .7rem;
+    padding: .5em .7rem;
+}
+
+// DataTables: add breathing room so focus ring on search input is not clipped
+.dataTables_wrapper .row:first-child {
+  padding-top: 4px;
+  padding-right: 4px;
+}
+

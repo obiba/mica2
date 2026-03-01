@@ -74,14 +74,23 @@ class GraphicsResultParser {
           },
           hoverinfo: "label+value",
           values,
-          labels
+          labels,
+          showlegend: true,
+          domain: { x: [0, 0.55], y: [0, 1] }
         }];
       },
       layoutObject: {
         height: 360,
+        showlegend: true,
+        legend: {
+          x: 0.6,
+          y: 0.5,
+          xanchor: 'left',
+          yanchor: 'middle'
+        },
         margin: {
-          t: 50,
-          b: 40
+          t: 20,
+          b: 20
         }
       }
     },
@@ -203,7 +212,7 @@ class GraphicsResultParser {
       return;
     }
 
-    const tr = Vue.filter('translate') || (value => value);
+    const tr = MicaFilters.translate;
     const labelStudies = tr('studies');
     const aggData = chartData[chartOptions.dataKey];
 
@@ -239,8 +248,8 @@ class VariablesResultParser {
 
   parse(data, micaConfig, localize, displayOptions, studyTypeSelection) {
     const variablesResult = data.variableResultDto;
-    const tr = Vue.filter('translate') || (value => value);
-    const taxonomyTitle = Vue.filter('taxonomy-title') || (value => value);
+    const tr = MicaFilters.translate;
+    const taxonomyTitle = MicaFilters.taxonomyTitle;
 
     let columnKey = 'variableColumns';
     if (studyTypeSelection) {
@@ -287,7 +296,7 @@ class VariablesResultParser {
           case 'label+description': {
             let labelElem = marked.parse(localize(summary.variableLabel));
             if (column === 'label+description' && summary.description) {
-              labelElem = "<i class='fa fa-info-circle text-muted float-left mr-2 mt-1' data-toggle='tooltip' data-html='true' title='" + marked.parse(localize(summary.description)) + "'></i> " + labelElem;
+              labelElem = "<i class='fa fa-info-circle text-muted float-start me-2 mt-1' data-bs-toggle='tooltip' data-bs-html='true' title='" + marked.parse(localize(summary.description)) + "'></i> " + labelElem;
             }
             row.push(labelElem);
             break;
@@ -418,7 +427,7 @@ class StudiesResultParser {
       totalHits: dtoResult.totalHits
     }
 
-    const taxonomyFilter = Vue.filter('taxonomy-title') || (title => title);
+    const taxonomyFilter = MicaFilters.taxonomyTitle;
     const checkIcon = `<i class="fa fa-check">`;
     const summaries = result.summaries || [];
 
@@ -434,7 +443,7 @@ class StudiesResultParser {
       const hasDatasource = (dataSources, id) => dataSources.indexOf(id) > -1;
       const design = summary.design ? taxonomyFilter.apply(null, [`Mica_study.methods-design.${summary.design}`]) : '-';
       let anchor = (type, value, studyType) =>
-        `<a href="" class="query-anchor" data-study-type="${studyType}" data-target="study" data-target-id="${summary.id}" data-type="${type}">${value.toLocaleString(this.locale)}</a>`;
+        `<a href="" class="query-anchor" data-study-type="${studyType}" data-bs-target="study" data-bs-target-id="${summary.id}" data-type="${type}">${value.toLocaleString(this.locale)}</a>`;
 
       let path = this.normalizePath(`/study/${summary.id}`);
       let row = [];
@@ -550,8 +559,8 @@ class DatasetsResultParser {
 
   parse(data, micaConfig, localize, displayOptions, studyTypeSelection) {
     const resultDto = data.datasetResultDto;
-    const tr = Vue.filter('translate') || (value => value);
-    const taxonomyFilter = Vue.filter('taxonomy-title') || (value => value);
+    const tr = MicaFilters.translate;
+    const taxonomyFilter = MicaFilters.taxonomyTitle;
 
     let columnKey = 'datasetColumns';
     if (studyTypeSelection) {
@@ -594,7 +603,7 @@ class DatasetsResultParser {
         : dataset.collected.studyTable;
 
       const stats = dataset.countStats || {};
-      let anchor = (type, value) => `<a href="" class="query-anchor" data-target="dataset" data-target-id="${dataset.id}" data-type="${type}">${value.toLocaleString(this.locale)}</a>`;
+      let anchor = (type, value) => `<a href="" class="query-anchor" data-bs-target="dataset" data-bs-target-id="${dataset.id}" data-type="${type}">${value.toLocaleString(this.locale)}</a>`;
 
       (displayOptions[columnKey] || displayOptions.datasetColumns).forEach(column => {
         switch (column) {
@@ -697,7 +706,7 @@ class NetworksResultParser {
 
     networks.forEach(network => {
       const stats = network.countStats || {};
-      let anchor = (type, value, studyType) => `<a href="" class="query-anchor" data-study-type="${studyType}" data-target="network" data-target-id="${network.id}" data-type="${type}">${value.toLocaleString(this.locale)}</a>`;
+      let anchor = (type, value, studyType) => `<a href="" class="query-anchor" data-study-type="${studyType}" data-bs-target="network" data-bs-target-id="${network.id}" data-type="${type}">${value.toLocaleString(this.locale)}</a>`;
 
       let path = this.normalizePath(`/network/${network.id}`);
       let row = [];

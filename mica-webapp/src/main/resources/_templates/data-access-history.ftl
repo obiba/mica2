@@ -5,9 +5,9 @@
   <link rel="stylesheet" href="${assetsPath}/libs/node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css"></link>
   <title>${config.name!""} | <@message "data-access-history"/> ${dar.id}</title>
 </head>
-<body id="data-access-history-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
+<body id="data-access-history-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed sidebar-expand-lg">
 <!-- Site wrapper -->
-<div class="wrapper">
+<div class="app-wrapper">
 
   <!-- Navbar -->
   <#include "libs/aside-navbar.ftl">
@@ -18,7 +18,7 @@
   <!-- /.sidebar -->
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
+ <div class="app-main flex-fill">
     <!-- Content Header (Page header) -->
     <section class="content-header bg-info mb-4">
       <div class="container-fluid">
@@ -37,6 +37,7 @@
 
     <!-- Main content -->
     <section class="content">
+      <div class="container-fluid">
 
       <#if dar.archived>
         <div class="ribbon-wrapper ribbon-xl">
@@ -82,18 +83,18 @@
                     <tr>
                       <td>
                         <#if event.amendment>
-                          <a href="${contextPath}/data-access-amendment-form/${event.form.id}"><i class="fas fa-file-import"></i> ${event.form.id}</a>
+                          <a href="${contextPath}/data-access-amendment-form/${event.form.id}"><i class="fa-solid fa-file-import"></i> ${event.form.id}</a>
                         <#elseif event.feasibility>
-                          <a href="${contextPath}/data-access-feasibility-form/${event.form.id}"><i class="far fa-question-circle"></i> ${event.form.id}</a>
+                          <a href="${contextPath}/data-access-feasibility-form/${event.form.id}"><i class="fa-regular fa-question-circle"></i> ${event.form.id}</a>
                         <#elseif event.preliminary>
-                          <a href="${contextPath}/data-access-preliminary-form/${event.form.id}"><i class="far fa-play-circle"></i> ${event.form.id}</a>
+                          <a href="${contextPath}/data-access-preliminary-form/${event.form.id}"><i class="fa-regular fa-play-circle"></i> ${event.form.id}</a>
                         <#elseif event.agreement>
-                          <a href="${contextPath}/data-access-agreement-form/${event.form.id}"><i class="fa fa-gavel"></i> ${event.form.id}</a>
+                          <a href="${contextPath}/data-access-agreement-form/${event.form.id}"><i class="fa-solid fa-gavel"></i> ${event.form.id}</a>
                         <#else>
-                          <a href="${contextPath}/data-access-form/${event.form.id}"><i class="fas fa-book"></i> ${event.form.id}</a>
+                          <a href="${contextPath}/data-access-form/${event.form.id}"><i class="fa-solid fa-book"></i> ${event.form.id}</a>
                         </#if>
                       </td>
-                      <td><i class="fas fa-circle text-${statusColor(event.status.toString())}"></i> <@message event.status.toString()/></td>
+                      <td><i class="fa-solid fa-circle text-${statusColor(event.status.toString())}"></i> <@message event.status.toString()/></td>
                       <td>${event.profile.fullName}</td>
                       <td data-sort="${event.date.toString()}" class="moment-datetime">${event.date.toString()}</td>
                     </tr>
@@ -111,9 +112,9 @@
               <div class="card-header">
                 <h3 class="card-title"><@message "actions-log"/></h3>
                 <#if !dar.archived>
-                  <div class="float-right">
-                    <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-add">
-                      <i class="fas fa-plus"></i> <@message "add"/></a>
+                  <div class="float-end">
+                    <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-add">
+                      <i class="fa-solid fa-plus"></i> <@message "add"/></a>
                   </div>
                 </#if>
               </div>
@@ -146,6 +147,7 @@
       </div>
       <!-- /.row -->
 
+      </div><!-- /.container-fluid -->
     </section>
     <!-- /.content -->
   </div>
@@ -157,27 +159,25 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title"><@message "add-action"/></h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
           </button>
         </div>
         <div class="modal-body">
-          <div class="form-group">
+          <div class="mb-3">
             <label><@message "action"/></label>
             <input type="text" id="action-text" class="form-control">
           </div>
-          <div class="form-group">
+          <div class="mb-3">
             <label><@message "date"/></label>
             <div class="input-group">
               <input type="text" id="action-date" class="form-control">
-              <div class="input-group-append">
-                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
-              </div>
+              <span class="input-group-text"><i class="fa-solid fa-calendar-alt"></i></span>
             </div>
           </div>
         </div>
         <div class="modal-footer justify-content-between">
-          <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
           <button type="button" class="btn btn-primary" id="action-add-submit"><@message "submit"/></button>
         </div>
       </div>

@@ -40,6 +40,6 @@
     "listing-typeahead-placeholder": "<@message "global.list-search-placeholder"/>",
   };
 </script>
-<script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>
+<script src="${assetsPath}/libs/node_modules/vue/dist/vue.global.js"></script>
 <script src="${assetsPath}/libs/node_modules/rql/dist/rql.js"></script>
 <script src="${assetsPath}/js/mica-list-entities.js"></script>

@@ -1,7 +1,7 @@
 <!-- Script for the cart and the documents list pages -->
 <script src="${assetsPath}/js/mica-tables.js"></script>
 
-<script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>
+<script src="${assetsPath}/libs/node_modules/vue/dist/vue.global.js"></script>
 <script src="${assetsPath}/libs/node_modules/rql/dist/rql.js"></script>
 <script src="${assetsPath}/js/vue-mica-search/libs/result-parsers.js"></script>
 <script src="${assetsPath}/js/vue-mica-search/result.js"></script>
@@ -110,60 +110,7 @@
 
   Mica.defaultSearchMode = "${defaultSearchMode}";
 
-  class StringLocalizer {
-      static __localizeInternal(entries, locale) {
-        const result = (Array.isArray(entries) ? entries : [entries]).filter((entry) => entry && (locale === entry.lang || locale === entry.locale)).pop();
-
-        if (result) {
-          let value = result.value ? result.value : result.text;
-          return value ? value : null;
-        }
-        return null;
-      }
-
-      static localize(entries) {
-        if (entries) {
-          const result = StringLocalizer.__localizeInternal(entries, Mica.locale)
-            || StringLocalizer.__localizeInternal(entries, Mica.defaultLocale)
-            || StringLocalizer.__localizeInternal(entries, 'und');
-
-          return result ? result : '';
-        } else {
-          return '';
-        }
-      }
-    }
-
-  class TaxonomyTitleFinder {
-    initialize(taxonomies) {
-      this.taxonomies = taxonomies;
-    }
-
-    title(taxonomyName, vocabularyName, termName) {
-      if (taxonomyName) {
-        const taxonomy = this.taxonomies[taxonomyName];
-        if (taxonomy) {
-          if (!vocabularyName && !termName) return StringLocalizer.localize(taxonomy.title);
-          else if (vocabularyName) {
-            let foundVocabulary = (taxonomy.vocabularies || []).filter(vocabulary => vocabulary.name === vocabularyName)[0];
-
-            if (foundVocabulary) {
-              if (!termName) return StringLocalizer.localize(foundVocabulary.title);
-              else {
-                let foundTerm = (foundVocabulary.terms || []).filter(term => term.name === termName)[0];
-
-                if (foundTerm) return StringLocalizer.localize(foundTerm.title);
-              }
-            }
-          }
-        }
-      }
-
-      return null;
-    }
-  }
-
-  const taxonomyTitleFinder  = new TaxonomyTitleFinder(); // important initialisation
+  const taxonomyTitleFinder = new TaxonomyTitleFinder();
 
   // clear any previous selections from local storage
   const variablesCartStorage = new MicaSetStorage('cart');
@@ -203,58 +150,8 @@
   };
   </#if>
 
-  $(function () {
-    // global translate filter for use in imported components
-    Vue.filter("translate", (key) => {
-      let value = Mica.tr[key];
-      return typeof value === "string" ? value : key;
-    });
-
-    Vue.filter("localize-string", (input) => {
-      if (typeof input === "string") return input;
-      return StringLocalizer.localize(input);
-    });
-
-    // temporary, until overritten by rest call
-    Vue.filter("taxonomy-title", (input) => {
-      return input;
-    });
-
-    // base documents data table options
-    const dataTableOpts = {
-      paging: true,
-      lengthMenu: [10, 20, 50, 100],
-      pageLength: 20,
-      lengthChange: true,
-      searching: false,
-      ordering: false,
-      autoWidth: true,
-      language: {
-        url: "${assetsPath}/i18n/datatables.${.lang}.json"
-      },
-      processing: true,
-      serverSide: true,
-      columnDefs: [{ // the checkbox
-        orderable: false,
-        className: 'select-checkbox',
-        targets: 0
-      }, { // the ID
-          visible: false,
-          searchable: false,
-          targets: 1
-      }],
-      select: {
-        style: 'multi',
-        selector: 'td:first-child',
-        info: false
-      },
-      fixedHeader: true,
-      dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>><'row'<'table-responsive col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
-      info: true
-    };
-
-    new Vue({
-      el: "#query-vue-container",
+  const app = MicaVueApp.createApp({
+    // Mount target: #query-vue-container
       data() {
         return {
           from: 0,
@@ -591,7 +488,7 @@
 
           axios
             .get(MicaService.normalizeUrl(url))
-            .then(function(response) {
+            .then((response) => {
               $('#loadingSet').hide();
 
               EventBus.$emit(resultEventName, {
@@ -605,17 +502,19 @@
         }
       },
       beforeMount() {
-        EventBus.register("variables-results", this.onResult.bind(this));
-        EventBus.register("studies-results", this.onResult.bind(this));
-        EventBus.register("networks-results", this.onResult.bind(this));
+        this._onResultHandler = this.onResult.bind(this);
+        EventBus.register("variables-results", this._onResultHandler);
+        EventBus.register("studies-results", this._onResultHandler);
+        EventBus.register("networks-results", this._onResultHandler);
       },
       mounted() {
         this.pagination = new OBiBaPagination('obiba-pagination-top', true, this.onPagination),
         this.pageSizeSelector = new OBiBaPageSizeSelector('obiba-page-size-selector-top', DEFAULT_PAGE_SIZES, DEFAULT_PAGE_SIZE, this.onPageSizeChanged);
 
-        EventBus.register('variables-selections-updated', this.onSelectionChanged.bind(this));
-        EventBus.register('studies-selections-updated', this.onSelectionChanged.bind(this));
-        EventBus.register('networks-selections-updated', this.onSelectionChanged.bind(this));
+        this._onSelectionChangedHandler = this.onSelectionChanged.bind(this);
+        EventBus.register('variables-selections-updated', this._onSelectionChangedHandler);
+        EventBus.register('studies-selections-updated', this._onSelectionChangedHandler);
+        EventBus.register('networks-selections-updated', this._onSelectionChangedHandler);
 
         let url = '/ws/taxonomies/_filter?target=' + TARGETS.VARIABLE;
         let studyTaxonomyurl = '/ws/taxonomies/_filter?target=' + TARGETS.STUDY;
@@ -633,10 +532,10 @@
 
             taxonomyTitleFinder.initialize(taxonomies);
 
-            Vue.filter("taxonomy-title", (input) => {
+            MicaFilters.taxonomyTitle = (input) => {
               const [taxonomy, vocabulary, term] = input.split(/\./);
-              return  taxonomyTitleFinder.title(taxonomy, vocabulary, term) || input;
-            });
+              return taxonomyTitleFinder.title(taxonomy, vocabulary, term) || input;
+            };
 
             let setType = this.currentWindowLocationSearch()['type'];
             let totalCount = 0;
@@ -652,13 +551,17 @@
             this.doQuery(setType);
           }));
       },
-      beforeDestroy() {
-        EventBus.unregister("variables-results", this.onResult.bind(this));
-        EventBus.unregister("studies-results", this.onResult.bind(this));
-        EventBus.unregister("networks-results", this.onResult.bind(this));
+      beforeUnmount() {
+        EventBus.unregister("variables-results", this._onResultHandler);
+        EventBus.unregister("studies-results", this._onResultHandler);
+        EventBus.unregister("networks-results", this._onResultHandler);
+        EventBus.unregister('variables-selections-updated', this._onSelectionChangedHandler);
+        EventBus.unregister('studies-selections-updated', this._onSelectionChangedHandler);
+        EventBus.unregister('networks-selections-updated', this._onSelectionChangedHandler);
       }
     });
-  });
+  app.config.compilerOptions.whitespace = 'condense';
+  app.mount('#query-vue-container');
 </script>
 
 <#include "special-char-codec.ftl">

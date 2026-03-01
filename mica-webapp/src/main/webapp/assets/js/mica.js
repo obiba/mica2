@@ -1241,7 +1241,9 @@ class SetService {
         }
       })
       .catch(response => {
-        console.dir(response);
+        if (response.response && response.response.status !== 401) {
+          console.dir(response);
+        }
         if (onfailure) {
           onfailure(response);
         }
@@ -1415,7 +1417,8 @@ class SetService {
     }
     let count = Carts.map(c => c.count).reduce((prev, curr) => prev + curr, 0);
     $(elem).text(count > 0 ? (count > 50 ? '50+' : count) : '')
-      .attr('title', count > 50 ? count.toLocaleString(lang) : '');
+      .attr('title', count > 50 ? count.toLocaleString(lang) : '')
+      .toggle(count > 0);
   }
 
   /**
@@ -2033,4 +2036,14 @@ class TaxonomyHelper {
     (taxonomy.vocabularies || []).forEach(vocabulary => TaxonomyHelper.sortVocabularyTerms(vocabulary, sortKey));
   }
 }
+
+// Prevent BS5 modals from auto-focusing the close button on open
+document.addEventListener('shown.bs.modal', function(event) {
+  setTimeout(function() {
+    const active = document.activeElement;
+    if (active && active.classList.contains('btn-close')) {
+      active.blur();
+    }
+  }, 0);
+});
 

@@ -196,7 +196,7 @@
 <script src="${assetsPath}/libs/node_modules/plotly.js-dist-min/plotly.min.js"></script>
 
 <!-- Mica Search and dependencies -->
-<script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>
+<script src="${assetsPath}/libs/node_modules/vue/dist/vue.global.js"></script>
 <script src="${assetsPath}/libs/node_modules/rql/dist/rql.js"></script>
 <script src="${assetsPath}/js/vue-mica-search/libs/criterion.js"></script>
 <script src="${assetsPath}/js/vue-mica-search/libs/result-parsers.js"></script>

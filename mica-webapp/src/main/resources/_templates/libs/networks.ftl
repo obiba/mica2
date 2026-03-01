@@ -13,7 +13,7 @@
   <tr>
     <td><a href="${contextPath}/network/${network.id}">${localize(network.acronym)}</a></td>
     <td><small>${localize(network.name)}</small></td>
-    <td class="marked"><template><small>${localize(network.description)?trim?truncate_w(100, "...")}</small></template></td>
+    <td class="marked"><small>${localize(network.description)?trim?truncate_w(100, "...")}</small></td>
   </tr>
 </#macro>
 
@@ -31,9 +31,7 @@
   <div class="col-lg-9 col-sm-12">
     <h2 class="lead"><b>${localize(network.acronym)}</b></h2>
     <p class="text-muted text-sm">${localize(network.name)}</p>
-    <div class="marked">
-      <template>${localize(network.description)?trim?truncate_w(200, "...")}</template>
-    </div>
+    <div class="marked">${localize(network.description)?trim?truncate_w(200, "...")}</div>
     <div class="mt-2">
       <a href="${contextPath}/network/${network.id}" class="btn btn-sm btn-outline-info">
         <@message "global.read-more"/>
@@ -52,21 +50,21 @@
     <div class="col-6">
       <typeahead @typing="onType" @select="onSelect" :items="suggestions" :external-text="initialFilter"></typeahead>
     </div>
-    <div class="col-3 ml-auto">
-      <a href="${contextPath}/search#lists?type=networks" class="btn btn-sm btn-primary float-right">
-        <@message "global.search"/> <i class="fas fa-search"></i>
+    <div class="col-3 ms-auto">
+      <a href="${contextPath}/search#lists?type=networks" class="btn btn-sm btn-primary float-end">
+        <@message "global.search"/> <i class="fa-solid fa-search"></i>
       </a>
     </div>
   </div>
 
   <div class="row">
     <div class="col-12">
-      <div class="d-inline-flex float-right mt-3 mb-3">
+      <div class="d-inline-flex float-end mt-3 mb-3">
         <sorting @sort-update="onSortUpdate" :initial-choice="initialSort" :options-translations="sortOptionsTranslations"></sorting>
-        <span class="ml-2">
-          <select class="custom-select" id="obiba-page-size-selector-top"></select>
+        <span class="ms-2">
+          <select class="form-select" id="obiba-page-size-selector-top"></select>
         </span>
-        <nav id="obiba-pagination-top" aria-label="Top pagination" class="ml-2 mt-0">
+        <nav id="obiba-pagination-top" aria-label="Top pagination" class="ms-2 mt-0">
           <ul class="pagination mb-0"></ul>
         </nav>
       </div>
@@ -87,14 +85,14 @@
                 <div class="col-xs-12 col">
                   <h4 class="lead">
                     <a v-bind:href="'${contextPath}/network/' + network.id" class="mt-2">
-                      <b>{{network.name | localize-string}}</b>
+                      <b>{{localizeString(network.name)}}</b>
                     </a>
                   </h4>
-                  <span class="marked"><small :inner-html.prop="network.description | localize-string | ellipsis(300, ('${contextPath}/network/' + network.id)) | markdown"></small></span>
+                  <span class="marked"><small v-html="markdown(ellipsis(localizeString(network.description), 300, ('${contextPath}/network/' + network.id)))"></small></span>
                 </div>
                 <div class="col-3 mx-auto my-auto" v-if="network.logo">
                   <a v-bind:href="'${contextPath}/network/' + network.id" class="text-decoration-none text-center">
-                    <img class="img-fluid" style="max-height: 10em;" v-bind:alt="network.acronym | localize-string | concat(' logo')" v-bind:src="'${contextPath}/ws/network/' + network.id + '/file/' + network.logo.id + '/_download'"/>
+                    <img class="img-fluid" style="max-height: 10em;" v-bind:alt="concat(localizeString(network.acronym), ' logo')" v-bind:src="'${contextPath}/ws/network/' + network.id + '/file/' + network.logo.id + '/_download'"/>
                   </a>
                 </div>
               </div>
@@ -103,35 +101,35 @@
               <div v-if="hasStats(network.countStats)" class="row pt-1 row-cols-5">
                 <stat-item
                         v-bind:count="network.countStats.individualStudies"
-                        v-bind:singular="'individual-study' | translate"
-                        v-bind:plural="'individual-studies' | translate"
+                        v-bind:singular="translate('individual-study')"
+                        v-bind:plural="translate('individual-studies')"
                         v-bind:url="individualStudies(network.id)">
                 </stat-item>
                 <#if config.studyDatasetEnabled>
                   <stat-item
                           v-bind:count="network.countStats.studiesWithVariables"
-                          v-bind:singular="'study-with-variables' | translate"
-                          v-bind:plural="'studies-with-variables' | translate"
+                          v-bind:singular="translate('study-with-variables')"
+                          v-bind:plural="translate('studies-with-variables')"
                           v-bind:url="individualStudiesWithVariables(network.id)">
                   </stat-item>
                   <stat-item
                           v-bind:count="network.countStats.studyVariables"
-                          v-bind:singular="'study-variable' | translate"
-                          v-bind:plural="'study-variables' | translate"
+                          v-bind:singular="translate('study-variable')"
+                          v-bind:plural="translate('study-variables')"
                           v-bind:url="individualStudyVariables(network.id)">
                   </stat-item>
                 </#if>
                 <stat-item
                         v-bind:count="network.countStats.harmonizationStudies"
-                        v-bind:singular="'harmonization-study' | translate"
-                        v-bind:plural="'harmonization-studies' | translate"
+                        v-bind:singular="translate('harmonization-study')"
+                        v-bind:plural="translate('harmonization-studies')"
                         v-bind:url="harmonizationStudies(network.id)">
                 </stat-item>
                 <#if config.harmonizationDatasetEnabled>
                   <stat-item
                           v-bind:count="network.countStats.dataschemaVariables"
-                          v-bind:singular="'harmonization-study-variable' | translate"
-                          v-bind:plural="'harmonization-study-variables' | translate"
+                          v-bind:singular="translate('harmonization-study-variable')"
+                          v-bind:plural="translate('harmonization-study-variables')"
                           v-bind:url="harmonizationStudyVariables(network.id)">>
                   </stat-item>
                 </#if>
@@ -150,11 +148,11 @@
     </div>
   </div>
 
-  <div class="d-inline-flex pt-0 ml-auto">
+  <div class="d-inline-flex pt-0 ms-auto">
     <span>
-      <select class="custom-select" id="obiba-page-size-selector-bottom"></select>
+      <select class="form-select" id="obiba-page-size-selector-bottom"></select>
     </span>
-    <nav id="obiba-pagination-bottom" aria-label="Bottom pagination" class="ml-2 mt-0">
+    <nav id="obiba-pagination-bottom" aria-label="Bottom pagination" class="ms-2 mt-0">
       <ul class="pagination"></ul>
     </nav>
   </div>

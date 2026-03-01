@@ -8,9 +8,9 @@
   <#include "libs/data-access-form-head.ftl">
   <title>${config.name!""} | <@message "data-access-amendment"/> ${amendment.id}</title>
 </head>
-<body id="data-access-amendment-form-page" ng-app="formModule" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
+<body id="data-access-amendment-form-page" ng-app="formModule" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed sidebar-expand-lg">
 <!-- Site wrapper -->
-<div class="wrapper">
+<div class="app-wrapper">
 
   <!-- Navbar -->
     <#include "libs/aside-navbar.ftl">
@@ -21,18 +21,18 @@
   <!-- /.sidebar -->
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
+ <div class="app-main flex-fill">
     <!-- Content Header (Page header) -->
     <section class="content-header bg-info mb-4">
       <div class="container-fluid">
         <div class="row">
           <div class="col-sm-8">
-            <h1 class="m-0 float-left">
+            <h1 class="m-0 float-start">
               <span class="text-white-50"><@message "data-access-amendment"/> /</span> ${amendment.id}
             </h1>
               <#if amendmentPermissions?seq_contains("DELETE")>
-                <button type="button" class="btn btn-danger ml-4" data-toggle="modal" data-target="#modal-delete">
-                  <i class="fas fa-trash"></i> <@message "delete"/>
+                <button type="button" class="btn btn-danger ms-4" data-bs-toggle="modal" data-bs-target="#modal-delete">
+                  <i class="fa-solid fa-trash"></i> <@message "delete"/>
                 </button>
               </#if>
           </div>
@@ -49,16 +49,16 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title"><@message "confirm-deletion-title"/></h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
             </button>
           </div>
           <div class="modal-body">
             <p><@message "confirm-amendment-deletion-text"/></p>
           </div>
           <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-            <button type="button" class="btn btn-primary" data-dismiss="modal"
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                     onclick="DataAccessService.delete('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/>
             </button>
           </div>
@@ -71,6 +71,7 @@
 
     <!-- Main content -->
     <section class="content">
+      <div class="container-fluid">
 
       <#if dar.archived>
         <div class="ribbon-wrapper ribbon-xl">
@@ -101,27 +102,27 @@
               <h3 class="card-title"><@message "amendment-form"/></h3>
               <div ng-cloak>
                 <#if amendmentPermissions?seq_contains("EDIT")>
-                  <span class="float-right border-left ml-2 pl-2" ng-if="schema.readOnly">
-                    <a class="btn btn-primary" href="${amendment.id}?edit=true"><i class="fas fa-pen"></i> <@message "edit"/></a>
+                  <span class="float-end border-start ms-2 ps-2" ng-if="schema.readOnly">
+                    <a class="btn btn-primary" href="${amendment.id}?edit=true"><i class="fa-solid fa-pen"></i> <@message "edit"/></a>
                   </span>
-                  <span class="float-right border-left ml-2 pl-2" ng-hide="schema.readOnly">
+                  <span class="float-end border-start ms-2 ps-2" ng-hide="schema.readOnly">
                     <a class="btn btn-primary" href="#" ng-click="save('${dar.id}', 'amendment', '${amendment.id}')"><@message "save"/></a>
-                    <a class="btn btn-default" href="${amendment.id}"><@message "cancel"/></a>
+                    <a class="btn btn-secondary" href="${amendment.id}"><@message "cancel"/></a>
                   </span>
                 </#if>
                 <#if amendmentPermissions?seq_contains("EDIT_STATUS")>
-                  <span class="float-right border-left ml-2 pl-2">
+                  <span class="float-end border-start ms-2 ps-2">
                     <#if amendment.status == "OPENED" || amendment.status == "CONDITIONALLY_APPROVED">
-                      <button type="button" class="btn btn-info" ng-hide="!schema.readOnly" data-toggle="modal"
-                              data-target="#modal-submit"><@message "submit"/></button>
+                      <button type="button" class="btn btn-info" ng-hide="!schema.readOnly" data-bs-toggle="modal"
+                              data-bs-target="#modal-submit"><@message "submit"/></button>
                       <button type="button" class="btn btn-success"
                               ng-click="validate()"><@message "validate"/></button>
                     <#elseif amendment.status == "APPROVED" && !accessConfig.approvedFinal>
-                      <button type="button" class="btn btn-outline-secondary" data-toggle="modal"
-                              data-target="#modal-cancel-approve"><@message "cancel-approval"/></button>
+                      <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
+                              data-bs-target="#modal-cancel-approve"><@message "cancel-approval"/></button>
                     <#elseif amendment.status == "REJECTED" && !accessConfig.rejectedFinal>
-                      <button type="button" class="btn btn-outline-secondary" data-toggle="modal"
-                              data-target="#modal-cancel-reject"><@message "cancel-rejection"/></button>
+                      <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
+                              data-bs-target="#modal-cancel-reject"><@message "cancel-rejection"/></button>
                     <#else>
                       <button type="button" class="btn btn-primary"
                               onclick="DataAccessService.reopen('${dar.id}', 'amendment', '${amendment.id}')"><@message "reopen"/></button>
@@ -129,30 +130,30 @@
                         <button type="button" class="btn btn-primary"
                                 onclick="DataAccessService.review('${dar.id}', 'amendment', '${amendment.id}')"><@message "review"/></button>
                       <#elseif amendment.status == "REVIEWED" || (amendment.status == "SUBMITTED" && !accessConfig.withReview)>
-                        <button type="button" class="btn btn-success" data-toggle="modal"
-                                data-target="#modal-approve"><@message "approve"/></button>
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                data-bs-target="#modal-approve"><@message "approve"/></button>
                         <#if accessConfig.withConditionalApproval>
-                        <button type="button" class="btn btn-warning" data-toggle="modal"
-                                data-target="#modal-condition"><@message "conditionallyApprove"/></button>
+                        <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                                data-bs-target="#modal-condition"><@message "conditionallyApprove"/></button>
                         </#if>
-                        <button type="button" class="btn btn-danger" data-toggle="modal"
-                                data-target="#modal-reject"><@message "reject"/></button>
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                data-bs-target="#modal-reject"><@message "reject"/></button>
                       </#if>
                     </#if>
                   </span>
                 </#if>
-                <span class="float-right" ng-if="schema.readOnly">
+                <span class="float-end" ng-if="schema.readOnly">
                   <#if diffs??>
-                    <button type="button" class="btn btn-outline-info" data-toggle="modal"
-                            data-target="#modal-diff"><i class="fas fa-code-branch"></i> <@message "form-diff"/></button>
+                    <button type="button" class="btn btn-outline-info" data-bs-toggle="modal"
+                            data-bs-target="#modal-diff"><i class="fa-solid fa-code-branch"></i> <@message "form-diff"/></button>
                   </#if>
                   <#if isAdministrator || isDAO>
-                    <a href="${contextPath}/ws/data-access-request/${dar.id}/amendment/${amendment.id}/_word?lang=${.lang}" class="btn btn-default">
-                      <i class="fas fa-file-word"></i> <@message "download"/>
+                    <a href="${contextPath}/ws/data-access-request/${dar.id}/amendment/${amendment.id}/_word?lang=${.lang}" class="btn btn-secondary">
+                      <i class="fa-solid fa-file-word"></i> <@message "download"/>
                     </a>
                   </#if>
-                  <a href="#" onclick="window.print()" class="btn btn-default">
-                    <i class="fas fa-print"></i> <@message "global.print"/>
+                  <a href="#" onclick="window.print()" class="btn btn-secondary">
+                    <i class="fa-solid fa-print"></i> <@message "global.print"/>
                   </a>
                 </span>
               </div>
@@ -170,9 +171,9 @@
             </div>
             <#if amendmentPermissions?seq_contains("EDIT")>
               <div class="card-footer" ng-hide="schema.readOnly" ng-cloak>
-                <span class="float-right">
+                <span class="float-end">
                   <a class="btn btn-primary" href="#" ng-click="save('${dar.id}', 'amendment', '${amendment.id}')"><@message "save"/></a>
-                  <a class="btn btn-default" href="${amendment.id}"><@message "cancel"/></a>
+                  <a class="btn btn-secondary" href="${amendment.id}"><@message "cancel"/></a>
                 </span>
               </div>
             </#if>
@@ -189,16 +190,16 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title"><@message "confirm-submission-title"/></h4>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
                   </button>
                 </div>
                 <div class="modal-body">
                   <p><@message "confirm-amendment-submission-text"/></p>
                 </div>
                 <div class="modal-footer justify-content-between">
-                  <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-                  <button type="button" class="btn btn-primary" data-dismiss="modal"
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
+                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                           ng-click="submit('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
                 </div>
               </div>
@@ -214,16 +215,16 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title"><@message "confirm-approval-title"/></h4>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
                   </button>
                 </div>
                 <div class="modal-body">
                   <p><@message "confirm-amendment-approval-text"/></p>
                 </div>
                 <div class="modal-footer justify-content-between">
-                  <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-                  <button type="button" class="btn btn-primary" data-dismiss="modal"
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
+                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                           onclick="DataAccessService.approve('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
                 </div>
               </div>
@@ -239,16 +240,16 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title"><@message "confirm-conditional-approval-title"/></h4>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
                   </button>
                 </div>
                 <div class="modal-body">
                   <p><@message "confirm-amendment-conditional-approval-text"/></p>
                 </div>
                 <div class="modal-footer justify-content-between">
-                  <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-                  <button type="button" class="btn btn-primary" data-dismiss="modal"
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
+                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                           onclick="DataAccessService.conditionally('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
                 </div>
               </div>
@@ -264,16 +265,16 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title"><@message "confirm-rejection-title"/></h4>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
                   </button>
                 </div>
                 <div class="modal-body">
                   <p><@message "confirm-amendment-rejection-text"/></p>
                 </div>
                 <div class="modal-footer justify-content-between">
-                  <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-                  <button type="button" class="btn btn-primary" data-dismiss="modal"
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
+                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                           onclick="DataAccessService.reject('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
                 </div>
               </div>
@@ -289,20 +290,20 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title"><@message "confirm-cancel-approval-title"/></h4>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
                   </button>
                 </div>
                 <div class="modal-body">
                   <p><@message "confirm-amendment-cancel-approval-text"/></p>
                 </div>
                 <div class="modal-footer justify-content-between">
-                  <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
                     <#if accessConfig.withReview>
-                      <button type="button" class="btn btn-primary" data-dismiss="modal"
+                      <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                               onclick="DataAccessService.review('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
                     <#else>
-                      <button type="button" class="btn btn-primary" data-dismiss="modal"
+                      <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                               onclick="DataAccessService.submit('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
                     </#if>
                 </div>
@@ -319,20 +320,20 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title"><@message "confirm-cancel-rejection-title"/></h4>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
                   </button>
                 </div>
                 <div class="modal-body">
                   <p><@message "confirm-amendment-cancel-rejection-text"/></p>
                 </div>
                 <div class="modal-footer justify-content-between">
-                  <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
                     <#if accessConfig.withReview>
-                      <button type="button" class="btn btn-primary" data-dismiss="modal"
+                      <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                               onclick="DataAccessService.review('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
                     <#else>
-                      <button type="button" class="btn btn-primary" data-dismiss="modal"
+                      <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                               onclick="DataAccessService.submit('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
                     </#if>
                 </div>
@@ -355,18 +356,18 @@
                 <div class="card-body">
                     <#if amendment.variablesSet??>
                       <a class="btn btn-info" href="${contextPath}/list/${amendment.variablesSet.id}">
-                        <i class="far fa-list-alt"></i>
+                        <i class="fa-regular fa-list-alt"></i>
                         <span><@message "list-linked-variables"/></span>
-                        <span class="badge badge-light">${amendment.variablesSet.identifiers?size}</span>
+                        <span class="badge text-bg-light">${amendment.variablesSet.identifiers?size}</span>
                       </a>
                       <#if amendmentPermissions?seq_contains("EDIT")>
-                        <a class="ml-3" href="javascript:void(0)" onclick="DataAccessService.unlinkVariables('${amendment.parentId}', 'amendment', '${amendment.id}')">
-                          <i class="fas fa-unlink"></i> <@message "unlink-variables"/>
+                        <a class="ms-3" href="javascript:void(0)" onclick="DataAccessService.unlinkVariables('${amendment.parentId}', 'amendment', '${amendment.id}')">
+                          <i class="fa-solid fa-unlink"></i> <@message "unlink-variables"/>
                         </a>
                       </#if>
                     <#elseif amendmentVariablesEnabled && amendmentPermissions?seq_contains("EDIT")>
                       <a class="btn btn-primary" href="javascript:void(0)" onclick="DataAccessService.linkVariables('${amendment.parentId}', 'amendment', '${amendment.id}')">
-                        <i class="fas fa-link"></i> <@message "link-cart-variables"/> <i class="fas fa-shopping-cart fa-xs"></i>
+                        <i class="fa-solid fa-link"></i> <@message "link-cart-variables"/> <i class="fa-solid fa-shopping-cart fa-xs"></i>
                       </a>
                     <#else>
                       <span><@message "no-linked-variables"/></span>
@@ -391,6 +392,7 @@
 
       </div>
 
+      </div><!-- /.container-fluid -->
     </section>
     <!-- /.content -->
   </div>

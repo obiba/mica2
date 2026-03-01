@@ -27,14 +27,14 @@
   <title>${config.name!""} | ${localize(dataset.acronym)}</title>
 </head>
 <body id="${type?lower_case}-dataset-page" class="hold-transition layout-top-nav layout-navbar-fixed">
-<div class="wrapper">
+<div class="app-wrapper d-flex flex-column min-vh-100">
 
   <!-- Navbar -->
   <#include "libs/top-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
+ <div class="app-main flex-fill">
     <!-- Content Header (Page header) -->
     <@header titlePrefix=(type?lower_case + "-dataset") title=localize(dataset.acronym) subtitle=localize(dataset.name) breadcrumb=[["${contextPath}/", "home"], ["${contextPath}/${title}", "${title}"], [localize(dataset.acronym)]]/>
     <!-- /.content-header -->
@@ -74,7 +74,7 @@
                     <div class="col-md-3 col-sm-6 col-12">
                       <div class="info-box">
                         <span class="info-box-icon bg-info">
-                          <a href="${contextPath}/${detailsPageSearchMode}#lists?type=networks&query=${searchPageQuery}">
+                          <a href="${contextPath}/${detailsPageSearchMode}#lists?type=networks&query=${searchPageQuery}" class="text-white">
                             <i class="${networkIcon}"></i>
                           </a>
                         </span>
@@ -90,7 +90,7 @@
                   <div class="col-md-3 col-sm-6 col-12">
                     <div class="info-box">
                       <span class="info-box-icon bg-danger">
-                        <a href="${contextPath}/${detailsPageSearchMode}#lists?type=variables&query=${searchPageQuery}">
+                        <a href="${contextPath}/${detailsPageSearchMode}#lists?type=variables&query=${searchPageQuery}" class="text-white">
                           <i class="<#if type == "Harmonized">${dataschemaIcon}<#else>${variableIcon}</#if>"></i>
                         </a>
                       </span>
@@ -115,23 +115,23 @@
                 <#if study??>
                   <div class="card-footer">
                     <#if type == "Harmonized"><@message "associated-initiative"/><#else><@message "associated-study"/></#if>
-                    <a class="btn btn-success ml-2" href="${contextPath}/study/${study.id}">
+                    <a class="btn btn-success ms-2" href="${contextPath}/study/${study.id}">
                       <i class="<#if type == "Harmonized">${initiativeIcon}<#else>${studyIcon}</#if>"></i> ${localize(study.acronym)}
                     </a>
                     <#if showVariableStatistics && showDatasetContingencyLink>
-                      <a class="btn btn-primary float-right ml-2" href="${contextPath}/dataset-crosstab/${dataset.id}">
-                        <i class="fas fa-cog"></i> <@message "dataset.crosstab.title"/>
+                      <a class="btn btn-primary float-end ms-2" href="${contextPath}/dataset-crosstab/${dataset.id}">
+                        <i class="fa-solid fa-cog"></i> <@message "dataset.crosstab.title"/>
                       </a>
                     </#if>
                     <#if cartEnabled && variablesCartEnabled>
-                      <div id="cart-add" class="float-right">
+                      <div id="cart-add" class="float-end">
                         <#if user?? || cartAnonymousEnabled>
                           <button type="button" class="btn btn-link" onclick="onVariablesCartAdd('${dataset.id}')">
-                            <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
+                            <@message "sets.cart.add-to-cart"/> <i class="fa-solid fa-cart-plus"></i>
                           </button>
                         <#else>
                           <button type="button" class="btn btn-link" onclick="window.location.href='${contextPath}/signin?redirect=${contextPath}/dataset/${dataset.id}';">
-                            <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
+                            <@message "sets.cart.add-to-cart"/> <i class="fa-solid fa-cart-plus"></i>
                           </button>
                         </#if>
                       </div>
@@ -152,7 +152,7 @@
                         <h3 class="card-title"><@message "harmonization-protocol.information-content"/></h3>
                       </div>
                       <div class="card-body">
-                        <div class="marked"><template>${localize(dataset.model.informationContent)}</template></div>
+                        <div class="marked">${localize(dataset.model.informationContent)}</div>
                       </div>
                     </div>
                   </div>
@@ -164,7 +164,7 @@
                         <h3 class="card-title"><@message "global.additional-information"/></h3>
                       </div>
                       <div class="card-body">
-                        <div class="marked"><template>${localize(dataset.model.additionalInformation)}</template></div>
+                        <div class="marked">${localize(dataset.model.additionalInformation)}</div>
                       </div>
                     </div>
                   </div>
@@ -183,11 +183,11 @@
                 </div>
                 <div class="card-body">
                   <h5>${localize(population.name)}</h5>
-                  <div class="marked"><template>${localize(population.description)}</template></div>
+                  <div class="marked">${localize(population.description)}</div>
                   <@populationDialog id=population.id population=population></@populationDialog>
                 </div>
                 <div class="card-footer">
-                  <a href="#" data-toggle="modal" data-target="#modal-${population.id}"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
+                  <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${population.id}"><@message "more-info"/> <i class="fa-solid fa-arrow-circle-right"></i></a>
                 </div>
               </div>
             </div>
@@ -200,12 +200,12 @@
                 </div>
                 <div class="card-body">
                   <h5>${localize(dce.name)}</h5>
-                  <div class="marked"><template>${localize(dce.description)}</template></div>
+                  <div class="marked">${localize(dce.description)}</div>
                   <#assign dceId="${population.id}-${dce.id}">
                   <@dceDialog id=dceId dce=dce></@dceDialog>
                 </div>
                 <div class="card-footer">
-                  <a href="#" data-toggle="modal" data-target="#modal-${dceId}"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
+                  <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${dceId}"><@message "more-info"/> <i class="fa-solid fa-arrow-circle-right"></i></a>
                 </div>
               </div>
             </div>
@@ -215,11 +215,11 @@
                 <div class="card-header">
                   <h3 class="card-title"><@message "studies-included"/></h3>
                   <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
-                      <i class="fas fa-minus"></i></button>
+                    <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#pop-dce-card" title="<@message "collapse"/>">
+                      <i class="fa-solid fa-minus"></i></button>
                   </div>
                 </div>
-                <div class="card-body">
+                <div id="pop-dce-card" class="card-body collapse show">
                   <#if studyTables?? && studyTables?size != 0>
                     <div class="table-responsive">
                       <table class="table table-striped mb-3">
@@ -242,7 +242,7 @@
                               <#if table.population??>
                                 <#assign popId="${table.study.id}-${table.population.id}">
                                 <@populationDialog id=popId population=table.population></@populationDialog>
-                                <a href="#" data-toggle="modal" data-target="#modal-${popId}">
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${popId}">
                                   ${localize(table.population.name)}
                                 </a>
                               </#if>
@@ -251,7 +251,7 @@
                               <#if table.population?? && table.dce??>
                                 <#assign dceId="${table.study.id}-${table.population.id}-${table.dce.id}">
                                 <@dceDialog id=dceId dce=table.dce></@dceDialog>
-                                <a href="#" data-toggle="modal" data-target="#modal-${dceId}">
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${dceId}">
                                   ${localize(table.dce.name)}
                                 </a>
                               </#if>
@@ -268,11 +268,11 @@
                 <div class="card-header">
                   <h3 class="card-title"><@message "initiatives-included"/></h3>
                   <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
-                      <i class="fas fa-minus"></i></button>
+                    <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#initiatives-card" title="<@message "collapse"/>">
+                      <i class="fa-solid fa-minus"></i></button>
                   </div>
                 </div>
-                <div class="card-body">
+                <div id="initiatives-card" class="card-body collapse show">
                   <#if harmonizationTables?? && harmonizationTables?size != 0>
                     <div class="table-responsive">
                       <table class="table table-striped">
@@ -316,8 +316,8 @@
                   <@harmonizationLegend/>
                 </div>
                 <div class="col-lg-4 col-sm-6">
-                  <a href="${contextPath}/ws/harmonized-dataset/${dataset.id}/variables/harmonizations/_export" class="btn btn-primary float-right mb-3">
-                    <i class="fas fa-download"></i> <@message "download"/>
+                  <a href="${contextPath}/ws/harmonized-dataset/${dataset.id}/variables/harmonizations/_export" class="btn btn-primary float-end mb-3">
+                    <i class="fa-solid fa-download"></i> <@message "download"/>
                   </a>
                 </div>
               </div>
@@ -332,12 +332,10 @@
                           <#if localizedStringNotEmpty(table.description)>
                           <a href="javascript:void(0)"
                              id="popover-${table?counter}"
-                             data-html="true"
-                             data-toggle="popover"
-                             data-trigger="hover"
-                             data-placement="top"
-                             data-boundary="viewport"
-                             data-content="${localize(table.description)}"
+                             data-bs-toggle="popover"
+                             data-bs-trigger="hover"
+                             data-bs-placement="top"
+                             data-bs-content="${localize(table.description)}"
                              title="<@message "dataset.harmonized-table" />">
                               <span class="d-inline-block marked"><template>${localize(allStudies[table.studyId].acronym)}</template></span>
                           </a>
@@ -378,10 +376,12 @@
 <#include "libs/scripts.ftl">
 <#include "libs/dataset-scripts.ftl">
 <script>
-  $('#harmonizedTable tr [data-toggle="popover"]').popover({html: true, delay: { show: 250, hide: 750 }});
   document.querySelectorAll("[id^='popover-']").forEach(element => {
-    element.dataset.content=marked.parse(element.dataset.content).replaceAll('"', "'");
-  })
+    const content = element.dataset.bsContent;
+    if (content) {
+      element.dataset.bsContent = marked.parse(content);
+    }
+  });
 
 </script>
 </body>

@@ -6,24 +6,8 @@
         <folder-breadcrumb v-bind:path="path" v-bind:folder="folder" v-bind:tr="tr" v-bind:context-path="contextPath"
                            v-on:select-folder="onSelectFolder"></folder-breadcrumb>
       </div>
-      <div>
-        <table class="table table-sm table-striped">
-          <thead>
-          <tr>
-            <th>#</th>
-            <th><@message "name"/></th>
-            <th><@message "description"/></th>
-            <th><@message "size"/></th>
-            <th><@message "actions"/></th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr is="file-row" v-for="file in folder.children" v-bind:key="file.name"
-              v-bind:file="file" v-bind:tr="tr" v-bind:locale="locale" v-bind:context-path="contextPath"
-              v-on:select-folder="onSelectFolder"></tr>
-          </tbody>
-        </table>
-      </div>
+      <files-table v-bind:folder="folder" v-bind:tr="tr" v-bind:locale="locale" v-bind:context-path="contextPath"
+                   v-on:select-folder="onSelectFolder"></files-table>
     </div>
     <div v-else>
       <span class="text-muted"><@message "no-files"/></span>

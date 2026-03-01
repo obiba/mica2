@@ -1,12 +1,12 @@
 <!-- ChartJS -->
-<script src="${adminLTEPath}/plugins/chart.js/Chart.min.js"></script>
+<script src="${assetsPath}/libs/node_modules/chart.js/dist/chart.umd.js"></script>
 <script src="${assetsPath}/js/mica-charts.js"></script>
 <!-- Select2 -->
-<script src="${adminLTEPath}/plugins/select2/js/select2.js"></script>
-<script src="${adminLTEPath}/plugins/select2/js/i18n/${.lang}.js"></script>
+<script src="${assetsPath}/libs/node_modules/select2/dist/js/select2.full.js"></script>
+<script src="${assetsPath}/libs/node_modules/select2/dist/js/i18n/${.lang}.js"></script>
 
 <!-- Files -->
-<script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>
+<script src="${assetsPath}/libs/node_modules/vue/dist/vue.global.js"></script>
 <script src="${assetsPath}/js/mica-files.js"></script>
 
 <!-- Repository -->
@@ -93,11 +93,7 @@
       topo: data
     });
 
-  // global translate filter for use in imported components
-  Vue.filter("translate", (key) => {
-    let value = Mica.tr[key];
-    return typeof value === "string" ? value : key;
-  });
+  // Note: translate filter converted to component method in Vue 3
 
   class ChartTableTermSorters {
     initialize(taxonomy) {
@@ -265,8 +261,7 @@
         const studyTaxonomy = (responses[0].data||[]).pop();
         chartTableTermSorters.initialize(studyTaxonomy);
 
-        new Vue({
-          el: '#summary-statistics',
+        const app = MicaVueApp.createApp({
           data() {
             return {
               hasGraphicsResult: false,
@@ -275,6 +270,10 @@
             };
           },
           methods: {
+            translate(key) {
+              let value = Mica.tr[key];
+              return typeof value === "string" ? value : key;
+            },
             onGraphicsResult(payload) {
               this.hasGraphicsResult = payload.response.studyResultDto.totalHits > 0;
               if (!this.hasGraphicsResult) {
@@ -305,12 +304,16 @@
             this.onTabClick(0);
           },
           beforeMount() {
-            EventBus.register('query-type-graphics-results', this.onGraphicsResult.bind(this));
+            this._onGraphicsResultHandler = this.onGraphicsResult.bind(this);
+            EventBus.register('query-type-graphics-results', this._onGraphicsResultHandler);
           },
-          beforeDestroy() {
-            EventBus.unregister('query-type-graphics-results', this.onGraphicsResult);
+          beforeUnmount() {
+            EventBus.unregister('query-type-graphics-results', this._onGraphicsResultHandler);
           }
         });
+
+        app.config.compilerOptions.whitespace = 'condense';
+        app.mount('#summary-statistics');
 
         return responses[1].data;
       }))
@@ -364,13 +367,9 @@
         });
       });
       const selectBucketElem = $('#select-bucket');
-      selectBucketElem.select2({
-        theme: 'bootstrap4'
-      }).on('select2:select', function (e) {
-        let data = e.params.data;
-        //console.log(data);
+      selectBucketElem.on('change', function (e) {
         $('#classificationsContainer').hide();
-        renderVariablesClassifications(data.id);
+        renderVariablesClassifications($(this).val());
       });
       buckets.forEach(k => {
         let newOption = new Option(Mica.options[k], k, false, false);
@@ -399,7 +398,7 @@
     return (Object.keys(memberships) || []).map(key => {
       let url = MicaService.normalizeUrl(urlPrefix + key);
       let acronym = memberships[key].acronym;
-      let roles = '<span class="ml-1">(' + (memberships[key].roles || []).join(", ") + ')</span>';
+      let roles = '<span class="ms-1">(' + (memberships[key].roles || []).join(", ") + ')</span>';
 
       return '<a href="' + url + '">' + acronym + '</a>' + roles;
     });
@@ -446,7 +445,9 @@
             data: dataset
           });
 
-          $('#affiliatedMembersModal').modal('handleUpdate');
+          const modalEl = document.getElementById('affiliatedMembersModal');
+          const modal = bootstrap.Modal.getInstance(modalEl);
+          if (modal) modal.handleUpdate();
         }
       }, function(response) {
 
@@ -464,7 +465,11 @@
         tr: {
           "item": "<@message "item"/>",
           "items": "<@message "items"/>",
-          "download": "<@message "download"/>"
+          "download": "<@message "download"/>",
+          "name": "<@message "name"/>",
+          "description": "<@message "description"/>",
+          "size": "<@message "size"/>",
+          "actions": "<@message "actions"/>"
         },
         locale: '${.lang}',
         contextPath: '${contextPath}'

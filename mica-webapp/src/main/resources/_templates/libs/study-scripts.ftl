@@ -3,15 +3,15 @@
 <script src="${contextPath}/bower_components/mica-study-timeline/dist/mica-study-timeline.js"></script>
 
 <!-- ChartJS -->
-<script src="${adminLTEPath}/plugins/chart.js/Chart.min.js"></script>
+<script src="${assetsPath}/libs/node_modules/chart.js/dist/chart.umd.js"></script>
 <script src="${assetsPath}/js/mica-charts.js"></script>
 <script src="${assetsPath}/libs/node_modules/plotly.js-dist-min/plotly.min.js"></script>
 <!-- Select2 -->
-<script src="${adminLTEPath}/plugins/select2/js/select2.js"></script>
-<script src="${adminLTEPath}/plugins/select2/js/i18n/${.lang}.js"></script>
+<script src="${assetsPath}/libs/node_modules/select2/dist/js/select2.full.js"></script>
+<script src="${assetsPath}/libs/node_modules/select2/dist/js/i18n/${.lang}.js"></script>
 
 <!-- Files -->
-<script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>
+<script src="${assetsPath}/libs/node_modules/vue/dist/vue.global.js"></script>
 <script src="${assetsPath}/js/mica-files.js"></script>
 
 <!-- Repository -->
@@ -115,13 +115,9 @@
         });
       });
       const selectBucketElem = $('#select-bucket');
-      selectBucketElem.select2({
-        theme: 'bootstrap4'
-      }).on('select2:select', function (e) {
-        let data = e.params.data;
-        //console.log(data);
+      selectBucketElem.on('change', function (e) {
         $('#classificationsContainer').hide();
-        renderVariablesClassifications(data.id);
+        renderVariablesClassifications($(this).val());
       });
       buckets.forEach(k => {
         let newOption = new Option(Mica.options[k], k, false, false);
@@ -131,10 +127,12 @@
   };
 
   $(function () {
-    let options = dataTablesDefaultOpts;
-    options.columnDefs = [
-      { "type": "num", "targets": 0, "visible": false }
-    ];
+    let options = Object.assign({}, dataTablesDefaultOpts, {
+      autoWidth: false,
+      columnDefs: [
+        { "type": "num", "targets": 0, "visible": false }
+      ]
+    });
     <#list study.populations as pop>
       $("#population-${pop.id}-dces").DataTable(options);
     </#list>
@@ -154,7 +152,11 @@
     const filesTr = {
       "item": "<@message "item"/>",
       "items": "<@message "items"/>",
-      "download": "<@message "download"/>"
+      "download": "<@message "download"/>",
+      "name": "<@message "name"/>",
+      "description": "<@message "description"/>",
+      "size": "<@message "size"/>",
+      "actions": "<@message "actions"/>"
     };
     <#if showStudyFiles>
       makeFilesVue('#study-files-app', {
@@ -208,7 +210,7 @@
 
     <!-- Variables classifications -->
     <#if studyVariablesClassificationsTaxonomies?? && studyVariablesClassificationsTaxonomies?size gt 0>
-      const taxonomies = ['${networkVariablesClassificationsTaxonomies?join("', '")}'];
+      const taxonomies = ['${studyVariablesClassificationsTaxonomies?join("', '")}'];
       $('#classificationsContainer').hide();
       StudyService.getVariablesCoverage('${study.id}', taxonomies, '${.lang}', function(data, vocabulariesColorsMapFunc) {
         if (data && data.charts) {
@@ -242,9 +244,17 @@
         }, 250);
 
         setTimeout(() => {
-          $('a[href="#population-'+populationId+'"]').tab('show');
+          const tabEl = document.querySelector('a[href="#population-'+populationId+'"]');
+          if (tabEl) {
+            const tab = new bootstrap.Tab(tabEl);
+            tab.show();
+          }
           if (dceId) {
-            $('#modal-'+populationId+'-'+dceId).modal();
+            const modalEl = document.getElementById('modal-'+populationId+'-'+dceId);
+            if (modalEl) {
+              const modal = new bootstrap.Modal(modalEl);
+              modal.show();
+            }
           }
         }, 250);
 

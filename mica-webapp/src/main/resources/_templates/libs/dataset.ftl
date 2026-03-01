@@ -60,7 +60,7 @@
 
       <#if dataset.model.prospectiveRetrospective??>
         <dt class="col-sm-3">
-            <@message "harmonization-protocol.prospective-retrospective.title"/> <i class="fas fa-info-circle" title="Add text"></i>
+            <@message "harmonization-protocol.prospective-retrospective.title"/> <i class="fa-solid fa-info-circle" title="Add text"></i>
         </dt>
         <dd class="col-sm-9">
             <@message "harmonization-protocol.prospective-retrospective.enum." + dataset.model.prospectiveRetrospective/>
@@ -69,7 +69,7 @@
 
       <#if dataset.model.qualitativeQuantitative??>
         <dt class="col-sm-3">
-            <@message "harmonization-protocol.qualitative-quantitative.title"/> <i class="fas fa-info-circle" title="Add text"></i>
+            <@message "harmonization-protocol.qualitative-quantitative.title"/> <i class="fa-solid fa-info-circle" title="Add text"></i>
         </dt>
         <dd class="col-sm-9">
             <@message "harmonization-protocol.qualitative-quantitative.enum." + dataset.model.qualitativeQuantitative/>

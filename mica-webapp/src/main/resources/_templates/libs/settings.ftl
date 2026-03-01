@@ -26,10 +26,28 @@
 <#assign brandImageSrc = "${assetsPath}/images/mica-logo.png"/>
 <#assign brandImageClass = "img-circle elevation-3"/>
 <#assign brandTextEnabled = true/>
-<#assign brandTextClass = "font-weight-light"/>
+<#assign brandTextClass = "fw-light"/>
 
 <!-- Theme -->
 <#assign adminLTEPath = "${assetsPath}/libs/node_modules/admin-lte"/>
+
+<!-- Library paths (AdminLTE 4 no longer bundles plugins) -->
+<#assign bootstrapPath = "${assetsPath}/libs/node_modules/bootstrap"/>
+<#assign fontAwesomePath = "${assetsPath}/libs/node_modules/@fortawesome/fontawesome-free"/>
+<#assign jQueryPath = "${assetsPath}/libs/node_modules/jquery"/>
+<#assign popperPath = "${assetsPath}/libs/node_modules/@popperjs/core"/>
+<#assign momentPath = "${assetsPath}/libs/node_modules/moment"/>
+<#assign datatablesPath = "${assetsPath}/libs/node_modules/datatables.net"/>
+<#assign datatablesBS5Path = "${assetsPath}/libs/node_modules/datatables.net-bs5"/>
+<#assign datatablesButtonsPath = "${assetsPath}/libs/node_modules/datatables.net-buttons"/>
+<#assign datatablesButtonsBS5Path = "${assetsPath}/libs/node_modules/datatables.net-buttons-bs5"/>
+<#assign datatablesSelectPath = "${assetsPath}/libs/node_modules/datatables.net-select"/>
+<#assign datatablesSelectBS5Path = "${assetsPath}/libs/node_modules/datatables.net-select-bs5"/>
+<#assign datatablesFixedHeaderPath = "${assetsPath}/libs/node_modules/datatables.net-fixedheader"/>
+<#assign datatablesFixedHeaderBS5Path = "${assetsPath}/libs/node_modules/datatables.net-fixedheader-bs5"/>
+<#assign select2Path = "${assetsPath}/libs/node_modules/select2"/>
+<#assign select2BS5ThemePath = "${assetsPath}/libs/node_modules/select2-bootstrap-5-theme"/>
+<#assign toastrPath = "${assetsPath}/libs/node_modules/toastr"/>
 
 <!-- Home page settings -->
 <#assign networksLink = "${contextPath}/networks"/>

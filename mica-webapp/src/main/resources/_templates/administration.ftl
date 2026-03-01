@@ -5,14 +5,14 @@
   <title>${config.name!""} | <@message "administration"/></title>
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed">
-<div class="wrapper">
+<div class="app-wrapper d-flex flex-column min-vh-100">
 
   <!-- Navbar -->
   <#include "libs/top-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
+ <div class="app-main flex-fill">
     <!-- Content Header (Page header) -->
     <div class="content-header bg-info mb-4">
       <div class="container">
@@ -36,31 +36,31 @@
         <div class="row">
 
           <div class="col-sm-12 col-lg-6">
-            <div class="small-box bg-info">
-              <div class="inner">
+            <div class="small-box bg-info text-white position-relative">
+              <div class="inner z-1">
                 <h3><@message "content-administration"/></h3>
                 <p><@message "admin-content"/></p>
               </div>
-              <div class="icon">
-                <i class="fas fa-cogs"></i>
+              <div class="icon position-absolute top-0 end-0 pt-2 pe-3 opacity-25">
+                <i class="fa-solid fa-gears fa-5x"></i>
               </div>
               <a href="${contextPath}/admin" class="small-box-footer">
-                <@message "more-info"/> <i class="fas fa-arrow-circle-right"></i>
+                <@message "more-info"/> <i class="fa-solid fa-arrow-circle-right"></i>
               </a>
             </div>
           </div>
           <div class="col-sm-12 col-lg-6">
             <#if isAdministrator || isReviewer || isEditor>
-              <div class="small-box bg-warning">
-                <div class="inner">
+              <div class="small-box bg-warning position-relative">
+                <div class="inner z-1">
                   <h3><@message "users-administration"/></h3>
                   <p><@message "admin-users"/></p>
                 </div>
-                <div class="icon">
-                  <i class="fas fa-users"></i>
+                <div class="icon position-absolute top-0 end-0 pt-2 pe-3 opacity-25">
+                  <i class="fa-solid fa-users fa-5x"></i>
                 </div>
                 <a href="${agateUrl}/admin" class="small-box-footer">
-                  <@message "more-info"/> <i class="fas fa-arrow-circle-right"></i>
+                  <@message "more-info"/> <i class="fa-solid fa-arrow-circle-right"></i>
                 </a>
               </div>
             </#if>

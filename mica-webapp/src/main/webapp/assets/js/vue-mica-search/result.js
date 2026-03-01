@@ -1,27 +1,30 @@
-// an EventBus is a Vue app without element
-// its data are callback functions, registered by event name
-const EventBus = new Vue({
-  data: {
-    callbacks: {}
+// EventBus: plain JS event emitter (replaces Vue 2 instance-based bus, $on/$emit removed in Vue 3)
+const EventBus = {
+  _callbacks: {},
+  register(eventName, callback) {
+    if (!this._callbacks[eventName]) {
+      this._callbacks[eventName] = [];
+    }
+    this._callbacks[eventName].push(callback);
   },
-  methods: {
-    register: function (eventName, callback) {
-      if (!this.callbacks[eventName]) {
-        this.callbacks[eventName] = [];
-        this.$on(eventName, function (payload) {
-          for (let callback of this.callbacks[eventName]) {
-            callback(payload);
-          }
-        });
+  unregister(eventName, callback) {
+    if (callback) {
+      // remove specific callback
+      const cbs = this._callbacks[eventName];
+      if (cbs) this._callbacks[eventName] = cbs.filter(cb => cb !== callback);
+    } else {
+      this._callbacks[eventName] = undefined;
+    }
+  },
+  $emit(eventName, payload) {
+    const cbs = this._callbacks[eventName];
+    if (cbs) {
+      for (const cb of cbs) {
+        cb(payload);
       }
-      this.callbacks[eventName].push(callback);
-      //console.dir(this.callbacks)
-    },
-    unregister: function (eventName) {
-      this.callbacks[eventName] = undefined;
     }
   }
-});
+};
 
 const COVERAGE_PAGE_SIZE = 48;
 const ROW_POPUP_MARGIN = 15;
@@ -30,9 +33,10 @@ const DataTableDefaults = {
   searching: false,
   ordering: false,
   destroy: true,
+  autoWidth: false,
   lengthMenu: [10, 20, 50, 100],
   pageLength: 20,
-  dom: "<<'toolbar d-inline-block'><'float-right'<'d-inline-block pr-2'l><'d-inline-block'p>>> <''<'table-responsive 'tr> > <<'float-right'<'d-inline-block pr-2'l><'d-inline-block'p>>>",
+  dom: "<<'toolbar d-inline-block'><'float-end'<'d-inline-block pe-2'l><'d-inline-block'p>>> <''<'table-responsive 'tr> > <<'float-end'<'d-inline-block pe-2'l><'d-inline-block'p>>>",
   preDrawCallback: function (settings) {
     const api = new $.fn.dataTable.Api(settings);
     const data  = api.data();
@@ -239,7 +243,7 @@ const EntityResult = {
     this.getEventBus().register(`${this.type}-results`,this.onResults.bind(this));
     this.getEventBus().register("clear-results-selections", this.clearSelections.bind(this));
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.dataTable = null;
     this.getEventBus().unregister(`${this.type}-results`, this.onResults);
     this.getEventBus().unregister("clear-results-selections", this.clearSelections);
@@ -250,15 +254,15 @@ const GraphicResult = {
   template: `
   <div v-bind:id="cardId" class="card card-primary card-outline">
     <div v-if="!hideHeader" class="card-header">
-      <h3 class="card-title">{{chartDataset.options.title | translate}}</h3>
-      <div class="card-tools float-right">
-        <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" v-bind:title="'collapse' | translate">
+      <h3 class="card-title">{{translate(chartDataset.options.title)}}</h3>
+      <div class="card-tools float-end">
+        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" :data-bs-target="'#' + cardId + '-card'"  title="tooltip" v-bind:title="translate('collapse')">
           <i class="fas fa-minus"></i>
         </button>
         </div>
     </div>
-    <div class="card-body" style="min-height: 24em">
-      <p class="text-muted">{{chartDataset.options.text | translate}}</p>
+    <div :id="cardId + '-card'" class="card-body collapse show" style="min-height: 24em">
+      <p class="text-muted">{{translate(chartDataset.options.text)}}</p>
       <div v-bind:id="containerId" class="row">
         <div v-bind:id="chartContainerId" class="col-sm-12 col-xl-6 my-auto"></div>
 
@@ -268,7 +272,7 @@ const GraphicResult = {
               <tr class="row" v-on:click.prevent="resetSort()">
                 <th class="col" v-for="(col, index) in chartDataset.tableData.cols" v-bind:key="index">
                   <span>{{ col }}</span>
-                  <button v-if="chartDataset.options.withSort" v-on:click.stop="toggleSortColumn(index)" type="button" class="btn btn-xs ml-1"><i :class="'fas fa-' + sortClass(index)"></i></button>
+                  <button v-if="chartDataset.options.withSort" v-on:click.stop="toggleSortColumn(index)" type="button" class="btn btn-sm ms-1 p-0 lh-1"><i :class="'fas fa-' + sortClass(index)"></i></button>
                 </th>
               </tr>
             </thead>
@@ -278,12 +282,12 @@ const GraphicResult = {
 
                   <td class="col" v-bind:title="totals ? (100 * row.count/totals.countTotal).toFixed(2) + '%' : ''" v-if="row.count > 0">
                     <a href="" v-on:click="onCountClick($event, row.vocabulary, row.key, row.queryOverride)" class="query-anchor">{{row.count}}</a>
-                    <small class="ml-1 d-inline-block" style="width: 4rem;" v-if="chartDataset.options.withTotals && chartDataset.options.withPercentages">({{totals ? (100 * row.count/totals.countTotal).toFixed(2) + '%' : ''}})</small>
+                    <small class="ms-1 d-inline-block" style="width: 4rem;" v-if="chartDataset.options.withTotals && chartDataset.options.withPercentages">({{totals ? (100 * row.count/totals.countTotal).toFixed(2) + '%' : ''}})</small>
                   </td>
 
                   <td class="col" v-bind:title="totals ? (0).toFixed(2) + '%' : ''" v-if="row.count === 0">
                     <span class="text-muted">{{row.count}}</span>
-                    <small v-if="chartDataset.options.withTotals && chartDataset.options.withPercentages" class="ml-1 text-muted d-inline-block" style="width: 4rem;">({{totals ? (0).toFixed(2) + '%' : ''}})</small>
+                    <small v-if="chartDataset.options.withTotals && chartDataset.options.withPercentages" class="ms-1 text-muted d-inline-block" style="width: 4rem;">({{totals ? (0).toFixed(2) + '%' : ''}})</small>
                   </td>
 
                   <td class="col" v-bind:title="totals ? (100 * row.subAgg/totals.subAggTotal).toFixed(2) + '%' : ''" v-if="row.subAgg !== undefined">
@@ -293,10 +297,10 @@ const GraphicResult = {
             </tbody>
             <tfoot v-if="totals">
               <tr class="row">
-                  <th class="col">{{ 'graphics.total' | translate }}</th>
+                  <th class="col">{{ translate('graphics.total') }}</th>
                   <th class="col">
                     <span>{{totals.countTotal.toLocaleString()}}</span>
-                    <small class="ml-1 d-inline-block" style="width: 4rem;" v-if="chartDataset.options.withTotals && chartDataset.options.withPercentages">({{(100).toFixed(2) + '%'}})</small>
+                    <small class="ms-1 d-inline-block" style="width: 4rem;" v-if="chartDataset.options.withTotals && chartDataset.options.withPercentages">({{(100).toFixed(2) + '%'}})</small>
                   </th>
                   <th class="col" v-if="totals.subAggTotal !== undefined">{{totals.subAggTotal.toLocaleString()}}</th>
                 </tr>
@@ -332,7 +336,21 @@ const GraphicResult = {
   },
   computed: {
     rows() {
-      return this.chartDataset.tableData.rows.map(r => r);
+      const source = this.chartDataset.tableData.rows;
+      if (this.sort.index == null) return source;
+
+      const sortFields = ['title', 'count', 'subAgg'];
+      const field = sortFields[this.sort.index];
+      const multiplier = this.sort.direction === 'up' ? -1 : 1;
+
+      return source.slice().sort((rowA, rowB) => {
+        const a = rowA[field];
+        const b = rowB[field];
+        if (typeof a === 'number' || typeof b === 'number') {
+          return (a - b) * multiplier;
+        }
+        return a.toString().localeCompare(b.toString()) * multiplier;
+      });
     },
     totals() {
       let totals = this.chartDataset.options.withTotals ? {countTotal: 0, subAggTotal: 0} : null;
@@ -373,8 +391,6 @@ const GraphicResult = {
     resetSort() {
       this.sort.index = null;
       this.sort.direction = null;
-
-      this.rows = this.chartDataset.tableData.rows.map(r => r);
     },
     sortClass(index) {
       if (this.sort.index !== index) {
@@ -394,35 +410,37 @@ const GraphicResult = {
       if (goDown) {
         this.sort.direction = 'down';
       }
-
-      const sortFields = ['title', 'count', 'subAgg'];
-
-      this.rows.sort((rowA, rowB) => {
-        let multiplier = 1;
-
-        if (this.sort.direction === 'up') {
-          multiplier = -1;
-        }
-
-        const a = rowA[sortFields[this.sort.index]];
-        const b = rowB[sortFields[this.sort.index]];
-
-        if (typeof a === 'number' || typeof b === 'number') {
-          return (a - b) * multiplier;
-        } else {
-          return a.toString().localeCompare(b.toString()) * multiplier;
-        }
-      });
     }
   },
   mounted() {
-    this.renderCanvas();
-
     if (this.chartDataset.options.initialSortIndex !== undefined) {
       this.toggleSortColumn(this.chartDataset.options.initialSortIndex, this.chartDataset.options.initialSortDirection === 'down');
     }
+
+    const el = document.getElementById(this.chartContainerId);
+
+    if (el && window.ResizeObserver) {
+      this._resizeObserver = new ResizeObserver((entries) => {
+        const width = entries[0].contentRect.width;
+        if (width === 0) return;
+        if (!this._rendered) {
+          this._rendered = true;
+          this.renderCanvas();
+        } else {
+          if (this._rafId) cancelAnimationFrame(this._rafId);
+          this._rafId = requestAnimationFrame(() => Plotly.Plots.resize(el));
+        }
+      });
+      this._resizeObserver.observe(el);
+    } else {
+      this.renderCanvas();
+    }
   },
-   watch: {
+  beforeUnmount() {
+    if (this._resizeObserver) this._resizeObserver.disconnect();
+    if (this._rafId) cancelAnimationFrame(this._rafId);
+  },
+  watch: {
     chartDataset(val) {
       if (val) this.renderCanvas();
     }
@@ -484,7 +502,7 @@ const GraphicsResult = {
     console.debug(`Prop ${this.options} AGGS ${this.aggs}`);
     this.getEventBus().register('query-type-graphics-results',this.onResults.bind(this));
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.getEventBus().unregister('query-type-graphics-results', this.onResults);
   }
 };
@@ -492,14 +510,13 @@ const GraphicsResult = {
 const VariablesResult = {
   template: `
   <div>
-    <div class="row" v-show="showResult">
-      <div class="col">
+    <div class="table-responsive" v-show="showResult">
         <table id="vosr-variables-result" class="table table-striped" width="100%">
           <thead>
             <tr>
               <th v-if="showCheckboxes"><i class="far fa-square"></i></th>
-              <th class="column-name">{{ "name" | translate }}</th>
-              <th v-for="(column, index) in variableColumnNames" :key="index" :class="'column-'+ column" >{{ column | translate }}</th>
+              <th class="column-name">{{ translate("name") }}</th>
+              <th v-for="(column, index) in variableColumnNames" :key="index" :class="'column-'+ column" >{{ translate(column) }}</th>
             </tr>
           </thead>
           <tbody>
@@ -508,7 +525,6 @@ const VariablesResult = {
             </tr>
           </tbody>
         </table>
-      </div>
     </div>
   </div>
   `,
@@ -551,25 +567,24 @@ const VariablesResult = {
 const StudiesResult = {
   template: `
   <div>
-    <div class="row" v-show="showResult">
-      <div class="col">
+    <div class="table-responsive" v-show="showResult">
         <table id="vosr-studies-result" class="table table-striped" width="100%">
           <thead>
             <tr>
               <th v-if="showCheckboxes" rowspan="2"><i class="far fa-square"></i></th>
-              <th class="column-acronym" rowspan="2">{{ "acronym"  | translate }}</th>
+              <th class="column-acronym" rowspan="2">{{ translate("acronym") }}</th>
               <th v-for="(item, index) in studyColumnItems" :key="index"
                 :class="'column-'+ item.name"
                 :rowspan="item.rowspan"
                 :colspan="item.colspan">
-                {{ item.name | translate }}
+                {{ translate(item.name) }}
               </th>
             </tr>
             <tr>
-              <th v-for="(item, index) in studyColumnItems2" :key="index" :class="'column-'+ item.name" :title="item.title | taxonomy-title">
+              <th v-for="(item, index) in studyColumnItems2" :key="index" :class="'column-'+ item.name" :title="taxonomyTitle(item.title)">
               <span>
                 <i v-if="item.icon" :class="item.icon"></i>
-                {{ item.name | translate }}
+                {{ translate(item.name) }}
               </span>
               </th>
             </tr>
@@ -580,7 +595,6 @@ const StudiesResult = {
             </tr>
           </tbody>
         </table>
-      </div>
     </div>
   </div>
   `,
@@ -705,8 +719,8 @@ const StudiesResult = {
       console.debug('Study onAnchorClicked');
       event.preventDefault();
       const anchor = $(event.target);
-      const target = anchor.attr('data-target');
-      const targetId = anchor.attr('data-target-id');
+      const target = anchor.attr('data-bs-target');
+      const targetId = anchor.attr('data-bs-target-id');
       const type = anchor.attr('data-type');
       const studyType = anchor.attr('data-study-type');
 
@@ -728,32 +742,31 @@ const StudiesResult = {
 const NetworksResult = {
   template: `
   <div>
-    <div class="row" v-show="showResult">
-      <div class="col">
+    <div class="table-responsive" v-show="showResult">
         <table id="vosr-networks-result" class="table table-striped" width="100%">
           <thead v-if="withCollectedDatasets && withHarmonizedDatasets">
             <tr>
               <th v-if="showCheckboxes" rowspan="2"><i class="far fa-square"></i></th>
-              <th class="column-acronym" rowspan="2">{{ "acronym" | translate }}</th>
+              <th class="column-acronym" rowspan="2">{{ translate("acronym") }}</th>
               <th v-for="(item, index) in networkColumnItems" :key="index"
                 :class="'column-' + item.name"
                 :rowspan="item.rowspan"
                 :colspan="item.colspan">
-                {{ item.name | translate }}
+                {{ translate(item.name) }}
               </th>
             </tr>
             <tr v-if="withCollectedDatasets || withHarmonizedDatasets">
               <th v-for="(item, index) in networkColumnItems2" :key="index" :class="'column-' + item.name">
-                {{ item.name | translate }}
+                {{ translate(item.name) }}
               </th>
             </tr>
           </thead>
           <thead v-else>
             <tr>
               <th v-if="showCheckboxes"><i class="far fa-square"></i></th>
-              <th>{{ "acronym" | translate }}</th>
+              <th>{{ translate("acronym") }}</th>
               <th v-for="(item, index) in networkColumnItems" :key="index" :class="'column-' + item.name">
-                {{ item.name | translate }}
+                {{ translate(item.name) }}
               </th>
             </tr>
           </thead>
@@ -763,7 +776,6 @@ const NetworksResult = {
             </tr>
           </tbody>
         </table>
-      </div>
     </div>
   </div>
   `,
@@ -862,8 +874,8 @@ const NetworksResult = {
       console.debug('Network onAnchorClicked');
       event.preventDefault();
       const anchor = $(event.target);
-      const target = anchor.attr('data-target');
-      const targetId = anchor.attr('data-target-id');
+      const target = anchor.attr('data-bs-target');
+      const targetId = anchor.attr('data-bs-target-id');
       const type = anchor.attr('data-type');
       const studyType = anchor.attr('data-study-type');
 
@@ -885,13 +897,12 @@ const NetworksResult = {
 const DatasetsResult = {
   template: `
   <div>
-    <div class="row" v-show="showResult">
-      <div class="col">
+    <div class="table-responsive" v-show="showResult">
         <table id="vosr-datasets-result" class="table table-striped" width="100%">
           <thead>
             <tr>
-              <th class="column-acronym" >{{ "acronym" | translate }}</th>
-              <th v-for="(column, index) in datasetColumnNames" :key="index" :class="'column-' + column">{{ column | translate }}</th>
+              <th class="column-acronym" >{{ translate("acronym") }}</th>
+              <th v-for="(column, index) in datasetColumnNames" :key="index" :class="'column-' + column">{{ translate(column) }}</th>
             </tr>
           </thead>
           <tbody>
@@ -900,7 +911,6 @@ const DatasetsResult = {
             </tr>
           </tbody>
         </table>
-      </div>
     </div>
   </div>
   `,
@@ -946,16 +956,16 @@ const DatasetsResult = {
      onAnchorClicked(event) {
       event.preventDefault();
       const anchor = $(event.target);
-      const query = new RQL.Query('in', ['Mica_dataset.id', `${anchor.attr('data-target-id')}`]);
+      const query = new RQL.Query('in', ['Mica_dataset.id', `${anchor.attr('data-bs-target-id')}`]);
       this.getEventBus().$emit(
         'query-type-update',
         {
           type: `${anchor.attr('data-type')}`,
-          target: `${anchor.attr('data-target')}`,
+          target: `${anchor.attr('data-bs-target')}`,
           query
         });
 
-      console.debug(`${anchor.attr('data-target')} - ${anchor.attr('data-target-id')}`);
+      console.debug(`${anchor.attr('data-bs-target')} - ${anchor.attr('data-bs-target-id')}`);
     }
   },
   mounted() {
@@ -996,12 +1006,16 @@ const RowPopup = {
   <div v-show="visible === true" class="coverage-row-popup" id="row-popup">
     <div class="coverage-row-popup-content">
         <table class="table table-striped table-condensed p-0 m-0">
-          <tr>
-            <th v-for="(value, index) in headers" v-bind:key="index">{{value}}</th>
-          </tr>
-          <tr>
-            <td v-for="(value, index) in content" v-bind:key="index">{{value}}</td>
-          </tr>
+          <thead>
+            <tr>
+              <th v-for="(value, index) in headers" v-bind:key="index">{{value}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td v-for="(value, index) in content" v-bind:key="index">{{value}}</td>
+            </tr>
+          </tbody>
         </table>
     </div>
   </div>
@@ -1030,7 +1044,7 @@ const RowPopup = {
     this.scrollHandler = this.onScroll.bind(this);
     this.mouseMoveHandler = this.onMouseMove.bind(this);
 
-    const translate = (key) => Vue.filter('translate')(key);
+    const translate = (key) => MicaFilters.translate(key);
 
     this.headersMap = {
       dceId: [
@@ -1051,7 +1065,7 @@ const RowPopup = {
       this.content = this.typeSelection && this.typeSelection.harmonization ? [content[0]] : content;
       this.headers = this.typeSelection && this.typeSelection.harmonization ? this.headersMap['harmonization'] : this.headersMap[model.field].slice(0);
     },
-    beforeDestroy() {
+    beforeUnmount() {
       clearTimeout(this.timeoutId);
       this.container.removeEventListener("scroll", this.scrollHandler);
       window.removeEventListener("mousemove", this.mouseMoveHandler);
@@ -1103,12 +1117,12 @@ const CoverageResult = {
             <thead>
               <tr>
                 <th v-bind:rowspan="bucketStartsWithDce ? 1 : 2" v-bind:colspan="studyTypeSelection && studyTypeSelection.harmonization ? 3 : table.cols.colSpan">
-                  <span v-if="!studyTypeSelection || !studyTypeSelection.harmonization">{{ (bucketName === 'dce' ? '' : ('coverage-buckets-' + bucketName)) | translate}}</span>
-                  <span v-else>{{ 'coverage-buckets-harmonization' | translate}}</span>
+                  <span v-if="!studyTypeSelection || !studyTypeSelection.harmonization">{{ translate(bucketName === 'dce' ? '' : ('coverage-buckets-' + bucketName))}}</span>
+                  <span v-else>{{ translate('coverage-buckets-harmonization')}}</span>
                 </th>
                 <th v-for="(header, index) in table.vocabularyHeaders" v-bind:key="index" v-bind:colspan="header.termsCount">
                   <!-- TODO popover -->
-                  <span>{{ header.entity.titles | localize-string }} </span>
+                  <span>{{ localizeString(header.entity.titles) }} </span>
                   <small>
                     <a href v-on:click="removeVocabulary($event, header)">
                       <i class="fa fa-times"></i>
@@ -1117,13 +1131,13 @@ const CoverageResult = {
                 </th>
               </tr>
               <tr>
-                <th v-if="bucketStartsWithDce" v-bind:colspan="studyTypeSelection && studyTypeSelection.harmonization ? 3 : 1">{{ (studyTypeSelection && studyTypeSelection.harmonization ? "coverage-buckets-harmonization" : "study") | translate }}</th>
-                <th v-if="bucketStartsWithDce" v-show="!studyTypeSelection.harmonization">{{ "population" | translate }}</th>
-                <th v-if="bucketStartsWithDce" v-show="!studyTypeSelection.harmonization">{{ "data-collection-event" | translate }}</th>
+                <th v-if="bucketStartsWithDce" v-bind:colspan="studyTypeSelection && studyTypeSelection.harmonization ? 3 : 1">{{ translate(studyTypeSelection && studyTypeSelection.harmonization ? "coverage-buckets-harmonization" : "study") }}</th>
+                <th v-if="bucketStartsWithDce" v-show="!studyTypeSelection.harmonization">{{ translate("population") }}</th>
+                <th v-if="bucketStartsWithDce" v-show="!studyTypeSelection.harmonization">{{ translate("data-collection-event") }}</th>
 
                 <th v-for="(header, index) in table.termHeaders" v-bind:key="index">
                   <!-- TODO popover -->
-                  <span>{{ header.entity.titles | localize-string }} </span>
+                  <span>{{ localizeString(header.entity.titles) }} </span>
                   <small>
                     <a ng-if="header.canRemove" href v-on:click="removeTerm($event, header)">
                       <i class="fa fa-times"></i>
@@ -1133,7 +1147,7 @@ const CoverageResult = {
               </tr>
               <tr>
                 <th v-bind:colspan="studyTypeSelection && studyTypeSelection.harmonization ? 3 : table.cols.colSpan"></th>
-                <th v-for="(header, index) in table.termHeaders" v-bind:key="index" v-bind:title="header.entity.descriptions | localize-string">
+                <th v-for="(header, index) in table.termHeaders" v-bind:key="index" v-bind:title="localizeString(header.entity.descriptions)">
                   <a href v-on:click="updateQuery($event, null, header, 'variables')">
                     <span>{{header.hits.toLocaleString()}}</span>
                   </a>
@@ -1163,10 +1177,10 @@ const CoverageResult = {
                   <div style="text-align: center" v-show="col.start && bucketStartsWithDce">
                     <div>
                       <small class="help-block no-margin" v-show="col.end">
-                        {{col.start}} {{'to' | translate }} {{col.end}}
+                        {{col.start}} {{translate('to') }} {{col.end}}
                       </small>
                       <small class="help-block no-margin" v-show="!col.end">
-                        {{col.start}}, {{'coverage-end-date-ongoing' | translate}}
+                        {{col.start}}, {{translate('coverage-end-date-ongoing')}}
                       </small>
                     </div>
                     <div class="progress no-margin" style="height: 0.5em">
@@ -1182,7 +1196,7 @@ const CoverageResult = {
 
                 <td v-for="(h, hindex) in table.termHeaders" v-bind:key="'h'+hindex">
                   <a href="" v-on:click="updateQuery($event, row.value, h, 'variables')">
-                    <span class="badge badge-primary" v-show="row.hitsTitles[hindex]">{{row.hitsTitles[hindex]}}</span>
+                    <span class="badge text-bg-primary" v-show="row.hitsTitles[hindex]">{{row.hitsTitles[hindex]}}</span>
                   </a>
                   <span v-show="!row.hitsTitles[hindex]">0</span>
                 </td>
@@ -1240,7 +1254,7 @@ const CoverageResult = {
       const dTable = $('#' + tableId).DataTable(mergedOptions);
       dTable.on('draw.dt', function() {
         // bs tooltip
-        $('[data-toggle="tooltip"]').tooltip();
+        $('[data-bs-toggle="tooltip"]').tooltip();
       });
 
       // checkboxes only for variables
@@ -1350,15 +1364,15 @@ const CoverageResult = {
     console.debug('Mounted CoverageResult');
     this.getEventBus().register('coverage-results',this.onResults.bind(this));
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.dataTable = null;
     this.getEventBus().unregister('coverage-results', this.onResults);
   }
 }
 
-Vue.component(GraphicsResult.name, GraphicsResult);
-Vue.component(VariablesResult.name, VariablesResult);
-Vue.component(StudiesResult.name, StudiesResult);
-Vue.component(NetworksResult.name, NetworksResult);
-Vue.component(DatasetsResult.name, DatasetsResult);
-Vue.component(CoverageResult.name, CoverageResult);
+MicaVueApp.component(GraphicsResult.name, GraphicsResult);
+MicaVueApp.component(VariablesResult.name, VariablesResult);
+MicaVueApp.component(StudiesResult.name, StudiesResult);
+MicaVueApp.component(NetworksResult.name, NetworksResult);
+MicaVueApp.component(DatasetsResult.name, DatasetsResult);
+MicaVueApp.component(CoverageResult.name, CoverageResult);

@@ -26,7 +26,7 @@ const makeSummary = function(summaryStatisticsAccessPolicy, showHarmonizedVariab
         });
       }
       selectStudy.select2({
-        theme: 'bootstrap4'
+        theme: 'bootstrap-5'
       }).on('select2:select', function (e) {
         let selId = e.params.data.id;
         //console.log(sel);
@@ -65,7 +65,7 @@ const makeSummary = function(summaryStatisticsAccessPolicy, showHarmonizedVariab
       });
 
       if (frequencyChartElem.length) {
-        Plotly.newPlot("frequencyChart", chartData, null, {responsive: true});
+        Plotly.newPlot("frequencyChart", chartData, {showlegend: true}, {responsive: true});
         frequencyChartElem.show();
       }
 
@@ -192,12 +192,12 @@ const makeHarmonizedVariablesTable = function() {
           colName =
             '<a href="javascript:void(0)" ' +
             'data-html="true" ' +
-            'data-toggle="popover" ' +
+            'data-bs-toggle="popover" ' +
             'data-trigger="hover" ' +
-            'data-placement="top" ' +
+            'data-bs-placement="top" ' +
             'data-boundary="viewport" ' +
             'title="'+ Mica.tr['dataset.harmonized-table'] + '"' +
-            'data-content="' + description.replaceAll('"', "'") + '">' + title + '</a>';
+            'data-bs-content="' + description.replaceAll('"', "'") + '">' + title + '</a>';
         }
 
         return colName;
@@ -229,7 +229,11 @@ const makeHarmonizedVariablesTable = function() {
           '</tr>')
       }
       $('#harmonizedVariables').show();
-      $('[data-toggle="popover"]').popover({delay: { show: 250, hide: 750 }});
+      document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
+        new bootstrap.Popover(el, {
+          delay: { show: 250, hide: 750 }
+        });
+      });
     } else {
       $('#noHarmonizedVariables').show();
     }

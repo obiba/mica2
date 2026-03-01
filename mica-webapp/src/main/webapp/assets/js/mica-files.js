@@ -1,6 +1,6 @@
 'use strict';
 
-Vue.component('folder-breadcrumb', {
+const FolderBreadcrumbComponent = {
   props: {
     path: String,   // relative path
     folder: Object, // current folder
@@ -39,7 +39,7 @@ Vue.component('folder-breadcrumb', {
   },
   template:
     '<div>' +
-    '<ol class="breadcrumb breadcrumb-sm float-left">' +
+    '<ol class="breadcrumb breadcrumb-sm float-start">' +
     '<li v-if="isRoot" class="breadcrumb-item active"><i class="fas fa-home"></i></li>' +
     '<li v-else class="breadcrumb-item"><a href="javascript:void(0)" v-on:click="$emit(\'select-folder\', \'/\')"><i class="fas fa-home"></i></a></li>' +
     '<li v-for="segment in segments" v-bind:class="segment.class">' +
@@ -47,11 +47,12 @@ Vue.component('folder-breadcrumb', {
     '  <span v-else>{{ segment.token }}</span>' +
     '</li>' +
     '</ol>' +
-    '<a :href="contextPath + \'/ws/file-dl\' + folder.path" class="btn btn-sm btn-info float-right"><i class="fa fa-download"></i> {{ tr.download }}</a>' +
+    '<a :href="contextPath + \'/ws/file-dl\' + folder.path" class="btn btn-sm btn-info float-end"><i class="fa fa-download"></i> {{ tr.download }}</a>' +
     '</div>'
-});
+};
 
-Vue.component('file-row', {
+const FileRowComponent = {
+  emits: ['select-folder'],
   data: function() {
     return {
       textMaxLength: 100
@@ -114,7 +115,7 @@ Vue.component('file-row', {
   },
   template: '<tr>' +
     '<td><i v-bind:class="iconClass"></i></td>' +
-    '<td v-if="isFile">{{ file.name }} <span class="badge badge-info" v-if="hasMediaType">{{ file.mediaType }}</span></td>' +
+    '<td v-if="isFile">{{ file.name }} <span class="badge text-bg-info" v-if="hasMediaType">{{ file.mediaType }}</span></td>' +
     '<td v-else>' +
     '  <a v-if="file.size>0" href="javascript:void(0)" v-on:click="$emit(\'select-folder\', file.path)">{{ file.name }}</a>' +
     '  <span v-else>{{ file.name }}</span></td>' +
@@ -122,12 +123,44 @@ Vue.component('file-row', {
     '<td>{{ sizeLabel }}</td>' +
     '<td><a v-if="file.size>0" download :href="contextPath + \'/ws/file-dl\' + file.path"><i class="fa fa-download"></i></a></td>' +
     '</tr>'
-});
+};
+
+const FilesTableComponent = {
+  emits: ['select-folder'],
+  props: {
+    folder: Object,
+    tr: Object,
+    locale: String,
+    contextPath: String
+  },
+  components: {
+    'file-row': FileRowComponent
+  },
+  template:
+    '<div>' +
+    '<table class="table table-sm table-striped">' +
+    '<thead><tr>' +
+    '<th>#</th><th>{{ tr.name }}</th><th>{{ tr.description }}</th><th>{{ tr.size }}</th><th>{{ tr.actions }}</th>' +
+    '</tr></thead>' +
+    '<tbody>' +
+    '<file-row v-for="file in folder.children" v-bind:key="file.name"' +
+    '  v-bind:file="file" v-bind:tr="tr" v-bind:locale="locale" v-bind:context-path="contextPath"' +
+    '  v-on:select-folder="$emit(\'select-folder\', $event)">' +
+    '</file-row>' +
+    '</tbody>' +
+    '</table>' +
+    '</div>'
+};
 
 const makeFilesVue = function(el, data, childrenFilter) {
-  const vm = new Vue({
-    el: el,
-    data: data,
+  const app = MicaVueApp.createApp({
+    data() {
+      return data;
+    },
+    components: {
+      'folder-breadcrumb': FolderBreadcrumbComponent,
+      'files-table': FilesTableComponent
+    },
     computed: {
       rawFolder: {
         get: function() { return this.folder; },
@@ -148,7 +181,6 @@ const makeFilesVue = function(el, data, childrenFilter) {
         const relativePath = folderPath === '/' ?
           this.basePath :
           (folderPath.replace('/' + this.type + '/' + this.id, ''));
-        //console.log(relativePath);
         const that = this;
         FilesService.getFolder(this.type, this.id, relativePath, function(data) {
           that.rawFolder = data;
@@ -159,6 +191,8 @@ const makeFilesVue = function(el, data, childrenFilter) {
       }
     }
   });
+  app.config.compilerOptions.whitespace = 'condense';
+  const vm = app.mount(el);
   $(el + '-container').hide();
   FilesService.getFolder(vm.type, vm.id, vm.basePath + vm.path, function(data) {
     vm.rawFolder = data;
