@@ -8,14 +8,14 @@
   <title>${config.name!""} | <@message "approved-projects"/></title>
 </head>
 <body id="projects-page" class="hold-transition layout-top-nav layout-navbar-fixed">
-<div class="wrapper">
+<div class="app-wrapper d-flex flex-column min-vh-100">
 
   <!-- Navbar -->
   <#include "libs/top-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
+ <div class="app-main flex-fill">
     <!-- Content Header (Page header) -->
     <div class="content-header bg-info mb-4">
       <div class="container">
@@ -73,7 +73,7 @@
               <#else>
                 <p class="text-muted"><@message "sign-in-approved-projects"/></p>
                 <button type="button" onclick="location.href='${contextPath}/signin?redirect=${contextPath}/projects';" class="btn btn-success btn-lg">
-                  <i class="fas fa-sign-in-alt"></i> <@message "sign-in"/>
+                  <i class="fa-solid fa-sign-in-alt"></i> <@message "sign-in"/>
                 </button>
               </#if>
             </div>

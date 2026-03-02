@@ -58,9 +58,9 @@
             </p>
           </div><!-- /.col -->
           <div class="col-sm-2">
-            <div class="text-right">
+            <div class="text-end">
               <button type="button"  onclick="location.href='${contextPath}/signin';" class="btn btn-primary btn-lg">
-                <i class="fas fa-sign-in-alt"></i> <@message "sign-in"/>
+                <i class="fa-solid fa-sign-in-alt"></i> <@message "sign-in"/>
               </button>
             </div>
           </div><!-- /.col -->
@@ -72,14 +72,14 @@
         <div id="search-portal-callout" class="callout callout-info">
         <div class="row">
           <div class="col-sm-10">
-            <p class="text-justify">
+            <span class="text-justify">
               <@message "search-portal-callout"/>
-            </p>
+            </span>
           </div><!-- /.col -->
           <div class="col-sm-2">
-            <div class="text-right">
+            <div class="text-end">
               <button type="button"  onclick="location.href='<#if !config.openAccess && !user??>${contextPath}/signin?redirect=${contextPath}/search${defaultSearchState?url('UTF-8')}<#else>${contextPath}/search${defaultSearchState}</#if>';" class="btn btn-success btn-lg">
-                <i class="fas fa-search"></i> <@message "search"/>
+                <i class="fa-solid fa-search"></i> <@message "search"/>
               </button>
             </div>
           </div><!-- /.col -->
@@ -89,17 +89,17 @@
   </#if>
 
   <#if config.dataAccessEnabled>
-    <div id="data-access-process-portal-callout" class="callout callout-info">
+    <div id="data-access-process-portal-callout" class="callout callout-info mt-3">
       <div class="row">
         <div class="col-sm-8">
-          <p class="text-justify">
+          <span class="text-justify">
             <@message "data-access-process-portal-callout"/>
-          </p>
+          </span>
         </div><!-- /.col -->
         <div class="col-sm-4">
-          <div class="text-right">
+          <div class="text-end">
             <button type="button"  onclick="location.href='${contextPath}/data-access-process';" class="btn btn-info btn-lg">
-              <i class="fas fa-info-circle"></i> <@message "data-access-process"/>
+              <i class="fa-solid fa-info-circle"></i> <@message "data-access-process"/>
             </button>
           </div>
         </div><!-- /.col -->

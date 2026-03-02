@@ -9,9 +9,9 @@
   <link rel="stylesheet" href="${assetsPath}/libs/node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css"></link>
   <title>${config.name!""} | <@message "data-access"/> ${dar.id}</title>
 </head>
-<body id="data-access-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
+<body id="data-access-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed sidebar-expand-lg">
 <!-- Site wrapper -->
-<div class="wrapper">
+<div class="app-wrapper">
 
   <!-- Navbar -->
   <#include "libs/aside-navbar.ftl">
@@ -22,29 +22,29 @@
   <!-- /.sidebar -->
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
+ <div class="app-main flex-fill">
     <!-- Content Header (Page header) -->
     <section class="content-header bg-info mb-4">
       <div class="container-fluid">
         <div class="row">
           <div class="col-sm-6">
-            <h1 class="m-0 float-left">
+            <h1 class="m-0 float-start">
               <span class="text-white-50"><@message "data-access"/> /</span> ${dar.id}
             </h1>
               <#if permissions?seq_contains("DELETE")>
-                <button type="button" class="btn btn-danger ml-4" data-toggle="modal" data-target="#modal-delete">
-                  <i class="fas fa-trash"></i> <@message "delete"/>
+                <button type="button" class="btn btn-danger ms-4" data-bs-toggle="modal" data-bs-target="#modal-delete">
+                  <i class="fa-solid fa-trash"></i> <@message "delete"/>
                 </button>
               </#if>
               <#if dataAccessArchiveEnabled>
                 <#if permissions?seq_contains("ARCHIVE")>
-                  <button type="button" class="btn btn-warning ml-4" data-toggle="modal" data-target="#modal-archive">
-                    <i class="fas fa-box"></i> <@message "archive"/>
+                  <button type="button" class="btn btn-warning ms-4" data-bs-toggle="modal" data-bs-target="#modal-archive">
+                    <i class="fa-solid fa-box"></i> <@message "archive"/>
                   </button>
                 </#if>
                 <#if permissions?seq_contains("UNARCHIVE")>
-                  <button type="button" class="btn btn-warning ml-4" data-toggle="modal" data-target="#modal-unarchive">
-                    <i class="fas fa-box-open"></i> <@message "unarchive"/>
+                  <button type="button" class="btn btn-warning ms-4" data-bs-toggle="modal" data-bs-target="#modal-unarchive">
+                    <i class="fa-solid fa-box-open"></i> <@message "unarchive"/>
                   </button>
                 </#if>
               </#if>
@@ -62,16 +62,16 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title"><@message "confirm-deletion-title"/></h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
             </button>
           </div>
           <div class="modal-body">
             <p><@message "confirm-deletion-text"/></p>
           </div>
           <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-            <button type="button" class="btn btn-primary" data-dismiss="modal"
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                     onclick="DataAccessService.delete('${dar.id}')"><@message "confirm"/>
             </button>
           </div>
@@ -88,16 +88,16 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title"><@message "confirm-archive-title"/></h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
             </button>
           </div>
           <div class="modal-body">
             <p><@message "confirm-archive-text"/></p>
           </div>
           <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-            <button type="button" class="btn btn-primary" data-dismiss="modal"
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                     onclick="DataAccessService.archive('${dar.id}')"><@message "confirm"/>
             </button>
           </div>
@@ -114,16 +114,16 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title"><@message "confirm-unarchive-title"/></h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
             </button>
           </div>
           <div class="modal-body">
             <p><@message "confirm-unarchive-text"/></p>
           </div>
           <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-            <button type="button" class="btn btn-primary" data-dismiss="modal"
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                     onclick="DataAccessService.unarchive('${dar.id}')"><@message "confirm"/>
             </button>
           </div>
@@ -140,8 +140,8 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title"><@message "collaborator-invite-title"/></h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
             </button>
           </div>
           <div class="modal-body">
@@ -151,16 +151,12 @@
             </#if>
             <div class="input-group mb-3">
               <input id="collaborator-email" name="collaborator-email" type="email" class="form-control" placeholder="<@message "email"/>">
-              <div class="input-group-append">
-                <div class="input-group-text">
-                  <span class="fas fa-envelope"></span>
-                </div>
-              </div>
+              <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
             </div>
           </div>
           <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-            <button type="button" class="btn btn-primary" data-dismiss="modal"
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                     onclick="DataAccessService.inviteCollaborator('${dar.id}', $('input[name=collaborator-email]').val())"><@message "invite"/>
             </button>
           </div>
@@ -178,8 +174,8 @@
           <div class="modal-content">
             <div class="modal-header">
               <h4 class="modal-title"><@message "confirm-collaborator-delete-title"/></h4>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
               </button>
             </div>
             <div class="modal-body">
@@ -189,8 +185,8 @@
               </p>
             </div>
             <div class="modal-footer justify-content-between">
-              <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-              <button type="button" class="btn btn-primary" data-dismiss="modal"
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
+              <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                       onclick="DataAccessService.deleteCollaborator('${dar.id}', $('#collaborator-to-delete').text())"><@message "confirm"/>
               </button>
             </div>
@@ -204,6 +200,7 @@
 
     <!-- Main content -->
     <section class="content">
+      <div class="container-fluid">
 
       <#if dar.archived>
         <div class="ribbon-wrapper ribbon-xl">
@@ -261,10 +258,10 @@
               <div class="card-header">
                 <h3 class="card-title"><@message "collaborators"/></h3>
                 <#if accessConfig.collaboratorsEnabled>
-                  <div class="float-right">
+                  <div class="float-end">
                     <#if permissions?seq_contains("ADD_COLLABORATORS")>
-                      <button type="button" class="btn btn-primary ml-4" data-toggle="modal" data-target="#modal-collaborator-add">
-                        <i class="fas fa-plus"></i> <@message "new-collaborator"/>
+                      <button type="button" class="btn btn-primary ms-4" data-bs-toggle="modal" data-bs-target="#modal-collaborator-add">
+                        <i class="fa-solid fa-plus"></i> <@message "new-collaborator"/>
                       </button>
                     </#if>
                   </div>
@@ -284,10 +281,10 @@
             <div class="card card-info card-outline">
               <div class="card-header">
                 <h3 class="card-title"><@message "feasibilities"/></h3>
-                <div class="float-right">
+                <div class="float-end">
                   <#if !dar.archived && (user.username == dar.applicant || isAdministrator)>
-                    <button type="button" class="btn btn-primary ml-4" data-toggle="modal" data-target="#modal-feasibility-add">
-                      <i class="fas fa-plus"></i> <@message "new-feasibility"/>
+                    <button type="button" class="btn btn-primary ms-4" data-bs-toggle="modal" data-bs-target="#modal-feasibility-add">
+                      <i class="fa-solid fa-plus"></i> <@message "new-feasibility"/>
                     </button>
                   </#if>
                 </div>
@@ -310,7 +307,7 @@
                           <td><a href="${contextPath}/data-access-feasibility-form/${feasibility.id}">${feasibility.id}</a></td>
                           <td data-sort="${feasibility.lastModifiedDate.get().toString()}" class="moment-datetime">${feasibility.lastModifiedDate.get().toString()}</td>
                           <td data-sort="<#if feasibility.lastSubmission?? && feasibility.lastSubmission.changedOn??>${feasibility.lastSubmission.changedOn.toString()}</#if>" class="moment-datetime"><#if feasibility.lastSubmission?? && feasibility.lastSubmission.changedOn??>${feasibility.lastSubmission.changedOn.toString()}</#if></td>
-                          <td><i class="fas fa-circle text-${statusColor(feasibility.status.toString())}"></i> <@message feasibility.status.toString()/></td>
+                          <td><i class="fa-solid fa-circle text-${statusColor(feasibility.status.toString())}"></i> <@message feasibility.status.toString()/></td>
                         </tr>
                       </#list>
                       </tbody>
@@ -327,10 +324,10 @@
             <div class="card card-info card-outline">
               <div class="card-header">
                 <h3 class="card-title"><@message "amendments"/></h3>
-                <div class="float-right">
+                <div class="float-end">
                   <#if !dar.archived && (user.username == dar.applicant || isAdministrator)>
-                    <button type="button" class="btn btn-primary ml-4" data-toggle="modal" data-target="#modal-amendment-add">
-                      <i class="fas fa-plus"></i> <@message "new-amendment"/>
+                    <button type="button" class="btn btn-primary ms-4" data-bs-toggle="modal" data-bs-target="#modal-amendment-add">
+                      <i class="fa-solid fa-plus"></i> <@message "new-amendment"/>
                     </button>
                   </#if>
                 </div>
@@ -353,7 +350,7 @@
                         <td><a href="${contextPath}/data-access-amendment-form/${amendment.id}">${amendment.id}</a></td>
                         <td data-sort="${amendment.lastModifiedDate.get().toString()}" class="moment-datetime">${amendment.lastModifiedDate.get().toString()}</td>
                         <td data-sort="<#if amendment.lastSubmission?? && amendment.lastSubmission.changedOn??>${amendment.lastSubmission.changedOn.toString()}</#if>" class="moment-datetime"><#if amendment.lastSubmission?? && amendment.lastSubmission.changedOn??>${amendment.lastSubmission.changedOn.toString()}</#if></td>
-                        <td><i class="fas fa-circle text-${statusColor(amendment.status.toString())}"></i> <@message amendment.status.toString()/></td>
+                        <td><i class="fa-solid fa-circle text-${statusColor(amendment.status.toString())}"></i> <@message amendment.status.toString()/></td>
                       </tr>
                       </#list>
                       </tbody>
@@ -377,7 +374,7 @@
               <#if !dar.archived>
                 <div class="card-footer">
                   <a href="${contextPath}/data-access-comments/${dar.id}"><@message "send-message"/> <i
-                            class="fas fa-arrow-circle-right ml-1"></i></a>
+                            class="fa-solid fa-arrow-circle-right ms-1"></i></a>
                 </div>
               </#if>
             </div>
@@ -388,10 +385,11 @@
       </div>
       <!-- /.row -->
 
+      </div><!-- /.container-fluid -->
     </section>
     <!-- /.content -->
   </div>
-  <!-- /.content-wrapper -->
+  <!-- /.app-main -->
 
   <!-- Start date modal -->
   <div class="modal fade" id="modal-start-date">
@@ -399,8 +397,8 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title"><@message "start-date"/></h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
           </button>
         </div>
         <div class="modal-body">
@@ -408,14 +406,12 @@
             <label><@message "date"/></label>
             <div class="input-group">
               <input type="text" id="start-date" class="form-control">
-              <div class="input-group-append">
-                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
-              </div>
+              <span class="input-group-text"><i class="fa-solid fa-calendar-alt"></i></span>
             </div>
           </div>
         </div>
         <div class="modal-footer justify-content-between">
-          <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
           <button type="button" class="btn btn-primary" id="start-date-submit"><@message "submit"/></button>
         </div>
       </div>

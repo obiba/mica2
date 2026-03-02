@@ -7,31 +7,33 @@
   <#include "libs/head.ftl">
   <title>${config.name!""} | ${listName(set)}</title>
 </head>
-<body id="list-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
+<body id="list-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed sidebar-expand-lg">
 <!-- Site wrapper -->
-<div class="wrapper">
+<div class="app-wrapper">
   <!-- Navbar -->
   <#include "libs/aside-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Main Sidebar Container -->
-  <aside class="main-sidebar sidebar-dark-primary">
+  <aside class="app-sidebar bg-body-secondary" data-bs-theme="dark">
     <!-- Brand Logo -->
-    <a href="${portalLink}" class="brand-link bg-white">
+    <div class="sidebar-brand">
+      <a href="${portalLink}" class="brand-link">
       <img src="${brandImageSrc}"
            alt="Logo"
            class="brand-image ${brandImageClass}"
            style="opacity: .8">
-      <span class="brand-text ${brandTextClass}">
-        <#if brandTextEnabled>
-          ${config.name!""}
-        <#else>&nbsp;
-        </#if>
-      </span>
-    </a>
+        <span class="brand-text ${brandTextClass}">
+          <#if brandTextEnabled>
+            ${config.name!""}
+          <#else>&nbsp;
+          </#if>
+        </span>
+      </a>
+    </div>
 
     <!-- Sidebar -->
-    <div class="sidebar">
+    <div class="sidebar-wrapper">
       <!-- Sidebar user (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="info">
@@ -46,28 +48,26 @@
             <#list sets.variablesLists as variableList>
               <#assign variableListActiveClass = (variableList.id == set.id)?then("active", "") />
               <li class="nav-item">
-                <a class="nav-link ${variableListActiveClass}" href="${contextPath}/list/${variableList.id}">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>
+                <a class="nav-link ${variableListActiveClass} d-flex align-items-center" href="${contextPath}/list/${variableList.id}">
+                  <i class="fa-regular fa-circle nav-icon"></i>
+                  <p class="mb-0">
                     <span title="${listName(variableList)} <#if variableList.name?starts_with("dar:")>[<@message "data-access-request"/>]</#if>">
                         ${listName(variableList)?truncate_c(20, "...")}
                     </span>
                     <#if variableList.name?starts_with("dar:")>
-                      <i class="fas fa-link ml-2"></i>
-                    <#else>
-                      <span></span>
+                      <i class="fa-solid fa-link ms-2"></i>
                     </#if>
                     <#if variableList.locked>
-                      <i class="fas fa-lock ml-2"></i>
+                      <i class="fa-solid fa-lock ms-2"></i>
                     </#if>
-                    <span class="badge badge-light right">${variableList.identifiers?size}</span>
                   </p>
+                  <span class="badge text-bg-light ms-auto">${variableList.identifiers?size}</span>
                 </a>
               </li>
             </#list>
           </ul>
         <#else >
-          <span class="pl-2 text-white-50">
+          <span class="ps-2 text-white-50">
             <em>
               <@message "no-personal-list"/>
             </em>
@@ -76,7 +76,7 @@
       </nav>
       <!-- /.sidebar-menu -->
     </div>
-    <!-- /.sidebar -->
+    <!-- /.sidebar-wrapper -->
   </aside>
 
   <!-- Control Sidebar -->
@@ -86,13 +86,13 @@
   <!-- /.control-sidebar -->
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper" id="query-vue-container">
+  <div class="app-main flex-fill" id="query-vue-container">
     <!-- Content Header (Page header) -->
-    <div class="content-header bg-info mb-4">
+    <section class="content-header bg-info mb-4">
       <div class="container-fluid">
         <div class="row">
           <div class="col-sm-12">
-            <h1 class="m-0 float-left">
+            <h1 class="m-0 float-start">
               <span class="text-white-50"><@message "search.list"/> /</span>
                 ${listName(set)}
                 <#if set.name?starts_with("dar:")>
@@ -100,14 +100,14 @@
                 </#if>
             </h1>
             <#if !set.locked || isAdministrator>
-              <button type="button" class="btn btn-danger ml-4" data-toggle="modal" data-target="#modal-delete-list">
-                <i class="fas fa-trash"></i> <@message "delete"/>
+              <button type="button" class="btn btn-danger ms-4" data-bs-toggle="modal" data-bs-target="#modal-delete-list">
+                <i class="fa-solid fa-trash"></i> <@message "delete"/>
               </button>
             </#if>
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
-    </div>
+    </section>
     <!-- /.content-header -->
 
     <!-- Confirm delete modal -->
@@ -116,8 +116,8 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title"><@message "cart-confirm-deletion-title"/> (${listName(set)})</h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
             </button>
           </div>
           <div class="modal-body">
@@ -125,8 +125,8 @@
             <p id="delete-selected-message" style="display: none;"><@message "list-selected-confirm-deletion-text"/></p>
           </div>
           <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-            <button type="button" class="btn btn-primary" data-dismiss="modal"
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                     onclick="VariablesSetService.deleteVariables('${set.id}', variablesCartStorage.getSelections(), function() { window.location.reload(); })"><@message "confirm"/>
             </button>
           </div>
@@ -143,16 +143,16 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title"><@message "cart-confirm-deletion-title"/> (${listName(set)})</h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
             </button>
           </div>
           <div class="modal-body">
             <p><@message "list-confirm-complete-deletion-text"/></p>
           </div>
           <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-            <button type="button" class="btn btn-primary" data-dismiss="modal"
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                     onclick="VariablesSetService.deleteSet('${set.id}', function () { window.location.replace('${contextPath}/lists'); })"><@message "confirm"/>
             </button>
           </div>
@@ -164,14 +164,14 @@
     <!-- /.modal -->
 
     <!-- Main content -->
-    <div class="content">
+    <section class="content">
       <div class="container-fluid">
 
         <#if set.name?starts_with("dar:")>
           <div id="dar-list-callout" class="callout callout-info">
             <p><@message "sets.set.dar-help"/></p>
             <button class="btn btn-info" onclick="location.href='${contextPath}/data-access-form/${set.name?replace("dar:", "")}'">
-              <i class="fas fa-link"></i>
+              <i class="fa-solid fa-link"></i>
                 <#if set.name?matches(".+-F\\d+$")>
                   <@message "data-access-feasibility"/>
                 <#elseif set.name?matches(".+-A\\d+$")>
@@ -191,27 +191,27 @@
           <div class="card-header">
 
             <#if config.harmonizationDatasetEnabled && config.studyDatasetEnabled>
-            <div class="float-left">
+            <div class="float-start">
               <ul class="nav nav-pills" id="studyClassNameChoice" :title="countWarning ? '<@message "count-warning"/>' : ''" role="tablist" v-cloak>
                 <li class="nav-item" role="presentation">
-                  <a class="nav-link active" id="individual-tab" @click="onStudyClassNameChange('Study')" href="" data-toggle="tab" role="tab" aria-controls="home" aria-selected="true"><@message "individual-search"/> <span :class="{ 'badge-warning': countWarning, 'badge-light': !countWarning }" class="badge right">{{individualSubCount}}</span></a>
+                  <a class="nav-link active" id="individual-tab" @click="onStudyClassNameChange('Study')" href="" data-bs-toggle="tab" role="tab" aria-controls="home" aria-selected="true"><@message "individual-search"/> <span :class="{ 'badge text-bg-warning': countWarning, 'badge text-bg-light': !countWarning }" class="badge right">{{individualSubCount}}</span></a>
                 </li>
                 <li class="nav-item" role="presentation">
-                  <a class="nav-link" id="harmonization-tab" @click="onStudyClassNameChange('HarmonizationStudy')" href="" data-toggle="tab" role="tab" aria-controls="profile" aria-selected="false"><@message "harmonization-search"/> <span :class="{ 'badge-warning': countWarning, 'badge-light': !countWarning }" class="badge right">{{harmonizationSubCount}}</span></a>
+                  <a class="nav-link" id="harmonization-tab" @click="onStudyClassNameChange('HarmonizationStudy')" href="" data-bs-toggle="tab" role="tab" aria-controls="profile" aria-selected="false"><@message "harmonization-search"/> <span :class="{ 'badge text-bg-warning': countWarning, 'badge text-bg-light': !countWarning }" class="badge right">{{harmonizationSubCount}}</span></a>
                 </li>
               </ul>
             </div>
             </#if>
 
-            <div class="float-right">
-              <button class="btn btn-success ml-2" onclick="onVariablesCartAdd('${set.id}')">
-                <i class="fas fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/>
+            <div class="float-end">
+              <button class="btn btn-success ms-2" onclick="onVariablesCartAdd('${set.id}')">
+                <i class="fa-solid fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/>
               </button>
               <#if showCartDownload>
                 <#if showCartViewDownload>
-                  <div class="btn-group ml-2" role="group">
-                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      <i class="fas fa-download"></i> <@message "download"/>
+                  <div class="btn-group ms-2" role="group">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i class="fa-solid fa-download"></i> <@message "download"/>
                     </button>
                     <div class="dropdown-menu">
                       <a class="dropdown-item" href="${contextPath}/ws/variables/set/${set.id}/documents/_report?locale=${.locale}" download><@message "download-cart-report"/></a>
@@ -220,14 +220,14 @@
                     </div>
                   </div>
                 <#else>
-                  <a href="${contextPath}/ws/variables/set/${set.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
-                    <i class="fas fa-download"></i> <@message "download"/>
+                  <a href="${contextPath}/ws/variables/set/${set.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ms-2">
+                    <i class="fa-solid fa-download"></i> <@message "download"/>
                   </a>
                 </#if>
               </#if>
               <#if !set.locked || isAdministrator>
-                <button id="delete-all" type="button" class="btn btn-danger ml-2" data-toggle="modal" data-target="#modal-delete">
-                  <i class="fas fa-trash"></i> <@message "delete"/> <span class="badge badge-light selection-count"></span>
+                <button id="delete-all" type="button" class="btn btn-danger ms-2" data-bs-toggle="modal" data-bs-target="#modal-delete">
+                  <i class="fa-solid fa-trash"></i> <@message "delete"/> <span class="badge text-bg-light selection-count"></span>
                 </button>
               </#if>
             </div>
@@ -237,11 +237,11 @@
               <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
               <div class="mt-3 text-muted" v-show="!hasResult"><@message "empty-list"/></div>
               <div v-show="hasResult" class="clearfix mb-3">
-                <div class="float-left">
+                <div class="float-start">
                   <div class="d-inline-block">
                     <div class="d-inline-flex">
-                      <span class="mr-2">
-                        <select class="custom-select" id="obiba-page-size-selector-top"></select>
+                      <span class="me-2">
+                        <select class="form-select" id="obiba-page-size-selector-top"></select>
                       </span>
                       <nav id="obiba-pagination-top" aria-label="Top pagination" class="mt-0">
                         <ul class="pagination mb-0"></ul>
@@ -250,12 +250,12 @@
                   </div>
                 </div>
                 <#if config.setsSearchEnabled>
-                  <div class="float-right">
-                    <a class="btn btn-info ml-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=variables&query=variable(in(Mica_variable.sets,${set.id})),study(in(Mica_study.className,Study))">
-                      <i class="fas fa-search"></i>
+                  <div class="float-end">
+                    <a class="btn btn-info ms-2" v-if="studyClassName != 'HarmonizationStudy'" href="${contextPath}/individual-search#lists?type=variables&query=variable(in(Mica_variable.sets,${set.id})),study(in(Mica_study.className,Study))">
+                      <i class="fa-solid fa-search"></i>
                     </a>
-                    <a class="btn btn-info ml-2" v-else href="${contextPath}/harmonization-search#lists?type=variables&query=variable(in(Mica_variable.sets,${set.id})),study(in(Mica_study.className,HarmonizationStudy))">
-                      <i class="fas fa-search"></i>
+                    <a class="btn btn-info ms-2" v-else href="${contextPath}/harmonization-search#lists?type=variables&query=variable(in(Mica_variable.sets,${set.id})),study(in(Mica_study.className,HarmonizationStudy))">
+                      <i class="fa-solid fa-search"></i>
                     </a>
                   </div>
                 </#if>
@@ -268,10 +268,10 @@
         </div>
 
       </div><!-- /.container-fluid -->
-    </div>
+    </section>
     <!-- /.content -->
   </div>
-  <!-- /.content-wrapper -->
+  <!-- /.app-main -->
 
   <#include "libs/footer.ftl">
 </div>

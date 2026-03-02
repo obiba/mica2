@@ -5,14 +5,14 @@
   <title><@message "error"/></title>
 </head>
 <body id="error-page" class="hold-transition layout-top-nav layout-navbar-fixed">
-<div class="wrapper">
+<div class="app-wrapper d-flex flex-column min-vh-100">
 
   <!-- Navbar -->
     <#include "libs/top-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
+ <div class="app-main flex-fill">
     <!-- Content Header (Page header) -->
     <div class="content-header bg-info mb-4">
       <div class="container">
@@ -35,7 +35,7 @@
           <h2 class="headline text-warning"> ${status!"404"}</h2>
 
           <div class="error-content">
-            <h3><i class="fas fa-exclamation-triangle text-warning"></i>
+            <h3><i class="fa-solid fa-exclamation-triangle text-warning"></i>
               <#if msg??>
                   <@message msg/>
               <#else >

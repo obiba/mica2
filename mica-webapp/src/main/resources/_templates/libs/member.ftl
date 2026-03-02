@@ -54,15 +54,15 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title"><#if member.person.firstName??>${member.person.firstName} </#if>${member.person.lastName}</h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            
           </button>
         </div>
         <div class="modal-body">
           <@memberModel member=member/>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-dismiss="modal"><@message "close"/></button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><@message "close"/></button>
         </div>
       </div>
       <!-- /.modal-content -->
@@ -74,12 +74,12 @@
 
 <!-- Member list by role -->
 <#macro memberList members role>
-  <ul class="pl-3">
+  <ul class="ps-3">
     <#assign i=0>
     <#list members as member>
       <li>
         <#assign i++>
-        <a href="#" data-toggle="modal" data-target="#modal-${role}-${i}">
+        <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${role}-${i}">
           ${member.person.title!""} ${member.person.firstName!""} ${member.person.lastName}
         </a>
         <#if member.person.institution?? && member.person.institution.name??>

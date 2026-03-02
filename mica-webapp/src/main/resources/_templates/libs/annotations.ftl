@@ -7,12 +7,12 @@
       <div class="card card-primary card-outline">
         <div class="card-header">
           <h3 class="card-title pt-2"><@message "classifications" /></h3>
-          <ul class="nav nav-pills ml-auto float-right">
-            <li class="nav-item"><a class="nav-link active" title="<@message "summary-view" />" href="#summary" data-toggle="tab">
-                <i class="fas fa-grip-lines"></i></a>
+          <ul class="nav nav-pills ms-auto float-end">
+            <li class="nav-item"><a class="nav-link active" title="<@message "summary-view" />" href="#summary" data-bs-toggle="tab">
+                <i class="fa-solid fa-grip-lines"></i></a>
             </li>
-            <li class="nav-item"><a class="nav-link " title="<@message "detail-view" />" href="#detail" data-toggle="tab">
-                <i class="fas fa-grip-horizontal"></i></a>
+            <li class="nav-item"><a class="nav-link " title="<@message "detail-view" />" href="#detail" data-bs-toggle="tab">
+                <i class="fa-solid fa-grip-horizontal"></i></a>
             </li>
           </ul>
         </div>
@@ -42,10 +42,10 @@
         <#assign collapsedClass = (index != 0)?then('collapsed', '') />
         <#assign showClass = (index == 0)?then('show', '') />
 
-      <div class="card-header pr-2">
-        <button type="button" class="${'btn btn-block text-navy text-left pl-0 ' + collapsedClass}"
-                data-toggle="collapse"
-                data-target="#${taxonomy}">${taxonomyLocalized} <span class="badge badge-light"><@itemCount item=taxonomyItem/></span></button>
+      <div class="card-header pe-2">
+        <button type="button" class="${'btn w-100 text-navy text-start ps-0 ' + collapsedClass}"
+                data-bs-toggle="collapse"
+                data-bs-target="#${taxonomy}">${taxonomyLocalized} <span class="badge text-bg-light"><@itemCount item=taxonomyItem/></span></button>
       </div>
       <div id="${taxonomy}" class="${'collapse ' + showClass}" data-parent="#annotationsAccordion_${index}">
         <div class="card-body">
@@ -64,11 +64,11 @@
     <#list vocabularies as vocabulary>
         <#if !vocabulary.missing>
             <#assign vocabularyId = taxonomyId + 'vocabulary' + vocabulary?index />
-          <p class="mb-1 pl-1 py-2 bg-light font-weight-bold"><@vocabularyColorLabel vocabulary=vocabulary.name/> ${localize(vocabulary.title)} <span class="float-right pr-2"><@itemCount item=vocabulary/></span></p>
-          <div class="pt-1 pb-1 pl-1">
+          <p class="mb-1 ps-1 py-2 bg-light fw-bold"><@vocabularyColorLabel vocabulary=vocabulary.name/> ${localize(vocabulary.title)} <span class="float-end pe-2"><@itemCount item=vocabulary/></span></p>
+          <div class="pt-1 pb-1 ps-1">
             <div class="row ">
                 <#list vocabulary.terms as termItem>
-                  <div class="col-xs-12 col-md-6 font-weight-normal">${localize(termItem.title)} <span class="float-right"><@itemCount item=termItem/></span></div>
+                  <div class="col-xs-12 col-md-6 fw-normal">${localize(termItem.title)} <span class="float-end pe-2"><@itemCount item=termItem/></span></div>
                 </#list>
             </div>
           </div>
@@ -83,13 +83,13 @@
             <@vocabularyColorLabel vocabulary=vocabulary.name/>
           <span class="<#if vocabulary.missing>text-muted</#if>">${localize(vocabulary.title)}</span>
             <#if vocabulary.missing>
-              <span><i class="fas float-right text-muted fa-minus"></i></span>
+              <span><i class="fa-solid float-end text-muted fa-minus"></i></span>
             <#elseif vocabulary.count == -1>
-              <span><i class="fas fa-check float-right text-success"></i></span>
+              <span><i class="fa-solid fa-check float-end text-success"></i></span>
             <#else>
-              <span class="float-right"><@itemCount item=vocabulary/></span>
+              <span class="float-end"><@itemCount item=vocabulary/></span>
             </#if>
-            <#--          <span><i class="fas float-right <#if vocabularyItem.missing>text-muted fa-minus<#else>text-success fa-check</#if>"></i></span>-->
+            <#--          <span><i class="fa-solid float-end <#if vocabularyItem.missing>text-muted fa-minus<#else>text-success fa-check</#if>"></i></span>-->
         </dt>
       </#list>
   </dl>
@@ -102,5 +102,5 @@
 </#macro>
 
 <#macro vocabularyColorLabel vocabulary="">
-  <span class="p-1 mr-1 ${vocabulary}"></span>
+  <span class="p-1 me-1 ${vocabulary}"></span>
 </#macro>

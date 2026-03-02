@@ -8,7 +8,7 @@
         <@message "study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.title"/>
       </dt>
       <dd class="col-sm-8">
-        <ul class="pl-3">
+        <ul class="ps-3">
           <#list dce.model.dataSources as item>
             <li>
               <#assign txt = "study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term." + item + ".title"/>
@@ -27,7 +27,7 @@
           <@message "study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.title"/>
       </dt>
       <dd class="col-sm-8">
-        <ul class="pl-3">
+        <ul class="ps-3">
           <#list dce.model.bioSamples as item>
             <li>
               <#assign txt = "study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term." + item + ".title"/>
@@ -48,7 +48,7 @@
           <@message "study_taxonomy.vocabulary.populations-dataCollectionEvents-administrativeDatabases.title"/>
       </dt>
       <dd class="col-sm-8">
-        <ul class="pl-3">
+        <ul class="ps-3">
           <#list dce.model.administrativeDatabases as item>
             <li>
               <#assign txt = "study_taxonomy.vocabulary.populations-dataCollectionEvents-administrativeDatabases.term." + item + ".title"/>
@@ -82,8 +82,8 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title">${localize(dce.name)}</h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            
           </button>
         </div>
         <div class="modal-body">
@@ -114,7 +114,7 @@
           </#if>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-dismiss="modal"><@message "close"/></button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><@message "close"/></button>
         </div>
       </div>
       <!-- /.modal-content -->
@@ -177,12 +177,12 @@
             <tr>
               <td>${dce.weight}</td>
               <td>
-                <a href="#" data-toggle="modal" data-target="#modal-${dceId}">
+                <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${dceId}">
                   ${localize(dce.name)}
                 </a>
                 <@dceDialog id=dceId dce=dce></@dceDialog>
               </td>
-              <td class="marked"><template>${localize(dce.description)?trim?truncate(200, "...")}</template></td>
+              <td class="marked">${localize(dce.description)?trim?truncate(200, "...")}</td>
               <td><#if dce.start?? && dce.start.yearMonth??>${dce.start.yearMonth}</#if></td>
               <td><#if dce.end?? && dce.end.yearMonth??>${dce.end.yearMonth}</#if></td>
             </tr>

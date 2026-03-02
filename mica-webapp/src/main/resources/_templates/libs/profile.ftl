@@ -19,7 +19,7 @@
       <dt class="col-sm-4"><@message "groups"/></dt>
       <dd class="col-sm-8">
         <#list profile.groups as group>
-          <span class="badge badge-info">${group}</span>
+          <span class="badge text-bg-info">${group}</span>
         </#list>
       </dd>
     </#if>
@@ -28,7 +28,7 @@
         <dt class="col-sm-4"><@message "roles"/></dt>
         <dd class="col-sm-8">
           <#list profile.roles as role>
-            <span class="badge badge-primary">${role}</span>
+            <span class="badge text-bg-primary">${role}</span>
           </#list>
         </dd>
       </#if>
@@ -46,9 +46,9 @@
               <#elseif key == "locale">
                 <@message profile.attributes[key]/>
               <#elseif profile.attributes[key] == "true">
-                <i class="fas fa-check"></i>
+                <i class="fa-solid fa-check"></i>
               <#elseif profile.attributes[key] == "false">
-                <i class="fas fa-times"></i>
+                <i class="fa-solid fa-times"></i>
               <#elseif key == "realm">
                 <code>${profile.attributes[key]}</code>
               <#else>
@@ -82,15 +82,15 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title">${profile.fullName}</h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            
           </button>
         </div>
         <div class="modal-body">
           <@userProfile profile=profile/>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-dismiss="modal"><@message "close"/></button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><@message "close"/></button>
         </div>
       </div>
       <!-- /.modal-content -->

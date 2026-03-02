@@ -65,25 +65,25 @@
 <!-- Form print header and footer, not visible on screen -->
 <#macro dataAccessFormPrintHeader form type>
   <div class="clearfix border-bottom pb-3 mb-3">
-    <div class="float-left">
-      <img src="${brandImageSrc}" alt="Logo" class="brand-image ${brandImageClass} mr-2" style="opacity: .8; max-height: 33px">
+    <div class="float-start">
+      <img src="${brandImageSrc}" alt="Logo" class="brand-image ${brandImageClass} me-2" style="opacity: .8; max-height: 33px">
       <span class="brand-text ${brandTextClass}" style="font-size: larger">
         <#if brandTextEnabled>
           ${config.name!""}
         </#if>
       </span>
     </div>
-    <div class="float-right text-muted">
+    <div class="float-end text-muted">
       <span><@message type/> - ${form.id} - [<@message form.status.toString()/>] - ${applicant.fullName}</span>
     </div>
   </div>
 </#macro>
 <#macro dataAccessFormPrintFooter form>
   <div class="border-top mt-3 pt-3">
-    <div class="float-left">
+    <div class="float-start">
       <small><span class="moment-datetime text-muted">${.now?iso_utc}</span></small>
     </div>
-    <div class="float-right">
+    <div class="float-end">
         <#if form.lastSubmission??>
           <small><@message "form-submitted-on"/> <span class="moment-datetime text-muted">${form.lastSubmission.changedOn.toString()}</span></small>
         </#if>
@@ -97,8 +97,8 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title"><@message "form-diff"/></h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
           </button>
         </div>
         <div class="modal-body">
@@ -141,7 +141,7 @@
           </div>
         </div>
         <div class="modal-footer justify-content-between">
-          <button type="button" class="btn btn-default" data-dismiss="modal"><@message "close"/></button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "close"/></button>
         </div>
       </div>
       <!-- /.modal-content -->

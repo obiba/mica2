@@ -13,13 +13,13 @@ https:
 
 # Opal: data dictionaries, summaries and taxonomies
 opal:
-    url: https://localhost:8443
+    url: http://localhost:8080
     username: administrator
     password: password
 
 # Agate: user realm and application services configuration
 agate:
-    url: https://localhost:8444
+    url: http://localhost:8081
     application:
         name: mica
         key: changeit

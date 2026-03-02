@@ -1,44 +1,6 @@
 'use strict';
 
-// global translate filter for use in imported components
-Vue.filter("translate", (key) => {
-  let value = Mica.tr[key];
-  return typeof value === "string" ? value : key;
-});
-
-Vue.filter("localize-string", (input) => {
-  if (typeof input === "string") return input;
-  return StringLocalizer.localize(input);
-});
-
-// temporary, until overritten by rest call
-Vue.filter("taxonomy-title", (input) => {
-  return input;
-});
-
-class StringLocalizer {
-  static __localizeInternal(entries, locale) {
-    const result = (Array.isArray(entries) ? entries : [entries]).filter((entry) => entry && (locale === entry.lang || locale === entry.locale)).pop();
-
-    if (result) {
-      let value = result.value ? result.value : result.text;
-      return value ? value : null;
-    }
-    return null;
-  }
-
-  static localize(entries) {
-    if (entries) {
-      const result = StringLocalizer.__localizeInternal(entries, Mica.locale)
-        || StringLocalizer.__localizeInternal(entries, Mica.defaultLocale)
-        || StringLocalizer.__localizeInternal(entries, 'und');
-
-      return result ? result : '';
-    } else {
-      return '';
-    }
-  }
-}
+// Filter functions and StringLocalizer are now provided by mica-filters.js (MicaFilters)
 
 const MINIMUM_STUDY_TAXONOMY = {
   name: "Mica_study",
@@ -58,24 +20,24 @@ const MINIMUM_STUDY_TAXONOMY = {
 /**
  * Taxonomy sidebar menu component
 */
-Vue.component('search-criteria', {
+MicaVueApp.component('search-criteria', {
   template: `
   <div class="">
     <ul v-for="name in criteriaMenu.order"
-        class="nav nav-pills nav-sidebar flex-column" data-widget="treeview"
+        class="nav nav-pills nav-sidebar flex-column" data-lte-toggle="treeview"
         role="menu" data-accordion="false">
       <li class="nav-item has-treeview menu-open">
         <a href="#" class="nav-link">
           <i class="nav-icon" v-bind:class="criteriaMenu.items[name].icon"></i>
-          <p>
+          <span>
            {{studyTypeSelection && studyTypeSelection.harmonization ? criteriaMenu.items[name].harmoTitle : criteriaMenu.items[name].title}}
-          </p>
+          </span>
         </a>
         <ul class="nav nav-treeview">
-          <li class="nav-item" :key="menu.name" v-for="menu in criteriaMenu.items[name].menus" v-if="!(studyTypeSelection && studyTypeSelection.harmonization) || !menu.hideHarmo">
-            <a href="#" class="nav-link" data-toggle="modal" data-target="#taxonomy-modal"
-              :title="menu.description | localize-string"
-              @click.prevent="onTaxonomySelection(menu.name, name)"><i class="far fa-circle nav-icon"></i><p>{{ menu.title | localize-string }}</p>
+          <li class="nav-item" v-for="menu in getFilteredMenus(name)" :key="menu.name">
+            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#taxonomy-modal"
+              :title="localizeString(menu.description)"
+              @click.prevent="onTaxonomySelection(menu.name, name)"><i class="far fa-circle nav-icon me-1"></i><span>{{ localizeString(menu.title) }}</span>
             </a>
           </li>
         </ul>
@@ -85,6 +47,15 @@ Vue.component('search-criteria', {
   `,
   props: {
     studyTypeSelection: Object
+  },
+  watch: {
+    studyTypeSelection: {
+      handler() {
+        // Recalculate treeview heights when study type selection changes
+        this.recalculateTreeview();
+      },
+      deep: true
+    }
   },
   data() {
     return {
@@ -120,6 +91,36 @@ Vue.component('search-criteria', {
     };
   },
   methods: {
+    // Filter menus based on study type selection and hideHarmo flag
+    getFilteredMenus(name) {
+      const menus = this.criteriaMenu.items[name]?.menus || [];
+      if (!menus.length) return [];
+
+      // If harmonization mode is selected, filter out menus with hideHarmo flag
+      if (this.studyTypeSelection && this.studyTypeSelection.harmonization) {
+        return menus.filter(menu => !menu.hideHarmo);
+      }
+
+      return menus;
+    },
+    // Recalculate treeview heights after DOM updates
+    recalculateTreeview() {
+      this.$nextTick(() => {
+        // Clear stale inline styles left by AdminLTE's slideDown/slideUp
+        this.$el.querySelectorAll('.nav-treeview').forEach(sub => {
+          sub.style.removeProperty('height');
+          sub.style.removeProperty('overflow');
+          sub.style.removeProperty('padding-top');
+          sub.style.removeProperty('padding-bottom');
+          sub.style.removeProperty('margin-top');
+          sub.style.removeProperty('margin-bottom');
+          sub.style.removeProperty('display');
+          sub.style.removeProperty('transition-property');
+          sub.style.removeProperty('transition-duration');
+          sub.style.removeProperty('box-sizing');
+        });
+      });
+    },
     // make the menu
     onMicaTaxonomies: function (payload) {
       // sort and include configured targets
@@ -155,9 +156,8 @@ Vue.component('search-criteria', {
             }
 
             this.criteriaMenu.items.variable.menus.forEach(m =>  {
-              if (m.name === 'Mlstr_additional') {
-                m.hideHarmo = true;
-              }
+              // Set hideHarmo property directly (Vue 3 doesn't need Vue.set)
+              m.hideHarmo = (m.name === 'Mlstr_additional');
             });
             break;
           case 'dataset':
@@ -170,6 +170,9 @@ Vue.component('search-criteria', {
           this.criteriaMenu.order.push(target.name);
         }
       }
+
+      // Recalculate treeview heights after menus are populated
+      this.recalculateTreeview();
     },
     // forward taxonomy selection
     onTaxonomySelection: function (payload, target) {
@@ -184,7 +187,7 @@ Vue.component('search-criteria', {
 /**
  * Component used to filter results by Study className vocabulary
  */
-Vue.component('study-filter-shortcut', {
+MicaVueApp.component('study-filter-shortcut', {
   name: 'StudyFilterShortcut',
   template: `
   <div>
@@ -255,7 +258,7 @@ Vue.component('study-filter-shortcut', {
   mounted() {
     EventBus.register(EVENTS.LOCATION_CHANGED, this.onLocationChanged.bind(this));
   },
-  beforeDestroy() {
+  beforeUnmount() {
     EventBus.unregister(EVENTS.LOCATION_CHANGED, this.onLocationChanged);
   }
 });
@@ -457,36 +460,7 @@ class TableFixedHeaderUtility {
     }
   };
 
-  class TaxonomyTitleFinder {
-    initialize(taxonomies) {
-      this.taxonomies = taxonomies;
-    }
-
-    title(taxonomyName, vocabularyName, termName) {
-      if (taxonomyName) {
-        const taxonomy = this.taxonomies[taxonomyName];
-        if (taxonomy) {
-          if (!vocabularyName && !termName) return StringLocalizer.localize(taxonomy.title);
-          else if (vocabularyName) {
-            let foundVocabulary = (taxonomy.vocabularies || []).filter(vocabulary => vocabulary.name === vocabularyName)[0];
-
-            if (foundVocabulary) {
-              if (!termName) return StringLocalizer.localize(foundVocabulary.title);
-              else {
-                let foundTerm = (foundVocabulary.terms || []).filter(term => term.name === termName)[0];
-
-                if (foundTerm) return StringLocalizer.localize(foundTerm.title);
-              }
-            }
-          }
-        }
-      }
-
-      return null;
-    }
-  }
-
-  const taxonomyTitleFinder  = new TaxonomyTitleFinder();
+  const taxonomyTitleFinder = new TaxonomyTitleFinder();
 
   class MicaQueryAlertListener {
     constructor() {
@@ -514,8 +488,8 @@ class TableFixedHeaderUtility {
   }
 
   class MicaQueryChangeListener {
-    constructor() {
-      this.loading = true;
+    constructor(loading) {
+      this.loading = loading;
 
       EventBus.register(EVENTS.QUERY_TYPE_SELECTION, this.__onQueryExecute.bind(this));
       EventBus.register(EVENTS.QUERY_TYPE_UPDATE, this.__onQueryExecute.bind(this));
@@ -534,11 +508,11 @@ class TableFixedHeaderUtility {
     }
 
     __onQueryExecute() {
-      this.loading = true;
+      this.loading.state = true;
     }
 
     __onQueryResult() {
-      this.loading = false;
+      this.loading.state = false;
     }
   }
 
@@ -585,11 +559,11 @@ class TableFixedHeaderUtility {
     return taxonomy;
   }
 
-  new Vue({
-    el: '#search-application',
+  const app = MicaVueApp.createApp({
     data() {
       return {
-        queryChangeListener: new MicaQueryChangeListener(),
+        loading: { state: true },
+        queryChangeListener: null,
         taxonomies: {},
         targets: [],
         display: DISPLAYS.LISTS,
@@ -643,6 +617,15 @@ class TableFixedHeaderUtility {
         showStudyShortcut: (Mica.isHarmonizedDatasetEnabled && !Mica.isSingleStudyEnabled) || !this.currentStudyTypeSelection || this.currentStudyTypeSelection.all,
         showVariableAndDatasetTabsInIndividualMode: '/individual-search' !== window.location.pathname || ('/individual-search' === window.location.pathname && Mica.config.isCollectedDatasetEnabled),
       };
+    },
+    watch: {
+      currentStudyTypeSelection: {
+        handler(val) {
+          document.getElementById('search-application')
+            .classList.toggle('harmoMode', !!(val && val.harmonization));
+        },
+        deep: true
+      }
     },
     methods: {
       updateStudyTypeFilter() {
@@ -856,8 +839,16 @@ class TableFixedHeaderUtility {
         this.refreshQueries();
 
         // result
-        $(`.nav-pills #${payload.display}-tab`).tab('show');
-        $(`.nav-pills #${payload.type}-tab`).tab('show');
+        const displayTabEl = document.querySelector(`.nav-pills #${payload.display}-tab`);
+        if (displayTabEl) {
+          const displayTab = new bootstrap.Tab(displayTabEl);
+          displayTab.show();
+        }
+        const typeTabEl = document.querySelector(`.nav-pills #${payload.type}-tab`);
+        if (typeTabEl) {
+          const typeTab = new bootstrap.Tab(typeTabEl);
+          typeTab.show();
+        }
 
         if (payload.bucket) {
           this.selectedBucket = TARGET_ID_BUCKET_MAP[payload.bucket];
@@ -865,7 +856,11 @@ class TableFixedHeaderUtility {
             ? TARGET_ID_BUCKET_MAP.studyId
             : TARGET_ID_BUCKET_MAP.datasetId;
           this.dceChecked = TARGET_ID_BUCKET_MAP.dceId === this.selectedBucket;
-          $(`.nav-pills #bucket-${tabPill}-tab`).tab('show');
+          const bucketTabEl = document.querySelector(`.nav-pills #bucket-${tabPill}-tab`);
+          if (bucketTabEl) {
+            const bucketTab = new bootstrap.Tab(bucketTabEl);
+            bucketTab.show();
+          }
         }
 
         const targetQueries = MicaTreeQueryUrl.getTreeQueries();
@@ -1294,9 +1289,6 @@ class TableFixedHeaderUtility {
       }
     },
     computed: {
-      loading() {
-        return this.queryChangeListener.loading;
-      },
       selectedQuery() {
         if (this.selectedTarget) {
           return this.queries[this.selectedTarget];
@@ -1328,6 +1320,9 @@ class TableFixedHeaderUtility {
       EventBus.register("networks-results", this.onResult.bind(this));
       EventBus.register('coverage-results', this.onCoverageResult.bind(this));
       EventBus.register(EVENTS.QUERY_TYPE_GRAPHICS_RESULTS, this.onGraphicsResult.bind(this));
+    },
+    created() {
+      this.queryChangeListener = new MicaQueryChangeListener(this.loading);
     },
     mounted() {
       console.debug('Mounted QueryBuilder');
@@ -1396,10 +1391,10 @@ class TableFixedHeaderUtility {
             taxonomyTitleFinder.initialize(this.taxonomies);
             chartTableTermSorters.initialize(this.taxonomies['Mica_study']);
 
-            Vue.filter("taxonomy-title", (input) => {
+            MicaFilters.taxonomyTitle = (input) => {
               const [taxonomy, vocabulary, term] = input.split(/\./);
               return  taxonomyTitleFinder.title(taxonomy, vocabulary, term) || input;
-            });
+            };
 
             // Emit 'query-type-selection' to pickup a URL query to be executed; if nothing found a Variable query is executed
             EventBus.$emit(EVENTS.QUERY_TYPE_SELECTION, {});
@@ -1446,8 +1441,8 @@ class TableFixedHeaderUtility {
         this.coverageFixedHeaderHandler = TableFixedHeaderUtility.applyTo(coverageResultTableElement, $("#menubar").outerHeight() + $("#loginbar").outerHeight());
       }
     },
-    beforeDestroy() {
-      console.debug('Before destroy query builder');
+    beforeUnmount() {
+      console.debug('Before unmount query builder');
       EventBus.unregister(EVENTS.LOCATION_CHANGED, this.onLocationChanged);
       EventBus.unregister('taxonomy-selection', this.onTaxonomySelection);
       EventBus.unregister(EVENTS.QUERY_TYPE_SELECTION, this.onQueryTypeSelection);
@@ -1461,5 +1456,8 @@ class TableFixedHeaderUtility {
       EventBus.unregister(EVENTS.QUERY_TYPE_GRAPHICS_RESULTS, this.onGraphicsResult);
     }
   });
+
+  app.config.compilerOptions.whitespace = 'condense';
+  app.mount('#search-application');
 
 })();

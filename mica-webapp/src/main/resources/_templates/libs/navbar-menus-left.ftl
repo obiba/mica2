@@ -5,7 +5,7 @@
     <#if config??>
         <#if config.repositoryEnabled>
           <li id="repoMenu" class="nav-item dropdown">
-            <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><@message "repository"/></a>
+            <a href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><@message "repository"/></a>
             <ul aria-labelledby="repoMenu" class="dropdown-menu border-0 shadow">
                 <#if config.networkEnabled>
                   <li>
@@ -38,12 +38,12 @@
 
               <#if !config.harmonizationDatasetEnabled>
                 <li id="searchMenu" class="nav-item">
-                  <a href="<#if !config.openAccess && !user??>${contextPath}/signin?redirect=${contextPath}/search<#else>${contextPath}/search</#if>" aria-haspopup="true" aria-expanded="false" class="nav-link btn btn-success text-white"><@message "search"/> <i class="fas fa-search"></i></a>
+                  <a href="<#if !config.openAccess && !user??>${contextPath}/signin?redirect=${contextPath}/search<#else>${contextPath}/search</#if>" aria-haspopup="true" aria-expanded="false" class="nav-link btn btn-success text-white"><@message "search"/> <i class="fa-solid fa-search"></i></a>
                 </li>
               <#else>
 
               <li id="searchMenu" class="nav-item dropdown">
-                <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle btn btn-success text-white"><@message "search"/> <i class="fas fa-search"></i></a>
+                <a href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn btn-success dropdown-toggle"><@message "search"/> <i class="fa-solid fa-search"></i></a>
                 <ul aria-labelledby="searchMenu" class="dropdown-menu border-0 shadow">
                   <li>
                     <a href="<#if !config.openAccess && !user??>${contextPath}/signin?redirect=${contextPath}/individual-search${defaultIndividualSearchState?url('UTF-8')}<#else>${contextPath}/individual-search${defaultIndividualSearchState}</#if>" class="dropdown-item">
@@ -66,7 +66,7 @@
 
         <#if config.dataAccessEnabled && config.projectEnabled>
           <li id="researchMenu" class="nav-item dropdown">
-            <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><@message "research"/></a>
+            <a href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><@message "research"/></a>
             <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
               <li id="dataAccessProcessMenu" ><a href="${contextPath}/data-access-process" class="dropdown-item"><@message "data-access-process"/></a></li>
               <li id="projectMenu"><a href="${contextPath}/projects" class="dropdown-item"><@message "approved-projects"/></a></li>
@@ -79,8 +79,8 @@
         </#if>
 
         <#if config.dataAccessEnabled>
-          <li id="dataAccessMenu" class="nav-item <#if config.repositoryEnabled && !config.projectEnabled>ml-3</#if>">
-            <a href="${contextPath}/data-accesses" class="btn btn-warning"><@message "data-access"/> <i class="fas fa-arrow-circle-right"></i></a>
+          <li id="dataAccessMenu" class="nav-item <#if config.repositoryEnabled && !config.projectEnabled>ms-3</#if>">
+            <a href="${contextPath}/data-accesses" class="btn btn-warning"><@message "data-access"/> <i class="fa-solid fa-arrow-circle-right"></i></a>
           </li>
         </#if>
     </#if>

@@ -51,7 +51,7 @@
                   <@message "study.selection-criteria.pregnant-women"/>
                 </dt>
                 <dd class="col-sm-8">
-                  <ul class="pl-3">
+                  <ul class="ps-3">
                       <#list population.model.selectionCriteria.pregnantWomen as type>
                         <li>
                           <#assign text = "study_taxonomy.vocabulary.populations-selectionCriteria-pregnantWomen.term." + type + ".title"/>
@@ -67,9 +67,9 @@
               </dt>
               <dd class="col-sm-8">
                 <#if population.model.selectionCriteria.newborn?? && population.model.selectionCriteria.newborn == true>
-                  <i class="fas fa-check"></i>
+                  <i class="fa-solid fa-check"></i>
                 <#else>
-                  <i class="fas fa-times"></i>
+                  <i class="fa-solid fa-times"></i>
                 </#if>
               </dd>
 
@@ -78,9 +78,9 @@
               </dt>
               <dd class="col-sm-8">
                 <#if population.model.selectionCriteria.twins?? && population.model.selectionCriteria.twins == true>
-                  <i class="fas fa-check"></i>
+                  <i class="fa-solid fa-check"></i>
                 <#else>
-                  <i class="fas fa-times"></i>
+                  <i class="fa-solid fa-times"></i>
                 </#if>
               </dd>
 
@@ -89,7 +89,7 @@
                     <@message "client.label.countries"/>
                 </dt>
                 <dd class="col-sm-8">
-                  <ul class="pl-3">
+                  <ul class="ps-3">
                     <#list population.model.selectionCriteria.countriesIso as country>
                       <li>
                         <@message country/>
@@ -113,7 +113,7 @@
                   <@message "study.selection-criteria.ethnic-origin"/>
                 </dt>
                 <dd class="col-sm-8">
-                  <ul class="pl-3">
+                  <ul class="ps-3">
                     <#list population.model.selectionCriteria.ethnicOrigin as item>
                       <li>${localize(item)}</li>
                     </#list>
@@ -126,7 +126,7 @@
                   <@message "study.selection-criteria.health-status"/>
                 </dt>
                 <dd class="col-sm-8">
-                  <ul class="pl-3">
+                  <ul class="ps-3">
                     <#list population.model.selectionCriteria.healthStatus as item>
                       <li>${localize(item)}</li>
                     </#list>
@@ -177,7 +177,7 @@
                       <@message "study_taxonomy.vocabulary.populations-recruitment-dataSources.title"/>
                   </dt>
                   <dd class="col-sm-6">
-                    <ul class="pl-3">
+                    <ul class="ps-3">
                       <#list population.model.recruitment.dataSources as type>
                         <li>
                           <#assign text = "study_taxonomy.vocabulary.populations-recruitment-dataSources.term." + type + ".title"/>
@@ -196,7 +196,7 @@
                     <@message "study.recruitment-sources.general-population"/>
                   </dt>
                   <dd class="col-sm-6">
-                    <ul class="pl-3">
+                    <ul class="ps-3">
                       <#list population.model.recruitment.generalPopulationSources as type>
                         <li>
                           <#assign text = "study_taxonomy.vocabulary.populations-recruitment-generalPopulationSources.term." + type + ".title"/>
@@ -212,7 +212,7 @@
                     <@message "study.recruitment-sources.specific-population"/>
                   </dt>
                   <dd class="col-sm-6">
-                    <ul class="pl-3">
+                    <ul class="ps-3">
                       <#list population.model.recruitment.specificPopulationSources as type>
                         <li>
                           <#assign text = "study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.term." + type + ".title"/>
@@ -231,7 +231,7 @@
                       <@message "suppl-info"/>
                   </dt>
                   <dd class="col-sm-6">
-                    <div class="marked"><template>${localize(population.model.recruitment.info)}</template></div>
+                    <div class="marked">${localize(population.model.recruitment.info)}</div>
                   </dd>
                 </#if>
 
@@ -240,7 +240,7 @@
                     <@message "study.recruitment-sources.studies"/>
                   </dt>
                   <dd class="col-sm-6">
-                    <ul class="pl-3">
+                    <ul class="ps-3">
                       <#list population.model.recruitment.studies as item>
                         <li>${localize(item)}</li>
                       </#list>
@@ -282,7 +282,7 @@
                     <#if population.model.numberOfParticipants.participant.noLimit?? && population.model.numberOfParticipants.participant.noLimit == true>
                       <@message "numberOfParticipants.no-limit"/>
                     <#else>
-                      <i class="fas fa-minus"></i>
+                      <i class="fa-solid fa-minus"></i>
                     </#if>
                   </dd>
                 </#if>
@@ -305,7 +305,7 @@
                     <#if population.model.numberOfParticipants.sample.noLimit?? && population.model.numberOfParticipants.sample.noLimit == true>
                       <@message "numberOfParticipants.no-limit"/>
                     <#else>
-                      <i class="fas fa-minus"></i>
+                      <i class="fa-solid fa-minus"></i>
                     </#if>
                   </dd>
                 </#if>
@@ -360,8 +360,8 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title">${localize(population.name)}</h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            
           </button>
         </div>
         <div class="modal-body">
@@ -369,7 +369,7 @@
           <@populationModel population=population id=id/>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-dismiss="modal"><@message "close"/></button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><@message "close"/></button>
         </div>
       </div>
       <!-- /.modal-content -->

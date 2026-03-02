@@ -16,7 +16,7 @@
   <tr>
     <td><a href="${contextPath}/study/${study.id}">${localize(study.acronym)}</a></td>
     <td><small>${localize(study.name)}</small></td>
-    <td class="marked"><template><small>${localize(study.objectives)?trim?truncate_w(100, "...")}</small></template></td>
+    <td class="marked"><small>${localize(study.objectives)?trim?truncate_w(100, "...")}</small></td>
     <#if showTypeColumn>
       <td>
         <#if study.class.simpleName == "HarmonizationStudy">
@@ -43,9 +43,7 @@
   <div class="col-lg-9 col-sm-12">
     <h2 class="lead"><b>${localize(study.acronym)}</b></h2>
     <p class="text-muted text-sm">${localize(study.name)}</p>
-    <div class="marked">
-      <template>${localize(study.objectives)?trim?truncate_w(200, "...")}</template>
-    </div>
+    <div class="marked">${localize(study.objectives)?trim?truncate_w(200, "...")}</div>
     <div class="mt-2">
       <a href="${contextPath}/study/${study.id}" class="btn btn-sm btn-outline-info">
         <@message "global.read-more"/>
@@ -55,12 +53,12 @@
 </#macro>
 
 <#macro studyCardModelStats>
-  <a v-if="study.model && study.model.methods" href="javascript:void(0)" style="cursor: initial;" class="btn btn-sm col text-left">
-    <span class="h6 pb-0 mb-0 d-block">{{study.model.methods.design | translate}}</span>
+  <a v-if="study.model && study.model.methods" href="javascript:void(0)" style="cursor: initial;" class="btn btn-sm col text-start">
+    <span class="h6 pb-0 mb-0 d-block">{{translate(study.model.methods.design)}}</span>
     <span class="text-muted"><small><@message "study_taxonomy.vocabulary.methods-design.title"/></small></span>
   </a>
-  <a v-if="study.model && study.model.numberOfParticipants" href="javascript:void(0)" style="cursor: initial;" class="btn btn-sm col text-left">
-    <span class="h6 pb-0 mb-0 d-block">{{study.model.numberOfParticipants.participant.number | localize-number}}</span>
+  <a v-if="study.model && study.model.numberOfParticipants" href="javascript:void(0)" style="cursor: initial;" class="btn btn-sm col text-start">
+    <span class="h6 pb-0 mb-0 d-block">{{localizeNumber(study.model.numberOfParticipants.participant.number)}}</span>
     <span class="text-muted"><small><@message "study_taxonomy.vocabulary.numberOfParticipants-participant-number.title"/></small></span>
   </a>
 </#macro>
@@ -88,21 +86,21 @@
     <div class="col-6">
       <typeahead @typing="onType" @select="onSelect" :items="suggestions" :external-text="initialFilter"></typeahead>
     </div>
-    <div class="col-3 ml-auto">
-      <a href="${contextPath}/${listPageSearchMode}#lists?type=studies&query=study(in(Mica_study.className,(${className})))" class="btn btn-sm btn-primary float-right">
-        <@message "global.search"/> <i class="fas fa-search"></i>
+    <div class="col-3 ms-auto">
+      <a href="${contextPath}/${listPageSearchMode}#lists?type=studies&query=study(in(Mica_study.className,(${className})))" class="btn btn-sm btn-primary float-end">
+        <@message "global.search"/> <i class="fa-solid fa-search"></i>
       </a>
     </div>
   </div>
 
   <div class="row">
     <div class="col-12">
-      <div class="d-inline-flex float-right mt-3 mb-3">
+      <div class="d-inline-flex float-end mt-3 mb-3">
         <sorting @sort-update="onSortUpdate" :initial-choice="initialSort" :options-translations="sortOptionsTranslations"></sorting>
-        <span class="ml-2">
-          <select class="custom-select" id="obiba-page-size-selector-top"></select>
+        <span class="ms-2">
+          <select class="form-select" id="obiba-page-size-selector-top"></select>
         </span>
-        <nav id="obiba-pagination-top" aria-label="Top pagination" class="ml-2 mt-0">
+        <nav id="obiba-pagination-top" aria-label="Top pagination" class="ms-2 mt-0">
           <ul class="pagination mb-0"></ul>
         </nav>
       </div>
@@ -122,14 +120,14 @@
                 <div class="col-xs-12 col">
                   <h4 class="lead">
                     <a v-bind:href="'${contextPath}/study/' + study.id" class="mt-2">
-                      <b>{{study.name | localize-string}}</b>
+                      <b>{{localizeString(study.name)}}</b>
                     </a>
                   </h4>
-                  <span class="marked"><small :inner-html.prop="study.objectives | localize-string | ellipsis(300, ('${contextPath}/study/' + study.id)) | markdown"></small></span>
+                  <span class="marked"><small v-html="markdown(ellipsis(localizeString(study.objectives), 300, ('${contextPath}/study/' + study.id)))"></small></span>
                 </div>
                 <div class="col-3 mx-auto my-auto" v-if="study.logo">
                   <a v-bind:href="'${contextPath}/study/' + study.id" class="text-decoration-none text-center">
-                    <img class="img-fluid" style="max-height: 10em;" v-bind:alt="study.acronym | localize-string | concat(' logo')" v-bind:src="'${contextPath}/ws/study/' + study.id + '/file/' + study.logo.id + '/_download'"/>
+                    <img class="img-fluid" style="max-height: 10em;" v-bind:alt="concat(localizeString(study.acronym), ' logo')" v-bind:src="'${contextPath}/ws/study/' + study.id + '/file/' + study.logo.id + '/_download'"/>
                   </a>
                 </div>
               </div>
@@ -170,11 +168,11 @@
     </div>
   </div>
 
-  <div class="d-inline-flex pt-0 ml-auto">
+  <div class="d-inline-flex pt-0 ms-auto">
     <span>
-      <select class="custom-select" id="obiba-page-size-selector-bottom"></select>
+      <select class="form-select" id="obiba-page-size-selector-bottom"></select>
     </span>
-    <nav id="obiba-pagination-bottom" aria-label="Bottom pagination" class="ml-2 mt-0">
+    <nav id="obiba-pagination-bottom" aria-label="Bottom pagination" class="ms-2 mt-0">
       <ul class="pagination"></ul>
     </nav>
   </div>

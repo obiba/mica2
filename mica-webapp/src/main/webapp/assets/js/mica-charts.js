@@ -26,11 +26,12 @@ const makeVariableFrequenciesChartSettings = function(frequencies, backgroundCol
     sort: false,
     hole: 0.5,
     marker: {
-      colors: dataset.backgroundColors
+      colors: backgroundColors
     },
     hoverinfo: "label+value",
     values: dataset.data,
-    labels
+    labels,
+    showlegend: true
   }];
 };
 

@@ -61,7 +61,7 @@
   <div class="container">
     <div class="navbar-header">
       <a href="${contextPath}/" class="navbar-brand">{{micaConfig.name}}</a>
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
         <span class="sr-only">Toggle navigation</span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -166,11 +166,11 @@
 
   <div ng-view=""></div>
 
-  <footer class="hidden-print" ng-hide="!authenticated">
+  <footer class="d-print-none" ng-hide="!authenticated">
     <div class="row">
       <div class="col-lg-12">
         <ul class="list-unstyled list-inline">
-          <li class="pull-right">{{micaConfig.version}}</li>
+          <li class="float-end">{{micaConfig.version}}</li>
           <li>© 2025</li>
           <li><a href="http://obiba.org" target="_blank"> OBiBa </a></li>
           <li><a href="http://micadoc.obiba.org" target="_blank" translate>

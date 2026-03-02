@@ -14,14 +14,14 @@
   </title>
 </head>
 <body id="compare-page" class="hold-transition layout-top-nav layout-navbar-fixed">
-<div class="wrapper">
+<div class="app-wrapper d-flex flex-column min-vh-100">
 
   <!-- Navbar -->
   <#include "libs/top-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
+ <div class="app-main flex-fill">
     <!-- Content Header (Page header) -->
     <div class="content-header bg-info mb-4">
       <div class="container">
@@ -64,7 +64,7 @@
             <div class="card-body">
               <#if ids?size gt (individualStudies?size + harmonizationStudies?size)>
                 <div class="alert alert-warning alert-dismissible">
-                  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-hidden="true">×</button>
                   <@messageArgs code="compare-max-items" args=["${config.maxItemsPerCompare}"]/>
                 </div>
               </#if>
@@ -76,17 +76,17 @@
                   <ul id="studies-tabs" class="nav nav-pills mb-3">
                     <#if individualStudies?size gt 0>
                       <li class="nav-item">
-                        <a id="individual-studies-tab" class="nav-link active" href="#tab_individual_studies" data-toggle="tab">
+                        <a id="individual-studies-tab" class="nav-link active" href="#tab_individual_studies" data-bs-toggle="tab">
                             <@message "individual"/>
-                          <span class="badge badge-light">${individualStudies?size}</span>
+                          <span class="badge text-bg-light">${individualStudies?size}</span>
                         </a>
                       </li>
                     </#if>
                     <#if harmonizationStudies?size gt 0>
                       <li class="nav-item">
-                        <a id="harmonization-studies-tab" class="nav-link" href="#tab_harmonization_studies" data-toggle="tab">
+                        <a id="harmonization-studies-tab" class="nav-link" href="#tab_harmonization_studies" data-bs-toggle="tab">
                             <@message "harmonization"/>
-                          <span class="badge badge-light">${harmonizationStudies?size}</span>
+                          <span class="badge text-bg-light">${harmonizationStudies?size}</span>
                         </a>
                       </li>
                     </#if>
@@ -95,9 +95,9 @@
                 <div class="tab-content">
                   <div class="tab-pane active" id="tab_individual_studies">
                     <#if individualQuery??>
-                      <div class="float-right">
-                        <a class="btn btn-sm btn-info ml-2" href="${contextPath}/individual-search#lists?type=${type}&query=${individualQuery}">
-                          <i class="fas fa-search"></i>
+                      <div class="float-end">
+                        <a class="btn btn-sm btn-info ms-2" href="${contextPath}/individual-search#lists?type=${type}&query=${individualQuery}">
+                          <i class="fa-solid fa-search"></i>
                         </a>
                       </div>
                     </#if>
@@ -119,9 +119,9 @@
                   </div>
                   <div class="tab-pane <#if individualStudies?size == 0>active</#if>" id="tab_harmonization_studies">
                     <#if harmonizationQuery??>
-                      <div class="float-right">
-                        <a class="btn btn-sm btn-info ml-2" href="${contextPath}/harmonization-search#lists?type=${type}&query=${harmonizationQuery}">
-                          <i class="fas fa-search"></i>
+                      <div class="float-end">
+                        <a class="btn btn-sm btn-info ms-2" href="${contextPath}/harmonization-search#lists?type=${type}&query=${harmonizationQuery}">
+                          <i class="fa-solid fa-search"></i>
                         </a>
                       </div>
                     </#if>
@@ -155,7 +155,7 @@
             <div class="card-body">
               <#if ids?size gt networks?size>
                 <div class="alert alert-warning alert-dismissible">
-                  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-hidden="true">×</button>
                     <@messageArgs code="compare-max-items" args=["${config.maxItemsPerCompare}"]/>
                 </div>
               </#if>
@@ -163,9 +163,9 @@
                 <span class="text-muted"><@message "compare-networks-none"/></span>
               <#else>
                 <#if query??>
-                  <div class="float-right">
-                    <a class="btn btn-sm btn-info ml-2" href="${contextPath}/search#lists?type=${type}&query=${query}">
-                      <i class="fas fa-search"></i>
+                  <div class="float-end">
+                    <a class="btn btn-sm btn-info ms-2" href="${contextPath}/search#lists?type=${type}&query=${query}">
+                      <i class="fa-solid fa-search"></i>
                     </a>
                   </div>
                 </#if>

@@ -16,7 +16,7 @@
   <tr>
     <td><a href="${contextPath}/dataset/${dataset.id}">${localize(dataset.acronym)}</a></td>
     <td><small>${localize(dataset.name)}</small></td>
-    <td class="marked"><template><small>${localize(dataset.description)?trim?truncate_w(100, "...")}</small></template></td>
+    <td class="marked"><small>${localize(dataset.description)?trim?truncate_w(100, "...")}</small></td>
     <#if showTypeColumn>
       <td>
         <#if dataset.class.simpleName == "HarmonizationDataset">
@@ -45,9 +45,7 @@
   <div class="col-lg-9 col-sm-12">
     <h2 class="lead"><b>${localize(dataset.acronym)}</b></h2>
     <p class="text-muted text-sm">${localize(dataset.name)}</p>
-    <div class="marked">
-      <template>${localize(dataset.description)?trim?truncate_w(200, "...")}</template>
-    </div>
+    <div class="marked">${localize(dataset.description)?trim?truncate_w(200, "...")}</div>
     <div class="mt-2">
       <a href="${contextPath}/dataset/${dataset.id}" class="btn btn-sm btn-outline-info">
         <@message "global.read-more"/>
@@ -80,9 +78,9 @@
       <typeahead @typing="onType" @select="onSelect" :items="suggestions" :external-text="initialFilter"></typeahead>
     </div>
     <#if searchDatasetListDisplay>
-      <div class="col-3 ml-auto">
-        <a href="${contextPath}/${listPageSearchMode}#lists?type=datasets&query=study(in(Mica_study.className,(${className})))" class="btn btn-sm btn-primary float-right">
-          <@message "global.search"/> <i class="fas fa-search"></i>
+      <div class="col-3 ms-auto">
+        <a href="${contextPath}/${listPageSearchMode}#lists?type=datasets&query=study(in(Mica_study.className,(${className})))" class="btn btn-sm btn-primary float-end">
+          <@message "global.search"/> <i class="fa-solid fa-search"></i>
         </a>
       </div>
     </#if>
@@ -90,12 +88,12 @@
 
   <div class="row">
     <div class="col-12">
-      <div class="d-inline-flex float-right mt-3 mb-3">
+      <div class="d-inline-flex float-end mt-3 mb-3">
         <sorting @sort-update="onSortUpdate" :initial-choice="initialSort" :options-translations="sortOptionsTranslations"></sorting>
-        <span class="ml-2">
-          <select class="custom-select" id="obiba-page-size-selector-top"></select>
+        <span class="ms-2">
+          <select class="form-select" id="obiba-page-size-selector-top"></select>
         </span>
-        <nav id="obiba-pagination-top" aria-label="Top pagination" class="ml-2 mt-0">
+        <nav id="obiba-pagination-top" aria-label="Top pagination" class="ms-2 mt-0">
           <ul class="pagination mb-0"></ul>
         </nav>
       </div>
@@ -116,10 +114,10 @@
                 <div class="col-12">
                   <h4 class="lead">
                     <a v-bind:href="'${contextPath}/dataset/' + dataset.id" class="mt-2">
-                      <b>{{dataset.name | localize-string}}</b>
+                      <b>{{localizeString(dataset.name)}}</b>
                     </a>
                   </h4>
-                  <span class="marked"><small :inner-html.prop="dataset.description | localize-string | ellipsis(300) | markdown"></small></span>
+                  <span class="marked"><small v-html="markdown(ellipsis(localizeString(dataset.description), 300))"></small></span>
                 </div>
               </div>
             </div>
@@ -128,8 +126,8 @@
                 <template v-if="hasStats(dataset)">
                   <stat-item
                     v-bind:count="dataset.countStats.networks"
-                    v-bind:singular="'network' | translate"
-                    v-bind:plural="'networks' | translate"
+                    v-bind:singular="translate('network')"
+                    v-bind:plural="translate('networks')"
                     v-bind:url="networks(dataset)">
                   </stat-item>
                   <study-stat-item
@@ -145,7 +143,7 @@
                 </template>
                 <template v-else>
                   <!-- HACK used 'datasetsWithVariables' with opacity ZERO to have the same height as the longest stat item -->
-                  <a href="javascript:void(0)" class="btn btn-sm text-left" style="cursor: initial; opacity: 0">
+                  <a href="javascript:void(0)" class="btn btn-sm text-start" style="cursor: initial; opacity: 0">
                     <span class="h6 pb-0 mb-0 d-block">0</span>
                     <span class="text-muted"><small><@message "analysis.empty"/></small></span>
                   </a>
@@ -158,11 +156,11 @@
     </div>
   </div>
 
-  <div class="d-inline-flex pt-0 ml-auto">
+  <div class="d-inline-flex pt-0 ms-auto">
     <span>
-      <select class="custom-select" id="obiba-page-size-selector-bottom"></select>
+      <select class="form-select" id="obiba-page-size-selector-bottom"></select>
     </span>
-    <nav id="obiba-pagination-bottom" aria-label="Bottom pagination" class="ml-2 mt-0">
+    <nav id="obiba-pagination-bottom" aria-label="Bottom pagination" class="ms-2 mt-0">
       <ul class="pagination"></ul>
     </nav>
   </div>

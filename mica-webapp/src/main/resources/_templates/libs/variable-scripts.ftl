@@ -1,18 +1,18 @@
 <!-- ChartJS -->
-<script src="${adminLTEPath}/plugins/chart.js/Chart.min.js"></script>
+<script src="${assetsPath}/libs/node_modules/chart.js/dist/chart.umd.js"></script>
 <script src="${assetsPath}/js/mica-charts.js"></script>
 <script src="${assetsPath}/libs/node_modules/plotly.js-dist-min/plotly.min.js"></script>
 
 <!-- Files -->
-<script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>
+<script src="${assetsPath}/libs/node_modules/vue/dist/vue.global.js"></script>
 <script src="${assetsPath}/js/mica-files.js"></script>
 
 <!-- Repository -->
 <script src="${assetsPath}/js/mica-repo.js"></script>
 
 <!-- Mica variable and dependencies -->
-<script src="${adminLTEPath}/plugins/select2/js/select2.js"></script>
-<script src="${adminLTEPath}/plugins/select2/js/i18n/${.lang}.js"></script>
+<script src="${assetsPath}/libs/node_modules/select2/dist/js/select2.full.js"></script>
+<script src="${assetsPath}/libs/node_modules/select2/dist/js/i18n/${.lang}.js"></script>
 <script src="${assetsPath}/js/mica-variable.js"></script>
 
 <script>

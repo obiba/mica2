@@ -19,14 +19,14 @@
   <title>${config.name!""} | ${variable.name}</title>
 </head>
 <body id="${type?lower_case}-variable-page" class="hold-transition layout-top-nav layout-navbar-fixed">
-<div class="wrapper">
+<div class="app-wrapper d-flex flex-column min-vh-100">
 
   <!-- Navbar -->
   <#include "libs/top-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
+ <div class="app-main flex-fill">
     <!-- Content Header (Page header) -->
     <#assign title = variable.name/>
     <#if opalTable?? && opalTable.name??>
@@ -40,17 +40,17 @@
       <div class="container">
         <div class="callout callout-info">
           <#if variable.attributes?? && variable.attributes.label??>
-            <p class="marked"><template>${localize(variable.attributes.label)}</template></p>
+            <p class="marked">${localize(variable.attributes.label)}</p>
           <#else>
             <p class="text-muted"><@message "no-label"/></p>
           </#if>
           <#if variable.attributes?? && variable.attributes.description??>
-            <p class="marked text-muted"><template><i class="fas fa-info-circle"></i> ${localize(variable.attributes.description)}</template></p>
+            <p class="marked text-muted"><i class="fa-solid fa-info-circle"></i> ${localize(variable.attributes.description)}</p>
           </#if>
         </div>
 
         <div class="row">
-          <div class="col-xs-12 col-lg-6 pl-2">
+          <div class="col-xs-12 col-lg-6 ps-2">
             <div class="card card-info card-outline">
               <div class="card-header">
                 <h3 class="card-title"><@message "overview"/></h3>
@@ -77,7 +77,7 @@
                   </#if>
                   <#if variable.repeatable?? && variable.repeatable>
                     <dt class="col-sm-4"><@message "repeatable"/></dt>
-                    <dd class="col-sm-8"><i class="fas fa-check"></i></dd>
+                    <dd class="col-sm-8"><i class="fa-solid fa-check"></i></dd>
                     <dt class="col-sm-4"><@message "occurrence-group"/></dt>
                     <dd class="col-sm-8">${variable.occurrenceGroup}</dd>
                   </#if>
@@ -104,7 +104,7 @@
                                 ${localize(category.attributes.label)}
                               </#if>
                             </td>
-                            <td><#if category.missing><i class="fas fa-check"></i></#if></td>
+                            <td><#if category.missing><i class="fa-solid fa-check"></i></#if></td>
                           </tr>
                         </#list>
                         </tbody>
@@ -117,21 +117,21 @@
                 <div class="card-footer">
                   <#if user?? || cartAnonymousEnabled>
                     <a id="cart-add" href="javascript:void(0)" onclick="onVariablesCartAdd('${variableCartId}')" style="display: none;">
-                      <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
+                      <@message "sets.cart.add-to-cart"/> <i class="fa-solid fa-cart-plus"></i>
                     </a>
                     <a id="cart-remove" href="javascript:void(0)" onclick="onVariablesCartRemove('${variableCartId}')" style="display: none;">
-                      <@message "sets.cart.remove-from-cart"/> <i class="fas fa-cart-arrow-down"></i>
+                      <@message "sets.cart.remove-from-cart"/> <i class="fa-solid fa-cart-arrow-down"></i>
                     </a>
                   <#else>
                     <a href="${contextPath}/signin?redirect=${contextPath}/variable/${variable.id}">
-                      <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
+                      <@message "sets.cart.add-to-cart"/> <i class="fa-solid fa-cart-plus"></i>
                     </a>
                   </#if>
                 </div>
               </#if>
             </div>
           </div>
-          <div class="col-xs-12 col-lg-6 pr-2">
+          <div class="col-xs-12 col-lg-6 pe-2">
             <div class="card card-info card-outline">
               <div class="card-header">
                 <h3 class="card-title"><@message "definition"/></h3>
@@ -169,7 +169,7 @@
                     <dt class="col-sm-4"><@message "population"/></dt>
                     <dd class="col-sm-8">
                       <#if studyPublished>
-                        <a href="#" data-toggle="modal" data-target="#modal-${population.id}">${localize(population.name, population.id)}</a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${population.id}">${localize(population.name, population.id)}</a>
                         <@populationDialog id=population.id population=population></@populationDialog>
                       <#else>
                         ${localize(population.name, population.id)}
@@ -180,7 +180,7 @@
                       <dd class="col-sm-8">
                         <#if studyPublished>
                         <#assign dceId="${population.id}-${dce.id}">
-                        <a href="#" data-toggle="modal" data-target="#modal-${dceId}">${localize(dce.name, dce.id)}</a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${dceId}">${localize(dce.name, dce.id)}</a>
                         <@dceDialog id=dceId dce=dce></@dceDialog>
                         <#else>
                           ${localize(dce.name, dce.id)}
@@ -211,7 +211,7 @@
 
 
         <div class="row">
-          <div class="col-sm-12 col-lg-6 pl-2">
+          <div class="col-sm-12 col-lg-6 ps-2">
             <#if annotations?? && annotations?size != 0>
               <div class="card card-info card-outline">
                 <div class="card-header">
@@ -224,26 +224,26 @@
                         ${localize(annotation.vocabularyTitle)}
                       </dt>
                       <dd class="col-sm-8" title="<#if annotation.termDescription??>${localize(annotation.termDescription)}</#if>">
-                        <span class="marked"><template>${localize(annotation.termTitle)}</template></span>
+                        <span class="marked">${localize(annotation.termTitle)}</span>
                       </dd>
                     </#list>
                   </dl>
                 </div>
                 <div class="card-footer">
                   <a href="${contextPath}/<#if type != "Collected">harmonization-search<#else>individual-search</#if>#lists?type=variables&query=${query}">
-                    <@message "find-similar-variables"/> <i class="fas fa-search"></i>
+                    <@message "find-similar-variables"/> <i class="fa-solid fa-search"></i>
                   </a>
                 </div>
               </div>
             </#if>
           </div>
-          <div class="col-sm-12 col-lg-6 pr-2">
+          <div class="col-sm-12 col-lg-6 pe-2">
             <#if type == "Harmonized">
               <div class="card card-${harmoAnnotations.statusClass} card-outline">
                 <div class="card-header">
                   <h3 class="card-title"><@message "harmonization"/>
                   <#if harmoAnnotations.hasStatus()>
-                    <span class=" badge badge-${harmoAnnotations.statusClass}">
+                    <span class="badge text-bg-${harmoAnnotations.statusClass}">
                       ${localize(harmoAnnotations.statusValueTitle, harmoAnnotations.statusValue!"-")}
                     </span>
                   </#if>
@@ -268,7 +268,7 @@
                             ${localize(harmoAnnotations.algorithmTitle, "Algorithm")}
                         </dt>
                         <dd>
-                          <span class="marked mt-3"><template>${localize(harmoAnnotations.algorithmValue!"")}</template></span>
+                          <span class="marked mt-3">${localize(harmoAnnotations.algorithmValue!"")}</span>
                         </dd>
                       </#if>
 
@@ -278,7 +278,7 @@
                           ${localize(harmoAnnotations.commentTitle, "Comment")}
                         </dt>
                         <dd>
-                          <span class="marked"><template>${localize(harmoAnnotations.commentValue!"")}</template></span>
+                          <span class="marked">${localize(harmoAnnotations.commentValue!"")}</span>
                         </dd>
                       </#if>
                     </dl>
@@ -297,12 +297,12 @@
                   <h3 class="card-title"><@message "summary-statistics"/></h3>
                   <#if showDatasetContingencyLink>
                     <#if variable.nature == "CATEGORICAL">
-                      <a class="btn btn-primary float-right" href="${contextPath}/dataset-crosstab/${variable.datasetId}?var1=${variable.name}">
-                        <i class="fas fa-cog"></i> <@message "dataset.crosstab.title"/>
+                      <a class="btn btn-primary float-end" href="${contextPath}/dataset-crosstab/${variable.datasetId}?var1=${variable.name}">
+                        <i class="fa-solid fa-cog"></i> <@message "dataset.crosstab.title"/>
                       </a>
                     <#elseif variable.nature == "CONTINUOUS">
-                      <a class="btn btn-primary float-right" href="${contextPath}/dataset-crosstab/${variable.datasetId}?var2=${variable.name}">
-                        <i class="fas fa-cog"></i> <@message "dataset.crosstab.title"/>
+                      <a class="btn btn-primary float-end" href="${contextPath}/dataset-crosstab/${variable.datasetId}?var2=${variable.name}">
+                        <i class="fa-solid fa-cog"></i> <@message "dataset.crosstab.title"/>
                       </a>
                     </#if>
                   </#if>

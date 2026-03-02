@@ -3,7 +3,7 @@
 
   <#if showHarmonizedVariableSummarySelector>
     <div style="display: none;" class="mb-4">
-      <select id="select-study" class="form-control select2 float-right" style="width: 100%;"></select>
+      <select id="select-study" class="form-select float-end" style="width: 100%;"></select>
     </div>
   </#if>
 
@@ -12,7 +12,7 @@
       <div class="col-xs-12 col-lg-6">
         <dl class="row">
           <dt class="col-sm-4">N</dt>
-          <dd class="col-sm-8"><span id="n" class="badge badge-info"></span></dd>
+          <dd class="col-sm-8"><span id="n" class="badge text-bg-info"></span></dd>
           <dt class="col-sm-4"><@message "n-values"/></dt>
           <dd id="n-values" class="col-sm-8"></dd>
           <dt class="col-sm-4"><@message "n-missings"/></dt>

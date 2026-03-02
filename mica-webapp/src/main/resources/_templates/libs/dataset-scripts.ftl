@@ -1,10 +1,10 @@
 <!-- ChartJS -->
-<script src="${adminLTEPath}/plugins/chart.js/Chart.min.js"></script>
+<script src="${assetsPath}/libs/node_modules/chart.js/dist/chart.umd.js"></script>
 <script src="${assetsPath}/js/mica-charts.js"></script>
 <script src="${assetsPath}/libs/node_modules/plotly.js-dist-min/plotly.min.js"></script>
 
 <!-- Files -->
-<script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>
+<script src="${assetsPath}/libs/node_modules/vue/dist/vue.global.js"></script>
 <script src="${assetsPath}/js/mica-files.js"></script>
 
 <!-- Repository -->
@@ -150,7 +150,11 @@
     const filesTr = {
       'item': "<@message "item"/>",
       'items': "<@message "items"/>",
-      'download': "<@message "download"/>"
+      'download': "<@message "download"/>",
+      'name': "<@message "name"/>",
+      'description': "<@message "description"/>",
+      'size': "<@message "size"/>",
+      'actions': "<@message "actions"/>"
     };
     <#if showDatasetFiles>
       makeFilesVue('#files-app', {

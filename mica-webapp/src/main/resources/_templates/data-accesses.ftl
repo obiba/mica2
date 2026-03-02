@@ -10,14 +10,14 @@
   <title>${config.name!""} | <@message "data-access-requests"/></title>
 </head>
 <body id="data-accesses-page" class="hold-transition layout-top-nav layout-navbar-fixed">
-<div class="wrapper">
+<div class="app-wrapper d-flex flex-column min-vh-100">
 
   <!-- Navbar -->
   <#include "libs/top-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
+ <div class="app-main flex-fill">
     <!-- Content Header (Page header) -->
     <@header title="data-access-requests"/>
     <!-- /.content-header -->
@@ -30,8 +30,8 @@
           <div class="alert alert-info">
             <h6><i class="icon fas fa-lock"></i> <@message "security-info"/></h6>
               <@message "2fa-info"/>
-              <a href="${contextPath}/profile" class="ml-2">
-                  <i class="fa fa-arrow-right"></i> <@message "profile"/>
+              <a href="${contextPath}/profile" class="ms-2">
+                  <i class="fa-solid fa-arrow-right"></i> <@message "profile"/>
               </a>
           </div>
         </#if>
@@ -51,13 +51,13 @@
             <div class="card-header p-0 border-bottom-0 ">
               <ul class="nav nav-tabs" id="tabs-tab" role="tablist">
                 <li class="nav-item">
-                  <a class="nav-link active" id="tabs-dars-tab" data-toggle="pill" href="#tabs-dars" role="tab" aria-controls="tabs-dars" aria-selected="true">
-                    <@message "data-access-requests"/> <span class="badge badge-info">${dars?size}</span>
+                  <a class="nav-link active" id="tabs-dars-tab" data-bs-toggle="pill" href="#tabs-dars" role="tab" aria-controls="tabs-dars" aria-selected="true">
+                    <@message "data-access-requests"/> <span class="badge bg-info">${dars?size}</span>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" id="tabs-users-tab" data-toggle="pill" href="#tabs-users" role="tab" aria-controls="tabs-users" aria-selected="false">
-                    <@message "registered-users"/> <span class="badge badge-info">${users?size}</span>
+                  <a class="nav-link" id="tabs-users-tab" data-bs-toggle="pill" href="#tabs-users" role="tab" aria-controls="tabs-users" aria-selected="false">
+                    <@message "registered-users"/> <span class="badge bg-info">${users?size}</span>
                   </a>
                 </li>
               </ul>
@@ -71,8 +71,8 @@
 
             <#macro darList>
               <div class="mb-3">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-add">
-                  <i class="fas fa-plus"></i> <@message "new-data-access-request"/>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-add">
+                  <i class="fa-solid fa-plus"></i> <@message "new-data-access-request"/>
                 </button>
               </div>
               <#if dars?? && dars?size gt 0>
@@ -111,7 +111,7 @@
                         <td><a href="${contextPath}/data-access/${dar.id}">${dar.id}</a></td>
                         <#if isAdministrator || isDAO>
                           <td>
-                            <a href="#" data-toggle="modal" data-target="#modal-${dar.applicant?replace("\\W", "-", "r")}">${applicants[dar.applicant].fullName}</a>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${dar.applicant?replace("\\W", "-", "r")}">${applicants[dar.applicant].fullName}</a>
                           </td>
                         </#if>
                         <td>${dar.title!""}</td>
@@ -127,11 +127,11 @@
                           <td>${dar.pendingAgreements}/${dar.totalAgreements}</td>
                         </#if>
                         <#if accessConfig.preliminaryEnabled>
-                          <td><i class="fas fa-circle text-${statusColor(dar.preliminary.status.toString())}"></i> <@message dar.preliminary.status.toString()/></td>
+                          <td><i class="fa-solid fa-circle text-${statusColor(dar.preliminary.status.toString())}"></i> <@message dar.preliminary.status.toString()/></td>
                         </#if>
-                        <td><i class="fas fa-circle text-${statusColor(dar.status.toString())}"></i> <@message dar.status.toString()/></td>
+                        <td><i class="fa-solid fa-circle text-${statusColor(dar.status.toString())}"></i> <@message dar.status.toString()/></td>
                         <#if dataAccessArchiveEnabled>
-                          <td><#if dar.archived><i class="fas fa-check"></i></#if></td>
+                          <td><#if dar.archived><i class="fa-solid fa-check"></i></#if></td>
                         </#if>
                       </tr>
                     </#list>
@@ -165,11 +165,11 @@
                         <#list users as profile>
                           <tr>
                             <td>
-                              <a href="#" data-toggle="modal" data-target="#modal-${profile.username?replace("\\W", "-", "r")}">${profile.fullName}</a>
+                              <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${profile.username?replace("\\W", "-", "r")}">${profile.fullName}</a>
                             </td>
                             <td>
                               <#list profile.groups as group>
-                                <span class="badge badge-info">${group}</span>
+                                <span class="badge bg-info">${group}</span>
                               </#list>
                             </td>
                             <td data-sort="${profile.attributes["createdDate"].toString()}" class="moment-datetime">${profile.attributes["createdDate"].toString()}</td>
@@ -210,16 +210,14 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title"><@message "confirm-creation"/></h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">          </button>
         </div>
         <div class="modal-body">
           <p><@message "confirm-data-access-request-creation"/></p>
         </div>
         <div class="modal-footer justify-content-between">
-          <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
-          <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="DataAccessService.create()"><@message "confirm"/></button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="DataAccessService.create()"><@message "confirm"/></button>
         </div>
       </div>
       <!-- /.modal-content -->

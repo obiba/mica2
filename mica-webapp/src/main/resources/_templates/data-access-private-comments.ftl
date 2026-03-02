@@ -8,9 +8,9 @@
   <#include "libs/data-access-comments-head.ftl">
   <title>${config.name!""} | <@message "data-access-private-comments"/> ${dar.id}</title>
 </head>
-<body id="data-access-private-comments-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
+<body id="data-access-private-comments-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed sidebar-expand-lg">
 <!-- Site wrapper -->
-<div class="wrapper">
+<div class="app-wrapper">
 
   <!-- Navbar -->
     <#include "libs/aside-navbar.ftl">
@@ -21,7 +21,7 @@
   <!-- /.sidebar -->
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
+ <div class="app-main flex-fill">
     <!-- Content Header (Page header) -->
     <section class="content-header bg-info mb-4">
       <div class="container-fluid">
@@ -40,6 +40,7 @@
 
     <!-- Main content -->
     <section class="content">
+      <div class="container-fluid">
 
       <#if dar.archived>
         <div class="ribbon-wrapper ribbon-xl">
@@ -79,8 +80,8 @@
                 <textarea id="comment-add-write-text"></textarea>
               </div><!-- /.card-body -->
               <div class="card-footer">
-                <button id="send-comment" type="button" class="btn btn-secondary float-right">
-                  <i class="fa fa-paper-plane"></i> <@message "send-comment"/>
+                <button id="send-comment" type="button" class="btn btn-secondary float-end">
+                  <i class="fa-solid fa-paper-plane"></i> <@message "send-comment"/>
                 </button>
               </div><!-- /.card-footer -->
             </div>
@@ -89,6 +90,7 @@
         </div>
       </#if>
 
+      </div><!-- /.container-fluid -->
     </section>
     <!-- /.content -->
   </div>

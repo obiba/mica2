@@ -29,14 +29,14 @@
   <link rel="stylesheet" href="${contextPath}/bower_components/mica-study-timeline/dist/mica-study-timeline.css" />
 </head>
 <body id="${type?lower_case}-study-page" class="hold-transition layout-top-nav layout-navbar-fixed">
-<div class="wrapper">
+<div class="app-wrapper d-flex flex-column min-vh-100">
 
   <!-- Navbar -->
   <#include "libs/top-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
+ <div class="app-main flex-fill">
     <!-- Content Header (Page header) -->
     <@header titlePrefix=(type?lower_case + "-study") title=localize(study.acronym) subtitle=localize(study.name) breadcrumb=[["..", "home"], ["${contextPath}/${title}", "${title}"], [localize(study.acronym)]]/>
     <!-- /.content-header -->
@@ -75,7 +75,7 @@
                     <div class="col-md-3 col-sm-6 col-12">
                       <div class="info-box">
                         <span class="info-box-icon bg-info">
-                          <a href="${contextPath}/${detailsPageSearchMode}#lists?type=networks&query=${searchPageQuery}">
+                          <a href="${contextPath}/${detailsPageSearchMode}#lists?type=networks&query=${searchPageQuery}" class="text-white">
                             <i class="${networkIcon}"></i>
                           </a>
                         </span>
@@ -92,7 +92,7 @@
                     <div class="col-md-3 col-sm-6 col-12">
                       <div class="info-box">
                         <span class="info-box-icon bg-warning">
-                          <a href="${contextPath}/${detailsPageSearchMode}#lists?type=datasets&query=${searchPageQuery}">
+                          <a href="${contextPath}/${detailsPageSearchMode}#lists?type=datasets&query=${searchPageQuery}" class="text-dark">
                             <i class="<#if type == "Harmonization">${dataschemaIcon}<#else>${variableIcon}</#if>"></i>
                           </a>
                         </span>
@@ -109,7 +109,7 @@
                     <div class="col-md-3 col-sm-6 col-12">
                       <div class="info-box">
                         <span class="info-box-icon bg-danger">
-                          <a href="${contextPath}/${detailsPageSearchMode}#lists?type=variables&query=${searchPageQuery}">
+                          <a href="${contextPath}/${detailsPageSearchMode}#lists?type=variables&query=${searchPageQuery}" class="text-white">
                             <i class="<#if type == "Harmonization">${dataschemaIcon}<#else>${variableIcon}</#if>"></i>
                           </a>
                         </span>
@@ -136,14 +136,14 @@
                 <div class="card-footer">
                   <#if user?? || cartAnonymousEnabled>
                     <a id="cart-add" href="javascript:void(0)" onclick="onStudiesCartAdd('${study.id}')" style="display: none;">
-                        <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
+                        <@message "sets.cart.add-to-cart"/> <i class="fa-solid fa-cart-plus"></i>
                     </a>
                     <a id="cart-remove" href="javascript:void(0)" onclick="onStudiesCartRemove('${study.id}')" style="display: none;">
-                        <@message "sets.cart.remove-from-cart"/> <i class="fas fa-cart-arrow-down"></i>
+                        <@message "sets.cart.remove-from-cart"/> <i class="fa-solid fa-cart-arrow-down"></i>
                     </a>
                   <#else>
                     <a href="${contextPath}/signin?redirect=${contextPath}/study/${study.id}">
-                        <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
+                        <@message "sets.cart.add-to-cart"/> <i class="fa-solid fa-cart-plus"></i>
                     </a>
                   </#if>
                 </div>
@@ -159,15 +159,15 @@
               <div class="card card-primary card-outline">
                 <div class="card-header">
                   <h3 class="card-title"><@message "members"/></h3>
-                  <div class="card-tools float-right">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
-                      <i class="fas fa-minus"></i></button>
+                  <div class="card-tools float-end">
+                    <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#member-card" aria-expanded="true" title="<@message "collapse"/>">
+                      <i class="fa-solid fa-minus"></i></button>
                   </div>
-                  <a href="${contextPath}/ws/persons/_search/_download?limit=1000&query=studyMemberships.parentId:(${study.id})" class="btn btn-primary float-right mr-2">
-                    <i class="fas fa-download"></i> <@message "download"/>
+                  <a href="${contextPath}/ws/persons/_search/_download?limit=1000&query=studyMemberships.parentId:(${study.id})" class="btn btn-primary float-end me-2">
+                    <i class="fa-solid fa-download"></i> <@message "download"/>
                   </a>
                 </div>
-                <div class="card-body">
+                <div id="member-card" class="card-body collapse show">
                   <div class="table-responsive">
                     <table class="table">
                       <thead>
@@ -237,7 +237,7 @@
                     <#else>
                       <ul class="nav nav-pills mb-3">
                         <#list study.populationsSorted as pop>
-                          <li class="nav-item"><a class="nav-link <#if pop?index == 0>active</#if>" href="#population-${pop.id}" data-toggle="tab">
+                          <li class="nav-item"><a class="nav-link <#if pop?index == 0>active</#if>" href="#population-${pop.id}" data-bs-toggle="tab">
                             ${localize(pop.name)}</a>
                           </li>
                         </#list>

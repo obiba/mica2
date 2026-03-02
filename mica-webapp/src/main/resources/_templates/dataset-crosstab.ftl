@@ -8,14 +8,14 @@
   <title>${config.name!""} | ${localize(dataset.acronym)} | <@message "dataset.crosstab.title"/></title>
 </head>
 <body id="dataset-crosstab-page" class="hold-transition layout-top-nav layout-navbar-fixed">
-<div class="wrapper">
+<div class="app-wrapper d-flex flex-column min-vh-100">
 
   <!-- Navbar -->
     <#include "libs/top-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
+ <div class="app-main flex-fill">
     <!-- Content Header (Page header) -->
     <@header titlePrefix=(type?lower_case + "-dataset-crosstab") title=(localize(dataset.acronym)) subtitle=localize(dataset.name) breadcrumb=[["/", "home"], ["/datasets", "datasets"], [localize(dataset.acronym)]]/>
     <!-- /.content-header -->
@@ -36,23 +36,23 @@
           <div class="card-body">
             <div class="row">
               <div class="col-3">
-                <select id="select-var1" class="form-control select2" style="width: 100%;"></select>
+                <select id="select-var1" class="form-select" style="width: 100%;"></select>
               </div>
               <div class="col-1 text-center">
-                <i class="fa fa-2x fa-times"></i>
+                <i class="fa-solid fa-2x fa-times"></i>
               </div>
               <div class="col-3">
-                <select id="select-var2" class="form-control select2" style="width: 100%;"></select>
+                <select id="select-var2" class="form-select" style="width: 100%;"></select>
               </div>
               <div class="col-3">
                 <a id="submit" class="btn btn-primary" href="#"><@message "submit"/></a>
-                <button id="clear" class="btn btn-default" onclick="clearCrosstab()"><@message "clear"/></button>
+                <button id="clear" class="btn btn-secondary" onclick="clearCrosstab()"><@message "clear"/></button>
               </div>
             </div>
           </div>
           <div class="card-footer">
               <#if type == "Harmonized"><@message "associated-protocol"/><#else><@message "associated-dataset"/></#if>
-            <a class="btn btn-success ml-2" href="${contextPath}/dataset/${dataset.id}">
+            <a class="btn btn-success ms-2" href="${contextPath}/dataset/${dataset.id}">
               <#if type == "Collected">
                 <i class="${datasetIcon}"></i>
               <#else>
@@ -66,22 +66,22 @@
         <div id="results" class="card" style="display: none;">
           <div class="card-header">
             <h3 class="card-title"><@message "results"/></h3>
-            <a id="download" href="#" class="btn btn-primary float-right">
-              <i class="fas fa-download"></i> <@message "download"/>
+            <a id="download" href="#" class="btn btn-primary float-end">
+              <i class="fa-solid fa-download"></i> <@message "download"/>
             </a>
-            <button id="transpose" class="btn btn-default float-right mr-2" onclick="transposeCrosstab()">
-              <i class="fas fa-exchange-alt"></i>
+            <button id="transpose" class="btn btn-secondary float-end me-2" onclick="transposeCrosstab()">
+              <i class="fa-solid fa-exchange-alt"></i>
               <@message "transpose"/>
             </button>
           </div>
           <div class="card-body">
             <div id="loadingCrosstab" class="spinner-border spinner-border-sm" role="status"></div>
             <div id="privacy-alert" class="alert alert-warning" style="display: none;">
-              <i class="fas fa-exclamation-triangle"></i> <@message "privacy-threshold-applies"/>
+              <i class="fa-solid fa-exclamation-triangle"></i> <@message "privacy-threshold-applies"/>
             </div>
             <div id="result-panel" style="overflow-x: auto;">
               <div style="display: none;" class="mb-4">
-                <select id="select-study" class="form-control select2 float-right" style="width: 100%;"></select>
+                <select id="select-study" class="form-select float-end" style="width: 100%;"></select>
               </div>
               <div class="table-responsive">
                 <table id="crosstab" class="table table-striped"></table>

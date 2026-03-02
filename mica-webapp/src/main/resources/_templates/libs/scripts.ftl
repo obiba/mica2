@@ -1,29 +1,28 @@
 <!-- REQUIRED SCRIPTS -->
 
 <!-- jQuery -->
-<script src="${adminLTEPath}/plugins/jquery/jquery.min.js"></script>
+<script src="${jQueryPath}/dist/jquery.min.js"></script>
 <!-- Popper -->
-<script src="${adminLTEPath}/plugins/popper/umd/popper.min.js"></script>
-<script src="${adminLTEPath}/plugins/popper/umd/popper-utils.min.js"></script>
+<script src="${popperPath}/dist/umd/popper.min.js"></script>
 
-<!-- Bootstrap 4 -->
-<script src="${adminLTEPath}/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- Bootstrap 5 -->
+<script src="${bootstrapPath}/dist/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE App -->
 <script src="${adminLTEPath}/dist/js/adminlte.min.js"></script>
 <!-- Moment -->
-<script src="${adminLTEPath}/plugins/moment/moment-with-locales.min.js"></script>
+<script src="${momentPath}/min/moment-with-locales.min.js"></script>
 <!-- DataTables -->
-<script src="${adminLTEPath}/plugins/datatables/jquery.dataTables.min.js"></script>
-<script src="${adminLTEPath}/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-<script src="${adminLTEPath}/plugins/datatables-fixedheader/js/dataTables.fixedHeader.min.js"></script>
-<script src="${adminLTEPath}/plugins/datatables-fixedheader/js/fixedHeader.bootstrap4.min.js"></script>
-<script src="${adminLTEPath}/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
-<script src="${adminLTEPath}/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
-<script src="${adminLTEPath}/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
-<script src="${adminLTEPath}/plugins/datatables-buttons/js/buttons.print.min.js"></script>
-<script src="${adminLTEPath}/plugins/datatables-select/js/dataTables.select.min.js"></script>
+<script src="${datatablesPath}/js/jquery.dataTables.min.js"></script>
+<script src="${datatablesBS5Path}/js/dataTables.bootstrap5.min.js"></script>
+<script src="${datatablesFixedHeaderPath}/js/dataTables.fixedHeader.min.js"></script>
+<script src="${datatablesFixedHeaderBS5Path}/js/fixedHeader.bootstrap5.min.js"></script>
+<script src="${datatablesButtonsPath}/js/dataTables.buttons.min.js"></script>
+<script src="${datatablesButtonsBS5Path}/js/buttons.bootstrap5.min.js"></script>
+<script src="${datatablesButtonsPath}/js/buttons.html5.min.js"></script>
+<script src="${datatablesButtonsPath}/js/buttons.print.min.js"></script>
+<script src="${datatablesSelectPath}/js/dataTables.select.min.js"></script>
 <!-- Toastr -->
-<script src="${adminLTEPath}/plugins/toastr/toastr.min.js"></script>
+<script src="${toastrPath}/build/toastr.min.js"></script>
 <!-- Axios -->
 <script src="${assetsPath}/libs/node_modules/axios/dist/axios.min.js"></script>
 <!-- Marked -->
@@ -32,6 +31,7 @@
 <script src="${assetsPath}/libs/node_modules/jquery.redirect/jquery.redirect.js"></script>
 <script src="${assetsPath}/libs/node_modules/js-cookie/src/js.cookie.js"></script>
 <script src="${assetsPath}/js/mica.js"></script>
+<script src="${assetsPath}/js/mica-filters.js"></script>
 
 <!-- Custom js -->
 <#include "../models/scripts.ftl"/>
@@ -155,8 +155,14 @@
       return d.innerHTML;
     }
 
-    // bs tooltip
-    $('[data-toggle="tooltip"]').tooltip();
+    // bs tooltip and popover initialization (Bootstrap 5 vanilla JS)
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {
+      html: tooltipTriggerEl.getAttribute('data-bs-html') === 'true'
+    }))
+
+    const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+    const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl, { html: true }))
     // apply markdown rendering
     $('.marked').each(function () {
       const template = $(this).find('template');
