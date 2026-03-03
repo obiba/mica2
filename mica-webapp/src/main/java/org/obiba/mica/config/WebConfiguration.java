@@ -29,6 +29,7 @@ import org.obiba.mica.web.filter.StaticResourcesProductionFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.jetty.servlet.JettyServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
@@ -83,52 +84,13 @@ public class WebConfiguration implements ServletContextInitializer, EnvironmentA
       contextPath = environment.getProperty("server.servlet.context-path", "");
   }
 
-  // @Bean
-  // public WebServerFactoryCustomizer<JettyServletWebServerFactory> containerCustomizer() throws Exception {
-  //   WebConfiguration that = this;
-//
-  //   return new WebServerFactoryCustomizer<JettyServletWebServerFactory>() {
-//
-  //     @Override
-  //     public void customize(JettyServletWebServerFactory factory) {
-  //       factory.setServerCustomizers(Arrays.asList(that));
-  //       if (!Strings.isNullOrEmpty(contextPath) && contextPath.startsWith("/")) factory.setContextPath(contextPath);
-  //     }
-  //   };
-  // }
-//
-  // @Override
-  // public void customize(Server server) {
-  //   customizeSsl(server);
-//
-  //   GzipHandler gzipHandler = new GzipHandler();
-  //   gzipHandler.setIncludedMethods("PUT", "POST", "GET");
-  //   gzipHandler.setInflateBufferSize(2048);
-  //   gzipHandler.setHandler(server.getHandler());
-  //   server.setHandler(gzipHandler);
-  // }
-
-  private void customizeSsl(Server server) {
-    if (httpsPort <= 0) return;
-
-    SslContextFactory.Server jettySsl = new SslContextFactory.Server() {
-
-      @Override
-      protected void doStart() throws Exception {
-        setSslContext(sslContextFactory.createSslContext());
-        super.doStart();
+  @Bean
+  public WebServerFactoryCustomizer<JettyServletWebServerFactory> containerCustomizer() {
+    return factory -> {
+      if (!Strings.isNullOrEmpty(contextPath) && contextPath.startsWith("/")) {
+        factory.setContextPath(contextPath);
       }
     };
-    jettySsl.setWantClientAuth(true);
-    jettySsl.setNeedClientAuth(false);
-    jettySsl.addExcludeProtocols("SSL", "SSLv2", "SSLv2Hello", "SSLv3", "TLSv1", "TLSv1.1");
-
-    ServerConnector sslConnector = new ServerConnector(server, jettySsl);
-    sslConnector.setHost(serverAddress);
-    sslConnector.setPort(httpsPort);
-    sslConnector.setIdleTimeout(MAX_IDLE_TIME);
-
-    server.addConnector(sslConnector);
   }
 
   @Override
