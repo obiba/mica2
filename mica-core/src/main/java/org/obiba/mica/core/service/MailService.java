@@ -173,7 +173,7 @@ public class MailService extends AgateRestService {
 
   private String getNotificationsUrl() {
     return UriComponentsBuilder
-      .fromHttpUrl(agateServerConfigService.getAgateUrl())
+      .fromUriString(agateServerConfigService.getAgateUrl())
       .path(DEFAULT_REST_PREFIX)
       .path(DEFAULT_NOTIFICATIONS_PATH).build()
       .toUriString();

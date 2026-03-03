@@ -29,8 +29,6 @@ import org.obiba.mica.web.filter.StaticResourcesProductionFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
-import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
@@ -50,7 +48,7 @@ import java.util.Arrays;
 @ComponentScan({ "org.obiba.mica", "org.obiba.shiro" })
 @PropertySource("classpath:mica-webapp.properties")
 @AutoConfigureAfter(SecurityConfiguration.class)
-public class WebConfiguration implements ServletContextInitializer, JettyServerCustomizer, EnvironmentAware {
+public class WebConfiguration implements ServletContextInitializer, EnvironmentAware {
 
   private static final Logger log = LoggerFactory.getLogger(WebConfiguration.class);
 
@@ -85,30 +83,30 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
       contextPath = environment.getProperty("server.servlet.context-path", "");
   }
 
-  @Bean
-  public WebServerFactoryCustomizer<JettyServletWebServerFactory> containerCustomizer() throws Exception {
-    WebConfiguration that = this;
-
-    return new WebServerFactoryCustomizer<JettyServletWebServerFactory>() {
-
-      @Override
-      public void customize(JettyServletWebServerFactory factory) {
-        factory.setServerCustomizers(Arrays.asList(that));
-        if (!Strings.isNullOrEmpty(contextPath) && contextPath.startsWith("/")) factory.setContextPath(contextPath);
-      }
-    };
-  }
-
-  @Override
-  public void customize(Server server) {
-    customizeSsl(server);
-
-    GzipHandler gzipHandler = new GzipHandler();
-    gzipHandler.setIncludedMethods("PUT", "POST", "GET");
-    gzipHandler.setInflateBufferSize(2048);
-    gzipHandler.setHandler(server.getHandler());
-    server.setHandler(gzipHandler);
-  }
+  // @Bean
+  // public WebServerFactoryCustomizer<JettyServletWebServerFactory> containerCustomizer() throws Exception {
+  //   WebConfiguration that = this;
+//
+  //   return new WebServerFactoryCustomizer<JettyServletWebServerFactory>() {
+//
+  //     @Override
+  //     public void customize(JettyServletWebServerFactory factory) {
+  //       factory.setServerCustomizers(Arrays.asList(that));
+  //       if (!Strings.isNullOrEmpty(contextPath) && contextPath.startsWith("/")) factory.setContextPath(contextPath);
+  //     }
+  //   };
+  // }
+//
+  // @Override
+  // public void customize(Server server) {
+  //   customizeSsl(server);
+//
+  //   GzipHandler gzipHandler = new GzipHandler();
+  //   gzipHandler.setIncludedMethods("PUT", "POST", "GET");
+  //   gzipHandler.setInflateBufferSize(2048);
+  //   gzipHandler.setHandler(server.getHandler());
+  //   server.setHandler(gzipHandler);
+  // }
 
   private void customizeSsl(Server server) {
     if (httpsPort <= 0) return;

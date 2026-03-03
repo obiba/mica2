@@ -116,7 +116,7 @@ public class UserProfileService extends AgateRestService {
   public String getUserProfileTranslations(String locale) {
 
     String serviceUrl = UriComponentsBuilder
-      .fromHttpUrl(agateServerConfigService.getAgateUrl())
+      .fromUriString(agateServerConfigService.getAgateUrl())
       .path(DEFAULT_REST_PREFIX)
       .path("/users/i18n/" + locale + ".json")
       .build().toUriString();
@@ -271,7 +271,7 @@ public class UserProfileService extends AgateRestService {
 
   private String getUsersJoinUrl() {
     return UriComponentsBuilder
-      .fromHttpUrl(agateServerConfigService.getAgateUrl())
+      .fromUriString(agateServerConfigService.getAgateUrl())
       .path(DEFAULT_REST_PREFIX)
       .path("/users/_join")
       .build().toUriString();
@@ -279,7 +279,7 @@ public class UserProfileService extends AgateRestService {
 
   private String getUsersForgotPasswordUrl() {
     return UriComponentsBuilder
-      .fromHttpUrl(agateServerConfigService.getAgateUrl())
+      .fromUriString(agateServerConfigService.getAgateUrl())
       .path(DEFAULT_REST_PREFIX)
       .path("/users/_forgot_password")
       .build().toUriString();
@@ -287,7 +287,7 @@ public class UserProfileService extends AgateRestService {
 
   private String getProfileServiceUrl(String username) {
     return UriComponentsBuilder
-      .fromHttpUrl(agateServerConfigService.getAgateUrl())
+      .fromUriString(agateServerConfigService.getAgateUrl())
       .path(DEFAULT_REST_PREFIX)
       .path(String.format("/tickets/subject/%s", username))
       .build().toUriString();
@@ -295,7 +295,7 @@ public class UserProfileService extends AgateRestService {
 
   private String getProfileServiceUrlByGroup(String username, String group) {
     UriComponentsBuilder urlBuilder =
-      UriComponentsBuilder.fromHttpUrl(agateServerConfigService.getAgateUrl()).path(DEFAULT_REST_PREFIX);
+      UriComponentsBuilder.fromUriString(agateServerConfigService.getAgateUrl()).path(DEFAULT_REST_PREFIX);
 
     if (Strings.isNullOrEmpty(username)) {
       urlBuilder.path(String.format("/application/%s/users", getApplicationName()));

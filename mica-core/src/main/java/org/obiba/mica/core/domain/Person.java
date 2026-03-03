@@ -17,8 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import jakarta.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.springframework.data.mongodb.core.mapping.Document;

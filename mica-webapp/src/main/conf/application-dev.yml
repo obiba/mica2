@@ -41,9 +41,8 @@ opalTaxonomies:
     defaultTermsSortOrder: "title"
 
 spring:
-    data:
-        mongodb:
-            uri: mongodb://localhost:27017/mica
+    mongodb:
+        uri: mongodb://localhost:27017/mica
     mail:
         host: localhost
         port: 25
