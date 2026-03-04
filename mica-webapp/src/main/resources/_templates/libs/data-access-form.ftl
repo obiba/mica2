@@ -155,22 +155,19 @@
 <#macro dataAccessDownloadButtons wordUrl filesUrl>
   <#if isAdministrator || isDAO>
     <div class="btn-group">
-      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <i class="fas fa-download"></i> <@message "download"/>
+      <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fa-solid fa-download"></i> <@message "download"/>
       </button>
-      <div class="dropdown-menu dropdown-menu-right">
+      <div class="dropdown-menu dropdown-menu-end">
         <a class="dropdown-item" href="${wordUrl}">
-          <i class="fas fa-file-word"></i> <@message "form"/>
+          <i class="fa-solid fa-file-word"></i> <@message "form"/>
         </a>
         <a class="dropdown-item" href="${filesUrl}">
-          <i class="fas fa-file-archive"></i> <@message "files"/>
+          <i class="fa-solid fa-file-zipper"></i> <@message "files"/>
         </a>
       </div>
     </div>
   </#if>
-  <a href="#" onclick="window.print()" class="btn btn-default">
-    <i class="fas fa-print"></i> <@message "global.print"/>
-  </a>
 </#macro>
 
 <!-- Variables linking -->
