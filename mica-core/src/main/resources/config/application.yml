@@ -28,6 +28,12 @@ spring:
       jcache:
         config: classpath:ehcache.xml
 
+server:
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/css,text/javascript,application/javascript,application/x-javascript
+    min-response-size: 1024
+
 metrics:
     jmx.enabled: true
     graphite:

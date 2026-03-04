@@ -20,6 +20,6 @@ import jakarta.ws.rs.ext.Provider;
 public class HttpServerErrorExceptionMapper implements ExceptionMapper<HttpServerErrorException> {
   @Override
   public Response toResponse(HttpServerErrorException e) {
-    return Response.status(e.getRawStatusCode()).entity(e.getResponseBodyAsString()).build();
+    return Response.status(e.getStatusCode().value()).entity(e.getResponseBodyAsString()).build();
   }
 }

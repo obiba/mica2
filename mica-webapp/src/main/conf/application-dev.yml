@@ -2,7 +2,7 @@
 server:
     port: 8082
     address: localhost
-#    context-path: /myca
+    #context-path: /myca
 
 https:
     port: 8445
@@ -41,9 +41,8 @@ opalTaxonomies:
     defaultTermsSortOrder: "title"
 
 spring:
-    data:
-        mongodb:
-            uri: mongodb://localhost:27017/mica
+    mongodb:
+        uri: mongodb://localhost:27017/mica
     mail:
         host: localhost
         port: 25

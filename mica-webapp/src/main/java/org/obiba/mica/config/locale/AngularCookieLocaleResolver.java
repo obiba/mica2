@@ -46,7 +46,6 @@ public class AngularCookieLocaleResolver extends CookieLocaleResolver {
     this.setDefaultLocale(defaultLocale);
   }
 
-  @Override
   protected Locale determineDefaultLocale(HttpServletRequest request) {
     List<Locale> allowed = micaConfigService.getConfig().getLocales();
     Locale candidate = getDefaultLocale();
@@ -58,6 +57,10 @@ public class AngularCookieLocaleResolver extends CookieLocaleResolver {
       .orElseGet(() -> allowed.isEmpty()
         ? Locale.ENGLISH
         : allowed.getFirst());
+  }
+
+  protected TimeZone determineDefaultTimeZone(HttpServletRequest request) {
+    return TimeZone.getDefault();
   }
 
   @Override
