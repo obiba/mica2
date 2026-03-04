@@ -93,6 +93,35 @@ public class WebConfiguration implements ServletContextInitializer, EnvironmentA
     };
   }
 
+  @Bean
+  public WebServerFactoryCustomizer<JettyServletWebServerFactory> jettySslCustomizer() {
+    return factory -> // call existing method in your class
+      factory.addServerCustomizers(this::customizeSsl);
+  }
+
+  private void customizeSsl(Server server) {
+    if (httpsPort <= 0) return;
+
+    SslContextFactory.Server jettySsl = new SslContextFactory.Server() {
+
+      @Override
+      protected void doStart() throws Exception {
+        setSslContext(sslContextFactory.createSslContext());
+        super.doStart();
+      }
+    };
+    jettySsl.setWantClientAuth(true);
+    jettySsl.setNeedClientAuth(false);
+    jettySsl.addExcludeProtocols("SSL", "SSLv2", "SSLv2Hello", "SSLv3", "TLSv1", "TLSv1.1");
+
+    ServerConnector sslConnector = new ServerConnector(server, jettySsl);
+    sslConnector.setHost(serverAddress);
+    sslConnector.setPort(httpsPort);
+    sslConnector.setIdleTimeout(MAX_IDLE_TIME);
+
+    server.addConnector(sslConnector);
+  }
+
   @Override
   public void onStartup(ServletContext servletContext) throws ServletException {
     log.info("Web application configuration, using profiles: {}", Arrays.toString(environment.getActiveProfiles()));

@@ -6,10 +6,14 @@ import org.springframework.stereotype.Service;
 
 import jakarta.inject.Inject;
 
+import java.net.URI;
+
 @Service
 public class AgateServerConfigService implements InitializingBean {
 
-  private String agateUrl;
+  private String agateUrlString;
+
+  private URI agateUri;
 
   private String serviceName;
 
@@ -24,7 +28,8 @@ public class AgateServerConfigService implements InitializingBean {
 
   @Override
   public void afterPropertiesSet() throws Exception {
-    agateUrl = env.getProperty("agate.url");
+    agateUrlString = env.getProperty("agate.url", "http://localhost:8081");
+    agateUri = URI.create(agateUrlString);
     serviceName = env.getProperty("agate.application.name");
     serviceKey = env.getProperty("agate.application.key");
   }
@@ -38,7 +43,11 @@ public class AgateServerConfigService implements InitializingBean {
   }
 
   public String getAgateUrl() {
-    return agateUrl;
+    return agateUrlString;
+  }
+
+  public URI getAgateUri() {
+    return agateUri;
   }
 
   public String buildToken() {
@@ -46,6 +55,6 @@ public class AgateServerConfigService implements InitializingBean {
   }
 
   public boolean isSecured() {
-    return agateUrl.toLowerCase().startsWith("https://");
+    return agateUrlString.toLowerCase().startsWith("https://");
   }
 }

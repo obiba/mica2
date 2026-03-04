@@ -98,7 +98,7 @@ public class UserAuthService extends AgateRestService {
 
   private String getProvidersUrl(String locale, boolean signupOnly) {
     return UriComponentsBuilder
-      .fromUriString(agateServerConfigService.getAgateUrl())
+      .fromUri(agateServerConfigService.getAgateUri())
       .path(DEFAULT_REST_PREFIX)
       .path("/auth/providers")
       .queryParam("locale", locale)
@@ -108,7 +108,7 @@ public class UserAuthService extends AgateRestService {
 
   private String getPublicConfigurationUrl() {
     return UriComponentsBuilder
-      .fromUriString(agateServerConfigService.getAgateUrl())
+      .fromUri(agateServerConfigService.getAgateUri())
       .path(DEFAULT_REST_PREFIX)
       .path("/config/_public")
       .build().toUriString();
@@ -116,7 +116,7 @@ public class UserAuthService extends AgateRestService {
 
   private String getClientConfigurationUrl() {
     return UriComponentsBuilder
-      .fromUriString(agateServerConfigService.getAgateUrl())
+      .fromUri(agateServerConfigService.getAgateUri())
       .path(DEFAULT_REST_PREFIX)
       .path("/config/client")
       .build().toUriString();

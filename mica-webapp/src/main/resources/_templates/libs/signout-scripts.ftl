@@ -1,9 +1,9 @@
 <script>
   <#if !authenticated>
-    MicaService.redirect('..');
+    MicaService.redirect('${contextPath}');
   <#elseif postLogoutRedirectUri??>
     MicaService.redirect('${postLogoutRedirectUri}');
   <#else>
-    UserService.signout('${postLogoutRedirectUri!".."}');
+    UserService.signout('${postLogoutRedirectUri!"${contextPath}"}');
   </#if>
 </script>

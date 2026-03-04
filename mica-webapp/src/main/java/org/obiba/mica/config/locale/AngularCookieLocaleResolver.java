@@ -48,7 +48,7 @@ public class AngularCookieLocaleResolver extends CookieLocaleResolver {
 
   protected Locale determineDefaultLocale(HttpServletRequest request) {
     List<Locale> allowed = micaConfigService.getConfig().getLocales();
-    Locale candidate = Locale.getDefault();
+    Locale candidate = getDefaultLocale();
 
     return allowed.stream()
       .filter(l -> l.getLanguage()
