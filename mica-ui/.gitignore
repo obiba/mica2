@@ -1,0 +1,45 @@
+.DS_Store
+.thumbs.db
+node_modules
+
+# Quasar core related directories
+.quasar
+/public/icons
+/dist
+
+# Cordova related directories and files
+/src-cordova/node_modules
+/src-cordova/platforms
+/src-cordova/plugins
+/src-cordova/www
+
+# Capacitor related directories and files
+/src-capacitor/www
+/src-capacitor/android
+/src-capacitor/ios
+
+# BEX related directories and files
+/src-bex/www
+/src-bex/icons/*
+!/src-bex/icons/README.md
+
+# local .env files
+.env.local*
+
+# typescript
+*.tsbuildinfo
+
+# Editor directories and files
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# node installer directories
+node
+
+# generated models
+src/models/*.ts
+!src/models/.gitkeep

@@ -1,0 +1,34 @@
+<template>
+  <q-item
+    v-ripple
+    clickable
+    :to="to"
+    :href="link"
+    :target="link ? '_blank' : undefined"
+  >
+    <q-item-section v-if="icon" avatar>
+      <q-icon :name="icon" />
+    </q-item-section>
+
+    <q-item-section>
+      <q-item-label>{{ $t(title) }}</q-item-label>
+      <q-item-label v-if="caption" caption>{{ caption }}</q-item-label>
+    </q-item-section>
+  </q-item>
+</template>
+
+<script setup lang="ts">
+export interface EssentialLinkProps {
+  title: string;
+  caption?: string;
+  link?: string;
+  to?: string;
+  icon?: string;
+}
+
+withDefaults(defineProps<EssentialLinkProps>(), {
+  caption: '',
+  link: '',
+  icon: '',
+});
+</script>
