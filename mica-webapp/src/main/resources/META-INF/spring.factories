@@ -1,0 +1,4 @@
+# Backwards compatible registration for older Spring Boot versions
+# Register ApplicationContextInitializer so the initializer runs early
+org.springframework.context.ApplicationContextInitializer=\
+org.obiba.mica.config.LegacyMongoPropertiesApplicationContextInitializer
