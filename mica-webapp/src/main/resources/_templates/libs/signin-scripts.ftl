@@ -10,6 +10,11 @@
       } else {
         $("#2faImage").hide();
       }
+      if (response.data?.email) {
+        $("#2faEmail").show();
+      } else {
+        $("#2faEmail").hide();
+      }
     } else {
       $("#otp").val("");
       $("#signInCard").show();

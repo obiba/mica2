@@ -117,6 +117,7 @@ public class SessionsResource {
       if (e.hasQrImage()) {
         JSONObject respObject = new JSONObject();
         respObject.put("image", e.getQrImage());
+        respObject.put("email", e.isEmail());
         builder.header("Content-type", "application/json")
           .entity(respObject.toString());
       }

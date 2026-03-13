@@ -76,6 +76,10 @@
         <div class="text-center">
           <img id="qr-img" src="" style="width: 100%;"/>
         </div>
+        <div id="2faEmail">
+          <@message "2fa-email-instructions"/>
+        </div>
+        <hr>
       </div>
       <p class="login-box-msg"><@message "2fa-caption"/></p>
       <div>
