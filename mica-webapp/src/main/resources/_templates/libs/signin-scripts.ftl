@@ -9,6 +9,7 @@
         $("#qr-img").attr("src", response.data.image);
       } else {
         $("#2faImage").hide();
+        $("#qr-img").attr("src", "");
       }
       if (response.data?.email) {
         $("#2faEmail").show();
