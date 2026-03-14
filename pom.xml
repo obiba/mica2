@@ -608,18 +608,6 @@
       </dependency>
 
       <dependency>
-        <groupId>org.apache.shiro</groupId>
-        <artifactId>shiro-ehcache</artifactId>
-        <version>${shiro.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>net.sf.ehcache</groupId>
-            <artifactId>ehcache-core</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
-      <dependency>
         <groupId>eu.flatwhite.shiro</groupId>
         <artifactId>shiro-extras</artifactId>
         <version>${shiro-extras.version}</version>

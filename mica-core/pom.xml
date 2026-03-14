@@ -274,10 +274,6 @@
       <classifier>jakarta</classifier>
     </dependency>
     <dependency>
-      <groupId>org.apache.shiro</groupId>
-      <artifactId>shiro-ehcache</artifactId>
-    </dependency>
-    <dependency>
       <groupId>eu.flatwhite.shiro</groupId>
       <artifactId>shiro-extras</artifactId>
     </dependency>
