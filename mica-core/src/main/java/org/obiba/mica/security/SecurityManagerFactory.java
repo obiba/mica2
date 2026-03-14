@@ -11,6 +11,7 @@ package org.obiba.mica.security;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import jakarta.inject.Inject;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -23,20 +24,18 @@ import org.apache.shiro.authz.permission.PermissionResolver;
 import org.apache.shiro.authz.permission.PermissionResolverAware;
 import org.apache.shiro.authz.permission.RolePermissionResolver;
 import org.apache.shiro.authz.permission.RolePermissionResolverAware;
+import org.apache.shiro.cache.jcache.JCacheManager;
+import org.apache.shiro.lang.util.LifecycleUtils;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.SessionsSecurityManager;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.realm.text.IniRealm;
 import org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO;
-import org.apache.shiro.util.LifecycleUtils;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
-import org.ehcache.integrations.shiro.EhcacheShiroManager;
-import org.obiba.shiro.EhCache3ShiroManager;
 import org.obiba.mica.security.service.MicaGroupsToRolesMapper;
 import org.obiba.shiro.NoSuchOtpException;
 import org.obiba.shiro.SessionStorageEvaluator;
-import org.obiba.shiro.realm.GroupsToRolesMapper;
 import org.obiba.shiro.realm.ObibaRealm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +46,10 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import jakarta.inject.Inject;
+import javax.cache.Caching;
+import javax.cache.spi.CachingProvider;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Set;
 
 @Component
@@ -161,9 +163,22 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
 
   private void initializeCacheManager(DefaultWebSecurityManager dsm) {
     if(dsm.getCacheManager() == null) {
-      EhcacheShiroManager ehCacheManager = new EhCache3ShiroManager();
-      ehCacheManager.setCacheManagerConfigFile("classpath:ehcache-shiro.xml");
-      dsm.setCacheManager(ehCacheManager);
+      URL configUrl = getClass().getResource("/ehcache-shiro.xml");
+      if (configUrl == null) {
+        log.error("Unable to initialize cache manager for security manager: '/ehcache.xml' not found on the classpath.");
+        return;
+      }
+      CachingProvider provider = Caching.getCachingProvider(); // picks up Ehcache 3
+      try {
+        javax.cache.CacheManager  jCacheManager = provider.getCacheManager(
+          configUrl.toURI(), getClass().getClassLoader()
+        );
+        JCacheManager shiroManager = new JCacheManager();
+        shiroManager.setCacheManager(jCacheManager);
+        dsm.setCacheManager(shiroManager);
+      } catch (URISyntaxException e) {
+        log.error("Unable to initialize cache manager for security manager", e);
+      }
     }
   }
 

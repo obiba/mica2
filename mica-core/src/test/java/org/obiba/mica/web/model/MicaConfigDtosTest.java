@@ -14,10 +14,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Locale;
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.config.IniSecurityManagerFactory;
+import org.apache.shiro.ini.IniSecurityManagerFactory;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.subject.Subject;
-import org.apache.shiro.util.Factory;
+import org.apache.shiro.lang.util.Factory;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
