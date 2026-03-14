@@ -544,7 +544,10 @@ class TableFixedHeaderUtility {
         clonedVocabularies.forEach(voc => {
           if (Array.isArray(voc.terms)) {
             voc.terms = voc.terms.filter(term => {
-              let foundAttr = (term.attributes || []).find(attr => voc.name !== 'sets' && attr.key === 'forClassName');
+              let foundAttr;
+              if (voc.name !== 'sets') {
+                 foundAttr = (term.attributes || []).find(attr => attr.key === 'forClassName');
+               }
               return foundAttributeIsOk(studyTypeSelection, foundAttr);
             });
           }
