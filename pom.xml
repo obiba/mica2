@@ -41,12 +41,13 @@
 
     <assertj-core.version>3.27.7</assertj-core.version>
     <awaitility.version>4.2.1</awaitility.version>
+    <cache-api.version>1.1.1</cache-api.version>
     <carrotsearch.version>0.7.1</carrotsearch.version>
-    <dropwizard-metrics.version>4.2.23</dropwizard-metrics.version>
     <commons-io.version>2.16.1</commons-io.version>
+    <commons-lang.version>2.6</commons-lang.version>
+    <dropwizard-metrics.version>4.2.23</dropwizard-metrics.version>
     <ehcache.version>3.10.8</ehcache.version>
     <easymock.version>5.2.0</easymock.version>
-    <commons-lang.version>2.6</commons-lang.version>
     <embed-mongo.version>1.50.0</embed-mongo.version>
     <esapi.version>2.6.0.0</esapi.version>
     <freemarker.version>2.3.33</freemarker.version>
@@ -65,18 +66,18 @@
     <jsr305.version>3.0.0</jsr305.version>
     <logback.version>1.5.25</logback.version>
     <logstash-logback.version>7.4</logstash-logback.version>
-    <magma.version>5.2.0</magma.version>
+    <magma.version>5.3.0</magma.version>
     <metrics-spring.version>3.0.0</metrics-spring.version>
     <mongodb-driver.version>5.6.3</mongodb-driver.version>
     <nosqlunit.version>0.7.9</nosqlunit.version>
-    <obiba-commons.version>5.0.1</obiba-commons.version>
+    <obiba-commons.version>5.1.1</obiba-commons.version>
     <opal.version>5.6.0</opal.version>
     <opencsv.version>2.3</opencsv.version>
     <poi.version>5.4.0</poi.version>
     <protobuf.version>3.25.5</protobuf.version>
     <protobuf-java-format.version>1.2.1-obiba</protobuf-java-format.version>
     <rql-parser.version>0.3.3-obiba</rql-parser.version>
-    <shiro.version>1.13.0</shiro.version>
+    <shiro.version>2.1.0</shiro.version>
     <shiro-extras.version>1.1.0</shiro-extras.version>
     <lang-tag.version>1.4.4</lang-tag.version>
     <servlet-api.version>6.1.0-M2</servlet-api.version>
@@ -238,11 +239,15 @@
         <version>${ehcache.version}</version>
         <classifier>jakarta</classifier>
       </dependency>
-
       <dependency>
-        <groupId>org.ehcache.integrations.shiro</groupId>
-        <artifactId>shiro-ehcache3</artifactId>
-        <version>1.0.0</version>
+        <groupId>javax.cache</groupId>
+        <artifactId>cache-api</artifactId>
+        <version>${cache-api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.shiro</groupId>
+        <artifactId>shiro-jcache</artifactId>
+        <version>${shiro.version}</version>
       </dependency>
 
       <dependency>

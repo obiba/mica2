@@ -18,12 +18,16 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
+import jakarta.inject.Inject;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.apache.commons.io.FileUtils;
-import org.apache.shiro.codec.CodecSupport;
-import org.apache.shiro.codec.Hex;
-import org.apache.shiro.crypto.AesCipherService;
 import org.apache.shiro.crypto.CryptoException;
-import org.apache.shiro.util.ByteSource;
+import org.apache.shiro.crypto.cipher.AesCipherService;
+import org.apache.shiro.crypto.cipher.ByteSourceBroker;
+import org.apache.shiro.lang.codec.CodecSupport;
+import org.apache.shiro.lang.codec.Hex;
+import org.apache.shiro.lang.util.ByteSource;
 import org.obiba.mica.micaConfig.MissingConfigurationException;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
@@ -44,9 +48,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import jakarta.inject.Inject;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.security.Key;
@@ -278,8 +279,8 @@ public class MicaConfigService {
 
   public String decrypt(String encrypted) {
     try {
-      ByteSource decrypted = cipherService.decrypt(Hex.decode(encrypted), getSecretKey());
-      return CodecSupport.toString(decrypted.getBytes());
+      ByteSourceBroker decrypted = cipherService.decrypt(Hex.decode(encrypted), getSecretKey());
+      return CodecSupport.toString(decrypted.getClonedBytes());
     } catch (CryptoException e) {
       logger.warn(String.format("Someone tried to use an invalid key [%s]", encrypted));
       throw new IllegalArgumentException("Given key is invalid", e);
