@@ -123,7 +123,17 @@ public class SessionInterceptor implements AsyncHandlerInterceptor {
 
         params.put("realm", subject.getPrincipals().getRealmNames().iterator().next());
         params.put("roles", roles);
-        params.put("hasPermissionOnAnyDraftDocument", subjectAclService.findBySubject(subject.getPrincipal().toString(), SubjectAcl.Type.USER).stream().anyMatch(acl -> Arrays.stream(ALL_DRAFT_RESOURCES).anyMatch(res -> res.equals(acl.getResource()))));
+
+        // Check both USER and GROUP permissions for draft documents
+        boolean hasUserPermission = subjectAclService.findBySubject(subject.getPrincipal().toString(), SubjectAcl.Type.USER)
+          .stream()
+          .anyMatch(acl -> Arrays.stream(ALL_DRAFT_RESOURCES).anyMatch(res -> res.equals(acl.getResource())));
+
+        boolean hasGroupPermission = roles.stream()
+          .flatMap(role -> subjectAclService.findBySubject(role, SubjectAcl.Type.GROUP).stream())
+          .anyMatch(acl -> Arrays.stream(ALL_DRAFT_RESOURCES).anyMatch(res -> res.equals(acl.getResource())));
+
+        params.put("hasPermissionOnAnyDraftDocument", hasUserPermission || hasGroupPermission);
         modelAndView.getModel().put("user", params);
 
         params = Maps.newHashMap();
