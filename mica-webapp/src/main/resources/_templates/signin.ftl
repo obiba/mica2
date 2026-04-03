@@ -28,13 +28,13 @@
 
       <form id="form" method="post">
         <div class="input-group mb-3">
-          <input name="username" type="text" class="form-control" placeholder="<@message "sign-in-username"/>">
+          <input name="username" type="text" autocomplete="nope" class="form-control" placeholder="<@message "sign-in-username"/>">
           <span class="input-group-text">
             <i class="fa-solid fa-envelope"></i>
           </span>
         </div>
         <div class="input-group mb-3">
-          <input name="password" type="password" autocomplete="off" class="form-control" placeholder="<@message "password"/>">
+          <input name="password" type="password" autocomplete="new-password" class="form-control" placeholder="<@message "password"/>">
           <span class="input-group-text">
             <i class="fa-solid fa-lock"></i>
           </span>
