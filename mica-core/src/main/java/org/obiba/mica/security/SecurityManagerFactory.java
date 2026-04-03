@@ -33,6 +33,7 @@ import org.apache.shiro.realm.text.IniRealm;
 import org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
+import org.obiba.mica.security.realm.MicaIniRealm;
 import org.obiba.mica.security.service.MicaGroupsToRolesMapper;
 import org.obiba.shiro.NoSuchOtpException;
 import org.obiba.shiro.SessionStorageEvaluator;
@@ -72,7 +73,6 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
   private SessionsSecurityManager securityManager;
 
 
-
   @Inject
   @Lazy
   public SecurityManagerFactory(
@@ -89,7 +89,7 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
 
   @Override
   public SessionsSecurityManager getObject() throws Exception {
-    if(securityManager == null) {
+    if (securityManager == null) {
       securityManager = doCreateSecurityManager();
       SecurityUtils.setSecurityManager(securityManager);
     }
@@ -122,7 +122,7 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
     String serviceName = environment.getProperty("agate.application.name");
     String serviceKey = environment.getProperty("agate.application.key");
 
-    if(!Strings.isNullOrEmpty(obibaRealmUrl)) {
+    if (!Strings.isNullOrEmpty(obibaRealmUrl)) {
       builder.add(obibaRealm(obibaRealmUrl, serviceName, serviceKey));
     }
 
@@ -140,7 +140,7 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
   }
 
   private Realm micaIniRealm() {
-    IniRealm iniRealm = new IniRealm("classpath:shiro.ini");
+    IniRealm iniRealm = new MicaIniRealm();
     iniRealm.setName(INI_REALM);
     iniRealm.setRolePermissionResolver(rolePermissionResolver);
     iniRealm.setPermissionResolver(permissionResolver);
@@ -162,7 +162,7 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
   }
 
   private void initializeCacheManager(DefaultWebSecurityManager dsm) {
-    if(dsm.getCacheManager() == null) {
+    if (dsm.getCacheManager() == null) {
       URL configUrl = getClass().getResource("/ehcache-shiro.xml");
       if (configUrl == null) {
         log.error("Unable to initialize cache manager for security manager: '/ehcache.xml' not found on the classpath.");
@@ -170,7 +170,7 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
       }
       CachingProvider provider = Caching.getCachingProvider(); // picks up Ehcache 3
       try {
-        javax.cache.CacheManager  jCacheManager = provider.getCacheManager(
+        javax.cache.CacheManager jCacheManager = provider.getCacheManager(
           configUrl.toURI(), getClass().getClassLoader()
         );
         JCacheManager shiroManager = new JCacheManager();
@@ -191,20 +191,20 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
   }
 
   private void initializeSubjectDAO(DefaultWebSecurityManager dsm) {
-    if(dsm.getSubjectDAO() instanceof DefaultSubjectDAO) {
+    if (dsm.getSubjectDAO() instanceof DefaultSubjectDAO) {
       ((DefaultSubjectDAO) dsm.getSubjectDAO()).setSessionStorageEvaluator(new SessionStorageEvaluator());
     }
   }
 
   private void initializeAuthorizer(DefaultWebSecurityManager dsm) {
-    if(dsm.getAuthorizer() instanceof ModularRealmAuthorizer) {
+    if (dsm.getAuthorizer() instanceof ModularRealmAuthorizer) {
       ((RolePermissionResolverAware) dsm.getAuthorizer()).setRolePermissionResolver(rolePermissionResolver);
       ((PermissionResolverAware) dsm.getAuthorizer()).setPermissionResolver(permissionResolver);
     }
   }
 
   private void initializeAuthenticator(DefaultWebSecurityManager dsm) {
-    if(dsm.getAuthenticator() instanceof ModularRealmAuthenticator) {
+    if (dsm.getAuthenticator() instanceof ModularRealmAuthenticator) {
       ((ModularRealmAuthenticator) dsm.getAuthenticator()).setAuthenticationStrategy(new OtpSuccessfulStrategy());
     }
   }
@@ -212,7 +212,7 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
   private class OtpSuccessfulStrategy extends FirstSuccessfulStrategy {
     @Override
     public AuthenticationInfo afterAttempt(Realm realm, AuthenticationToken token, AuthenticationInfo singleRealmInfo, AuthenticationInfo aggregateInfo, Throwable t) throws AuthenticationException {
-      if (t instanceof NoSuchOtpException) throw (NoSuchOtpException)t;
+      if (t instanceof NoSuchOtpException) throw (NoSuchOtpException) t;
       return super.afterAttempt(realm, token, singleRealmInfo, aggregateInfo, t);
     }
   }
