@@ -11,7 +11,7 @@
 package org.obiba.mica.dataset.service;
 
 import com.google.common.base.Strings;
-import org.bouncycastle.openssl.PEMWriter;
+import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.security.KeyStoreManager;
 import org.obiba.security.KeyStoreRepository;
@@ -83,7 +83,7 @@ public class KeyStoreService implements InitializingBean {
     if (certificates == null || certificates.length == 0) throw new IllegalArgumentException("Cannot find certificate for alias: " + alias);
 
     StringWriter writer = new StringWriter();
-    PEMWriter pemWriter = new PEMWriter(writer);
+    JcaPEMWriter pemWriter = new JcaPEMWriter(writer);
     for (Certificate certificate : certificates) {
       pemWriter.writeObject(certificate);
     }

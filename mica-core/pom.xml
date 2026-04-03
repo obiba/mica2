@@ -303,8 +303,13 @@
       <artifactId>itextpdf</artifactId>
     </dependency>
       <dependency>
-          <groupId>org.obiba.commons</groupId>
-          <artifactId>obiba-password-hasher</artifactId>
+        <groupId>org.obiba.commons</groupId>
+        <artifactId>obiba-password-hasher</artifactId>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcpkix-jdk18on</artifactId>
       </dependency>
 
   </dependencies>
