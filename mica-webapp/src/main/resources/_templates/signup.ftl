@@ -33,21 +33,21 @@
 
         <#if authConfig.joinWithUsername>
           <div class="input-group mb-3">
-            <input name="username" type="text" class="form-control" placeholder="<@message "username"/>">
+            <input name="username" type="text" autocomplete="nope" class="form-control" placeholder="<@message "username"/>">
             <span class="input-group-text">
               <i class="fa-solid fa-user"></i>
             </span>
           </div>
         </#if>
         <div class="input-group mb-3">
-          <input name="email" type="email" class="form-control" placeholder="<@message "email"/>">
+          <input name="email" type="email" autocomplete="nope" class="form-control" placeholder="<@message "email"/>">
           <span class="input-group-text">
             <i class="fa-solid fa-envelope"></i>
           </span>
         </div>
         <#if config.signupWithPassword>
           <div class="input-group mb-3">
-            <input name="password" type="password" class="form-control" placeholder="<@message "password"/>">
+            <input name="password" type="password" autocomplete="new-password" class="form-control" placeholder="<@message "password"/>">
             <span class="input-group-text">
               <i class="fa-solid fa-lock"></i>
             </span>
