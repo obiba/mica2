@@ -12,4 +12,5 @@ package org.obiba.mica.spi.search;
 
 public interface IndexFieldMapping {
   boolean isAnalyzed(String fieldName);
+  boolean isSortable(String fieldName);
 }
