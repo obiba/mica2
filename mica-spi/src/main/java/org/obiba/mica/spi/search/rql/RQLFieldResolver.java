@@ -38,6 +38,8 @@ public class RQLFieldResolver {
 
   private static final String POSFIX_ANALYZED = ".analyzed";
 
+  private static final String POSFIX_SORT = ".sort";
+
   private static final String LANGUAGE_TAG_UNDETERMINED = "und";
 
   private final List<Taxonomy> taxonomies;
@@ -85,11 +87,15 @@ public class RQLFieldResolver {
     return resolveFieldAsBuilder(rqlField).unanalyze().build();
   }
 
+  public FieldData resolveFieldForSort(String rqlField) {
+    return resolveFieldAsBuilder(rqlField).unanalyze().sortable().build();
+  }
+
   private FieldData.Builder resolveFieldAsBuilder(String rqlField) {
     String field = rqlField;
     if (isRegExp(field)) {
       // do not alter the regexp
-      return FieldData.newBuilder().field(field);
+      return FieldData.newBuilder().indexFieldMapping(indexFieldMapping).field(field);
     }
 
     // normalize field name
@@ -98,11 +104,11 @@ public class RQLFieldResolver {
     }
 
     int idx = field.indexOf(TAXO_SEPARATOR);
-    if(idx < 1) return FieldData.newBuilder().field(rqlField);
+    if(idx < 1) return FieldData.newBuilder().indexFieldMapping(indexFieldMapping).field(rqlField);
 
     FieldData.Builder builder = resolveFieldInternal(field.substring(0, idx), field.substring(idx + 1, field.length()));
 
-    return builder == null ? FieldData.newBuilder().field(rqlField) : builder;
+    return builder == null ? FieldData.newBuilder().indexFieldMapping(indexFieldMapping).field(rqlField) : builder.indexFieldMapping(indexFieldMapping);
   }
 
   private FieldData.Builder resolveFieldInternal(String taxonomyName, String vocabularyName) {
@@ -231,6 +237,12 @@ public class RQLFieldResolver {
 
     static class Builder {
       FieldData data = new FieldData();
+      IndexFieldMapping indexFieldMapping;
+
+      Builder indexFieldMapping(IndexFieldMapping value) {
+        this.indexFieldMapping = value;
+        return this;
+      }
 
       Builder taxonomy(Taxonomy value) {
         data.taxonomy = value;
@@ -249,6 +261,13 @@ public class RQLFieldResolver {
 
       Builder unanalyze() {
         data.field = Strings.isNullOrEmpty(data.field) ? data.field : data.field.replaceFirst("\\" + POSFIX_ANALYZED,"");
+        return this;
+      }
+
+      Builder sortable() {
+        if (!Strings.isNullOrEmpty(data.field) && indexFieldMapping != null && indexFieldMapping.isSortable(data.field)) {
+          data.field = data.field + POSFIX_SORT;
+        }
         return this;
       }
 
