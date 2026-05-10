@@ -13,12 +13,20 @@ import org.obiba.mica.project.service.ProjectService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.IndividualStudyService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.io.IOException;
+
 @Controller
 public class AdminController extends BaseController {
+
+  private static final Logger log = LoggerFactory.getLogger(AdminController.class);
 
   @Inject
   private MicaConfigService micaConfigService;
@@ -94,6 +102,50 @@ public class AdminController extends BaseController {
     }
 
     return new ModelAndView("redirect:/");
+  }
+
+  @GetMapping("/admin2")
+  public ModelAndView admin2() {
+    Subject subject = SecurityUtils.getSubject();
+    String contextPath = micaConfigService.getContextPath();
+    if (!subject.isAuthenticated())
+      return new ModelAndView("redirect:signin?redirect=" + contextPath + "/admin2");
+
+    if (subject.hasRole(Roles.MICA_ADMIN)
+      || subject.hasRole(Roles.MICA_DAO)
+      || subject.hasRole(Roles.MICA_EDITOR)
+      || subject.hasRole(Roles.MICA_REVIEWER)
+      || hasPermissionOnAnyDraftDocument()) {
+      ModelAndView mv = new ModelAndView("admin2");
+      try {
+        includeEntryPoints(mv);
+      } catch (IOException e) {
+        log.error("Error while reading SPA entry points", e);
+      }
+      return mv;
+    }
+
+    return new ModelAndView("redirect:/");
+  }
+
+  private void includeEntryPoints(ModelAndView mv) throws IOException {
+    var resolver = new PathMatchingResourcePatternResolver();
+    String folderPath = "classpath:/static/admin/assets/*";
+
+    // Resolve all resources under the folder
+    Resource[] resources = resolver.getResources(folderPath);
+
+    for (Resource resource : resources) {
+      String fileName = resource.getFilename();
+      if (fileName != null && fileName.startsWith("index-")) {
+        log.debug("Quasar entrypoint: {}", fileName);
+        if (fileName.endsWith(".js")) {
+          mv.getModel().put("entryPointJS", fileName);
+        } else if (fileName.endsWith(".css")) {
+          mv.getModel().put("entryPointCSS", fileName);
+        }
+      }
+    }
   }
 
 }
