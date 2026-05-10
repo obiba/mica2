@@ -130,8 +130,92 @@
             <fileset>
               <directory>node_modules</directory>
             </fileset>
+            <fileset>
+              <directory>src/main/webapp/assets/libs/node_modules</directory>
+            </fileset>
+            <fileset>
+              <directory>src/main/webapp/assets/css</directory>
+              <includes>
+                <include>*.min.css</include>
+                <include>*.map</include>
+              </includes>
+            </fileset>
           </filesets>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <version>${frontend-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>install node and npm</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>install-node-and-npm</goal>
+            </goals>
+            <configuration>
+              <nodeVersion>v24.11.0</nodeVersion>
+            </configuration>
+          </execution>
+          <execution>
+            <id>npm install</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <arguments>install --include=dev</arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <!-- execution>
+            <id>copy js deps</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>src/main/webapp/assets/libs/node_modules</outputDirectory>
+              <overwrite>true</overwrite>
+              <resources>
+                <resource>
+                  <directory>node_modules</directory>
+                  <includes>
+                    <include>admin-lte/dist/**</include>
+                    <include>admin-lte/plugins/bootstrap/**</include>
+                    <include>toastr/build/**</include>
+                    <include>@fortawesome/fontawesome-free/**</include>
+                    <include>axios/dist/**</include>
+                    <include>jquery/dist/**</include>
+                    <include>jquery.redirect/**</include>
+                    <include>bootstrap/dist/**</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution -->
+          <execution>
+            <id>copy ui content</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>target/classes/static/admin</outputDirectory>
+              <overwrite>true</overwrite>
+              <resources>
+                <resource>
+                  <directory>../mica-ui/dist/spa</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
@@ -350,6 +434,16 @@
                 </fileset>
                 <fileset>
                   <directory>node_modules</directory>
+                </fileset>
+                <fileset>
+                  <directory>src/main/webapp/assets/libs/node_modules</directory>
+                </fileset>
+                <fileset>
+                  <directory>src/main/webapp/assets/css</directory>
+                  <includes>
+                    <include>*.min.css</include>
+                    <include>*.map</include>
+                  </includes>
                 </fileset>
               </filesets>
             </configuration>
