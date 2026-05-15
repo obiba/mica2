@@ -1,9 +1,6 @@
 import { defineStore } from 'pinia';
 import { api } from 'src/boot/api';
-import type {
-  PublicMicaConfigDto,
-  LocalizedStringDto,
-} from 'src/models/Mica';
+import type { PublicMicaConfigDto, LocalizedStringDto } from 'src/models/Mica';
 
 export const useSystemStore = defineStore('system', () => {
   const configurationPublic = ref<PublicMicaConfigDto>({} as PublicMicaConfigDto);
@@ -27,7 +24,6 @@ export const useSystemStore = defineStore('system', () => {
       return response;
     });
   }
-
 
   return {
     translations,
