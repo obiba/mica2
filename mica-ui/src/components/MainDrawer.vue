@@ -26,7 +26,7 @@
           <q-icon name="hub" />
         </q-item-section>
         <q-item-section>
-          <q-item-label>{{ t('networks') }}</q-item-label>
+          <q-item-label>{{ t('networks.title') }}</q-item-label>
         </q-item-section>
       </q-item>
       <q-item to="/studies">
@@ -34,7 +34,7 @@
           <q-icon name="book" />
         </q-item-section>
         <q-item-section>
-          <q-item-label>{{ t('studies') }}</q-item-label>
+          <q-item-label>{{ t('studies.title') }}</q-item-label>
         </q-item-section>
       </q-item>
       <q-item :to="`/datasets`">
@@ -42,7 +42,7 @@
           <q-icon name="splitscreen" />
         </q-item-section>
         <q-item-section>
-          <q-item-label>{{ t('datasets') }}</q-item-label>
+          <q-item-label>{{ t('datasets.title') }}</q-item-label>
         </q-item-section>
       </q-item>
       <q-item :to="`/research-projects`">
@@ -50,7 +50,7 @@
           <q-icon name="science" />
         </q-item-section>
         <q-item-section>
-          <q-item-label>{{ t('research_projects') }}</q-item-label>
+          <q-item-label>{{ t('research_projects.title') }}</q-item-label>
         </q-item-section>
       </q-item>
       <q-item :to="`/files`">
@@ -58,7 +58,7 @@
           <q-icon name="folder" />
         </q-item-section>
         <q-item-section>
-          <q-item-label>{{ t('files') }}</q-item-label>
+          <q-item-label>{{ t('files.title') }}</q-item-label>
         </q-item-section>
       </q-item>
       <q-item :to="`/persons`">
@@ -66,7 +66,7 @@
           <q-icon name="people" />
         </q-item-section>
         <q-item-section>
-          <q-item-label>{{ t('persons') }}</q-item-label>
+          <q-item-label>{{ t('persons.title') }}</q-item-label>
         </q-item-section>
       </q-item>
       <q-item v-if="authStore.isAdministrator" :to="`/settings`">
