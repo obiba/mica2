@@ -1,7 +1,7 @@
 import type { AxiosResponse } from 'axios';
 import { defineStore } from 'pinia';
 import { api } from 'src/boot/api';
-import type { SessionDto, OIDCAuthProviderSummaryDto } from 'src/models/Mica';
+import type { SessionDto } from 'src/models/Mica';
 
 export const useAuthStore = defineStore('auth', () => {
   const sid = ref('');
@@ -58,12 +58,6 @@ export const useAuthStore = defineStore('auth', () => {
     });
   }
 
-  async function getProviders(): Promise<OIDCAuthProviderSummaryDto[]> {
-    return api.get('/auth/providers').then((response) => {
-      return response.data;
-    });
-  }
-
   return {
     sid,
     version,
@@ -75,6 +69,5 @@ export const useAuthStore = defineStore('auth', () => {
     signout,
     userProfile,
     reset,
-    getProviders,
   };
 });

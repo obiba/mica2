@@ -117,6 +117,7 @@
     "useId": true,
     "useModel": true,
     "useTemplateRef": true,
-    "useTicketStore": true
+    "useTicketStore": true,
+    "useNetworksStore": true
   }
 }
