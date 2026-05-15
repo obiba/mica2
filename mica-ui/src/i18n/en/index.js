@@ -19,13 +19,23 @@ export default {
     title: 'Networks',
     caption: 'Manage networks',
   },
-  studies: {
-    title: 'Studies',
-    caption: 'Manage studies',
+  individual: {
+    title: 'Individual',
+    studies: {
+      title: 'Individual Studies',
+    },
+    datasets: {
+      title: 'Collected Datasets',
+    },
   },
-  datasets: {
-    title: 'Datasets',
-    caption: 'Manage datasets',
+  harmonization: {
+    title: 'Harmonization',
+    studies: {
+      title: 'Harmonization Initiatives',
+    },
+    datasets: {
+      title: 'Harmonized Protocols',
+    },
   },
   research_projects: {
     title: 'Research Projects',
