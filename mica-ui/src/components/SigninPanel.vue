@@ -4,7 +4,7 @@
       <div class="text-help text-center q-pt-xs q-pb-xs">{{ t(authStore.isAuthenticated ? 'auth.confirm_title' : 'auth.title') }}</div>
       <q-card-section v-show="!withToken">
         <q-form @submit="onSubmit">
-          <div v-if="!authStore.isAuthenticated || isCredentialsRealm" class="q-gutter-md q-mb-md">
+          <div v-if="!authStore.isAuthenticated" class="q-gutter-md q-mb-md">
             <q-input autofocus color="grey-10" v-model="username" :disable="authStore.isAuthenticated" :label="t('auth.username')" autocomplete="nope">
               <template v-slot:prepend>
                 <q-icon name="fas fa-user" size="xs" />
@@ -17,19 +17,6 @@
             </q-input>
             <div>
               <q-btn :label="t('auth.signin')" type="submit" color="primary" :disable="disableSubmit" />
-            </div>
-          </div>
-          <div v-if="authProviders.length > 0">
-            <q-separator v-if="!authStore.isAuthenticated" class="q-mb-md" />
-            <div v-for="provider in authProviders" :key="provider.name">
-              <q-btn
-                no-caps
-                :label="t('auth.signin_with', { provider: provider.title || provider.name })"
-                @click="onSigninProvider(provider)"
-                color="primary"
-                class="full-width q-mb-sm"
-                stretch
-              />
             </div>
           </div>
         </q-form>
@@ -88,11 +75,8 @@
 
 <script setup lang="ts">
 import type { AxiosError } from 'axios';
-import { contextPath } from 'src/boot/api';
 import { Cookies } from 'quasar';
 import { locales } from 'src/boot/i18n';
-import type { OIDCAuthProviderSummaryDto } from 'src/models/Mica';
-import { baseUrl } from 'src/boot/api';
 import { notifyError } from 'src/utils/notify';
 
 interface AuthResponse {
@@ -120,23 +104,12 @@ const token = ref('');
 const qr = ref('');
 const authMethod = ref('');
 const withToken = ref(false);
-const authProviders = ref<OIDCAuthProviderSummaryDto[]>([]);
-
-const isCredentialsRealm = computed(
-  () => authStore.session && ['agate-user-realm', 'agate-ini-realm'].includes(authStore.session.realm || ''),
-);
 
 const disableSubmit = computed(() => {
   return !username.value || !password.value;
 });
 
 onMounted(() => {
-  authStore.getProviders().then((providers) => {
-    if (authStore.session?.realm) {
-      providers = providers.filter((p) => p.name === authStore.session?.realm);
-    }
-    authProviders.value = providers;
-  });
   // check is already authenticated
   if (authStore.isAuthenticated) {
     username.value = authStore.session?.username || '';
@@ -170,10 +143,6 @@ async function onSubmit() {
       notifyError(err);
     }
   }
-}
-
-function onSigninProvider(provider: OIDCAuthProviderSummaryDto) {
-  window.open(`${baseUrl}/../auth/signin/${provider.name}?redirect=${contextPath === '/' ? '' : contextPath}/admin`, '_self');
 }
 
 function onCancelToken() {
