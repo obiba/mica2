@@ -54,7 +54,7 @@ const values = ref<Record<string, string>>({});
 watch(
   () => props.modelValue,
   () => {
-    languages.value.forEach((lang) => {
+    languages.value.forEach((lang: string) => {
       const localizedString = props.modelValue?.find((x) => x.lang === lang);
       values.value[lang] = localizedString?.value || '';
     });
@@ -63,7 +63,7 @@ watch(
 );
 
 function onUpdate() {
-  const localizedStrings = languages.value.map((lang) => ({ lang, value: values.value[lang] }));
+  const localizedStrings = languages.value.map((lang: string) => ({ lang, value: values.value[lang] }));
   emits('update:modelValue', localizedStrings);
 }
 </script>
