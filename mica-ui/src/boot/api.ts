@@ -28,6 +28,10 @@ const api = axios.create({
   withCredentials: true,
 });
 
+function toServerUrl(path: string): string {
+  return baseUrl + path;
+}
+
 function requiresCode(response: AxiosResponse): boolean {
   if (response && response.status === 401) return response.headers['www-authenticate'] === 'X-Obiba-TOTP';
   return false;
@@ -54,18 +58,19 @@ api.interceptors.response.use(
     ) {
       // verify that user is still logged in
       console.debug('error', error);
-      api.get(PROFILE_PATH)
-      .then(() => {
-        // user is still logged in
-        if (isReAuthError(error)) {
-          const authStore = useAuthStore();
-          authStore.reAuthRequired = true;
-        }
-      })
-      .catch(() => {
-        // reload to redirect to sign in page (and reset app state)
-        window.location.replace(contextPath);
-      });
+      api
+        .get(PROFILE_PATH)
+        .then(() => {
+          // user is still logged in
+          if (isReAuthError(error)) {
+            const authStore = useAuthStore();
+            authStore.reAuthRequired = true;
+          }
+        })
+        .catch(() => {
+          // reload to redirect to sign in page (and reset app state)
+          window.location.replace(contextPath);
+        });
     }
     return Promise.reject(error);
   },
@@ -83,4 +88,4 @@ export default boot(({ app }) => {
   //       so you can easily perform requests against your app's API
 });
 
-export { api, baseUrl, contextPath };
+export { api, baseUrl, contextPath, toServerUrl };

@@ -29,6 +29,7 @@
   "devDependencies": {
     "@eslint/js": "^9.14.0",
     "@intlify/unplugin-vue-i18n": "^2.0.0",
+    "@obiba/quasar-app-extension-json-form": "^0.1.1",
     "@quasar/app-vite": "^2.4.1",
     "@types/node": "^20.5.9",
     "@vue/eslint-config-prettier": "^10.1.0",

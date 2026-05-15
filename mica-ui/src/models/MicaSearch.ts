@@ -14,9 +14,9 @@ import type {
   StudyDto,
   StudySummaryDto,
   TaxonomyEntityDto,
-} from "./Mica";
+} from './Mica';
 
-export const protobufPackage = "obiba.mica";
+export const protobufPackage = 'obiba.mica';
 
 export interface JoinQueryResultDto {
   variableResultDto?: QueryResultDto | undefined;
@@ -217,9 +217,7 @@ export interface StudyEntitiesCountDto {
   entityType: string;
   /** original query restricted to study variables */
   query: string;
-  study:
-    | DocumentDigestDto
-    | undefined;
+  study: DocumentDigestDto | undefined;
   /** all criteria count */
   total: number;
   belowPrivacyThreshold: boolean;

@@ -4,7 +4,7 @@
 //   protoc               v3.21.12
 // source: MicaSecurity.proto
 
-export const protobufPackage = "obiba.mica";
+export const protobufPackage = 'obiba.mica';
 
 export interface AclDto {
   type: string;
