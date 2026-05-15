@@ -42,7 +42,7 @@ function getCurrentLocale(): string {
 
 // function mergeWithCustomMessages() {
 //   const serverTranslations = translationAsMap(systemStore.configuration.translations || []);
-// 
+//
 //   Object.keys(serverTranslations).forEach((lang) => {
 //     const existingMessages = i18n.global.getLocaleMessage(lang) || {};
 //     const newMessages = (serverTranslations[lang] || ([] as AttributeDto[])).reduce(
@@ -55,7 +55,7 @@ function getCurrentLocale(): string {
 //       },
 //       {} as Record<string, string>,
 //     );
-// 
+//
 //     i18n.global.setLocaleMessage(lang, {
 //       ...existingMessages,
 //       ...newMessages,

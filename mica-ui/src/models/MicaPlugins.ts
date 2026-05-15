@@ -4,12 +4,12 @@
 //   protoc               v3.21.12
 // source: MicaPlugins.proto
 
-export const protobufPackage = "obiba.mica";
+export const protobufPackage = 'obiba.mica';
 
 export enum ServicePluginStatus {
-  RUNNING = "RUNNING",
-  STOPPED = "STOPPED",
-  UNRECOGNIZED = "UNRECOGNIZED",
+  RUNNING = 'RUNNING',
+  STOPPED = 'STOPPED',
+  UNRECOGNIZED = 'UNRECOGNIZED',
 }
 
 export interface PluginPackageDto {
