@@ -4,35 +4,35 @@
 //   protoc               v3.21.12
 // source: Mica.proto
 
-export const protobufPackage = "obiba.mica";
+export const protobufPackage = 'obiba.mica';
 
 export enum StateType {
-  StateType_UNSET = "StateType_UNSET",
-  STUDY_SUMMARY = "STUDY_SUMMARY",
-  NETWORK = "NETWORK",
-  NETWORK_SUMMARY = "NETWORK_SUMMARY",
-  DATASET = "DATASET",
-  PROJECT = "PROJECT",
-  UNRECOGNIZED = "UNRECOGNIZED",
+  StateType_UNSET = 'StateType_UNSET',
+  STUDY_SUMMARY = 'STUDY_SUMMARY',
+  NETWORK = 'NETWORK',
+  NETWORK_SUMMARY = 'NETWORK_SUMMARY',
+  DATASET = 'DATASET',
+  PROJECT = 'PROJECT',
+  UNRECOGNIZED = 'UNRECOGNIZED',
 }
 
 export enum OpalCredentialType {
-  USERNAME = "USERNAME",
-  PUBLIC_KEY_CERTIFICATE = "PUBLIC_KEY_CERTIFICATE",
-  TOKEN = "TOKEN",
-  UNRECOGNIZED = "UNRECOGNIZED",
+  USERNAME = 'USERNAME',
+  PUBLIC_KEY_CERTIFICATE = 'PUBLIC_KEY_CERTIFICATE',
+  TOKEN = 'TOKEN',
+  UNRECOGNIZED = 'UNRECOGNIZED',
 }
 
 export enum KeyType {
-  KEY_PAIR = "KEY_PAIR",
-  CERTIFICATE = "CERTIFICATE",
-  UNRECOGNIZED = "UNRECOGNIZED",
+  KEY_PAIR = 'KEY_PAIR',
+  CERTIFICATE = 'CERTIFICATE',
+  UNRECOGNIZED = 'UNRECOGNIZED',
 }
 
 export enum FileType {
-  FILE = "FILE",
-  FOLDER = "FOLDER",
-  UNRECOGNIZED = "UNRECOGNIZED",
+  FILE = 'FILE',
+  FOLDER = 'FOLDER',
+  UNRECOGNIZED = 'UNRECOGNIZED',
 }
 
 export interface SessionDto {
@@ -65,9 +65,7 @@ export interface StudySummaryDto {
   permissions?: PermissionsDto | undefined;
   studyResourcePath?: string | undefined;
   content?: string | undefined;
-  state?:
-    | EntityStateDto
-    | undefined;
+  state?: EntityStateDto | undefined;
   /** Specific to search */
   countStats?: CountStatsDto | undefined;
 }
@@ -147,9 +145,9 @@ export interface PopulationDto_SelectionCriteriaDto {
 }
 
 export enum PopulationDto_SelectionCriteriaDto_Gender {
-  men = "men",
-  women = "women",
-  UNRECOGNIZED = "UNRECOGNIZED",
+  men = 'men',
+  women = 'women',
+  UNRECOGNIZED = 'UNRECOGNIZED',
 }
 
 export interface PopulationDto_DataCollectionEventDto {
@@ -262,9 +260,7 @@ export interface NetworkDto {
   permissions?: PermissionsDto | undefined;
   content?: string | undefined;
   membershipSortOrder: MembershipSortOrderDto[];
-  state?:
-    | EntityStateDto
-    | undefined;
+  state?: EntityStateDto | undefined;
   /** Specific to search */
   countStats?: CountStatsDto | undefined;
 }
@@ -333,11 +329,11 @@ export interface PersonDto {
 }
 
 export enum PersonDto_Type {
-  Type_UNSET = "Type_UNSET",
-  STUDY = "STUDY",
-  INITIATIVE = "INITIATIVE",
-  NETWORK = "NETWORK",
-  UNRECOGNIZED = "UNRECOGNIZED",
+  Type_UNSET = 'Type_UNSET',
+  STUDY = 'STUDY',
+  INITIATIVE = 'INITIATIVE',
+  NETWORK = 'NETWORK',
+  UNRECOGNIZED = 'UNRECOGNIZED',
 }
 
 export interface PersonDto_InstitutionDto {
@@ -534,9 +530,7 @@ export interface DatasetDto {
   variableType?: string | undefined;
   permissions?: PermissionsDto | undefined;
   content?: string | undefined;
-  state?:
-    | EntityStateDto
-    | undefined;
+  state?: EntityStateDto | undefined;
   /** Specific to search */
   countStats?: CountStatsDto | undefined;
   collected?: CollectedDatasetDto | undefined;
@@ -682,22 +676,16 @@ export interface DatasetVariablesHarmonizationsDto {
 
 export interface DatasetHarmonizedVariableSummaryDto {
   /** harmonized variable Mlstr_harmo.status */
-  status?:
-    | string
-    | undefined;
+  status?: string | undefined;
   /** harmonized variable reference (might not exists) */
-  harmonizedVariableRef?:
-    | DatasetVariableResolverDto
-    | undefined;
+  harmonizedVariableRef?: DatasetVariableResolverDto | undefined;
   /** harmonized variable Mlstr_harmo.status_detail */
   statusDetail?: string | undefined;
 }
 
 export interface DatasetVariableHarmonizationSummaryDto {
   /** dataschema variable reference */
-  dataschemaVariableRef:
-    | DatasetVariableResolverDto
-    | undefined;
+  dataschemaVariableRef: DatasetVariableResolverDto | undefined;
   /** harmonized variables */
   harmonizedVariables: DatasetHarmonizedVariableSummaryDto[];
 }
@@ -814,12 +802,12 @@ export interface DataAccessRequestDto {
 }
 
 export enum DataAccessRequestDto_Type {
-  REQUEST = "REQUEST",
-  AMENDMENT = "AMENDMENT",
-  FEASIBILITY = "FEASIBILITY",
-  AGREEMENT = "AGREEMENT",
-  PRELIMINARY = "PRELIMINARY",
-  UNRECOGNIZED = "UNRECOGNIZED",
+  REQUEST = 'REQUEST',
+  AMENDMENT = 'AMENDMENT',
+  FEASIBILITY = 'FEASIBILITY',
+  AGREEMENT = 'AGREEMENT',
+  PRELIMINARY = 'PRELIMINARY',
+  UNRECOGNIZED = 'UNRECOGNIZED',
 }
 
 export interface DataAccessRequestDto_ActionLogDto {
@@ -958,9 +946,9 @@ export interface DataAccessFormDto {
 }
 
 export enum DataAccessFormDto_PdfDownloadType {
-  Template = "Template",
-  Embedded = "Embedded",
-  UNRECOGNIZED = "UNRECOGNIZED",
+  Template = 'Template',
+  Embedded = 'Embedded',
+  UNRECOGNIZED = 'UNRECOGNIZED',
 }
 
 export interface DataAccessPreliminaryFormDto {
@@ -1010,14 +998,14 @@ export interface EntityFormDto {
 }
 
 export enum EntityFormDto_Type {
-  Network = "Network",
-  Study = "Study",
-  Population = "Population",
-  DataCollectionEvent = "DataCollectionEvent",
-  CollectedDataset = "CollectedDataset",
-  HarmonizedDataset = "HarmonizedDataset",
-  HarmonizationStudy = "HarmonizationStudy",
-  UNRECOGNIZED = "UNRECOGNIZED",
+  Network = 'Network',
+  Study = 'Study',
+  Population = 'Population',
+  DataCollectionEvent = 'DataCollectionEvent',
+  CollectedDataset = 'CollectedDataset',
+  HarmonizedDataset = 'HarmonizedDataset',
+  HarmonizationStudy = 'HarmonizationStudy',
+  UNRECOGNIZED = 'UNRECOGNIZED',
 }
 
 export interface UserProfileDto {
@@ -1037,13 +1025,9 @@ export interface GitCommitInfoDto {
   comment: string;
   commitId: string;
   diffEntries: string[];
-  blob?:
-    | string
-    | undefined;
+  blob?: string | undefined;
   /** head of the commit tree */
-  isHead?:
-    | boolean
-    | undefined;
+  isHead?: boolean | undefined;
   /** current (latest) commit for a given path */
   isCurrent?: boolean | undefined;
 }
