@@ -19,13 +19,23 @@ export default {
     title: 'Réseaux',
     caption: 'Gérer les réseaux',
   },
-  studies: {
-    title: 'Études',
-    caption: 'Gérer les études',
+  individual: {
+    title: 'Individuel',
+    studies: {
+      title: 'Études individuelles',
+    },
+    datasets: {
+      title: 'Jeux de données collectés',
+    },
   },
-  datasets: {
-    title: 'Jeux de données',
-    caption: 'Gérer les jeux de données',
+  harmonization: {
+    title: 'Harmonisation',
+    studies: {
+      title: 'Initiatives de harmonisation',
+    },
+    datasets: {
+      title: 'Protocoles harmonisés',
+    },
   },
   research_projects: {
     title: 'Projets de recherche',

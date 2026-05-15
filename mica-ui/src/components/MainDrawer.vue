@@ -29,20 +29,46 @@
           <q-item-label>{{ t('networks.title') }}</q-item-label>
         </q-item-section>
       </q-item>
-      <q-item to="/studies">
-        <q-item-section avatar>
+      <q-item class="bg-grey-3">
+        <q-item-section>
+          <q-item-label>{{ t('individual.title') }}</q-item-label>
+        </q-item-section>
+      </q-item>
+      <q-item to="/individual-studies">
+        <q-item-section avatar class="q-ml-md">
           <q-icon name="book" />
         </q-item-section>
         <q-item-section>
-          <q-item-label>{{ t('studies.title') }}</q-item-label>
+          <q-item-label>{{ t('individual.studies.title') }}</q-item-label>
         </q-item-section>
       </q-item>
-      <q-item :to="`/datasets`">
-        <q-item-section avatar>
+      <q-item :to="`/collected-datasets`">
+        <q-item-section avatar class="q-ml-md">
           <q-icon name="splitscreen" />
         </q-item-section>
         <q-item-section>
-          <q-item-label>{{ t('datasets.title') }}</q-item-label>
+          <q-item-label>{{ t('individual.datasets.title') }}</q-item-label>
+        </q-item-section>
+      </q-item>
+      <q-item class="bg-grey-3">
+        <q-item-section>
+          <q-item-label>{{ t('harmonization.title') }}</q-item-label>
+        </q-item-section>
+      </q-item>
+      <q-item to="/harmonization-studies">
+        <q-item-section avatar class="q-ml-md">
+          <q-icon name="book" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>{{ t('harmonization.studies.title') }}</q-item-label>
+        </q-item-section>
+      </q-item>
+      <q-item :to="`/harmonized-datasets`">
+        <q-item-section avatar class="q-ml-md">
+          <q-icon name="splitscreen" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>{{ t('harmonization.datasets.title') }}</q-item-label>
         </q-item-section>
       </q-item>
       <q-item :to="`/research-projects`">
