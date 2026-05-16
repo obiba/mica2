@@ -6,8 +6,10 @@
           v-model="values[lang]"
           :label="label + (required ? ' *' : '')"
           :hint="hint"
+          :type="rows && rows > 1 ? 'textarea' : 'text'"
           dense
           lazy-rules
+          :disable="readonly"
           :rules="required ? [(val) => !!val || t('required')] : []"
           @update:model-value="onUpdate"
         />
@@ -40,6 +42,8 @@ interface Props {
   label: string;
   hint?: string | undefined;
   required?: boolean | undefined;
+  readonly?: boolean | undefined;
+  rows?: number | undefined;
 }
 
 const props = defineProps<Props>();
