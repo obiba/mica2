@@ -78,6 +78,7 @@ export default {
       },
     },
   },
+  acronym: 'Acronyme',
   add: 'ajouter',
   administration: 'Administration',
   applications_caption: "Gérer les applications, les identifications et les fournisseurs d'identité",

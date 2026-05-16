@@ -78,6 +78,7 @@ export default {
       },
     },
   },
+  acronym: 'Acronym',
   add: 'Add',
   administration: 'Administration',
   applications_caption: 'Manage applications, identifications and identity providers',
