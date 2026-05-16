@@ -6,9 +6,7 @@
         <q-breadcrumbs-el :label="t('settings')" />
       </q-breadcrumbs>
     </q-toolbar>
-    <q-page class="q-pa-md">
-      <div class="text-h6 q-mb-md">{{ t('properties') }}</div>
-    </q-page>
+    <q-page class="q-pa-md"> </q-page>
   </div>
 </template>
 
