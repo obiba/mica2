@@ -28,15 +28,29 @@
         <q-separator />
         <q-tab-panels v-model="tab">
           <q-tab-panel name="view">
-            <q-img
-              v-if="networksStore.network.logo"
-              :src="
-                toServerUrl(
-                  `/draft/network/${networksStore.network.id}/file/${networksStore.network.logo.id}/_download`,
-                )
-              "
-              class="q-mb-md"
-              style="max-width: 200px"
+            <div class="row">
+              <div class="col-12 col-md-4">
+                <q-img
+                  v-if="networksStore.network.logo"
+                  :src="
+                    toServerUrl(
+                      `/draft/network/${networksStore.network.id}/file/${networksStore.network.logo.id}/_download`,
+                    )
+                  "
+                  class="q-mb-md"
+                  style="max-width: 200px"
+                />
+              </div>
+              <div class="col-12 col-md-8">
+                <localized-input v-model="networksStore.network.acronym" :label="t('acronym')" readonly />
+                <localized-input v-model="networksStore.network.name" :label="t('name')" readonly />
+              </div>
+            </div>
+            <localized-input
+              v-model="networksStore.network.description"
+              :label="t('description')"
+              :rows="10"
+              readonly
             />
             <pre>{{ networksStore.network }}</pre>
           </q-tab-panel>
@@ -62,6 +76,7 @@
 <script setup lang="ts">
 import type { GitCommitInfoDto } from 'src/models/Mica';
 import { toServerUrl } from 'src/boot/api';
+import LocalizedInput from 'src/components/commons/LocalizedInput.vue';
 
 const networksStore = useNetworksStore();
 const router = useRouter();

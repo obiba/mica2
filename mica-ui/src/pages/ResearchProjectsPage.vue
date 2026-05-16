@@ -3,7 +3,7 @@
     <q-toolbar class="bg-grey-3">
       <q-breadcrumbs>
         <q-breadcrumbs-el icon="home" to="/" />
-        <q-breadcrumbs-el :label="t('settings')" />
+        <q-breadcrumbs-el :label="t('research_projects.title')" />
       </q-breadcrumbs>
     </q-toolbar>
     <q-page class="q-pa-md"> </q-page>
@@ -11,10 +11,5 @@
 </template>
 
 <script setup lang="ts">
-const systemStore = useSystemStore();
 const { t } = useI18n();
-
-onMounted(() => {
-  systemStore.init();
-});
 </script>

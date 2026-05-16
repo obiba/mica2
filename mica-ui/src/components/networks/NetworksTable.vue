@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-table flat :rows="networksStore.networks" :columns="columns" row-key="id">
+    <q-table flat :rows="networksStore.networks" :columns="columns" :rows-per-page-options="ROWS_PER_PAGE" row-key="id">
       <template v-slot:body-cell-id="props">
         <q-td key="id" :props="props">
           <router-link :to="`/network/${props.value}`" class="text-primary">{{ props.value }}</router-link>
@@ -20,6 +20,8 @@
 
 <script setup lang="ts">
 import type { TimestampsDto } from 'src/models/Mica';
+import { ROWS_PER_PAGE } from 'src/utils/constants';
+import { getDateLabel } from 'src/utils/dates';
 
 const networksStore = useNetworksStore();
 const { t } = useI18n();
@@ -29,9 +31,9 @@ const columns = computed(() => [
   { name: 'name', label: t('name'), field: 'name', sortable: true },
   {
     name: 'lastUpdated',
-    label: t('lastUpdated'),
+    label: t('last_modified'),
     field: 'timestamps',
-    format: (ts: TimestampsDto) => ts.lastUpdate,
+    format: (ts: TimestampsDto) => getDateLabel(ts.lastUpdate),
     sortable: true,
   },
 ]);
