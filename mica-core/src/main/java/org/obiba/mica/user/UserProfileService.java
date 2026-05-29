@@ -15,6 +15,9 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import jakarta.annotation.Nullable;
+import jakarta.inject.Inject;
+import jakarta.validation.constraints.NotNull;
 import org.apache.shiro.SecurityUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -27,18 +30,19 @@ import org.obiba.shiro.realm.ObibaRealm.Subject;
 import org.owasp.esapi.ESAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springframework.web.client.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import jakarta.annotation.Nullable;
-import jakarta.inject.Inject;
-import jakarta.validation.constraints.NotNull;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
@@ -61,14 +65,30 @@ public class UserProfileService extends AgateRestService {
   @Inject
   private MailService mailService;
 
-  private Cache<String, Subject> subjectCache = CacheBuilder.newBuilder()
-    .maximumSize(100)
-    .expireAfterWrite(1, TimeUnit.MINUTES)
-    .build();
+  @Value("${cache.userInfo.maxSize:1000}")
+  private int cacheUserInfoMaxSize;
+
+  @Value("${cache.userInfo.expireHours:8}")
+  private int cacheUserInfoExpireHours;
+
+  private Cache<String, Subject> subjectsCache;
+
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    super.afterPropertiesSet();
+    subjectsCache = CacheBuilder.newBuilder()
+      .maximumSize(cacheUserInfoMaxSize)
+      .expireAfterWrite(cacheUserInfoExpireHours, TimeUnit.HOURS)
+      .build();
+  }
 
   public synchronized Subject getProfile(@NotNull String username) {
+    return getProfile(username, true);
+  }
+
+  public synchronized Subject getProfile(@NotNull String username, boolean cached) {
     Assert.notNull(username, "Username cannot be null");
-    Subject subject = getProfileInternal(getProfileServiceUrl(username));
+    Subject subject = getProfileInternal(getProfileServiceUrl(username), cached);
 
     if (subject == null) {
       // return dummy Subject in case communication with Agate failed
@@ -77,17 +97,6 @@ public class UserProfileService extends AgateRestService {
     }
 
     return subject;
-  }
-
-  public synchronized Subject getProfile(@NotNull String username, boolean cached) {
-    if (!cached) return getProfile(username);
-
-    ObibaRealm.Subject profile = subjectCache.getIfPresent(username);
-    if (profile == null) {
-      profile = getProfile(username);
-      subjectCache.put(username, profile);
-    }
-    return profile;
   }
 
   public synchronized Map<String, Object> getProfileMap(@NotNull String username, boolean cached) {
@@ -104,7 +113,7 @@ public class UserProfileService extends AgateRestService {
     try {
       String profileServiceUrl = getProfileServiceUrlByGroup(null, group);
       subjects = Arrays.asList(executeQuery(profileServiceUrl, Subject[].class));
-      subjects.forEach(s -> subjectCache.put(s.getUsername(), s));
+      subjects.forEach(s -> subjectsCache.put(getProfileServiceUrl(s.getUsername()), s));
     } catch (RestClientException e) {
       log.error("Agate connection failure: {}", e.getMessage());
       subjects = Lists.newArrayList();
@@ -248,9 +257,20 @@ public class UserProfileService extends AgateRestService {
   // Private methods
   //
 
-  private synchronized Subject getProfileInternal(String serviceUrl) {
+  private Subject getProfileInternal(String serviceUrl) {
+    return getProfileInternal(serviceUrl, true);
+  }
+
+  private synchronized Subject getProfileInternal(String serviceUrl, boolean cached) {
     try {
-      return executeQuery(serviceUrl, Subject.class);
+      if (!cached) return executeQuery(serviceUrl, Subject.class);
+
+      Subject profile = subjectsCache.getIfPresent(serviceUrl);
+      if (profile == null) {
+        profile = executeQuery(serviceUrl, Subject.class);
+        subjectsCache.put(serviceUrl, profile);
+      }
+      return profile;
     } catch (RestClientException e) {
       log.error("Agate connection failure: {}", e.getMessage());
     }
