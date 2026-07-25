@@ -13,6 +13,9 @@ package org.obiba.mica.config;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.ApplicationPath;
 
+import org.glassfish.jersey.internal.InternalProperties;
+import org.glassfish.jersey.jackson.internal.jackson.jaxrs.base.JsonMappingExceptionMapper;
+import org.glassfish.jersey.jackson.internal.jackson.jaxrs.base.JsonParseExceptionMapper;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
@@ -34,8 +37,17 @@ public class JerseyConfiguration extends ResourceConfig {
   @Inject
   public JerseyConfiguration(Environment environment, CSRFTokenHelper csrfTokenHelper) {
     register(RequestContextFilter.class);
-    packages("org.obiba.mica", "org.obiba.jersey", "com.fasterxml.jackson");
-    // register(LoggingFeature.class);
+    packages("org.obiba.mica", "org.obiba.jersey");
+    // Opt out of JacksonFeature's auto-registered DefaultJacksonJaxbJsonProvider and use MicaJacksonJsonProvider
+    // instead: it does the same job but declines protobuf messages, which are the ProtobufJsonProvider's business.
+    // Both providers declare MessageBodyWriter<Object> for application/json, so Jersey cannot order them by type or
+    // media type distance and picks whichever comes first in an unordered set. When Jackson wins, writing a protobuf
+    // DTO fails with "Direct self-reference leading to cycle" (UnknownFieldSet) and the response turns into an error.
+    property(InternalProperties.JSON_FEATURE, MicaJacksonJsonProvider.class.getSimpleName());
+    register(MicaJacksonJsonProvider.class);
+    // exception mappers JacksonFeature would have registered along with its provider
+    register(JsonParseExceptionMapper.class);
+    register(JsonMappingExceptionMapper.class);
     register(AuthenticationInterceptor.class);
     register(ConfigurationInterceptor.class);
     register(AuditInterceptor.class);

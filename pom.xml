@@ -18,7 +18,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.0.6</version>
+    <version>4.1.0</version>
   </parent>
 
   <modules>
@@ -40,46 +40,46 @@
     <maven.compiler.source>21</maven.compiler.source>
 
     <assertj-core.version>3.27.7</assertj-core.version>
-    <awaitility.version>4.2.1</awaitility.version>
+    <awaitility.version>4.3.0</awaitility.version>
+    <bouncycastle.version>1.85</bouncycastle.version>
     <cache-api.version>1.1.1</cache-api.version>
     <carrotsearch.version>0.7.1</carrotsearch.version>
-    <commons-io.version>2.16.1</commons-io.version>
-    <commons-lang.version>2.6</commons-lang.version>
-    <dropwizard-metrics.version>4.2.23</dropwizard-metrics.version>
+    <commons-io.version>2.22.0</commons-io.version>
+    <commons-lang.version>3.18.0</commons-lang.version>
+    <dropwizard-metrics.version>4.2.39</dropwizard-metrics.version>
     <ehcache.version>3.10.8</ehcache.version>
-    <easymock.version>5.2.0</easymock.version>
+    <easymock.version>5.6.0</easymock.version>
     <embed-mongo.version>1.50.0</embed-mongo.version>
     <esapi.version>2.6.0.0</esapi.version>
-    <freemarker.version>2.3.33</freemarker.version>
-    <guava.version>33.2.1-jre</guava.version>
+    <freemarker.version>2.3.34</freemarker.version>
+    <guava.version>33.6.0-jre</guava.version>
 <!--    <geronimo-javamail_1.4_mail.version>1.8.3</geronimo-javamail_1.4_mail.version>-->
     <itextpdf.version>5.5.13.4</itextpdf.version>
     <javax.inject.version>1</javax.inject.version>
     <javax-rs.version>2.0</javax-rs.version>
-    <jersey.version>3.1.3</jersey.version>
-    <jetty.version>12.1.6</jetty.version>
-    <jgit.version>7.2.1.202505142326-r</jgit.version>
-    <jhipsterloaded.version>0.7</jhipsterloaded.version>
-    <joda-time.version>2.12.7</joda-time.version>
-    <json-path.version>2.9.0</json-path.version>
+    <jersey.version>3.1.12</jersey.version>
+    <jetty.version>12.1.11</jetty.version>
+    <jgit.version>7.7.0.202606012155-r</jgit.version>
+    <jhipsterloaded.version>0.12</jhipsterloaded.version>
+    <joda-time.version>2.14.2</joda-time.version>
+    <json-path.version>2.10.0</json-path.version>
     <jsoup.version>1.17.2</jsoup.version>
-    <jsr305.version>3.0.0</jsr305.version>
-    <logback.version>1.5.35</logback.version>
+    <jsr305.version>3.0.2</jsr305.version>
+    <logback.version>1.6.0</logback.version>
     <logstash-logback.version>7.4</logstash-logback.version>
     <magma.version>5.3.0</magma.version>
     <metrics-spring.version>3.0.0</metrics-spring.version>
-    <mongodb-driver.version>5.6.3</mongodb-driver.version>
+    <mongodb-driver.version>5.9.1</mongodb-driver.version>
     <nosqlunit.version>0.7.9</nosqlunit.version>
-    <obiba-commons.version>5.1.2</obiba-commons.version>
-    <opal.version>5.6.3</opal.version>
-    <bouncycastle.version>1.84</bouncycastle.version>
+    <obiba-commons.version>5.2.1</obiba-commons.version>
+    <opal.version>5.7.3</opal.version>
     <opencsv.version>2.3</opencsv.version>
     <poi.version>5.4.0</poi.version>
-    <protobuf.version>3.25.5</protobuf.version>
+    <protobuf.version>3.25.8</protobuf.version>
     <protobuf-java-format.version>1.2.1-obiba</protobuf-java-format.version>
     <rql-parser.version>0.3.3-obiba</rql-parser.version>
-    <shiro.version>2.1.0</shiro.version>
-    <shiro-extras.version>1.1.0</shiro-extras.version>
+    <shiro.version>2.2.1</shiro.version>
+    <shiro-extras.version>2.0.0</shiro-extras.version>
     <lang-tag.version>1.4.4</lang-tag.version>
     <servlet-api.version>6.1.0-M2</servlet-api.version>
     <jakarta.servlet>4.0.4</jakarta.servlet>
@@ -90,14 +90,14 @@
     <github-release-plugin.version>1.6.0</github-release-plugin.version>
     <maven-antrun-plugin.version>1.7</maven-antrun-plugin.version>
     <maven-assembly-plugin.version>2.4</maven-assembly-plugin.version>
-    <maven-dependency-plugin.version>3.1.0</maven-dependency-plugin.version>
-    <maven-deploy-plugin.version>2.8.1</maven-deploy-plugin.version>
-    <maven-enforcer-plugin.version>1.3.1</maven-enforcer-plugin.version>
+    <maven-dependency-plugin.version>3.11.0</maven-dependency-plugin.version>
+    <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
+    <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
     <maven-findbugs-plugin.version>3.0.4</maven-findbugs-plugin.version>
-    <maven-pmd-plugin.version>3.1</maven-pmd-plugin.version>
+    <maven-pmd-plugin.version>3.6</maven-pmd-plugin.version>
     <maven-sonar-plugin.version>2.2</maven-sonar-plugin.version>
     <maven-release-plugin.version>2.5.2</maven-release-plugin.version>
-    <rpm-maven-plugin.version>2.1.4</rpm-maven-plugin.version>
+    <rpm-maven-plugin.version>2.2.0</rpm-maven-plugin.version>
 
   </properties>
 
@@ -204,8 +204,8 @@
         <version>${metrics-spring.version}</version>
       </dependency>
       <dependency>
-        <groupId>commons-lang</groupId>
-        <artifactId>commons-lang</artifactId>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
         <version>${commons-lang.version}</version>
       </dependency>
       <dependency>
@@ -345,6 +345,12 @@
       <dependency>
         <groupId>org.glassfish.jersey.media</groupId>
         <artifactId>jersey-media-multipart</artifactId>
+        <version>${jersey.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.glassfish.jersey.media</groupId>
+        <artifactId>jersey-media-json-jackson</artifactId>
         <version>${jersey.version}</version>
       </dependency>
 
