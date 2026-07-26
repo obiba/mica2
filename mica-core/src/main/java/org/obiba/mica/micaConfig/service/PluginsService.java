@@ -219,8 +219,11 @@ public class PluginsService implements EnvironmentAware, InitializingBean {
    * @return
    */
   public PluginResources getInstalledPlugin(String name) {
-    Optional<PluginResources> plugin = registeredPlugins.stream().filter(p -> p.getName().equals(name)).findFirst();
-    if (!plugin.isPresent()) throw new NoSuchElementException("No such plugin with name: " + name);
+    // order by version descending
+    Optional<PluginResources> plugin = registeredPlugins.stream()
+      .filter(p -> p.getName().equals(name))
+      .max(Comparator.comparing(PluginResources::getVersion));
+    if (plugin.isEmpty()) throw new NoSuchElementException("No such plugin with name: " + name);
     return plugin.get();
   }
 
@@ -285,7 +288,7 @@ public class PluginsService implements EnvironmentAware, InitializingBean {
 
   ServicePlugin getServicePlugin(String name) {
     Optional<ServicePlugin> service = servicePlugins.stream().filter(s -> name.equals(s.getName())).findFirst();
-    if (!service.isPresent()) throw new NoSuchElementException(name);
+    if (service.isEmpty()) throw new NoSuchElementException(name);
     return service.get();
   }
 
