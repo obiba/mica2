@@ -52,11 +52,10 @@ import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
@@ -67,9 +66,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.function.Supplier;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -103,12 +102,15 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
 
   private final MicaConfigService micaConfigService;
 
+  private final Executor executor;
+
   @Inject
   public HarmonizedDatasetService(StudyService studyService, NetworkService networkService, OpalService opalService,
     HarmonizationDatasetRepository harmonizationDatasetRepository,
     HarmonizationDatasetStateRepository harmonizationDatasetStateRepository,
     HarmonizationStudyService harmonizationStudyService, PublishedStudyService publishedStudyService, EventBus eventBus,
-    FileSystemService fileSystemService, MicaConfigService micaConfigService) {
+    FileSystemService fileSystemService, MicaConfigService micaConfigService,
+    @Qualifier("applicationTaskExecutor") Executor executor) {
     this.studyService = studyService;
     this.networkService = networkService;
     this.opalService = opalService;
@@ -119,6 +121,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
     this.eventBus = eventBus;
     this.fileSystemService = fileSystemService;
     this.micaConfigService = micaConfigService;
+    this.executor = executor;
 
     this.helper = new Helper(this, this.eventBus);
   }
@@ -257,22 +260,26 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
 
   private void indexHarmonizedVariables(HarmonizationDataset dataset) {
     if(!dataset.getBaseStudyTables().isEmpty()) {
-      dataset.getBaseStudyTables()
-        .forEach(studyTable -> {
-          Future<Iterable<DatasetVariable>> future = helper.asyncGetDatasetVariables(() -> getDatasetVariablesFromStudyTable(dataset, studyTable));
-          try {
-            Iterable<DatasetVariable> harmonizationVariables = future.get();
-            eventBus.post(new DatasetPublishedEvent(dataset, null, harmonizationVariables, getCurrentUsername()));
-          } catch (InterruptedException e) {
-            if(e.getCause() instanceof MagmaRuntimeException) {
-              throw new DatasourceNotAvailableException(e.getCause());
-            }
+      // kick off all study table fetches first so they run in parallel, then join on each below
+      List<CompletableFuture<Iterable<DatasetVariable>>> futures = dataset.getBaseStudyTables().stream()
+        .map(studyTable -> CompletableFuture
+          .supplyAsync(() -> getDatasetVariablesFromStudyTable(dataset, studyTable), executor))
+        .collect(toList());
 
-            throw Throwables.propagate(e.getCause());
-          } catch (ExecutionException e) {
-            throw Throwables.propagate(e);
+      futures.forEach(future -> {
+        try {
+          Iterable<DatasetVariable> harmonizationVariables = future.get();
+          eventBus.post(new DatasetPublishedEvent(dataset, null, harmonizationVariables, getCurrentUsername()));
+        } catch (InterruptedException e) {
+          if(e.getCause() instanceof MagmaRuntimeException) {
+            throw new DatasourceNotAvailableException(e.getCause());
           }
-        });
+
+          throw Throwables.propagate(e.getCause());
+        } catch (ExecutionException e) {
+          throw Throwables.propagate(e);
+        }
+      });
     }
   }
 
@@ -495,7 +502,14 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
 
   private Iterable<Variable> getVariables(@NotNull HarmonizationDataset dataset, BaseStudyTable studyTable)
     throws NoSuchDatasetException, NoSuchStudyException, NoSuchValueTableException {
-    return getStudyTableSource(dataset, studyTable).getValueTable().getVariables();
+    ValueTable valueTable = getStudyTableSource(dataset, studyTable).getValueTable();
+    // OpalService caches and shares ValueTable instances across calls to the same table, and their lazy
+    // variable-source initialisation (RestValueTable/AbstractValueTable) is not thread-safe: concurrent
+    // getVariables() calls on the same instance can corrupt its internal sources map. Serialize per table
+    // instance so tables resolving to distinct instances still run fully in parallel.
+    synchronized (valueTable) {
+      return valueTable.getVariables();
+    }
   }
 
   private ValueTable getTable(@NotNull HarmonizationDataset dataset, String studyId, String source)
@@ -553,13 +567,6 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
       log.info("cleared dataset variables cache dataset-{}", dataset.getId());
     }
 
-    @Async("opalExecutor")
-    public Future<Iterable<DatasetVariable>> asyncGetDatasetVariables(Supplier<Iterable<DatasetVariable>> supp) {
-      log.info("Getting dataset variables asynchronously.");
-      return new AsyncResult<>(supp.get());
-    }
-
-    @Async
     public void asyncBuildDatasetVariablesCache(HarmonizationDataset dataset,
       Map<String, List<DatasetVariable>> harmonizationVariables) {
       log.info("building variable summaries cache");
@@ -576,7 +583,6 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
       log.info("done building variable summaries cache");
     }
 
-    @Async
     public void getPublishedVariables(HarmonizationDataset dataset) {
       eventBus.post(new DatasetUpdatedEvent(dataset));
     }

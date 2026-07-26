@@ -13,7 +13,6 @@ package org.obiba.mica.dataset.service;
 import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,7 +29,6 @@ import org.obiba.magma.type.BooleanType;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.springframework.scheduling.annotation.AsyncResult;
 
 import com.google.common.eventbus.EventBus;
 
@@ -38,7 +36,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
 
 public class HarmonizedDatasetServiceTest {
 
@@ -77,7 +74,6 @@ public class HarmonizedDatasetServiceTest {
       }};
 
     doReturn(dataset).when(datasetService).findById(anyString());
-    when(helper.asyncGetDatasetVariables(any(Supplier.class))).thenReturn(new AsyncResult<>(l));
     doReturn(l).when(datasetService).getDatasetVariables(any(HarmonizationDataset.class), null);
     doReturn(l).when(datasetService).getDatasetVariablesFromStudyTable(any(HarmonizationDataset.class), any(StudyTable.class));
 
