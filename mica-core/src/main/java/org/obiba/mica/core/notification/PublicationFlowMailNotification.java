@@ -58,14 +58,6 @@ public abstract class PublicationFlowMailNotification {
   protected void sendNotification(RevisionStatus status, Map<String, String> ctx, String subject,
     String template, List<SubjectAcl> acls) {
 
-    List<SubjectAcl> allAcls = Lists.newArrayList(
-      SubjectAcl.newBuilder(Roles.MICA_REVIEWER, SubjectAcl.Type.GROUP).action(PermissionsUtils.getReviewerActions())
-        .build(),
-      SubjectAcl.newBuilder(Roles.MICA_EDITOR, SubjectAcl.Type.GROUP).action(PermissionsUtils.getEditorActions())
-        .build());
-
-    allAcls.addAll(acls);
-
     Map<RevisionStatus, String> requiredActions = new HashMap<RevisionStatus, String>() {
       {
         put(RevisionStatus.DRAFT, "EDIT");
@@ -74,8 +66,22 @@ public abstract class PublicationFlowMailNotification {
       }
     };
 
+    sendNotification(requiredActions.get(status), ctx, subject, template, acls);
+  }
+
+  protected void sendNotification(String requiredAction, Map<String, String> ctx, String subject,
+    String template, List<SubjectAcl> acls) {
+
+    List<SubjectAcl> allAcls = Lists.newArrayList(
+      SubjectAcl.newBuilder(Roles.MICA_REVIEWER, SubjectAcl.Type.GROUP).action(PermissionsUtils.getReviewerActions())
+        .build(),
+      SubjectAcl.newBuilder(Roles.MICA_EDITOR, SubjectAcl.Type.GROUP).action(PermissionsUtils.getEditorActions())
+        .build());
+
+    allAcls.addAll(acls);
+
     Map<SubjectAcl.Type, List<String>> recipients = allAcls.stream()
-      .filter(a -> a.getActions().contains(requiredActions.get(status)))
+      .filter(a -> a.getActions().contains(requiredAction))
       .map(a -> Pair.create(a.getPrincipal(), a.getType()))
       .collect(groupingBy(Pair::getSecond, mapping(Pair::getFirst, toList())));
 

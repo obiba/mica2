@@ -45,6 +45,7 @@ import org.obiba.mica.core.domain.EntityStateFilter;
 import org.obiba.mica.core.domain.GitPersistable;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.notification.EntityPublicationFlowMailNotification;
+import org.obiba.mica.core.notification.EntityPublishedMailNotification;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +67,9 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
 
   @Inject
   protected EntityPublicationFlowMailNotification entityPublicationFlowNotification;
+
+  @Inject
+  protected EntityPublishedMailNotification entityPublishedNotification;
 
   @Inject
   protected GitService gitService;
@@ -237,6 +241,7 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
     T entityState = publishStateInternal(id);
     if(entityState != null) {
       getEntityStateRepository().save(entityState);
+      entityPublishedNotification.send(id, getTypeName(), true);
     }
     idsCache.invalidate(PUBLISHED_CACHE_KEY);
     return entityState;
@@ -259,6 +264,7 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
     T entityState = unPublishStateInternal(id);
     if(entityState != null) {
       getEntityStateRepository().save(entityState);
+      entityPublishedNotification.send(id, getTypeName(), false);
     }
     idsCache.invalidate(PUBLISHED_CACHE_KEY);
     return entityState;
