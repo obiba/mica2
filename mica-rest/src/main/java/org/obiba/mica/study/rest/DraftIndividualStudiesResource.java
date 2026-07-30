@@ -98,7 +98,7 @@ public class DraftIndividualStudiesResource {
     individualStudyService.save(study, comment);
 
     if (SecurityUtils.getSubject().hasRole(Roles.MICA_EXTERNAL_EDITOR)) {
-      subjectAclService.addPermission("/draft/individual-study", "VIEW,EDIT", study.getId());
+      subjectAclService.addPermission("/draft/individual-study", "VIEW,EDIT,ADD", study.getId());
       subjectAclService.addPermission("/draft/individual-study/" + study.getId(), "EDIT", "_status");
       subjectAclService.addPermission("/draft/individual-study/" + study.getId() + "/_attachments", "EDIT");
     }
