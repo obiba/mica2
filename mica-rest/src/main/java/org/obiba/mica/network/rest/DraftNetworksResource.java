@@ -134,7 +134,7 @@ public class DraftNetworksResource {
     networkService.save(network, comment);
 
     if (SecurityUtils.getSubject().hasRole(Roles.MICA_EXTERNAL_EDITOR)) {
-      subjectAclService.addPermission("/draft/network", "VIEW,EDIT", network.getId());
+      subjectAclService.addPermission("/draft/network", "VIEW,EDIT,ADD", network.getId());
       subjectAclService.addPermission("/draft/network/" + network.getId(), "EDIT", "_status");
       subjectAclService.addPermission("/draft/network/" + network.getId() + "/_attachments", "EDIT");
     }

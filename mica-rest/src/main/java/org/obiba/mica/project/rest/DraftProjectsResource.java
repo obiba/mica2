@@ -127,7 +127,7 @@ public class DraftProjectsResource {
     projectService.save(project, comment);
 
     if (SecurityUtils.getSubject().hasRole(Roles.MICA_EXTERNAL_EDITOR)) {
-      subjectAclService.addPermission("/draft/project", "VIEW,EDIT", project.getId());
+      subjectAclService.addPermission("/draft/project", "VIEW,EDIT,ADD", project.getId());
       subjectAclService.addPermission("/draft/project/" + project.getId(), "EDIT", "_status");
       subjectAclService.addPermission("/draft/project/" + project.getId() + "/_attachments", "EDIT");
     }
