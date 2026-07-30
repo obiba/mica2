@@ -175,7 +175,14 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
    */
   protected Iterable<Variable> getVariables(@NotNull T dataset)
       throws NoSuchDatasetException, NoSuchValueTableException {
-    return getValueTable(dataset).getVariables();
+    ValueTable valueTable = getValueTable(dataset);
+    // OpalService caches and shares ValueTable instances across calls to the same table, and their lazy
+    // variable-source initialisation (RestValueTable/AbstractValueTable) is not thread-safe: concurrent
+    // getVariables() calls on the same instance can corrupt its internal sources map. Serialize per table
+    // instance so calls resolving to distinct instances still run fully in parallel.
+    synchronized (valueTable) {
+      return valueTable.getVariables();
+    }
   }
 
   protected StudyTableSource getStudyTableSource(@NotNull T dataset, @NotNull BaseStudyTable studyTable) {
