@@ -129,13 +129,15 @@ angular.module('mica.contact')
 
             if (contactConfirmed === person) {
               if (['STUDY', 'INITIATIVE'].indexOf(ctrl.doctype) > -1) {
-                person.studyMemberships = person.studyMemberships.filter(function (membership) {
-                  return membership.parentId === ctrl.docid && membership.role !== role;
-                });
+                const removeIndex = person.studyMemberships.findIndex((m) => m.parentId === ctrl.docid && m.role === role);
+                if (removeIndex !== -1) {
+                  person.studyMemberships.splice(removeIndex, 1);
+                }
               } else {
-                person.networkMemberships = person.networkMemberships.filter(function (membership) {
-                  return membership.parentId === ctrl.docid && membership.role !== role;
-                });
+                const removeIndex = person.networkMemberships.findIndex((m) => m.parentId === ctrl.docid && m.role === role);
+                if (removeIndex !== -1) {
+                  person.networkMemberships.splice(removeIndex, 1);
+                }
               }
 
               person.$update().then(function () {
