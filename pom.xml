@@ -63,7 +63,7 @@
     <jhipsterloaded.version>0.12</jhipsterloaded.version>
     <joda-time.version>2.14.2</joda-time.version>
     <json-path.version>2.10.0</json-path.version>
-    <jsoup.version>1.17.2</jsoup.version>
+    <jsoup.version>1.23.1</jsoup.version>
     <jsr305.version>3.0.2</jsr305.version>
     <logback.version>1.6.0</logback.version>
     <logstash-logback.version>7.4</logstash-logback.version>
