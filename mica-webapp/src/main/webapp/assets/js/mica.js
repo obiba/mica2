@@ -825,6 +825,38 @@ class MicaService {
     }
   }
 
+  /**
+   * POSTs form-urlencoded fields to url and saves the response as a file.
+   * Use this instead of a native form.submit() for any authenticated POST
+   * download: a plain form submission cannot carry the X-XSRF-TOKEN header
+   * required by CSRFInterceptor, so it always fails with a 403.
+   */
+  static download(url, fields, timeout = 60000) {
+    const params = new URLSearchParams();
+    Object.keys(fields || {}).forEach(name => {
+      const value = fields[name];
+      (Array.isArray(value) ? value : [value]).forEach(v => {
+        if (v !== null && v !== undefined) params.append(name, v);
+      });
+    });
+
+    return axios.post(MicaService.normalizeUrl(url), params, {responseType: 'blob', timeout})
+      .then(response => {
+        const disposition = response.headers['content-disposition'] || '';
+        const filenameMatch = disposition.match(/filename="?([^"]+)"?/);
+        const filename = filenameMatch ? filenameMatch[1] : 'download';
+
+        const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(blobUrl);
+      });
+  }
+
 }
 
 /**

@@ -63,6 +63,7 @@
     "coverage-buckets-dataset": "<@message "coverage-buckets-dataset"/>",
     "coverage-buckets-harmonization": "<@message "coverage-buckets-harmonization"/>",
     "no-coverage-available": "<@message "no-coverage-available"/>",
+    "download-error": "<@message "download-error"/>",
     "coverage-end-date-ongoing": "<@message "coverage-end-date-ongoing"/>",
     "missing-variable-query": "<@message "missing-variable-query"/>",
     "no-graphics-result":  "<@message "no-graphics-result"/>",

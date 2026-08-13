@@ -155,7 +155,7 @@
               <h3 class="card-title p-3"><@message "results"/></h3>
               <#if downloadQueryEnabled>
                 <div class="mt-2 pt-1">
-                  <a id="download-query" href="javascript:void(0)" class="btn btn-sm btn-info ms-2" @click="onDownloadQueryResult"><i class="fa-solid fa-download"></i> <@message "download"/></a>
+                  <a id="download-query" href="javascript:void(0)" class="btn btn-sm btn-info ms-2" :class="{disabled: downloadingQuery}" @click="onDownloadQueryResult"><i class="fa-solid" :class="downloadingQuery ? 'fa-spinner fa-spin' : 'fa-download'"></i> <@message "download"/></a>
                 </div>
               </#if>
               <ul id="search-tabs" class="nav nav-pills ms-auto p-2">
@@ -207,8 +207,8 @@
                       </ul>
                       <div class="float-end mt-1 d-flex gap-2 align-items-center">
                           <#if exportStudiesQueryEnabled>
-                            <button id="export-studies" type="button" class="btn btn-info btn-sm" v-if="isStudiesToolsVisible" @click="onDownloadExportQueryResult">
-                              <i class="fa-solid fa-download"></i> <@message "export"/></span>
+                            <button id="export-studies" type="button" class="btn btn-info btn-sm" v-if="isStudiesToolsVisible" :disabled="downloadingExport" @click="onDownloadExportQueryResult">
+                              <i class="fa-solid" :class="downloadingExport ? 'fa-spinner fa-spin' : 'fa-download'"></i> <@message "export"/></span>
                             </button>
                           </#if>
                           <#if studiesCompareEnabled>
@@ -217,8 +217,8 @@
                             </button>
                           </#if>
                           <#if exportNetworksQueryEnabled>
-                            <button id="export-networks" type="button" class="btn btn-info btn-sm" v-if="isNetworksToolsVisible" @click="onDownloadExportQueryResult">
-                              <i class="fa-solid fa-download"></i> <@message "export"/></span>
+                            <button id="export-networks" type="button" class="btn btn-info btn-sm" v-if="isNetworksToolsVisible" :disabled="downloadingExport" @click="onDownloadExportQueryResult">
+                              <i class="fa-solid" :class="downloadingExport ? 'fa-spinner fa-spin' : 'fa-download'"></i> <@message "export"/></span>
                             </button>
                           </#if>
                           <#if networksCompareEnabled>
