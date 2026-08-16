@@ -589,6 +589,8 @@ class TableFixedHeaderUtility {
         advanceQueryMode: false,
         downloadUrlObject: '',
         variableSelections: [],
+        downloadingQuery: false,
+        downloadingExport: false,
         counts: {
           variables: "0",
           datasets: "0",
@@ -952,18 +954,12 @@ class TableFixedHeaderUtility {
           }
         }
       },
-      createStudyTypeFormField(studyTypeSelection) {
+      getStudyType(studyTypeSelection) {
         const theStudyTypeSelection = studyTypeSelection ? studyTypeSelection : MicaTreeQueryUrl.getStudyTypeSelection(MicaTreeQueryUrl.getTree());
-        const studyType = theStudyTypeSelection.study ? 'individual-study' : theStudyTypeSelection.harmonization ? 'harmonization-study' : null;
-        const inputStudyType = document.createElement('input');
-        inputStudyType.name = 'studyType';
-        inputStudyType.value = studyType;
-        return inputStudyType;
+        return theStudyTypeSelection.study ? 'individual-study' : theStudyTypeSelection.harmonization ? 'harmonization-study' : null;
       },
-      updateFormForDownload(type, form) {
+      getColumnsToHide(type) {
         const studyTypeSelection = MicaTreeQueryUrl.getStudyTypeSelection(MicaTreeQueryUrl.getTree());
-        form.appendChild(this.createStudyTypeFormField(studyTypeSelection));
-
         let columnsToHide = [];
 
         switch (type) {
@@ -997,75 +993,40 @@ class TableFixedHeaderUtility {
             break;
         }
 
-        columnsToHide.forEach(column => {
-          let checkbox = document.createElement('input');
-          checkbox.type = 'checkbox';
-          checkbox.name = 'columnsToHide';
-          checkbox.value = column;
-          checkbox.checked = true;
+        return columnsToHide;
+      },
+      getDownloadQuery() {
+        if (Array.isArray(this.variableSelections) && this.variableSelections.length > 0) {
+          const queryAsTree = new RQL.QueryTree(RQL.Parser.parseQuery(this.downloadUrlObject.query));
+          let variableQuery = queryAsTree.search((name) => name === "variable");
+          queryAsTree.addQuery(variableQuery, new RQL.Query('in', ['id', this.variableSelections]));
 
-          form.appendChild(checkbox);
-        });
+          return queryAsTree.serialize();
+        }
+
+        return this.downloadUrlObject.query;
       },
       onDownloadQueryResult() {
         if (this.downloadUrlObject) {
-          const form = document.createElement('form');
-          form.setAttribute('class', 'hidden');
-          form.setAttribute('method', 'post');
-
-          form.action = this.downloadUrlObject.url;
-          form.accept = 'text/csv';
-
-          const input = document.createElement('input');
-          input.name = 'query';
-
-          if (Array.isArray(this.variableSelections) && this.variableSelections.length > 0) {
-            const queryAsTree = new RQL.QueryTree(RQL.Parser.parseQuery(this.downloadUrlObject.query));
-            let variableQuery = queryAsTree.search((name) => name === "variable");
-            queryAsTree.addQuery(variableQuery, new RQL.Query('in', ['id', this.variableSelections]));
-
-            input.value = queryAsTree.serialize();
-          } else {
-            input.value = this.downloadUrlObject.query;
-          }
-
-          form.appendChild(input);
-          this.updateFormForDownload(this.downloadUrlObject.type, form);
-
-          document.body.appendChild(form);
-          form.submit();
-          form.remove();
+          this.downloadingQuery = true;
+          MicaService.download(this.downloadUrlObject.url, {
+            query: this.getDownloadQuery(),
+            studyType: this.getStudyType(),
+            columnsToHide: this.getColumnsToHide(this.downloadUrlObject.type)
+          }).catch(() => MicaService.toastError(Mica.tr['download-error']))
+            .finally(() => this.downloadingQuery = false);
         } else {
           MicaService.toastError(Mica.tr['no-coverage-available']);
         }
       },
       onDownloadExportQueryResult() {
         if (this.downloadUrlObject) {
-          const form = document.createElement('form');
-          form.setAttribute('class', 'hidden');
-          form.setAttribute('method', 'post');
-
-          form.action = this.downloadUrlObject.url.replace('_rql_csv', '_export');
-          form.accept = 'application/octet-stream';
-
-          const input = document.createElement('input');
-          input.name = 'query';
-
-          if (Array.isArray(this.variableSelections) && this.variableSelections.length > 0) {
-            let variableQuery = queryAsTree.search((name) => name === "variable");
-            queryAsTree.addQuery(variableQuery, new RQL.Query('in', ['id', this.variableSelections]));
-
-            input.value = queryAsTree.serialize();
-          } else {
-            input.value = this.downloadUrlObject.query;
-          }
-
-          form.appendChild(input);
-          form.appendChild(this.createStudyTypeFormField());
-
-          document.body.appendChild(form);
-          form.submit();
-          form.remove();
+          this.downloadingExport = true;
+          MicaService.download(this.downloadUrlObject.url.replace('_rql_csv', '_export'), {
+            query: this.getDownloadQuery(),
+            studyType: this.getStudyType()
+          }).catch(() => MicaService.toastError(Mica.tr['download-error']))
+            .finally(() => this.downloadingExport = false);
         } else {
           MicaService.toastError(Mica.tr['no-coverage-available']);
         }
