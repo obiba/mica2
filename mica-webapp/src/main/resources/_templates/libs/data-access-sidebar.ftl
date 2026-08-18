@@ -2,7 +2,7 @@
 <#include "data-access.ftl"/>
 
 <!-- Main Sidebar Container -->
-<aside class="app-sidebar bg-body-secondary" data-bs-theme="dark">
+<aside class="app-sidebar bg-body-secondary d-print-none" data-bs-theme="dark">
   <!-- Brand Logo -->
   <div class="sidebar-brand">
     <a href="${portalLink}" class="brand-link">
