@@ -437,3 +437,13 @@ blockquote {
   padding-right: 4px;
 }
 
+// AdminLTE's print accessibility styles force `.app-sidebar { display: block !important }`
+// to keep navigation visible when printing. That competes (same !important, later in
+// source order) with Bootstrap's `.d-print-none`, so pages that intentionally hide the
+// sidebar on print (e.g. Data Access Request forms) need to win that tie explicitly.
+@media print {
+  .app-sidebar.d-print-none {
+    display: none !important;
+  }
+}
+
