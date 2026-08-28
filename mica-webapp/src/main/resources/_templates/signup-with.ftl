@@ -132,19 +132,19 @@
   UserService.refreshSignupWith()
   </#if>
   const requiredFields = [
-    { name: "email", title: "<@message "email"/>" },
-    { name: "firstname", title: "<@message "firstname"/>" },
-    { name: "lastname", title: "<@message "lastname"/>" },
+    { name: "email", title: "<@message "email"/>" }
+    , { name: "firstname", title: "<@message "firstname"/>" }
+    , { name: "lastname", title: "<@message "lastname"/>" }
     <#if authConfig.joinWithUsername>
-      { name: "username", title: "<@message "username"/>" },
+      , { name: "username", title: "<@message "username"/>" }
     </#if>
     <#list authConfig.userAttributes as attribute>
       <#if attribute.required>
-        { name: "${attribute.name}", title: "<@message attribute.name/>" },
+        , { name: "${attribute.name}", title: "<@message attribute.name/>" }
       </#if>
     </#list>
     <#if authConfig.reCaptchaKey?has_content>
-    { name: "g-recaptcha-response", title: "<@message "captcha"/>" }
+    , { name: "g-recaptcha-response", title: "<@message "captcha"/>" }
     </#if>
   ];
 </script>
