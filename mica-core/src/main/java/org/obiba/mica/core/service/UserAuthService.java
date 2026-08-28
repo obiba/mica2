@@ -1,5 +1,8 @@
 package org.obiba.mica.core.service;
 
+import com.google.common.base.Strings;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,6 +17,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * User authentication, as delegated to Agate.
@@ -22,6 +27,12 @@ import java.util.Map;
 public class UserAuthService extends AgateRestService {
 
   private static final Logger log = LoggerFactory.getLogger(UserAuthService.class);
+
+  private static final String CLIENT_CONFIGURATION_CACHE_KEY = "clientConfiguration";
+
+  private final Cache<String, JSONObject> clientConfigurationCache = CacheBuilder.newBuilder()
+    .expireAfterWrite(5, TimeUnit.MINUTES)
+    .build();
 
   public synchronized List<OIDCAuthProviderSummary> getOidcProviders(String locale) {
     return getOidcProviders(locale, false);
@@ -66,7 +77,22 @@ public class UserAuthService extends AgateRestService {
   }
 
   public synchronized JSONObject getClientConfiguration() {
-    return getJSONObject(getClientConfigurationUrl());
+    try {
+      return clientConfigurationCache.get(CLIENT_CONFIGURATION_CACHE_KEY, () -> getJSONObject(getClientConfigurationUrl()));
+    } catch (ExecutionException e) {
+      return new JSONObject();
+    }
+  }
+
+  /**
+   * Whether a reCAPTCHA site key is configured in Agate. When not configured, forms must not require a captcha input.
+   */
+  public synchronized boolean isReCaptchaEnabled() {
+    try {
+      return !Strings.isNullOrEmpty(getClientConfiguration().getString("reCaptchaKey"));
+    } catch (JSONException e) {
+      return false;
+    }
   }
 
   //

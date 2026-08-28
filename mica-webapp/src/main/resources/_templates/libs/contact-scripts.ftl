@@ -8,8 +8,10 @@
       { name: "name", title: "<@message "contact-name"/>" },
       { name: "email", title: "<@message "contact-email"/>" },
       { name: "subject", title: "<@message "contact-subject"/>" },
-      { name: "message", title: "<@message "contact-message"/>" },
-      { name: "g-recaptcha-response", title: "<@message "captcha"/>" }
+      { name: "message", title: "<@message "contact-message"/>" }
+      <#if reCaptchaKey?has_content>
+      , { name: "g-recaptcha-response", title: "<@message "captcha"/>" }
+      </#if>
     ];
     UserService.contact("#form", requiredFields, function() {
       let form = document.querySelector("#form");
