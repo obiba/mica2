@@ -77,11 +77,21 @@ public class UserAuthService extends AgateRestService {
   }
 
   public synchronized JSONObject getClientConfiguration() {
+    JSONObject config;
     try {
-      return clientConfigurationCache.get(CLIENT_CONFIGURATION_CACHE_KEY, () -> getJSONObject(getClientConfigurationUrl()));
+      config = clientConfigurationCache.get(CLIENT_CONFIGURATION_CACHE_KEY, () -> getJSONObject(getClientConfigurationUrl()));
     } catch (ExecutionException e) {
+      log.warn("Cannot get Agate client configuration: {}", e.getMessage());
+      if (log.isDebugEnabled())
+        log.debug("Cannot get Agate client configuration", e);
       return new JSONObject();
     }
+    if (config.isEmpty()) {
+      // do not cache a failed/empty fetch, so that the next call retries against Agate instead of
+      // waiting out the full cache TTL (which would otherwise wrongly disable reCAPTCHA for 5 minutes)
+      clientConfigurationCache.invalidate(CLIENT_CONFIGURATION_CACHE_KEY);
+    }
+    return config;
   }
 
   /**
