@@ -28,7 +28,13 @@ public class UserAuthService extends AgateRestService {
 
   private static final Logger log = LoggerFactory.getLogger(UserAuthService.class);
 
+  private static final String PUBLIC_CONFIGURATION_CACHE_KEY = "publicConfiguration";
+
   private static final String CLIENT_CONFIGURATION_CACHE_KEY = "clientConfiguration";
+
+  private final Cache<String, JSONObject> publicConfigurationCache = CacheBuilder.newBuilder()
+    .expireAfterWrite(5, TimeUnit.MINUTES)
+    .build();
 
   private final Cache<String, JSONObject> clientConfigurationCache = CacheBuilder.newBuilder()
     .expireAfterWrite(5, TimeUnit.MINUTES)
@@ -64,7 +70,16 @@ public class UserAuthService extends AgateRestService {
   }
 
   public synchronized JSONObject getPublicConfiguration() {
-    JSONObject config = getJSONObject(getPublicConfigurationUrl());
+    JSONObject config;
+    try {
+      config = publicConfigurationCache.get(PUBLIC_CONFIGURATION_CACHE_KEY, () -> getJSONObject(getPublicConfigurationUrl()));
+    } catch (ExecutionException e) {
+      log.warn("Cannot get Agate public configuration: {}", e.getMessage());
+      if (log.isDebugEnabled())
+        log.debug("Cannot get Agate public configuration", e);
+      return new JSONObject();
+    }
+    boolean fetchFailed = config.isEmpty();
     if (!config.has("publicUrl")) { // publicUrl as configured in Agate
       try {
         // publicUrl as configured in Mica
@@ -72,6 +87,11 @@ public class UserAuthService extends AgateRestService {
       } catch (JSONException e) {
         // ignore
       }
+    }
+    if (fetchFailed) {
+      // do not cache a failed/empty fetch, so that the next call retries against Agate instead of
+      // waiting out the full cache TTL
+      publicConfigurationCache.invalidate(PUBLIC_CONFIGURATION_CACHE_KEY);
     }
     return config;
   }
