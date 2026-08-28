@@ -1,4 +1,4 @@
-import { boot } from 'quasar/wrappers';
+import { defineBoot } from '#q-app';
 import axios from 'axios';
 import type { AxiosInstance, AxiosResponse } from 'axios';
 import { isReAuthError } from 'src/utils/notify';
@@ -14,10 +14,10 @@ declare module '@vue/runtime-core' {
 // context path detection
 const locationContextPath = window.location.pathname.substring(0, window.location.pathname.indexOf('/', 2));
 
-const baseUrl = process.env.API
-  ? process.env.API.startsWith('/')
-    ? locationContextPath + process.env.API
-    : process.env.API
+const baseUrl = import.meta.env.API
+  ? import.meta.env.API.startsWith('/')
+    ? locationContextPath + import.meta.env.API
+    : import.meta.env.API
   : '';
 const contextPath = locationContextPath || '/';
 const PROFILE_PATH = '/auth/session/_current';
@@ -76,7 +76,7 @@ api.interceptors.response.use(
   },
 );
 
-export default boot(({ app }) => {
+export default defineBoot(({ app }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api
 
   app.config.globalProperties.$axios = axios;
