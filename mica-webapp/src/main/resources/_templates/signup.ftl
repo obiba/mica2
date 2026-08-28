@@ -7,6 +7,7 @@
   <title>${config.name!""} | <@message "sign-up"/></title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <#if authConfig.reCaptchaKey?has_content>
   <script type="text/javascript">
     var onloadCallback = function() {
       grecaptcha.render('html_element', {
@@ -14,6 +15,7 @@
       });
     };
   </script>
+  </#if>
 </head>
 <body id="signup-page" class="hold-transition login-page">
 <div class="login-box">
@@ -105,7 +107,9 @@
           </div>
         </#list>
 
+        <#if authConfig.reCaptchaKey?has_content>
         <div id="html_element" class="mb-3"></div>
+        </#if>
         <div class="d-flex justify-content-end">
           <button type="submit" class="btn btn-primary w-50">
             <i class="spinner-border spinner-border-sm" style="display: none;"></i> <@message "sign-up-submit"/>
@@ -113,9 +117,11 @@
         </div>
       </form>
 
+      <#if authConfig.reCaptchaKey?has_content>
       <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"
               async defer>
       </script>
+      </#if>
 
       <#if oidcProviders?? && oidcProviders?size != 0>
         <div class="social-auth-links text-center mb-3">
@@ -141,21 +147,23 @@
 <#include "libs/scripts.ftl">
 <script>
   const requiredFields = [
-    { name: "email", title: "<@message "email"/>" },
+    { name: "email", title: "<@message "email"/>" }
     <#if config.signupWithPassword>
-      { name: "password", title: "<@message "password"/>" },
+      , { name: "password", title: "<@message "password"/>" }
     </#if>
-    { name: "firstname", title: "<@message "firstname"/>" },
-    { name: "lastname", title: "<@message "lastname"/>" },
+    , { name: "firstname", title: "<@message "firstname"/>" }
+    , { name: "lastname", title: "<@message "lastname"/>" }
     <#if authConfig.joinWithUsername>
-      { name: "username", title: "<@message "username"/>" },
+      , { name: "username", title: "<@message "username"/>" }
     </#if>
     <#list authConfig.userAttributes as attribute>
       <#if attribute.required>
-        { name: "${attribute.name}", title: "<@message attribute.name/>" },
+        , { name: "${attribute.name}", title: "<@message attribute.name/>" }
       </#if>
     </#list>
-    { name: "g-recaptcha-response", title: "<@message "captcha"/>" }
+    <#if authConfig.reCaptchaKey?has_content>
+    , { name: "g-recaptcha-response", title: "<@message "captcha"/>" }
+    </#if>
   ];
 </script>
 <#include "libs/signup-scripts.ftl">

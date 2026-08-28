@@ -3,6 +3,7 @@
 <head>
   <#include "libs/head.ftl">
   <title>${config.name!""} | <@message "contact-title"/></title>
+  <#if reCaptchaKey?has_content>
   <script type="text/javascript">
     var onloadCallback = function() {
       grecaptcha.render('html_element', {
@@ -10,6 +11,7 @@
       });
     };
   </script>
+  </#if>
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="app-wrapper d-flex flex-column min-vh-100">
@@ -68,8 +70,10 @@
                 <label for="contact-message"><@message "contact-message"/></label>
                 <textarea class="form-control" id="contact-message" name="message" rows="6"></textarea>
               </div>
-              <div id="html_element" class="mb-3"></div>
-              <button type="submit" class="btn btn-primary"><@message "contact-send"/></button>
+              <#if reCaptchaKey?has_content>
+              <div id="html_element" class="mt-3"></div>
+              </#if>
+              <button type="submit" class="btn btn-primary mt-3"><@message "contact-send"/></button>
             </form>
           </div>
         </div>
@@ -84,9 +88,11 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
+<#if reCaptchaKey?has_content>
 <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit&hl=${.lang}"
         async defer>
 </script>
+</#if>
 <#include "libs/contact-scripts.ftl">
 
 </body>

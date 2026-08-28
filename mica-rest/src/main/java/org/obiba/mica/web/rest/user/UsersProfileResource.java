@@ -24,6 +24,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.obiba.mica.core.service.UserAuthService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.model.Dtos;
@@ -43,6 +44,9 @@ public class UsersProfileResource {
 
   @Inject
   private UserProfileService userProfileService;
+
+  @Inject
+  private UserAuthService userAuthService;
 
   @Inject
   private Dtos dtos;
@@ -88,7 +92,10 @@ public class UsersProfileResource {
   public Response contact(@FormParam("name") String name, @FormParam("email") String email,
                           @FormParam("subject") String subject, @FormParam("message") String message,
                           @FormParam("g-recaptcha-response") String reCaptcha) {
-    if (Strings.isNullOrEmpty(name) || Strings.isNullOrEmpty(email) || Strings.isNullOrEmpty(subject) || Strings.isNullOrEmpty(message) || Strings.isNullOrEmpty(reCaptcha)) {
+    if (Strings.isNullOrEmpty(name) || Strings.isNullOrEmpty(email) || Strings.isNullOrEmpty(subject) || Strings.isNullOrEmpty(message)) {
+      throw new BadRequestException();
+    }
+    if (userAuthService.isReCaptchaEnabled() && Strings.isNullOrEmpty(reCaptcha)) {
       throw new BadRequestException();
     }
     userProfileService.sendContactEmail(ESAPI.encoder().encodeForHTML(name), ESAPI.encoder().encodeForHTML(email),
