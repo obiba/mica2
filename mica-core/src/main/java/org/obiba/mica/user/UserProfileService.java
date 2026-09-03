@@ -235,7 +235,9 @@ public class UserProfileService extends AgateRestService {
     ctx.put("contactEmail", email);
     ctx.put("contactSubject", subject);
     ctx.put("contactMessage", message);
-    ctx.put("reCaptcha", reCaptcha);
+    // reCAPTCHA is optional in Agate: only forward a response when there is one, otherwise Agate
+    // would try to verify a missing captcha
+    if (!Strings.isNullOrEmpty(reCaptcha)) ctx.put("reCaptcha", reCaptcha);
 
     List<String> contactGroups = config.getContactGroups();
     String[] groups = new String[contactGroups.size()];
