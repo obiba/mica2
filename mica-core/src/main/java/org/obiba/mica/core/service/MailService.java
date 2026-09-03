@@ -130,7 +130,7 @@ public class MailService extends AgateRestService {
         .append(encode(templateName, "UTF-8"));
       context.forEach((k, v) -> {
         try {
-          form.append("&").append(k).append("=").append(encode(v, "UTF-8"));
+          form.append("&").append(k).append("=").append(encode(Strings.nullToEmpty(v), "UTF-8"));
         } catch(UnsupportedEncodingException ignored) {
         }
       });
