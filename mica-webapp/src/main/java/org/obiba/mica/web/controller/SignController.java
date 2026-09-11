@@ -25,6 +25,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.inject.Inject;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
@@ -249,9 +251,24 @@ public class SignController extends BaseController {
     return requestUrl;
   }
 
+  /**
+   * Only accept redirects to a local path or to the Agate server; anything else (absolute URLs,
+   * protocol-relative URLs such as //host or /\host) is dropped to prevent open redirects.
+   */
   private String verifyRedirect(String redirect) {
+    if (Strings.isNullOrEmpty(redirect)) return redirect;
     String agateUrl = agateServerConfigService.getAgateUrl();
-    if (Strings.isNullOrEmpty(redirect) || redirect.startsWith("/") || redirect.startsWith(agateUrl)) return redirect;
-    return "";
+    if (!Strings.isNullOrEmpty(agateUrl) && redirect.startsWith(agateUrl)) return redirect;
+    return isLocalPath(redirect) ? redirect : "";
+  }
+
+  static boolean isLocalPath(String redirect) {
+    if (!redirect.startsWith("/") || redirect.startsWith("//") || redirect.startsWith("/\\")) return false;
+    try {
+      URI uri = new URI(redirect);
+      return uri.getScheme() == null && uri.getRawAuthority() == null;
+    } catch (URISyntaxException e) {
+      return false;
+    }
   }
 }

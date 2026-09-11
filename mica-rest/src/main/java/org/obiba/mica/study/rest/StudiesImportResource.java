@@ -22,6 +22,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
@@ -112,8 +113,8 @@ public class StudiesImportResource {
   private static final String DEFINITION = "definition";
 
   private static final String BASIC_AUTHENTICATION = "Basic ";
-  private static final String USERNAME_PARAM = "username";
-  private static final String PWORD_PARAM = "password";
+  private static final String USERNAME_HEADER = "X-Mica-Remote-Username";
+  private static final String PWORD_HEADER = "X-Mica-Remote-Password";
   private static final String TYPE = "type";
   private static final String IDS = "ids";
   private static final String HARMONIZATION_STUDY = "harmonization-study";
@@ -171,8 +172,8 @@ public class StudiesImportResource {
   @Produces({"application/xml", "application/json", "text/plain", "text/html"})
   @SuppressWarnings({"unchecked", "rawtypes"})
   public Response listDifferences(@QueryParam("url") String url,
-                                  @QueryParam(USERNAME_PARAM) String username,
-                                  @QueryParam(PWORD_PARAM) String password,
+                                  @HeaderParam(USERNAME_HEADER) String username,
+                                  @HeaderParam(PWORD_HEADER) String password,
                                   @QueryParam(TYPE) String type) {
 
     try {
@@ -214,8 +215,8 @@ public class StudiesImportResource {
   @RequiresPermissions({"/draft/individual-study:ADD", "/draft/harmonization-study:ADD"})
   @Produces({"application/xml", "application/json", "text/plain", "text/html"})
   public Response listRemoteStudies(@QueryParam("url") String url,
-                                    @QueryParam(USERNAME_PARAM) String username,
-                                    @QueryParam(PWORD_PARAM) String password,
+                                    @HeaderParam(USERNAME_HEADER) String username,
+                                    @HeaderParam(PWORD_HEADER) String password,
                                     @QueryParam(TYPE) String type) {
 
     try {
@@ -278,8 +279,8 @@ public class StudiesImportResource {
   @Path("/studies/import/_save")
   @RequiresPermissions({"/draft/individual-study:ADD", "/draft/harmonization-study:ADD"})
   public Response saveStudies(@QueryParam("url") String url,
-                              @QueryParam(USERNAME_PARAM) String username,
-                              @QueryParam(PWORD_PARAM) String password,
+                              @HeaderParam(USERNAME_HEADER) String username,
+                              @HeaderParam(PWORD_HEADER) String password,
                               @QueryParam(TYPE) String type,
                               @QueryParam(IDS) List<String> ids,
                               @QueryParam(LIST_DIFFS_FORM) List<String> listDiffsForm) {

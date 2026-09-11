@@ -143,9 +143,8 @@ mica.study.StudiesImportController = function (
     	$http({
           url: contextPath + '/ws/draft/studies/import/_save',
           method: 'PUT',
+          headers: remoteCredentialsHeaders(),
           params: {url: $scope.importVO.url,
-                   username: $scope.importVO.username,
-                   password: $scope.importVO.password,
                    type: $scope.studyType,
                    ids: idsToSave,
                    listDiffsForm: $scope.listDiffsForm
@@ -179,13 +178,21 @@ mica.study.StudiesImportController = function (
     }
   };
 
+  // remote Mica credentials travel in headers so that they never appear in URLs or access/audit logs
+  function remoteCredentialsHeaders() {
+    return {
+      'X-Mica-Remote-Username': $scope.importVO.username,
+      'X-Mica-Remote-Password': $scope.importVO.password
+    };
+  }
+
   function nextConnectionParams() {
     $('body').css('cursor', 'progress');
     $http({
         url: contextPath + '/ws/draft/studies/import/_differences',
         method: 'GET',
-        params: {url: $scope.importVO.url, username: $scope.importVO.username,
-                 password: $scope.importVO.password, type: $scope.studyType}
+        headers: remoteCredentialsHeaders(),
+        params: {url: $scope.importVO.url, type: $scope.studyType}
       }).then(function(response) {
         if (typeof(response.data) === 'number') {
        	 	$scope.statusErrorImport = handleHTTPStatus(response.data);
@@ -238,8 +245,8 @@ mica.study.StudiesImportController = function (
     $http({
         url: contextPath + '/ws/draft/studies/import/_preview',
         method: 'GET',
-        params: {url: $scope.importVO.url, username: $scope.importVO.username,
-                 password: $scope.importVO.password, type: $scope.studyType}
+        headers: remoteCredentialsHeaders(),
+        params: {url: $scope.importVO.url, type: $scope.studyType}
       }).then(function(response) {
          if (typeof(response.data) === 'number') {
         	 $scope.statusErrorImport = handleHTTPStatus(response.data);

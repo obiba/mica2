@@ -87,7 +87,7 @@ public class SessionsResource {
 
       Subject subject = SecurityUtils.getSubject();
       String sessionId = subject.getSession().getId().toString();
-      log.info("Successful session creation for user '{}' session ID is '{}'.", realUsername, sessionId);
+      log.info("Successful session creation for user '{}'.", realUsername);
       String locale = getPreferredLocale(subject);
       if (locale == null || locale.isBlank()) {
         locale = validatedLocale;
