@@ -3,6 +3,7 @@
 Web data portal application server.
 
 * See [download instructions](http://www.obiba.org/pages/products/mica/#download).
+* Upgrading? See the [upgrade notes](UPGRADE.md).
 * Read the [documentation](http://micadoc.obiba.org).
 * Have a bug or a question? Please create an issue on [GitHub](https://github.com/obiba/mica2/issues).
 * Continuous integration is on [Travis](https://travis-ci.org/obiba/mica2).

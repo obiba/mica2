@@ -69,6 +69,10 @@
     </div>
     <!-- /.login-card-body -->
     <div id="2faCard" class="card-body 2fa-card-body" style="display: none;">
+      <div id="alertOtpFailure" class="alert alert-danger d-none">
+        <small><@message "sign-in-otp-failed"/></small>
+      </div>
+
       <div id="2faImage">
         <div>
           <@message "2fa-qrcode-instructions"/>
