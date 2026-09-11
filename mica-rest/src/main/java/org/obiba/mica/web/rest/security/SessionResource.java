@@ -9,7 +9,6 @@
  */
 package org.obiba.mica.web.rest.security;
 
-import jakarta.annotation.Nullable;
 import jakarta.ws.rs.HEAD;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -18,8 +17,6 @@ import jakarta.ws.rs.core.Response;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.SessionException;
-import org.apache.shiro.session.mgt.DefaultSessionKey;
-import org.apache.shiro.session.mgt.SessionKey;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -31,24 +28,19 @@ public class SessionResource  {
 
   @HEAD
   public Response checkSession() {
-    // Find the Shiro Session
-    return isValidSessionId(sessionId) ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();
+    // Only the owner of the session (identified by its cookie) may check that it is still alive:
+    // this keeps the endpoint from being used as an oracle for session identifiers.
+    return isCurrentSession(sessionId) ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();
   }
 
-  private boolean isValidSessionId(String sessionId) {
-    return getSession(sessionId) != null;
-  }
-
-  @Nullable
-  Session getSession(String sessionId) {
-    if(sessionId != null) {
-      SessionKey key = new DefaultSessionKey(sessionId);
-      try {
-        return SecurityUtils.getSecurityManager().getSession(key);
-      } catch(SessionException e) {
-        // Means that the session does not exist or has expired.
-      }
+  private boolean isCurrentSession(String sessionId) {
+    if (sessionId == null) return false;
+    try {
+      Session current = SecurityUtils.getSubject().getSession(false);
+      return current != null && current.getId() != null && sessionId.equals(current.getId().toString());
+    } catch (SessionException e) {
+      // Means that the session does not exist or has expired.
+      return false;
     }
-    return null;
   }
 }

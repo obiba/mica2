@@ -11,6 +11,7 @@
 package org.obiba.mica.web.rest.security;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableSet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
@@ -32,6 +33,7 @@ import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 public class AuditInterceptor implements ContainerResponseFilter {
@@ -41,6 +43,15 @@ public class AuditInterceptor implements ContainerResponseFilter {
   private static final String LOG_FORMAT = "{}";
 
   private static final String WS_ROOT = "/ws";
+
+  private static final String SESSION_PATH = "/auth/session/";
+
+  private static final String REDACTED = "[redacted]";
+
+  /**
+   * Query parameter names (lower case) whose values must never be written to the log.
+   */
+  private static final Set<String> SENSITIVE_PARAMS = ImmutableSet.of("password", "pwd", "key", "token", "secret", "otp");
 
 
   @Inject
@@ -76,12 +87,19 @@ public class AuditInterceptor implements ContainerResponseFilter {
       for(Map.Entry<String, List<String>> kv : params.entrySet()) {
         if(first) first = false;
         else sb.append(", ");
-        sb.append(kv.getKey()).append(": [").append(Joiner.on(", ").join(kv.getValue())).append("]");
+        sb.append(kv.getKey()).append(": [");
+        if (isSensitive(kv.getKey())) sb.append(REDACTED);
+        else sb.append(Joiner.on(", ").join(kv.getValue()));
+        sb.append("]");
       }
       sb.append("}");
     }
 
     return sb.toString();
+  }
+
+  private boolean isSensitive(String paramName) {
+    return paramName != null && SENSITIVE_PARAMS.contains(paramName.toLowerCase());
   }
 
   private void logServerError(ContainerRequestContext requestContext, ContainerResponseContext responseContext) {
@@ -109,6 +127,8 @@ public class AuditInterceptor implements ContainerResponseFilter {
       if(resourceUri != null) {
         String args = getArguments(requestContext, responseContext);
         String path = resourceUri.substring(resourceUri.indexOf(WS_ROOT) + WS_ROOT.length());
+        // never write session identifiers to the log
+        if (path.startsWith(SESSION_PATH)) path = SESSION_PATH + REDACTED;
         MDC.put("created", path);
         log.info(LOG_FORMAT, args);
         logged = true;
