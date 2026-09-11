@@ -18,9 +18,12 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.obiba.mica.security.Roles;
 import org.obiba.mica.web.rest.dto.LoggerDTO;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
 
@@ -32,7 +35,9 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 /**
  * Controller for view and managing Log Level at runtime.
  */
+@Component
 @Path("/logs")
+@RequiresRoles(Roles.MICA_ADMIN)
 public class LogsResource {
 
   @GET

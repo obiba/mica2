@@ -14,6 +14,7 @@ import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
@@ -23,9 +24,11 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.security.Roles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -69,14 +72,18 @@ public class CustomTranslationsResource {
   @PUT
   @Path("/{locale}.json")
   @Consumes("application/json")
+  @RequiresRoles(Roles.MICA_ADMIN)
   public Response save(String translations, @PathParam("locale") String locale,
                        @QueryParam("merge") @DefaultValue("false") boolean merge) throws IOException {
     MicaConfig config = micaConfigService.getConfig();
 
+    JsonNode node = objectMapper.readTree(translations);
+    if (node == null || !node.isObject()) throw new BadRequestException("Translations must be a JSON object");
+
     if (merge) {
-      micaConfigService.mergeJson(getTranslations(locale), objectMapper.readTree(translations));
+      micaConfigService.mergeJson(getTranslations(locale), node);
     } else {
-      config.getTranslations().put(locale, translations);
+      config.getTranslations().put(locale, node.toString());
     }
 
     micaConfigService.save(config);
@@ -86,6 +93,7 @@ public class CustomTranslationsResource {
   @PUT
   @Path("/import")
   @Consumes("application/json")
+  @RequiresRoles(Roles.MICA_ADMIN)
   public Response importTranslations(String translations,
                                      @QueryParam("merge") @DefaultValue("false") boolean merge) throws IOException {
     MicaConfig config = micaConfigService.getConfig();
