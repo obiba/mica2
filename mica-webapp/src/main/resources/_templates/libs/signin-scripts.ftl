@@ -2,6 +2,7 @@
   UserService.signin("form", "otp", function (response, banned) {
     if (response.status === 401 && response.headers["www-authenticate"] === "X-Obiba-TOTP") {
       $("#otp").val("");
+      $("#alertOtpFailure").addClass("d-none");
       $("#signInCard").hide();
       $("#2faCard").show();
       if (response.data?.image) {
@@ -18,11 +19,17 @@
       }
     } else {
       $("#otp").val("");
-      $("#signInCard").show();
-      $("#2faCard").hide();
-      $("#2faImage").hide();
-      $("#qr-img").attr("src", "");
-      const alertId = banned ? "#alertBanned" : "#alertFailure";
+      let alertId;
+      if (!banned && $("#2faCard").is(":visible")) {
+        // password was already accepted to get here: only the code can be wrong
+        alertId = "#alertOtpFailure";
+      } else {
+        $("#signInCard").show();
+        $("#2faCard").hide();
+        $("#2faImage").hide();
+        $("#qr-img").attr("src", "");
+        alertId = banned ? "#alertBanned" : "#alertFailure";
+      }
       $(alertId).removeClass("d-none");
       setTimeout(function () {
         $(alertId).addClass("d-none");
@@ -36,6 +43,7 @@
 
   const cancelOtp = () => {
     $("#otp").val("");
+    $("#alertOtpFailure").addClass("d-none");
     $("#signInCard").show();
     $("#2faCard").hide();
     $("#2faImage").hide();
