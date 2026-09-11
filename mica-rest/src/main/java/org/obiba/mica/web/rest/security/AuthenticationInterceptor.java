@@ -17,6 +17,7 @@ import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.NewCookie;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
@@ -61,6 +62,13 @@ public class AuthenticationInterceptor implements ContainerResponseFilter {
       NewCookie csrfCookie = csrfTokenHelper.createCsrfTokenCookie();
       if(csrfCookie != null)
         responseContext.getHeaders().add(HttpHeaders.SET_COOKIE, csrfCookie);
+      // Forward the Agate SSO cookie (obibaid) that ObibaRealm stored in the session at login
+      Object cookieValue = session.getAttribute(HttpHeaders.SET_COOKIE);
+      if (cookieValue != null) {
+        responseContext.getHeaders().add(HttpHeaders.SET_COOKIE, RuntimeDelegate.getInstance()
+          .createHeaderDelegate(NewCookie.class)
+          .fromString(cookieValue.toString()));
+      }
     } else {
       if (responseContext.getHeaders().get(HttpHeaders.SET_COOKIE) == null) {
         responseContext.getHeaders().putSingle(HttpHeaders.SET_COOKIE,
