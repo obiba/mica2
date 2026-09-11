@@ -137,10 +137,7 @@ const MicaFilters = {
    */
   markdown(text) {
     if (!text) return '';
-    if (typeof marked !== 'undefined') {
-      return marked.parse(String(text));
-    }
-    return String(text);
+    return renderMarkdown(text);
   },
 
   /**

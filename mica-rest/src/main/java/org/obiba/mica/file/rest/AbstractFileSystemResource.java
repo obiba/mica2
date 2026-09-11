@@ -11,7 +11,10 @@
 package org.obiba.mica.file.rest;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import com.google.common.io.Files;
+import jakarta.ws.rs.core.Response;
 import org.apache.commons.math3.util.Pair;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.RevisionStatus;
@@ -19,9 +22,11 @@ import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
+import org.obiba.mica.file.support.FileMediaType;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
+import org.springframework.web.util.UriUtils;
 
 import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
@@ -29,12 +34,23 @@ import jakarta.validation.constraints.NotNull;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.obiba.mica.file.FileUtils.isRoot;
 import static org.obiba.mica.file.FileUtils.normalizePath;
 
 public abstract class AbstractFileSystemResource {
+
+  /**
+   * Media types that browsers can render inline without executing anything: everything else is always served as an
+   * attachment, whatever the client asked for (an XML, SVG or HTML file rendered inline would run scripts in the
+   * portal's origin).
+   */
+  private static final Set<String> INLINE_SAFE_MEDIA_TYPES = ImmutableSet.of(
+    "application/pdf",
+    "image/png", "image/jpeg", "image/gif", "image/webp", "image/bmp", "image/tiff",
+    "text/plain", "text/csv", "text/tab-separated-values");
 
   @Inject
   protected SubjectAclService subjectAclService;
@@ -193,6 +209,27 @@ public abstract class AbstractFileSystemResource {
 
   protected String doZip(String path) {
     return fileSystemService.zipDirectory(normalizePath(path), isPublishedFileSystem());
+  }
+
+  /**
+   * Build the response serving a file: inline only when requested and when the media type is known to be safe,
+   * as an attachment otherwise. MIME sniffing is disabled in both cases.
+   */
+  protected Response buildFileResponse(Object entity, String filename, boolean inline) {
+    String uriEncodedFilename = UriUtils.encode(filename, "UTF-8");
+    String mediaType = FileMediaType.type(Files.getFileExtension(filename));
+    Response.ResponseBuilder builder = Response.ok(entity).header("X-Content-Type-Options", "nosniff");
+
+    if (inline && mediaType != null && INLINE_SAFE_MEDIA_TYPES.contains(mediaType)) {
+      return builder
+        .header("Content-Disposition", "inline; filename=\"" + uriEncodedFilename + "\"")
+        .type(mediaType)
+        .build();
+    }
+
+    return builder
+      .header("Content-Disposition", "attachment; filename*=UTF-8''" + uriEncodedFilename)
+      .build();
   }
 
   //

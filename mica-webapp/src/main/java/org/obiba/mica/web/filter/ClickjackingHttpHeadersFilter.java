@@ -16,12 +16,15 @@ import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
 /**
  * This filter is used to mitigate the "Web Application Potentially Vulnerable to Clickjacking". See https://www.tenable.com/plugins/nessus/85582
+ * It also sets the other browser hardening headers: no MIME sniffing, referrer policy and HSTS (on TLS connections only,
+ * browsers ignore the header over plain HTTP).
  */
 public class ClickjackingHttpHeadersFilter implements Filter {
 
@@ -42,6 +45,11 @@ public class ClickjackingHttpHeadersFilter implements Filter {
 
     httpResponse.setHeader("X-Frame-Options", "DENY");
     httpResponse.setHeader("Content-Security-Policy", "frame-ancestors 'none'");
+    httpResponse.setHeader("X-Content-Type-Options", "nosniff");
+    httpResponse.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+    if (request.isSecure()) {
+      httpResponse.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+    }
 
     chain.doFilter(request, response);
   }

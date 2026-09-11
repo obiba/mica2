@@ -29,13 +29,10 @@ import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.service.TempFileService;
-import org.obiba.mica.file.support.FileMediaType;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriUtils;
 
 import com.google.common.base.Strings;
-import com.google.common.io.Files;
 
 @Component
 @Path("/draft")
@@ -59,18 +56,7 @@ public class DraftFileSystemResource extends AbstractFileSystemResource {
 
     try {
       Attachment attachment = doGetAttachment(path, version, shareKey);
-      String filename = attachment.getName();
-      String uriEncodedFilename = UriUtils.encode(filename, "UTF-8");
-
-      if (inline) {
-        return Response.ok(fileStoreService.getFile(attachment.getFileReference()))
-          .header("Content-Disposition", "inline; filename=\"" + uriEncodedFilename + "\"")
-          .type(FileMediaType.type(Files.getFileExtension(filename)))
-          .build();
-      }
-
-      return Response.ok(fileStoreService.getFile(attachment.getFileReference()))
-        .header("Content-Disposition", "attachment; filename=" + uriEncodedFilename).build();
+      return buildFileResponse(fileStoreService.getFile(attachment.getFileReference()), attachment.getName(), inline);
     } catch (NoSuchEntityException e) {
       String name = doZip(path);
 

@@ -379,7 +379,7 @@
   document.querySelectorAll("[id^='popover-']").forEach(element => {
     const content = element.dataset.bsContent;
     if (content) {
-      element.dataset.bsContent = marked.parse(content);
+      element.dataset.bsContent = renderMarkdown(content);
     }
   });
 
