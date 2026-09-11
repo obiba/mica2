@@ -164,7 +164,7 @@
               <#else>
                 <#if query??>
                   <div class="float-end">
-                    <a class="btn btn-sm btn-info ms-2" href="${contextPath}/search#lists?type=${type}&query=${query}">
+                    <a class="btn btn-sm btn-info ms-2" href="${contextPath}/search#lists?type=${type?html}&query=${query?html}">
                       <i class="fa-solid fa-search"></i>
                     </a>
                   </div>

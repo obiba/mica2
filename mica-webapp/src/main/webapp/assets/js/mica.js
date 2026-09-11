@@ -4,6 +4,24 @@
 axios.defaults.xsrfCookieName = 'XSRF-TOKEN';
 axios.defaults.xsrfHeaderName = 'X-XSRF-TOKEN';
 
+/**
+ * Render Markdown to HTML and sanitize the result. Markdown comes from document editors and must never be able to
+ * run scripts in the visitor's browser. If the sanitizer is not loaded, the raw text is returned HTML-escaped.
+ *
+ * @param text Markdown text
+ * @returns {string} safe HTML
+ */
+const renderMarkdown = function (text) {
+  if (text === undefined || text === null) return '';
+  const html = (typeof marked !== 'undefined') ? marked.parse(String(text)) : String(text);
+  if (typeof DOMPurify === 'undefined') {
+    const div = document.createElement('div');
+    div.textContent = html;
+    return div.innerHTML;
+  }
+  return DOMPurify.sanitize(html);
+};
+
 class LocalizedValues {
   static for(values, lang, keyLang, keyValue) {
     if (Array.isArray(values)) {

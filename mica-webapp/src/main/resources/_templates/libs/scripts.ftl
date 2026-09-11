@@ -27,6 +27,7 @@
 <script src="${assetsPath}/libs/node_modules/axios/dist/axios.min.js"></script>
 <!-- Marked -->
 <script src="${assetsPath}/libs/node_modules/marked/marked.min.js"></script>
+<script src="${assetsPath}/libs/node_modules/dompurify/dist/purify.min.js"></script>
 <!-- Mica Utils and dependencies -->
 <script src="${assetsPath}/libs/node_modules/jquery.redirect/jquery.redirect.js"></script>
 <script src="${assetsPath}/libs/node_modules/js-cookie/src/js.cookie.js"></script>
@@ -174,7 +175,7 @@
             length = 300;
           msg = msg.substring(0, length) + '...';
         }
-        $(this).html(marked.parse(tidy(msg)));
+        $(this).html(renderMarkdown(tidy(msg)));
       }
     });
     $('.marked table').each(function () {

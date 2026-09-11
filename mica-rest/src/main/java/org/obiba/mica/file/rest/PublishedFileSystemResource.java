@@ -11,7 +11,6 @@
 package org.obiba.mica.file.rest;
 
 import com.codahale.metrics.annotation.Timed;
-import com.google.common.io.Files;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -22,10 +21,8 @@ import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.service.TempFileService;
-import org.obiba.mica.file.support.FileMediaType;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriUtils;
 
 import jakarta.inject.Inject;
 
@@ -52,18 +49,7 @@ public class PublishedFileSystemResource extends AbstractFileSystemResource {
 
     try {
       Attachment attachment = doGetAttachment(path);
-      String filename = attachment.getName();
-      String uriEncodedFilename = UriUtils.encode(filename, "UTF-8");
-
-      if (inline) {
-        return Response.ok(fileStoreService.getFile(attachment.getFileReference()))
-          .header("Content-Disposition", "inline; filename=\"" + uriEncodedFilename + "\"")
-          .type(FileMediaType.type(Files.getFileExtension(filename)))
-          .build();
-      }
-
-      return Response.ok(fileStoreService.getFile(attachment.getFileReference()))
-        .header("Content-Disposition", "attachment; filename*=" + uriEncodedFilename).build();
+      return buildFileResponse(fileStoreService.getFile(attachment.getFileReference()), attachment.getName(), inline);
     } catch (NoSuchEntityException e) {
       String name = doZip(path);
 

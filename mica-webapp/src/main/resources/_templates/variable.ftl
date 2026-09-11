@@ -230,7 +230,7 @@
                   </dl>
                 </div>
                 <div class="card-footer">
-                  <a href="${contextPath}/<#if type != "Collected">harmonization-search<#else>individual-search</#if>#lists?type=variables&query=${query}">
+                  <a href="${contextPath}/<#if type != "Collected">harmonization-search<#else>individual-search</#if>#lists?type=variables&query=${query?html}">
                     <@message "find-similar-variables"/> <i class="fa-solid fa-search"></i>
                   </a>
                 </div>
