@@ -1056,6 +1056,21 @@ class UserService {
   }
 
   /**
+   * A reCaptcha token can only be verified once: after a server-side error,
+   * the widget must be reset so that the user can obtain a fresh token before
+   * resubmitting the form.
+   */
+  static resetReCaptcha() {
+    if (typeof grecaptcha !== 'undefined' && typeof grecaptcha.reset === 'function') {
+      try {
+        grecaptcha.reset();
+      } catch (e) {
+        console.error('Unable to reset reCaptcha', e);
+      }
+    }
+  }
+
+  /**
    * Check and submit signup form.
    *
    * @param formId
@@ -1125,6 +1140,7 @@ class UserService {
         .catch(handle => {
           console.dir(handle);
           toggleSubmitButton(true);
+          UserService.resetReCaptcha();
           if (handle.response.data?.message?.startsWith('Email already in use')) {
             onFailure('server.error.email-already-assigned');
           } else if (handle.response.data?.message === 'Invalid reCaptcha response') {
@@ -1258,6 +1274,7 @@ class UserService {
         })
         .catch(handle => {
           console.dir(handle);
+          UserService.resetReCaptcha();
           if (handle.response.data.message === 'Invalid reCaptcha response') {
             onFailure('server.error.bad-captcha');
           } else if (handle.response.data.messageTemplate) {
