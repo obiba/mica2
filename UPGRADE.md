@@ -3,7 +3,7 @@
 Actions to perform when upgrading a Mica server. Go through every version between the
 one installed and the one being deployed.
 
-## 6.4.0
+## 7.0.0
 
 ### Before upgrading
 
