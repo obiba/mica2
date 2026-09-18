@@ -1,4 +1,17 @@
 import type { RouteRecordRaw } from 'vue-router';
+import { documentTarget, type DocumentType } from 'src/composables/useDocumentTarget';
+
+/** the list, creation, edition and view routes of a document type, served by the shared pages */
+function documentRoutes(documentType: DocumentType): RouteRecordRaw[] {
+  const meta = { documentType };
+  const { listRoute } = documentTarget(documentType, '');
+  return [
+    { path: listRoute.substring(1), component: () => import('pages/DocumentsPage.vue'), meta },
+    { path: `${documentType}/new`, component: () => import('pages/DocumentEditPage.vue'), meta },
+    { path: `${documentType}/:id/edit`, component: () => import('pages/DocumentEditPage.vue'), meta },
+    { path: `${documentType}/:id/:tab?`, component: () => import('pages/DocumentPage.vue'), meta },
+  ];
+}
 
 const routes: RouteRecordRaw[] = [
   { path: '/index.html', redirect: '/' },
@@ -8,14 +21,11 @@ const routes: RouteRecordRaw[] = [
     children: [
       { path: '', component: () => import('pages/IndexPage.vue') },
       { path: 'settings', component: () => import('pages/SettingsPage.vue') },
-      { path: 'networks', component: () => import('pages/NetworksPage.vue') },
-      { path: 'network/new', component: () => import('pages/NetworkEditPage.vue') },
-      { path: 'network/:id/edit', component: () => import('pages/NetworkEditPage.vue') },
-      { path: 'network/:id/:tab?', component: () => import('pages/NetworkPage.vue') },
-      { path: 'individual-studies', component: () => import('pages/IndividualStudiesPage.vue') },
-      { path: 'harmonization-studies', component: () => import('pages/HarmonizationStudiesPage.vue') },
-      { path: 'collected-datasets', component: () => import('pages/IndividualDatasetsPage.vue') },
-      { path: 'harmonized-datasets', component: () => import('pages/HarmonizedDatasetsPage.vue') },
+      ...documentRoutes('network'),
+      ...documentRoutes('individual-study'),
+      ...documentRoutes('harmonization-study'),
+      ...documentRoutes('collected-dataset'),
+      ...documentRoutes('harmonized-dataset'),
       { path: 'files', component: () => import('pages/FilesPage.vue') },
       { path: 'persons', component: () => import('pages/PersonsPage.vue') },
       { path: 'research-projects', component: () => import('pages/ResearchProjectsPage.vue') },

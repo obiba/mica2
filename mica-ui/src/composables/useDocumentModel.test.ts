@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { fromModel, localizedToArray, localizedToObject, toModel, useDocumentModel, type ModelledDocument } from './useDocumentModel';
+import type { LocalizedStringDto } from 'src/models/Mica';
+import {
+  fromModel,
+  localizedToArray,
+  localizedToObject,
+  toModel,
+  useDocumentModel,
+  type ModelledDocument,
+} from './useDocumentModel';
 
 const network = {
   id: 'net1',
@@ -46,14 +54,38 @@ describe('useDocumentModel', () => {
   });
 
   it('handles a document without content', () => {
-    expect(toModel({ name: [{ lang: 'en', value: 'x' }] } as ModelledDocument, ['name'])).toEqual({ _name: { en: 'x' } });
-    expect(toModel({ name: [] } as ModelledDocument, ['name'])).toEqual({});
-    expect(fromModel({}, { _name: {} }, ['name'])).toEqual({ name: undefined, content: '{}' });
+    const fields = { localized: ['name'], plain: [] };
+    expect(toModel({ name: [{ lang: 'en', value: 'x' }] } as ModelledDocument, fields)).toEqual({ _name: { en: 'x' } });
+    expect(toModel({ name: [] } as ModelledDocument, fields)).toEqual({});
+    expect(fromModel({}, { _name: {} }, fields)).toEqual({ name: undefined, content: '{}' });
+  });
+
+  it('maps the plain mandatory fields of studies and datasets', () => {
+    const { toModel, fromModel } = useDocumentModel('individual-study');
+    const study: ModelledDocument & { name?: LocalizedStringDto[]; opal?: string } = {
+      name: [{ lang: 'en', value: 'S' }],
+      opal: 'https://opal.example.org',
+      content: '{"x":1}',
+    };
+    expect(toModel(study)).toEqual({ x: 1, _name: { en: 'S' }, _opal: 'https://opal.example.org' });
+    delete study.opal;
+    expect(toModel(study)).toEqual({ x: 1, _name: { en: 'S' } });
+    const updated = fromModel(study, { x: 2, _name: { en: 'S' }, _opal: '' });
+    expect(updated.opal).toBeUndefined();
+    expect(JSON.parse(updated.content as string)).toEqual({ x: 2 });
+
+    const dataset = useDocumentModel('collected-dataset');
+    expect(dataset.fields.value).toEqual({ localized: ['name', 'acronym', 'description'], plain: ['entityType'] });
+    const collected: ModelledDocument & { entityType: string } = { entityType: 'Participant' };
+    expect(dataset.fromModel(collected, { _entityType: 'Sample' }).entityType).toBe('Sample');
   });
 
   it('maps the fields of every document type', () => {
-    expect(useDocumentModel('individual-study').fields).toEqual(['name', 'acronym', 'objectives']);
-    expect(useDocumentModel('project').fields).toEqual(['title', 'summary']);
+    expect(useDocumentModel('harmonization-study').fields.value).toEqual({
+      localized: ['name', 'acronym', 'objectives'],
+      plain: ['opal'],
+    });
+    expect(useDocumentModel('project').fields.value).toEqual({ localized: ['title', 'summary'], plain: [] });
   });
 
   it('converts localized strings both ways', () => {
