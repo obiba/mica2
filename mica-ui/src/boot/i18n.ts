@@ -1,7 +1,30 @@
 import { defineBoot } from '#q-app';
 import { createI18n } from 'vue-i18n';
-import messages from 'src/i18n';
+import { messages as formMessages } from '@obiba/quasar-ui-json-form';
+import appMessages from 'src/i18n';
 import { Quasar, Cookies } from 'quasar';
+
+type Messages = Record<string, unknown>;
+
+function isObject(value: unknown): value is Messages {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/** deep merge, `override` wins key by key, namespaces are merged */
+function deepMerge(base: Messages, override: Messages): Messages {
+  const result: Messages = { ...base };
+  Object.entries(override).forEach(([key, value]) => {
+    const current = result[key];
+    result[key] = isObject(value) && isObject(current) ? deepMerge(current, value) : value;
+  });
+  return result;
+}
+
+// the renderer messages of quasar-json-form (error.*, localized.*, files.*...) under the app's
+const messages = {
+  en: deepMerge(formMessages.en as Messages, appMessages.en),
+  fr: deepMerge(formMessages.fr as Messages, appMessages.fr),
+} as typeof appMessages;
 
 export type MessageLanguages = keyof typeof messages;
 // Type-define 'en-US' as the master schema for the resource
