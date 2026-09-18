@@ -65,5 +65,9 @@ function getModel(): Record<string, any> {
   return model.value;
 }
 
-defineExpose({ validate, getModel });
+function getErrors(): ErrorObject[] {
+  return errors.value;
+}
+
+defineExpose({ validate, getModel, getErrors });
 </script>

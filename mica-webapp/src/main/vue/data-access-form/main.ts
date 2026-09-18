@@ -1,5 +1,6 @@
 import { createApp } from 'vue';
 import type { ComponentPublicInstance } from 'vue';
+import type { ErrorObject } from 'ajv';
 import { Quasar } from 'quasar';
 import langEn from 'quasar/lang/en-US';
 import langFr from 'quasar/lang/fr';
@@ -18,7 +19,7 @@ const ROOT_CLASS = 'mica-json-form';
 
 const QUASAR_LANGS: Record<string, any> = { en: langEn, fr: langFr };
 
-type FormInstance = ComponentPublicInstance & { validate(): boolean; getModel(): Record<string, any> };
+type FormInstance = ComponentPublicInstance & { validate(): boolean; getModel(): Record<string, any>; getErrors(): ErrorObject[] };
 
 let form: FormInstance | null = null;
 let messages: FormMessages | null = null;
@@ -52,6 +53,11 @@ function mount(selector: string, options: MountOptions): void {
   form = app.mount(el) as FormInstance;
 
   loadMicaTranslations(i18n, contextPath, options.lang).catch((error) => console.warn('[data-access-form]', error));
+}
+
+/** current validation errors (AJV-shaped), for support / debugging from the browser console */
+function errors(): ErrorObject[] {
+  return ensureMounted().getErrors();
 }
 
 function ensureMounted(): FormInstance {
@@ -106,7 +112,7 @@ function approveAgreement(id: string, aId: string): void {
   }
 }
 
-const api: MicaDataAccessFormApi = { mount, validate, save, submit, approveAgreement };
+const api: MicaDataAccessFormApi = { mount, validate, save, submit, approveAgreement, errors };
 window.MicaDataAccessForm = api;
 
 export default api;

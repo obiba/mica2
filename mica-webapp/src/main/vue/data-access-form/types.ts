@@ -1,3 +1,5 @@
+import type { ErrorObject } from 'ajv';
+
 /** Toast messages, translated by the Freemarker template (`formMessages` global). */
 export interface FormMessages {
   validationSuccess: string;
@@ -53,4 +55,6 @@ export interface MicaDataAccessFormApi {
   submit(id: string, type?: string, aId?: string): void;
   /** validates, then approves the agreement */
   approveAgreement(id: string, aId: string): void;
+  /** current validation errors (AJV-shaped), for support / debugging from the browser console */
+  errors(): ErrorObject[];
 }
