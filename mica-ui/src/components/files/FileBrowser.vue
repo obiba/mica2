@@ -8,6 +8,7 @@
         :selection="selected"
         :download-url="downloadUrl(document)"
         :root="isRoot"
+        :can-paste="canPaste"
         :disable="busy"
         class="q-mb-md"
         @upload="upload"
@@ -16,28 +17,72 @@
         @publish="publish"
         @status="toStatus"
         @delete="remove"
+        @copy="copyToClipboard"
+        @cut="cutToClipboard"
+        @paste="paste"
       />
       <div class="row q-col-gutter-md">
-        <div class="col-12 col-md-8">
+        <div v-if="!isCurrentFile" class="col-12 col-md-3">
+          <file-search-panel
+            :search="search"
+            :recursively="recursively"
+            @search="(query) => searchFiles(query, recursively)"
+            @shortcut="(shortcut) => searchShortcut(shortcut, recursively)"
+            @clear="clearSearch"
+            @update:recursively="onRecursively"
+          />
+        </div>
+        <div :class="isCurrentFile ? 'col-12 col-md-8' : 'col-12 col-md-6'">
           <files-table
             v-if="!isCurrentFile"
             v-model:selected="selected"
             :children="children"
             :download-url="downloadUrl"
             :root="isRoot"
+            :searching="searching"
             :loading="loading || busy"
             @navigate="(file) => onNavigate(file.path)"
             @navigate-back="navigateBack"
             @delete="onDeleteChild"
           />
-          <slot v-else name="file" :document="document" />
+          <slot v-else name="file" :document="document">
+            <file-revisions-table
+              :document="document"
+              :download-url="downloadUrl"
+              :disable="busy"
+              @restore="restoreRevision"
+            />
+          </slot>
         </div>
-        <div class="col-12 col-md-4">
-          <file-detail-panel :document="document" />
+        <div :class="isCurrentFile ? 'col-12 col-md-4' : 'col-12 col-md-3'">
+          <file-detail-panel :document="document" @edit="showDetails = true" />
+          <q-card v-if="document.permissions?.publish" flat bordered class="q-mt-md">
+            <q-card-section class="row items-center no-wrap">
+              <q-icon name="lock" size="sm" class="q-mr-sm" />
+              <div class="text-subtitle2">{{ t('permissions') }}</div>
+            </q-card-section>
+            <q-separator />
+            <q-card-section class="q-px-sm">
+              <file-acl-panel :path="path" :can-edit="document.permissions.publish" stacked />
+            </q-card-section>
+          </q-card>
         </div>
       </div>
+      <file-details-dialog
+        v-if="document.state?.attachment"
+        v-model="showDetails"
+        :attachment="document.state.attachment"
+        :saving="busy"
+        @save="onSaveDetails"
+      />
       <name-dialog v-model="showAddFolder" :title="t('files.new_folder')" :label="t('name')" @submit="createFolder" />
-      <name-dialog v-model="showRename" :title="t('files.rename')" :label="t('name')" :initial="document.name" @submit="(name) => document && rename(document, name)" />
+      <name-dialog
+        v-model="showRename"
+        :title="t('files.rename')"
+        :label="t('name')"
+        :initial="document.name"
+        @submit="(name) => document && rename(document, name)"
+      />
       <confirm-dialog
         v-model="showDeleteChild"
         :title="t('files.delete_title')"
@@ -55,6 +100,10 @@ import FileBreadcrumbs from 'src/components/files/FileBreadcrumbs.vue';
 import FileToolbar from 'src/components/files/FileToolbar.vue';
 import FilesTable from 'src/components/files/FilesTable.vue';
 import FileDetailPanel from 'src/components/files/FileDetailPanel.vue';
+import FileSearchPanel from 'src/components/files/FileSearchPanel.vue';
+import FileRevisionsTable from 'src/components/files/FileRevisionsTable.vue';
+import FileDetailsDialog, { type FileDetails } from 'src/components/files/FileDetailsDialog.vue';
+import FileAclPanel from 'src/components/files/FileAclPanel.vue';
 import NameDialog from 'src/components/files/NameDialog.vue';
 import { useFileSystem } from 'src/composables/useFileSystem';
 import { fileIcon, isUnder } from 'src/utils/files';
@@ -81,24 +130,51 @@ const {
   isCurrentFile,
   isRoot,
   breadcrumbs,
+  search,
+  searching,
+  canPaste,
   downloadUrl,
   navigateTo,
   navigateBack,
+  searchFiles,
+  searchShortcut,
+  clearSearch,
   createFolder,
   upload,
   rename,
   remove,
   publish,
   toStatus,
+  copyToClipboard,
+  cutToClipboard,
+  paste,
+  restoreRevision,
+  updateDetails,
 } = useFileSystem(() => props.root);
 
 const showAddFolder = ref(false);
 const showRename = ref(false);
+const showDetails = ref(false);
+/** search in the subfolders too; kept while browsing */
+const recursively = ref(true);
 const showDeleteChild = ref(false);
 const childToDelete = ref<FileDto>();
 
 function onNavigate(target: string) {
   navigateTo(target);
+}
+
+/** a change of the option reruns the search in progress */
+function onRecursively(value: boolean) {
+  recursively.value = value;
+  if (!search.value) return;
+  if (search.value.shortcut) searchShortcut(search.value.shortcut, value);
+  else searchFiles(search.value.query, value);
+}
+
+async function onSaveDetails(details: FileDetails) {
+  await updateDetails(details);
+  showDetails.value = false;
 }
 
 function onDeleteChild(file: FileDto) {

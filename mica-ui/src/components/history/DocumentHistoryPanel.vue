@@ -60,10 +60,16 @@ const props = defineProps<Props>();
 const emit = defineEmits<{ restored: [] }>();
 const { t } = useI18n();
 
-const { commits, loading, fetchCommits, viewRevision, diff: fetchDiff, restore, restoreFields } = useDocumentHistory<object>(
-  () => props.target,
-);
-const { toModel } = useDocumentModel(props.target.type);
+const {
+  commits,
+  loading,
+  fetchCommits,
+  viewRevision,
+  diff: fetchDiff,
+  restore,
+  restoreFields,
+} = useDocumentHistory<object>(() => props.target);
+const { toModel } = useDocumentModel(() => props.target.type);
 
 const viewed = ref<GitCommitInfoDto>();
 const revision = ref<object>();
@@ -138,5 +144,5 @@ async function onRestored() {
   await load();
 }
 
-watch(() => props.target.id, load, { immediate: true });
+watch(() => props.target.path, load, { immediate: true });
 </script>

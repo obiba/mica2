@@ -28,6 +28,11 @@ export function isUnder(path: string, root: string): boolean {
   return root === '/' || path === root || path.startsWith(`${root}/`);
 }
 
+/** a path as a URL segment sequence: each folder name encoded, the separators kept */
+export function encodePath(path: string): string {
+  return path.split('/').map(encodeURIComponent).join('/');
+}
+
 export interface Breadcrumb {
   name: string;
   path: string;

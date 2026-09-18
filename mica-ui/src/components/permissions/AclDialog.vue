@@ -37,7 +37,7 @@
             </template>
           </q-option-group>
         </div>
-        <q-checkbox v-model="form.file" dense :label="fileLabel" />
+        <q-checkbox v-if="fileLabel" v-model="form.file" dense :label="fileLabel" />
       </q-card-section>
       <q-separator />
       <q-card-actions align="right" class="bg-grey-3">
@@ -50,7 +50,7 @@
 
 <script setup lang="ts">
 import type { AclDto } from 'src/models/MicaSecurity';
-import { DOCUMENT_ROLES, type AclInput, type AclType, type DocumentRole } from 'src/composables/useDocumentAcl';
+import { DOCUMENT_ROLES, type AclInput, type AclType, type DocumentRole } from 'src/composables/useAcl';
 
 interface Props {
   modelValue: boolean;
@@ -60,7 +60,8 @@ interface Props {
   withRole?: boolean;
   title: string;
   principalHint: string;
-  fileLabel: string;
+  /** the label of the "apply to files" option; none to hide it */
+  fileLabel?: string | undefined;
   saving?: boolean;
 }
 
@@ -113,7 +114,12 @@ function onSave() {
   attempted.value = true;
   const principal = form.value.principal.trim();
   if (!principal) return;
-  emit('save', { ...form.value, principal, role: props.withRole ? form.value.role : undefined });
+  emit('save', {
+    ...form.value,
+    principal,
+    role: props.withRole ? form.value.role : undefined,
+    file: props.fileLabel ? form.value.file : undefined,
+  });
 }
 
 function onHide() {
