@@ -4,7 +4,7 @@ import { t } from 'src/boot/i18n';
 import type { GitCommitInfoDto } from 'src/models/Mica';
 import { notifyError, notifySuccess } from 'src/utils/notify';
 import type { DocumentTarget } from 'src/composables/useDocumentTarget';
-import { LOCALIZED_FIELDS } from 'src/composables/useDocumentModel';
+import { MANDATORY_FIELDS } from 'src/composables/useDocumentModel';
 import type { DocumentActionResult } from 'src/composables/useDocumentActions';
 import { applyChosenFields, fromRestorable, toRestorable } from 'src/utils/restoreFields';
 import type { ChosenField, DocumentDiff } from 'src/utils/restoreFields';
@@ -74,7 +74,7 @@ export function useDocumentHistory<T extends object>(target: MaybeRefOrGetter<Do
   /** the chosen fields of an older revision are applied to the current document (a new commit) */
   function restoreFields(chosen: ChosenField[]) {
     return run(async () => {
-      const fields = LOCALIZED_FIELDS[toValue(target).type];
+      const fields = MANDATORY_FIELDS[toValue(target).type].localized;
       const current = (await api.get<T>(path())).data;
       const restored = fromRestorable<T>(applyChosenFields(toRestorable(current, fields), chosen), fields);
       await api.put(path(), restored, { params: { comment: t('history.restored_fields_comment') } });
