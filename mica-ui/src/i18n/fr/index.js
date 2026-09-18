@@ -15,9 +15,11 @@ export default {
     validate: 'Valider',
     signin_with: "S'identifier avec {provider}",
   },
+  logo: 'Logo',
   networks: {
     title: 'Réseaux',
     caption: 'Gérer les réseaux',
+    new: 'Nouveau réseau',
   },
   individual: {
     title: 'Individuel',
@@ -143,6 +145,13 @@ export default {
   history: 'Historique',
   permissions: 'Permissions',
   document: {
+    comment: 'Commentaire de révision',
+    comment_hint: "Décrit la modification dans l'historique du document",
+    logo_hint: 'Choisir une image',
+    remove_logo: 'Retirer le logo',
+    saved: 'Document enregistré',
+    unsaved_title: 'Modifications non enregistrées',
+    unsaved_text: 'Les modifications seront perdues. Quitter la page ?',
     not_found: 'Document introuvable',
     published: 'Document publié',
     unpublished: 'Document dépublié',

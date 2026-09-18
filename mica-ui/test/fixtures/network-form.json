@@ -1,0 +1,5 @@
+{
+  "type": "Network",
+  "schema": "{\"type\":\"object\",\"properties\":{\"website\":{\"title\":\"Website\",\"type\":\"string\"},\"_acronym\":{\"format\":\"localizedString\",\"title\":\"Acronym\",\"type\":\"object\"},\"_name\":{\"format\":\"localizedString\",\"title\":\"Name\",\"type\":\"object\"},\"_description\":{\"format\":\"obibaSimpleMde\",\"title\":\"Description\",\"type\":\"object\"}},\"required\":[\"_name\",\"_acronym\",\"_description\"]}",
+  "definition": "[{\"helpvalue\":\"\u003ch3\u003e\u003ch3\u003eGeneral Information\u003c\\/h3\u003e\u003c\\/h3\u003e\",\"type\":\"help\"},{\"type\":\"localizedstring\",\"key\":\"_name\"},{\"type\":\"localizedstring\",\"key\":\"_acronym\"},{\"marked\":true,\"type\":\"obibaSimpleMde\",\"rows\":5,\"key\":\"_description\"},\"website\"]"
+}

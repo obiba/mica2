@@ -7,6 +7,7 @@
       </q-breadcrumbs>
     </q-toolbar>
     <q-page class="q-pa-md">
+      <q-btn color="primary" icon="add" :label="t('add')" size="sm" to="/network/new" class="q-mb-md" />
       <networks-table />
     </q-page>
   </div>

@@ -16,7 +16,11 @@
           :state="network.state"
           :disable="busy"
           @action="onAction"
-        />
+        >
+          <template #actions>
+            <q-btn v-if="canEdit" color="primary" icon="edit" :label="t('edit')" size="sm" :to="`/network/${id}/edit`" />
+          </template>
+        </document-header>
         <q-tabs inline-label dense class="text-grey" active-color="primary" indicator-color="primary" align="justify">
           <q-route-tab name="view" icon="visibility" :label="t('view')" :to="tabRoute('view')" exact />
           <q-route-tab name="history" icon="history" :label="t('history')" :to="tabRoute('history')" />
@@ -76,7 +80,7 @@ const tab = computed(() => {
 
 const { target } = useDocumentTarget('network', id);
 const network = computed(() => networksStore.network);
-const { canManagePermissions } = useDocumentState(() => network.value?.state);
+const { canEdit, canManagePermissions } = useDocumentState(() => network.value?.state);
 const { busy, apply } = useDocumentActions(target);
 
 const loading = ref(true);

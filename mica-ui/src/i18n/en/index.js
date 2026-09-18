@@ -15,9 +15,11 @@ export default {
     validate: 'Validate',
     signin_with: 'Sign in with {provider}',
   },
+  logo: 'Logo',
   networks: {
     title: 'Networks',
     caption: 'Manage networks',
+    new: 'New network',
   },
   individual: {
     title: 'Individual',
@@ -143,6 +145,13 @@ export default {
   history: 'History',
   permissions: 'Permissions',
   document: {
+    comment: 'Revision comment',
+    comment_hint: 'Describes the change in the history of the document',
+    logo_hint: 'Choose an image',
+    remove_logo: 'Remove the logo',
+    saved: 'Document saved',
+    unsaved_title: 'Unsaved changes',
+    unsaved_text: 'The changes will be lost. Leave the page?',
     not_found: 'Document not found',
     published: 'Document published',
     unpublished: 'Document unpublished',
