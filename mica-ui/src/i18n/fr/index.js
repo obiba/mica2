@@ -25,23 +25,28 @@ export default {
     title: 'Individuel',
     studies: {
       title: 'Études individuelles',
+      new: 'Nouvelle étude individuelle',
     },
     datasets: {
       title: 'Jeux de données collectés',
+      new: 'Nouveau jeu de données collecté',
     },
   },
   harmonization: {
     title: 'Harmonisation',
     studies: {
       title: 'Initiatives de harmonisation',
+      new: "Nouvelle initiative d'harmonisation",
     },
     datasets: {
       title: 'Protocoles harmonisés',
+      new: 'Nouveau protocole harmonisé',
     },
   },
   research_projects: {
     title: 'Projets de recherche',
     caption: 'Gérer les projets de recherche',
+    new: 'Nouveau projet de recherche',
   },
   files: {
     title: 'Fichiers',
@@ -66,7 +71,7 @@ export default {
     details_saved: 'Détails du fichier enregistrés',
     edit_details: 'Modifier le type et la description',
     folder: 'Dossier',
-    invalid_paste: 'Les fichiers ne peuvent pas être collés dans le dossier d\'origine',
+    invalid_paste: "Les fichiers ne peuvent pas être collés dans le dossier d'origine",
     no_description: 'Aucune description',
     no_results: 'Aucun fichier trouvé',
     no_revisions: 'Aucune révision',
@@ -242,7 +247,7 @@ export default {
     field: 'Champ',
     restore: 'Restaurer',
     restore_title: 'Restaurer la révision',
-    restore_text: 'Restaurer la révision du {date} ? Le document courant est conservé dans l\'historique.',
+    restore_text: "Restaurer la révision du {date} ? Le document courant est conservé dans l'historique.",
     restored: 'Révision restaurée',
     restored_fields_comment: 'Champs restaurés',
     revision_date: 'Date de la révision',
@@ -263,7 +268,7 @@ export default {
     reader: 'Lecteur',
     reader_help: 'Accès en lecture seule au document en mode brouillon avec ses révisions et ses fichiers associés.',
     editor: 'Éditeur',
-    editor_help: "Accès en édition au document en mode brouillon avec ses révisions et ses fichiers associés. La publication ou la suppression permanente ne sont pas autorisées.",
+    editor_help: 'Accès en édition au document en mode brouillon avec ses révisions et ses fichiers associés. La publication ou la suppression permanente ne sont pas autorisées.',
     reviewer: 'Réviseur',
     reviewer_help: 'Accès total au document, sa publication, la suppression permanente et les permissions.',
     file_permission: 'Appliquer la même permission à tous les fichiers associés',
