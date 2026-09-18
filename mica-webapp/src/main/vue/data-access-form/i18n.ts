@@ -7,11 +7,20 @@ function isObject(value: unknown): value is Record<string, any> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-/** deep merge, `override` wins; Mica's bundle already has a top-level `error` object */
+/**
+ * Deep merge, `override` wins, except that a scalar never replaces a message namespace: the
+ * Mica bundle has top-level scalars (`error: "Error"`, `upload`...) named like the library
+ * namespaces (`error.required`, `files.upload`...), which must survive so that the form
+ * messages stay translated; a custom translation can still override an individual key.
+ */
 export function deepMerge(base: Messages, override: Messages): Messages {
   const result: Messages = { ...base };
   Object.entries(override).forEach(([key, value]) => {
-    result[key] = isObject(value) && isObject(result[key]) ? deepMerge(result[key], value) : value;
+    if (isObject(value) && isObject(result[key])) {
+      result[key] = deepMerge(result[key], value);
+    } else if (!isObject(result[key])) {
+      result[key] = value;
+    }
   });
   return result;
 }
