@@ -45,7 +45,7 @@
             {{ t('files.title') }}
           </q-tab-panel>
           <q-tab-panel name="permissions">
-            {{ t('permissions') }}
+            <document-acl-panel :target="target" :can-edit="canManagePermissions" />
           </q-tab-panel>
         </q-tab-panels>
       </div>
@@ -59,6 +59,7 @@
 <script setup lang="ts">
 import DocumentHeader from 'src/components/documents/DocumentHeader.vue';
 import DocumentHistoryPanel from 'src/components/history/DocumentHistoryPanel.vue';
+import DocumentAclPanel from 'src/components/permissions/DocumentAclPanel.vue';
 import NetworkViewPanel from 'src/components/networks/NetworkViewPanel.vue';
 import { useDocumentTarget } from 'src/composables/useDocumentTarget';
 import { useDocumentState } from 'src/composables/useDocumentState';
