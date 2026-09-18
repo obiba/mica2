@@ -22,6 +22,11 @@
   <name>mica-ui</name>
   <packaging>pom</packaging>
 
+  <properties>
+    <!-- -DskipTests also skips the mica-ui unit tests -->
+    <skipTests>false</skipTests>
+  </properties>
+
   <build>
     <plugins>
       <plugin>
@@ -54,6 +59,18 @@
             </goals>
             <configuration>
               <arguments>run build</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <!-- unit tests of the composables and components, skipped with -DskipTests -->
+            <id>npm test</id>
+            <phase>test</phase>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <arguments>test</arguments>
+              <skipTests>${skipTests}</skipTests>
             </configuration>
           </execution>
         </executions>
