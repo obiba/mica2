@@ -8,7 +8,7 @@
   <#include "libs/data-access-form-head.ftl">
   <title>${config.name!""} | <@message "data-access-form"/> ${dar.id}</title>
 </head>
-<body id="data-access-form-page" ng-app="formModule" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed sidebar-expand-lg">
+<body id="data-access-form-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed sidebar-expand-lg">
 <!-- Site wrapper -->
 <div class="app-wrapper">
 
@@ -64,30 +64,35 @@
         <!-- /.row -->
       </#if>
 
-      <div class="row" ng-controller="FormController">
+      <div class="row">
         <div class="col-sm-12 <#if dataAccessInstructionsEnabled || (dar.variablesSet?? || variablesEnabled)>col-lg-8<#else>col-lg-12</#if>">
           <div class="card card-primary card-outline">
             <div class="card-header d-print-none">
               <h3 class="card-title">
                 <#if accessConfig.preliminaryEnabled><@message "main-form"/><#else><@message "application-form"/></#if>
               </h3>
-              <div ng-cloak>
+              <div>
                 <#if permissions?seq_contains("EDIT")>
-                  <span class="float-end border-start ms-2 ps-2" ng-if="schema.readOnly">
+                  <#if formConfig.readOnly>
+                  <span class="float-end border-start ms-2 ps-2">
                     <a class="btn btn-primary" href="${dar.id}?edit=true"><i class="fa-solid fa-pen"></i> <@message "edit"/></a>
                   </span>
-                  <span class="float-end border-start ms-2 ps-2" ng-hide="schema.readOnly">
-                    <a class="btn btn-primary" href="#" ng-click="save('${dar.id}')"><@message "save"/></a>
+                  <#else>
+                  <span class="float-end border-start ms-2 ps-2">
+                    <a class="btn btn-primary" href="#" onclick="MicaDataAccessForm.save('${dar.id}'); return false;"><@message "save"/></a>
                     <a class="btn btn-secondary" href="${dar.id}"><@message "cancel"/></a>
                   </span>
+                  </#if>
                 </#if>
                 <#if permissions?seq_contains("EDIT_STATUS")>
                   <span class="float-end">
                     <#if dar.status == "OPENED" || dar.status == "CONDITIONALLY_APPROVED">
-                      <button type="button" class="btn btn-info" ng-hide="!schema.readOnly" data-bs-toggle="modal"
+                      <#if formConfig.readOnly>
+                      <button type="button" class="btn btn-info" data-bs-toggle="modal"
                               data-bs-target="#modal-submit"><@message "submit"/></button>
+                      </#if>
                       <button type="button" class="btn btn-success"
-                              ng-click="validate()"><@message "validate"/></button>
+                              onclick="MicaDataAccessForm.validate()"><@message "validate"/></button>
                     <#elseif dar.status == "APPROVED" && !accessConfig.approvedFinal>
                       <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
                               data-bs-target="#modal-cancel-approve"><@message "cancel-approval"/></button>
@@ -113,7 +118,8 @@
                     </#if>
                   </span>
                 </#if>
-                <span class="float-end <#if permissions?seq_contains("EDIT_STATUS")>border-end me-2 pe-2</#if>" ng-if="schema.readOnly">
+                <#if formConfig.readOnly>
+                <span class="float-end <#if permissions?seq_contains("EDIT_STATUS")>border-end me-2 pe-2</#if>">
                   <#if diffs??>
                     <button type="button" class="btn btn-outline-info" data-bs-toggle="modal"
                             data-bs-target="#modal-diff"><i class="fa-solid fa-code-branch"></i> <@message "form-diff"/></button>
@@ -157,23 +163,22 @@
                     </#if>
                   </#if>
                 </span>
+                </#if>
               </div>
             </div>
             <div class="card-body">
               <div class="d-none d-print-block">
                 <@dataAccessFormPrintHeader form=dar type="data-access-request"/>
               </div>
-              <form name="forms.requestForm" class="bootstrap3">
-                <div sf-schema="schema" sf-form="form" sf-model="model" sf-options="sfOptions"></div>
-              </form>
+              <div id="data-access-form" class="mica-json-form"></div>
               <div class="d-none d-print-block">
                 <@dataAccessFormPrintFooter form=dar/>
               </div>
             </div>
-            <#if permissions?seq_contains("EDIT")>
-              <div class="card-footer" ng-hide="schema.readOnly" ng-cloak>
+            <#if permissions?seq_contains("EDIT") && !formConfig.readOnly>
+              <div class="card-footer">
                 <span class="float-end">
-                  <a class="btn btn-primary" href="#" ng-click="save('${dar.id}')"><@message "save"/></a>
+                  <a class="btn btn-primary" href="#" onclick="MicaDataAccessForm.save('${dar.id}'); return false;"><@message "save"/></a>
                   <a class="btn btn-secondary" href="${dar.id}"><@message "cancel"/></a>
                 </span>
               </div>
@@ -201,7 +206,7 @@
                 <div class="modal-footer justify-content-between">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><@message "cancel"/></button>
                   <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                          ng-click="submit('${dar.id}')"><@message "confirm"/></button>
+                          onclick="MicaDataAccessForm.submit('${dar.id}')"><@message "confirm"/></button>
                 </div>
               </div>
               <!-- /.modal-content -->
