@@ -25,23 +25,28 @@ export default {
     title: 'Individual',
     studies: {
       title: 'Individual Studies',
+      new: 'New individual study',
     },
     datasets: {
       title: 'Collected Datasets',
+      new: 'New collected dataset',
     },
   },
   harmonization: {
     title: 'Harmonization',
     studies: {
       title: 'Harmonization Initiatives',
+      new: 'New harmonization initiative',
     },
     datasets: {
       title: 'Harmonized Protocols',
+      new: 'New harmonized protocol',
     },
   },
   research_projects: {
     title: 'Research Projects',
     caption: 'Manage research projects',
+    new: 'New research project',
   },
   files: {
     title: 'Files',
