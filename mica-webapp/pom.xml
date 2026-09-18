@@ -24,6 +24,8 @@
 
   <properties>
     <maven.deploy.skip>true</maven.deploy.skip>
+    <!-- -DskipTests also skips the data access form bundle tests -->
+    <skipTests>false</skipTests>
   </properties>
 
   <dependencies>
@@ -140,6 +142,9 @@
                 <include>*.map</include>
               </includes>
             </fileset>
+            <fileset>
+              <directory>src/main/webapp/assets/js/data-access-form</directory>
+            </fileset>
           </filesets>
         </configuration>
       </plugin>
@@ -166,6 +171,29 @@
             </goals>
             <configuration>
               <arguments>install --include=dev</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <!-- data access form bundle (Vue + Quasar json-form), see src/main/vue/data-access-form -->
+            <id>npm build forms</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <arguments>run build:forms</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <!-- unit tests of the data access form bundle, skipped with -DskipTests -->
+            <id>npm test forms</id>
+            <phase>test</phase>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <arguments>run test:forms</arguments>
+              <skipTests>${skipTests}</skipTests>
             </configuration>
           </execution>
         </executions>
