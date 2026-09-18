@@ -24,6 +24,8 @@
 
   <properties>
     <maven.deploy.skip>true</maven.deploy.skip>
+    <!-- -DskipTests also skips the data access form bundle tests -->
+    <skipTests>false</skipTests>
   </properties>
 
   <dependencies>
@@ -180,6 +182,18 @@
             </goals>
             <configuration>
               <arguments>run build:forms</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <!-- unit tests of the data access form bundle, skipped with -DskipTests -->
+            <id>npm test forms</id>
+            <phase>test</phase>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <arguments>run test:forms</arguments>
+              <skipTests>${skipTests}</skipTests>
             </configuration>
           </execution>
         </executions>

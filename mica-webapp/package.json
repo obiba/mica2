@@ -45,7 +45,8 @@
     "build:css:prod": "sass --quiet-deps --style=compressed --no-source-map --load-path=node_modules src/main/resources/scss/mica.scss src/main/webapp/assets/css/mica.min.css",
     "watch:css": "sass --quiet-deps --watch --source-map --load-path=node_modules src/main/resources/scss/mica.scss src/main/webapp/assets/css/mica.min.css",
     "build:forms": "vite build --config vite.forms.config.mjs",
-    "watch:forms": "vite build --config vite.forms.config.mjs --watch"
+    "watch:forms": "vite build --config vite.forms.config.mjs --watch",
+    "test:forms": "vitest run --config vitest.forms.config.mjs"
   },
   "devDependencies": {
     "@quasar/vite-plugin": "^1.12.0",
@@ -75,6 +76,7 @@
     "grunt-usemin": "3.1.1",
     "grunt-wiredep": "3.0.1",
     "husky": "^9.1.7",
+    "jsdom": "^26.1.0",
     "karma": "1.3.0",
     "karma-chrome-launcher": "2.0.0",
     "karma-html2js-preprocessor": "1.1.0",
@@ -87,7 +89,8 @@
     "sass": "^1.93.2",
     "serve-static": "^1.12.3",
     "time-grunt": "1.4.0",
-    "vite": "^6.4.3"
+    "vite": "^6.4.3",
+    "vitest": "^3.2.7"
   },
   "engines": {
     "node": ">=20.19.0"
