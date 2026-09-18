@@ -6,10 +6,14 @@ vi.mock('src/utils/notify', () => ({ notifyError: vi.fn() }));
 import { api } from 'src/boot/api';
 import { notifyError } from 'src/utils/notify';
 import { documentTarget } from './useDocumentTarget';
-import { useDocumentAcl } from './useDocumentAcl';
+import { useDocumentAcl, useFileAcl } from './useAcl';
 
 const target = documentTarget('network', 'net1');
-const mocked = api as unknown as { get: ReturnType<typeof vi.fn>; put: ReturnType<typeof vi.fn>; delete: ReturnType<typeof vi.fn> };
+const mocked = api as unknown as {
+  get: ReturnType<typeof vi.fn>;
+  put: ReturnType<typeof vi.fn>;
+  delete: ReturnType<typeof vi.fn>;
+};
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -45,10 +49,26 @@ describe('useDocumentAcl', () => {
     });
   });
 
+  it('manages the ACLs of a file, without the file option', async () => {
+    const acl = useFileAcl('/network/net1/docs/a b.pdf');
+    await acl.loadPermissions();
+    expect(mocked.get).toHaveBeenCalledWith('/draft/file-permission/network/net1/docs/a%20b.pdf');
+    await acl.savePermission({ principal: 'bob', type: 'USER', role: 'EDITOR' });
+    expect(mocked.put).toHaveBeenCalledWith('/draft/file-permission/network/net1/docs/a%20b.pdf', null, {
+      params: { principal: 'bob', type: 'USER', role: 'EDITOR' },
+    });
+    await acl.deleteAccess({ principal: 'bob', type: 'USER' });
+    expect(mocked.delete).toHaveBeenCalledWith('/draft/file-access/network/net1/docs/a%20b.pdf', {
+      params: { principal: 'bob', type: 'USER' },
+    });
+  });
+
   it('deletes and reports failures', async () => {
     const acl = useDocumentAcl(target);
     expect(await acl.deleteAccess({ principal: 'bob', type: 'USER' })).toBe(true);
-    expect(mocked.delete).toHaveBeenCalledWith('/draft/network/net1/accesses', { params: { principal: 'bob', type: 'USER' } });
+    expect(mocked.delete).toHaveBeenCalledWith('/draft/network/net1/accesses', {
+      params: { principal: 'bob', type: 'USER' },
+    });
     mocked.delete.mockRejectedValueOnce(new Error('nope'));
     expect(await acl.deletePermission({ principal: 'bob', type: 'USER' })).toBe(false);
     expect(notifyError).toHaveBeenCalled();

@@ -79,7 +79,8 @@ declare global {
   const useCssVars: typeof import('vue').useCssVars
   const useDatashieldStore: (typeof import('./stores/datashield'))['useDatashieldStore']
   const useDatasourceStore: (typeof import('./stores/datasource'))['useDatasourceStore']
-  const useFilesStore: (typeof import('./stores/files'))['useFilesStore']
+  const useDocumentsStore: typeof import('./stores/documents').useDocumentsStore
+  const useFilesStore: typeof import('./stores/files').useFilesStore
   const useFormsStore: typeof import('./stores/forms').useFormsStore
   const useGroupStore: typeof import('./stores/group')['useGroupStore']
   const useGroupsStore: (typeof import('./stores/groups'))['useGroupsStore']
@@ -122,6 +123,12 @@ declare global {
   // @ts-ignore
   export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, ShallowRef, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
+  // @ts-ignore
+  export type { DocumentDto, DocumentSummary, LoadedDocument } from './stores/documents'
+  import('./stores/documents')
+  // @ts-ignore
+  export type { ClipboardCommand } from './stores/files'
+  import('./stores/files')
   // @ts-ignore
   export type { AsfForm } from './stores/forms'
   import('./stores/forms')
@@ -196,12 +203,13 @@ declare module 'vue' {
     readonly useAuthStore: UnwrapRef<typeof import('./stores/auth')['useAuthStore']>
     readonly useCssModule: UnwrapRef<typeof import('vue')['useCssModule']>
     readonly useCssVars: UnwrapRef<typeof import('vue')['useCssVars']>
+    readonly useDocumentsStore: UnwrapRef<typeof import('./stores/documents')['useDocumentsStore']>
+    readonly useFilesStore: UnwrapRef<typeof import('./stores/files')['useFilesStore']>
     readonly useFormsStore: UnwrapRef<typeof import('./stores/forms')['useFormsStore']>
     readonly useI18n: UnwrapRef<typeof import('vue-i18n')['useI18n']>
     readonly useId: UnwrapRef<typeof import('vue')['useId']>
     readonly useLink: UnwrapRef<typeof import('vue-router')['useLink']>
     readonly useModel: UnwrapRef<typeof import('vue')['useModel']>
-    readonly useNetworksStore: UnwrapRef<typeof import('./stores/networks')['useNetworksStore']>
     readonly useRoute: UnwrapRef<typeof import('vue-router')['useRoute']>
     readonly useRouter: UnwrapRef<typeof import('vue-router')['useRouter']>
     readonly useSlots: UnwrapRef<typeof import('vue')['useSlots']>

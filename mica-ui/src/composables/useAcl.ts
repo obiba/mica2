@@ -3,6 +3,7 @@ import { api } from 'src/boot/api';
 import type { AclDto } from 'src/models/MicaSecurity';
 import { notifyError } from 'src/utils/notify';
 import type { DocumentTarget } from 'src/composables/useDocumentTarget';
+import { encodePath } from 'src/utils/files';
 
 export type AclType = 'USER' | 'GROUP';
 /** the roles on a draft document */
@@ -14,22 +15,39 @@ export interface AclInput {
   principal: string;
   type: AclType;
   role?: DocumentRole | undefined;
-  /** apply to the files of the document too */
-  file: boolean;
+  /** apply to the files of the document too (documents only) */
+  file?: boolean | undefined;
+}
+
+/** where the lists are managed: the permissions (draft) and the accesses (publication) resources */
+export interface AclEndpoints {
+  permissions: string;
+  accesses: string;
+}
+
+export function documentAclEndpoints(target: DocumentTarget): AclEndpoints {
+  return { permissions: `${target.path}/permissions`, accesses: `${target.path}/accesses` };
+}
+
+export function fileAclEndpoints(path: string): AclEndpoints {
+  return {
+    permissions: `/draft/file-permission${encodePath(path)}`,
+    accesses: `/draft/file-access${encodePath(path)}`,
+  };
 }
 
 /**
- * The access control lists of a draft document: the permissions on the draft (with a role) and
- * the accesses to the publication.
+ * The access control lists of a draft document or file: the permissions on the draft (with a
+ * role) and the accesses to the publication.
  */
-export function useDocumentAcl(target: MaybeRefOrGetter<DocumentTarget>) {
+export function useAcl(endpoints: MaybeRefOrGetter<AclEndpoints>) {
   const permissions = ref<AclDto[]>([]);
   const accesses = ref<AclDto[]>([]);
   const loadingPermissions = ref(false);
   const loadingAccesses = ref(false);
 
   function path(kind: 'permissions' | 'accesses') {
-    return `${toValue(target).path}/${kind}`;
+    return toValue(endpoints)[kind];
   }
 
   async function load(kind: 'permissions' | 'accesses'): Promise<AclDto[]> {
@@ -50,7 +68,8 @@ export function useDocumentAcl(target: MaybeRefOrGetter<DocumentTarget>) {
 
   async function save(kind: 'permissions' | 'accesses', acl: AclInput): Promise<boolean> {
     try {
-      const params: Record<string, string | boolean> = { principal: acl.principal, type: acl.type, file: acl.file };
+      const params: Record<string, string | boolean> = { principal: acl.principal, type: acl.type };
+      if (acl.file !== undefined) params.file = acl.file;
       if (kind === 'permissions' && acl.role) params.role = acl.role;
       await api.put(path(kind), null, { params });
       await load(kind);
@@ -84,4 +103,14 @@ export function useDocumentAcl(target: MaybeRefOrGetter<DocumentTarget>) {
     saveAccess: (acl: AclInput) => save('accesses', acl),
     deleteAccess: (acl: Pick<AclDto, 'principal' | 'type'>) => remove('accesses', acl),
   };
+}
+
+/** the ACLs of a draft document (`/draft/{type}/{id}/permissions|accesses`) */
+export function useDocumentAcl(target: MaybeRefOrGetter<DocumentTarget>) {
+  return useAcl(() => documentAclEndpoints(toValue(target)));
+}
+
+/** the ACLs of a draft file or folder (`/draft/file-permission|file-access/{path}`) */
+export function useFileAcl(path: MaybeRefOrGetter<string>) {
+  return useAcl(() => fileAclEndpoints(toValue(path)));
 }
