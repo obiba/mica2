@@ -42,7 +42,7 @@
             <document-history-panel :target="target" :state="network.state" :can-restore="canEdit" @restored="refresh" />
           </q-tab-panel>
           <q-tab-panel name="files">
-            {{ t('files.title') }}
+            <file-browser :root="target.filesPath" :path="filePath" @update:path="onFilePath" />
           </q-tab-panel>
           <q-tab-panel name="permissions">
             <document-acl-panel :target="target" :can-edit="canManagePermissions" />
@@ -60,6 +60,7 @@
 import DocumentHeader from 'src/components/documents/DocumentHeader.vue';
 import DocumentHistoryPanel from 'src/components/history/DocumentHistoryPanel.vue';
 import DocumentAclPanel from 'src/components/permissions/DocumentAclPanel.vue';
+import FileBrowser from 'src/components/files/FileBrowser.vue';
 import NetworkViewPanel from 'src/components/networks/NetworkViewPanel.vue';
 import { useDocumentTarget } from 'src/composables/useDocumentTarget';
 import { useDocumentState } from 'src/composables/useDocumentState';
@@ -84,6 +85,13 @@ const { canEdit, canManagePermissions } = useDocumentState(() => network.value?.
 const { busy, apply } = useDocumentActions(target);
 
 const loading = ref(true);
+
+/** the folder opened in the files tab, kept in the route */
+const filePath = computed(() => (typeof route.query.path === 'string' ? route.query.path : undefined));
+
+function onFilePath(value: string) {
+  router.replace({ query: { ...route.query, path: value === target.value.filesPath ? undefined : value } });
+}
 
 function tabRoute(name: string) {
   return name === 'view' ? `${target.value.routeBase}/${id.value}` : `${target.value.routeBase}/${id.value}/${name}`;
