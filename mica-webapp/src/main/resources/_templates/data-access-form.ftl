@@ -1,7 +1,5 @@
 <!-- Macros -->
 <#include "models/data-access-form.ftl">
-<!-- Form rendered by the Vue + Quasar json-form bundle (see libs/data-access-form-scripts.ftl) -->
-<#assign jsonFormEnabled = true/>
 
 <!DOCTYPE html>
 <html lang="${.lang}">

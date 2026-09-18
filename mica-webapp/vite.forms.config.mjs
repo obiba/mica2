@@ -74,6 +74,8 @@ export default defineConfig({
     emptyOutDir: true,
     cssCodeSplit: false,
     sourcemap: false,
+    // the entry is ~1 MB minified (see the plan): the default 500 kB warning would only add noise
+    chunkSizeWarningLimit: 1500,
     // no modulepreload polyfill: the page loads the entry with <script type="module">
     modulePreload: { polyfill: false },
     // not `build.lib`: library mode inlines every asset (the icon font) as data URIs
