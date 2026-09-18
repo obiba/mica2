@@ -35,3 +35,13 @@ npm run build
 ### Customize the configuration
 
 See [Configuring quasar.config.ts](https://quasar.dev/quasar-cli-vite/quasar-config-file).
+
+### Run the unit tests
+
+```bash
+npm test
+```
+
+Composables, utils and small components are tested with [vitest](https://vitest.dev) and
+`@vue/test-utils` (`src/**/*.test.ts`, configuration in `vitest.config.mjs`). The Maven build runs
+them in the `test` phase (`-DskipTests` skips them).
