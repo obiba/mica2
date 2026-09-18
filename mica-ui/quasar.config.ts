@@ -60,7 +60,8 @@ export default defineConfig((ctx) => {
       vueRouterMode: 'hash', // available values: 'hash', 'history'
       // vueRouterBase,
       // vueDevtools,
-      // vueOptionsAPI: true, // defaults to false since @quasar/app-vite v3
+      // the JsonForms component of @jsonforms/vue (used by QJsonForm) is an Options API component
+      vueOptionsAPI: true,
 
       // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
 
@@ -146,7 +147,7 @@ export default defineConfig((ctx) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: ['AppFullscreen', 'Notify', 'LocalStorage', 'LoadingBar'],
+      plugins: ['AppFullscreen', 'Dialog', 'Notify', 'LocalStorage', 'LoadingBar'],
     },
 
     // animations: 'all', // --- includes all animations
