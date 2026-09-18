@@ -1,7 +1,7 @@
 import type { AxiosResponse } from 'axios';
 import { defineStore } from 'pinia';
 import { api } from 'src/boot/api';
-import type { GitCommitInfoDto, NetworkDto } from 'src/models/Mica';
+import type { NetworkDto } from 'src/models/Mica';
 
 export const useNetworksStore = defineStore('networks', () => {
   const networks = ref<NetworkDto[]>([]);
@@ -55,15 +55,6 @@ export const useNetworksStore = defineStore('networks', () => {
     await api.put(`/draft/network/${dto.id}`, dto, { params: comment ? { comment } : {} });
   }
 
-  async function fetchNetworkCommits(id: string): Promise<GitCommitInfoDto[]> {
-    return api.get<GitCommitInfoDto[]>(`/draft/network/${id}/commits`).then((response: AxiosResponse) => {
-      if (response.status === 200) {
-        return response.data;
-      }
-      return response;
-    });
-  }
-
   return {
     networks,
     network,
@@ -72,6 +63,5 @@ export const useNetworksStore = defineStore('networks', () => {
     newNetwork,
     createNetwork,
     saveNetwork,
-    fetchNetworkCommits,
   };
 });

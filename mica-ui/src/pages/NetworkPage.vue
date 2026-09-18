@@ -23,7 +23,7 @@
         </document-header>
         <q-tabs inline-label dense class="text-grey" active-color="primary" indicator-color="primary" align="justify">
           <q-route-tab name="view" icon="visibility" :label="t('view')" :to="tabRoute('view')" exact />
-          <q-route-tab name="history" icon="history" :label="t('history')" :to="tabRoute('history')" />
+          <q-route-tab name="history" icon="history" :label="t('history.title')" :to="tabRoute('history')" />
           <q-route-tab name="files" icon="folder" :label="t('files.title')" :to="tabRoute('files')" />
           <q-route-tab
             v-if="canManagePermissions"
@@ -39,8 +39,7 @@
             <network-view-panel :network="network" />
           </q-tab-panel>
           <q-tab-panel name="history">
-            <q-spinner-dots v-if="loadingCommits" color="primary" size="2em" />
-            <pre v-else>{{ commits }}</pre>
+            <document-history-panel :target="target" :state="network.state" :can-restore="canEdit" @restored="refresh" />
           </q-tab-panel>
           <q-tab-panel name="files">
             {{ t('files.title') }}
@@ -58,8 +57,8 @@
 </template>
 
 <script setup lang="ts">
-import type { GitCommitInfoDto } from 'src/models/Mica';
 import DocumentHeader from 'src/components/documents/DocumentHeader.vue';
+import DocumentHistoryPanel from 'src/components/history/DocumentHistoryPanel.vue';
 import NetworkViewPanel from 'src/components/networks/NetworkViewPanel.vue';
 import { useDocumentTarget } from 'src/composables/useDocumentTarget';
 import { useDocumentState } from 'src/composables/useDocumentState';
@@ -84,8 +83,6 @@ const { canEdit, canManagePermissions } = useDocumentState(() => network.value?.
 const { busy, apply } = useDocumentActions(target);
 
 const loading = ref(true);
-const loadingCommits = ref(false);
-const commits = ref<GitCommitInfoDto[]>([]);
 
 function tabRoute(name: string) {
   return name === 'view' ? `${target.value.routeBase}/${id.value}` : `${target.value.routeBase}/${id.value}/${name}`;
@@ -119,26 +116,6 @@ async function onAction(action: DocumentAction) {
     await refresh();
   }
 }
-
-async function loadCommits() {
-  commits.value = [];
-  loadingCommits.value = true;
-  try {
-    commits.value = await networksStore.fetchNetworkCommits(id.value);
-  } catch (error) {
-    console.error('Failed to fetch commits:', error);
-  } finally {
-    loadingCommits.value = false;
-  }
-}
-
-watch(
-  tab,
-  (name) => {
-    if (name === 'history') loadCommits();
-  },
-  { immediate: true },
-);
 
 watch(id, initialize, { immediate: true });
 </script>
