@@ -1,5 +1,5 @@
 <template>
-  <acl-panel :endpoints="fileAclEndpoints(path)" :can-edit="canEdit" />
+  <acl-panel :endpoints="fileAclEndpoints(path)" :can-edit="canEdit" :stacked="stacked" />
 </template>
 
 <script setup lang="ts">
@@ -11,6 +11,8 @@ interface Props {
   path: string;
   /** the user can change the lists (publish permission on the file) */
   canEdit?: boolean;
+  /** the lists one below the other (narrow column) */
+  stacked?: boolean;
 }
 
 defineProps<Props>();

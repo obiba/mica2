@@ -22,29 +22,29 @@
         @paste="paste"
       />
       <div class="row q-col-gutter-md">
-        <div class="col-12 col-md-8">
-          <template v-if="!isCurrentFile">
-            <file-search-bar
-              :search="search"
-              :recursively="recursively"
-              class="q-mb-sm"
-              @search="(query) => searchFiles(query, recursively)"
-              @shortcut="(shortcut) => searchShortcut(shortcut, recursively)"
-              @clear="clearSearch"
-              @update:recursively="onRecursively"
-            />
-            <files-table
-              v-model:selected="selected"
-              :children="children"
-              :download-url="downloadUrl"
-              :root="isRoot"
-              :searching="searching"
-              :loading="loading || busy"
-              @navigate="(file) => onNavigate(file.path)"
-              @navigate-back="navigateBack"
-              @delete="onDeleteChild"
-            />
-          </template>
+        <div v-if="!isCurrentFile" class="col-12 col-md-3">
+          <file-search-panel
+            :search="search"
+            :recursively="recursively"
+            @search="(query) => searchFiles(query, recursively)"
+            @shortcut="(shortcut) => searchShortcut(shortcut, recursively)"
+            @clear="clearSearch"
+            @update:recursively="onRecursively"
+          />
+        </div>
+        <div :class="isCurrentFile ? 'col-12 col-md-8' : 'col-12 col-md-6'">
+          <files-table
+            v-if="!isCurrentFile"
+            v-model:selected="selected"
+            :children="children"
+            :download-url="downloadUrl"
+            :root="isRoot"
+            :searching="searching"
+            :loading="loading || busy"
+            @navigate="(file) => onNavigate(file.path)"
+            @navigate-back="navigateBack"
+            @delete="onDeleteChild"
+          />
           <slot v-else name="file" :document="document">
             <file-revisions-table
               :document="document"
@@ -54,13 +54,18 @@
             />
           </slot>
         </div>
-        <div class="col-12 col-md-4">
+        <div :class="isCurrentFile ? 'col-12 col-md-4' : 'col-12 col-md-3'">
           <file-detail-panel :document="document" @edit="showDetails = true" />
-        </div>
-        <div v-if="document.permissions?.publish" class="col-12">
-          <q-expansion-item v-model="showAcl" icon="lock" :label="t('permissions')" dense header-class="text-subtitle2">
-            <file-acl-panel v-if="showAcl" :path="path" :can-edit="document.permissions.publish" class="q-pt-sm" />
-          </q-expansion-item>
+          <q-card v-if="document.permissions?.publish" flat bordered class="q-mt-md">
+            <q-card-section class="row items-center no-wrap">
+              <q-icon name="lock" size="sm" class="q-mr-sm" />
+              <div class="text-subtitle2">{{ t('permissions') }}</div>
+            </q-card-section>
+            <q-separator />
+            <q-card-section class="q-px-sm">
+              <file-acl-panel :path="path" :can-edit="document.permissions.publish" stacked />
+            </q-card-section>
+          </q-card>
         </div>
       </div>
       <file-details-dialog
@@ -95,7 +100,7 @@ import FileBreadcrumbs from 'src/components/files/FileBreadcrumbs.vue';
 import FileToolbar from 'src/components/files/FileToolbar.vue';
 import FilesTable from 'src/components/files/FilesTable.vue';
 import FileDetailPanel from 'src/components/files/FileDetailPanel.vue';
-import FileSearchBar from 'src/components/files/FileSearchBar.vue';
+import FileSearchPanel from 'src/components/files/FileSearchPanel.vue';
 import FileRevisionsTable from 'src/components/files/FileRevisionsTable.vue';
 import FileDetailsDialog, { type FileDetails } from 'src/components/files/FileDetailsDialog.vue';
 import FileAclPanel from 'src/components/files/FileAclPanel.vue';
@@ -150,7 +155,6 @@ const {
 const showAddFolder = ref(false);
 const showRename = ref(false);
 const showDetails = ref(false);
-const showAcl = ref(false);
 /** search in the subfolders too; kept while browsing */
 const recursively = ref(true);
 const showDeleteChild = ref(false);
@@ -185,7 +189,6 @@ async function onDeleteChildConfirmed() {
 }
 
 watch(path, (value) => {
-  showAcl.value = false;
   if (value !== props.path) emit('update:path', value);
 });
 

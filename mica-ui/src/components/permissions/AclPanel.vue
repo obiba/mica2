@@ -1,6 +1,6 @@
 <template>
   <div class="row q-col-gutter-lg">
-    <div :class="openAccess ? 'col-12' : 'col-12 col-md-6'">
+    <div :class="openAccess || stacked ? 'col-12' : 'col-12 col-md-6'">
       <acl-table
         :acls="permissions"
         :title="t('permission.draft')"
@@ -15,7 +15,7 @@
         @delete="onDeleteRequest('permissions', $event)"
       />
     </div>
-    <div v-if="!openAccess" class="col-12 col-md-6">
+    <div v-if="!openAccess" :class="stacked ? 'col-12' : 'col-12 col-md-6'">
       <acl-table
         :acls="accesses"
         :title="t('access.published')"
@@ -69,6 +69,8 @@ interface Props {
   canEdit?: boolean;
   /** offer to apply an ACL to the files of the document too */
   withFile?: boolean;
+  /** the two lists one below the other instead of side by side */
+  stacked?: boolean;
 }
 
 const props = defineProps<Props>();
