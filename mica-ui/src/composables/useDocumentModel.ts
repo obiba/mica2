@@ -47,7 +47,9 @@ export function toModel(document: ModelledDocument, fields: string[]): FormModel
   const record = document as unknown as Record<string, unknown>;
   const model: FormModel = document.content ? JSON.parse(document.content) : {};
   fields.forEach((field) => {
-    model[modelKey(field)] = localizedToObject(record[field] as LocalizedStringDto[] | undefined);
+    const values = localizedToObject(record[field] as LocalizedStringDto[] | undefined);
+    // an empty field is left out so that the schema `required` applies (not the "completed" check)
+    if (Object.keys(values).length > 0) model[modelKey(field)] = values;
   });
   return model;
 }

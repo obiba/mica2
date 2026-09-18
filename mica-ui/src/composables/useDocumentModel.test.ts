@@ -21,7 +21,6 @@ describe('useDocumentModel', () => {
       maelstromAuthorization: { authorized: false },
       _name: { en: 'Network', fr: 'Réseau' },
       _acronym: { en: 'NET' },
-      _description: {},
     });
   });
 
@@ -48,6 +47,7 @@ describe('useDocumentModel', () => {
 
   it('handles a document without content', () => {
     expect(toModel({ name: [{ lang: 'en', value: 'x' }] } as ModelledDocument, ['name'])).toEqual({ _name: { en: 'x' } });
+    expect(toModel({ name: [] } as ModelledDocument, ['name'])).toEqual({});
     expect(fromModel({}, { _name: {} }, ['name'])).toEqual({ name: undefined, content: '{}' });
   });
 
