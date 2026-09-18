@@ -4,7 +4,9 @@
   "description": "Description for mica",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.5.2",
+    "@obiba/quasar-ui-json-form": "^0.6.0",
     "@popperjs/core": "^2.11.8",
+    "@quasar/extras": "^1.18.0",
     "@vue/compat": "^3.4.0",
     "admin-lte": "^4.0.0-rc4",
     "axios": "^1.18.0",
@@ -29,19 +31,25 @@
     "moment": "^2.30.1",
     "moment-timezone": "^0.5.47",
     "plotly.js-dist-min": "^2.5.1",
+    "quasar": "^2.33.0",
     "rql": "github:epigeny/rql#1.1.0",
     "select2": "^4.1.0-rc.0",
     "select2-bootstrap-5-theme": "^1.3.0",
     "simplemde": "^1.11.2",
     "toastr": "^2.1.4",
-    "vue": "^3.4.0"
+    "vue": "^3.4.0",
+    "vue-i18n": "^11.4.12"
   },
   "scripts": {
     "build:css": "sass --quiet-deps --style=compressed --source-map --load-path=node_modules src/main/resources/scss/mica.scss src/main/webapp/assets/css/mica.min.css",
     "build:css:prod": "sass --quiet-deps --style=compressed --no-source-map --load-path=node_modules src/main/resources/scss/mica.scss src/main/webapp/assets/css/mica.min.css",
-    "watch:css": "sass --quiet-deps --watch --source-map --load-path=node_modules src/main/resources/scss/mica.scss src/main/webapp/assets/css/mica.min.css"
+    "watch:css": "sass --quiet-deps --watch --source-map --load-path=node_modules src/main/resources/scss/mica.scss src/main/webapp/assets/css/mica.min.css",
+    "build:forms": "vite build --config vite.forms.config.mjs",
+    "watch:forms": "vite build --config vite.forms.config.mjs --watch"
   },
   "devDependencies": {
+    "@quasar/vite-plugin": "^1.12.0",
+    "@vitejs/plugin-vue": "^5.2.4",
     "grunt": "1.0.1",
     "grunt-autoprefixer": "3.0.4",
     "grunt-cli": "1.2.0",
@@ -75,9 +83,11 @@
     "karma-requirejs": "1.1.0",
     "karma-script-launcher": "1.0.0",
     "load-grunt-tasks": "3.5.2",
+    "postcss-prefix-selector": "^2.2.1",
     "sass": "^1.93.2",
     "serve-static": "^1.12.3",
-    "time-grunt": "1.4.0"
+    "time-grunt": "1.4.0",
+    "vite": "^6.4.3"
   },
   "engines": {
     "node": ">=0.10.0"

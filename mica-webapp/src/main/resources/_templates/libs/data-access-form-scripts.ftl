@@ -1,5 +1,33 @@
-<!-- Data access schemaform and dependencies -->
+<!-- Data access form: schema, definition and model (t() tokens resolved by the server) -->
+<script>
+    const formSchema = ${formConfig.schema!"{}"};
+    formSchema.readOnly = ${formConfig.readOnly?c};
+    const formDefinition = ${formConfig.definition!"['*']"};
+    const formModel = ${formConfig.model!"{}"};
+    const formMessages = {
+        validationSuccess: "<@message "form-validation-success"/>",
+        validationError: "<@message "form-validation-error"/>",
+        validationErrorOnSubmit: "<@message "form-validation-submit-error"/>",
+        errorOnSave: "<@message "form-save-error"/>"
+    };
+</script>
 
+<#if jsonFormEnabled??>
+<!-- Vue + Quasar json-form bundle, see mica-webapp/src/main/vue/data-access-form -->
+<script type="module" src="${assetsPath}/js/data-access-form/mica-data-access-form.js"></script>
+<script type="module">
+    MicaDataAccessForm.mount('#data-access-form', {
+        schema: formSchema,
+        definition: formDefinition,
+        model: formModel,
+        readOnly: formSchema.readOnly,
+        lang: '${.lang}',
+        contextPath: contextPath,
+        messages: formMessages
+    });
+</script>
+<#else>
+<!-- Data access schemaform and dependencies (legacy, angular-schema-form) -->
 <script src="${contextPath}/bower_components/angular/angular.js"></script>
 <script src="${contextPath}/bower_components/objectpath/lib/ObjectPath.js"></script>
 <script src="${contextPath}/bower_components/marked/lib/marked.js"></script>
@@ -29,17 +57,5 @@
 <script src="${contextPath}/bower_components/sf-obiba-selection-tree/dist/sf-obiba-selection-tree.js"></script>
 <script src="${contextPath}/bower_components/sf-radio-group-collection/dist/sf-radio-group-collection.js"></script>
 
-<script>
-    const formSchema = ${formConfig.schema!"{}"};
-    formSchema.readOnly = ${formConfig.readOnly?c};
-    const formDefinition = ${formConfig.definition!"['*']"};
-    const formModel = ${formConfig.model!"{}"};
-    const formMessages = {
-        validationSuccess: "<@message "form-validation-success"/>",
-        validationError: "<@message "form-validation-error"/>",
-        validationErrorOnSubmit: "<@message "form-validation-submit-error"/>",
-        errorOnSave: "<@message "form-save-error"/>"
-    };
-</script>
-
 <script src="${assetsPath}/js/mica-data-access-form.js"></script>
+</#if>
