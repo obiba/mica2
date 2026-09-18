@@ -92,6 +92,7 @@ onMounted(() => {
       if (!authStore.isAdministrator) {
         router.push('/');
       }
+      systemStore.init();
     })
     .catch(() => {
       window.location.href = `..${contextPath === '/' ? '' : contextPath}/signin`;
