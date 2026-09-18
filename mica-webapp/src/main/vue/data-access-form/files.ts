@@ -18,6 +18,9 @@ export function createFileUploadHooks(contextPath: string): FileUploadHooks {
       }
       const location = upload.headers.get('Location') || '';
       const id = location.substring(location.lastIndexOf('/') + 1);
+      if (!id) {
+        throw new Error(`Upload response has no file location (Location: '${location}')`);
+      }
       const metadata = await fetch(ws(`/files/temp/${id}`), { headers: { Accept: 'application/json' } });
       if (!metadata.ok) {
         throw new Error(`Cannot read uploaded file with status ${metadata.status}`);
@@ -29,7 +32,11 @@ export function createFileUploadHooks(contextPath: string): FileUploadHooks {
     async remove(item: FileItem): Promise<void> {
       // stored files are deleted by the server on save
       if (item.justUploaded && item.id) {
-        await fetch(ws(`/files/temp/${item.id}`), { method: 'DELETE' });
+        const response = await fetch(ws(`/files/temp/${item.id}`), { method: 'DELETE' });
+        if (!response.ok) {
+          // the item is already out of the form data; the temp store expires the file anyway
+          throw new Error(`Temporary file deletion failed with status ${response.status}`);
+        }
       }
     },
 
