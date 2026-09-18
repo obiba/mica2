@@ -31,10 +31,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y rpm devscripts fakeroot debhelper build-essential nodejs
 
-      - name: Setup Node.js (LTS Jod = Node 22)
+      # same major as the frontend-maven-plugin (mica-ui, mica-webapp): the mica-webapp sass /
+      # Vite builds run by exec-maven-plugin need Node >= 20
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
 
       - name: Install global npm tools
         run: npm install -g grunt-cli bower
