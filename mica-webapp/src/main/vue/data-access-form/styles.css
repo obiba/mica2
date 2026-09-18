@@ -1,0 +1,27 @@
+/* Form root: inherit the portal font instead of Quasar's Roboto (the html/body rules of Quasar
+   are remapped to this class by the build, see vite.forms.config.mjs). */
+.mica-json-form {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+}
+
+/* Bootstrap defines .row / .row > * too (gutter variables, negative margins, width: 100% on the
+   children): neutralize them inside the form, including the Quasar portal nodes (menus, dialogs)
+   that carry the root class. `:where()` keeps the specificity at Bootstrap's level so that the
+   Quasar rules (prefixed, higher specificity) still apply. This stylesheet is loaded after the
+   page ones. */
+:where(.mica-json-form) .row {
+  --bs-gutter-x: 0;
+  --bs-gutter-y: 0;
+  margin: 0;
+}
+:where(.mica-json-form) .row > * {
+  flex-shrink: 1;
+  width: auto;
+  max-width: none;
+  padding-right: 0;
+  padding-left: 0;
+  margin-top: 0;
+}
