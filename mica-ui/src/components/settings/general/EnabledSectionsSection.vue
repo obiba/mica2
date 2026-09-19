@@ -42,6 +42,9 @@ import { localeText } from 'src/utils/config';
 const { t, locale } = useI18n();
 const systemStore = useSystemStore();
 
+/** a taxonomy can only be flagged as missing once the Opal taxonomies are known */
+const summaryLoaded = ref(false);
+
 /** the taxonomy titles by name, in the locale of the UI */
 const taxonomyTitles = computed<Record<string, string>>(() =>
   Object.fromEntries(
@@ -55,7 +58,8 @@ const taxonomyTitles = computed<Record<string, string>>(() =>
 /** a configured taxonomy that Opal does not serve anymore is still listed, flagged */
 function taxonomyLabel(name: string) {
   const title = taxonomyTitles.value[name];
-  return title ? title : `${name} (${t('config.taxonomies_for_concept_tagging_missing')})`;
+  if (title) return title;
+  return summaryLoaded.value ? `${name} (${t('config.taxonomies_for_concept_tagging_missing')})` : name;
 }
 
 const taxonomyOptions = computed(() => {
@@ -86,8 +90,13 @@ const items = computed(() => [
 ]);
 
 onMounted(() => {
-  systemStore.loadTaxonomiesSummary().catch(() => {
-    // Opal may be unreachable: the taxonomies are then shown by name
-  });
+  systemStore
+    .loadTaxonomiesSummary()
+    .then(() => {
+      summaryLoaded.value = true;
+    })
+    .catch(() => {
+      // Opal may be unreachable: the taxonomies are then shown by name
+    });
 });
 </script>

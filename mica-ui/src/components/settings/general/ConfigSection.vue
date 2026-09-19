@@ -4,7 +4,7 @@
       <div class="text-subtitle1">{{ title }}</div>
       <q-space />
       <q-btn
-        v-if="authStore.isAdministrator"
+        v-if="authStore.isAdministrator && configLoaded"
         flat
         dense
         round
@@ -67,6 +67,8 @@ const showDialog = ref(false);
 const saving = ref(false);
 /** a working copy of the configuration, discarded on cancel */
 const form = ref<MicaConfigDto>();
+/** the configuration is an empty object until loaded: editing it would save an incomplete one */
+const configLoaded = computed(() => !!systemStore.configuration.name);
 
 function onEdit() {
   form.value = copyConfig(systemStore.configuration);

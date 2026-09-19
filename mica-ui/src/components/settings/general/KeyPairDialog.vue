@@ -1,7 +1,7 @@
 <template>
   <q-dialog v-model="showDialog" persistent @hide="onHide">
     <q-card class="dialog-md">
-      <q-form @submit="onSave">
+      <q-form @submit="onSave" @validation-error="onValidationError">
         <q-card-section>
           <div class="text-h6">
             {{ mode === 'create' ? t('config.keys.title_create') : t('config.keys.title_import') }}
@@ -40,7 +40,12 @@
             <q-input v-model="publicForm.locality" dense outlined :label="t('config.keys.locality')" class="q-mb-md" />
             <q-input v-model="publicForm.state" dense outlined :label="t('config.keys.state')" class="q-mb-md" />
             <q-input v-model="publicForm.country" dense outlined :label="t('config.keys.country')" class="q-mb-md" />
-            <q-expansion-item dense :label="t('config.keys.advanced')" header-class="text-primary q-px-none">
+            <q-expansion-item
+              v-model="advancedExpanded"
+              dense
+              :label="t('config.keys.advanced')"
+              header-class="text-primary q-px-none"
+            >
               <q-input
                 v-model="privateForm.algo"
                 dense
@@ -123,6 +128,7 @@ const publicForm = ref<PublicKeyForm>({});
 const privateForm = ref<PrivateKeyForm>({ algo: 'RSA', size: 2048 });
 const privateImport = ref('');
 const publicImport = ref('');
+const advancedExpanded = ref(false);
 
 const required = (value: string) => !!value?.trim() || t('required');
 
@@ -130,6 +136,7 @@ function reset() {
   opalUrl.value = '';
   publicForm.value = {};
   privateForm.value = { algo: 'RSA', size: 2048 };
+  advancedExpanded.value = false;
   privateImport.value = '';
   publicImport.value = '';
 }
@@ -140,6 +147,12 @@ function onSave() {
       ? { keyType: KeyType.KEY_PAIR, privateForm: privateForm.value, publicForm: publicForm.value }
       : { keyType: KeyType.KEY_PAIR, privateImport: privateImport.value, publicImport: publicImport.value };
   emit('save', keyForm, opalUrl.value.trim());
+}
+
+/** an invalid field hidden in the collapsed advanced options must be shown to be fixed */
+function onValidationError() {
+  const { algo, size } = privateForm.value;
+  if (!algo?.trim() || !(size > 0)) advancedExpanded.value = true;
 }
 
 function onHide() {

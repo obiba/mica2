@@ -31,7 +31,7 @@ import ConfigInput from 'src/components/settings/general/ConfigInput.vue';
 import { formattedItem, valueItem } from 'src/components/settings/general/fields';
 import type { MicaConfigDto } from 'src/models/Mica';
 import { addedLanguages } from 'src/utils/config';
-import { notifyWarning } from 'src/utils/notify';
+import { notifyError, notifyWarning } from 'src/utils/notify';
 
 const { t, locale } = useI18n();
 const systemStore = useSystemStore();
@@ -77,5 +77,5 @@ const items = computed(() => [
   valueItem('defaultCharSet', 'default_char_set', false),
 ]);
 
-watch(locale, (value) => systemStore.loadLanguages(value), { immediate: true });
+watch(locale, (value) => systemStore.loadLanguages(value).catch(notifyError), { immediate: true });
 </script>

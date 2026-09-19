@@ -28,6 +28,8 @@
         :hint="t('config.signup_groups_form_help')"
         class="q-mb-md"
         @new-value="(value: string, done: (item?: string) => void) => onNewGroup(form, value, done)"
+        @input-value="(value: string) => (pendingGroups = value)"
+        @blur="onGroupsBlur(form)"
       />
     </template>
   </config-section>
@@ -41,6 +43,9 @@ import type { MicaConfigDto } from 'src/models/Mica';
 import { SUMMARY_STATISTICS_ACCESS_POLICIES, splitGroups } from 'src/utils/config';
 
 const { t } = useI18n();
+
+/** the groups typed but not yet committed with Enter */
+const pendingGroups = ref('');
 
 const policyOptions = computed(() =>
   SUMMARY_STATISTICS_ACCESS_POLICIES.map((policy) => ({
@@ -56,6 +61,14 @@ function onNewGroup(form: MicaConfigDto, value: string, done: (item?: string) =>
     if (!form.signupGroups.includes(group)) form.signupGroups.push(group);
   });
   done();
+}
+
+/** groups typed without Enter are still saved when leaving the field (as in the legacy text input) */
+function onGroupsBlur(form: MicaConfigDto) {
+  if (!pendingGroups.value.trim()) return;
+  onNewGroup(form, pendingGroups.value, () => {
+    pendingGroups.value = '';
+  });
 }
 
 const items = computed(() => [
