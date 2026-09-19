@@ -48,6 +48,17 @@ export default {
     caption: 'Gérer les projets de recherche',
     new: 'Nouveau projet de recherche',
   },
+  data_access_request: {
+    title: "Demande d'accès aux données",
+    status: {
+      OPENED: 'Ouverte',
+      SUBMITTED: 'Soumise',
+      REVIEWED: 'En révision',
+      CONDITIONALLY_APPROVED: 'Approuvée sous conditions',
+      APPROVED: 'Approuvée',
+      REJECTED: 'Rejetée',
+    },
+  },
   files: {
     title: 'Fichiers',
     caption: 'Gérer les fichiers',

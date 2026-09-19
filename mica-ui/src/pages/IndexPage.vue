@@ -42,12 +42,12 @@
             </q-card>
             <q-card flat bordered class="on-left q-mb-md o-card-sm bg-grey-1">
               <q-card-section class="q-pa-sm text-h6 text-center bg-grey-4">
-                <router-link to="/research-projects">{{ t('research_projects.title') }}</router-link>
+                <router-link to="/projects">{{ t('research_projects.title') }}</router-link>
               </q-card-section>
               <q-separator />
               <q-card-section class="text-hint">
                 {{ t('research_projects.caption') }}
-                <q-btn flat rounded dense icon="arrow_forward" size="xs" color="primary" :to="`/research-projects`" />
+                <q-btn flat rounded dense icon="arrow_forward" size="xs" color="primary" :to="`/projects`" />
               </q-card-section>
             </q-card>
             <q-card flat bordered class="on-left q-mb-md o-card-sm bg-grey-1">
