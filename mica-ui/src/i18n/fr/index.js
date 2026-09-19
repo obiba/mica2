@@ -190,7 +190,6 @@ export default {
   role: 'Rôle',
   save: 'Enregistrer',
   search: 'Rechercher',
-  settings: 'Paramètres',
   source_code: 'Code source',
   status: 'Statut',
   tickets: 'Tickets',
@@ -311,8 +310,12 @@ export default {
     delete_title: "Supprimer l'accès",
     delete_text: "Supprimer l'accès de {type} {principal} ?",
   },
-  settings_general: 'Général',
-  settings_general_caption: 'Identification du serveur, source de données, édition et accès au contenu, sections et fonctionnalités activées',
+  settings: {
+    title: 'Paramètres',
+    system: 'Système',
+    general: 'Général',
+    general_caption: 'Identification du serveur, source de données, édition et accès au contenu, sections et fonctionnalités activées',
+  },
   config: {
     server_identification: 'Identification du serveur',
     name: 'Nom',

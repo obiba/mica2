@@ -7,17 +7,22 @@
       </q-breadcrumbs>
     </q-toolbar>
     <q-page class="q-pa-md">
-      <div class="row">
-        <q-card flat bordered class="on-left q-mb-md o-card-md bg-grey-1">
-          <q-card-section class="q-pa-sm text-h6 text-center bg-grey-4">
-            <router-link to="/settings/general">{{ t('settings_general') }}</router-link>
-          </q-card-section>
-          <q-separator />
-          <q-card-section class="text-hint">
-            {{ t('settings_general_caption') }}
-            <q-btn flat rounded dense icon="arrow_forward" size="xs" color="primary" to="/settings/general" />
-          </q-card-section>
-        </q-card>
+      <div class="row q-col-gutter-lg q-mb-lg">
+        <div class="col-6 col-sm-6 col-xs-12">
+          <q-list separator>
+            <q-item-label header class="text-uppercase">{{ t('settings.system') }}</q-item-label>
+            <q-item>
+              <q-item-section>
+                <q-item-label>
+                  <router-link to="/settings/general">{{ t('settings.general') }}</router-link>
+                </q-item-label>
+                <q-item-label caption lines="2">{{ t('settings.general_caption') }}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </div>
+        <div class="col-6 col-sm-6 col-xs-12">
+        </div>
       </div>
     </q-page>
   </div>

@@ -190,7 +190,6 @@ export default {
   role: 'Role',
   save: 'Save',
   search: 'Search',
-  settings: 'Settings',
   source_code: 'Source Code',
   status: 'Status',
   tickets: 'Tickets',
@@ -311,8 +310,12 @@ export default {
     delete_title: 'Delete access',
     delete_text: 'Delete the access of {type} {principal}?',
   },
-  settings_general: 'General',
-  settings_general_caption: 'Server identification, data source, content edition and access, enabled sections and features',
+  settings: {
+    title: 'Settings',
+    system: 'System',
+    general: 'General',
+    general_caption: 'Server identification, data source, content edition and access, enabled sections and features',
+  },
   config: {
     server_identification: 'Server identification',
     name: 'Name',

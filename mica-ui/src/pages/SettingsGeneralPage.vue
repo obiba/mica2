@@ -3,8 +3,8 @@
     <q-toolbar class="bg-grey-3">
       <q-breadcrumbs>
         <q-breadcrumbs-el icon="home" to="/" />
-        <q-breadcrumbs-el :label="t('settings')" to="/settings" />
-        <q-breadcrumbs-el :label="t('settings_general')" />
+        <q-breadcrumbs-el :label="t('settings.title')" to="/settings" />
+        <q-breadcrumbs-el :label="t('settings.general')" />
       </q-breadcrumbs>
     </q-toolbar>
     <q-page class="q-pa-md">
