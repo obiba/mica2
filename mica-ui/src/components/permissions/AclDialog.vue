@@ -50,7 +50,14 @@
 
 <script setup lang="ts">
 import type { AclDto } from 'src/models/MicaSecurity';
-import { DOCUMENT_ROLES, type AclInput, type AclType, type DocumentRole } from 'src/composables/useAcl';
+import { DOCUMENT_ROLES, type AclInput, type AclType } from 'src/composables/useAcl';
+
+/** a role of the dialog: its label and its description */
+export interface RoleOption {
+  value: string;
+  label: string;
+  help: string;
+}
 
 interface Props {
   modelValue: boolean;
@@ -58,6 +65,8 @@ interface Props {
   acl?: AclDto | undefined;
   /** a permission has a role; an access has none */
   withRole?: boolean;
+  /** the roles offered, the document ones by default */
+  roles?: RoleOption[] | undefined;
   title: string;
   principalHint: string;
   /** the label of the "apply to files" option; none to hide it */
@@ -71,10 +80,19 @@ const { t } = useI18n();
 
 const showDialog = ref(props.modelValue);
 const attempted = ref(false);
+const roleOptions = computed<RoleOption[]>(
+  () =>
+    props.roles ??
+    DOCUMENT_ROLES.map((role) => ({
+      label: t(`permission.${role.toLowerCase()}`),
+      value: role,
+      help: t(`permission.${role.toLowerCase()}_help`),
+    })),
+);
 const form = ref<AclInput>(empty());
 
 function empty(): AclInput {
-  return { principal: '', type: 'USER', role: 'READER', file: true };
+  return { principal: '', type: 'USER', role: roleOptions.value[0]?.value, file: true };
 }
 
 const editing = computed(() => props.acl !== undefined);
@@ -89,7 +107,7 @@ watch(
         ? {
             principal: props.acl.principal,
             type: props.acl.type as AclType,
-            role: (props.acl.role as DocumentRole | undefined) ?? 'READER',
+            role: props.acl.role ?? roleOptions.value[0]?.value,
             file: props.acl.file !== false,
           }
         : empty();
@@ -101,14 +119,6 @@ const typeOptions = computed(() => [
   { label: t('permission.user'), value: 'USER' },
   { label: t('permission.group'), value: 'GROUP' },
 ]);
-
-const roleOptions = computed(() =>
-  DOCUMENT_ROLES.map((role) => ({
-    label: t(`permission.${role.toLowerCase()}`),
-    value: role,
-    help: t(`permission.${role.toLowerCase()}_help`),
-  })),
-);
 
 function onSave() {
   attempted.value = true;
