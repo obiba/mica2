@@ -315,6 +315,8 @@ export default {
     system: 'Système',
     general: 'Général',
     general_caption: 'Identification du serveur, source de données, édition et accès au contenu, sections et fonctionnalités activées',
+    content: 'Contenu',
+    search: 'Recherche',
   },
   config: {
     server_identification: 'Identification du serveur',
