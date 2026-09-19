@@ -8,7 +8,7 @@
     </q-toolbar>
     <q-page class="q-pa-md">
       <div class="row q-col-gutter-lg q-mb-lg">
-        <div class="col-6 col-sm-6 col-xs-12">
+        <div class="col-4 col-sm-4 col-xs-12">
           <q-list separator>
             <q-item-label header class="text-uppercase">{{ t('settings.system') }}</q-item-label>
             <q-item>
@@ -21,7 +21,15 @@
             </q-item>
           </q-list>
         </div>
-        <div class="col-6 col-sm-6 col-xs-12">
+        <div class="col-4 col-sm-4 col-xs-12">
+          <q-list separator>
+            <q-item-label header class="text-uppercase">{{ t('settings.content') }}</q-item-label>
+          </q-list>
+        </div>
+        <div class="col-4 col-sm-4 col-xs-12">
+          <q-list separator>
+            <q-item-label header class="text-uppercase">{{ t('settings.search') }}</q-item-label>
+          </q-list>
         </div>
       </div>
     </q-page>
