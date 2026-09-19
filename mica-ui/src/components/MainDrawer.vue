@@ -100,7 +100,7 @@
           <q-icon name="settings" />
         </q-item-section>
         <q-item-section>
-          <q-item-label>{{ t('settings') }}</q-item-label>
+          <q-item-label>{{ t('settings.title') }}</q-item-label>
         </q-item-section>
       </q-item>
       <q-item-label header>{{ t('other_links') }}</q-item-label>
