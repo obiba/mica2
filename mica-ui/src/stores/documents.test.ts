@@ -28,6 +28,18 @@ describe('documents store', () => {
     expect(store.listOf('network')).toEqual([]);
   });
 
+  it('unwraps the projects list', async () => {
+    const request = { id: 'dar1', status: 'APPROVED', viewable: true };
+    mocked.get.mockResolvedValueOnce({ data: { from: 0, limit: 1000, total: 1, projects: [{ id: 'p1', request }] } });
+    const store = useDocumentsStore();
+    const list = await store.fetchDocuments(documentTarget('project', ''));
+    expect(mocked.get).toHaveBeenCalledWith('/draft/projects', {
+      params: { from: 0, limit: 1000, order: 'asc', sort: 'id' },
+    });
+    expect(list).toEqual([{ id: 'p1', request }]);
+    expect(store.listOf('project')).toEqual(list);
+  });
+
   it('reads the state from the document when it carries it', async () => {
     mocked.get.mockResolvedValueOnce({ data: { id: 'net1', name: [], state } });
     const loaded = await useDocumentsStore().fetchDocument(documentTarget('network', 'net1'));
