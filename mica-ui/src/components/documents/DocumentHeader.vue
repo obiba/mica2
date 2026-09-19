@@ -5,6 +5,7 @@
         {{ t('last_modified') }}: {{ getDateLabel(timestamps?.lastUpdate) }}
         <document-status-badge :state="state" class="q-ml-sm" />
       </div>
+      <slot name="info" />
     </div>
     <div class="col-auto row items-center q-gutter-sm">
       <slot name="actions" />
