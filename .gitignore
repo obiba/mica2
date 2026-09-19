@@ -15,6 +15,7 @@ mica-webapp/src/main/webapp/dist
 mica-webapp/src/main/webapp/bower_components
 mica-webapp/src/main/webapp/styles/mica.css.map
 mica-webapp/src/main/webapp/assets/css/mica.min.css*
+mica-webapp/src/main/webapp/assets/js/data-access-form
 spring_loaded
 *.log
 .vagrant

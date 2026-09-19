@@ -1,0 +1,126 @@
+// app global css in SCSS form
+a {
+  color: $primary;
+  text-decoration: none;
+  background-color: transparent;
+}
+
+a.q-btn {
+  line-height: 2em;
+}
+
+p:last-of-type {
+  margin: 0;
+}
+
+.q-tab-panel {
+  padding: 1em 0 1em 0;
+}
+
+.q-table {
+  th {
+    background-color: $blue-grey-1;
+  }
+  tr:nth-child(even) {
+    background-color: $grey-2;
+  }
+  tr:nth-child(odd) {
+    background-color: white;
+  }
+}
+
+.fields-list {
+  .q-item:nth-child(even) {
+    background-color: $grey-2;
+  }
+  .q-item:nth-child(odd) {
+    background-color: white;
+  }
+}
+
+code {
+  color: crimson;
+  background-color: #f7f7f9;
+  font-size: smaller;
+  padding: 2px 4px;
+  border-radius: 5px;
+  border: 1px solid #e1e1e8;
+  white-space: nowrap;
+}
+
+.q-card.o-card-sm {
+  width: 200px;
+}
+.q-card.o-card-md {
+  width: 250px;
+}
+
+.box-info {
+  background-color: $info;
+  color: white;
+  padding: 0.5em;
+}
+
+.box-warning {
+  background-color: $warning;
+  color: $grey-10;
+  padding: 0.5em;
+}
+
+.box-negative {
+  background-color: $negative;
+  color: white;
+  padding: 0.5em;
+}
+
+.box-positive {
+  background-color: $positive;
+  color: white;
+  padding: 0.5em;
+}
+
+.text-help {
+  color: $grey-7;
+}
+
+.text-hint {
+  color: $grey-7;
+  font-size: 0.8em;
+}
+
+.table-values {
+  /* specifying max-width so the example can
+    highlight the sticky column on any browser window */
+  //max-width: 600px;
+
+  thead tr:first-child th:first-child {
+    /* bg color is important for th; just specify one */
+    background-color: $grey-1;
+  }
+
+  td:first-child {
+    background-color: $grey-3;
+  }
+
+  th:first-child,
+  td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+  }
+}
+
+.dialog-sm {
+  width: 500px !important;
+  max-width: 80vw !important;
+}
+
+.dialog-md {
+  width: 700px !important;
+  max-width: 80vw !important;
+}
+
+.dialog-lg {
+  width: 900px !important;
+  max-width: 80vw !important;
+}
