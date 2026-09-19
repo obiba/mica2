@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { api } from 'src/boot/api';
 import type {
+  DataAccessRequestSummaryDto,
   DatasetDto,
   EntityStateDto,
   LocalizedStringDto,
@@ -21,6 +22,8 @@ export interface DocumentSummary {
   title?: LocalizedStringDto[] | undefined;
   timestamps?: TimestampsDto | undefined;
   state?: EntityStateDto | undefined;
+  /** the data access request a project comes from */
+  request?: DataAccessRequestSummaryDto | undefined;
 }
 
 export interface LoadedDocument {
@@ -44,11 +47,16 @@ export const useDocumentsStore = defineStore('documents', () => {
     order: string = 'asc',
     sort: string = 'id',
   ) {
-    const response = await api.get<DocumentSummary[]>(target.listPath, {
+    const response = await api.get<DocumentSummary[] | Record<string, unknown>>(target.listPath, {
       params: { ...target.listParams, from, limit, order, sort },
     });
-    lists.value[target.type] = response.data;
-    return response.data;
+    const data = response.data;
+    // the projects list is wrapped ({projects: [...], total}), the others are plain lists
+    const list: DocumentSummary[] = Array.isArray(data)
+      ? data
+      : ((data[target.listKey ?? ''] as DocumentSummary[] | undefined) ?? []);
+    lists.value[target.type] = list;
+    return list;
   }
 
   async function fetchState(target: DocumentTarget): Promise<EntityStateDto | undefined> {

@@ -22,6 +22,8 @@ export interface DocumentTarget {
   /** REST path listing the documents with their state, and its fixed parameters */
   listPath: string;
   listParams: Record<string, string>;
+  /** key of the documents in the list response when it is wrapped (`{projects: [...]}`), the response is the list otherwise */
+  listKey?: string;
   /** REST path serving the state of the document when the document DTO does not carry it (studies) */
   statePath?: string;
   /** root of the document's files in the file system: `/network/{id}` */
@@ -44,6 +46,8 @@ interface DocumentTypeInfo {
   labels: { title: string; new: string };
   /** the states of the studies are served apart from the study DTO */
   stateApart?: boolean;
+  /** the list response is wrapped: `{ [listKey]: [...], total, from, limit }` */
+  listKey?: string;
 }
 
 const TYPES: Record<DocumentType, DocumentTypeInfo> = {
@@ -72,6 +76,7 @@ const TYPES: Record<DocumentType, DocumentTypeInfo> = {
   },
   project: {
     collection: 'projects',
+    listKey: 'projects',
     withLogo: false,
     labels: { title: 'research_projects.title', new: 'research_projects.new' },
   },
@@ -95,6 +100,7 @@ export function documentTarget(type: DocumentType, id: string): DocumentTarget {
     listPath: info.stateApart ? '/draft/study-states' : collectionPath,
     listParams: info.stateApart ? { type } : {},
     ...(info.stateApart ? { statePath: `/draft/study-state/${id}` } : {}),
+    ...(info.listKey ? { listKey: info.listKey } : {}),
     filesPath: `/${type}/${id}`,
     formPath: `/config/${type}/form`,
     routeBase: `/${type}`,
