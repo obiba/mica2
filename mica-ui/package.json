@@ -47,7 +47,7 @@
     "typescript": "^5.9.3",
     "unplugin-auto-import": "^21.1.0",
     "vite-plugin-checker": "^0.14.5",
-    "vitest": "^3.2.7",
+    "vitest": "^4.1.11",
     "vue-tsc": "^3.3.11"
   },
   "overrides": {
