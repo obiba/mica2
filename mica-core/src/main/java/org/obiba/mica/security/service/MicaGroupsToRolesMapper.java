@@ -30,6 +30,8 @@ public class MicaGroupsToRolesMapper implements GroupsToRolesMapper {
 
   private Map<String, List<Set<String>>> roleGroups = Maps.newHashMap();
 
+  private Map<String, Set<String>> roleNotifiableGroups = Maps.newHashMap();
+
   @Inject
   public MicaGroupsToRolesMapper(Environment environment) {
     Roles.ALL_ROLES.forEach(role -> {
@@ -61,19 +63,17 @@ public class MicaGroupsToRolesMapper implements GroupsToRolesMapper {
   }
 
   /**
-   * Get the groups that grant the given role: all the groups appearing in any of the role's conditions
-   * (when a condition requires several groups, the members of each of them are returned). When no
-   * mapping is configured for the role, the role name is a group of its own.
+   * Get the groups that grant the given role: the groups appearing alone in one of the role's conditions.
+   * A condition requiring several groups ("a,b") is ignored, as the role is only granted to the intersection
+   * of these groups, not to each of them. When no mapping is configured for the role (or only multi-groups
+   * conditions), the role name is a group of its own.
    *
    * @param role
    * @return
    */
   public Set<String> toGroups(String role) {
-    List<Set<String>> groupsSets = roleGroups.get(role);
-    if (groupsSets == null || groupsSets.isEmpty()) return Sets.newHashSet(role);
-    Set<String> groups = Sets.newLinkedHashSet();
-    groupsSets.forEach(groups::addAll);
-    return groups;
+    Set<String> groups = roleNotifiableGroups.get(role);
+    return groups == null ? Sets.newHashSet(role) : Sets.newLinkedHashSet(groups);
   }
 
   /**
@@ -99,6 +99,17 @@ public class MicaGroupsToRolesMapper implements GroupsToRolesMapper {
       .map((cond) -> toSet(cond, ","))
       .toList();
     roleGroups.put(role, groupsSets);
+    if (groupsSets.isEmpty()) return;
+    Set<String> groups = Sets.newLinkedHashSet();
+    groupsSets.forEach(groupsSet -> {
+      if (groupsSet.size() == 1) groups.addAll(groupsSet);
+      else log.warn("Role '{}' condition '{}' requires several groups, they will not be notified as a whole", role, Joiner.on(",").join(groupsSet));
+    });
+    if (groups.isEmpty()) {
+      log.warn("Role '{}' has no single group condition, group '{}' will be notified instead", role, role);
+      groups.add(role);
+    }
+    roleNotifiableGroups.put(role, groups);
   }
 
   private Set<String> toSet(String groupsStr, String separator) {

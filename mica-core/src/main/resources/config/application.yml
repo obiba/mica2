@@ -77,7 +77,7 @@ csrf:
 
 # Assign roles when user belongs to one or more groups listed. Syntax: "," means all the groups are
 # required, "|" separates alternatives. The same groups are used when notifying the users having a role
-# (with an "a,b" condition, the members of both groups are notified).
+# (only the groups appearing alone in a condition are notified: with "a,b|c", the members of "c" are notified).
 # This makes it possible to share one Agate between several Mica instances, each with its own groups,
 # for instance: mica-reviewer: mica-reviewer-a
 roles:

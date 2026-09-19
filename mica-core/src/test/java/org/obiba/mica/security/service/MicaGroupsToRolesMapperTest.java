@@ -68,14 +68,24 @@ public class MicaGroupsToRolesMapperTest {
 
   @Test
   public void testToGroupsMultipleGroups() {
+    // the role is granted to the intersection of the groups: none of them can be notified as a whole
     MicaGroupsToRolesMapper mapper = new MicaGroupsToRolesMapper("opal-administrator,mica-user", Roles.MICA_ADMIN);
-    assertEquals(Set.of("opal-administrator", "mica-user"), mapper.toGroups(Roles.MICA_ADMIN));
+    assertEquals(Set.of(Roles.MICA_ADMIN), mapper.toGroups(Roles.MICA_ADMIN));
   }
 
   @Test
   public void testToGroupsMultipleOptionsGroups() {
     MicaGroupsToRolesMapper mapper = new MicaGroupsToRolesMapper("opal-administrator,mica-user|local-administrator", Roles.MICA_ADMIN);
-    assertEquals(Set.of("opal-administrator", "mica-user", "local-administrator"), mapper.toGroups(Roles.MICA_ADMIN));
+    assertEquals(Set.of("local-administrator"), mapper.toGroups(Roles.MICA_ADMIN));
+  }
+
+  @Test
+  public void testToGroupsMultipleSingleGroupOptions() {
+    MicaGroupsToRolesMapper mapper = new MicaGroupsToRolesMapper("dao-a|dao-b|dao-c,mica-user", Roles.MICA_DAO);
+    assertEquals(Set.of("dao-a", "dao-b"), mapper.toGroups(Roles.MICA_DAO));
+    // the roles mapping itself is unchanged
+    assertTrue(mapper.toRoles(Set.of("dao-c", "mica-user")).contains(Roles.MICA_DAO));
+    assertFalse(mapper.toRoles(Set.of("dao-c")).contains(Roles.MICA_DAO));
   }
 
   @Test
