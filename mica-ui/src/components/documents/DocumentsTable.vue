@@ -21,6 +21,11 @@
           </div>
         </q-td>
       </template>
+      <template v-slot:body-cell-request="props">
+        <q-td key="request" :props="props">
+          <data-access-request-link :request="props.value" />
+        </q-td>
+      </template>
       <template v-slot:body-cell-status="props">
         <q-td key="status" :props="props">
           <document-status-badge :state="props.value" />
@@ -33,6 +38,7 @@
 <script setup lang="ts">
 import type { TimestampsDto } from 'src/models/Mica';
 import DocumentStatusBadge from 'src/components/documents/DocumentStatusBadge.vue';
+import DataAccessRequestLink from 'src/components/projects/DataAccessRequestLink.vue';
 import type { DocumentTarget } from 'src/composables/useDocumentTarget';
 import type { DocumentSummary } from 'src/stores/documents';
 import { ROWS_PER_PAGE } from 'src/utils/constants';
@@ -51,20 +57,36 @@ const { t } = useI18n();
 const loading = ref(false);
 
 const columns = computed(() => [
-  { name: 'id', label: 'ID', field: 'id', sortable: true },
+  { name: 'id', label: 'ID', field: 'id', sortable: true, align: 'left' as const },
   {
     name: 'name',
     label: t('name'),
     field: (row: DocumentSummary) => row.name ?? row.title ?? [],
     sortable: true,
+    align: 'left' as const,
+    // the titles (projects) can be long
+    style: 'white-space: normal',
   },
-  { name: 'status', label: t('status'), field: 'state', sortable: false },
+  // the research projects may come from a data access request
+  ...(props.target.type === 'project'
+    ? [
+        {
+          name: 'request',
+          label: t('data_access_request.title'),
+          field: 'request',
+          sortable: false,
+          align: 'left' as const,
+        },
+      ]
+    : []),
+  { name: 'status', label: t('status'), field: 'state', sortable: false, align: 'left' as const },
   {
     name: 'lastUpdated',
     label: t('last_modified'),
     field: 'timestamps',
     format: (ts: TimestampsDto | undefined) => getDateLabel(ts?.lastUpdate),
     sortable: true,
+    align: 'left' as const,
   },
 ]);
 
