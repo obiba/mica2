@@ -25,14 +25,35 @@
       </template>
       <template v-slot:body-cell-principal="props">
         <q-td :props="props">
-          <em v-if="props.value === '*'">{{ props.row.type === 'USER' ? t('permission.anyone') : t('permission.any_group') }}</em>
+          <em v-if="props.value === '*'">{{
+            props.row.type === 'USER' ? t('permission.anyone') : t('permission.any_group')
+          }}</em>
           <span v-else>{{ props.value }}</span>
         </q-td>
       </template>
       <template v-slot:body-cell-actions="props">
         <q-td :props="props" class="text-no-wrap">
-          <q-btn v-if="withRole" flat dense round size="sm" icon="edit" color="primary" :title="t('edit')" @click="emit('edit', props.row)" />
-          <q-btn flat dense round size="sm" icon="delete" color="negative" :title="t('delete')" @click="emit('delete', props.row)" />
+          <q-btn
+            v-if="withRole"
+            flat
+            dense
+            round
+            size="sm"
+            icon="edit"
+            color="primary"
+            :title="t('edit')"
+            @click="emit('edit', props.row)"
+          />
+          <q-btn
+            flat
+            dense
+            round
+            size="sm"
+            icon="delete"
+            color="negative"
+            :title="t('delete')"
+            @click="emit('delete', props.row)"
+          />
         </q-td>
       </template>
     </q-table>
@@ -69,10 +90,22 @@ function rowKey(acl: AclDto) {
 const columns = computed<QTableColumn[]>(() => {
   const list: QTableColumn[] = [
     { name: 'principal', label: t('permission.principal'), field: 'principal', align: 'left', sortable: true },
-    { name: 'type', label: t('type'), field: 'type', align: 'left', format: (value: string) => t(`permission.${value.toLowerCase()}`) },
+    {
+      name: 'type',
+      label: t('type'),
+      field: 'type',
+      align: 'left',
+      format: (value: string) => t(`permission.${value.toLowerCase()}`),
+    },
   ];
   if (props.withRole) {
-    list.push({ name: 'role', label: t('role'), field: 'role', align: 'left', format: (value: string) => (value ? t(`permission.${value.toLowerCase()}`) : '') });
+    list.push({
+      name: 'role',
+      label: t('role'),
+      field: 'role',
+      align: 'left',
+      format: (value: string) => (value ? t(`permission.${value.toLowerCase()}`) : ''),
+    });
   }
   if (props.canEdit) {
     list.push({ name: 'actions', label: t('history.actions'), field: 'principal', align: 'left' });
