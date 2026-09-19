@@ -48,6 +48,17 @@ export default {
     caption: 'Manage research projects',
     new: 'New research project',
   },
+  data_access_request: {
+    title: 'Data access request',
+    status: {
+      OPENED: 'Opened',
+      SUBMITTED: 'Submitted',
+      REVIEWED: 'Under review',
+      CONDITIONALLY_APPROVED: 'Conditionally approved',
+      APPROVED: 'Approved',
+      REJECTED: 'Rejected',
+    },
+  },
   files: {
     title: 'Files',
     caption: 'Manage files',

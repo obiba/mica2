@@ -28,6 +28,16 @@ describe('documentTarget', () => {
     expect(documentTarget('project', 'x').collectionPath).toBe('/draft/projects');
   });
 
+  it('wraps the projects list only', () => {
+    const project = documentTarget('project', 'p');
+    expect(project.listPath).toBe('/draft/projects');
+    expect(project.listKey).toBe('projects');
+    expect(project.routeBase).toBe('/project');
+    expect(project.listRoute).toBe('/projects');
+    expect(project.withLogo).toBe(false);
+    expect(documentTarget('network', 'n').listKey).toBeUndefined();
+  });
+
   it('serves the states of the studies apart', () => {
     const study = documentTarget('harmonization-study', 'hs');
     expect(study.statePath).toBe('/draft/study-state/hs');
