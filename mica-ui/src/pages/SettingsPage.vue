@@ -6,7 +6,7 @@
         <q-breadcrumbs-el :label="t('settings')" />
       </q-breadcrumbs>
     </q-toolbar>
-    <q-page class="q-pa-md">
+    <q-page padding>
       <div class="row q-col-gutter-lg q-mb-lg">
         <div class="col-4 col-sm-4 col-xs-12">
           <q-list separator>
