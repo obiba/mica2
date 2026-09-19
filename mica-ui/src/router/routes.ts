@@ -26,9 +26,9 @@ const routes: RouteRecordRaw[] = [
       ...documentRoutes('harmonization-study'),
       ...documentRoutes('collected-dataset'),
       ...documentRoutes('harmonized-dataset'),
+      ...documentRoutes('project'),
       { path: 'files', component: () => import('pages/FilesPage.vue') },
       { path: 'persons', component: () => import('pages/PersonsPage.vue') },
-      { path: 'research-projects', component: () => import('pages/ResearchProjectsPage.vue') },
     ],
   },
 
