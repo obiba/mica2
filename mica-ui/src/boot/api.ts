@@ -32,6 +32,11 @@ function toServerUrl(path: string): string {
   return baseUrl + path;
 }
 
+/** the URL of a page of the public portal (`/signin`, `/data-access/{id}`), relative to this app (`/admin2`) */
+function toPortalUrl(path: string): string {
+  return `..${contextPath === '/' ? '' : contextPath}${path}`;
+}
+
 function requiresCode(response: AxiosResponse): boolean {
   if (response && response.status === 401) return response.headers['www-authenticate'] === 'X-Obiba-TOTP';
   return false;
@@ -88,4 +93,4 @@ export default defineBoot(({ app }) => {
   //       so you can easily perform requests against your app's API
 });
 
-export { api, baseUrl, contextPath, toServerUrl };
+export { api, baseUrl, contextPath, toServerUrl, toPortalUrl };
