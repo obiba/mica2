@@ -33,6 +33,8 @@ import java.util.Scanner;
 
 public abstract class EntityConfigService<T extends EntityConfig> {
 
+  private static final String EMPTY_UISCHEMA = "{\"type\":\"VerticalLayout\",\"elements\":[]}";
+
   protected abstract MongoRepository<T, String> getRepository();
 
   protected abstract String getDefaultId();
@@ -84,12 +86,22 @@ public abstract class EntityConfigService<T extends EntityConfig> {
     }
   }
 
+  /**
+   * The definition is either an angular-schema-form array or a JSON Forms UI schema object.
+   */
   private void validateDefinition(String json) {
     try {
-      new JSONArray(json);
+      if (isUischema(json))
+        new JSONObject(json);
+      else
+        new JSONArray(json);
     } catch(JSONException e) {
       throw new InvalidFormDefinitionException();
     }
+  }
+
+  private static boolean isUischema(String json) {
+    return json != null && json.trim().startsWith("{");
   }
 
   private T createDefaultForm() {
@@ -120,8 +132,14 @@ public abstract class EntityConfigService<T extends EntityConfig> {
     repositoryConfiguration.setSchema(mergedSchema);
 
     String repositoryDefinition = repositoryConfiguration.getDefinition();
-    String mandatoryDefinition = getResourceAsString(getMandatoryDefinitionResourcePath(), "[]");
-    String mergedDefinition = mergeDefinition(repositoryDefinition, mandatoryDefinition);
+    String mergedDefinition;
+    if (isUischema(repositoryDefinition)) {
+      String mandatoryUischema = getResourceAsString(getMandatoryUischemaResourcePath(), EMPTY_UISCHEMA);
+      mergedDefinition = mergeUischema(repositoryDefinition, mandatoryUischema);
+    } else {
+      String mandatoryDefinition = getResourceAsString(getMandatoryDefinitionResourcePath(), "[]");
+      mergedDefinition = mergeDefinition(repositoryDefinition, mandatoryDefinition);
+    }
     repositoryConfiguration.setDefinition(mergedDefinition);
 
     return repositoryConfiguration;
@@ -163,6 +181,33 @@ public abstract class EntityConfigService<T extends EntityConfig> {
     return mandatoryDefinition;
   }
 
+  /**
+   * A JSON Forms custom UI schema is appended to the elements of the mandatory one: the mandatory
+   * layout comes first, then the custom layout as a whole.
+   */
+  String mergeUischema(String customNode, String mandatoryNode) {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      return mergeUischema(mapper.readTree(customNode), mapper.readTree(mandatoryNode)).toString();
+    } catch (IOException e) {
+      e.printStackTrace();
+      throw new UncheckedIOException(e);
+    }
+  }
+
+  private JsonNode mergeUischema(JsonNode customUischema, JsonNode mandatoryUischema) {
+    ObjectNode merged = mandatoryUischema.isObject() ? (ObjectNode) mandatoryUischema : new ObjectMapper().createObjectNode();
+    if (!merged.has("type")) merged.put("type", "VerticalLayout");
+    JsonNode elements = merged.get("elements");
+    if (elements == null || !elements.isArray()) {
+      elements = merged.putArray("elements");
+    }
+    if (customUischema.isObject() && !customUischema.isEmpty()) {
+      ((ArrayNode) elements).add(customUischema);
+    }
+    return merged;
+  }
+
   private void mergeRequiredFields(JsonNode baseNode, JsonNode overrideNode) {
     ArrayList<JsonNode> baseRequiredItems = Lists.newArrayList(baseNode.get("required"));
     for (JsonNode overrideRequiredItem : overrideNode.get("required")) {
@@ -202,4 +247,13 @@ public abstract class EntityConfigService<T extends EntityConfig> {
   protected abstract String getDefaultDefinitionResourcePath();
 
   protected abstract String getMandatoryDefinitionResourcePath();
+
+  /**
+   * The JSON Forms counterpart of the mandatory definition, merged into a custom definition of that
+   * dialect: by default the `uischema-mandatory.json` beside the `definition-mandatory.json`.
+   */
+  protected String getMandatoryUischemaResourcePath() {
+    String path = getMandatoryDefinitionResourcePath();
+    return StringUtils.isEmpty(path) ? path : path.replace("definition-mandatory.json", "uischema-mandatory.json");
+  }
 }

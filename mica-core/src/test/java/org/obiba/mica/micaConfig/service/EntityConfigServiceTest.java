@@ -12,11 +12,11 @@ package org.obiba.mica.micaConfig.service;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class EntityConfigServiceTest {
 
@@ -93,5 +93,44 @@ public class EntityConfigServiceTest {
     DocumentContext parse = JsonPath.parse(mergeSchema);
     assertThat(parse.read("$[0].items[0]"), is("mandatoryItem1"));
     assertThat(parse.read("$[1].items[0]"), is("customItem1"));
+  }
+
+  @Test
+  public void can_merge_two_uischemas() throws Exception {
+
+    // Given
+    String customUischema = "{" +
+      "    \"type\": \"VerticalLayout\"," +
+      "    \"elements\": [ { \"type\": \"Control\", \"scope\": \"#/properties/customItem1\" } ]" +
+      "}";
+
+    String mandatoryUischema = "{" +
+      "    \"type\": \"VerticalLayout\"," +
+      "    \"elements\": [ { \"type\": \"Control\", \"scope\": \"#/properties/mandatoryItem1\" } ]" +
+      "}";
+
+    // Execute
+    String merged = new IndividualStudyConfigService().mergeUischema(customUischema, mandatoryUischema);
+
+    // Verify
+    DocumentContext parse = JsonPath.parse(merged);
+    assertThat(parse.read("type"), is("VerticalLayout"));
+    assertThat(parse.read("elements[0].scope"), is("#/properties/mandatoryItem1"));
+    assertThat(parse.read("elements[1].type"), is("VerticalLayout"));
+    assertThat(parse.read("elements[1].elements[0].scope"), is("#/properties/customItem1"));
+  }
+
+  @Test
+  public void can_merge_uischema_without_mandatory_one() throws Exception {
+
+    // Given
+    String customUischema = "{ \"type\": \"VerticalLayout\", \"elements\": [] }";
+
+    // Execute
+    String merged = new IndividualStudyConfigService().mergeUischema(customUischema, "{\"type\":\"VerticalLayout\",\"elements\":[]}");
+
+    // Verify
+    DocumentContext parse = JsonPath.parse(merged);
+    assertThat(parse.read("elements[0].type"), is("VerticalLayout"));
   }
 }

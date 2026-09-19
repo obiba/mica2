@@ -24,6 +24,14 @@
         <div class="col-4 col-sm-4 col-xs-12">
           <q-list separator>
             <q-item-label header class="text-uppercase">{{ t('settings.content') }}</q-item-label>
+            <q-item v-if="systemStore.configuration.isNetworkEnabled">
+              <q-item-section>
+                <q-item-label>
+                  <router-link to="/settings/network">{{ t('settings.network') }}</router-link>
+                </q-item-label>
+                <q-item-label caption lines="2">{{ t('settings.network_caption') }}</q-item-label>
+              </q-item-section>
+            </q-item>
           </q-list>
         </div>
         <div class="col-4 col-sm-4 col-xs-12">
@@ -38,4 +46,9 @@
 
 <script setup lang="ts">
 const { t } = useI18n();
+const systemStore = useSystemStore();
+
+onMounted(() => {
+  systemStore.init();
+});
 </script>
