@@ -11,6 +11,11 @@
       <q-spinner-dots v-if="loading" color="primary" size="2em" />
       <div v-else-if="document">
         <document-header :id="id" :timestamps="document.timestamps" :state="state" :disable="busy" @action="onAction">
+          <template v-if="request" #info>
+            <div class="text-caption text-grey-7 q-mt-xs">
+              {{ t('data_access_request.title') }}: <data-access-request-link :request="request" />
+            </div>
+          </template>
           <template #actions>
             <q-btn
               v-if="canEdit"
@@ -69,6 +74,7 @@ import DocumentHistoryPanel from 'src/components/history/DocumentHistoryPanel.vu
 import DocumentAclPanel from 'src/components/permissions/DocumentAclPanel.vue';
 import CommentsPanel from 'src/components/comments/CommentsPanel.vue';
 import FileBrowser from 'src/components/files/FileBrowser.vue';
+import DataAccessRequestLink from 'src/components/projects/DataAccessRequestLink.vue';
 import { useDocumentTarget, useRouteDocumentType } from 'src/composables/useDocumentTarget';
 import { useDocumentState } from 'src/composables/useDocumentState';
 import { useDocumentActions, type DocumentAction } from 'src/composables/useDocumentActions';
@@ -93,6 +99,8 @@ const document = ref<DocumentDto>();
 const state = ref<EntityStateDto>();
 const { canEdit, canManagePermissions } = useDocumentState(state);
 const { busy, apply } = useDocumentActions(target);
+/** the data access request a research project comes from */
+const request = computed(() => (document.value && 'request' in document.value ? document.value.request : undefined));
 
 const loading = ref(true);
 
