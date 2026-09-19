@@ -157,7 +157,7 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
 
     projectRepository.save(saved);
     eventBus.post(new ProjectUpdatedEvent(saved));
-    gitService.save(saved);
+    gitService.save(saved, comments);
   }
 
   /**

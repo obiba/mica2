@@ -58,7 +58,7 @@
 <script setup lang="ts">
 import { Cookies } from 'quasar';
 import { locales } from 'boot/i18n';
-import { contextPath } from 'src/boot/api';
+import { toPortalUrl } from 'src/boot/api';
 import ReSigninDialog from 'src/components/ReSigninDialog.vue';
 import MainDrawer from 'src/components/MainDrawer.vue';
 
@@ -95,7 +95,7 @@ onMounted(() => {
       systemStore.init();
     })
     .catch(() => {
-      window.location.href = `..${contextPath === '/' ? '' : contextPath}/signin`;
+      window.location.href = toPortalUrl('/signin');
     });
   systemStore.initPub();
 });
@@ -112,10 +112,10 @@ function onLocaleSelection(localeOpt: { label: string; value: string }) {
 }
 
 function onProfile() {
-  window.location.href = `..${contextPath === '/' ? '' : contextPath}/profile`;
+  window.location.href = toPortalUrl('/profile');
 }
 
 function onSignout() {
-  window.location.href = `..${contextPath === '/' ? '' : contextPath}/signout`;
+  window.location.href = toPortalUrl('/signout');
 }
 </script>
