@@ -1,3 +1,6 @@
 {
-  "@obiba/json-form": {}
+  "@obiba/json-form": {},
+  "@quasar/qmarkdown": {
+    "import_md": false
+  }
 }
