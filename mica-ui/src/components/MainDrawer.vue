@@ -71,7 +71,7 @@
           <q-item-label>{{ t('harmonization.datasets.title') }}</q-item-label>
         </q-item-section>
       </q-item>
-      <q-item :to="`/research-projects`">
+      <q-item :to="`/projects`">
         <q-item-section avatar>
           <q-icon name="science" />
         </q-item-section>
