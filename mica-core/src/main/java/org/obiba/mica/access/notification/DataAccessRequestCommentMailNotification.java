@@ -24,6 +24,7 @@ import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.domain.SubjectAcl;
 import org.obiba.mica.security.domain.SubjectAcl.Type;
+import org.obiba.mica.security.service.MicaGroupsToRolesMapper;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.springframework.stereotype.Component;
 
@@ -48,6 +49,8 @@ public class DataAccessRequestCommentMailNotification implements MailNotificatio
 
   private MicaConfigService micaConfigService;
 
+  private MicaGroupsToRolesMapper groupsToRolesMapper;
+
   @Inject
   public DataAccessRequestCommentMailNotification(
     DataAccessConfigService dataAccessConfigService,
@@ -55,13 +58,15 @@ public class DataAccessRequestCommentMailNotification implements MailNotificatio
     DataAccessRequestService dataAccessRequestService,
     MailService mailService,
     SubjectAclService subjectAclService,
-    MicaConfigService micaConfigService) {
+    MicaConfigService micaConfigService,
+    MicaGroupsToRolesMapper groupsToRolesMapper) {
     this.dataAccessConfigService = dataAccessConfigService;
     this.dataAccessRequestUtilService = dataAccessRequestUtilService;
     this.dataAccessRequestService = dataAccessRequestService;
     this.mailService = mailService;
     this.subjectAclService = subjectAclService;
     this.micaConfigService = micaConfigService;
+    this.groupsToRolesMapper = groupsToRolesMapper;
   }
 
   @Override
@@ -100,7 +105,7 @@ public class DataAccessRequestCommentMailNotification implements MailNotificatio
     }
 
     mailService.sendEmailToGroups(mailService.getSubject(dataAccessConfig.getCommentedSubject(), ctx, DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT),
-      "dataAccessRequestCommentAdded", ctx, Roles.MICA_DAO);
+      "dataAccessRequestCommentAdded", ctx, groupsToRolesMapper.toGroups(Roles.MICA_DAO).toArray(String[]::new));
   }
 
   private List<SubjectAcl> getPrivateCommentsAcls() {

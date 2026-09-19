@@ -23,6 +23,7 @@ import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.PermissionsUtils;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.domain.SubjectAcl;
+import org.obiba.mica.security.service.MicaGroupsToRolesMapper;
 import org.obiba.mica.security.service.SubjectAclService;
 
 import com.google.common.collect.Lists;
@@ -43,6 +44,9 @@ public abstract class PublicationFlowMailNotification {
   @Inject
   protected MailService mailService;
 
+  @Inject
+  protected MicaGroupsToRolesMapper groupsToRolesMapper;
+
   protected List<SubjectAcl> getResourceAcls(String resource, String instance) {
     return subjectAclService.findByResourceInstance(resource, instance);
   }
@@ -58,11 +62,12 @@ public abstract class PublicationFlowMailNotification {
   protected void sendNotification(RevisionStatus status, Map<String, String> ctx, String subject,
     String template, List<SubjectAcl> acls) {
 
-    List<SubjectAcl> allAcls = Lists.newArrayList(
-      SubjectAcl.newBuilder(Roles.MICA_REVIEWER, SubjectAcl.Type.GROUP).action(PermissionsUtils.getReviewerActions())
-        .build(),
-      SubjectAcl.newBuilder(Roles.MICA_EDITOR, SubjectAcl.Type.GROUP).action(PermissionsUtils.getEditorActions())
-        .build());
+    // groups granting the built-in roles
+    List<SubjectAcl> allAcls = Lists.newArrayList();
+    groupsToRolesMapper.toGroups(Roles.MICA_REVIEWER).forEach(group -> allAcls.add(
+      SubjectAcl.newBuilder(group, SubjectAcl.Type.GROUP).action(PermissionsUtils.getReviewerActions()).build()));
+    groupsToRolesMapper.toGroups(Roles.MICA_EDITOR).forEach(group -> allAcls.add(
+      SubjectAcl.newBuilder(group, SubjectAcl.Type.GROUP).action(PermissionsUtils.getEditorActions()).build()));
 
     allAcls.addAll(acls);
 

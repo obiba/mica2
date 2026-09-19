@@ -15,6 +15,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.apache.shiro.SecurityUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -22,6 +23,7 @@ import org.obiba.mica.core.service.AgateRestService;
 import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.security.service.MicaGroupsToRolesMapper;
 import org.obiba.shiro.realm.ObibaRealm;
 import org.obiba.shiro.realm.ObibaRealm.Subject;
 import org.owasp.esapi.ESAPI;
@@ -60,6 +62,9 @@ public class UserProfileService extends AgateRestService {
 
   @Inject
   private MailService mailService;
+
+  @Inject
+  private MicaGroupsToRolesMapper groupsToRolesMapper;
 
   private Cache<String, Subject> subjectCache = CacheBuilder.newBuilder()
     .maximumSize(100)
@@ -137,7 +142,8 @@ public class UserProfileService extends AgateRestService {
     }
 
     ObibaRealm.Subject profile = getProfile(username);
-    return profile != null && profile.getGroups() != null && profile.getGroups().stream().filter(g -> g.equals(role)).count() > 0;
+    return profile != null && profile.getGroups() != null
+      && groupsToRolesMapper.toRoles(Sets.newHashSet(profile.getGroups())).contains(role);
   }
 
   public void createUser(Map<String, Object> params) {
@@ -147,7 +153,8 @@ public class UserProfileService extends AgateRestService {
     headers.set(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded");
 
     StringBuffer query = new StringBuffer();
-    for (String group : micaConfigService.getConfig().getSignupGroups()) {
+    // a signup group that is a role name stands for the groups granting that role
+    for (String group : groupsToRolesMapper.toGroups(micaConfigService.getConfig().getSignupGroups().toArray(String[]::new))) {
       if (query.length() > 0) query.append("&");
       query.append("group=").append(group);
     }
@@ -239,9 +246,8 @@ public class UserProfileService extends AgateRestService {
     // would try to verify a missing captcha
     if (!Strings.isNullOrEmpty(reCaptcha)) ctx.put("reCaptcha", reCaptcha);
 
-    List<String> contactGroups = config.getContactGroups();
-    String[] groups = new String[contactGroups.size()];
-    contactGroups.toArray(groups);
+    // a contact group that is a role name stands for the groups granting that role
+    String[] groups = groupsToRolesMapper.toGroups(config.getContactGroups().toArray(String[]::new)).toArray(String[]::new);
     mailService.sendEmailToGroups(mailService.getSubject(config.getContactNotificationsSubject(), ctx, DEFAULT_CONTACT_NOTIFICATION_SUBJECT),
       "contactUs", ctx, groups);
   }

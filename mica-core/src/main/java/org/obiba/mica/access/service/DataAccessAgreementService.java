@@ -107,7 +107,7 @@ public class DataAccessAgreementService extends DataAccessEntityService<DataAcce
 
       mailService.sendEmailToGroups(mailService.getSubject(dataAccessConfig.getApprovedSubject(), ctx,
           DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "ApprovedDAOEmail", ctx,
-        Roles.MICA_DAO);
+        groupsToRolesMapper.toGroups(Roles.MICA_DAO).toArray(String[]::new));
     }
   }
 
@@ -121,7 +121,7 @@ public class DataAccessAgreementService extends DataAccessEntityService<DataAcce
 
       mailService.sendEmailToGroups(mailService.getSubject(dataAccessConfig.getApprovedSubject(), ctx,
           DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "RejectedDAOEmail", ctx,
-        Roles.MICA_DAO);
+        groupsToRolesMapper.toGroups(Roles.MICA_DAO).toArray(String[]::new));
     }
   }
 

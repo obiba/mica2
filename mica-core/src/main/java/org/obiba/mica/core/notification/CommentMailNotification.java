@@ -22,6 +22,7 @@ import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.PermissionsUtils;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.domain.SubjectAcl;
+import org.obiba.mica.security.service.MicaGroupsToRolesMapper;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.springframework.stereotype.Component;
 
@@ -44,17 +45,21 @@ public class CommentMailNotification implements MailNotification<Comment> {
   @Inject
   private SubjectAclService subjectAclService;
 
+  @Inject
+  private MicaGroupsToRolesMapper groupsToRolesMapper;
+
   @Override
   public void send(Comment comment) {
     MicaConfig config = micaConfigService.getConfig();
 
     if(comment == null || !config.isCommentNotificationsEnabled()) return;
 
-    List<SubjectAcl> acls = Lists.newArrayList(
-      SubjectAcl.newBuilder(Roles.MICA_REVIEWER, SubjectAcl.Type.GROUP).action(PermissionsUtils.asActions("REVIEWER"))
-        .build(),
-      SubjectAcl.newBuilder(Roles.MICA_EDITOR, SubjectAcl.Type.GROUP).action(PermissionsUtils.asActions("EDITOR"))
-        .build());
+    // groups granting the built-in roles
+    List<SubjectAcl> acls = Lists.newArrayList();
+    groupsToRolesMapper.toGroups(Roles.MICA_REVIEWER).forEach(group -> acls.add(
+      SubjectAcl.newBuilder(group, SubjectAcl.Type.GROUP).action(PermissionsUtils.asActions("REVIEWER")).build()));
+    groupsToRolesMapper.toGroups(Roles.MICA_EDITOR).forEach(group -> acls.add(
+      SubjectAcl.newBuilder(group, SubjectAcl.Type.GROUP).action(PermissionsUtils.asActions("EDITOR")).build()));
 
     acls.addAll(subjectAclService.findByResourceInstance(comment.getResourceId(), comment.getInstanceId()));
     List<String> users = acls.stream().filter(s -> s.hasAction("VIEW") && s.getType() == SubjectAcl.Type.USER &&
