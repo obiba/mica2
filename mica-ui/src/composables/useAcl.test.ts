@@ -6,7 +6,7 @@ vi.mock('src/utils/notify', () => ({ notifyError: vi.fn() }));
 import { api } from 'src/boot/api';
 import { notifyError } from 'src/utils/notify';
 import { documentTarget } from './useDocumentTarget';
-import { useDocumentAcl, useFileAcl } from './useAcl';
+import { useConfigAcl, useDocumentAcl, useFileAcl } from './useAcl';
 
 const target = documentTarget('network', 'net1');
 const mocked = api as unknown as {
@@ -72,5 +72,27 @@ describe('useDocumentAcl', () => {
     mocked.delete.mockRejectedValueOnce(new Error('nope'));
     expect(await acl.deletePermission({ principal: 'bob', type: 'USER' })).toBe(false);
     expect(notifyError).toHaveBeenCalled();
+  });
+});
+
+describe('useConfigAcl', () => {
+  it('saves a permission with the config and file parameters and no accesses', async () => {
+    const acl = useConfigAcl('/config/contingencies/permissions');
+    expect(await acl.savePermission({ principal: 'analysts', type: 'GROUP', role: 'ANALYST' })).toBe(true);
+    expect(mocked.put).toHaveBeenCalledWith('/config/contingencies/permissions', null, {
+      params: { config: true, file: false, principal: 'analysts', type: 'GROUP', role: 'ANALYST' },
+    });
+    expect(mocked.get).toHaveBeenCalledWith('/config/contingencies/permissions');
+    expect(await acl.loadAccesses()).toEqual([]);
+    expect(await acl.saveAccess({ principal: 'x', type: 'USER' })).toBe(false);
+    expect(mocked.get).toHaveBeenCalledTimes(1);
+  });
+
+  it('deletes a permission', async () => {
+    const acl = useConfigAcl('/config/document-sets/permissions');
+    expect(await acl.deletePermission({ principal: 'bob', type: 'USER' })).toBe(true);
+    expect(mocked.delete).toHaveBeenCalledWith('/config/document-sets/permissions', {
+      params: { principal: 'bob', type: 'USER' },
+    });
   });
 });

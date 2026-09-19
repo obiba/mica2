@@ -14,7 +14,8 @@ export type DocumentRole = (typeof DOCUMENT_ROLES)[number];
 export interface AclInput {
   principal: string;
   type: AclType;
-  role?: DocumentRole | undefined;
+  /** a document role, or the role of a configuration resource (`ANALYST`...) */
+  role?: string | undefined;
   /** apply to the files of the document too (documents only) */
   file?: boolean | undefined;
 }
@@ -22,11 +23,22 @@ export interface AclInput {
 /** where the lists are managed: the permissions (draft) and the accesses (publication) resources */
 export interface AclEndpoints {
   permissions: string;
-  accesses: string;
+  /** none for a configuration resource, which has no publication */
+  accesses?: string | undefined;
+  /** fixed query parameters of the permission save */
+  params?: Record<string, string | boolean> | undefined;
 }
 
 export function documentAclEndpoints(target: DocumentTarget): AclEndpoints {
   return { permissions: `${target.path}/permissions`, accesses: `${target.path}/accesses` };
+}
+
+/**
+ * A configuration resource (Opal views download, contingency tables...): permissions only, saved
+ * with the role as is (`config`) and without file permission.
+ */
+export function configAclEndpoints(path: string): AclEndpoints {
+  return { permissions: path, params: { config: true, file: false } };
 }
 
 export function fileAclEndpoints(path: string): AclEndpoints {
@@ -46,16 +58,21 @@ export function useAcl(endpoints: MaybeRefOrGetter<AclEndpoints>) {
   const loadingPermissions = ref(false);
   const loadingAccesses = ref(false);
 
-  function path(kind: 'permissions' | 'accesses') {
+  function path(kind: 'permissions' | 'accesses'): string | undefined {
     return toValue(endpoints)[kind];
   }
 
   async function load(kind: 'permissions' | 'accesses'): Promise<AclDto[]> {
     const list = kind === 'permissions' ? permissions : accesses;
     const loading = kind === 'permissions' ? loadingPermissions : loadingAccesses;
+    const resource = path(kind);
+    if (!resource) {
+      list.value = [];
+      return list.value;
+    }
     loading.value = true;
     try {
-      const response = await api.get<AclDto[]>(path(kind));
+      const response = await api.get<AclDto[]>(resource);
       list.value = response.data;
     } catch (error) {
       notifyError(error);
@@ -67,11 +84,17 @@ export function useAcl(endpoints: MaybeRefOrGetter<AclEndpoints>) {
   }
 
   async function save(kind: 'permissions' | 'accesses', acl: AclInput): Promise<boolean> {
+    const resource = path(kind);
+    if (!resource) return false;
     try {
-      const params: Record<string, string | boolean> = { principal: acl.principal, type: acl.type };
+      const params: Record<string, string | boolean> = {
+        ...(kind === 'permissions' ? toValue(endpoints).params : {}),
+        principal: acl.principal,
+        type: acl.type,
+      };
       if (acl.file !== undefined) params.file = acl.file;
       if (kind === 'permissions' && acl.role) params.role = acl.role;
-      await api.put(path(kind), null, { params });
+      await api.put(resource, null, { params });
       await load(kind);
       return true;
     } catch (error) {
@@ -81,8 +104,10 @@ export function useAcl(endpoints: MaybeRefOrGetter<AclEndpoints>) {
   }
 
   async function remove(kind: 'permissions' | 'accesses', acl: Pick<AclDto, 'principal' | 'type'>): Promise<boolean> {
+    const resource = path(kind);
+    if (!resource) return false;
     try {
-      await api.delete(path(kind), { params: { principal: acl.principal, type: acl.type } });
+      await api.delete(resource, { params: { principal: acl.principal, type: acl.type } });
       await load(kind);
       return true;
     } catch (error) {
@@ -113,4 +138,9 @@ export function useDocumentAcl(target: MaybeRefOrGetter<DocumentTarget>) {
 /** the ACLs of a draft file or folder (`/draft/file-permission|file-access/{path}`) */
 export function useFileAcl(path: MaybeRefOrGetter<string>) {
   return useAcl(() => fileAclEndpoints(toValue(path)));
+}
+
+/** the permissions of a configuration resource (`/config/document-sets/permissions`...) */
+export function useConfigAcl(path: MaybeRefOrGetter<string>) {
+  return useAcl(() => configAclEndpoints(toValue(path)));
 }
