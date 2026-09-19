@@ -21,6 +21,7 @@ const routes: RouteRecordRaw[] = [
     children: [
       { path: '', component: () => import('pages/IndexPage.vue') },
       { path: 'settings', component: () => import('pages/SettingsPage.vue') },
+      { path: 'settings/general', component: () => import('pages/SettingsGeneralPage.vue') },
       ...documentRoutes('network'),
       ...documentRoutes('individual-study'),
       ...documentRoutes('harmonization-study'),
