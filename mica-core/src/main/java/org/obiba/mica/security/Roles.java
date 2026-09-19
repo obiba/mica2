@@ -33,5 +33,5 @@ public interface Roles {
   // can view published data
   String MICA_USER = "mica-user";
 
-  List<String> ALL_ROLES = Lists.newArrayList(MICA_ADMIN, MICA_REVIEWER, MICA_EDITOR, MICA_DAO, MICA_USER);
+  List<String> ALL_ROLES = Lists.newArrayList(MICA_ADMIN, MICA_REVIEWER, MICA_EDITOR, MICA_EXTERNAL_EDITOR, MICA_DAO, MICA_USER);
 }

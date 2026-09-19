@@ -26,6 +26,7 @@ import org.obiba.mica.micaConfig.domain.DataAccessConfig;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.Roles;
+import org.obiba.mica.security.service.MicaGroupsToRolesMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -69,14 +70,17 @@ public class DataAccessRequestReportNotificationService {
 
   private final DataAccessConfigService dataAccessConfigService;
 
+  private final MicaGroupsToRolesMapper groupsToRolesMapper;
+
   @Inject
-  public DataAccessRequestReportNotificationService(DataAccessRequestService dataAccessRequestService, DataAccessConfigService dataAccessConfigService, DataAccessAmendmentService dataAccessAmendmentService, DataAccessRequestUtilService dataAccessRequestUtilService, MailService mailService, MicaConfigService micaConfigService) {
+  public DataAccessRequestReportNotificationService(DataAccessRequestService dataAccessRequestService, DataAccessConfigService dataAccessConfigService, DataAccessAmendmentService dataAccessAmendmentService, DataAccessRequestUtilService dataAccessRequestUtilService, MailService mailService, MicaConfigService micaConfigService, MicaGroupsToRolesMapper groupsToRolesMapper) {
     this.dataAccessRequestService = dataAccessRequestService;
     this.dataAccessConfigService = dataAccessConfigService;
     this.dataAccessAmendmentService = dataAccessAmendmentService;
     this.dataAccessRequestUtilService = dataAccessRequestUtilService;
     this.mailService = mailService;
     this.micaConfigService = micaConfigService;
+    this.groupsToRolesMapper = groupsToRolesMapper;
   }
 
   /**
@@ -146,7 +150,7 @@ public class DataAccessRequestReportNotificationService {
 
     mailService.sendEmailToGroups(mailService.getSubject(dataAccessConfig.getFinalReportSubject(), ctx,
         DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestFinalReportDAOEmail", ctx,
-      Roles.MICA_DAO);
+      groupsToRolesMapper.toGroups(Roles.MICA_DAO).toArray(String[]::new));
   }
 
   private void remindDataAccessIntermediateReport(DataAccessConfig dataAccessConfig, DataAccessRequest request, Date reportDate, int nbOfDaysBeforeReport) {
@@ -158,7 +162,7 @@ public class DataAccessRequestReportNotificationService {
 
     mailService.sendEmailToGroups(mailService.getSubject(dataAccessConfig.getIntermediateReportSubject(), ctx,
         DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestIntermediateReportDAOEmail", ctx,
-      Roles.MICA_DAO);
+      groupsToRolesMapper.toGroups(Roles.MICA_DAO).toArray(String[]::new));
   }
 
   /**

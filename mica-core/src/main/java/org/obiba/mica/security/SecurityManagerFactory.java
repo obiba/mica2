@@ -70,6 +70,8 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
 
   private final PermissionResolver permissionResolver;
 
+  private final MicaGroupsToRolesMapper groupsToRolesMapper;
+
   private SessionsSecurityManager securityManager;
 
 
@@ -80,11 +82,13 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
     Set<Realm> realms,
     RolePermissionResolver rolePermissionResolver,
     PermissionResolver permissionResolver,
+    MicaGroupsToRolesMapper groupsToRolesMapper,
     CacheManager cacheManager) {
     this.environment = environment;
     this.realms = realms;
     this.rolePermissionResolver = rolePermissionResolver;
     this.permissionResolver = permissionResolver;
+    this.groupsToRolesMapper = groupsToRolesMapper;
   }
 
   @Override
@@ -155,7 +159,7 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
     oRealm.setBaseUrl(obibaRealmUrl);
     oRealm.setServiceName(serviceName);
     oRealm.setServiceKey(serviceKey);
-    oRealm.setGroupsToRolesMapper(new MicaGroupsToRolesMapper(environment));
+    oRealm.setGroupsToRolesMapper(groupsToRolesMapper);
     // Note: authentication caching is not enabled because it makes the SSO fail
 
     return oRealm;

@@ -9,8 +9,10 @@ import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.Roles;
+import org.obiba.mica.security.service.MicaGroupsToRolesMapper;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.user.UserProfileService;
+import org.obiba.shiro.realm.ObibaRealm;
 import org.obiba.mica.web.controller.domain.DataAccessRequestBundle;
 import org.owasp.esapi.ESAPI;
 import org.springframework.stereotype.Controller;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.inject.Inject;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -59,6 +62,9 @@ public class DataAccessesController extends BaseController {
   @Inject
   private SubjectAclService subjectAclService;
 
+  @Inject
+  private MicaGroupsToRolesMapper groupsToRolesMapper;
+
   @GetMapping("/data-accesses")
   public ModelAndView get(@RequestParam(value = "status", required = false) List<String> status) {
     Subject subject = SecurityUtils.getSubject();
@@ -68,7 +74,10 @@ public class DataAccessesController extends BaseController {
       List<DataAccessRequestBundle> dars = getDataAccessRequests(status);
       params.put("dars", dars);
       if (subjectAclService.isPermitted("/user", "VIEW"))
-        params.put("users", userProfileService.getProfilesByGroup(Roles.MICA_USER).stream()
+        params.put("users", groupsToRolesMapper.toGroups(Roles.MICA_USER).stream()
+          .flatMap(group -> userProfileService.getProfilesByGroup(group).stream())
+          .collect(Collectors.toMap(ObibaRealm.Subject::getUsername, s -> s, (s1, s2) -> s1, LinkedHashMap::new))
+          .values().stream()
           .map(s -> userProfileService.asMap(s)).collect(Collectors.toList()));
       params.put("applicants", dars.stream().map(DataAccessRequestBundle::getApplicant).distinct()
         .collect(Collectors.toMap(u -> u, u -> userProfileService.getProfileMap(u, true))));

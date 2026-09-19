@@ -55,6 +55,7 @@ import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.domain.SubjectAcl;
 import org.obiba.mica.security.domain.SubjectAcl.Type;
+import org.obiba.mica.security.service.MicaGroupsToRolesMapper;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,6 +102,9 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
 
   @Inject
   protected SubjectAclService subjectAclService;
+
+  @Inject
+  protected MicaGroupsToRolesMapper groupsToRolesMapper;
 
   private static final String EXCLUSION_IDS_YAML_RESOURCE_PATH = "config/data-access-form/data-access-request-exclusion-ids-list.yml";
 
@@ -245,7 +249,7 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
       if (ctx.get("parentId") == null) { // only original request, not amendments
         mailService.sendEmailToGroups(mailService.getSubject(dataAccessConfig.getCreatedSubject(), ctx,
             DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestCreatedDAOEmail", ctx,
-          Roles.MICA_DAO);
+          groupsToRolesMapper.toGroups(Roles.MICA_DAO).toArray(String[]::new));
 
         sendNotificationToReaders(mailService.getSubject(dataAccessConfig.getCreatedSubject(), ctx,
           DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), request, ctx, "dataAccessRequestCreatedDAOEmail");
@@ -265,7 +269,7 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
         getApplicantAndCollaborators(request));
       mailService.sendEmailToGroups(mailService.getSubject(dataAccessConfig.getSubmittedSubject(), ctx,
           DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "SubmittedDAOEmail", ctx,
-        Roles.MICA_DAO);
+        groupsToRolesMapper.toGroups(Roles.MICA_DAO).toArray(String[]::new));
 
       sendNotificationToReaders(mailService.getSubject(dataAccessConfig.getSubmittedSubject(), ctx,
         DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), request, ctx, prefix + "SubmittedDAOEmail");
@@ -348,7 +352,7 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
 
       mailService.sendEmailToGroups(mailService.getSubject(dataAccessConfig.getAttachmentSubject(), ctx,
           DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestAttachmentsUpdated", ctx,
-        Roles.MICA_DAO);
+        groupsToRolesMapper.toGroups(Roles.MICA_DAO).toArray(String[]::new));
 
       sendNotificationToReaders(mailService.getSubject(dataAccessConfig.getAttachmentSubject(), ctx,
       DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), request, ctx, "dataAccessRequestAttachmentsUpdated");

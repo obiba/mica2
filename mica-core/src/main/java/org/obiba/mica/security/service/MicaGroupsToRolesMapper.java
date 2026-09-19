@@ -3,11 +3,14 @@ package org.obiba.mica.security.service;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import jakarta.inject.Inject;
 import org.obiba.mica.security.Roles;
 import org.obiba.shiro.realm.GroupsToRolesMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,12 +18,21 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Maps the groups a user belongs to (as reported by Agate) to the Mica built-in roles, according to
+ * the {@code roles.<role>} settings, and conversely resolves the Agate groups that grant a role (for
+ * instance to notify all the users having that role).
+ */
+@Component
 public class MicaGroupsToRolesMapper implements GroupsToRolesMapper {
 
   private static final Logger log = LoggerFactory.getLogger(MicaGroupsToRolesMapper.class);
 
   private Map<String, List<Set<String>>> roleGroups = Maps.newHashMap();
 
+  private Map<String, Set<String>> roleNotifiableGroups = Maps.newHashMap();
+
+  @Inject
   public MicaGroupsToRolesMapper(Environment environment) {
     Roles.ALL_ROLES.forEach(role -> {
       addRoleGroups(environment, role);
@@ -50,6 +62,32 @@ public class MicaGroupsToRolesMapper implements GroupsToRolesMapper {
     return roles;
   }
 
+  /**
+   * Get the groups that grant the given role: the groups appearing alone in one of the role's conditions.
+   * A condition requiring several groups ("a,b") is ignored, as the role is only granted to the intersection
+   * of these groups, not to each of them. When no mapping is configured for the role (or only multi-groups
+   * conditions), the role name is a group of its own.
+   *
+   * @param role
+   * @return
+   */
+  public Set<String> toGroups(String role) {
+    Set<String> groups = roleNotifiableGroups.get(role);
+    return groups == null ? Sets.newHashSet(role) : Sets.newLinkedHashSet(groups);
+  }
+
+  /**
+   * Get the groups that grant any of the given roles.
+   *
+   * @param roles
+   * @return
+   */
+  public Set<String> toGroups(String... roles) {
+    Set<String> groups = Sets.newLinkedHashSet();
+    Arrays.stream(roles).forEach(role -> groups.addAll(toGroups(role)));
+    return groups;
+  }
+
   private void addRoleGroups(Environment environment, String role) {
     String groupsStr = environment.getProperty(String.format("roles.%s", role), role);
     addRoleGroups(groupsStr, role);
@@ -61,6 +99,17 @@ public class MicaGroupsToRolesMapper implements GroupsToRolesMapper {
       .map((cond) -> toSet(cond, ","))
       .toList();
     roleGroups.put(role, groupsSets);
+    if (groupsSets.isEmpty()) return;
+    Set<String> groups = Sets.newLinkedHashSet();
+    groupsSets.forEach(groupsSet -> {
+      if (groupsSet.size() == 1) groups.addAll(groupsSet);
+      else log.warn("Role '{}' condition '{}' requires several groups, they will not be notified as a whole", role, Joiner.on(",").join(groupsSet));
+    });
+    if (groups.isEmpty()) {
+      log.warn("Role '{}' has no single group condition, group '{}' will be notified instead", role, role);
+      groups.add(role);
+    }
+    roleNotifiableGroups.put(role, groups);
   }
 
   private Set<String> toSet(String groupsStr, String separator) {
