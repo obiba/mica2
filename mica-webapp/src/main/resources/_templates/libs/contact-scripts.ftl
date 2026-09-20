@@ -16,7 +16,7 @@
     UserService.contact("#form", requiredFields, function() {
       let form = document.querySelector("#form");
       if (form) {
-        window.location.href = window.location.origin + "/page/contact-success"
+        window.location.href = window.location.origin + "${contextPath}/contact-success"
       }
     }, function (messageItems) {
       var alertId = "#alertFailure";
