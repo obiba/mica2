@@ -139,6 +139,11 @@ export default {
       application: {
         'not-orphan': 'Cannot delete an application having associated users or groups.',
       },
+      'data-access-form': {
+        'invalid-schema': 'The form schema is not a valid JSON object.',
+        'invalid-definition': 'The form definition is not valid JSON.',
+        'invalid-translations': 'The form translations are not a valid JSON object.',
+      },
     },
   },
   acronym: 'Acronym',
@@ -279,6 +284,7 @@ export default {
   permission: {
     draft: 'Draft permissions',
     help: 'Grant permission to <code>read</code>, <code>edit</code> or <code>review</code> the current draft.',
+    help_global: 'Grant permission to <code>read</code>, <code>edit</code> or <code>review</code> any draft.',
     none: 'No permissions.',
     principal: 'Name',
     principal_help: 'User or group unique name.',
@@ -304,6 +310,7 @@ export default {
   access: {
     published: 'Published accesses',
     help: 'Grant <code>read</code> access to the current publication.',
+    help_global: 'Grant <code>read</code> access to any publication.',
     none: 'No accesses.',
     add: 'Add access',
     principal_help: 'User or group unique name. Use the wildcard * for anyone or any group.',
@@ -317,6 +324,8 @@ export default {
     general_caption: 'Server identification, data source, content edition and access, enabled sections and features',
     content: 'Content',
     search: 'Search',
+    network: 'Network',
+    network_caption: 'Network form and permissions',
   },
   config: {
     server_identification: 'Server identification',
@@ -435,6 +444,11 @@ export default {
     data_access_requests_count_enabled: 'Data access requests metrics enabled',
     data_access_requests_count_enabled_help: 'Show data access requests counts in the administration section.',
     saved: 'Configuration saved.',
+    form: 'Form',
+    form_saved: 'Form saved.',
+    network_form: 'Network form',
+    network_form_info:
+      'The custom network form is defined by a JSON schema (the data structure) and a UI schema (the display and validation of the fields), edited with the form builder. The mandatory fields (name, acronym, description) are added by the server.',
     encryption_keys: 'Encryption keys',
     encryption_keys_help: 'HTTPS connection requires to have a private key and a public key (certificate) defined. A self-signed key pair is available by default. You can provide your own.',
     add_key_pair: 'Add keys',

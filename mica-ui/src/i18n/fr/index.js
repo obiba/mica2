@@ -139,6 +139,11 @@ export default {
       application: {
         'not-orphan': 'Impossible de supprimer une application ayant des utilisateurs ou des groupes.',
       },
+      'data-access-form': {
+        'invalid-schema': "Le schéma du formulaire n'est pas un objet JSON valide.",
+        'invalid-definition': "La définition du formulaire n'est pas un JSON valide.",
+        'invalid-translations': "Les traductions du formulaire ne sont pas un objet JSON valide.",
+      },
     },
   },
   acronym: 'Acronyme',
@@ -279,6 +284,7 @@ export default {
   permission: {
     draft: 'Permissions sur le brouillon',
     help: "Accorder l'autorisation de <code>lire</code>, <code>éditer</code> ou <code>réviser</code> le brouillon actuel.",
+    help_global: "Accorder l'autorisation de <code>lire</code>, <code>éditer</code> ou <code>réviser</code> tout brouillon.",
     none: 'Aucune permission.',
     principal: 'Nom',
     principal_help: "Nom unique d'un utilisateur ou d'un groupe.",
@@ -304,6 +310,7 @@ export default {
   access: {
     published: 'Accès à la publication',
     help: "Accorder l'autorisation de <code>lire</code> la publication.",
+    help_global: "Accorder l'autorisation de <code>lire</code> toute publication.",
     none: 'Aucun accès.',
     add: 'Ajouter un accès',
     principal_help: "Nom unique d'utilisateur ou de groupe. Utiliser l'astérisque * pour tout utilisateur ou tout groupe.",
@@ -317,6 +324,8 @@ export default {
     general_caption: 'Identification du serveur, source de données, édition et accès au contenu, sections et fonctionnalités activées',
     content: 'Contenu',
     search: 'Recherche',
+    network: 'Réseau',
+    network_caption: 'Formulaire et permissions des réseaux',
   },
   config: {
     server_identification: 'Identification du serveur',
@@ -435,6 +444,11 @@ export default {
     data_access_requests_count_enabled: "Métriques des demandes d'accès aux données activées",
     data_access_requests_count_enabled_help: "Afficher les nombres de demandes d'accès aux données dans la section d'administration.",
     saved: 'Configuration enregistrée.',
+    form: 'Formulaire',
+    form_saved: 'Formulaire enregistré.',
+    network_form: 'Formulaire de réseau',
+    network_form_info:
+      "Le formulaire de réseau personnalisé est défini par un schéma JSON (la structure des données) et un schéma d'interface (l'affichage et la validation des champs), édités avec le constructeur de formulaire. Les champs obligatoires (nom, acronyme, description) sont ajoutés par le serveur.",
     encryption_keys: 'Clés de chiffrement',
     encryption_keys_help: "La connexion HTTPS nécessite d'avoir une clé privée et une clé publique (certificat). Une paire de clés auto-signée est disponible par défaut. Vous pouvez également fournir la vôtre.",
     add_key_pair: 'Ajouter des clés',
