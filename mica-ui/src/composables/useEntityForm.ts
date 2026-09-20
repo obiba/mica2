@@ -1,5 +1,5 @@
 import type { MaybeRefOrGetter } from 'vue';
-import { convertAsf } from '@obiba/quasar-ui-json-form';
+import { toJsonForms } from '@obiba/quasar-ui-json-form';
 import type { AsfDiagnostic } from '@obiba/quasar-ui-json-form';
 import { notifyError } from 'src/utils/notify';
 import { useFormsStore } from 'src/stores/forms';
@@ -10,8 +10,9 @@ export interface EntityFormOptions {
 }
 
 /**
- * The form configuration of a document type (`/config/{type}/form`), converted from the
- * angular-schema-form dialect to a JSON Forms `(schema, uischema)` pair for `QJsonForm`.
+ * The form configuration of a document type (`/config/{type}/form`), as a JSON Forms
+ * `(schema, uischema)` pair for `QJsonForm`: the definition is converted from the angular-schema-form
+ * dialect when it is one (an array), else it is a UI schema (edited by the form builder).
  * Fetched again when the locale changes (the `t()` tokens are resolved by the server).
  */
 export function useEntityForm(formPath: MaybeRefOrGetter<string>, options: EntityFormOptions = {}) {
@@ -28,7 +29,7 @@ export function useEntityForm(formPath: MaybeRefOrGetter<string>, options: Entit
     loading.value = true;
     try {
       const form = await formsStore.getForm(toValue(formPath), locale.value);
-      const result = convertAsf(form.schema, form.definition, {
+      const result = toJsonForms(form.schema, form.definition, {
         readonly: toValue(options.readonly) === true,
         logger: (diagnostic: AsfDiagnostic) => {
           const log = diagnostic.level === 'warn' ? console.warn : console.info;
