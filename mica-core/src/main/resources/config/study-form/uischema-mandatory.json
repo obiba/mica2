@@ -1,0 +1,57 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "Label",
+      "text": "<h3>t(study.general-info)</h3>"
+    },
+    {
+      "type": "VerticalLayout",
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/_name",
+              "hint": "t(study.name-help)"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/_acronym",
+              "hint": "t(study.acronym-help)"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/_opal",
+              "hint": "t(study.opal-help)"
+            }
+          ],
+          "options": {
+            "class": "col-6"
+          }
+        },
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/_objectives",
+              "hint": "t(study.objectives-help)",
+              "options": {
+                "marked": true,
+                "rows": 3
+              }
+            }
+          ],
+          "options": {
+            "class": "col-6"
+          }
+        }
+      ],
+      "options": {
+        "class": "row q-col-gutter-md"
+      }
+    }
+  ]
+}
