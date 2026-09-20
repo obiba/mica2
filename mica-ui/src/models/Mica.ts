@@ -995,6 +995,8 @@ export interface EntityFormDto {
   type: EntityFormDto_Type;
   schema: string;
   definition: string;
+  /** the texts of the form by locale, JSON ({ "en": { "<key>": "<text>" } }), looked up before the Mica translations */
+  translations?: string | undefined;
 }
 
 export enum EntityFormDto_Type {
