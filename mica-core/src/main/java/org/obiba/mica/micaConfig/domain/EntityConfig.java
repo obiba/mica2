@@ -20,6 +20,9 @@ public abstract class EntityConfig {
 
   private String definition;
 
+  /** the texts of the form by locale, JSON; looked up before the Mica translations */
+  private String translations;
+
   public EntityConfig() {
     setId(DEFAULT_ID);
   }
@@ -46,5 +49,17 @@ public abstract class EntityConfig {
 
   public void setDefinition(String definition) {
     this.definition = definition;
+  }
+
+  public String getTranslations() {
+    return translations;
+  }
+
+  public void setTranslations(String translations) {
+    this.translations = translations;
+  }
+
+  public boolean hasTranslations() {
+    return translations != null && !translations.isBlank();
   }
 }
