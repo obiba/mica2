@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { flattenMessages, tokenKey, toToken, unwrapKeys } from './formTranslations';
+import { tokenKey, toToken, unwrapKeys, wrapKeys } from './formTranslations';
 
 describe('tokenKey', () => {
   it('reads the key of a single token', () => {
@@ -55,13 +55,44 @@ describe('unwrapKeys', () => {
   });
 });
 
-describe('messages', () => {
-  it('flattens a nested bundle to dotted keys', () => {
-    expect(flattenMessages({ website: 'Website', network: { name: 'Name', general: { info: 'Info' } }, n: 1 })).toEqual({
-      website: 'Website',
-      'network.name': 'Name',
-      'network.general.info': 'Info',
+describe('wrapKeys', () => {
+  it('writes the known keys as tokens, but for the untranslated ones', () => {
+    const isKnown = (key: string) => ['name.title', 'name.hint', 'name'].includes(key);
+    expect(
+      wrapKeys(
+        {
+          type: 'object',
+          properties: { name: { type: 'string', title: 'name.title', description: 'Literal', default: 'name' } },
+          required: ['name'],
+        },
+        isKnown,
+      ),
+    ).toEqual({
+      type: 'object',
+      properties: { name: { type: 'string', title: 't(name.title)', description: 'Literal', default: 'name' } },
+      required: ['name'],
     });
-    expect(flattenMessages(undefined)).toEqual({});
+    expect(
+      wrapKeys(
+        {
+          type: 'Control',
+          scope: '#/properties/name',
+          hint: 'name.hint',
+          options: { labels: ['name.title', 'Other'] },
+        },
+        isKnown,
+      ),
+    ).toEqual({
+      type: 'Control',
+      scope: '#/properties/name',
+      hint: 't(name.hint)',
+      options: { labels: ['t(name.title)', 'Other'] },
+    });
+  });
+
+  it('is the reverse of unwrapKeys', () => {
+    const isKnown = (key: string) => key.startsWith('name.');
+    const form = { properties: { name: { title: 'name.title', enum: ['name.title'] } } };
+    expect(unwrapKeys(wrapKeys(form, isKnown), isKnown)).toEqual(form);
   });
 });

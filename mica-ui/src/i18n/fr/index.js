@@ -139,6 +139,11 @@ export default {
       application: {
         'not-orphan': 'Impossible de supprimer une application ayant des utilisateurs ou des groupes.',
       },
+      'data-access-form': {
+        'invalid-schema': "Le schéma du formulaire n'est pas un objet JSON valide.",
+        'invalid-definition': "La définition du formulaire n'est pas un JSON valide.",
+        'invalid-translations': "Les traductions du formulaire ne sont pas un objet JSON valide.",
+      },
     },
   },
   acronym: 'Acronyme',

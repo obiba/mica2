@@ -3,7 +3,13 @@
     <p class="text-grey-8" v-html="info" />
     <q-spinner-dots v-if="loading && !form" color="primary" size="2em" />
     <div v-else-if="form">
-      <q-json-form-builder ref="builder" v-model="form" :languages="languages" :locale="locale" />
+      <q-json-form-builder
+        ref="builder"
+        :model-value="form"
+        :languages="languages"
+        :locale="locale"
+        @update:model-value="update"
+      />
       <div class="q-mt-md q-gutter-sm">
         <q-btn color="primary" :label="t('save')" :loading="saving" :disable="!dirty" @click="onSave" />
         <q-btn flat color="primary" :label="t('cancel')" :disable="!dirty || saving" @click="load" />
@@ -33,7 +39,7 @@ const $q = useQuasar();
 const systemStore = useSystemStore();
 
 const languages = computed(() => systemStore.languages);
-const { loading, saving, form, dirty, load, save } = useEntityConfigForm(props.target);
+const { loading, saving, form, dirty, load, update, save } = useEntityConfigForm(props.target);
 
 const builder = ref<{ getModel: () => FormModel }>();
 
@@ -43,8 +49,9 @@ async function onSave() {
   if (await save(model)) notifySuccess(t('config.form_saved'));
 }
 
-onBeforeRouteLeave(() => {
-  if (!dirty.value) return true;
+/** true when the form can be left: nothing to save, or the user gives up the unsaved changes */
+function confirmLeave(): Promise<boolean> {
+  if (!dirty.value) return Promise.resolve(true);
   return new Promise<boolean>((resolve) => {
     $q.dialog({
       title: t('document.unsaved_title'),
@@ -55,7 +62,11 @@ onBeforeRouteLeave(() => {
       .onOk(() => resolve(true))
       .onCancel(() => resolve(false));
   });
-});
+}
+
+onBeforeRouteLeave(confirmLeave);
+
+defineExpose({ confirmLeave });
 
 onMounted(load);
 </script>

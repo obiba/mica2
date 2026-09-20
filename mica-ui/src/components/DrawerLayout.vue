@@ -58,6 +58,8 @@ function onMouseEnter() {
 }
 
 function onMouseLeave() {
+  // already collapsed (small screen): no width transition will end
+  if (miniState.value) return;
   miniState.value = true;
   animating.value = true;
 }

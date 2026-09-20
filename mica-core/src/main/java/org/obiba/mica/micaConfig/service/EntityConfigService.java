@@ -109,7 +109,7 @@ public abstract class EntityConfigService<T extends EntityConfig> {
     try {
       new JSONObject(json);
     } catch(JSONException e) {
-      throw new InvalidFormDefinitionException();
+      throw new InvalidFormTranslationsException(e);
     }
   }
 

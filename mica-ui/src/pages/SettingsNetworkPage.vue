@@ -12,13 +12,13 @@
       <drawer-layout class="col">
         <template #drawer>
           <q-list padding role="none">
-            <q-item clickable v-ripple :active="tab === 'form'" @click="tab = 'form'">
+            <q-item clickable v-ripple :active="tab === 'form'" @click="selectTab('form')">
               <q-item-section avatar>
                 <q-icon name="list" />
               </q-item-section>
               <q-item-section>{{ t('config.form') }}</q-item-section>
             </q-item>
-            <q-item clickable v-ripple :active="tab === 'permissions'" @click="tab = 'permissions'">
+            <q-item clickable v-ripple :active="tab === 'permissions'" @click="selectTab('permissions')">
               <q-item-section avatar>
                 <q-icon name="lock" />
               </q-item-section>
@@ -30,7 +30,7 @@
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="form" class="q-pa-none">
             <div class="text-h5 q-mb-md">{{ t('config.network_form') }}</div>
-            <entity-form-builder :target="target" :info="t('config.network_form_info')" />
+            <entity-form-builder ref="formBuilder" :target="target" :info="t('config.network_form_info')" />
           </q-tab-panel>
           <q-tab-panel name="permissions" class="q-pa-none">
             <div class="text-h5 q-mb-md">{{ t('permissions') }}</div>
@@ -61,9 +61,17 @@ const authStore = useAuthStore();
 const systemStore = useSystemStore();
 
 const tab = ref('form');
+const formBuilder = ref<InstanceType<typeof EntityFormBuilder>>();
 const target: EntityConfigTarget = { name: 'network', type: EntityFormDto_Type.Network };
 /** the permissions on any draft network and the accesses to any published network */
 const endpoints: AclEndpoints = { permissions: '/config/network/permissions', accesses: '/config/network/accesses' };
+
+/** switches the panel, unless the form has unsaved changes the user keeps */
+async function selectTab(name: string) {
+  if (name === tab.value) return;
+  if (tab.value === 'form' && formBuilder.value && !(await formBuilder.value.confirmLeave())) return;
+  tab.value = name;
+}
 
 onMounted(() => {
   systemStore.init();

@@ -1,20 +1,13 @@
 import { toJsonForms } from '@obiba/quasar-ui-json-form';
 import type { AsfDiagnostic } from '@obiba/quasar-ui-json-form';
-import {
-  fromDefinition,
-  toDefinition,
-  locations,
-  textSlots,
-  rawText,
-  isKnownKey,
-  propertySchema,
-} from '@obiba/quasar-ui-json-form/builder';
-import type { FormDefinition, FormModel, FormNode, TextSlot } from '@obiba/quasar-ui-json-form/builder';
+import { fromDefinition, toDefinition, pruneTranslations } from '@obiba/quasar-ui-json-form/builder';
+import type { FormDefinition, FormModel } from '@obiba/quasar-ui-json-form/builder';
+import type { FormTranslations as StoredTranslations } from '@obiba/quasar-ui-json-form';
 import { api } from 'src/boot/api';
 import type { EntityFormDto, EntityFormDto_Type } from 'src/models/Mica';
 import { useFormsStore } from 'src/stores/forms';
 import { notifyError } from 'src/utils/notify';
-import { flattenMessages, toToken, unwrapKeys, type Messages } from 'src/utils/formTranslations';
+import { toToken, unwrapKeys, wrapKeys, type Messages } from 'src/utils/formTranslations';
 
 export interface EntityConfigTarget {
   /** the configuration resource: `network` for `/config/network/form-custom` */
@@ -22,51 +15,38 @@ export interface EntityConfigTarget {
   type: EntityFormDto_Type;
 }
 
-/** the translations of a form, by language then by dotted key */
+/** the texts of a form, by language then by dotted key */
 export type FormTranslations = Record<string, Messages>;
 
-type Path = (string | number)[];
-
-function getPath(target: Record<string, unknown> | undefined, path: Path): unknown {
-  let value: unknown = target;
-  for (const segment of path) {
-    if (typeof value !== 'object' || value === null) return undefined;
-    value = (value as Record<string | number, unknown>)[segment];
-  }
-  return value;
-}
-
-function setPath(target: Record<string, unknown>, path: Path, value: unknown): void {
-  let node: Record<string | number, unknown> = target;
-  path.slice(0, -1).forEach((segment, index) => {
-    const child = node[segment];
-    if (typeof child !== 'object' || child === null) {
-      node[segment] = typeof path[index + 1] === 'number' ? [] : {};
-    }
-    node = node[segment] as Record<string | number, unknown>;
-  });
-  node[path[path.length - 1] as string | number] = value;
-}
-
-/** the object holding a text slot: the property schema of a control, or the UI schema element */
-function slotTarget(model: FormModel, node: FormNode, slot: TextSlot): Record<string, unknown> | undefined {
-  return slot.target === 'schema' ? propertySchema(model, node.id) : node.element;
-}
-
-/** the translations stored with a form (`{ "en": { "<key>": "<text>" } }`, nested or flat), flat by language */
-export function parseTranslations(json: string | undefined): FormTranslations {
+/** the translations stored with a form (`{ "en": { "<key>": "<text>" } }`, nested or flat), as they are */
+export function parseTranslations(json: string | undefined): StoredTranslations {
   if (!json) return {};
   try {
     const parsed: unknown = JSON.parse(json);
     if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return {};
-    const translations: FormTranslations = {};
-    Object.entries(parsed).forEach(([language, messages]) => {
-      translations[language] = flattenMessages(messages);
-    });
-    return translations;
+    return parsed as StoredTranslations;
   } catch {
     return {};
   }
+}
+
+/** true when a language of the form defines the key */
+function knownKeys(translations: StoredTranslations): (key: string) => boolean {
+  const messages = Object.values(translations);
+  return (key) => messages.some((texts) => key in texts);
+}
+
+/** the texts of a form, without the empty ones and the languages left without text */
+function nonEmptyTexts(translations: StoredTranslations): FormTranslations {
+  const result: FormTranslations = {};
+  Object.entries(translations).forEach(([language, messages]) => {
+    const texts: Messages = {};
+    Object.entries(messages).forEach(([key, text]) => {
+      if (typeof text === 'string' && text !== '') texts[key] = text;
+    });
+    if (Object.keys(texts).length > 0) result[language] = texts;
+  });
+  return result;
 }
 
 /** the result of the preparation of a form for the server */
@@ -83,27 +63,14 @@ export interface PreparedForm {
 export function prepareForm(model: FormModel): PreparedForm {
   // a detached copy: the builder keeps its model
   const copy = fromDefinition(toDefinition(model));
-  const used = new Set<string>();
-  for (const { node } of locations(copy)) {
-    for (const slot of textSlots(copy, node)) {
-      const raw = rawText(copy, node, slot);
-      if (raw === undefined || !isKnownKey(copy, raw)) continue;
-      used.add(raw);
-      const holder = slotTarget(copy, node, slot);
-      if (holder && getPath(holder, slot.path) === raw) setPath(holder, slot.path, toToken(raw));
-    }
-  }
-  const translations: FormTranslations = {};
-  Object.entries(copy.translations).forEach(([language, messages]) => {
-    const texts: Messages = {};
-    used.forEach((key) => {
-      const text = messages[key];
-      if (text !== undefined && text !== '') texts[key] = text;
-    });
-    if (Object.keys(texts).length > 0) translations[language] = texts;
-  });
+  pruneTranslations(copy);
   const definition = toDefinition(copy);
-  return { schema: definition.schema, uischema: definition.uischema, translations };
+  const isKnown = knownKeys(definition.translations);
+  return {
+    schema: wrapKeys(definition.schema, isKnown),
+    uischema: wrapKeys(definition.uischema, isKnown),
+    translations: nonEmptyTexts(definition.translations),
+  };
 }
 
 /**
@@ -118,10 +85,8 @@ export function useEntityConfigForm(target: EntityConfigTarget) {
   const saving = ref(false);
   const form = ref<FormDefinition>();
   const diagnostics = ref<AsfDiagnostic[]>([]);
-  /** what was loaded, for the dirty check */
-  const snapshot = ref('');
-
-  const dirty = computed(() => form.value !== undefined && JSON.stringify(form.value) !== snapshot.value);
+  /** true when the builder changed the form since it was loaded */
+  const dirty = ref(false);
 
   async function load(): Promise<void> {
     loading.value = true;
@@ -135,20 +100,35 @@ export function useEntityConfigForm(target: EntityConfigTarget) {
         },
       });
       diagnostics.value = converted.diagnostics;
-      const translations = parseTranslations(response.data.translations);
-      const isKnown = (key: string) => Object.values(translations).some((messages) => key in messages);
+      // the form as the builder models it: its translations flat, by dotted key
+      const definition = toDefinition(
+        fromDefinition({
+          schema: converted.schema,
+          uischema: converted.uischema,
+          translations: parseTranslations(response.data.translations),
+        }),
+      );
+      const isKnown = knownKeys(definition.translations);
       form.value = {
-        schema: unwrapKeys(converted.schema, isKnown),
-        uischema: unwrapKeys(converted.uischema, isKnown),
-        translations,
+        schema: unwrapKeys(definition.schema, isKnown),
+        uischema: unwrapKeys(definition.uischema, isKnown),
+        translations: definition.translations,
       };
-      snapshot.value = JSON.stringify(form.value);
+      // a mounted builder echoes the form it is given, once modelled: not a change
+      await nextTick();
+      dirty.value = false;
     } catch (error) {
       form.value = undefined;
       notifyError(error);
     } finally {
       loading.value = false;
     }
+  }
+
+  /** the form as changed by the builder */
+  function update(definition: FormDefinition): void {
+    form.value = definition;
+    dirty.value = true;
   }
 
   /** saves the form with its texts, and reloads it */
@@ -174,5 +154,5 @@ export function useEntityConfigForm(target: EntityConfigTarget) {
     }
   }
 
-  return { loading, saving, form, diagnostics, dirty, load, save };
+  return { loading, saving, form, diagnostics, dirty, load, update, save };
 }

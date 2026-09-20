@@ -31,7 +31,10 @@ const jsonForm = {
   type: 'Network',
   schema: JSON.stringify({
     type: 'object',
-    properties: { website: { title: 't(website)', type: 'string' }, phone: { title: 't(phone.title)', type: 'string' } },
+    properties: {
+      website: { title: 't(website)', type: 'string' },
+      phone: { title: 't(phone.title)', type: 'string' },
+    },
   }),
   definition: JSON.stringify({
     type: 'VerticalLayout',
@@ -40,12 +43,17 @@ const jsonForm = {
       { type: 'Control', scope: '#/properties/phone', hint: 't(phone.hint)' },
     ],
   }),
-  translations: JSON.stringify({ en: { phone: { title: 'Phone', hint: 'Digits only' } }, fr: { 'phone.title': 'Téléphone' } }),
+  translations: JSON.stringify({
+    en: { phone: { title: 'Phone', hint: 'Digits only' } },
+    fr: { 'phone.title': 'Téléphone' },
+  }),
 };
 
 function mockServer(dto: object) {
   mocked.get.mockImplementation((url: string) =>
-    url === '/config/network/form-custom' ? Promise.resolve({ data: dto }) : Promise.reject(new Error(`unexpected ${url}`)),
+    url === '/config/network/form-custom'
+      ? Promise.resolve({ data: dto })
+      : Promise.reject(new Error(`unexpected ${url}`)),
   );
   mocked.put.mockResolvedValue({ status: 200 });
 }
@@ -56,9 +64,9 @@ beforeEach(() => {
 });
 
 describe('parseTranslations', () => {
-  it('flattens the texts by language', () => {
+  it('reads the texts by language, and nothing else', () => {
     expect(parseTranslations(jsonForm.translations)).toEqual({
-      en: { 'phone.title': 'Phone', 'phone.hint': 'Digits only' },
+      en: { phone: { title: 'Phone', hint: 'Digits only' } },
       fr: { 'phone.title': 'Téléphone' },
     });
     expect(parseTranslations(undefined)).toEqual({});
@@ -82,7 +90,7 @@ describe('useEntityConfigForm', () => {
     expect(dirty.value).toBe(false);
   });
 
-  it('loads a form saved by the builder with its keys and texts', async () => {
+  it('loads a form saved by the builder with its keys and texts, flat', async () => {
     mockServer(jsonForm);
     const { form, load } = useEntityConfigForm(target);
     await load();
@@ -128,7 +136,10 @@ describe('useEntityConfigForm', () => {
     expect(await save(fromDefinition(edited))).toBe(true);
 
     expect(mocked.put).toHaveBeenCalledTimes(1);
-    const [path, dto] = mocked.put.mock.calls[0] as [string, { type: string; schema: string; definition: string; translations?: string }];
+    const [path, dto] = mocked.put.mock.calls[0] as [
+      string,
+      { type: string; schema: string; definition: string; translations?: string },
+    ];
     expect(path).toBe('/config/network/form-custom');
     expect(dto.type).toBe('Network');
     expect(JSON.parse(dto.schema).properties).toEqual({
@@ -150,6 +161,17 @@ describe('useEntityConfigForm', () => {
     });
     // reloaded
     expect(mocked.get).toHaveBeenCalledWith('/config/network/form-custom');
+  });
+
+  it('is dirty once the builder changes the form, until it is saved', async () => {
+    mockServer(asfForm);
+    const { form, dirty, load, update, save } = useEntityConfigForm(target);
+    await load();
+    expect(dirty.value).toBe(false);
+    update({ ...(form.value as FormDefinition), translations: { en: { 'website.hint': 'URL' } } });
+    expect(dirty.value).toBe(true);
+    expect(await save(fromDefinition(form.value as FormDefinition))).toBe(true);
+    expect(dirty.value).toBe(false);
   });
 
   it('omits the translations when the form has no text', async () => {
@@ -179,5 +201,28 @@ describe('prepareForm', () => {
     const prepared = prepareForm(model);
     expect((prepared.schema.properties as Record<string, { title: string }>).phone?.title).toBe('Phone');
     expect(prepared.translations).toEqual({});
+  });
+
+  it('keeps the texts under the prefix of a control, read by the renderers', () => {
+    const model = fromDefinition({
+      schema: { type: 'object', properties: { phone: { title: 'phone.title', type: 'string' } }, required: ['phone'] },
+      uischema: { type: 'VerticalLayout', elements: [{ type: 'Control', scope: '#/properties/phone' }] },
+      translations: { en: { 'phone.title': 'Phone', 'phone.error.required': 'A phone is required', orphan: 'Unused' } },
+    });
+    const prepared = prepareForm(model);
+    expect(prepared.schema.required).toEqual(['phone']);
+    expect(prepared.translations).toEqual({
+      en: { 'phone.title': 'Phone', 'phone.error.required': 'A phone is required' },
+    });
+  });
+
+  it('does not touch the model of the builder', () => {
+    const model = fromDefinition({
+      schema: { type: 'object', properties: { phone: { title: 'phone.title', type: 'string' } } },
+      translations: { en: { 'phone.title': 'Phone', orphan: 'Unused' } },
+    });
+    prepareForm(model);
+    expect(model.translations).toEqual({ en: { 'phone.title': 'Phone', orphan: 'Unused' } });
+    expect((model.schema.properties as Record<string, { title: string }>).phone?.title).toBe('phone.title');
   });
 });

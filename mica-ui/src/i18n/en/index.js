@@ -139,6 +139,11 @@ export default {
       application: {
         'not-orphan': 'Cannot delete an application having associated users or groups.',
       },
+      'data-access-form': {
+        'invalid-schema': 'The form schema is not a valid JSON object.',
+        'invalid-definition': 'The form definition is not valid JSON.',
+        'invalid-translations': 'The form translations are not a valid JSON object.',
+      },
     },
   },
   acronym: 'Acronym',

@@ -15,6 +15,7 @@ const UNTRANSLATED_KEYS = new Set([
   'enum',
   'const',
   'default',
+  'required',
   '$ref',
   'key',
   'scope',
@@ -26,7 +27,6 @@ const UNTRANSLATED_KEYS = new Set([
 ]);
 
 export type Messages = Record<string, string>;
-export type NestedMessages = { [key: string]: string | NestedMessages };
 
 function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -43,38 +43,38 @@ export function toToken(key: string): string {
   return `t(${key})`;
 }
 
-/**
- * Replaces, in a schema or UI schema, every string that is exactly a `t(key)` token of a known key
- * by that key. Any other text is left as it is: a token of an unknown key (one of the Mica bundle,
- * from a legacy form) or a text mixing a token with other content are still resolved by the server
- * at render time.
- */
-export function unwrapKeys<T>(value: T, isKnown: (key: string) => boolean, key?: string): T {
+/** the strings of a schema or UI schema, replaced but for the ones under the untranslated keys */
+function mapStrings<T>(value: T, replace: (text: string) => string, key?: string): T {
   if (typeof value === 'string') {
-    if (key !== undefined && UNTRANSLATED_KEYS.has(key)) return value;
-    const token = tokenKey(value);
-    return (token !== undefined && isKnown(token) ? token : value) as T;
+    return (key !== undefined && UNTRANSLATED_KEYS.has(key) ? value : replace(value)) as T;
   }
   if (Array.isArray(value)) {
-    return value.map((item) => unwrapKeys(item, isKnown, key)) as T;
+    return value.map((item) => mapStrings(item, replace, key)) as T;
   }
   if (isObject(value)) {
     const result: Record<string, unknown> = {};
     Object.keys(value).forEach((name) => {
-      result[name] = unwrapKeys(value[name], isKnown, name);
+      result[name] = mapStrings(value[name], replace, name);
     });
     return result as T;
   }
   return value;
 }
 
-/** the strings of a nested messages bundle, by dotted key */
-export function flattenMessages(messages: unknown, prefix = '', result: Messages = {}): Messages {
-  if (!isObject(messages)) return result;
-  Object.entries(messages).forEach(([name, value]) => {
-    const key = prefix ? `${prefix}.${name}` : name;
-    if (typeof value === 'string') result[key] = value;
-    else if (isObject(value)) flattenMessages(value, key, result);
+/**
+ * Replaces, in a schema or UI schema, every string that is exactly a `t(key)` token of a known key
+ * by that key. Any other text is left as it is: a token of an unknown key (one of the Mica bundle,
+ * from a legacy form) or a text mixing a token with other content are still resolved by the server
+ * at render time.
+ */
+export function unwrapKeys<T>(value: T, isKnown: (key: string) => boolean): T {
+  return mapStrings(value, (text) => {
+    const token = tokenKey(text);
+    return token !== undefined && isKnown(token) ? token : text;
   });
-  return result;
+}
+
+/** Replaces, in a schema or UI schema, every string that is exactly a known key by its `t(key)` token. */
+export function wrapKeys<T>(value: T, isKnown: (key: string) => boolean): T {
+  return mapStrings(value, (text) => (isKnown(text) ? toToken(text) : text));
 }
