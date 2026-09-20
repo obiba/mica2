@@ -1,15 +1,34 @@
 <template>
   <div>
-    <q-toolbar class="bg-grey-3">
-      <q-breadcrumbs>
-        <q-breadcrumbs-el icon="home" to="/" />
-        <q-breadcrumbs-el :label="t(target.labels.title)" :to="target.listRoute" />
-        <q-breadcrumbs-el :label="id" />
-      </q-breadcrumbs>
-    </q-toolbar>
-    <q-page class="q-pa-md">
-      <q-spinner-dots v-if="loading" color="primary" size="2em" />
-      <div v-else-if="document">
+    <q-page class="q-pa-none column">
+      <q-toolbar class="bg-grey-3">
+        <q-breadcrumbs>
+          <q-breadcrumbs-el icon="home" to="/" />
+          <q-breadcrumbs-el :label="t(target.labels.title)" :to="target.listRoute" />
+          <q-breadcrumbs-el :label="id" />
+        </q-breadcrumbs>
+      </q-toolbar>
+
+      <q-spinner-dots v-if="loading" color="primary" size="2em" class="q-ma-md" />
+      <drawer-layout v-else-if="document" class="col">
+        <template #drawer>
+          <q-list padding role="none">
+            <q-item
+              v-for="item in menu"
+              :key="item.name"
+              clickable
+              v-ripple
+              :active="tab === item.name"
+              :to="tabRoute(item.name)"
+            >
+              <q-item-section avatar>
+                <q-icon :name="item.icon" />
+              </q-item-section>
+              <q-item-section>{{ t(item.label) }}</q-item-section>
+            </q-item>
+          </q-list>
+        </template>
+
         <document-header :id="id" :timestamps="document.timestamps" :state="state" :disable="busy" @action="onAction">
           <template v-if="request" #info>
             <div class="text-caption text-grey-7 q-mt-xs">
@@ -27,39 +46,25 @@
             />
           </template>
         </document-header>
-        <q-tabs inline-label dense class="text-grey" active-color="primary" indicator-color="primary" align="justify">
-          <q-route-tab name="view" icon="visibility" :label="t('view')" :to="tabRoute('view')" exact />
-          <q-route-tab name="history" icon="history" :label="t('history.title')" :to="tabRoute('history')" />
-          <q-route-tab name="files" icon="folder" :label="t('files.title')" :to="tabRoute('files')" />
-          <q-route-tab name="comments" icon="comment" :label="t('comments.title')" :to="tabRoute('comments')" />
-          <q-route-tab
-            v-if="canManagePermissions"
-            name="permissions"
-            icon="lock"
-            :label="t('permissions')"
-            :to="tabRoute('permissions')"
-          />
-        </q-tabs>
-        <q-separator />
-        <q-tab-panels v-model="tab">
-          <q-tab-panel name="view">
+        <q-tab-panels v-model="tab" animated>
+          <q-tab-panel name="view" class="q-pa-none">
             <document-view-panel :target="target" :document="document" />
           </q-tab-panel>
-          <q-tab-panel name="history">
+          <q-tab-panel name="history" class="q-pa-none">
             <document-history-panel :target="target" :state="state" :can-restore="canEdit" @restored="refresh" />
           </q-tab-panel>
-          <q-tab-panel name="files">
+          <q-tab-panel name="files" class="q-pa-none">
             <file-browser :root="target.filesPath" :path="filePath" @update:path="onFilePath" />
           </q-tab-panel>
-          <q-tab-panel name="comments">
+          <q-tab-panel name="comments" class="q-pa-none">
             <comments-panel :path="target.path" />
           </q-tab-panel>
-          <q-tab-panel name="permissions">
+          <q-tab-panel name="permissions" class="q-pa-none">
             <document-acl-panel :target="target" :can-edit="canManagePermissions" />
           </q-tab-panel>
         </q-tab-panels>
-      </div>
-      <div v-else>
+      </drawer-layout>
+      <div v-else class="q-pa-md">
         {{ t('document.not_found') }}
       </div>
     </q-page>
@@ -68,6 +73,7 @@
 
 <script setup lang="ts">
 import type { EntityStateDto } from 'src/models/Mica';
+import DrawerLayout from 'src/components/DrawerLayout.vue';
 import DocumentHeader from 'src/components/documents/DocumentHeader.vue';
 import DocumentViewPanel from 'src/components/documents/DocumentViewPanel.vue';
 import DocumentHistoryPanel from 'src/components/history/DocumentHistoryPanel.vue';
@@ -98,6 +104,14 @@ const { target } = useDocumentTarget(type, id);
 const document = ref<DocumentDto>();
 const state = ref<EntityStateDto>();
 const { canEdit, canManagePermissions } = useDocumentState(state);
+/** the drawer entries, one per tab */
+const menu = computed(() => [
+  { name: 'view', icon: 'visibility', label: 'view' },
+  { name: 'history', icon: 'history', label: 'history.title' },
+  { name: 'files', icon: 'folder', label: 'files.title' },
+  { name: 'comments', icon: 'comment', label: 'comments.title' },
+  ...(canManagePermissions.value ? [{ name: 'permissions', icon: 'lock', label: 'permissions' }] : []),
+]);
 const { busy, apply } = useDocumentActions(target);
 /** the data access request a research project comes from */
 const request = computed(() => (document.value && 'request' in document.value ? document.value.request : undefined));

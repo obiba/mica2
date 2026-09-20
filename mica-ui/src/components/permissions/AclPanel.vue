@@ -4,7 +4,7 @@
       <acl-table
         :acls="permissions"
         :title="t('permission.draft')"
-        :help="t('permission.help')"
+        :help="permissionHelp ?? t('permission.help')"
         :add-label="t('permission.add')"
         :empty-label="t('permission.none')"
         with-role
@@ -19,7 +19,7 @@
       <acl-table
         :acls="accesses"
         :title="t('access.published')"
-        :help="t('access.help')"
+        :help="accessHelp ?? t('access.help')"
         :add-label="t('access.add')"
         :empty-label="t('access.none')"
         :loading="loadingAccesses"
@@ -71,6 +71,10 @@ interface Props {
   withFile?: boolean;
   /** the two lists one below the other instead of side by side */
   stacked?: boolean;
+  /** the help of the permissions list, when not the one of a document; may contain HTML from the app bundles */
+  permissionHelp?: string | undefined;
+  /** the help of the accesses list, when not the one of a document; may contain HTML from the app bundles */
+  accessHelp?: string | undefined;
 }
 
 const props = defineProps<Props>();

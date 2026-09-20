@@ -17,6 +17,7 @@ import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import net.minidev.json.JSONArray;
+import org.obiba.mica.micaConfig.service.helper.FormTranslations;
 import org.obiba.core.translator.JsonTranslator;
 import org.obiba.core.translator.PrefixedValueTranslator;
 import org.obiba.core.translator.TranslationUtils;
@@ -140,21 +141,21 @@ public class EntityConfigKeyTranslationService {
 
           if (optionalIndividualStudySchemaForm.isPresent()) {
             StudyConfig individualStudySchemaForm = optionalIndividualStudySchemaForm.get();
-            translateSchemaForm(translator, individualStudySchemaForm);
+            translateSchemaForm(translator, locale, individualStudySchemaForm);
 
             translationMap.putAll(getTranslationMap(individualStudySchemaForm, ""));
           }
 
           if (optionalPopulationSchemaForm.isPresent()) {
             PopulationConfig populationSchemaForm = optionalPopulationSchemaForm.get();
-            translateSchemaForm(translator, populationSchemaForm);
+            translateSchemaForm(translator, locale, populationSchemaForm);
 
             translationMap.putAll(getTranslationMap(populationSchemaForm, "^populations\\[\\d+\\]\\."));
           }
 
           if (optionalDataCollectionEventSchemaForm.isPresent()) {
             DataCollectionEventConfig dataCollectionEventSchemaForm = optionalDataCollectionEventSchemaForm.get();
-            translateSchemaForm(translator, dataCollectionEventSchemaForm);
+            translateSchemaForm(translator, locale, dataCollectionEventSchemaForm);
 
             translationMap.putAll(getTranslationMap(dataCollectionEventSchemaForm, "^populations\\[\\d+\\]\\.dataCollectionEvents\\[\\d+\\]\\."));
           }
@@ -167,7 +168,7 @@ public class EntityConfigKeyTranslationService {
 
           if (optionalHarmonizationStudySchemaForm.isPresent()) {
             HarmonizationStudyConfig harmonizationStudySchemaForm = optionalHarmonizationStudySchemaForm.get();
-            translateSchemaForm(translator, harmonizationStudySchemaForm);
+            translateSchemaForm(translator, locale, harmonizationStudySchemaForm);
 
             translationMap.putAll(getTranslationMap(harmonizationStudySchemaForm, ""));
           }
@@ -179,7 +180,7 @@ public class EntityConfigKeyTranslationService {
 
           if (optionalNetworkSchemaForm.isPresent()) {
             NetworkConfig networkSchemaForm = optionalNetworkSchemaForm.get();
-            translateSchemaForm(translator, networkSchemaForm);
+            translateSchemaForm(translator, locale, networkSchemaForm);
 
             translationMap.putAll(getTranslationMap(networkSchemaForm, ""));
           }
@@ -191,7 +192,7 @@ public class EntityConfigKeyTranslationService {
 
           if (optionalStudyDatasetSchemaForm.isPresent()) {
             StudyDatasetConfig studyDatasetSchemaForm = optionalStudyDatasetSchemaForm.get();
-            translateSchemaForm(translator, studyDatasetSchemaForm);
+            translateSchemaForm(translator, locale, studyDatasetSchemaForm);
 
             translationMap.putAll(getTranslationMap(studyDatasetSchemaForm, ""));
           }
@@ -203,7 +204,7 @@ public class EntityConfigKeyTranslationService {
 
           if (optionalHarmonizationDatasetSchemaForm.isPresent()) {
             HarmonizationDatasetConfig harmonizationDatasetSchemaForm = optionalHarmonizationDatasetSchemaForm.get();
-            translateSchemaForm(translator, harmonizationDatasetSchemaForm);
+            translateSchemaForm(translator, locale, harmonizationDatasetSchemaForm);
 
             translationMap.putAll(getTranslationMap(harmonizationDatasetSchemaForm, ""));
           }
@@ -215,7 +216,7 @@ public class EntityConfigKeyTranslationService {
 
           if (optionalProjectSchemaForm.isPresent()) {
             ProjectConfig projectSchemaForm = optionalProjectSchemaForm.get();
-            translateSchemaForm(translator, projectSchemaForm);
+            translateSchemaForm(translator, locale, projectSchemaForm);
 
             translationMap.putAll(getTranslationMap(projectSchemaForm, ""));
           }
@@ -224,25 +225,25 @@ public class EntityConfigKeyTranslationService {
 
         case "data-access-form":
           DataAccessForm dataAccessForm = dataAccessFormService.findLatest();
-          translateSchemaForm(translator, dataAccessForm);
+          translateSchemaForm(translator, locale, dataAccessForm);
           translationMap.putAll(getTranslationMap(dataAccessForm, ""));
           break;
 
         case "data-access-preliminary":
           DataAccessPreliminaryForm dataAccessPreliminaryForm = dataAccessPreliminaryFormService.findLatest();
-          translateSchemaForm(translator, dataAccessPreliminaryForm);
+          translateSchemaForm(translator, locale, dataAccessPreliminaryForm);
           translationMap.putAll(getTranslationMap(dataAccessPreliminaryForm, ""));
           break;
 
         case "data-access-feasibility":
           DataAccessFeasibilityForm dataAccessFeasibilityForm = dataAccessFeasibilityFormService.findLatest();
-          translateSchemaForm(translator, dataAccessFeasibilityForm);
+          translateSchemaForm(translator, locale, dataAccessFeasibilityForm);
           translationMap.putAll(getTranslationMap(dataAccessFeasibilityForm, ""));
           break;
 
         case "data-access-amendment":
           DataAccessAmendmentForm dataAccessAmendmentForm = dataAccessAmendmentFormService.findLatest();
-          translateSchemaForm(translator, dataAccessAmendmentForm);
+          translateSchemaForm(translator, locale, dataAccessAmendmentForm);
           translationMap.putAll(getTranslationMap(dataAccessAmendmentForm, ""));
           break;
 
@@ -254,9 +255,10 @@ public class EntityConfigKeyTranslationService {
     return translationMap;
   }
 
-  private void translateSchemaForm(Translator translator, EntityConfig config) {
+  private void translateSchemaForm(Translator translator, String locale, EntityConfig config) {
     TranslationUtils translationUtils = new TranslationUtils();
-    PrefixedValueTranslator prefixedValueTranslator = new PrefixedValueTranslator(translator);
+    // the texts stored with the form come first
+    PrefixedValueTranslator prefixedValueTranslator = new PrefixedValueTranslator(FormTranslations.translator(config, locale, translator));
     config.setSchema(translationUtils.translate(config.getSchema(), prefixedValueTranslator));
     config.setDefinition(translationUtils.translate(config.getDefinition(), prefixedValueTranslator));
   }
