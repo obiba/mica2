@@ -5,7 +5,7 @@
         <q-breadcrumbs-el icon="home" />
       </q-breadcrumbs>
     </q-toolbar>
-    <q-page class="q-pa-md">
+    <q-page padding>
       <div class="row q-col-gutter-lg q-mb-lg">
         <div class="col-8 col-sm-8 col-xs-12">
           <q-item-label header class="text-uppercase">{{ t('content_management') }}</q-item-label>

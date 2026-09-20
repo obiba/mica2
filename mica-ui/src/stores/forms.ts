@@ -2,10 +2,10 @@ import { defineStore } from 'pinia';
 import { api } from 'src/boot/api';
 import type { EntityFormDto } from 'src/models/Mica';
 
-/** an angular-schema-form pair as stored by Mica, parsed */
+/** a form pair as stored by Mica, parsed: the definition is an angular-schema-form array or a JSON Forms UI schema */
 export interface AsfForm {
   schema: Record<string, unknown>;
-  definition: unknown[];
+  definition: unknown;
 }
 
 /**

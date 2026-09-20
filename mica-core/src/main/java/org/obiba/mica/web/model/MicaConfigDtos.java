@@ -673,6 +673,7 @@ class MicaConfigDtos {
 
     config.setSchema(dto.getSchema());
     config.setDefinition(dto.getDefinition());
+    if (dto.hasTranslations()) config.setTranslations(dto.getTranslations());
     return (T)config;
   }
 
@@ -712,6 +713,7 @@ class MicaConfigDtos {
       .setType(type)
       .setSchema(config.getSchema())
       .setDefinition(config.getDefinition());
+    if (config.hasTranslations()) builder.setTranslations(config.getTranslations());
 
     return builder.build();
   }
