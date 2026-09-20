@@ -133,4 +133,25 @@ public class EntityConfigServiceTest {
     DocumentContext parse = JsonPath.parse(merged);
     assertThat(parse.read("elements[0].type"), is("VerticalLayout"));
   }
+
+  @Test
+  public void can_merge_schema_without_required_and_properties() throws Exception {
+
+    // Given: a custom schema as the form builder writes it, without an empty required array
+    String customSchema = "{ \"type\": \"object\" }";
+
+    String mandatorySchema = "{" +
+      "    \"type\": \"object\"," +
+      "    \"properties\": { \"neededInfo\": { \"type\": \"string\" } }," +
+      "    \"required\": [ \"neededInfo\" ]" +
+      "}";
+
+    // Execute
+    String mergeSchema = new IndividualStudyConfigService().mergeSchema(customSchema, mandatorySchema);
+
+    // Verify
+    DocumentContext parse = JsonPath.parse(mergeSchema);
+    assertThat(parse.read("properties.neededInfo.type"), is("string"));
+    assertThat(parse.read("required"), containsInAnyOrder("neededInfo"));
+  }
 }

@@ -209,18 +209,33 @@ public abstract class EntityConfigService<T extends EntityConfig> {
   }
 
   private void mergeRequiredFields(JsonNode baseNode, JsonNode overrideNode) {
-    ArrayList<JsonNode> baseRequiredItems = Lists.newArrayList(baseNode.get("required"));
-    for (JsonNode overrideRequiredItem : overrideNode.get("required")) {
+    JsonNode overrideRequired = overrideNode.get("required");
+    if (overrideRequired == null || !overrideRequired.isArray()) return;
+    // a schema without required fields may omit the array (the form builder does)
+    ArrayNode baseRequired = arrayIn(baseNode, "required");
+    ArrayList<JsonNode> baseRequiredItems = Lists.newArrayList(baseRequired);
+    for (JsonNode overrideRequiredItem : overrideRequired) {
       if (!baseRequiredItems.contains(overrideRequiredItem)) {
-        ((ArrayNode) baseNode.get("required")).add(overrideRequiredItem);
+        baseRequired.add(overrideRequiredItem);
       }
     }
+  }
+
+  private ArrayNode arrayIn(JsonNode node, String name) {
+    JsonNode array = node.get(name);
+    return array != null && array.isArray() ? (ArrayNode) array : ((ObjectNode) node).putArray(name);
+  }
+
+  private ObjectNode objectIn(JsonNode node, String name) {
+    JsonNode object = node.get(name);
+    return object != null && object.isObject() ? (ObjectNode) object : ((ObjectNode) node).putObject(name);
   }
 
   private void mergeProperties(JsonNode baseNode, JsonNode overrideNode) {
 
     JsonNode overrideProperties = overrideNode.get("properties");
-    JsonNode baseProperties = baseNode.get("properties");
+    if (overrideProperties == null || !overrideProperties.isObject()) return;
+    JsonNode baseProperties = objectIn(baseNode, "properties");
     Iterator<String> overridePropertiesNames = overrideProperties.fieldNames();
 
     while (overridePropertiesNames.hasNext()) {
