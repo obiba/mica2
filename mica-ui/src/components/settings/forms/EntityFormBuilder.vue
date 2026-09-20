@@ -33,7 +33,7 @@ const $q = useQuasar();
 const systemStore = useSystemStore();
 
 const languages = computed(() => systemStore.languages);
-const { loading, saving, form, dirty, load, save } = useEntityConfigForm(props.target, () => languages.value);
+const { loading, saving, form, dirty, load, save } = useEntityConfigForm(props.target);
 
 const builder = ref<{ getModel: () => FormModel }>();
 

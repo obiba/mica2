@@ -1,4 +1,3 @@
-import type { MaybeRefOrGetter } from 'vue';
 import { toJsonForms } from '@obiba/quasar-ui-json-form';
 import type { AsfDiagnostic } from '@obiba/quasar-ui-json-form';
 import {
@@ -15,14 +14,7 @@ import { api } from 'src/boot/api';
 import type { EntityFormDto, EntityFormDto_Type } from 'src/models/Mica';
 import { useFormsStore } from 'src/stores/forms';
 import { notifyError } from 'src/utils/notify';
-import {
-  flattenMessages,
-  nestMessages,
-  toToken,
-  unwrapKeys,
-  type Messages,
-  type NestedMessages,
-} from 'src/utils/formTranslations';
+import { flattenMessages, toToken, unwrapKeys, type Messages } from 'src/utils/formTranslations';
 
 export interface EntityConfigTarget {
   /** the configuration resource: `network` for `/config/network/form-custom` */
@@ -31,12 +23,7 @@ export interface EntityConfigTarget {
 }
 
 /** the translations of a form, by language then by dotted key */
-type FormTranslations = Record<string, Messages>;
-
-/** the prefix of the keys created by the builder, a namespace of its own in the Mica bundle */
-export function formKeyPrefix(target: EntityConfigTarget): string {
-  return `${target.name}-form.`;
-}
+export type FormTranslations = Record<string, Messages>;
 
 type Path = (string | number)[];
 
@@ -66,61 +53,54 @@ function slotTarget(model: FormModel, node: FormNode, slot: TextSlot): Record<st
   return slot.target === 'schema' ? propertySchema(model, node.id) : node.element;
 }
 
-/** every string held by a text slot of the form: the translation keys and the literals */
-function slotTexts(model: FormModel): string[] {
-  const texts = new Set<string>();
-  for (const { node } of locations(model)) {
-    for (const slot of textSlots(model, node)) {
-      const raw = rawText(model, node, slot);
-      if (raw !== undefined && raw !== '') texts.add(raw);
-    }
+/** the translations stored with a form (`{ "en": { "<key>": "<text>" } }`, nested or flat), flat by language */
+export function parseTranslations(json: string | undefined): FormTranslations {
+  if (!json) return {};
+  try {
+    const parsed: unknown = JSON.parse(json);
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return {};
+    const translations: FormTranslations = {};
+    Object.entries(parsed).forEach(([language, messages]) => {
+      translations[language] = flattenMessages(messages);
+    });
+    return translations;
+  } catch {
+    return {};
   }
-  return [...texts];
 }
 
 /** the result of the preparation of a form for the server */
 export interface PreparedForm {
   schema: Record<string, unknown>;
   uischema: Record<string, unknown>;
-  /** the translations to add to the Mica bundle, by language then by (prefixed) dotted key */
+  /** the texts of the keys the form uses, by language, without the empty ones */
   translations: FormTranslations;
 }
 
 /**
- * Writes the keys of the form as `t(key)` tokens for the server: a key loaded from the Mica
- * bundle is kept as it is, a key created by the builder gets the form prefix. Returns the
- * translations of the keys the form uses that differ from the loaded ones.
+ * Writes the keys of the form as `t(key)` tokens for the server, with the texts of the keys it uses.
  */
-export function prepareForm(
-  model: FormModel,
-  target: EntityConfigTarget,
-  loadedKeys: Set<string>,
-  loaded: FormTranslations,
-): PreparedForm {
+export function prepareForm(model: FormModel): PreparedForm {
   // a detached copy: the builder keeps its model
   const copy = fromDefinition(toDefinition(model));
-  const prefix = formKeyPrefix(target);
-  /** the key stored, by the key held in the builder */
-  const renamed = new Map<string, string>();
+  const used = new Set<string>();
   for (const { node } of locations(copy)) {
     for (const slot of textSlots(copy, node)) {
       const raw = rawText(copy, node, slot);
       if (raw === undefined || !isKnownKey(copy, raw)) continue;
-      const key = loadedKeys.has(raw) || raw.startsWith(prefix) ? raw : `${prefix}${raw}`;
-      renamed.set(raw, key);
+      used.add(raw);
       const holder = slotTarget(copy, node, slot);
-      if (holder && getPath(holder, slot.path) === raw) setPath(holder, slot.path, toToken(key));
+      if (holder && getPath(holder, slot.path) === raw) setPath(holder, slot.path, toToken(raw));
     }
   }
   const translations: FormTranslations = {};
   Object.entries(copy.translations).forEach(([language, messages]) => {
-    const changed: Messages = {};
-    renamed.forEach((key, raw) => {
-      const text = messages[raw];
-      if (text === undefined || text === '' || loaded[language]?.[raw] === text) return;
-      changed[key] = text;
+    const texts: Messages = {};
+    used.forEach((key) => {
+      const text = messages[key];
+      if (text !== undefined && text !== '') texts[key] = text;
     });
-    if (Object.keys(changed).length > 0) translations[language] = changed;
+    if (Object.keys(texts).length > 0) translations[language] = texts;
   });
   const definition = toDefinition(copy);
   return { schema: definition.schema, uischema: definition.uischema, translations };
@@ -128,10 +108,10 @@ export function prepareForm(
 
 /**
  * The custom part of the form configuration of a document type (`/config/{type}/form-custom`),
- * as a form definition for `QJsonFormBuilder`: the `t(key)` tokens become translation keys, with
- * the texts of the Mica bundle of every language of the configuration.
+ * as a form definition for `QJsonFormBuilder`: the `t(key)` tokens of the keys translated by the
+ * form become translation keys, the texts being stored with the form.
  */
-export function useEntityConfigForm(target: EntityConfigTarget, languages: MaybeRefOrGetter<string[]>) {
+export function useEntityConfigForm(target: EntityConfigTarget) {
   const formsStore = useFormsStore();
 
   const loading = ref(false);
@@ -140,16 +120,8 @@ export function useEntityConfigForm(target: EntityConfigTarget, languages: Maybe
   const diagnostics = ref<AsfDiagnostic[]>([]);
   /** what was loaded, for the dirty check */
   const snapshot = ref('');
-  /** the keys found in the Mica bundle, kept as they are on save */
-  let loadedKeys = new Set<string>();
-  let loadedTranslations: FormTranslations = {};
 
   const dirty = computed(() => form.value !== undefined && JSON.stringify(form.value) !== snapshot.value);
-
-  async function loadBundle(language: string): Promise<Messages> {
-    const response = await api.get<NestedMessages>(`/config/i18n/${language}.json`);
-    return flattenMessages(response.data);
-  }
 
   async function load(): Promise<void> {
     loading.value = true;
@@ -163,30 +135,13 @@ export function useEntityConfigForm(target: EntityConfigTarget, languages: Maybe
         },
       });
       diagnostics.value = converted.diagnostics;
-      const definition: FormDefinition = {
-        schema: unwrapKeys(converted.schema),
-        uischema: unwrapKeys(converted.uischema),
+      const translations = parseTranslations(response.data.translations);
+      const isKnown = (key: string) => Object.values(translations).some((messages) => key in messages);
+      form.value = {
+        schema: unwrapKeys(converted.schema, isKnown),
+        uischema: unwrapKeys(converted.uischema, isKnown),
+        translations,
       };
-      const texts = slotTexts(fromDefinition(definition));
-      const codes = toValue(languages);
-      const bundles = await Promise.all(codes.map(loadBundle));
-      const translations: FormTranslations = {};
-      const keys = new Set<string>();
-      codes.forEach((language, index) => {
-        const bundle = bundles[index] ?? {};
-        const messages: Messages = {};
-        texts.forEach((text) => {
-          const value = bundle[text];
-          if (value !== undefined) {
-            messages[text] = value;
-            keys.add(text);
-          }
-        });
-        translations[language] = messages;
-      });
-      loadedKeys = keys;
-      loadedTranslations = JSON.parse(JSON.stringify(translations));
-      form.value = { ...definition, translations };
       snapshot.value = JSON.stringify(form.value);
     } catch (error) {
       form.value = undefined;
@@ -196,23 +151,17 @@ export function useEntityConfigForm(target: EntityConfigTarget, languages: Maybe
     }
   }
 
-  /** saves the translations then the form, and reloads it */
+  /** saves the form with its texts, and reloads it */
   async function save(model: FormModel): Promise<boolean> {
     saving.value = true;
     try {
-      const prepared = prepareForm(model, target, loadedKeys, loadedTranslations);
-      if (Object.keys(prepared.translations).length > 0) {
-        const nested: Record<string, NestedMessages> = {};
-        Object.entries(prepared.translations).forEach(([language, messages]) => {
-          nested[language] = nestMessages(messages);
-        });
-        await api.put('/config/i18n/custom/import', nested, { params: { merge: true } });
-      }
+      const prepared = prepareForm(model);
       const dto: EntityFormDto = {
         type: target.type,
         schema: JSON.stringify(prepared.schema),
         definition: JSON.stringify(prepared.uischema),
       };
+      if (Object.keys(prepared.translations).length > 0) dto.translations = JSON.stringify(prepared.translations);
       await api.put(`/config/${target.name}/form-custom`, dto);
       formsStore.clear();
       await load();

@@ -64,6 +64,7 @@ public abstract class EntityConfigService<T extends EntityConfig> {
   private void validateForm(T configuration) {
     validateSchema(configuration.getSchema());
     validateDefinition(configuration.getDefinition());
+    validateTranslations(configuration.getTranslations());
   }
 
   private T findOrCreateDefaultForm() {
@@ -95,6 +96,18 @@ public abstract class EntityConfigService<T extends EntityConfig> {
         new JSONObject(json);
       else
         new JSONArray(json);
+    } catch(JSONException e) {
+      throw new InvalidFormDefinitionException();
+    }
+  }
+
+  /**
+   * The translations, when there are some, are a JSON object (the texts by locale).
+   */
+  private void validateTranslations(String json) {
+    if (json == null || json.isBlank()) return;
+    try {
+      new JSONObject(json);
     } catch(JSONException e) {
       throw new InvalidFormDefinitionException();
     }

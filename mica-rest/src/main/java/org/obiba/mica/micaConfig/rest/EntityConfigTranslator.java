@@ -17,6 +17,7 @@ import org.obiba.core.translator.Translator;
 import org.obiba.mica.micaConfig.domain.EntityConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.obiba.mica.micaConfig.service.helper.FormTranslations;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -39,7 +40,8 @@ public class EntityConfigTranslator {
       return;
 
     Translator translator = JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(locale, false));
-    translator = new PrefixedValueTranslator(translator);
+    // the texts stored with the form come first
+    translator = new PrefixedValueTranslator(FormTranslations.translator(entityConfig, locale, translator));
 
     TranslationUtils translationUtils = new TranslationUtils();
     entityConfig.setSchema(translationUtils.translate(entityConfig.getSchema(), translator));

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { flattenMessages, nestMessages, tokenKey, toToken, unwrapKeys } from './formTranslations';
+import { flattenMessages, tokenKey, toToken, unwrapKeys } from './formTranslations';
 
 describe('tokenKey', () => {
   it('reads the key of a single token', () => {
@@ -16,7 +16,9 @@ describe('tokenKey', () => {
 });
 
 describe('unwrapKeys', () => {
-  it('replaces the single tokens of a schema and a UI schema by their keys', () => {
+  it('replaces the single tokens of the known keys of a schema and a UI schema by their keys', () => {
+    const known = new Set(['website', 'website.help', 'kind.a', 'website.hint', 'group', 'uri', 'a', 'x']);
+    const isKnown = (key: string) => known.has(key);
     const schema = {
       type: 'object',
       properties: {
@@ -30,21 +32,24 @@ describe('unwrapKeys', () => {
         { type: 'Label', text: '<h3>t(network.general-info)</h3>' },
         { type: 'Control', scope: '#/properties/website', options: { hint: 't(website.hint)' } },
         { type: 'Group', label: 't(group)', rule: { effect: 'SHOW', condition: { expr: 't(x)' } } },
+        { type: 'Label', text: 't(legacy.key)' },
       ],
     };
-    expect(unwrapKeys(schema)).toEqual({
+    expect(unwrapKeys(schema, isKnown)).toEqual({
       type: 'object',
       properties: {
         website: { title: 'website', description: 'website.help', type: 'string', format: 't(uri)' },
         kind: { type: 'string', oneOf: [{ const: 't(a)', title: 'kind.a' }] },
       },
     });
-    expect(unwrapKeys(uischema)).toEqual({
+    expect(unwrapKeys(uischema, isKnown)).toEqual({
       type: 'VerticalLayout',
       elements: [
         { type: 'Label', text: '<h3>t(network.general-info)</h3>' },
         { type: 'Control', scope: '#/properties/website', options: { hint: 'website.hint' } },
         { type: 'Group', label: 'group', rule: { effect: 'SHOW', condition: { expr: 't(x)' } } },
+        // a token of an unknown key (Mica bundle) is a literal
+        { type: 'Label', text: 't(legacy.key)' },
       ],
     });
   });
@@ -58,14 +63,5 @@ describe('messages', () => {
       'network.general.info': 'Info',
     });
     expect(flattenMessages(undefined)).toEqual({});
-  });
-
-  it('nests dotted keys, an object winning over a string', () => {
-    expect(nestMessages({ website: 'Website', 'network-form.phone.title': 'Phone', 'network-form.phone.hint': 'Hint' })).toEqual({
-      website: 'Website',
-      'network-form': { phone: { title: 'Phone', hint: 'Hint' } },
-    });
-    expect(nestMessages({ a: 'x', 'a.b': 'y' })).toEqual({ a: { b: 'y' } });
-    expect(nestMessages({ 'a.b': 'y', a: 'x' })).toEqual({ a: { b: 'y' } });
   });
 });

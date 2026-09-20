@@ -1,6 +1,7 @@
 /**
  * The bridge between the `t(key)` tokens of the Mica form configurations and the translation keys
- * of the form builder.
+ * of the form builder: the texts of a form are stored with it, by language, and the server resolves
+ * its tokens from them before the Mica translations.
  */
 
 /** a string made of a single `t(key)` token */
@@ -43,22 +44,24 @@ export function toToken(key: string): string {
 }
 
 /**
- * Replaces, in a schema or UI schema, every string that is exactly a `t(key)` token by its key
- * (a text mixing a token with other content is left as it is: the server still resolves it at
- * render time).
+ * Replaces, in a schema or UI schema, every string that is exactly a `t(key)` token of a known key
+ * by that key. Any other text is left as it is: a token of an unknown key (one of the Mica bundle,
+ * from a legacy form) or a text mixing a token with other content are still resolved by the server
+ * at render time.
  */
-export function unwrapKeys<T>(value: T, key?: string): T {
+export function unwrapKeys<T>(value: T, isKnown: (key: string) => boolean, key?: string): T {
   if (typeof value === 'string') {
     if (key !== undefined && UNTRANSLATED_KEYS.has(key)) return value;
-    return (tokenKey(value) ?? value) as T;
+    const token = tokenKey(value);
+    return (token !== undefined && isKnown(token) ? token : value) as T;
   }
   if (Array.isArray(value)) {
-    return value.map((item) => unwrapKeys(item, key)) as T;
+    return value.map((item) => unwrapKeys(item, isKnown, key)) as T;
   }
   if (isObject(value)) {
     const result: Record<string, unknown> = {};
     Object.keys(value).forEach((name) => {
-      result[name] = unwrapKeys(value[name], name);
+      result[name] = unwrapKeys(value[name], isKnown, name);
     });
     return result as T;
   }
@@ -72,28 +75,6 @@ export function flattenMessages(messages: unknown, prefix = '', result: Messages
     const key = prefix ? `${prefix}.${name}` : name;
     if (typeof value === 'string') result[key] = value;
     else if (isObject(value)) flattenMessages(value, key, result);
-  });
-  return result;
-}
-
-/** dotted keys as a nested bundle (the format of the Mica custom translations) */
-export function nestMessages(messages: Messages): NestedMessages {
-  const result: NestedMessages = {};
-  Object.entries(messages).forEach(([key, value]) => {
-    const segments = key.split('.');
-    const name = segments.pop() as string;
-    let node = result;
-    for (const segment of segments) {
-      const child = node[segment];
-      if (isObject(child)) {
-        node = child as NestedMessages;
-      } else {
-        const created: NestedMessages = {};
-        node[segment] = created;
-        node = created;
-      }
-    }
-    if (!isObject(node[name])) node[name] = value;
   });
   return result;
 }
