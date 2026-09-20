@@ -8,7 +8,7 @@
         <q-breadcrumbs-el :label="id ? t('edit') : t(target.labels.new)" />
       </q-breadcrumbs>
     </q-toolbar>
-    <q-page class="q-pa-md">
+    <q-page padding>
       <q-spinner-dots v-if="loading" color="primary" size="2em" />
       <div v-else-if="document">
         <document-logo-input

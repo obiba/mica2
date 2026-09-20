@@ -22,6 +22,7 @@ const routes: RouteRecordRaw[] = [
       { path: '', component: () => import('pages/IndexPage.vue') },
       { path: 'settings', component: () => import('pages/SettingsPage.vue') },
       { path: 'settings/general', component: () => import('pages/SettingsGeneralPage.vue') },
+      { path: 'settings/network', component: () => import('pages/SettingsNetworkPage.vue') },
       ...documentRoutes('network'),
       ...documentRoutes('individual-study'),
       ...documentRoutes('harmonization-study'),

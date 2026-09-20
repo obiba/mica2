@@ -6,7 +6,7 @@
         <q-breadcrumbs-el :label="t(target.labels.title)" />
       </q-breadcrumbs>
     </q-toolbar>
-    <q-page class="q-pa-md">
+    <q-page padding>
       <q-btn color="primary" icon="add" :label="t('add')" size="sm" :to="`${target.routeBase}/new`" class="q-mb-md" />
       <documents-table :target="target" />
     </q-page>

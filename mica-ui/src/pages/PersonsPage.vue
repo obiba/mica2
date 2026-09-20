@@ -6,7 +6,7 @@
         <q-breadcrumbs-el :label="t('persons.title')" />
       </q-breadcrumbs>
     </q-toolbar>
-    <q-page class="q-pa-md"> </q-page>
+    <q-page padding> </q-page>
   </div>
 </template>
 
