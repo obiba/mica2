@@ -7,7 +7,7 @@
         <q-breadcrumbs-el :label="t('settings.general')" />
       </q-breadcrumbs>
     </q-toolbar>
-    <q-page class="q-pa-md">
+    <q-page padding>
       <div class="text-h5 q-mb-md">{{ t('properties') }}</div>
       <general-properties />
       <div class="row q-col-gutter-lg q-mt-md">

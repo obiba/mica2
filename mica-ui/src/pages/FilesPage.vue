@@ -6,7 +6,7 @@
         <q-breadcrumbs-el :label="t('files.title')" />
       </q-breadcrumbs>
     </q-toolbar>
-    <q-page class="q-pa-md">
+    <q-page padding>
       <file-browser root="/" :path="filePath" @update:path="onFilePath" />
     </q-page>
   </div>
