@@ -1,0 +1,25 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "Label",
+      "text": "<h3>t(network.general-info)</h3>"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/_name"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/_acronym"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/_description",
+      "options": {
+        "marked": true,
+        "rows": 5
+      }
+    }
+  ]
+}
