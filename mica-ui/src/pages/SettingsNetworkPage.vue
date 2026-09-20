@@ -1,14 +1,15 @@
 <template>
   <div>
-    <q-toolbar class="bg-grey-3">
-      <q-breadcrumbs>
-        <q-breadcrumbs-el icon="home" to="/" />
-        <q-breadcrumbs-el :label="t('settings.title')" to="/settings" />
-        <q-breadcrumbs-el :label="t('settings.network')" />
-      </q-breadcrumbs>
-    </q-toolbar>
-    <q-page class="q-pa-none">
-      <drawer-layout>
+    <q-page class="q-pa-none column">
+      <q-toolbar class="bg-grey-3">
+        <q-breadcrumbs>
+          <q-breadcrumbs-el icon="home" to="/" />
+          <q-breadcrumbs-el :label="t('settings.title')" to="/settings" />
+          <q-breadcrumbs-el :label="t('settings.network')" />
+        </q-breadcrumbs>
+      </q-toolbar>
+
+      <drawer-layout class="col">
         <template #drawer>
           <q-list padding role="none">
             <q-item clickable v-ripple :active="tab === 'form'" @click="tab = 'form'">
