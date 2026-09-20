@@ -996,6 +996,8 @@ message EntityFormDto {
   required Type type = 1;
   required string schema = 2;
   required string definition = 3;
+  // the texts of the form by locale, JSON ({ "en": { "<key>": "<text>" } }), looked up before the Mica translations
+  optional string translations = 4;
 }
 
 message UserProfileDto {
