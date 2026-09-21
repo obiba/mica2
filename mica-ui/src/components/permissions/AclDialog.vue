@@ -38,6 +38,9 @@
           </q-option-group>
         </div>
         <q-checkbox v-if="fileLabel" v-model="form.file" dense :label="fileLabel" />
+        <div v-for="option in otherResources" :key="option.value" class="q-mt-xs">
+          <q-checkbox v-model="form.otherResources" :val="option.value" dense :label="option.label" />
+        </div>
       </q-card-section>
       <q-separator />
       <q-card-actions align="right" class="bg-grey-3">
@@ -51,6 +54,12 @@
 <script setup lang="ts">
 import type { AclDto } from 'src/models/MicaSecurity';
 import { DOCUMENT_ROLES, type AclInput, type AclType } from 'src/composables/useAcl';
+
+/** another resource a permission can be granted on: its name and its label */
+export interface OtherResourceOption {
+  value: string;
+  label: string;
+}
 
 /** a role of the dialog: its label and its description */
 export interface RoleOption {
@@ -71,6 +80,8 @@ interface Props {
   principalHint: string;
   /** the label of the "apply to files" option; none to hide it */
   fileLabel?: string | undefined;
+  /** the other resources the permission can be granted on too, each with its label */
+  otherResources?: OtherResourceOption[] | undefined;
   saving?: boolean;
 }
 
@@ -92,7 +103,7 @@ const roleOptions = computed<RoleOption[]>(
 const form = ref<AclInput>(empty());
 
 function empty(): AclInput {
-  return { principal: '', type: 'USER', role: roleOptions.value[0]?.value, file: true };
+  return { principal: '', type: 'USER', role: roleOptions.value[0]?.value, file: true, otherResources: [] };
 }
 
 const editing = computed(() => props.acl !== undefined);
@@ -109,6 +120,7 @@ watch(
             type: props.acl.type as AclType,
             role: props.acl.role ?? roleOptions.value[0]?.value,
             file: props.acl.file !== false,
+            otherResources: [...(props.acl.otherResources ?? [])],
           }
         : empty();
     }
@@ -129,6 +141,7 @@ function onSave() {
     principal,
     role: props.withRole ? form.value.role : undefined,
     file: props.fileLabel ? form.value.file : undefined,
+    otherResources: props.otherResources ? form.value.otherResources : undefined,
   });
 }
 

@@ -7,6 +7,9 @@
 /** a string made of a single `t(key)` token */
 const KEY_TOKEN = /^t\(\s*([^()]+?)\s*\)$/;
 
+/** every `t(key)` token of a text */
+const KEY_TOKENS = /t\(\s*([^()]+?)\s*\)/g;
+
 /** the keys of a schema or UI schema whose string values are never translation tokens */
 const UNTRANSLATED_KEYS = new Set([
   'type',
@@ -41,6 +44,38 @@ export function tokenKey(value: unknown): string | undefined {
 
 export function toToken(key: string): string {
   return `t(${key})`;
+}
+
+/** the keys of every `t(key)` token of a text, embedded or not */
+export function tokenKeys(value: unknown): string[] {
+  if (typeof value !== 'string') return [];
+  return Array.from(value.matchAll(KEY_TOKENS), (match) => match[1] as string);
+}
+
+/** the text with its `t(key)` tokens replaced by the messages of the keys, the unknown ones kept */
+export function resolveTokens(text: string, messages: Messages): string {
+  return text.replace(KEY_TOKENS, (token, key: string) => (key in messages ? (messages[key] as string) : token));
+}
+
+/** the messages of a nested bundle (`{ a: { b: 'text' } }`) by dotted key (`a.b`), as the `t()` tokens name them */
+export function flattenMessages(bundle: unknown, prefix = '', result: Messages = {}): Messages {
+  if (!isObject(bundle)) return result;
+  Object.entries(bundle).forEach(([name, value]) => {
+    const key = prefix ? `${prefix}.${name}` : name;
+    if (typeof value === 'string') result[key] = value;
+    else if (isObject(value)) flattenMessages(value, key, result);
+  });
+  return result;
+}
+
+/** the strings of a schema or UI schema that may hold translation tokens */
+export function translatableStrings(value: unknown): string[] {
+  const strings: string[] = [];
+  mapStrings(value, (text) => {
+    strings.push(text);
+    return text;
+  });
+  return strings;
 }
 
 /** the strings of a schema or UI schema, replaced but for the ones under the untranslated keys */

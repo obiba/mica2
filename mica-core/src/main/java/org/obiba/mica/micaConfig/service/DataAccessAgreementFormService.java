@@ -88,7 +88,7 @@ public class DataAccessAgreementFormService extends AbstractDataAccessEntityForm
 
   private DataAccessAgreementForm createDefaultDataAccessAgreementForm() {
     DataAccessAgreementForm form = new DataAccessAgreementForm();
-    form.setDefinition(getDefaultDataAccessFormResourceAsString("definition.json"));
+    form.setDefinition(getDefaultDataAccessFormResourceAsString("uischema.json"));
     form.setSchema(getDefaultDataAccessFormResourceAsString("schema.json"));
     form.setRevision(0);
     return form;
