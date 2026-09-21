@@ -1,8 +1,30 @@
 <template>
   <div>
+    <div class="row items-center q-gutter-xs q-mb-sm">
+      <q-chip
+        clickable
+        :outline="statusFilter !== undefined"
+        color="grey-7"
+        text-color="white"
+        @click="setStatusFilter(undefined)"
+      >
+        {{ t('documents.filter.ALL') }}
+      </q-chip>
+      <q-chip
+        v-for="filter in STATE_FILTERS"
+        :key="filter"
+        clickable
+        :outline="statusFilter !== filter"
+        color="primary"
+        :text-color="statusFilter === filter ? 'white' : 'primary'"
+        @click="setStatusFilter(filter)"
+      >
+        {{ t(`documents.filter.${filter}`) }}
+      </q-chip>
+    </div>
     <q-table
       flat
-      :rows="documentsStore.listOf(target.type)"
+      :rows="rows"
       :columns="columns"
       :rows-per-page-options="ROWS_PER_PAGE"
       row-key="id"
@@ -39,6 +61,7 @@
 import type { TimestampsDto } from 'src/models/Mica';
 import DocumentStatusBadge from 'src/components/documents/DocumentStatusBadge.vue';
 import DataAccessRequestLink from 'src/components/projects/DataAccessRequestLink.vue';
+import { isStateFilter, matchesStateFilter, STATE_FILTERS, type StateFilter } from 'src/composables/useDocumentState';
 import type { DocumentTarget } from 'src/composables/useDocumentTarget';
 import type { DocumentSummary } from 'src/stores/documents';
 import { ROWS_PER_PAGE } from 'src/utils/constants';
@@ -53,8 +76,26 @@ interface Props {
 const props = defineProps<Props>();
 const documentsStore = useDocumentsStore();
 const { t } = useI18n();
+const route = useRoute();
+const router = useRouter();
 
 const loading = ref(false);
+
+/** the state filter, carried by the `status` route query so that the statistics summary can link here */
+const statusFilter = computed<StateFilter | undefined>(() =>
+  isStateFilter(route.query.status) ? route.query.status : undefined,
+);
+
+const rows = computed(() =>
+  documentsStore.listOf(props.target.type).filter((row) => matchesStateFilter(row.state, statusFilter.value)),
+);
+
+function setStatusFilter(filter: StateFilter | undefined) {
+  const query = { ...route.query };
+  if (filter) query.status = filter;
+  else delete query.status;
+  router.replace({ query });
+}
 
 const columns = computed(() => [
   { name: 'id', label: 'ID', field: 'id', sortable: true, align: 'left' as const },
