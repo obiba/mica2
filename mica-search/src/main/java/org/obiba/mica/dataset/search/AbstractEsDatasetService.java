@@ -18,7 +18,12 @@ public abstract class AbstractEsDatasetService<T extends Dataset> extends Abstra
 
   @Override
   public long getStudiesWithVariablesCount() {
-    return searcher.countDocumentsWithField(getIndexName(), getType(), "studyTable.studyId");
+    // as getCountByRql: a missing index (nothing published yet, or dropped) is not an error, there are none
+    try {
+      return searcher.countDocumentsWithField(getIndexName(), getType(), "studyTable.studyId");
+    } catch (RuntimeException e) {
+      return 0;
+    }
   }
 
 }
