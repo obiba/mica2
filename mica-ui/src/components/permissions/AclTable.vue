@@ -73,6 +73,8 @@ interface Props {
   emptyLabel: string;
   /** permissions have a role and can be edited; accesses are read-only */
   withRole?: boolean;
+  /** the labels of the other resources a permission can be granted on, by name: shown when any */
+  otherResourceLabels?: Record<string, string> | undefined;
   loading?: boolean;
   canEdit?: boolean;
 }
@@ -105,6 +107,16 @@ const columns = computed<QTableColumn[]>(() => {
       field: 'role',
       align: 'left',
       format: (value: string) => (value ? t(`permission.${value.toLowerCase()}`) : ''),
+    });
+  }
+  if (props.otherResourceLabels) {
+    const labels = props.otherResourceLabels;
+    list.push({
+      name: 'otherResources',
+      label: t('permission.other_resources'),
+      field: 'otherResources',
+      align: 'left',
+      format: (value: string[] | undefined) => (value ?? []).map((name) => labels[name] ?? name).join(', '),
     });
   }
   if (props.canEdit) {

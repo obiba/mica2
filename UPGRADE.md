@@ -107,6 +107,15 @@ Install the new version and restart as usual. No database migration runs at star
    right away from the credentials form; a wrong code keeps the 2FA step open and shows
    "Invalid or expired code". Also open a study page with a Markdown description and
    check it is rendered as formatted HTML.
+6. **Data access forms.** The five data access forms (application, preliminary,
+   feasibility, amendment, end user agreement) are now edited with the form builder of
+   the new administration application (Settings › Data access), as JSON Forms, with
+   their texts stored with the form. Open each form there: a form still in the
+   angular-schema-form dialect is converted on load; save it, then publish it, so that
+   the portal renders the JSON Forms version. Until a form is published again, the
+   portal keeps rendering its current published revision, and a request submitted with
+   an older revision keeps being displayed and exported with that revision. No data
+   changes: the request contents have the same schema in both dialects.
 
 ### Rolling back
 

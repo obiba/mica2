@@ -19,7 +19,7 @@ vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, json: async () => ({}) }))
 
 const messages = { validationSuccess: 'valid', validationError: 'invalid', validationErrorOnSubmit: 'cannot submit', errorOnSave: 'save failed' };
 
-// an angular-schema-form pair, as the server injects it: a required name, a conditional required field
+// the schema of the form, as the server injects it: a required name, a conditional required field
 const schema = {
   type: 'object',
   properties: {
@@ -29,14 +29,25 @@ const schema = {
   },
   required: ['name'],
 };
+// the angular-schema-form definition of a form revision from before the JSON Forms dialect
 const definition = ['name', 'other', { key: 'otherText', required: true, condition: 'model.other' }];
+// the same form as a JSON Forms UI schema
+const uischema = {
+  type: 'VerticalLayout',
+  elements: [
+    { type: 'Label', text: '<h3>Applicant</h3>' },
+    { type: 'Control', scope: '#/properties/name' },
+    { type: 'Control', scope: '#/properties/other' },
+    { type: 'Control', scope: '#/properties/otherText', rules: { visible: 'other' } },
+  ],
+};
 
 const api = () => window.MicaDataAccessForm;
 const flush = async () => { for (let i = 0; i < 5; i++) await nextTick(); };
 
-function mountForm(model: Record<string, any>, readOnly = false) {
+function mountForm(model: Record<string, any>, readOnly = false, definitionOrUischema: unknown = definition) {
   document.body.innerHTML = '<div id="data-access-form"></div>';
-  const options: MountOptions = { schema, definition, model, readOnly, lang: 'en', contextPath: '/mica', messages };
+  const options: MountOptions = { schema, definition: definitionOrUischema, model, readOnly, lang: 'en', contextPath: '/mica', messages };
   api().mount('#data-access-form', options);
 }
 
@@ -55,6 +66,20 @@ describe('MicaDataAccessForm', () => {
     expect(root.querySelectorAll('.q-field').length).toBe(1); // otherText hidden by its condition
     expect((root.querySelector('input') as HTMLInputElement).value).toBe('Jane');
     expect(root.querySelector('.q-toggle')).not.toBeNull();
+  });
+
+  it('mounts a JSON Forms UI schema as it is', async () => {
+    mountForm({ name: 'Jane' }, false, uischema);
+    await flush();
+    const root = document.querySelector('#data-access-form')!;
+    expect(root.querySelector('h3')?.textContent).toBe('Applicant');
+    expect(root.querySelectorAll('.q-field').length).toBe(1); // otherText hidden by its rule
+    expect((root.querySelector('input') as HTMLInputElement).value).toBe('Jane');
+    expect(api().validate()).toBe(true);
+    mountForm({ name: 'Jane', other: true }, false, uischema);
+    await flush();
+    expect(document.querySelectorAll('#data-access-form .q-field').length).toBe(2);
+    expect(api().validate()).toBe(true); // otherText is not required by the schema
   });
 
   it('logs an error when the mount element is missing', () => {

@@ -10,10 +10,14 @@ export interface FormMessages {
 
 /** Options of `MicaDataAccessForm.mount()`, built by data-access-form-scripts.ftl. */
 export interface MountOptions {
-  /** angular-schema-form JSON schema (`t()` tokens already resolved by the server) */
+  /** JSON schema (`t()` tokens already resolved by the server) */
   schema: Record<string, any>;
-  /** angular-schema-form definition array */
-  definition: any[];
+  /**
+   * JSON Forms UI schema (object), or the angular-schema-form definition (array) of a form revision
+   * that a request was submitted with before the forms were edited as JSON Forms: read-only rendering,
+   * converted on the fly
+   */
+  definition: unknown;
   /** form data */
   model: Record<string, any>;
   readOnly: boolean;

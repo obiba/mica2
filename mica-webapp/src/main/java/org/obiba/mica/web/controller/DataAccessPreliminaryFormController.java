@@ -80,7 +80,7 @@ public class DataAccessPreliminaryFormController extends BaseDataAccessControlle
 
   private void addDataAccessPreliminaryFormConfiguration(Map<String, Object> params, DataAccessPreliminary preliminary, boolean readOnly, String locale) {
     DataAccessPreliminaryForm form = dataAccessPreliminaryFormService.findByRevision(preliminary.hasFormRevision() ? preliminary.getFormRevision().toString() : "latest").get();
-    params.put("formConfig", new SchemaFormConfig(micaConfigService, form.getSchema(), form.getDefinition(), preliminary.getContent(), locale, readOnly));
+    params.put("formConfig", new SchemaFormConfig(micaConfigService, form, preliminary.getContent(), locale, readOnly));
     params.put("accessConfig", getConfig());
     addHasFiles(params, preliminary);
   }
