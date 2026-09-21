@@ -1,5 +1,6 @@
 import type { RouteRecordRaw } from 'vue-router';
-import { documentTarget, type DocumentType } from 'src/composables/useDocumentTarget';
+import { DOCUMENT_TYPES, documentTarget, type DocumentType } from 'src/composables/useDocumentTarget';
+import { entityConfigRoute } from 'src/utils/entityConfigs';
 
 /** the list, creation, edition and view routes of a document type, served by the shared pages */
 function documentRoutes(documentType: DocumentType): RouteRecordRaw[] {
@@ -22,13 +23,12 @@ const routes: RouteRecordRaw[] = [
       { path: '', component: () => import('pages/IndexPage.vue') },
       { path: 'settings', component: () => import('pages/SettingsPage.vue') },
       { path: 'settings/general', component: () => import('pages/SettingsGeneralPage.vue') },
-      { path: 'settings/network', component: () => import('pages/SettingsNetworkPage.vue') },
-      ...documentRoutes('network'),
-      ...documentRoutes('individual-study'),
-      ...documentRoutes('harmonization-study'),
-      ...documentRoutes('collected-dataset'),
-      ...documentRoutes('harmonized-dataset'),
-      ...documentRoutes('project'),
+      ...DOCUMENT_TYPES.map((documentType) => ({
+        path: entityConfigRoute(documentType).substring(1),
+        component: () => import('pages/SettingsEntityConfigPage.vue'),
+        meta: { documentType },
+      })),
+      ...DOCUMENT_TYPES.flatMap(documentRoutes),
       { path: 'files', component: () => import('pages/FilesPage.vue') },
       { path: 'persons', component: () => import('pages/PersonsPage.vue') },
     ],
