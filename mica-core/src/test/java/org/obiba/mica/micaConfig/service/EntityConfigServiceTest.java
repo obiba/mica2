@@ -10,11 +10,24 @@
 
 package org.obiba.mica.micaConfig.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Test;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -153,5 +166,52 @@ public class EntityConfigServiceTest {
     DocumentContext parse = JsonPath.parse(mergeSchema);
     assertThat(parse.read("properties.neededInfo.type"), is("string"));
     assertThat(parse.read("required"), containsInAnyOrder("neededInfo"));
+  }
+
+  @Test
+  public void every_document_type_has_a_mandatory_uischema() throws Exception {
+
+    // Given: the form configuration services of the document types edited with the form builder
+    List<EntityConfigService<?>> services = List.of(
+      new NetworkConfigService(),
+      new IndividualStudyConfigService(),
+      new HarmonizationStudyConfigService(),
+      new PopulationConfigService(),
+      new DataCollectionEventConfigService(),
+      new StudyDatasetConfigService(),
+      new HarmonizationDatasetConfigService(),
+      new ProjectConfigService());
+
+    for (EntityConfigService<?> service : services) {
+      // Execute
+      String path = service.getMandatoryUischemaResourcePath();
+      String merged = service.mergeUischema("{}", readResource(path));
+
+      // Verify: a layout with the mandatory controls, merged with an empty custom form
+      DocumentContext parse = JsonPath.parse(merged);
+      assertThat(path, parse.read("type"), is("VerticalLayout"));
+      assertThat(path, parse.read("elements"), is(not(empty())));
+
+      // Verify: every property of the mandatory schema has its control
+      JsonNode schema = new ObjectMapper().readTree(readResource(service.getMandatorySchemaResourcePath()));
+      List<String> scopes = controlScopes(new ObjectMapper().readTree(merged), new ArrayList<>());
+      schema.get("properties").fieldNames()
+        .forEachRemaining(property -> assertThat(path, scopes, hasItem("#/properties/" + property)));
+    }
+  }
+
+  private String readResource(String path) throws IOException {
+    Resource resource = new DefaultResourceLoader().getResource(path);
+    assertThat(path, resource.exists(), is(true));
+    try (InputStream in = resource.getInputStream()) {
+      return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+    }
+  }
+
+  /** the scopes of the controls of a UI schema, layouts included */
+  private List<String> controlScopes(JsonNode uischema, List<String> scopes) {
+    if (uischema.hasNonNull("scope")) scopes.add(uischema.get("scope").asText());
+    if (uischema.has("elements")) uischema.get("elements").forEach(element -> controlScopes(element, scopes));
+    return scopes;
   }
 }
