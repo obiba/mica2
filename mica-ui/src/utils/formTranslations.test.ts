@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { tokenKey, toToken, unwrapKeys, wrapKeys } from './formTranslations';
+import {
+  flattenMessages,
+  resolveTokens,
+  tokenKey,
+  tokenKeys,
+  toToken,
+  translatableStrings,
+  unwrapKeys,
+  wrapKeys,
+} from './formTranslations';
 
 describe('tokenKey', () => {
   it('reads the key of a single token', () => {
@@ -94,5 +103,38 @@ describe('wrapKeys', () => {
     const isKnown = (key: string) => key.startsWith('name.');
     const form = { properties: { name: { title: 'name.title', enum: ['name.title'] } } };
     expect(unwrapKeys(wrapKeys(form, isKnown), isKnown)).toEqual(form);
+  });
+});
+
+describe('tokens', () => {
+  it('lists the keys of the tokens of a text', () => {
+    expect(tokenKeys('<h3>t(network.info)</h3><p>t( website )</p>')).toEqual(['network.info', 'website']);
+    expect(tokenKeys('Website')).toEqual([]);
+    expect(tokenKeys(42)).toEqual([]);
+  });
+
+  it('resolves the tokens of a text from the messages, keeping the unknown ones', () => {
+    expect(resolveTokens('<h3>t(network.info)</h3> t(nope)', { 'network.info': 'Information' })).toBe(
+      '<h3>Information</h3> t(nope)',
+    );
+  });
+
+  it('flattens a bundle to dotted keys', () => {
+    expect(flattenMessages({ a: { b: 'B', c: { d: 'D' } }, e: 'E', f: 1 })).toEqual({
+      'a.b': 'B',
+      'a.c.d': 'D',
+      e: 'E',
+    });
+    expect(flattenMessages('nope')).toEqual({});
+  });
+
+  it('lists the strings that may hold tokens', () => {
+    expect(
+      translatableStrings({
+        type: 'object',
+        properties: { x: { title: 't(x)', type: 'string', enum: ['a'] } },
+        required: ['x'],
+      }),
+    ).toEqual(['t(x)']);
   });
 });

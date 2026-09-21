@@ -1,0 +1,238 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "Label",
+      "text": "<h2>I - t(data-access-request.default.I.title)</h2>"
+    },
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "Label",
+          "text": "<h3>A. t(data-access-request.default.I.A.title)</h3><p class='help-block'>t(data-access-request.default.I.A.info)</p>"
+        },
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/name"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/title"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/position"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/institution"
+                }
+              ],
+              "options": {
+                "class": "col-6"
+              }
+            },
+            {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/email"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/emailAlt"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/phone"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/mailingAddress",
+                  "options": {
+                    "rows": 3
+                  }
+                }
+              ],
+              "options": {
+                "class": "col-6"
+              }
+            }
+          ],
+          "options": {
+            "class": "row q-col-gutter-md"
+          }
+        }
+      ]
+    },
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "Label",
+          "text": "<h3>B. t(data-access-request.default.I.B.title)</h3><p class='help-block'>t(data-access-request.default.I.B.info)</p>"
+        },
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/repName"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/repTitle"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/repPosition"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/repInstitution"
+                }
+              ],
+              "options": {
+                "class": "col-6"
+              }
+            },
+            {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/repEmail"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/repPhone"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/repMailingAddress",
+                  "options": {
+                    "rows": 3
+                  }
+                }
+              ],
+              "options": {
+                "class": "col-6"
+              }
+            }
+          ],
+          "options": {
+            "class": "row q-col-gutter-md"
+          }
+        }
+      ]
+    },
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "Label",
+          "text": "<h3>C. t(data-access-request.default.I.C.title)</h3>"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/projectTitle",
+          "label": false,
+          "options": {
+            "rows": 3
+          }
+        },
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/projectWebsite",
+                  "hint": "t(data-access-request.default.I.C.website-help)"
+                }
+              ],
+              "options": {
+                "class": "col-6"
+              }
+            },
+            {
+              "type": "VerticalLayout",
+              "elements": [],
+              "options": {
+                "class": "col-6"
+              }
+            }
+          ],
+          "options": {
+            "class": "row q-col-gutter-md"
+          }
+        }
+      ]
+    },
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "Label",
+          "text": "<h3>F. t(data-access-request.default.I.F.title)</h3><p class='help-block'>t(data-access-request.default.I.F.info)</p>"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/abstract",
+          "label": false,
+          "options": {
+            "rows": 3,
+            "wordLimit": "0:500",
+            "validationMessage": {
+              "wordLimitError": "The 500 words limit has been exceeded."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "Label",
+      "text": "<h2>II - t(data-access-request.default.documents.title)</h2>"
+    },
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "Control",
+          "scope": "#/properties/rdCV",
+          "options": {
+            "emptyMessage": "t(data-access-request.no-documents)",
+            "validationMessage": {
+              "missingFiles": "t(missing-files)",
+              "minItems": "t(min-items)"
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/rdPeerReview",
+          "options": {
+            "emptyMessage": "t(data-access-request.no-documents)",
+            "validationMessage": {
+              "missingFiles": "t(missing-files)",
+              "minItems": "t(min-items)"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

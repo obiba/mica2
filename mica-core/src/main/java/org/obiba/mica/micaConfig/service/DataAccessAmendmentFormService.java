@@ -79,7 +79,7 @@ public class DataAccessAmendmentFormService extends AbstractDataAccessEntityForm
 
   private DataAccessAmendmentForm createDefaultDataAccessAmendmentForm() {
     DataAccessAmendmentForm form = new DataAccessAmendmentForm();
-    form.setDefinition(getDefaultDataAccessFormResourceAsString("definition.json"));
+    form.setDefinition(getDefaultDataAccessFormResourceAsString("uischema.json"));
     form.setSchema(getDefaultDataAccessFormResourceAsString("schema.json"));
     form.setTitleFieldPath("projectTitle");
     form.setSummaryFieldPath("summary");
