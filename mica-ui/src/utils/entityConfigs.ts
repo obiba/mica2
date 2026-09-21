@@ -7,6 +7,8 @@ export interface EntityConfigForm {
   target: EntityConfigTarget;
   /** i18n key of the form title */
   label: string;
+  /** the icon of the form in the settings drawer */
+  icon: string;
   /** i18n keys of the parameters of the form info (`config.form_info`): the document type name and its mandatory fields */
   info: { type: string; fields: string };
 }
@@ -24,10 +26,11 @@ export interface EntityConfig {
   isEnabled: (configuration: MicaConfigDto) => boolean;
 }
 
-function form(target: EntityConfigTarget, key: string): EntityConfigForm {
+function form(target: EntityConfigTarget, key: string, icon = 'list'): EntityConfigForm {
   return {
     target,
     label: `config.${key}_form`,
+    icon,
     info: { type: `config.${key}_form_type`, fields: `config.${key}_form_fields` },
   };
 }
@@ -45,8 +48,12 @@ const ENTITY_CONFIGS: Record<DocumentType, EntityConfig> = {
     caption: 'settings.individual_study_caption',
     forms: [
       form({ name: 'individual-study', type: EntityFormDto_Type.Study }, 'individual_study'),
-      form({ name: 'population', type: EntityFormDto_Type.Population }, 'population'),
-      form({ name: 'data-collection-event', type: EntityFormDto_Type.DataCollectionEvent }, 'data_collection_event'),
+      form({ name: 'population', type: EntityFormDto_Type.Population }, 'population', 'groups'),
+      form(
+        { name: 'data-collection-event', type: EntityFormDto_Type.DataCollectionEvent },
+        'data_collection_event',
+        'event',
+      ),
     ],
     permissions: 'individual-study',
     isEnabled: () => true,

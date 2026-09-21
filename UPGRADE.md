@@ -3,6 +3,24 @@
 Actions to perform when upgrading a Mica server. Go through every version between the
 one installed and the one being deployed.
 
+## 8.0.0
+
+### Upgrade
+
+Install the new version and restart as usual. No database migration runs at startup.
+
+### After upgrading
+
+**Data access forms.** The five data access forms (application, preliminary,
+feasibility, amendment, end user agreement) are now edited with the form builder of
+the new administration application (Settings › Data access), as JSON Forms, with
+their texts stored with the form. Open each form there: a form still in the
+angular-schema-form dialect is converted on load; save it, then publish it, so that
+the portal renders the JSON Forms version. Until a form is published again, the
+portal keeps rendering its current published revision, and a request submitted with
+an older revision keeps being displayed and exported with that revision. No data
+changes: the request contents have the same schema in both dialects.
+
 ## 7.0.0
 
 Security release: 2FA sign-in feedback, open redirect closed, credentials kept out of

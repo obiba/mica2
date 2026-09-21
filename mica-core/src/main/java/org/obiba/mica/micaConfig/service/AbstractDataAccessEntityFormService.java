@@ -1,10 +1,10 @@
 package org.obiba.mica.micaConfig.service;
 
 import com.google.common.base.Strings;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.obiba.mica.micaConfig.domain.AbstractDataAccessEntityForm;
+import org.obiba.mica.micaConfig.service.helper.FormValidation;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 
@@ -81,22 +81,6 @@ abstract class AbstractDataAccessEntityFormService<T extends AbstractDataAccessE
     }
   }
 
-  private void validateJsonObject(String json) {
-    try {
-      new JSONObject(json);
-    } catch (JSONException e) {
-      throw new InvalidFormSchemaException(e);
-    }
-  }
-
-  private void validateJsonArray(String json) {
-    try {
-      new JSONArray(json);
-    } catch (JSONException e) {
-      throw new InvalidFormSchemaException(e);
-    }
-  }
-
   private Resource getDefaultDataAccessFormResource(String name) {
     return new DefaultResourceLoader().getResource(getDataAccessEntityFormResourceLocation() + name);
   }
@@ -109,8 +93,14 @@ abstract class AbstractDataAccessEntityFormService<T extends AbstractDataAccessE
     }
   }
 
+  /**
+   * The form is a JSON Forms pair (schema object, UI schema object) with, optionally, its texts by locale.
+   * An angular-schema-form definition (array) is no longer accepted: the forms of an older deployment
+   * are converted by the administration application before being saved again.
+   */
   void validateForm(AbstractDataAccessEntityForm dataAccessForm) {
-    validateJsonObject(dataAccessForm.getSchema());
-    validateJsonArray(dataAccessForm.getDefinition());
+    FormValidation.validateSchema(dataAccessForm.getSchema());
+    FormValidation.validateUischema(dataAccessForm.getDefinition());
+    FormValidation.validateTranslations(dataAccessForm.getTranslations());
   }
 }
