@@ -19,6 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.obiba.mica.micaConfig.domain.EntityConfig;
+import org.obiba.mica.micaConfig.service.helper.FormValidation;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -61,10 +62,11 @@ public abstract class EntityConfigService<T extends EntityConfig> {
     networkForm.ifPresent(d -> getRepository().save(d));
   }
 
+  /** The definition is either an angular-schema-form array or a JSON Forms UI schema object. */
   private void validateForm(T configuration) {
-    validateSchema(configuration.getSchema());
-    validateDefinition(configuration.getDefinition());
-    validateTranslations(configuration.getTranslations());
+    FormValidation.validateSchema(configuration.getSchema());
+    FormValidation.validateDefinition(configuration.getDefinition());
+    FormValidation.validateTranslations(configuration.getTranslations());
   }
 
   private T findOrCreateDefaultForm() {
@@ -77,44 +79,6 @@ public abstract class EntityConfigService<T extends EntityConfig> {
     }
 
     return form.get();
-  }
-
-  private void validateSchema(String json) {
-    try {
-      new JSONObject(json);
-    } catch(JSONException e) {
-      throw new InvalidFormSchemaException(e);
-    }
-  }
-
-  /**
-   * The definition is either an angular-schema-form array or a JSON Forms UI schema object.
-   */
-  private void validateDefinition(String json) {
-    try {
-      if (isUischema(json))
-        new JSONObject(json);
-      else
-        new JSONArray(json);
-    } catch(JSONException e) {
-      throw new InvalidFormDefinitionException();
-    }
-  }
-
-  /**
-   * The translations, when there are some, are a JSON object (the texts by locale).
-   */
-  private void validateTranslations(String json) {
-    if (json == null || json.isBlank()) return;
-    try {
-      new JSONObject(json);
-    } catch(JSONException e) {
-      throw new InvalidFormTranslationsException(e);
-    }
-  }
-
-  private static boolean isUischema(String json) {
-    return json != null && json.trim().startsWith("{");
   }
 
   private T createDefaultForm() {
@@ -146,7 +110,7 @@ public abstract class EntityConfigService<T extends EntityConfig> {
 
     String repositoryDefinition = repositoryConfiguration.getDefinition();
     String mergedDefinition;
-    if (isUischema(repositoryDefinition)) {
+    if (FormValidation.isObject(repositoryDefinition)) {
       String mandatoryUischema = getResourceAsString(getMandatoryUischemaResourcePath(), EMPTY_UISCHEMA);
       mergedDefinition = mergeUischema(repositoryDefinition, mandatoryUischema);
     } else {
