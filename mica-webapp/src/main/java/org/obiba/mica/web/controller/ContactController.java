@@ -21,6 +21,11 @@ public class ContactController extends BaseController {
     return mv;
   }
 
+  @GetMapping("/contact-success")
+  public ModelAndView contactSuccess() {
+    return new ModelAndView("contact-success");
+  }
+
   private String getReCaptchaKey() {
     try {
       JSONObject clientConfig = userAuthService.getClientConfiguration();
