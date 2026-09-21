@@ -79,7 +79,7 @@ public class DataAccessAgreementFormController extends BaseDataAccessController 
 
   private void addDataAccessAgreementFormConfiguration(Map<String, Object> params, DataAccessAgreement agreement, boolean readOnly, String locale) {
     DataAccessAgreementForm form = dataAccessAgreementFormService.findByRevision(agreement.hasFormRevision() ? agreement.getFormRevision().toString() : "latest").get();
-    params.put("formConfig", new SchemaFormConfig(micaConfigService, form.getSchema(), form.getDefinition(), agreement.getContent(), locale, readOnly));
+    params.put("formConfig", new SchemaFormConfig(micaConfigService, form, agreement.getContent(), locale, readOnly));
     params.put("accessConfig", getConfig());
     addHasFiles(params, agreement);
   }

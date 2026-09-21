@@ -1,0 +1,313 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "Label",
+          "text": "<h3>t(data-access-feasibility.default.grant-submission.title)</h3>"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/grantSubmission"
+        }
+      ]
+    },
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/grantingAgency"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/grantDate",
+                  "options": {
+                    "validationMessage": "t(data-access-request.default.date-error)",
+                    "dateOptions": {
+                      "dateFormat": "yyyy-MM-dd"
+                    }
+                  }
+                }
+              ],
+              "options": {
+                "class": "col-6"
+              }
+            },
+            {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/grantCompetition"
+                }
+              ],
+              "options": {
+                "class": "col-6"
+              }
+            }
+          ],
+          "options": {
+            "class": "row q-col-gutter-md"
+          }
+        }
+      ],
+      "rules": {
+        "visible": "!!grantSubmission"
+      }
+    },
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "Label",
+          "text": "<h3>t(data-access-feasibility.default.applicant-info.title)</h3>"
+        }
+      ]
+    },
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/pi"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/career",
+                  "options": {
+                    "format": "radio"
+                  }
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/careerOther",
+                  "rules": {
+                    "visible": "career === \"other\""
+                  }
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/currentPosition"
+                }
+              ],
+              "options": {
+                "class": "col-6"
+              }
+            },
+            {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/piEmail"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/piPhone"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/piAddress",
+                  "options": {
+                    "rows": 3
+                  }
+                }
+              ],
+              "options": {
+                "class": "col-6"
+              }
+            }
+          ],
+          "options": {
+            "class": "row q-col-gutter-md"
+          }
+        }
+      ]
+    },
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "Label",
+          "text": "<h3>t(data-access-feasibility.default.project-info.title)</h3>"
+        }
+      ]
+    },
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/projectTitle"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/projectObjectives",
+                  "options": {
+                    "rows": 3
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "Label",
+          "text": "<h3>t(data-access-feasibility.default.data.title)</h3>"
+        }
+      ]
+    },
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/datasets",
+                  "options": {
+                    "rows": 3
+                  }
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/selectionCriteria",
+                  "options": {
+                    "rows": 3
+                  }
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/studyDesign",
+                  "options": {
+                    "rows": 3
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "Label",
+          "text": "<h3>t(data-access-feasibility.default.biospecimens.title)</h3>"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/includeBiospecimens"
+        }
+      ]
+    },
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/biospecimensType",
+                  "options": {
+                    "rows": 3
+                  }
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/biospecimensSelectionCriteria",
+                  "options": {
+                    "rows": 3
+                  }
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/biospecimensPreAnalyticalCharacteristics",
+                  "options": {
+                    "rows": 3
+                  }
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/biospecimensAnalyzeMethods",
+                  "options": {
+                    "rows": 3
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "rules": {
+        "visible": "!!includeBiospecimens"
+      }
+    },
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "Label",
+          "text": "<h3>t(data-access-feasibility.default.linkage.title)</h3>"
+        }
+      ]
+    },
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/linkage",
+                  "options": {
+                    "rows": 3
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

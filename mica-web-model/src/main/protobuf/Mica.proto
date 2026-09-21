@@ -940,6 +940,8 @@ message DataAccessFormDto {
   optional string endDateFieldPath = 8;
   optional int32 revision = 9;
   optional string lastUpdateDate = 10;
+  // the texts of the form by locale, JSON; looked up before the Mica translations
+  optional string translations = 11;
 }
 
 message DataAccessPreliminaryFormDto {
@@ -947,6 +949,8 @@ message DataAccessPreliminaryFormDto {
   required string definition = 2;
   optional int32 revision = 3;
   optional string lastUpdateDate = 4;
+  // the texts of the form by locale, JSON; looked up before the Mica translations
+  optional string translations = 5;
 }
 
 message DataAccessFeasibilityFormDto {
@@ -954,6 +958,8 @@ message DataAccessFeasibilityFormDto {
   required string definition = 2;
   optional int32 revision = 3;
   optional string lastUpdateDate = 4;
+  // the texts of the form by locale, JSON; looked up before the Mica translations
+  optional string translations = 5;
 }
 
 message DataAccessAgreementFormDto {
@@ -961,6 +967,8 @@ message DataAccessAgreementFormDto {
   required string definition = 2;
   optional int32 revision = 3;
   optional string lastUpdateDate = 4;
+  // the texts of the form by locale, JSON; looked up before the Mica translations
+  optional string translations = 5;
 }
 
 message DataAccessAmendmentFormDto {
@@ -974,6 +982,8 @@ message DataAccessAmendmentFormDto {
   optional string endDateFieldPath = 8;
   optional int32 revision = 9;
   optional string lastUpdateDate = 10;
+  // the texts of the form by locale, JSON; looked up before the Mica translations
+  optional string translations = 11;
 }
 
 message ProjectFormDto {

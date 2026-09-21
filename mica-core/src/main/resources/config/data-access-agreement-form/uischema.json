@@ -1,0 +1,18 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "Label",
+          "text": "<h3>t(data-access-agreement.default.signature.title)</h3>"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/signature"
+        }
+      ]
+    }
+  ]
+}

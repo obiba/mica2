@@ -21,7 +21,7 @@
               @click="selectTab(form.target.name)"
             >
               <q-item-section avatar>
-                <q-icon name="list" />
+                <q-icon :name="form.icon" />
               </q-item-section>
               <q-item-section>{{ config.forms.length > 1 ? t(form.label) : t('config.form') }}</q-item-section>
             </q-item>
@@ -37,8 +37,9 @@
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel v-for="form in config.forms" :key="form.target.name" :name="form.target.name" class="q-pa-none">
             <div class="text-h5 q-mb-md">{{ t(form.label) }}</div>
-            <entity-form-builder
+            <entity-config-form-builder
               ref="formBuilders"
+              :key="form.target.name"
               :target="form.target"
               :info="t('config.form_info', { type: t(form.info.type), fields: t(form.info.fields) })"
             />
@@ -61,9 +62,10 @@
 
 <script setup lang="ts">
 import DrawerLayout from 'src/components/DrawerLayout.vue';
-import EntityFormBuilder from 'src/components/settings/forms/EntityFormBuilder.vue';
+import EntityConfigFormBuilder from 'src/components/settings/forms/EntityConfigFormBuilder.vue';
 import AclPanel from 'src/components/permissions/AclPanel.vue';
 import { useRouteDocumentType } from 'src/composables/useDocumentTarget';
+import { useGuardedTab } from 'src/composables/useGuardedTab';
 import type { AclEndpoints } from 'src/composables/useAcl';
 import { entityConfig } from 'src/utils/entityConfigs';
 
@@ -75,9 +77,9 @@ const documentType = useRouteDocumentType();
 /** the forms of the document type and the permissions on its documents */
 const config = computed(() => entityConfig(documentType.value));
 
-const tab = ref(firstTab());
-/** the mounted form builders: the one of the active panel */
-const formBuilders = ref<InstanceType<typeof EntityFormBuilder>[]>([]);
+/** the mounted form builders: the one of the active panel, each owning the state of its form */
+const formBuilders = ref<InstanceType<typeof EntityConfigFormBuilder>[]>([]);
+const { tab, selectTab } = useGuardedTab(firstTab(), () => formBuilders.value);
 
 /** the permissions on any draft document and the accesses to any published document of the type */
 const endpoints = computed<AclEndpoints>(() => ({
@@ -87,15 +89,6 @@ const endpoints = computed<AclEndpoints>(() => ({
 
 function firstTab(): string {
   return config.value.forms[0]?.target.name ?? 'permissions';
-}
-
-/** switches the panel, unless the form has unsaved changes the user keeps */
-async function selectTab(name: string) {
-  if (name === tab.value) return;
-  for (const builder of formBuilders.value) {
-    if (!(await builder.confirmLeave())) return;
-  }
-  tab.value = name;
 }
 
 // the same page serves every document type

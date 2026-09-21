@@ -32,6 +32,14 @@
                 <q-item-label caption lines="2">{{ t(entry.caption) }}</q-item-label>
               </q-item-section>
             </q-item>
+            <q-item v-if="systemStore.configuration.isDataAccessEnabled">
+              <q-item-section>
+                <q-item-label>
+                  <router-link to="/settings/data-access">{{ t('settings.data_access') }}</router-link>
+                </q-item-label>
+                <q-item-label caption lines="2">{{ t('settings.data_access_caption') }}</q-item-label>
+              </q-item-section>
+            </q-item>
           </q-list>
         </div>
         <div class="col-4 col-sm-4 col-xs-12">
