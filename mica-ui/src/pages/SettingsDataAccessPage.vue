@@ -80,6 +80,15 @@
           </q-tab-panel>
           <q-tab-panel name="permissions" class="q-pa-none">
             <div class="text-h5 q-mb-md">{{ t('permissions') }}</div>
+            <config-acl-panel
+              endpoint="/config/data-access-form/permissions"
+              :title="t('config.data_access.permissions_title')"
+              :help="t('config.data_access.permissions_help')"
+              :roles="readerRole"
+              :file-label="t('permission.file_permission')"
+              :other-resources="otherResources"
+              :can-edit="authStore.isAdministrator === true"
+            />
           </q-tab-panel>
         </q-tab-panels>
       </drawer-layout>
@@ -94,6 +103,7 @@ import DataAccessFormProperties from 'src/components/settings/dataaccess/DataAcc
 import DataAccessPdfTemplates from 'src/components/settings/dataaccess/DataAccessPdfTemplates.vue';
 import DataAccessNotificationsPanel from 'src/components/settings/dataaccess/DataAccessNotificationsPanel.vue';
 import DataAccessSettingsPanel from 'src/components/settings/dataaccess/DataAccessSettingsPanel.vue';
+import ConfigAclPanel from 'src/components/permissions/ConfigAclPanel.vue';
 import { useDataAccessConfig } from 'src/composables/useDataAccessConfig';
 import {
   DATA_ACCESS_FORM_KINDS,
@@ -104,6 +114,17 @@ import type { DataAccessConfigDto } from 'src/models/Mica';
 
 const { t } = useI18n();
 const systemStore = useSystemStore();
+const authStore = useAuthStore();
+
+/** the one role on the data access requests */
+const readerRole = computed(() => [
+  { value: 'READER', label: t('permission.reader'), help: t('config.data_access.reader_help') },
+]);
+/** the other resources a permission can be granted on too */
+const otherResources = computed(() => [
+  { value: 'action-logs', label: t('config.data_access.action_logs_permission') },
+  { value: 'private-comment', label: t('config.data_access.private_comment_permission') },
+]);
 /** the data access configuration: the enabled forms here, the notifications and other settings in their panels */
 const dataAccessConfig = useDataAccessConfig();
 
