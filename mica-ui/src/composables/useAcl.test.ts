@@ -37,6 +37,7 @@ describe('useDocumentAcl', () => {
     expect(await acl.savePermission({ principal: 'bob', type: 'USER', role: 'EDITOR', file: true })).toBe(true);
     expect(mocked.put).toHaveBeenCalledWith('/draft/network/net1/permissions', null, {
       params: { principal: 'bob', type: 'USER', file: true, role: 'EDITOR' },
+      paramsSerializer: { indexes: null },
     });
     expect(mocked.get).toHaveBeenCalledWith('/draft/network/net1/permissions');
   });
@@ -46,6 +47,7 @@ describe('useDocumentAcl', () => {
     await acl.saveAccess({ principal: '*', type: 'GROUP', file: false });
     expect(mocked.put).toHaveBeenCalledWith('/draft/network/net1/accesses', null, {
       params: { principal: '*', type: 'GROUP', file: false },
+      paramsSerializer: { indexes: null },
     });
   });
 
@@ -56,6 +58,7 @@ describe('useDocumentAcl', () => {
     await acl.savePermission({ principal: 'bob', type: 'USER', role: 'EDITOR' });
     expect(mocked.put).toHaveBeenCalledWith('/draft/file-permission/network/net1/docs/a%20b.pdf', null, {
       params: { principal: 'bob', type: 'USER', role: 'EDITOR' },
+      paramsSerializer: { indexes: null },
     });
     await acl.deleteAccess({ principal: 'bob', type: 'USER' });
     expect(mocked.delete).toHaveBeenCalledWith('/draft/file-access/network/net1/docs/a%20b.pdf', {
@@ -81,6 +84,7 @@ describe('useConfigAcl', () => {
     expect(await acl.savePermission({ principal: 'analysts', type: 'GROUP', role: 'ANALYST' })).toBe(true);
     expect(mocked.put).toHaveBeenCalledWith('/config/contingencies/permissions', null, {
       params: { config: true, file: false, principal: 'analysts', type: 'GROUP', role: 'ANALYST' },
+      paramsSerializer: { indexes: null },
     });
     expect(mocked.get).toHaveBeenCalledWith('/config/contingencies/permissions');
     expect(await acl.loadAccesses()).toEqual([]);
@@ -93,6 +97,44 @@ describe('useConfigAcl', () => {
     expect(await acl.deletePermission({ principal: 'bob', type: 'USER' })).toBe(true);
     expect(mocked.delete).toHaveBeenCalledWith('/config/document-sets/permissions', {
       params: { principal: 'bob', type: 'USER' },
+    });
+  });
+});
+
+describe('useConfigAcl with other resources', () => {
+  it('sends the other resources as repeated parameters, with the file option', async () => {
+    const acl = useConfigAcl('/config/data-access-form/permissions', {
+      withFile: true,
+      otherResources: ['action-logs', 'private-comment'],
+    });
+    expect(
+      await acl.savePermission({
+        principal: 'dao',
+        type: 'GROUP',
+        role: 'READER',
+        file: true,
+        otherResources: ['action-logs'],
+      }),
+    ).toBe(true);
+    expect(mocked.put).toHaveBeenCalledWith('/config/data-access-form/permissions', null, {
+      params: {
+        config: true,
+        principal: 'dao',
+        type: 'GROUP',
+        file: true,
+        role: 'READER',
+        otherResources: ['action-logs'],
+      },
+      paramsSerializer: { indexes: null },
+    });
+  });
+
+  it('keeps the files out of a plain configuration resource', async () => {
+    const acl = useConfigAcl('/config/contingencies/permissions');
+    await acl.savePermission({ principal: 'bob', type: 'USER', role: 'ANALYST' });
+    expect(mocked.put).toHaveBeenCalledWith('/config/contingencies/permissions', null, {
+      params: { config: true, file: false, principal: 'bob', type: 'USER', role: 'ANALYST' },
+      paramsSerializer: { indexes: null },
     });
   });
 });

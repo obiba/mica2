@@ -96,7 +96,7 @@ public class DataAccessAmendmentFormController extends BaseDataAccessController 
 
   private void addDataAccessAmendmentFormConfiguration(Map<String, Object> params, DataAccessAmendment amendment, boolean readOnly, String locale) {
     DataAccessAmendmentForm dataAccessAmendmentForm = getDataAccessAmendmentForm(amendment);
-    params.put("formConfig", new SchemaFormConfig(micaConfigService, dataAccessAmendmentForm.getSchema(), dataAccessAmendmentForm.getDefinition(), amendment.getContent(), locale, readOnly));
+    params.put("formConfig", new SchemaFormConfig(micaConfigService, dataAccessAmendmentForm, amendment.getContent(), locale, readOnly));
     params.put("accessConfig", getConfig());
   }
 
