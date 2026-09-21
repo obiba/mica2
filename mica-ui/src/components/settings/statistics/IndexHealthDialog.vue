@@ -104,19 +104,25 @@ function localizedTitle(item: EntityIndexHealthDto_ItemDto): string {
   return titles.find((entry) => entry.lang === locale.value)?.value ?? titles[0]?.value ?? '';
 }
 
+/** identifies the latest load, so that a stale response cannot fill a dialog opened for another type */
+let loadSequence = 0;
+
 watch(
   () => props.modelValue,
   async (value) => {
     showDialog.value = value;
+    const sequence = ++loadSequence;
     if (value && props.type) {
       loading.value = true;
       items.value = [];
       selected.value = [];
       try {
-        items.value = await props.load(props.type);
-        selected.value = items.value.slice();
+        const loaded = await props.load(props.type);
+        if (sequence !== loadSequence) return;
+        items.value = loaded;
+        selected.value = loaded.slice();
       } finally {
-        loading.value = false;
+        if (sequence === loadSequence) loading.value = false;
       }
     }
   },
@@ -130,7 +136,12 @@ async function onIndex() {
   if (!props.type) return;
   indexing.value = true;
   try {
-    if (await props.index(props.type, selected.value.map((item) => item.id))) {
+    if (
+      await props.index(
+        props.type,
+        selected.value.map((item) => item.id),
+      )
+    ) {
       emit('indexed', selected.value.length);
       showDialog.value = false;
     }
