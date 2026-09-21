@@ -9,11 +9,14 @@ import { useFormsStore } from 'src/stores/forms';
 import { notifyError } from 'src/utils/notify';
 import { toToken, unwrapKeys, wrapKeys, type Messages } from 'src/utils/formTranslations';
 
-export interface EntityConfigTarget {
-  /** the configuration resource: `network` for `/config/network/form-custom` */
-  name: string;
-  type: EntityFormDto_Type;
-}
+/** the configuration resource (`network` for `/config/network/form-custom`) and the type of its form DTO */
+export type EntityConfigTarget =
+  | { name: string; type: EntityFormDto_Type }
+  /** the project form has its own DTO, without type */
+  | { name: 'project'; type?: undefined };
+
+/** the form as sent to `/config/{type}/form-custom`: an EntityFormDto, or a ProjectFormDto without type */
+export type EntityFormPayload = Omit<EntityFormDto, 'type'> & Partial<Pick<EntityFormDto, 'type'>>;
 
 /** the texts of a form, by language then by dotted key */
 export type FormTranslations = Record<string, Messages>;
@@ -136,11 +139,11 @@ export function useEntityConfigForm(target: EntityConfigTarget) {
     saving.value = true;
     try {
       const prepared = prepareForm(model);
-      const dto: EntityFormDto = {
-        type: target.type,
+      const dto: EntityFormPayload = {
         schema: JSON.stringify(prepared.schema),
         definition: JSON.stringify(prepared.uischema),
       };
+      if (target.type) dto.type = target.type;
       if (Object.keys(prepared.translations).length > 0) dto.translations = JSON.stringify(prepared.translations);
       await api.put(`/config/${target.name}/form-custom`, dto);
       formsStore.clear();

@@ -1,0 +1,50 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "VerticalLayout",
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/_id",
+              "options": {
+                "validationMessage": {
+                  "uniqueId": "t(global.messages.error.unique-id)"
+                }
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/_name"
+            }
+          ],
+          "options": {
+            "class": "col-md-6"
+          }
+        },
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/_description",
+              "options": {
+                "marked": true,
+                "rows": 5
+              }
+            }
+          ],
+          "options": {
+            "class": "col-md-6"
+          }
+        }
+      ],
+      "options": {
+        "class": "row q-col-gutter-md"
+      }
+    }
+  ]
+}

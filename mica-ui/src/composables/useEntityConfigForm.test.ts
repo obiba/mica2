@@ -49,9 +49,9 @@ const jsonForm = {
   }),
 };
 
-function mockServer(dto: object) {
+function mockServer(dto: object, name = 'network') {
   mocked.get.mockImplementation((url: string) =>
-    url === '/config/network/form-custom'
+    url === `/config/${name}/form-custom`
       ? Promise.resolve({ data: dto })
       : Promise.reject(new Error(`unexpected ${url}`)),
   );
@@ -181,6 +181,17 @@ describe('useEntityConfigForm', () => {
     expect(await save(fromDefinition(form.value as FormDefinition))).toBe(true);
     const [, dto] = mocked.put.mock.calls[0] as [string, { translations?: string }];
     expect(dto.translations).toBeUndefined();
+  });
+
+  it('sends the project form without type, as its own DTO', async () => {
+    mockServer({ schema: asfForm.schema, definition: asfForm.definition, properties: [] }, 'project');
+    const { form, load, save } = useEntityConfigForm({ name: 'project' });
+    await load();
+    expect(await save(fromDefinition(form.value as FormDefinition))).toBe(true);
+    const [url, dto] = mocked.put.mock.calls[0] as [string, Record<string, unknown>];
+    expect(url).toBe('/config/project/form-custom');
+    expect('type' in dto).toBe(false);
+    expect(typeof dto.schema).toBe('string');
   });
 
   it('reports a failed save', async () => {

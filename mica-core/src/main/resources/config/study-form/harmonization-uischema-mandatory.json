@@ -1,0 +1,57 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "Label",
+      "text": "<h3>t(study.general-info)</h3>"
+    },
+    {
+      "type": "VerticalLayout",
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/_name",
+              "hint": "t(harmonization-initiative.name-help)"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/_acronym",
+              "hint": "t(harmonization-initiative.acronym-help)"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/_opal",
+              "hint": "t(harmonization-initiative.opal-help)"
+            }
+          ],
+          "options": {
+            "class": "col-6"
+          }
+        },
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/_objectives",
+              "hint": "t(harmonization-initiative.objectives-help)",
+              "options": {
+                "marked": true,
+                "rows": 3
+              }
+            }
+          ],
+          "options": {
+            "class": "col-6"
+          }
+        }
+      ],
+      "options": {
+        "class": "row q-col-gutter-md"
+      }
+    }
+  ]
+}
