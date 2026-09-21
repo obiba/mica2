@@ -638,6 +638,7 @@ class MicaConfigDtos {
       .setDefinition(projectConfig.getDefinition())
       .setSchema(projectConfig.getSchema())
       .addAllProperties(asDtoList(projectConfig.getProperties()));
+    if (projectConfig.hasTranslations()) builder.setTranslations(projectConfig.getTranslations());
 
     return builder.build();
   }
@@ -723,6 +724,7 @@ class MicaConfigDtos {
     ProjectConfig projectConfig = new ProjectConfig();
     projectConfig.setSchema(dto.getSchema());
     projectConfig.setDefinition(dto.getDefinition());
+    if (dto.hasTranslations()) projectConfig.setTranslations(dto.getTranslations());
 
     return projectConfig;
   }
