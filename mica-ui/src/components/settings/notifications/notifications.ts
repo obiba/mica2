@@ -14,7 +14,7 @@ export interface NotificationKind {
   subjectField: FieldsOfType<string>;
   /** the reserved terms the subject can contain */
   terms: string[];
-  /** the default subject, as the server builds it */
+  /** the default subject, as the server builds it: `[org] id: <Type name> status has changed` */
   placeholder: string;
 }
 
@@ -34,7 +34,8 @@ export const DOCUMENT_KINDS: NotificationKind[] = [
     enabledField: 'isStudyNotificationsEnabled',
     subjectField: 'studyNotificationsSubject',
     terms: DOCUMENT_TERMS,
-    placeholder: '[${organization}] ${documentId}: Individual Study / Harmonization Initiative status has changed',
+    // the type name is the one of the document: an individual study or a harmonization study
+    placeholder: '[${organization}] ${documentId}: Individual Study / Harmonization Study status has changed',
   },
   {
     key: 'collected_dataset',
@@ -48,7 +49,7 @@ export const DOCUMENT_KINDS: NotificationKind[] = [
     enabledField: 'isHarmonizedDatasetNotificationsEnabled',
     subjectField: 'harmonizedDatasetNotificationsSubject',
     terms: DOCUMENT_TERMS,
-    placeholder: '[${organization}] ${documentId}: Harmonization Protocol status has changed',
+    placeholder: '[${organization}] ${documentId}: Harmonized Dataset status has changed',
   },
   {
     key: 'project',
