@@ -72,6 +72,7 @@
           </q-tab-panel>
           <q-tab-panel name="notifications" class="q-pa-none">
             <div class="text-h5 q-mb-md">{{ t('config.data_access.notifications') }}</div>
+            <data-access-notifications-panel ref="notificationsPanel" :state="dataAccessConfig" />
           </q-tab-panel>
           <q-tab-panel name="settings" class="q-pa-none">
             <div class="text-h5 q-mb-md">{{ t('config.data_access.other_settings') }}</div>
@@ -90,6 +91,7 @@ import DrawerLayout from 'src/components/DrawerLayout.vue';
 import ConfigFormBuilder from 'src/components/settings/forms/ConfigFormBuilder.vue';
 import DataAccessFormProperties from 'src/components/settings/dataaccess/DataAccessFormProperties.vue';
 import DataAccessPdfTemplates from 'src/components/settings/dataaccess/DataAccessPdfTemplates.vue';
+import DataAccessNotificationsPanel from 'src/components/settings/dataaccess/DataAccessNotificationsPanel.vue';
 import { useDataAccessConfig } from 'src/composables/useDataAccessConfig';
 import {
   DATA_ACCESS_FORM_KINDS,
@@ -100,7 +102,8 @@ import type { DataAccessConfigDto } from 'src/models/Mica';
 
 const { t } = useI18n();
 const systemStore = useSystemStore();
-const { config: dataAccessConfig, load: loadDataAccessConfig } = useDataAccessConfig();
+/** the data access configuration: the enabled forms here, the notifications and other settings in their panels */
+const dataAccessConfig = useDataAccessConfig();
 
 /** the icon of each form in the drawer, as in the legacy administration page */
 const ICONS: Record<DataAccessFormKind, string> = {
@@ -136,25 +139,31 @@ const forms = computed(() =>
     label: `config.data_access.${kind}_form`,
     icon: ICONS[kind],
     state: states[kind],
-    enabled: dataAccessConfig.value ? ENABLED[kind](dataAccessConfig.value) : true,
+    enabled: dataAccessConfig.config.value ? ENABLED[kind](dataAccessConfig.config.value) : true,
   })),
 );
 
 const tab = ref<string>('application');
 /** the mounted form builders: the one of the active panel */
 const formBuilders = ref<InstanceType<typeof ConfigFormBuilder>[]>([]);
+const notificationsPanel = ref<InstanceType<typeof DataAccessNotificationsPanel>>();
 
-/** switches the panel, unless the form has unsaved changes the user keeps */
+/** the editors of the active panel, each with its unsaved-changes guard */
+function editors(): { confirmLeave: () => Promise<boolean> }[] {
+  return [...formBuilders.value, ...(notificationsPanel.value ? [notificationsPanel.value] : [])];
+}
+
+/** switches the panel, unless the active editor has unsaved changes the user keeps */
 async function selectTab(name: string) {
   if (name === tab.value) return;
-  for (const builder of formBuilders.value) {
-    if (!(await builder.confirmLeave())) return;
+  for (const editor of editors()) {
+    if (!(await editor.confirmLeave())) return;
   }
   tab.value = name;
 }
 
 onMounted(() => {
   systemStore.init();
-  loadDataAccessConfig();
+  dataAccessConfig.load();
 });
 </script>

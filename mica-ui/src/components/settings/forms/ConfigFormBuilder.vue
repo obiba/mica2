@@ -37,11 +37,10 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeRouteLeave } from 'vue-router';
-import { useQuasar } from 'quasar';
 import { QJsonFormBuilder } from '@obiba/quasar-ui-json-form/builder';
 import type { FormModel } from '@obiba/quasar-ui-json-form/builder';
 import type { ConfigFormState } from 'src/composables/useConfigForm';
+import { useConfirmLeave } from 'src/composables/useConfirmLeave';
 import { getDateLabel } from 'src/utils/dates';
 import { notifySuccess } from 'src/utils/notify';
 
@@ -57,7 +56,6 @@ interface Props {
 
 const props = defineProps<Props>();
 const { t, locale } = useI18n({ useScope: 'global' });
-const $q = useQuasar();
 const systemStore = useSystemStore();
 
 const languages = computed(() => systemStore.languages);
@@ -85,22 +83,7 @@ async function onPublish() {
   if (await state.publish()) notifySuccess(t('config.form_published_ok'));
 }
 
-/** true when the form can be left: nothing to save, or the user gives up the unsaved changes */
-function confirmLeave(): Promise<boolean> {
-  if (!state.dirty) return Promise.resolve(true);
-  return new Promise<boolean>((resolve) => {
-    $q.dialog({
-      title: t('document.unsaved_title'),
-      message: t('document.unsaved_text'),
-      cancel: true,
-      persistent: true,
-    })
-      .onOk(() => resolve(true))
-      .onCancel(() => resolve(false));
-  });
-}
-
-onBeforeRouteLeave(confirmLeave);
+const { confirmLeave } = useConfirmLeave(props.state.dirty);
 
 defineExpose({ confirmLeave });
 

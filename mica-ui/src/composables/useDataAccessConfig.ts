@@ -40,3 +40,6 @@ export function useDataAccessConfig() {
 
   return { loading, saving, config, load, save };
 }
+
+/** the state of the data access configuration, as returned by `useDataAccessConfig` */
+export type DataAccessConfigState = ReturnType<typeof useDataAccessConfig>;
