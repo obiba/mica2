@@ -1,4 +1,5 @@
-<!-- Data access form: schema, definition and model (t() tokens resolved by the server) -->
+<!-- Data access form: schema, definition (a JSON Forms UI schema, or the angular-schema-form definition of an older
+     form revision, converted on the fly) and model (t() tokens resolved by the server) -->
 <script>
     const formSchema = ${formConfig.schema!"{}"};
     formSchema.readOnly = ${formConfig.readOnly?c};

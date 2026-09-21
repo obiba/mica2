@@ -26,7 +26,7 @@ public class SchemaFormConfigService {
   private MicaConfigService micaConfigService;
 
   public SchemaFormConfig getConfig(AbstractDataAccessEntityForm form, DataAccessEntity request, String lang) {
-    return new SchemaFormConfig(micaConfigService, form.getSchema(), form.getDefinition(), request.getContent(), lang, true);
+    return new SchemaFormConfig(micaConfigService, form, request.getContent(), lang, true);
   }
 
   public Translator getTranslator(String lang) {

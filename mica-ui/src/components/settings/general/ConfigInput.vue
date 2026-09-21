@@ -6,6 +6,7 @@
     :type="type"
     :label="t(`config.${name}`) + (required ? ' *' : '')"
     :hint="noHelp ? undefined : t(`config.${name}_help`)"
+    :placeholder="placeholder"
     :rules="rules"
     :disable="disable"
     :min="min"
@@ -28,6 +29,7 @@ interface Props {
   min?: number;
   disable?: boolean;
   noHelp?: boolean;
+  placeholder?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), { type: 'text' });

@@ -25,13 +25,31 @@
     "career": {
       "title": "t(data-access-feasibility.default.career.title)",
       "type": "string",
-      "enum": [
-        "inv-early",
-        "inv-mid",
-        "inv-senior",
-        "student",
-        "postdoc",
-        "other"
+      "oneOf": [
+        {
+          "const": "inv-early",
+          "title": "t(data-access-feasibility.default.career.inv-early)"
+        },
+        {
+          "const": "inv-mid",
+          "title": "t(data-access-feasibility.default.career.inv-mid)"
+        },
+        {
+          "const": "inv-senior",
+          "title": "t(data-access-feasibility.default.career.inv-senior)"
+        },
+        {
+          "const": "student",
+          "title": "t(data-access-feasibility.default.career.student)"
+        },
+        {
+          "const": "postdoc",
+          "title": "t(data-access-feasibility.default.career.postdoc)"
+        },
+        {
+          "const": "other",
+          "title": "t(data-access-feasibility.default.career.other)"
+        }
       ]
     },
     "careerOther": {
@@ -111,6 +129,13 @@
     "projectObjectives",
     "datasets",
     "selectionCriteria",
-    "studyDesign"
+    "studyDesign",
+    "grantingAgency",
+    "grantDate",
+    "grantCompetition",
+    "careerOther",
+    "biospecimensType",
+    "biospecimensSelectionCriteria",
+    "biospecimensAnalyzeMethods"
   ]
 }

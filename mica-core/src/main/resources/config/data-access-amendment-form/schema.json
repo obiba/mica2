@@ -5,22 +5,62 @@
       "type": "array",
       "items": {
         "type": "string",
-        "enum": [
-          "IA",
-          "IB",
-          "IC",
-          "ID",
-          "IE",
-          "IF",
-          "IG",
-          "IH",
-          "IIrdRebResearchProtocol",
-          "IIrdRebDecisionLetter",
-          "IIrdCV",
-          "IIrdPeerReview",
-          "other"
+        "oneOf": [
+          {
+            "const": "IA",
+            "title": "t(data-access-amendment.default.I.A.title)"
+          },
+          {
+            "const": "IB",
+            "title": "t(data-access-amendment.default.I.B.title)"
+          },
+          {
+            "const": "IC",
+            "title": "t(data-access-amendment.default.I.C.title)"
+          },
+          {
+            "const": "ID",
+            "title": "t(data-access-amendment.default.I.D.title)"
+          },
+          {
+            "const": "IE",
+            "title": "t(data-access-amendment.default.I.E.title)"
+          },
+          {
+            "const": "IF",
+            "title": "t(data-access-amendment.default.I.F.title)"
+          },
+          {
+            "const": "IG",
+            "title": "t(data-access-amendment.default.I.G.title)"
+          },
+          {
+            "const": "IH",
+            "title": "t(data-access-amendment.default.I.H.title)"
+          },
+          {
+            "const": "IIrdRebResearchProtocol",
+            "title": "t(data-access-amendment.default.documents.reb-research-protocol)"
+          },
+          {
+            "const": "IIrdRebDecisionLetter",
+            "title": "t(data-access-amendment.default.documents.reb-decision-letter)"
+          },
+          {
+            "const": "IIrdCV",
+            "title": "t(data-access-amendment.default.documents.cv)t"
+          },
+          {
+            "const": "IIrdPeerReview",
+            "title": "t(data-access-amendment.default.documents.peer-review)"
+          },
+          {
+            "const": "other",
+            "title": "Other"
+          }
         ]
-      }
+      },
+      "uniqueItems": true
     },
     "name": {
       "title": "t(data-access-amendment.default.name)",
@@ -200,6 +240,7 @@
     }
   },
   "required": [
-    "isFormCompleted"
+    "isFormCompleted",
+    "modificationNature"
   ]
 }
