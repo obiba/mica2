@@ -1,0 +1,192 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "title": "t(data-access-request.default.name)",
+      "type": "string"
+    },
+    "title": {
+      "title": "t(data-access-request.default.title)",
+      "type": "string"
+    },
+    "position": {
+      "title": "t(data-access-request.default.position)",
+      "type": "string"
+    },
+    "institution": {
+      "title": "t(data-access-request.default.institution)",
+      "type": "string"
+    },
+    "email": {
+      "title": "t(data-access-request.default.institution-email)",
+      "type": "string",
+      "pattern": "^\\S+@\\S+$"
+    },
+    "emailAlt": {
+      "title": "t(data-access-request.default.email-alt)",
+      "type": "string",
+      "pattern": "^\\S+@\\S+$"
+    },
+    "mailingAddress": {
+      "title": "t(data-access-request.default.address)",
+      "type": "string"
+    },
+    "phone": {
+      "title": "t(data-access-request.default.phone)",
+      "type": "string"
+    },
+    "repName": {
+      "title": "t(data-access-request.default.name)",
+      "type": "string"
+    },
+    "repTitle": {
+      "title": "t(data-access-request.default.title)",
+      "type": "string"
+    },
+    "repPosition": {
+      "title": "t(data-access-request.default.position)",
+      "type": "string"
+    },
+    "repInstitution": {
+      "title": "t(data-access-request.default.institution)",
+      "type": "string"
+    },
+    "repEmail": {
+      "title": "t(data-access-request.default.institution-email)",
+      "type": "string",
+      "pattern": "^\\S+@\\S+$"
+    },
+    "repMailingAddress": {
+      "title": "t(data-access-request.default.address)",
+      "type": "string"
+    },
+    "repPhone": {
+      "title": "t(data-access-request.default.phone)",
+      "type": "string"
+    },
+    "projectTitle": {
+      "type": "string"
+    },
+    "projectWebsite": {
+      "title": "t(data-access-request.default.I.C.website)",
+      "type": "string",
+      "pattern": "^https?://\\S+$"
+    },
+    "hasNoStaff": {
+      "title": "t(data-access-request.default.I.D.check)",
+      "type": "boolean"
+    },
+    "staff": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "title": "t(data-access-request.default.name)",
+            "type": "string"
+          },
+          "title": {
+            "title": "t(data-access-request.default.title)",
+            "type": "string"
+          },
+          "position": {
+            "title": "t(data-access-request.default.position)",
+            "type": "string"
+          },
+          "email": {
+            "title": "t(data-access-request.default.email)",
+            "type": "string",
+            "pattern": "^\\S+@\\S+$"
+          }
+        },
+        "required": [
+          "name",
+          "email"
+        ]
+      }
+    },
+    "hasNoStudents": {
+      "title": "t(data-access-request.default.I.E.check)",
+      "type": "boolean"
+    },
+    "students": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "title": "t(data-access-request.default.name)",
+            "type": "string"
+          },
+          "title": {
+            "title": "t(data-access-request.default.title)",
+            "type": "string"
+          },
+          "position": {
+            "title": "t(data-access-request.default.position)",
+            "type": "string"
+          },
+          "email": {
+            "title": "t(data-access-request.default.email)",
+            "type": "string",
+            "pattern": "^\\S+@\\S+$"
+          }
+        },
+        "required": [
+          "name",
+          "email"
+        ]
+      }
+    },
+    "abstract": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "endDate": {
+      "type": "string",
+      "format": "datepicker"
+    },
+    "rdRebResearchProtocol": {
+      "type": "object",
+      "format": "obibaFiles",
+      "title": "t(data-access-request.default.documents.reb-research-protocol)"
+    },
+    "rdRebDecisionLetter": {
+      "type": "object",
+      "format": "obibaFiles",
+      "title": "t(data-access-request.default.documents.reb-decision-letter)"
+    },
+    "rdCV": {
+      "type": "object",
+      "format": "obibaFiles",
+      "title": "t(data-access-request.default.documents.cv)"
+    },
+    "rdPeerReview": {
+      "type": "object",
+      "format": "obibaFiles",
+      "title": "t(data-access-request.default.documents.peer-review)"
+    },
+    "isFormCompleted": {
+      "title": "t(data-access-request.default.signature.check)",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "name",
+    "email",
+    "repName",
+    "repEmail",
+    "projectTitle",
+    "abstract",
+    "summary",
+    "endDate",
+    "rdRebResearchProtocol",
+    "rdRebDecisionLetter",
+    "rdCV",
+    "isFormCompleted"
+  ]
+}
