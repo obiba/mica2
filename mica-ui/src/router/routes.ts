@@ -25,6 +25,10 @@ const routes: RouteRecordRaw[] = [
       { path: 'settings/general', component: () => import('pages/SettingsGeneralPage.vue') },
       { path: 'settings/notifications', component: () => import('pages/SettingsNotificationsPage.vue') },
       { path: 'settings/data-access', component: () => import('pages/SettingsDataAccessPage.vue') },
+      { path: 'settings/caching', component: () => import('pages/SettingsCachingPage.vue') },
+      { path: 'settings/logs', component: () => import('pages/SettingsLogsPage.vue') },
+      { path: 'settings/indexing', component: () => import('pages/SettingsIndexingPage.vue') },
+      { path: 'settings/statistics', component: () => import('pages/SettingsStatisticsPage.vue') },
       ...DOCUMENT_TYPES.map((documentType) => ({
         path: entityConfigRoute(documentType).substring(1),
         component: () => import('pages/SettingsEntityConfigPage.vue'),
