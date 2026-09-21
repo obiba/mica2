@@ -24,12 +24,12 @@
         <div class="col-4 col-sm-4 col-xs-12">
           <q-list separator>
             <q-item-label header class="text-uppercase">{{ t('settings.content') }}</q-item-label>
-            <q-item v-if="systemStore.configuration.isNetworkEnabled">
+            <q-item v-for="entry in contentEntries" :key="entry.type">
               <q-item-section>
                 <q-item-label>
-                  <router-link to="/settings/network">{{ t('settings.network') }}</router-link>
+                  <router-link :to="entityConfigRoute(entry.type)">{{ t(entry.label) }}</router-link>
                 </q-item-label>
-                <q-item-label caption lines="2">{{ t('settings.network_caption') }}</q-item-label>
+                <q-item-label caption lines="2">{{ t(entry.caption) }}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>
@@ -45,8 +45,18 @@
 </template>
 
 <script setup lang="ts">
+import { DOCUMENT_TYPES } from 'src/composables/useDocumentTarget';
+import { entityConfig, entityConfigRoute } from 'src/utils/entityConfigs';
+
 const { t } = useI18n();
 const systemStore = useSystemStore();
+
+/** the settings of the document types whose section is enabled */
+const contentEntries = computed(() =>
+  DOCUMENT_TYPES.map((type) => ({ type, ...entityConfig(type) })).filter((entry) =>
+    entry.isEnabled(systemStore.configuration),
+  ),
+);
 
 onMounted(() => {
   systemStore.init();
