@@ -23,6 +23,7 @@ const routes: RouteRecordRaw[] = [
       { path: '', component: () => import('pages/IndexPage.vue') },
       { path: 'settings', component: () => import('pages/SettingsPage.vue') },
       { path: 'settings/general', component: () => import('pages/SettingsGeneralPage.vue') },
+      { path: 'settings/notifications', component: () => import('pages/SettingsNotificationsPage.vue') },
       { path: 'settings/data-access', component: () => import('pages/SettingsDataAccessPage.vue') },
       ...DOCUMENT_TYPES.map((documentType) => ({
         path: entityConfigRoute(documentType).substring(1),
