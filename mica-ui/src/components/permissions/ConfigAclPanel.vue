@@ -7,6 +7,7 @@
       :add-label="t('permission.add')"
       :empty-label="t('permission.none')"
       with-role
+      :other-resource-labels="otherResourceLabels"
       :loading="loadingPermissions"
       :can-edit="canEdit"
       @add="onAdd"
@@ -20,6 +21,8 @@
       :roles="roles"
       :title="dialogTitle"
       :principal-hint="t('permission.principal_help')"
+      :file-label="fileLabel"
+      :other-resources="otherResources"
       :saving="saving"
       @save="onSave"
     />
@@ -31,7 +34,7 @@
 import type { AclDto } from 'src/models/MicaSecurity';
 import ConfirmDialog from 'src/components/ConfirmDialog.vue';
 import AclTable from 'src/components/permissions/AclTable.vue';
-import AclDialog, { type RoleOption } from 'src/components/permissions/AclDialog.vue';
+import AclDialog, { type OtherResourceOption, type RoleOption } from 'src/components/permissions/AclDialog.vue';
 import { useConfigAcl, type AclInput } from 'src/composables/useAcl';
 
 interface Props {
@@ -42,6 +45,10 @@ interface Props {
   help: string;
   /** the roles that can be granted on the resource */
   roles: RoleOption[];
+  /** the label of the "apply to files" option; none when the resource has no files */
+  fileLabel?: string | undefined;
+  /** the other resources a permission can be granted on too */
+  otherResources?: OtherResourceOption[] | undefined;
   canEdit?: boolean | undefined;
 }
 
@@ -50,6 +57,16 @@ const { t } = useI18n();
 
 const { permissions, loadingPermissions, loadPermissions, savePermission, deletePermission } = useConfigAcl(
   () => props.endpoint,
+  () => ({
+    withFile: props.fileLabel !== undefined,
+    otherResources: props.otherResources?.map((option) => option.value),
+  }),
+);
+
+const otherResourceLabels = computed(() =>
+  props.otherResources
+    ? Object.fromEntries(props.otherResources.map((option) => [option.value, option.label]))
+    : undefined,
 );
 
 const saving = ref(false);

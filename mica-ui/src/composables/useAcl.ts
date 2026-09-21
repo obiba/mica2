@@ -18,6 +18,8 @@ export interface AclInput {
   role?: string | undefined;
   /** apply to the files of the document too (documents only) */
   file?: boolean | undefined;
+  /** the other resources of the permission granted too (`action-logs`... of the data access requests) */
+  otherResources?: string[] | undefined;
 }
 
 /** where the lists are managed: the permissions (draft) and the accesses (publication) resources */
@@ -27,6 +29,16 @@ export interface AclEndpoints {
   accesses?: string | undefined;
   /** fixed query parameters of the permission save */
   params?: Record<string, string | boolean> | undefined;
+  /** the other resources a permission can be granted on too, sent as repeated `otherResources` parameters */
+  otherResources?: string[] | undefined;
+}
+
+/** the options of a configuration resource */
+export interface ConfigAclOptions {
+  /** the permission can apply to the files of the resource (the `file` parameter, not sent as false) */
+  withFile?: boolean;
+  /** the other resources a permission can be granted on too */
+  otherResources?: string[] | undefined;
 }
 
 export function documentAclEndpoints(target: DocumentTarget): AclEndpoints {
@@ -37,8 +49,13 @@ export function documentAclEndpoints(target: DocumentTarget): AclEndpoints {
  * A configuration resource (Opal views download, contingency tables...): permissions only, saved
  * with the role as is (`config`) and without file permission.
  */
-export function configAclEndpoints(path: string): AclEndpoints {
-  return { permissions: path, params: { config: true, file: false } };
+export function configAclEndpoints(path: string, options: ConfigAclOptions = {}): AclEndpoints {
+  const endpoints: AclEndpoints = {
+    permissions: path,
+    params: options.withFile ? { config: true } : { config: true, file: false },
+  };
+  if (options.otherResources) endpoints.otherResources = options.otherResources;
+  return endpoints;
 }
 
 export function fileAclEndpoints(path: string): AclEndpoints {
@@ -87,14 +104,16 @@ export function useAcl(endpoints: MaybeRefOrGetter<AclEndpoints>) {
     const resource = path(kind);
     if (!resource) return false;
     try {
-      const params: Record<string, string | boolean> = {
+      const params: Record<string, string | boolean | string[]> = {
         ...(kind === 'permissions' ? toValue(endpoints).params : {}),
         principal: acl.principal,
         type: acl.type,
       };
       if (acl.file !== undefined) params.file = acl.file;
       if (kind === 'permissions' && acl.role) params.role = acl.role;
-      await api.put(resource, null, { params });
+      if (kind === 'permissions' && acl.otherResources) params.otherResources = acl.otherResources;
+      // a list as repeated parameters (`otherResources=a&otherResources=b`), as the server reads them
+      await api.put(resource, null, { params, paramsSerializer: { indexes: null } });
       await load(kind);
       return true;
     } catch (error) {
@@ -141,6 +160,6 @@ export function useFileAcl(path: MaybeRefOrGetter<string>) {
 }
 
 /** the permissions of a configuration resource (`/config/document-sets/permissions`...) */
-export function useConfigAcl(path: MaybeRefOrGetter<string>) {
-  return useAcl(() => configAclEndpoints(toValue(path)));
+export function useConfigAcl(path: MaybeRefOrGetter<string>, options: MaybeRefOrGetter<ConfigAclOptions> = {}) {
+  return useAcl(() => configAclEndpoints(toValue(path), toValue(options)));
 }

@@ -32,7 +32,6 @@ import java.util.Optional;
 
 @Component
 @Path("/config/data-access-form")
-@RequiresAuthentication
 public class DataAccessFormResource {
 
   @Inject
@@ -45,6 +44,7 @@ public class DataAccessFormResource {
   Dtos dtos;
 
   @GET
+  @RequiresAuthentication
   public Mica.DataAccessFormDto get(@QueryParam("revision") String revision) {
     Optional<DataAccessForm> d = dataAccessFormService.findByRevision(revision);
     if(!d.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
@@ -66,8 +66,11 @@ public class DataAccessFormResource {
     return Response.ok().build();
   }
 
+  /**
+   * The sub-resource checks the permission itself (edit on any data access request): no annotation on the locator,
+   * which is also invoked for the unauthenticated CORS preflight requests.
+   */
   @Path("/permissions")
-  @RequiresRoles(Roles.MICA_ADMIN)
   public SubjectAclResource permissions() {
     SubjectAclResource subjectAclResource = applicationContext.getBean(SubjectAclResource.class);
     subjectAclResource.setResourceInstance("/data-access-request", "*");

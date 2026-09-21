@@ -943,6 +943,7 @@ export interface DataAccessFormDto {
   endDateFieldPath?: string | undefined;
   revision?: number | undefined;
   lastUpdateDate?: string | undefined;
+  translations?: string | undefined;
 }
 
 export enum DataAccessFormDto_PdfDownloadType {
@@ -956,6 +957,7 @@ export interface DataAccessPreliminaryFormDto {
   definition: string;
   revision?: number | undefined;
   lastUpdateDate?: string | undefined;
+  translations?: string | undefined;
 }
 
 export interface DataAccessFeasibilityFormDto {
@@ -963,6 +965,7 @@ export interface DataAccessFeasibilityFormDto {
   definition: string;
   revision?: number | undefined;
   lastUpdateDate?: string | undefined;
+  translations?: string | undefined;
 }
 
 export interface DataAccessAgreementFormDto {
@@ -970,6 +973,7 @@ export interface DataAccessAgreementFormDto {
   definition: string;
   revision?: number | undefined;
   lastUpdateDate?: string | undefined;
+  translations?: string | undefined;
 }
 
 export interface DataAccessAmendmentFormDto {
@@ -983,6 +987,7 @@ export interface DataAccessAmendmentFormDto {
   endDateFieldPath?: string | undefined;
   revision?: number | undefined;
   lastUpdateDate?: string | undefined;
+  translations?: string | undefined;
 }
 
 export interface ProjectFormDto {
