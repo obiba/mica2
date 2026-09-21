@@ -131,16 +131,15 @@ describe('useContentMetrics', () => {
     expect(mocked.get).not.toHaveBeenCalled();
   });
 
-  it('indexes the selected documents then reloads the metrics', async () => {
+  it('indexes the selected documents without reloading the metrics', async () => {
     mocked.put.mockResolvedValueOnce({ status: 204 });
-    mocked.get.mockResolvedValueOnce({ data: dto });
     const { index } = useContentMetrics();
     expect(await index('Network', ['n1', 'n2'])).toBe(true);
     expect(mocked.put).toHaveBeenCalledWith('/draft/networks/_index', null, {
       params: { id: ['n1', 'n2'] },
       paramsSerializer: { indexes: null },
     });
-    expect(mocked.get).toHaveBeenCalledWith('/config/metrics');
+    expect(mocked.get).not.toHaveBeenCalled();
   });
 
   it('does not index without a selection', async () => {

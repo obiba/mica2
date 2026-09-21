@@ -480,7 +480,7 @@ export default {
         info: "Documents publiés absents de l'index de recherche. Sélectionnez ceux à indexer.",
         empty: 'Tous les documents publiés sont indexés.',
         index: 'Indexer',
-        started: 'Indexation démarrée : {count} documents.',
+        started: 'Indexation démarrée : {count} documents. Rafraîchissez les statistiques plus tard pour voir le résultat.',
       },
     },
     notifications: {

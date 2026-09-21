@@ -480,7 +480,7 @@ export default {
         info: 'Published documents missing from the search index. Select the ones to index.',
         empty: 'Every published document is indexed.',
         index: 'Index',
-        started: 'Indexing started: {count} documents.',
+        started: 'Indexing started: {count} documents. Refresh the statistics later to see the result.',
       },
     },
     notifications: {
