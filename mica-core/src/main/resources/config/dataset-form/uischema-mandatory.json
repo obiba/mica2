@@ -1,0 +1,29 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "Label",
+      "text": "t(dataset.general-info)"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/_name"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/_acronym"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/_description",
+      "options": {
+        "marked": true,
+        "rows": 5
+      }
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/_entityType"
+    }
+  ]
+}
