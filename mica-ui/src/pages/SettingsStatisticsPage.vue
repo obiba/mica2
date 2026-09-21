@@ -13,7 +13,7 @@
           <div class="text-h5 q-mb-sm">{{ t('config.statistics.title') }}</div>
           <p class="text-grey-8">{{ t('config.statistics.info') }}</p>
         </div>
-        <div class="col-auto text-right">
+        <div v-if="!failed" class="col-auto text-right">
           <q-btn
             color="primary"
             icon="refresh"
