@@ -99,6 +99,17 @@ describe('useContentMetrics', () => {
     expect(loading.value).toBe(false);
   });
 
+  it('flags a failed load and keeps the previous metrics', async () => {
+    mocked.get.mockResolvedValueOnce({ data: dto });
+    mocked.get.mockRejectedValueOnce(new Error('500'));
+    const { metrics, failed, load } = useContentMetrics();
+    await load();
+    expect(failed.value).toBe(false);
+    await load();
+    expect(failed.value).toBe(true);
+    expect(metrics.value?.types).toHaveLength(3);
+  });
+
   it('lists the documents requiring indexing, sorted by id', async () => {
     mocked.get.mockResolvedValueOnce({
       data: {

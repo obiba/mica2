@@ -112,6 +112,9 @@ export default {
     title: 'Personnes',
     caption: 'Gérer les personnes',
   },
+  error: {
+    unhandledException: 'Erreur inattendue du serveur, voir les logs du serveur.',
+  },
   server: {
     error: {
       401: 'Opération non autorisée',
@@ -440,6 +443,7 @@ export default {
       refresh: 'Rafraîchir',
       refreshed_at: 'Rafraîchi à {time}',
       none: 'Aucune statistique disponible.',
+      load_failed: "Les métriques n'ont pas pu être chargées : le moteur de recherche est peut-être arrêté ou ses index absents (voir la page Indexation).",
       require_indexing_warning: "Aucun document publié ne nécessite une indexation. | Un document publié nécessite une indexation : ouvrez sa carte pour compléter l'index. | {n} documents publiés nécessitent une indexation : ouvrez leurs cartes pour compléter l'index.",
       of_total: 'sur {total} au total',
       total: 'Total',

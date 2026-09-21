@@ -28,6 +28,16 @@
         </div>
       </div>
 
+      <q-banner v-if="failed" rounded class="bg-negative text-white q-mb-md">
+        <template v-slot:avatar>
+          <q-icon name="error" />
+        </template>
+        {{ t('config.statistics.load_failed') }}
+        <template v-slot:action>
+          <q-btn flat :label="t('config.statistics.refresh')" :loading="loading" @click="load" />
+        </template>
+      </q-banner>
+
       <q-banner v-if="metrics && metrics.notIndexed > 0" rounded class="bg-warning text-dark q-mb-md">
         <template v-slot:avatar>
           <q-icon name="warning" />
@@ -47,7 +57,7 @@
           </q-card>
         </div>
       </div>
-      <p v-else-if="metrics && metrics.types.length === 0" class="text-hint">{{ t('config.statistics.none') }}</p>
+      <p v-else-if="!metrics || metrics.types.length === 0" class="text-hint">{{ t('config.statistics.none') }}</p>
       <div v-else-if="metrics" class="row q-col-gutter-md">
         <div v-for="typeMetrics in metrics.types" :key="typeMetrics.type" class="col-12 col-md-6 col-lg-4">
           <variables-metrics-card v-if="typeMetrics.type === 'DatasetVariable'" :metrics="typeMetrics" />
@@ -76,7 +86,7 @@ import { useContentMetrics, type MetricsType } from 'src/composables/useContentM
 import { notifySuccess } from 'src/utils/notify';
 
 const { t } = useI18n();
-const { loading, metrics, refreshedAt, load, loadIndexHealth, index } = useContentMetrics();
+const { loading, failed, metrics, refreshedAt, load, loadIndexHealth, index } = useContentMetrics();
 
 const showIndexDialog = ref(false);
 const indexType = ref<MetricsType>();

@@ -112,6 +112,9 @@ export default {
     title: 'Persons',
     caption: 'Manage persons',
   },
+  error: {
+    unhandledException: 'Unexpected server error, see the server logs.',
+  },
   server: {
     error: {
       401: 'Unauthorized operation',
@@ -440,6 +443,7 @@ export default {
       refresh: 'Refresh',
       refreshed_at: 'Refreshed at {time}',
       none: 'No statistics available.',
+      load_failed: 'The metrics could not be loaded: the search engine may be down or its indices missing (see the Indexing page).',
       require_indexing_warning: 'No published document requires indexing. | One published document requires indexing: open its card to complete the index. | {n} published documents require indexing: open their cards to complete the index.',
       of_total: 'of {total} in total',
       total: 'Total',

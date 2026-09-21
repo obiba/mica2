@@ -130,6 +130,8 @@ export function useContentMetrics() {
   const loading = ref(false);
   const metrics = ref<ContentMetrics>();
   const refreshedAt = ref<Date>();
+  /** the last load failed (search engine down...): the previous metrics, if any, are kept */
+  const failed = ref(false);
 
   async function load(): Promise<void> {
     loading.value = true;
@@ -137,7 +139,9 @@ export function useContentMetrics() {
       const response = await api.get<MicaMetricsDto>('/config/metrics');
       metrics.value = normalizeMetrics(response.data);
       refreshedAt.value = new Date();
+      failed.value = false;
     } catch (error) {
+      failed.value = true;
       notifyError(error);
     } finally {
       loading.value = false;
@@ -173,5 +177,5 @@ export function useContentMetrics() {
     }
   }
 
-  return { loading, metrics, refreshedAt, load, loadIndexHealth, index };
+  return { loading, failed, metrics, refreshedAt, load, loadIndexHealth, index };
 }
