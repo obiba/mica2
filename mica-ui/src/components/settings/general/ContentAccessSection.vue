@@ -15,21 +15,10 @@
       />
       <config-toggle v-model="form.signupEnabled" name="signup_enabled" />
       <config-toggle v-model="form.signupWithPassword" name="signup_with_password" />
-      <q-select
+      <groups-select
         v-model="form.signupGroups"
-        multiple
-        use-input
-        use-chips
-        hide-dropdown-icon
-        input-debounce="0"
-        dense
-        outlined
         :label="t('config.signup_groups')"
         :hint="t('config.signup_groups_form_help')"
-        class="q-mb-md"
-        @new-value="(value: string, done: (item?: string) => void) => onNewGroup(form, value, done)"
-        @input-value="(value: string) => (pendingGroups = value)"
-        @blur="onGroupsBlur(form)"
       />
     </template>
   </config-section>
@@ -38,14 +27,12 @@
 <script setup lang="ts">
 import ConfigSection from 'src/components/settings/general/ConfigSection.vue';
 import ConfigToggle from 'src/components/settings/general/ConfigToggle.vue';
+import GroupsSelect from 'src/components/settings/general/GroupsSelect.vue';
 import { flagItem, formattedItem } from 'src/components/settings/general/fields';
 import type { MicaConfigDto } from 'src/models/Mica';
-import { SUMMARY_STATISTICS_ACCESS_POLICIES, splitGroups } from 'src/utils/config';
+import { SUMMARY_STATISTICS_ACCESS_POLICIES } from 'src/utils/config';
 
 const { t } = useI18n();
-
-/** the groups typed but not yet committed with Enter */
-const pendingGroups = ref('');
 
 const policyOptions = computed(() =>
   SUMMARY_STATISTICS_ACCESS_POLICIES.map((policy) => ({
@@ -53,23 +40,6 @@ const policyOptions = computed(() =>
     value: policy,
   })),
 );
-
-/** several groups can be typed at once, space separated as in the legacy form */
-function onNewGroup(form: MicaConfigDto, value: string, done: (item?: string) => void) {
-  form.signupGroups = form.signupGroups || [];
-  splitGroups(value).forEach((group) => {
-    if (!form.signupGroups.includes(group)) form.signupGroups.push(group);
-  });
-  done();
-}
-
-/** groups typed without Enter are still saved when leaving the field (as in the legacy text input) */
-function onGroupsBlur(form: MicaConfigDto) {
-  if (!pendingGroups.value.trim()) return;
-  onNewGroup(form, pendingGroups.value, () => {
-    pendingGroups.value = '';
-  });
-}
 
 const items = computed(() => [
   flagItem('openAccess', 'open_access'),
