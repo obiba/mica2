@@ -144,14 +144,18 @@ export function untranslatedTokens(definition: FormDefinition): string[] {
  * key of its own. A token whose key no bundle knows is left as it is, resolved by the server at render
  * time. Returns the number of keys seeded.
  */
-export function seedTranslations(model: FormModel, bundles: Record<string, Messages>): number {
+export function seedTranslations(
+  model: FormModel,
+  bundles: Record<string, Messages>,
+  /** the model as a definition, when the caller has it already */
+  definition: Required<FormDefinition> = toDefinition(model),
+): number {
   const languages = Object.keys(bundles);
   const isKnown = knownKeys(model.translations);
   const known = (key: string) => languages.some((language) => key in (bundles[language] as Messages));
   let seeded = 0;
 
   // the strings made of a single token: the key stays, the texts come from the bundles
-  const definition = toDefinition(model);
   const wholeKeys = new Set<string>();
   [...translatableStrings(definition.schema), ...translatableStrings(definition.uischema)].forEach((text) => {
     const key = tokenKey(text);
@@ -215,11 +219,9 @@ export function useConfigForm<D extends ConfigFormDto = ConfigFormDto>(source: C
 
   /** the Mica messages of the configured languages, by language */
   async function bundles(): Promise<Record<string, Messages>> {
-    const result: Record<string, Messages> = {};
-    for (const language of systemStore.languages) {
-      result[language] = await formsStore.getBundle(language);
-    }
-    return result;
+    const languages = systemStore.languages;
+    const messages = await Promise.all(languages.map((language) => formsStore.getBundle(language)));
+    return Object.fromEntries(languages.map((language, index) => [language, messages[index] as Messages]));
   }
 
   async function loadPublished(): Promise<void> {
@@ -255,10 +257,13 @@ export function useConfigForm<D extends ConfigFormDto = ConfigFormDto>(source: C
         uischema: converted.uischema,
         translations: parseTranslations(response.data.translations),
       });
-      // a legacy form relies on the Mica bundle: its texts are brought into the builder
-      if (untranslatedTokens(toDefinition(model)).length > 0) seedTranslations(model, await bundles());
       // the form as the builder models it: its translations flat, by dotted key
-      const modelled = toDefinition(model);
+      let modelled = toDefinition(model);
+      // a legacy form relies on the Mica bundle: its texts are brought into the builder
+      if (untranslatedTokens(modelled).length > 0) {
+        seedTranslations(model, await bundles(), modelled);
+        modelled = toDefinition(model);
+      }
       const isKnown = knownKeys(modelled.translations);
       form.value = {
         schema: unwrapKeys(modelled.schema, isKnown),

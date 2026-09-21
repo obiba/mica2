@@ -96,7 +96,7 @@
       </div>
 
       <div class="q-mt-md q-gutter-sm">
-        <q-btn color="primary" :label="t('save')" :loading="state.saving" :disable="!dirty || !valid" @click="onSave" />
+        <q-btn color="primary" :label="t('save')" :loading="state.saving" :disable="!dirty || !valid" @click="save" />
         <q-btn flat color="primary" :label="t('cancel')" :disable="!dirty || state.saving" @click="reset" />
       </div>
     </div>
@@ -106,7 +106,7 @@
 <script setup lang="ts">
 import ConfigInput from 'src/components/settings/general/ConfigInput.vue';
 import ConfigToggle from 'src/components/settings/general/ConfigToggle.vue';
-import { useConfirmLeave } from 'src/composables/useConfirmLeave';
+import { useWorkingCopy } from 'src/composables/useWorkingCopy';
 import type { DataAccessConfigState } from 'src/composables/useDataAccessConfig';
 import type { DataAccessConfigDto } from 'src/models/Mica';
 import { notifySuccess } from 'src/utils/notify';
@@ -127,8 +127,6 @@ const props = defineProps<Props>();
 const { t } = useI18n();
 
 const state = reactive(props.state);
-/** a working copy of the configuration, discarded on cancel */
-const form = ref<DataAccessConfigDto>();
 
 /** the configuration as saved: an empty prefix is none */
 function normalized(config: DataAccessConfigDto): DataAccessConfigDto {
@@ -137,14 +135,14 @@ function normalized(config: DataAccessConfigDto): DataAccessConfigDto {
   return result;
 }
 
-const dirty = computed(
-  () =>
-    form.value !== undefined &&
-    state.config !== undefined &&
-    JSON.stringify(normalized(form.value)) !== JSON.stringify(normalized(state.config)),
-);
+/** a working copy of the configuration, discarded on cancel */
+const { form, dirty, reset, save, confirmLeave } = useWorkingCopy<DataAccessConfigDto>({
+  source: () => state.config,
+  save: state.save,
+  normalize: normalized,
+  onSaved: () => notifySuccess(t('config.data_access.saved')),
+});
 const valid = computed(() => !form.value?.idPrefix || ID_PREFIX.test(form.value.idPrefix));
-const { confirmLeave } = useConfirmLeave(dirty);
 
 const agreementPolicies = computed(() =>
   AGREEMENT_POLICIES.map((policy) => ({
@@ -152,20 +150,6 @@ const agreementPolicies = computed(() =>
     label: t(`config.data_access.agreement_opened_policy_${policy}`),
   })),
 );
-
-function reset() {
-  form.value = state.config ? structuredClone(toRaw(state.config)) : undefined;
-}
-
-async function onSave() {
-  if (!form.value) return;
-  if (await state.save(normalized(form.value))) {
-    notifySuccess(t('config.data_access.saved'));
-    reset();
-  }
-}
-
-watch(() => state.config, reset, { immediate: true });
 
 defineExpose({ confirmLeave });
 </script>

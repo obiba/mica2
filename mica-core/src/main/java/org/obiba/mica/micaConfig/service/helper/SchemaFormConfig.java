@@ -18,9 +18,6 @@ import org.obiba.mica.micaConfig.domain.EntityConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 
 /**
- * Schema form settings.
- */
-/**
  * The form of a data access entity as rendered by the portal: the {@code t()} tokens of the schema and of the
  * definition are resolved from the texts stored with the form first, then from the Mica translations.
  */

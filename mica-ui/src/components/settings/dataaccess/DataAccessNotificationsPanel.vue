@@ -88,7 +88,7 @@
         </q-tab-panel>
       </q-tab-panels>
       <div class="q-mt-md q-gutter-sm">
-        <q-btn color="primary" :label="t('save')" :loading="state.saving" :disable="!dirty" @click="onSave" />
+        <q-btn color="primary" :label="t('save')" :loading="state.saving" :disable="!dirty" @click="save" />
         <q-btn flat color="primary" :label="t('cancel')" :disable="!dirty || state.saving" @click="reset" />
       </div>
     </div>
@@ -98,7 +98,7 @@
 <script setup lang="ts">
 import ConfigInput from 'src/components/settings/general/ConfigInput.vue';
 import ConfigToggle from 'src/components/settings/general/ConfigToggle.vue';
-import { useConfirmLeave } from 'src/composables/useConfirmLeave';
+import { useWorkingCopy } from 'src/composables/useWorkingCopy';
 import type { DataAccessConfigState } from 'src/composables/useDataAccessConfig';
 import type { DataAccessConfigDto } from 'src/models/Mica';
 import { notifySuccess } from 'src/utils/notify';
@@ -127,10 +127,11 @@ const { t } = useI18n();
 const state = reactive(props.state);
 const tab = ref('events');
 /** a working copy of the configuration, discarded on cancel */
-const form = ref<DataAccessConfigDto>();
-
-const dirty = computed(() => form.value !== undefined && JSON.stringify(form.value) !== JSON.stringify(state.config));
-const { confirmLeave } = useConfirmLeave(dirty);
+const { form, dirty, reset, save, confirmLeave } = useWorkingCopy<DataAccessConfigDto>({
+  source: () => state.config,
+  save: state.save,
+  onSaved: () => notifySuccess(t('config.data_access.saved')),
+});
 
 function notifyField(event: NotifiedEvent): NotifyField {
   return `notify${event.charAt(0).toUpperCase()}${event.slice(1)}` as NotifyField;
@@ -144,20 +145,6 @@ function subjectField(event: NotifiedEvent): SubjectField {
 function snake(event: string): string {
   return event.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
 }
-
-function reset() {
-  form.value = state.config ? structuredClone(toRaw(state.config)) : undefined;
-}
-
-async function onSave() {
-  if (!form.value) return;
-  if (await state.save(form.value)) {
-    notifySuccess(t('config.data_access.saved'));
-    reset();
-  }
-}
-
-watch(() => state.config, reset, { immediate: true });
 
 defineExpose({ confirmLeave });
 </script>

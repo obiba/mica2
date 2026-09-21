@@ -114,7 +114,32 @@ async function onRemove(language: string) {
   if (previous?.justUploaded) await remove(previous).catch(() => undefined);
 }
 
+/**
+ * Deletes from the temporary store the templates uploaded for a form that is given up (cancelled,
+ * reloaded, left): those the saved form keeps have been moved by the server.
+ */
+async function discardUploads(discarded: DataAccessFormDto | undefined, kept: DataAccessFormDto | undefined) {
+  if (!discarded?.pdfTemplates) return;
+  const keptIds = new Set((kept?.pdfTemplates ?? []).map((template) => template.id));
+  const uploads = discarded.pdfTemplates.filter((template) => template.justUploaded && !keptIds.has(template.id));
+  if (uploads.length === 0) return;
+  discarded.pdfTemplates = discarded.pdfTemplates.filter((template) => !uploads.includes(template));
+  await Promise.all(uploads.map((upload) => remove(upload).catch(() => undefined)));
+}
+
+// the form as reloaded replaces the DTO: after a save, or when the changes are given up
+watch(
+  () => state.dto,
+  (current, previous) => {
+    if (previous !== current) discardUploads(previous, current).catch(() => undefined);
+  },
+);
+
 onMounted(() => {
   systemStore.loadLanguages(locale.value).catch(() => undefined);
+});
+
+onBeforeUnmount(() => {
+  discardUploads(dto.value, undefined).catch(() => undefined);
 });
 </script>

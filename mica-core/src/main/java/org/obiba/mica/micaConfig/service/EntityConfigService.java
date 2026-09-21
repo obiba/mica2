@@ -15,7 +15,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.obiba.mica.micaConfig.domain.EntityConfig;

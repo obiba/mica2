@@ -74,7 +74,7 @@ public class DataAccessEntityExporter {
       applyFontConfig(titleRun, getItemConfig("documentTitle"));
 
       // a JSON Forms UI schema (object) is walked as the definition tree of the angular-schema-form dialect (array)
-      traverseDefinitionTree(document, definition.isObject() ? UischemaDefinition.toDefinition(definition) : definition, model);
+      traverseDefinitionTree(document, definition.isObject() ? UischemaDefinition.toDefinition(definition, schema) : definition, model);
 
       // footer
       XWPFFooter footer = document.createFooter(HeaderFooterType.DEFAULT);

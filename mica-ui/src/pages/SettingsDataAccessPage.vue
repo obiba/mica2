@@ -105,6 +105,7 @@ import DataAccessNotificationsPanel from 'src/components/settings/dataaccess/Dat
 import DataAccessSettingsPanel from 'src/components/settings/dataaccess/DataAccessSettingsPanel.vue';
 import ConfigAclPanel from 'src/components/permissions/ConfigAclPanel.vue';
 import { useDataAccessConfig } from 'src/composables/useDataAccessConfig';
+import { useGuardedTab } from 'src/composables/useGuardedTab';
 import {
   DATA_ACCESS_FORM_KINDS,
   useDataAccessConfigForm,
@@ -166,27 +167,16 @@ const forms = computed(() =>
   })),
 );
 
-const tab = ref<string>('application');
 /** the mounted form builders: the one of the active panel */
 const formBuilders = ref<InstanceType<typeof ConfigFormBuilder>[]>([]);
 const notificationsPanel = ref<InstanceType<typeof DataAccessNotificationsPanel>>();
 const settingsPanel = ref<InstanceType<typeof DataAccessSettingsPanel>>();
-
-/** the editors of the active panel, each with its unsaved-changes guard */
-function editors(): { confirmLeave: () => Promise<boolean> }[] {
-  return [...formBuilders.value, notificationsPanel.value, settingsPanel.value].filter(
-    (editor) => editor !== undefined,
-  );
-}
-
-/** switches the panel, unless the active editor has unsaved changes the user keeps */
-async function selectTab(name: string) {
-  if (name === tab.value) return;
-  for (const editor of editors()) {
-    if (!(await editor.confirmLeave())) return;
-  }
-  tab.value = name;
-}
+/** the editors of the active panel guard the switch with their unsaved changes */
+const { tab, selectTab } = useGuardedTab('application', () => [
+  ...formBuilders.value,
+  notificationsPanel.value,
+  settingsPanel.value,
+]);
 
 onMounted(() => {
   systemStore.init();
