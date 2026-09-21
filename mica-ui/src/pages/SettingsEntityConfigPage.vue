@@ -35,11 +35,11 @@
         </template>
 
         <q-tab-panels v-model="tab" animated>
-          <q-tab-panel v-for="form in config.forms" :key="form.target.name" :name="form.target.name" class="q-pa-none">
+          <q-tab-panel v-for="form in forms" :key="form.target.name" :name="form.target.name" class="q-pa-none">
             <div class="text-h5 q-mb-md">{{ t(form.label) }}</div>
-            <entity-form-builder
+            <config-form-builder
               ref="formBuilders"
-              :target="form.target"
+              :state="form.state"
               :info="t('config.form_info', { type: t(form.info.type), fields: t(form.info.fields) })"
             />
           </q-tab-panel>
@@ -61,9 +61,10 @@
 
 <script setup lang="ts">
 import DrawerLayout from 'src/components/DrawerLayout.vue';
-import EntityFormBuilder from 'src/components/settings/forms/EntityFormBuilder.vue';
+import ConfigFormBuilder from 'src/components/settings/forms/ConfigFormBuilder.vue';
 import AclPanel from 'src/components/permissions/AclPanel.vue';
 import { useRouteDocumentType } from 'src/composables/useDocumentTarget';
+import { useEntityConfigForm } from 'src/composables/useEntityConfigForm';
 import type { AclEndpoints } from 'src/composables/useAcl';
 import { entityConfig } from 'src/utils/entityConfigs';
 
@@ -74,10 +75,12 @@ const systemStore = useSystemStore();
 const documentType = useRouteDocumentType();
 /** the forms of the document type and the permissions on its documents */
 const config = computed(() => entityConfig(documentType.value));
+/** the forms with their edition state, renewed with the document type */
+const forms = computed(() => config.value.forms.map((form) => ({ ...form, state: useEntityConfigForm(form.target) })));
 
 const tab = ref(firstTab());
 /** the mounted form builders: the one of the active panel */
-const formBuilders = ref<InstanceType<typeof EntityFormBuilder>[]>([]);
+const formBuilders = ref<InstanceType<typeof ConfigFormBuilder>[]>([]);
 
 /** the permissions on any draft document and the accesses to any published document of the type */
 const endpoints = computed<AclEndpoints>(() => ({
