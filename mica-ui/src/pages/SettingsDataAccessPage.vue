@@ -21,7 +21,7 @@
               @click="selectTab(form.kind)"
             >
               <q-item-section avatar>
-                <q-icon name="list" />
+                <q-icon :name="form.icon" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>{{ t(form.label) }}</q-item-label>
@@ -31,13 +31,13 @@
             <q-separator />
             <q-item clickable v-ripple :active="tab === 'notifications'" @click="selectTab('notifications')">
               <q-item-section avatar>
-                <q-icon name="notifications" />
+                <q-icon name="mail" />
               </q-item-section>
               <q-item-section>{{ t('config.data_access.notifications') }}</q-item-section>
             </q-item>
             <q-item clickable v-ripple :active="tab === 'settings'" @click="selectTab('settings')">
               <q-item-section avatar>
-                <q-icon name="tune" />
+                <q-icon name="settings" />
               </q-item-section>
               <q-item-section>{{ t('config.data_access.other_settings') }}</q-item-section>
             </q-item>
@@ -102,6 +102,15 @@ const { t } = useI18n();
 const systemStore = useSystemStore();
 const { config: dataAccessConfig, load: loadDataAccessConfig } = useDataAccessConfig();
 
+/** the icon of each form in the drawer, as in the legacy administration page */
+const ICONS: Record<DataAccessFormKind, string> = {
+  application: 'list',
+  preliminary: 'play_circle',
+  feasibility: 'help',
+  amendment: 'edit_note',
+  agreement: 'gavel',
+};
+
 /** whether a form is enabled in the other settings (the application form always is) */
 const ENABLED: Record<DataAccessFormKind, (config: DataAccessConfigDto) => boolean> = {
   application: () => true,
@@ -125,6 +134,7 @@ const forms = computed(() =>
   DATA_ACCESS_FORM_KINDS.map((kind) => ({
     kind,
     label: `config.data_access.${kind}_form`,
+    icon: ICONS[kind],
     state: states[kind],
     enabled: dataAccessConfig.value ? ENABLED[kind](dataAccessConfig.value) : true,
   })),

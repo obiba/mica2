@@ -21,7 +21,7 @@
               @click="selectTab(form.target.name)"
             >
               <q-item-section avatar>
-                <q-icon name="list" />
+                <q-icon :name="form.icon" />
               </q-item-section>
               <q-item-section>{{ config.forms.length > 1 ? t(form.label) : t('config.form') }}</q-item-section>
             </q-item>
