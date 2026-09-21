@@ -1,0 +1,143 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "VerticalLayout",
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/_id",
+              "options": {
+                "validationMessage": {
+                  "uniqueId": "t(global.messages.error.unique-id)"
+                }
+              }
+            }
+          ],
+          "options": {
+            "class": "col-6"
+          }
+        },
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/_name"
+            }
+          ],
+          "options": {
+            "class": "col-6"
+          }
+        }
+      ],
+      "options": {
+        "class": "row q-col-gutter-md"
+      }
+    },
+    {
+      "type": "VerticalLayout",
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/_description",
+              "options": {
+                "marked": true,
+                "rows": 3
+              }
+            }
+          ],
+          "options": {
+            "class": "col-12"
+          }
+        }
+      ],
+      "options": {
+        "class": "row q-col-gutter-md"
+      }
+    },
+    {
+      "type": "VerticalLayout",
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/_startYear"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/_endYear"
+            }
+          ],
+          "options": {
+            "class": "col-4"
+          }
+        },
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/_startMonth"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/_endMonth"
+            }
+          ],
+          "options": {
+            "class": "col-4"
+          }
+        },
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/_startDay",
+              "options": {
+                "dateOptions": {
+                  "dateFormat": "yyyy-MM-dd",
+                  "yearRef": "_startYear",
+                  "monthRef": "_startMonth"
+                },
+                "validationMessage": {
+                  "invalidYMDate": "t(global.messages.error.invalid-ym-date)"
+                }
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/_endDay",
+              "options": {
+                "dateOptions": {
+                  "dateFormat": "yyyy-MM-dd",
+                  "yearRef": "_endYear",
+                  "monthRef": "_endMonth",
+                  "lastDay": true
+                },
+                "validationMessage": {
+                  "invalidYMDate": "t(global.messages.error.invalid-ym-date)"
+                }
+              }
+            }
+          ],
+          "options": {
+            "class": "col-4"
+          }
+        }
+      ],
+      "options": {
+        "class": "row q-col-gutter-md"
+      }
+    }
+  ]
+}

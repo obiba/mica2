@@ -989,6 +989,8 @@ export interface ProjectFormDto {
   schema: string;
   definition: string;
   properties: LocalizedPropertyDto[];
+  /** the texts of the form by locale, JSON ({ "en": { "<key>": "<text>" } }), looked up before the Mica translations */
+  translations?: string | undefined;
 }
 
 export interface EntityFormDto {
