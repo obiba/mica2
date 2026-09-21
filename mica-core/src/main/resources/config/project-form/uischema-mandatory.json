@@ -1,0 +1,21 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "Label",
+      "text": "t(research-project.main-section)"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/_title"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/_summary",
+      "options": {
+        "marked": true,
+        "rows": 5
+      }
+    }
+  ]
+}
