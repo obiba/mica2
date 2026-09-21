@@ -57,7 +57,9 @@
           </q-card>
         </div>
       </div>
-      <p v-else-if="!metrics || metrics.types.length === 0" class="text-hint">{{ t('config.statistics.none') }}</p>
+      <p v-else-if="!failed && (!metrics || metrics.types.length === 0)" class="text-hint">
+        {{ t('config.statistics.none') }}
+      </p>
       <div v-else-if="metrics" class="row q-col-gutter-md">
         <div v-for="typeMetrics in metrics.types" :key="typeMetrics.type" class="col-12 col-md-6 col-lg-4">
           <variables-metrics-card v-if="typeMetrics.type === 'DatasetVariable'" :metrics="typeMetrics" />
