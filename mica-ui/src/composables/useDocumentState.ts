@@ -15,7 +15,9 @@ export function useDocumentState(state: MaybeRefOrGetter<EntityStateDto | undefi
   const current = computed(() => toValue(state));
   const permissions = computed(() => current.value?.permissions ?? {});
 
-  const status = computed<RevisionStatus | undefined>(() => current.value?.revisionStatus as RevisionStatus | undefined);
+  const status = computed<RevisionStatus | undefined>(
+    () => current.value?.revisionStatus as RevisionStatus | undefined,
+  );
   const isDraft = computed(() => status.value === DRAFT);
   const isUnderReview = computed(() => status.value === UNDER_REVIEW);
   const isDeleted = computed(() => status.value === DELETED);
@@ -60,4 +62,31 @@ export function useDocumentState(state: MaybeRefOrGetter<EntityStateDto | undefi
     canGoToUnderReview,
     canGoToDeleted,
   };
+}
+
+/** the filters of a documents list, the counts of the statistics summary: they overlap */
+export const STATE_FILTERS = ['PUBLISHED', 'NOT_PUBLISHED', 'IN_EDITION', 'UNDER_REVIEW', 'TO_DELETE'] as const;
+
+export type StateFilter = (typeof STATE_FILTERS)[number];
+
+export function isStateFilter(value: unknown): value is StateFilter {
+  return typeof value === 'string' && (STATE_FILTERS as readonly string[]).includes(value);
+}
+
+/** whether a document state matches a list filter, `IN_EDITION` being published with a draft ahead */
+export function matchesStateFilter(state: EntityStateDto | undefined, filter: StateFilter | undefined): boolean {
+  if (!filter) return true;
+  const published = state?.publishedTag !== undefined;
+  switch (filter) {
+    case 'PUBLISHED':
+      return published;
+    case 'NOT_PUBLISHED':
+      return !published;
+    case 'IN_EDITION':
+      return published && (state?.revisionsAhead ?? 0) > 0;
+    case 'UNDER_REVIEW':
+      return state?.revisionStatus === UNDER_REVIEW;
+    case 'TO_DELETE':
+      return state?.revisionStatus === DELETED;
+  }
 }
