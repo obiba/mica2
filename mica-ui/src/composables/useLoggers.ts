@@ -1,7 +1,8 @@
 import { api } from 'src/boot/api';
 import { notifyError } from 'src/utils/notify';
 
-export const LOG_LEVELS = ['TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR'] as const;
+/** the logback levels, from the finest to the coarsest */
+export const LOG_LEVELS = ['ALL', 'TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR', 'OFF'] as const;
 
 export type LogLevel = (typeof LOG_LEVELS)[number];
 
@@ -13,11 +14,13 @@ export interface LoggerDto {
 
 /** the color of a level, as the legacy page: the finer the level, the louder the color */
 export const LOG_LEVEL_COLORS: Record<LogLevel, string> = {
+  ALL: 'purple',
   TRACE: 'negative',
   DEBUG: 'warning',
   INFO: 'info',
   WARN: 'positive',
   ERROR: 'primary',
+  OFF: 'grey-7',
 };
 
 /**
@@ -38,27 +41,31 @@ export function useLoggers() {
     return counts;
   });
 
-  async function load(): Promise<LoggerDto[]> {
+  /** loads the loggers, and tells whether they could be loaded */
+  async function load(): Promise<boolean> {
     loading.value = true;
     try {
       const response = await api.get<LoggerDto[]>('/logs');
       loggers.value = response.data;
+      return true;
     } catch (error) {
       notifyError(error);
       loggers.value = [];
+      return false;
     } finally {
       loading.value = false;
     }
-    return loggers.value;
   }
 
-  /** sets the level of a logger, then reloads the list: the children inherit the new level */
+  /**
+   * Sets the level of a logger, then reloads the list: the children inherit the new level. Succeeds only when
+   * the reloaded list shows the change.
+   */
   async function setLevel(name: string, level: LogLevel): Promise<boolean> {
     busy.value = name;
     try {
       await api.put('/logs', { name, level });
-      await load();
-      return true;
+      return await load();
     } catch (error) {
       notifyError(error);
       return false;
