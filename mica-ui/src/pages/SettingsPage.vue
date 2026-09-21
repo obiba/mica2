@@ -27,6 +27,22 @@
                 <q-item-label caption lines="2">{{ t('settings.notifications_caption') }}</q-item-label>
               </q-item-section>
             </q-item>
+            <q-item>
+              <q-item-section>
+                <q-item-label>
+                  <router-link to="/settings/caching">{{ t('settings.caching') }}</router-link>
+                </q-item-label>
+                <q-item-label caption lines="2">{{ t('settings.caching_caption') }}</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section>
+                <q-item-label>
+                  <router-link to="/settings/logs">{{ t('settings.logs') }}</router-link>
+                </q-item-label>
+                <q-item-label caption lines="2">{{ t('settings.logs_caption') }}</q-item-label>
+              </q-item-section>
+            </q-item>
           </q-list>
         </div>
         <div class="col-4 col-sm-4 col-xs-12">
@@ -48,11 +64,27 @@
                 <q-item-label caption lines="2">{{ t('settings.data_access_caption') }}</q-item-label>
               </q-item-section>
             </q-item>
+            <q-item>
+              <q-item-section>
+                <q-item-label>
+                  <router-link to="/settings/statistics">{{ t('settings.statistics') }}</router-link>
+                </q-item-label>
+                <q-item-label caption lines="2">{{ t('settings.statistics_caption') }}</q-item-label>
+              </q-item-section>
+            </q-item>
           </q-list>
         </div>
         <div class="col-4 col-sm-4 col-xs-12">
           <q-list separator>
             <q-item-label header class="text-uppercase">{{ t('settings.search') }}</q-item-label>
+            <q-item>
+              <q-item-section>
+                <q-item-label>
+                  <router-link to="/settings/indexing">{{ t('settings.indexing') }}</router-link>
+                </q-item-label>
+                <q-item-label caption lines="2">{{ t('settings.indexing_caption') }}</q-item-label>
+              </q-item-section>
+            </q-item>
           </q-list>
         </div>
       </div>
