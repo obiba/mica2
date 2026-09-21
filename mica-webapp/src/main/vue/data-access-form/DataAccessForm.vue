@@ -16,12 +16,13 @@ import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { ErrorObject } from 'ajv';
 import type { ValidationMode } from '@jsonforms/core';
-import { QJsonForm, convertAsf } from '@obiba/quasar-ui-json-form';
+import { QJsonForm, toJsonForms } from '@obiba/quasar-ui-json-form';
 import type { AsfDiagnostic, FileUploadHooks } from '@obiba/quasar-ui-json-form';
 
 const props = defineProps<{
   schema: Record<string, any>;
-  definition: any[];
+  /** a JSON Forms UI schema (object), or an angular-schema-form definition (array) converted on the fly */
+  definition: unknown;
   modelValue: Record<string, any>;
   readOnly: boolean;
   /** page language: the localized strings are edited in that language only, as the ASF page did */
@@ -41,12 +42,13 @@ const errors = ref<ErrorObject[]>([]);
 // field in red.
 const validationMode = ref<ValidationMode>('ValidateAndHide');
 
+// a UI schema is rendered as it is; the ASF definition of an older form revision is converted
 const converted = computed(() => {
-  const result = convertAsf(props.schema, props.definition, {
+  const result = toJsonForms(props.schema, props.definition, {
     readonly: props.readOnly,
     languages: languages.value,
     logger: (diagnostic: AsfDiagnostic) => {
-      const log = diagnostic.level === 'warning' ? console.warn : console.info;
+      const log = diagnostic.level === 'warn' ? console.warn : console.info;
       log(`[data-access-form] ${diagnostic.message}`, diagnostic.key ?? '', diagnostic.element ?? '');
     },
   });

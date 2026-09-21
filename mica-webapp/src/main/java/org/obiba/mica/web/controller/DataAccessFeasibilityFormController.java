@@ -96,7 +96,7 @@ public class DataAccessFeasibilityFormController extends BaseDataAccessControlle
 
   private void addDataAccessFeasibilityFormConfiguration(Map<String, Object> params, DataAccessFeasibility feasibility, boolean readOnly, String locale) {
     DataAccessFeasibilityForm form = getDataAccessFeasibilityForm(feasibility);
-    params.put("formConfig", new SchemaFormConfig(micaConfigService, form.getSchema(), form.getDefinition(), feasibility.getContent(), locale, readOnly));
+    params.put("formConfig", new SchemaFormConfig(micaConfigService, form, feasibility.getContent(), locale, readOnly));
     params.put("accessConfig", getConfig());
   }
 
