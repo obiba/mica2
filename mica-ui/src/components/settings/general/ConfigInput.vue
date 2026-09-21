@@ -5,7 +5,7 @@
     outlined
     :type="type"
     :label="t(`config.${name}`) + (required ? ' *' : '')"
-    :hint="noHelp ? undefined : t(`config.${name}_help`)"
+    :hint="noHelp ? undefined : (hint ?? t(`config.${name}_help`))"
     :placeholder="placeholder"
     :rules="rules"
     :disable="disable"
@@ -29,6 +29,8 @@ interface Props {
   min?: number;
   disable?: boolean;
   noHelp?: boolean;
+  /** a hint given as text, instead of the `<name>_help` message */
+  hint?: string;
   placeholder?: string;
 }
 
