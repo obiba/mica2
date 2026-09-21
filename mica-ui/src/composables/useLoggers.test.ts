@@ -26,7 +26,7 @@ describe('useLoggers', () => {
     await load();
     expect(mocked.get).toHaveBeenCalledWith('/logs');
     expect(loggers.value).toEqual(list);
-    expect(countsByLevel.value).toEqual({ TRACE: 0, DEBUG: 2, INFO: 1, WARN: 0, ERROR: 0 });
+    expect(countsByLevel.value).toEqual({ ALL: 0, TRACE: 0, DEBUG: 2, INFO: 1, WARN: 0, ERROR: 0, OFF: 0 });
   });
 
   it('sets a level then reloads the list', async () => {
@@ -51,7 +51,15 @@ describe('useLoggers', () => {
   it('empties the list when it cannot be loaded', async () => {
     mocked.get.mockRejectedValueOnce(new Error('403'));
     const { loggers, load } = useLoggers();
-    expect(await load()).toEqual([]);
+    expect(await load()).toBe(false);
     expect(loggers.value).toEqual([]);
+  });
+
+  it('reports a level change as failed when the list cannot be reloaded', async () => {
+    mocked.put.mockResolvedValueOnce({ status: 204 });
+    mocked.get.mockRejectedValueOnce(new Error('401'));
+    const { setLevel } = useLoggers();
+    expect(await setLevel('ROOT', 'WARN')).toBe(false);
+    expect(mocked.get).toHaveBeenCalledWith('/logs');
   });
 });
