@@ -31,10 +31,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y rpm devscripts fakeroot debhelper build-essential nodejs
 
-      - name: Setup Node.js (LTS Gallium = Node 16)
+      - name: Setup Node.js (LTS Jod = Node 22)
         uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 22
 
       - name: Install global npm tools
         run: npm install -g grunt-cli bower
