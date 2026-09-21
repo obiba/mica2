@@ -76,6 +76,7 @@
           </q-tab-panel>
           <q-tab-panel name="settings" class="q-pa-none">
             <div class="text-h5 q-mb-md">{{ t('config.data_access.other_settings') }}</div>
+            <data-access-settings-panel ref="settingsPanel" :state="dataAccessConfig" />
           </q-tab-panel>
           <q-tab-panel name="permissions" class="q-pa-none">
             <div class="text-h5 q-mb-md">{{ t('permissions') }}</div>
@@ -92,6 +93,7 @@ import ConfigFormBuilder from 'src/components/settings/forms/ConfigFormBuilder.v
 import DataAccessFormProperties from 'src/components/settings/dataaccess/DataAccessFormProperties.vue';
 import DataAccessPdfTemplates from 'src/components/settings/dataaccess/DataAccessPdfTemplates.vue';
 import DataAccessNotificationsPanel from 'src/components/settings/dataaccess/DataAccessNotificationsPanel.vue';
+import DataAccessSettingsPanel from 'src/components/settings/dataaccess/DataAccessSettingsPanel.vue';
 import { useDataAccessConfig } from 'src/composables/useDataAccessConfig';
 import {
   DATA_ACCESS_FORM_KINDS,
@@ -147,10 +149,13 @@ const tab = ref<string>('application');
 /** the mounted form builders: the one of the active panel */
 const formBuilders = ref<InstanceType<typeof ConfigFormBuilder>[]>([]);
 const notificationsPanel = ref<InstanceType<typeof DataAccessNotificationsPanel>>();
+const settingsPanel = ref<InstanceType<typeof DataAccessSettingsPanel>>();
 
 /** the editors of the active panel, each with its unsaved-changes guard */
 function editors(): { confirmLeave: () => Promise<boolean> }[] {
-  return [...formBuilders.value, ...(notificationsPanel.value ? [notificationsPanel.value] : [])];
+  return [...formBuilders.value, notificationsPanel.value, settingsPanel.value].filter(
+    (editor) => editor !== undefined,
+  );
 }
 
 /** switches the panel, unless the active editor has unsaved changes the user keeps */
