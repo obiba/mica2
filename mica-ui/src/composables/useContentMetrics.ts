@@ -162,14 +162,16 @@ export function useContentMetrics() {
     }
   }
 
-  /** indexes the documents of a type, then reloads the metrics */
+  /**
+   * Requests the indexing of the documents of a type. The server indexes them asynchronously, so the metrics are
+   * not reloaded right away: they would still report the documents as not indexed.
+   */
   async function index(type: MetricsType, ids: string[]): Promise<boolean> {
     const documentType = DOCUMENT_METRICS_TYPES[type];
     if (!documentType || ids.length === 0) return false;
     const { collectionPath } = documentTarget(documentType, '');
     try {
       await api.put(`${collectionPath}/_index`, null, { params: { id: ids }, paramsSerializer: { indexes: null } });
-      await load();
       return true;
     } catch (error) {
       notifyError(error);
