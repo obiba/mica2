@@ -1193,7 +1193,7 @@ class UserService {
         })
         .catch(handle => {
           console.dir(handle);
-          onFailure();
+          onFailure(handle.response?.data?.messageTemplate);
         });
     });
   }
@@ -1275,9 +1275,9 @@ class UserService {
         .catch(handle => {
           console.dir(handle);
           UserService.resetReCaptcha();
-          if (handle.response.data.message === 'Invalid reCaptcha response') {
+          if (handle.response?.data?.message === 'Invalid reCaptcha response') {
             onFailure('server.error.bad-captcha');
-          } else if (handle.response.data.messageTemplate) {
+          } else if (handle.response?.data?.messageTemplate) {
             onFailure(handle.response.data.messageTemplate);
           } else {
             onFailure('server.error.bad-request');

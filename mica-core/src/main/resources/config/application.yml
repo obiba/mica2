@@ -75,6 +75,24 @@ login:
 csrf:
   allowed-agents: curl,python,java,HTTP.jl
 
+# Per client IP rate limiting of the anonymous endpoints (contact form, sign up, password reset), counted in memory
+# on each node. Over the limit, the request is rejected with a 429 status before any Agate or reCAPTCHA call.
+# The forwarding headers (X-Forwarded-For, Forwarded) are only read from the trusted proxies (IP addresses or CIDR
+# blocks, comma separated): add the address of the reverse proxy when it is not on the same host.
+security:
+  trustedProxies: 127.0.0.1,::1
+  rateLimit:
+    enabled: true
+    contact:
+      maxRequests: 5
+      periodSeconds: 600
+    signup:
+      maxRequests: 10
+      periodSeconds: 3600
+    forgotPassword:
+      maxRequests: 5
+      periodSeconds: 600
+
 # Assign roles when user belongs to one or more groups listed. Syntax: "," means all the groups are
 # required, "|" separates alternatives. The same groups are used when notifying the users having a role
 # (only the groups appearing alone in a condition are notified: with "a,b|c", the members of "c" are notified).

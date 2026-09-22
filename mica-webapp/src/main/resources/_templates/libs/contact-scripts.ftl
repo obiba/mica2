@@ -3,6 +3,7 @@
     const errorMessages = {
       "server.error.bad-request": "<@message "server.error.bad-request"/>",
       "server.error.bad-captcha": "<@message "server.error.bad-captcha"/>",
+      "server.error.too-many-requests": "<@message "server.error.too-many-requests"/>",
     };
     const requiredFields = [
       { name: "name", title: "<@message "contact-name"/>" },
@@ -29,6 +30,8 @@
       } else if (messageItems.title && errorMessages[messageItems.title]) {
         msg = errorMessages[messageItems.title];
         $('#contact-' + messageItems.name).addClass('is-invalid');
+      } else {
+        msg = errorMessages[messageItems] || errorMessages["server.error.bad-request"];
       }
       $(alertId).html('<small>' + msg + '</small>').removeClass("d-none");
       setTimeout(function() {
