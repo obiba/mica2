@@ -32,14 +32,19 @@ public class DatasetIndexer {
 
   private final Lock lock = new ReentrantLock();
 
-  @Inject
-  private Indexer indexer;
+  private final Indexer indexer;
+
+  private final HarmonizedDatasetService harmonizedDatasetService;
+
+  private final CollectedDatasetService collectedDatasetService;
 
   @Inject
-  private HarmonizedDatasetService harmonizedDatasetService;
-
-  @Inject
-  private CollectedDatasetService collectedDatasetService;
+  public DatasetIndexer(Indexer indexer, HarmonizedDatasetService harmonizedDatasetService,
+    CollectedDatasetService collectedDatasetService) {
+    this.indexer = indexer;
+    this.harmonizedDatasetService = harmonizedDatasetService;
+    this.collectedDatasetService = collectedDatasetService;
+  }
 
   @Async
   @Subscribe
@@ -103,11 +108,14 @@ public class DatasetIndexer {
         indexer.dropIndex(Indexer.PUBLISHED_VARIABLE_INDEX);
       if (indexer.hasIndex(Indexer.PUBLISHED_HVARIABLE_INDEX))
         indexer.dropIndex(Indexer.PUBLISHED_HVARIABLE_INDEX);
-
-      harmonizedDatasetService.indexAll();
-      collectedDatasetService.indexAll();
     } finally {
       lock.unlock();
     }
+
+    // Deliberately outside the lock: indexing publishes dataset events whose handlers need this
+    // same lock, and they are dispatched on the same bounded pool this method runs on. Holding it
+    // here starves that pool with handlers that can never proceed, and the reindex never completes.
+    harmonizedDatasetService.indexAll();
+    collectedDatasetService.indexAll();
   }
 }

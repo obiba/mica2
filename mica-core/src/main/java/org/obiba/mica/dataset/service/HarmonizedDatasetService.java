@@ -52,15 +52,17 @@ import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 
 import jakarta.annotation.Nullable;
+import jakarta.annotation.PreDestroy;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -68,7 +70,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -102,7 +105,15 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
 
   private final MicaConfigService micaConfigService;
 
-  private final Executor executor;
+  /**
+   * Deliberately not a Spring bean: any bean of type java.util.concurrent.Executor makes Boot back off
+   * from auto-configuring "applicationTaskExecutor", which @Async and the event bus both rely on.
+   * It is also kept apart from that shared pool on purpose, so the blocking waits below cannot
+   * starve the threads that dispatch the indexing events they are waiting for.
+   */
+  private final ThreadPoolTaskExecutor executor;
+
+  private final int studyTableFetchTimeoutMinutes;
 
   @Inject
   public HarmonizedDatasetService(StudyService studyService, NetworkService networkService, OpalService opalService,
@@ -110,7 +121,8 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
     HarmonizationDatasetStateRepository harmonizationDatasetStateRepository,
     HarmonizationStudyService harmonizationStudyService, PublishedStudyService publishedStudyService, EventBus eventBus,
     FileSystemService fileSystemService, MicaConfigService micaConfigService,
-    @Qualifier("applicationTaskExecutor") Executor executor) {
+    @Value("${dataset.indexation.harmonizedVariablesPoolSize:4}") int harmonizedVariablesPoolSize,
+    @Value("${dataset.indexation.studyTableFetchTimeout:10}") int studyTableFetchTimeoutMinutes) {
     this.studyService = studyService;
     this.networkService = networkService;
     this.opalService = opalService;
@@ -121,9 +133,19 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
     this.eventBus = eventBus;
     this.fileSystemService = fileSystemService;
     this.micaConfigService = micaConfigService;
-    this.executor = executor;
+    this.studyTableFetchTimeoutMinutes = studyTableFetchTimeoutMinutes;
+    this.executor = new ThreadPoolTaskExecutor();
+    this.executor.setCorePoolSize(harmonizedVariablesPoolSize);
+    this.executor.setMaxPoolSize(harmonizedVariablesPoolSize);
+    this.executor.setThreadNamePrefix("harmonized-variables-");
+    this.executor.initialize();
 
     this.helper = new Helper(this, this.eventBus);
+  }
+
+  @PreDestroy
+  public void shutdownExecutor() {
+    executor.shutdown();
   }
 
   public void save(@NotNull HarmonizationDataset dataset) {
@@ -268,7 +290,10 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
 
       futures.forEach(future -> {
         try {
-          Iterable<DatasetVariable> harmonizationVariables = future.get();
+          // bounded: an unresponsive Opal table must fail this dataset rather than block the
+          // indexation thread for good (callers log and carry on with the remaining datasets)
+          Iterable<DatasetVariable> harmonizationVariables =
+            future.get(studyTableFetchTimeoutMinutes, TimeUnit.MINUTES);
           eventBus.post(new DatasetPublishedEvent(dataset, null, harmonizationVariables, getCurrentUsername()));
         } catch (InterruptedException e) {
           if(e.getCause() instanceof MagmaRuntimeException) {
@@ -276,6 +301,8 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
           }
 
           throw Throwables.propagate(e.getCause());
+        } catch (TimeoutException e) {
+          throw new DatasourceNotAvailableException(e);
         } catch (ExecutionException e) {
           throw Throwables.propagate(e);
         }
