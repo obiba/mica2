@@ -9,7 +9,7 @@
     </q-toolbar>
     <q-page padding>
       <div class="text-h5 q-mb-sm">{{ t('config.notifications.title') }}</div>
-      <p class="text-grey-8">{{ t('config.notifications.info') }}</p>
+      <div class="text-grey-8 q-mb-lg">{{ t('config.notifications.info') }}</div>
       <div class="row q-col-gutter-md">
         <div class="col-12 col-md-6">
           <notifications-section

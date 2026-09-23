@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p class="text-grey-8">{{ t('config.data_access.notifications_info') }}</p>
+    <div class="text-grey-8 q-mb-lg">{{ t('config.data_access.notifications_info') }}</div>
     <q-spinner-dots v-if="state.loading && !form" color="primary" size="2em" />
     <div v-else-if="form">
       <q-tabs
@@ -17,7 +17,7 @@
         <q-tab name="collaborators" :label="t('config.data_access.collaborators')" />
       </q-tabs>
       <q-separator />
-      <q-tab-panels v-model="tab" animated>
+      <q-tab-panels v-model="tab">
         <q-tab-panel name="events" class="q-px-none">
           <div class="row q-col-gutter-lg">
             <div v-for="(column, index) in EVENT_COLUMNS" :key="index" class="col-12 col-md-6">
@@ -61,9 +61,9 @@
         <q-tab-panel name="collaborators" class="q-px-none">
           <div class="row q-col-gutter-lg">
             <div class="col-12 col-md-6">
-              <p v-if="!form.collaboratorsEnabled" class="text-grey-7">
+              <div v-if="!form.collaboratorsEnabled" class="text-grey-7 q-mb-lg">
                 {{ t('config.data_access.collaborators_disabled') }}
-              </p>
+              </div>
               <config-input
                 v-model="form.collaboratorInvitationSubject"
                 name="data_access.collaborator_invitation_subject"

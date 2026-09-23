@@ -9,7 +9,7 @@
     </q-toolbar>
     <q-page padding>
       <div class="text-h5 q-mb-sm">{{ t('config.caching.title') }}</div>
-      <p class="text-grey-8">{{ t('config.caching.info') }}</p>
+      <div class="text-grey-8 q-mb-lg">{{ t('config.caching.info') }}</div>
       <div class="row">
         <div class="col-12 col-md-8">
           <caches-panel />

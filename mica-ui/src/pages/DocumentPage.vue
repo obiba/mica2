@@ -46,7 +46,7 @@
             />
           </template>
         </document-header>
-        <q-tab-panels v-model="tab" animated>
+        <q-tab-panels v-model="tab">
           <q-tab-panel name="view" class="q-pa-none">
             <document-view-panel :target="target" :document="document" />
           </q-tab-panel>
