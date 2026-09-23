@@ -22,7 +22,7 @@
 
     <template v-if="translations.length">
       <div class="text-subtitle2 q-mb-sm">{{ t('taxonomies.translations') }}</div>
-      <q-markup-table flat bordered dense class="q-mb-md">
+      <q-markup-table flat bordered class="q-mb-md">
         <thead>
           <tr>
             <th class="text-left">{{ t('taxonomies.locale') }}</th>
@@ -44,7 +44,7 @@
 
     <template v-if="attributes.length">
       <div class="text-subtitle2 q-mb-sm">{{ t('attributes') }}</div>
-      <q-markup-table flat bordered dense>
+      <q-markup-table flat bordered>
         <thead>
           <tr>
             <th class="text-left">{{ t('name') }}</th>
@@ -53,7 +53,7 @@
         </thead>
         <tbody>
           <tr v-for="(attribute, idx) in attributes" :key="idx">
-            <td class="text-caption">{{ attribute.key }}</td>
+            <td><code>{{ attribute.key }}</code></td>
             <td class="wrap">{{ attribute.value }}</td>
           </tr>
         </tbody>
