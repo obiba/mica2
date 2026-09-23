@@ -29,6 +29,7 @@ const routes: RouteRecordRaw[] = [
       { path: 'settings/logs', component: () => import('pages/SettingsLogsPage.vue') },
       { path: 'settings/indexing', component: () => import('pages/SettingsIndexingPage.vue') },
       { path: 'settings/statistics', component: () => import('pages/SettingsStatisticsPage.vue') },
+      { path: 'settings/taxonomies/:tab?', component: () => import('pages/SettingsTaxonomiesPage.vue') },
       ...DOCUMENT_TYPES.map((documentType) => ({
         path: entityConfigRoute(documentType).substring(1),
         component: () => import('pages/SettingsEntityConfigPage.vue'),
