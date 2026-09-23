@@ -5,7 +5,7 @@
       <div class="row q-col-gutter-xl">
         <div class="col-12 col-md-6">
           <div class="text-h6">{{ t('config.data_access.general') }}</div>
-          <p class="text-grey-8">{{ t('config.data_access.general_info') }}</p>
+          <div class="text-grey-8 q-mb-lg">{{ t('config.data_access.general_info') }}</div>
 
           <div class="text-subtitle1 q-mt-md q-mb-sm">{{ t('permissions') }}</div>
           <config-toggle v-model="form.daoCanEdit" name="data_access.dao_can_edit" />
@@ -54,7 +54,7 @@
 
         <div class="col-12 col-md-6">
           <div class="text-h6">{{ t('config.data_access.id_generation') }}</div>
-          <p class="text-grey-8">{{ t('config.data_access.id_generation_info') }}</p>
+          <div class="text-grey-8 q-mb-lg">{{ t('config.data_access.id_generation_info') }}</div>
           <q-input
             v-model="form.idPrefix"
             :label="t('config.data_access.id_prefix')"
@@ -68,16 +68,17 @@
           <config-input v-model="form.idLength" name="data_access.id_length" type="number" :min="1" />
           <config-toggle v-model="form.randomId" name="data_access.random_id" />
           <config-toggle v-model="form.allowIdWithLeadingZeros" name="data_access.allow_id_with_leading_zeros" />
+          <div class="text-grey-8 q-mb-lg">{{ t('config.data_access.workflow_info') }}</div>
 
           <div class="text-h6 q-mt-lg">{{ t('config.data_access.workflow') }}</div>
-          <p class="text-grey-8">{{ t('config.data_access.workflow_info') }}</p>
+          <div class="text-grey-8 q-mb-lg">{{ t('config.data_access.workflow_info') }}</div>
           <config-toggle v-model="form.withReview" name="data_access.with_review" />
           <config-toggle v-model="form.withConditionalApproval" name="data_access.with_conditional_approval" />
           <config-toggle v-model="form.approvedFinal" name="data_access.approved_final" />
           <config-toggle v-model="form.rejectedFinal" name="data_access.rejected_final" />
 
           <div class="text-h6 q-mt-lg">{{ t('config.data_access.predefined_actions') }}</div>
-          <p class="text-grey-8">{{ t('config.data_access.predefined_actions_info') }}</p>
+          <div class="text-grey-8 q-mb-lg">{{ t('config.data_access.predefined_actions_info') }}</div>
           <q-select
             v-model="form.predefinedActions"
             :label="t('config.data_access.predefined_actions')"

@@ -6,12 +6,12 @@
           {{ t(`taxonomies.types.${node.type}`) }}
         </q-chip>
         <div class="text-h6">{{ title }}</div>
-        <div v-if="title !== node.name" class="text-caption text-grey-7 text-mono">{{ node.name }}</div>
+        <div v-if="title !== node.name" class="text-caption text-grey-7">{{ node.name }}</div>
       </div>
       <slot name="actions" />
     </div>
 
-    <p v-if="description" class="text-grey-8">{{ description }}</p>
+    <div v-if="description" class="text-grey-8 q-mb-md">{{ description }}</div>
 
     <q-list dense class="q-mb-md">
       <q-item v-for="property in properties" :key="property.label">
@@ -33,7 +33,7 @@
         </thead>
         <tbody>
           <tr v-for="row in translations" :key="row.locale">
-            <td>{{ row.locale }}</td>
+            <td><q-badge color="primary">{{ row.locale }}</q-badge></td>
             <td class="wrap">{{ row.title }}</td>
             <td class="wrap">{{ row.description }}</td>
             <td v-if="hasKeywords" class="wrap">{{ row.keywords }}</td>
@@ -53,7 +53,7 @@
         </thead>
         <tbody>
           <tr v-for="(attribute, idx) in attributes" :key="idx">
-            <td class="text-mono">{{ attribute.key }}</td>
+            <td class="text-caption">{{ attribute.key }}</td>
             <td class="wrap">{{ attribute.value }}</td>
           </tr>
         </tbody>

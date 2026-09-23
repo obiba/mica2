@@ -21,7 +21,7 @@
     </template>
     <template v-slot:body-cell-commitId="props">
       <q-td :props="props">
-        <span :title="props.value" class="text-mono">{{ props.value.substring(0, 8) }}</span>
+        <span :title="props.value" class="text-caption">{{ props.value.substring(0, 8) }}</span>
         <q-icon v-if="props.value === publishedId" name="star" color="warning" class="q-ml-xs">
           <q-tooltip>{{ t('publish.published') }}</q-tooltip>
         </q-icon>

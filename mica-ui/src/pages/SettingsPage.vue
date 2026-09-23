@@ -3,7 +3,7 @@
     <q-toolbar class="bg-grey-3">
       <q-breadcrumbs>
         <q-breadcrumbs-el icon="home" to="/" />
-        <q-breadcrumbs-el :label="t('settings')" />
+        <q-breadcrumbs-el :label="t('settings.title')" />
       </q-breadcrumbs>
     </q-toolbar>
     <q-page padding>
@@ -80,17 +80,17 @@
             <q-item>
               <q-item-section>
                 <q-item-label>
-                  <router-link to="/settings/indexing">{{ t('settings.indexing') }}</router-link>
+                  <router-link to="/settings/taxonomies">{{ t('settings.taxonomies') }}</router-link>
                 </q-item-label>
-                <q-item-label caption lines="2">{{ t('settings.indexing_caption') }}</q-item-label>
+                <q-item-label caption lines="2">{{ t('settings.taxonomies_caption') }}</q-item-label>
               </q-item-section>
             </q-item>
             <q-item>
               <q-item-section>
                 <q-item-label>
-                  <router-link to="/settings/taxonomies">{{ t('settings.taxonomies') }}</router-link>
+                  <router-link to="/settings/indexing">{{ t('settings.indexing') }}</router-link>
                 </q-item-label>
-                <q-item-label caption lines="2">{{ t('settings.taxonomies_caption') }}</q-item-label>
+                <q-item-label caption lines="2">{{ t('settings.indexing_caption') }}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>

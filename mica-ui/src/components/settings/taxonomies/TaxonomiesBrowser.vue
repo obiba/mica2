@@ -86,7 +86,7 @@ const authStore = useAuthStore();
 const systemStore = useSystemStore();
 const { moving, loadTarget, move } = useTaxonomies();
 
-const splitter = ref(35);
+const splitter = ref(25);
 const filter = ref<string | null>('');
 const expanded = ref<string[]>([]);
 

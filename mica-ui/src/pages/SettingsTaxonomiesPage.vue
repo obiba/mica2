@@ -28,15 +28,15 @@
           </q-list>
         </template>
 
-        <q-tab-panels v-model="tab" animated>
+        <q-tab-panels v-model="tab">
           <q-tab-panel name="browse" class="q-pa-none">
             <div class="text-h5 q-mb-sm">{{ t('taxonomies.title') }}</div>
-            <p class="text-grey-8">{{ t('taxonomies.info') }}</p>
+            <div class="text-grey-8 q-mb-lg">{{ t('taxonomies.info') }}</div>
             <taxonomies-browser v-model="nodeKey" />
           </q-tab-panel>
           <q-tab-panel name="files" class="q-pa-none">
             <div class="text-h5 q-mb-sm">{{ t('taxonomies.files') }}</div>
-            <p class="text-grey-8">{{ t('taxonomies.files_info') }}</p>
+            <div class="text-grey-8 q-mb-lg">{{ t('taxonomies.files_info') }}</div>
             <file-browser :root="FILES_ROOT" :path="filePath" @update:path="onFilePath" />
           </q-tab-panel>
         </q-tab-panels>
