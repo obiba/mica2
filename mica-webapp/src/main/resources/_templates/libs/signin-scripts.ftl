@@ -17,6 +17,8 @@
       } else {
         $("#2faEmail").hide();
       }
+      // the separator only means something when there are instructions above it
+      $("#2faSeparator").toggle($("#2faImage").is(":visible") || $("#2faEmail").is(":visible"));
     } else {
       $("#otp").val("");
       let alertId;

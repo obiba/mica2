@@ -84,7 +84,7 @@
       <div id="2faEmail">
         <@message "2fa-email-instructions"/>
       </div>
-      <hr>
+      <hr id="2faSeparator">
       <p class="login-box-msg"><@message "2fa-caption"/></p>
       <div>
         <div class="input-group mb-3">
