@@ -1,10 +1,10 @@
 <template>
   <div v-if="dto" class="q-mt-lg">
     <div class="text-h6">{{ t('config.data_access.pdf_download') }}</div>
-    <p class="text-grey-8">{{ t('config.data_access.pdf_download_info') }}</p>
+    <div class="text-grey-8 q-mb-lg">{{ t('config.data_access.pdf_download_info') }}</div>
     <q-option-group :model-value="dto.pdfDownloadType" :options="downloadTypes" @update:model-value="setDownloadType" />
     <div v-if="dto.pdfDownloadType === DataAccessFormDto_PdfDownloadType.Template" class="q-ml-lg q-mt-sm">
-      <p class="text-grey-8">{{ t('config.data_access.pdf_template_info') }}</p>
+      <div class="text-grey-8 q-mb-lg">{{ t('config.data_access.pdf_template_info') }}</div>
       <div v-for="language in systemStore.languages" :key="language" class="row items-center q-col-gutter-md q-mb-sm">
         <div class="col-12 col-md-4">
           <q-file
@@ -38,7 +38,7 @@
         </div>
       </div>
     </div>
-    <p v-else class="text-grey-8 q-ml-lg q-mt-sm">{{ t('config.data_access.pdf_embedded_info') }}</p>
+    <div v-else class="text-grey-8 q-ml-lg q-mt-sm">{{ t('config.data_access.pdf_embedded_info') }}</div>
   </div>
 </template>
 
