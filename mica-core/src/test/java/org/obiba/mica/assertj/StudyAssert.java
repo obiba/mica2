@@ -15,6 +15,11 @@ import org.obiba.mica.study.domain.Study;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializerBase;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,6 +31,14 @@ public class StudyAssert extends AbstractAssert<StudyAssert, Study> {
     super(actual, StudyAssert.class);
     objectMapper = new ObjectMapper();
     objectMapper.findAndRegisterModules();
+    // MongoDB persists dates with millisecond precision
+    objectMapper.registerModule(new SimpleModule().addSerializer(LocalDateTime.class,
+      new ToStringSerializerBase(LocalDateTime.class) {
+        @Override
+        public String valueToString(Object value) {
+          return ((LocalDateTime) value).truncatedTo(ChronoUnit.MILLIS).toString();
+        }
+      }));
   }
 
   public StudyAssert areFieldsEqualToEachOther(Study expected) {

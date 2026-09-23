@@ -11,11 +11,10 @@
 package org.obiba.mica.micaConfig;
 
 import java.security.KeyStoreException;
+import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -27,18 +26,17 @@ import org.obiba.mica.micaConfig.service.OpalCredentialService;
 import org.obiba.security.KeyStoreManager;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class OpalCredentialServiceTests {
 
-  @Rule
-  public ExpectedException exception = ExpectedException.none();
 
   @InjectMocks
   private OpalCredentialService opalCredentialService;
@@ -52,7 +50,7 @@ public class OpalCredentialServiceTests {
   @Mock
   private KeyStoreService keyStoreService;
 
-  @Before
+  @BeforeEach
   public void init() {
     MockitoAnnotations.initMocks(this);
   }
@@ -60,7 +58,7 @@ public class OpalCredentialServiceTests {
   @Test
   public void testGetOpalCredential() {
     OpalCredential credential = new OpalCredential("https://opal", AuthType.USERNAME, "test", "encrypted");
-    when(opalCredentialRepository.findById("https://opal").get()).thenReturn(credential);
+    when(opalCredentialRepository.findById("https://opal")).thenReturn(Optional.of(credential));
     when(micaConfigService.decrypt("encrypted")).thenReturn("password");
     OpalCredential actual = opalCredentialService.getOpalCredential("https://opal");
 
@@ -69,26 +67,25 @@ public class OpalCredentialServiceTests {
 
   @Test
   public void testGetOpalCredentialThrowsException() {
-    when(opalCredentialRepository.findById("https://opal").get()).thenReturn(null);
-    exception.expect(NoSuchOpalCredential.class);
-
-    opalCredentialService.getOpalCredential("https://opal");
+    when(opalCredentialRepository.findById("https://opal")).thenReturn(Optional.empty());
+    assertThrows(NoSuchOpalCredential.class, () -> opalCredentialService.getOpalCredential("https://opal"));
   }
 
   @Test
   public void testCreateUsernamePasswordCredential() {
-    when(opalCredentialRepository.findById("https://opal").get()).thenReturn(null);
+    when(opalCredentialRepository.findById("https://opal")).thenReturn(Optional.empty());
     when(micaConfigService.encrypt("password")).thenReturn("encrypted");
 
     opalCredentialService.createOrUpdateOpalCredential("https://opal", "test", "password");
 
-    verify(opalCredentialRepository).save(any(OpalCredential.class));
+    verify(opalCredentialRepository).insert(any(OpalCredential.class));
   }
 
   @Test
   public void testUpdateUsernamePasswordCredential() {
     OpalCredential credential = new OpalCredential("https://opal", AuthType.USERNAME, "test", "encrypted");
-    when(opalCredentialRepository.findById("https://opal").get()).thenReturn(credential);
+    credential.setVersion(1L);
+    when(opalCredentialRepository.findById("https://opal")).thenReturn(Optional.of(credential));
     when(micaConfigService.encrypt("password")).thenReturn("encrypted");
 
     opalCredentialService.createOrUpdateOpalCredential("https://opal", "test", "password");
@@ -99,7 +96,7 @@ public class OpalCredentialServiceTests {
   @Test
   public void testDeleteCertificateCredential() throws KeyStoreException {
     OpalCredential credential = new OpalCredential("https://opal", AuthType.CERTIFICATE);
-    when(opalCredentialRepository.findById("https://opal").get()).thenReturn(credential);
+    when(opalCredentialRepository.findById("https://opal")).thenReturn(Optional.of(credential));
     KeyStoreManager keyStore = mock(KeyStoreManager.class);
     doNothing().when(keyStore).deleteKey("https://opal");
     when(keyStoreService.getKeyStore("opal")).thenReturn(keyStore);

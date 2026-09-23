@@ -11,9 +11,10 @@
 package org.obiba.mica.dataset.service;
 
 import java.util.Locale;
+import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -74,7 +75,7 @@ public class CollectedDatasetServiceTest {
 
   private StudyDatasetState state;
 
-  @Before
+  @BeforeEach
   public void init() {
     MockitoAnnotations.initMocks(this);
     study = buildStudy();
@@ -91,7 +92,7 @@ public class CollectedDatasetServiceTest {
     when(r.getValueTable(anyString())).thenThrow(new MagmaRuntimeException());
     when(opalService.getDatasource(anyString(), anyString())).thenReturn(r);
     when(individualStudyService.findStudy(anyString())).thenReturn(study);
-    when(studyDatasetStateRepository.findById(anyString()).get()).thenReturn(state);
+    when(studyDatasetStateRepository.findById(anyString())).thenReturn(Optional.of(state));
 
     collectedDatasetService.save(dataset);
   }
@@ -100,6 +101,7 @@ public class CollectedDatasetServiceTest {
     StudyDataset ds = new StudyDataset();
     StudyTable st = new StudyTable();
     st.setSource(OpalTableSource.newSource("proj", "tab").getURN());
+    st.setStudyId("study");
     st.setPopulationId("1");
     st.setDataCollectionEventId("1");
     ds.setStudyTable(st);

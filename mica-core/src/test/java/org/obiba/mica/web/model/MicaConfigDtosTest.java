@@ -18,19 +18,19 @@ import org.apache.shiro.ini.IniSecurityManagerFactory;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.lang.util.Factory;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.obiba.mica.AbstractShiroTest;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.security.service.SubjectAclService;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class MicaConfigDtosTest extends AbstractShiroTest {
 
   @InjectMocks
@@ -45,13 +45,13 @@ public class MicaConfigDtosTest extends AbstractShiroTest {
   @Mock
   private SubjectAclService subjectAclService;
 
-  @BeforeClass
+  @BeforeAll
   public static void beforeClass() {
     Factory<SecurityManager> factory = new IniSecurityManagerFactory("classpath:test.shiro.ini");
     setSecurityManager(factory.getInstance());
   }
 
-  @Before
+  @BeforeEach
   public void setup() {
     Subject subjectUnderTest = new Subject.Builder(getSecurityManager()).buildSubject();
 
@@ -88,7 +88,7 @@ public class MicaConfigDtosTest extends AbstractShiroTest {
     assertThat(fromDto).isEqualToIgnoringGivenFields(config, "createdDate");
   }
 
-  @AfterClass
+  @AfterAll
   public static void tearDownSubject() {
     tearDownShiro();
   }

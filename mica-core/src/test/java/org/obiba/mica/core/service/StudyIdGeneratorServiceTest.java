@@ -10,24 +10,22 @@
 
 package org.obiba.mica.core.service;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.study.HarmonizationStudyStateRepository;
 import org.obiba.mica.study.StudyStateRepository;
-import org.obiba.mica.study.domain.StudyState;
 
 import java.util.Locale;
-import java.util.Optional;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class StudyIdGeneratorServiceTest {
 
   @InjectMocks
@@ -102,7 +100,7 @@ public class StudyIdGeneratorServiceTest {
 
   private void givenExistingAcronym(String... existingAcronyms) {
     for (String existingAcronym : existingAcronyms) {
-      when(studyStateRepository.findById(existingAcronym)).thenReturn(Optional.of(new StudyState()));
+      when(studyStateRepository.existsById(existingAcronym)).thenReturn(true);
     }
   }
 }

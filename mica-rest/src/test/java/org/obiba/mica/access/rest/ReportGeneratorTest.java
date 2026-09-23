@@ -14,7 +14,7 @@ import com.google.common.collect.Maps;
 import com.jayway.jsonpath.JsonPathException;
 import org.assertj.core.util.Lists;
 import org.json.JSONException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessEntity;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
@@ -31,6 +31,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 public class ReportGeneratorTest {
 
   @Test
@@ -45,19 +46,20 @@ public class ReportGeneratorTest {
     assertThat(frenchReportGenerator.extractTranslatedField("headers.summary"), is("OK"));
   }
 
-  @Test(expected = JsonPathException.class)
+  @Test
   public void when_use_invalid_json_schema__throws_exception() {
-    new CsvReportGenerator(Collections.emptyMap(), "{", "{}", "en").write(new ByteArrayOutputStream());
+    assertThrows(JsonPathException.class, () -> new CsvReportGenerator(Collections.emptyMap(), "{", "{}", "en").write(new ByteArrayOutputStream()));
   }
 
-  @Test(expected = JsonPathException.class)
+  @Test
   public void when_use_valid_schema_with_missing_translations__throws_exception() {
+    assertThrows(JsonPathException.class, () -> {
+      String csvSchema = "{\"headers\":" +
+        "   {\"organizationName\":{\"en\":\"Maelstrom\"}}" +
+        "}";
 
-    String csvSchema = "{\"headers\":" +
-      "   {\"organizationName\":{\"en\":\"Maelstrom\"}}" +
-      "}";
-
-    new CsvReportGenerator(Collections.emptyMap(), csvSchema, "{}", "en").write(new ByteArrayOutputStream());
+      new CsvReportGenerator(Collections.emptyMap(), csvSchema, "{}", "en").write(new ByteArrayOutputStream());
+    });
   }
 
   @Test

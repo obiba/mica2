@@ -15,13 +15,11 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.io.Files;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.obiba.core.util.FileUtil;
 import org.obiba.git.command.GitCommandHandler;
 import org.obiba.mica.config.JsonConfiguration;
@@ -48,6 +46,7 @@ import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.TaxonomyConfigService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.domain.Network;
+import org.obiba.mica.security.service.MicaGroupsToRolesMapper;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
@@ -68,12 +67,14 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import jakarta.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -83,15 +84,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.obiba.mica.assertj.Assertions.assertThat;
 import static org.obiba.mica.core.domain.LocalizedString.en;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
 @ContextConfiguration(classes = { IndividualStudyServiceTest.Config.class, JsonConfiguration.class })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class IndividualStudyServiceTest {
 
-  @Rule
-  public ExpectedException exception = ExpectedException.none();
 
   @Inject
   private IndividualStudyService individualStudyService;
@@ -111,12 +112,22 @@ public class IndividualStudyServiceTest {
   @Inject
   private MongoTemplate mongoTemplate;
 
-  @BeforeClass
+  @BeforeAll
   public static void init() {
+    assumeTrue(isMongoAvailable(), "MongoDB is not available on localhost:27017");
     SecurityUtils.setSecurityManager(new DefaultWebSecurityManager());
   }
 
-  @Before
+  private static boolean isMongoAvailable() {
+    try (Socket socket = new Socket()) {
+      socket.connect(new InetSocketAddress("localhost", 27017), 1000);
+      return true;
+    } catch (IOException e) {
+      return false;
+    }
+  }
+
+  @BeforeEach
   public void clearDatabase() {
     mongoTemplate.getDb().drop();
     reset(eventBus);
@@ -158,7 +169,7 @@ public class IndividualStudyServiceTest {
   @Test
   public void testCreateStudyWithContacts() throws Exception {
     Study study = new Study();
-    study.setId("test");
+    study.setName(en("name en").forFr("name fr"));
 
     Person person = new Person();
     person.setEmail("test@test.com");
@@ -317,12 +328,10 @@ public class IndividualStudyServiceTest {
 
     assertThat(studyStateRepository.findAll()).hasSize(1);
 
-    exception.expect(ConstraintException.class);
-
-    individualStudyService.delete(study.getId());
+    assertThrows(ConstraintException.class, () -> individualStudyService.delete(study.getId()));
   }
 
-  @After
+  @AfterEach
   public void cleanup() throws IOException {
     FileUtil.delete(Config.BASE_REPO);
     FileUtil.delete(Config.BASE_CLONE);
@@ -448,6 +457,11 @@ public class IndividualStudyServiceTest {
     @Bean
     public FilePublicationFlowMailNotification filePublicationFlowNotification() {
       return mock(FilePublicationFlowMailNotification.class);
+    }
+
+    @Bean
+    public MicaGroupsToRolesMapper micaGroupsToRolesMapper() {
+      return mock(MicaGroupsToRolesMapper.class);
     }
 
     @Bean

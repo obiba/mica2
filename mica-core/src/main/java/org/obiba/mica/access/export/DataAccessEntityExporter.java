@@ -55,7 +55,7 @@ public class DataAccessEntityExporter {
 
   private JsonNode model;
 
-  private JSONObject wordConfig;
+  private JSONObject wordConfig = new JSONObject();
 
   private String prefix = "";
 
