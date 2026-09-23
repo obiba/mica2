@@ -89,7 +89,8 @@
       :columns="columns"
       row-key="key"
       :loading="loading"
-      :pagination="{ rowsPerPage: 50 }"
+      v-model:pagination="pagination"
+      :sort-method="sortRows"
       :rows-per-page-options="[25, 50, 100]"
       :no-data-label="t('config.translations.none')"
     >
@@ -187,17 +188,50 @@ const fileInput = ref<HTMLInputElement>();
 /** the autogrow inputs measure their height only when mounted or edited: remounted when the width changes */
 const tableWidth = ref(0);
 
-const rows = computed(() => filterKeys(filter.value ?? '', customizedOnly.value).map((key) => ({ key })));
+const pagination = ref<{ rowsPerPage: number; sortBy?: string | null; descending?: boolean }>({ rowsPerPage: 50 });
 
-const columns = computed<QTableColumn<{ key: string }>[]>(() => [
-  { name: 'key', label: t('config.translations.key'), field: 'key', align: 'left', style: 'width: 30%' },
+type Row = { key: string };
+
+const rows = computed<Row[]>(() => filterKeys(filter.value ?? '', customizedOnly.value).map((key) => ({ key })));
+
+const columns = computed<QTableColumn<Row>[]>(() => [
+  {
+    name: 'key',
+    label: t('config.translations.key'),
+    field: 'key',
+    align: 'left',
+    sortable: true,
+    style: 'width: 30%',
+  },
   ...languages.value.map((locale) => ({
     name: locale,
     label: locale.toUpperCase(),
-    field: () => locale,
+    field: (row: Row) => value(row.key, locale),
     align: 'left' as const,
+    sortable: true,
   })),
 ]);
+
+/**
+ * The values of the sorted language, as they were when the sort, the filter or the translations last changed:
+ * editing a value does not move its row away while typing.
+ */
+const sortValues = shallowRef(new Map<string, string>());
+watch(
+  [() => pagination.value.sortBy, filter, customizedOnly, loading],
+  ([sortBy]) => {
+    const locale = sortBy && sortBy !== 'key' ? sortBy : undefined;
+    sortValues.value = new Map(locale ? filterKeys('').map((key) => [key, value(key, locale)]) : []);
+  },
+  { immediate: true },
+);
+
+function sortRows(data: readonly Row[], sortBy: string, descending: boolean): Row[] {
+  const values = sortValues.value;
+  const text = (row: Row) => (sortBy === 'key' ? row.key : (values.get(row.key) ?? ''));
+  const sign = descending ? -1 : 1;
+  return [...data].sort((a, b) => sign * text(a).localeCompare(text(b)) || a.key.localeCompare(b.key));
+}
 
 function onAdd() {
   $q.dialog({

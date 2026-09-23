@@ -30,6 +30,14 @@
             <q-item>
               <q-item-section>
                 <q-item-label>
+                  <router-link to="/settings/translations">{{ t('settings.translations') }}</router-link>
+                </q-item-label>
+                <q-item-label caption lines="2">{{ t('settings.translations_caption') }}</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section>
+                <q-item-label>
                   <router-link to="/settings/caching">{{ t('settings.caching') }}</router-link>
                 </q-item-label>
                 <q-item-label caption lines="2">{{ t('settings.caching_caption') }}</q-item-label>
@@ -41,14 +49,6 @@
                   <router-link to="/settings/logs">{{ t('settings.logs') }}</router-link>
                 </q-item-label>
                 <q-item-label caption lines="2">{{ t('settings.logs_caption') }}</q-item-label>
-              </q-item-section>
-            </q-item>
-            <q-item>
-              <q-item-section>
-                <q-item-label>
-                  <router-link to="/settings/translations">{{ t('settings.translations') }}</router-link>
-                </q-item-label>
-                <q-item-label caption lines="2">{{ t('settings.translations_caption') }}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>
