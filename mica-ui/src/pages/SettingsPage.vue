@@ -85,6 +85,14 @@
                 <q-item-label caption lines="2">{{ t('settings.indexing_caption') }}</q-item-label>
               </q-item-section>
             </q-item>
+            <q-item>
+              <q-item-section>
+                <q-item-label>
+                  <router-link to="/settings/taxonomies">{{ t('settings.taxonomies') }}</router-link>
+                </q-item-label>
+                <q-item-label caption lines="2">{{ t('settings.taxonomies_caption') }}</q-item-label>
+              </q-item-section>
+            </q-item>
           </q-list>
         </div>
       </div>
