@@ -12,7 +12,7 @@
       <q-card-section class="scroll" style="max-height: 60vh">
         <q-spinner-dots v-if="loading" color="primary" size="2em" />
         <div v-else-if="!diff || empty" class="text-grey-7">{{ t('history.diff_none') }}</div>
-        <q-markup-table v-else flat dense wrap-cells>
+        <q-markup-table v-else flat wrap-cells>
           <thead>
             <tr>
               <th v-if="selectable"></th>
@@ -27,7 +27,7 @@
                 <q-checkbox dense :model-value="checked.has(row.key)" @update:model-value="toggle(row)" />
               </td>
               <td>
-                <div class="text-weight-medium">{{ row.label || row.key }}</div>
+                <div><code>{{ row.label || row.key }}</code></div>
                 <div v-if="row.label" class="text-caption text-grey-7">{{ row.key }}</div>
               </td>
               <td>{{ row.left ?? '' }}</td>
