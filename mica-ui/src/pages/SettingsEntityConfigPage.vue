@@ -34,7 +34,7 @@
           </q-list>
         </template>
 
-        <q-tab-panels v-model="tab" animated>
+        <q-tab-panels v-model="tab">
           <q-tab-panel v-for="form in config.forms" :key="form.target.name" :name="form.target.name" class="q-pa-none">
             <div class="text-h5 q-mb-md">{{ t(form.label) }}</div>
             <entity-config-form-builder
