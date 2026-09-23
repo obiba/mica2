@@ -1,7 +1,7 @@
 <template>
   <div v-if="state.dto" class="q-mt-lg">
     <div class="text-h6">{{ t('config.data_access.properties') }}</div>
-    <p class="text-grey-8">{{ info }}</p>
+    <div class="text-grey-8 q-mb-lg">{{ info }}</div>
     <div class="row q-col-gutter-md">
       <div v-for="field in FIELDS" :key="field" class="col-12 col-md-4">
         <config-input

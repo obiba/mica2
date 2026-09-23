@@ -50,7 +50,7 @@
           </q-list>
         </template>
 
-        <q-tab-panels v-model="tab" animated>
+        <q-tab-panels v-model="tab">
           <q-tab-panel v-for="form in forms" :key="form.kind" :name="form.kind" class="q-pa-none">
             <div class="text-h5 q-mb-md">{{ t(form.label) }}</div>
             <config-form-builder
