@@ -43,6 +43,14 @@
                 <q-item-label caption lines="2">{{ t('settings.logs_caption') }}</q-item-label>
               </q-item-section>
             </q-item>
+            <q-item>
+              <q-item-section>
+                <q-item-label>
+                  <router-link to="/settings/translations">{{ t('settings.translations') }}</router-link>
+                </q-item-label>
+                <q-item-label caption lines="2">{{ t('settings.translations_caption') }}</q-item-label>
+              </q-item-section>
+            </q-item>
           </q-list>
         </div>
         <div class="col-4 col-sm-4 col-xs-12">
