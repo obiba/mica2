@@ -12,7 +12,7 @@ package org.obiba.mica.study;
 
 import java.util.SortedSet;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
@@ -21,7 +21,6 @@ import com.google.common.collect.Iterables;
 
 import static org.obiba.mica.assertj.Assertions.assertThat;
 import static org.obiba.mica.core.domain.LocalizedString.en;
-import static org.obiba.mica.study.date.PersistableYearMonth.of;
 
 @SuppressWarnings({ "MagicNumber", "OverlyLongMethod" })
 public class TestDataCollectionEventSort {
@@ -32,7 +31,7 @@ public class TestDataCollectionEventSort {
         createEvent("A", 1997, 1, 2000, 12), createEvent("A", 1997, 8, 2000, 12));
     population.setName(en("Test Population"));
     DataCollectionEvent event = Iterables.get(population.getDataCollectionEvents(), 0);
-    assertThat(event.getStart()).isEqualTo(of(1997, 1));
+    assertThat(event.getStart().getYearMonth()).isEqualTo("1997-01");
   }
 
   @Test
@@ -40,7 +39,7 @@ public class TestDataCollectionEventSort {
     Population population = createPopulation("Test Population", createEvent("A", 2010, null, 2020, null),
         createEvent("A", 1997, 1, 2000, null));
     DataCollectionEvent event = Iterables.get(population.getDataCollectionEvents(), 0);
-    assertThat(event.getStart()).isEqualTo(of(1997, 1));
+    assertThat(event.getStart().getYearMonth()).isEqualTo("1997-01");
   }
 
   @Test
@@ -48,7 +47,7 @@ public class TestDataCollectionEventSort {
     Population population = createPopulation("Test Population", createEvent("A", 2010, null, null, null),
         createEvent("A", 1997, null, null, null));
     DataCollectionEvent event = Iterables.get(population.getDataCollectionEvents(), 0);
-    assertThat(event.getStart()).isEqualTo(of(1997, 1));
+    assertThat(event.getStart().getYearMonth()).isEqualTo("1997");
   }
 
   @Test
@@ -62,7 +61,7 @@ public class TestDataCollectionEventSort {
 
     Population population = Iterables.get(study.getPopulations(), 0);
     DataCollectionEvent event = Iterables.get(population.getDataCollectionEvents(), 0);
-    assertThat(event.getStart()).isEqualTo(of(1996, 1));
+    assertThat(event.getStart().getYearMonth()).isEqualTo("1996-01");
   }
 
   @Test
@@ -76,8 +75,8 @@ public class TestDataCollectionEventSort {
     Population population = Iterables.get(study.getPopulations(), 0);
     SortedSet<DataCollectionEvent> events = population.getDataCollectionEvents();
     assertThat(events.size()).isEqualTo(3);
-    assertThat(Iterables.get(events, 0).getStart()).isEqualTo(of(2010, 1));
-    assertThat(Iterables.get(events, 1).getStart()).isEqualTo(of(2010, 1));
+    assertThat(Iterables.get(events, 0).getStart().getYearMonth()).isEqualTo("2010-01");
+    assertThat(Iterables.get(events, 1).getStart().getYearMonth()).isEqualTo("2010-01");
   }
 
   @Test
@@ -90,8 +89,8 @@ public class TestDataCollectionEventSort {
     Population population = Iterables.get(study.getPopulations(), 0);
     SortedSet<DataCollectionEvent> events = population.getDataCollectionEvents();
     assertThat(events.size()).isEqualTo(2);
-    assertThat(Iterables.get(events, 0).getStart()).isEqualTo(of(2010, 1));
-    assertThat(Iterables.get(events, 1).getStart()).isEqualTo(of(2014, 1));
+    assertThat(Iterables.get(events, 0).getStart().getYearMonth()).isEqualTo("2010-01");
+    assertThat(Iterables.get(events, 1).getStart().getYearMonth()).isEqualTo("2014-01");
   }
 
   @Test
@@ -105,12 +104,12 @@ public class TestDataCollectionEventSort {
     SortedSet<Population> populations = study.getPopulations();
     assertThat(populations.size()).isEqualTo(3);
 
-    assertThat(Iterables.get(Iterables.get(populations, 0).getDataCollectionEvents(), 0).getStart())
-        .isEqualTo(of(2010, 1));
-    assertThat(Iterables.get(Iterables.get(populations, 1).getDataCollectionEvents(), 0).getStart())
-        .isEqualTo(of(2010, 1));
-    assertThat(Iterables.get(Iterables.get(populations, 2).getDataCollectionEvents(), 0).getStart())
-        .isEqualTo(of(2010, 1));
+    assertThat(Iterables.get(Iterables.get(populations, 0).getDataCollectionEvents(), 0).getStart().getYearMonth())
+        .isEqualTo("2010-01");
+    assertThat(Iterables.get(Iterables.get(populations, 1).getDataCollectionEvents(), 0).getStart().getYearMonth())
+        .isEqualTo("2010-01");
+    assertThat(Iterables.get(Iterables.get(populations, 2).getDataCollectionEvents(), 0).getStart().getYearMonth())
+        .isEqualTo("2010-01");
   }
 
   @Test

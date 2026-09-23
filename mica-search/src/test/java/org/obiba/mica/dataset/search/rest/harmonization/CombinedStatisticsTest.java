@@ -10,7 +10,7 @@
 
 package org.obiba.mica.dataset.search.rest.harmonization;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.obiba.mica.web.model.Mica;
 
 import com.google.common.collect.Lists;

@@ -11,13 +11,13 @@
 package org.obiba.mica.web.model;
 
 import org.bson.types.ObjectId;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.obiba.mica.core.domain.Timestamped;
 import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.file.Attachment;
@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 import static org.obiba.mica.assertj.Assertions.assertThat;
 import static org.obiba.mica.core.domain.LocalizedString.en;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class StudyDtosTest {
 
   @InjectMocks
@@ -61,7 +61,16 @@ public class StudyDtosTest {
   @Mock
   private PersonService personService;
 
-  @Before
+  @Mock
+  private AttributeDtos attributeDtos;
+
+  @Mock
+  private PopulationDtos populationDtos;
+
+  @Mock
+  private PersonDtos personDtos;
+
+  @BeforeEach
   public void before() {
     MicaConfig config = new MicaConfig();
     config.setLocales(Arrays.asList(Locale.ENGLISH, Locale.FRENCH));
@@ -100,9 +109,8 @@ public class StudyDtosTest {
   }
 
   private void assertTimestamps(Timestamped study, Mica.StudyDtoOrBuilder dto) {
-    assertThat(dto.getTimestamps().getCreated()).isEqualTo(study.getCreatedDate().toString());
-    assertThat(dto.getTimestamps().getLastUpdate())
-      .isEqualTo(study.getLastModifiedDate() == null ? "" : study.getLastModifiedDate().toString());
+    assertThat(dto.getTimestamps().getCreated()).isEqualTo(study.getCreatedDate().map(Object::toString).orElse(""));
+    assertThat(dto.getTimestamps().getLastUpdate()).isEqualTo(study.getLastModifiedDate().map(Object::toString).orElse(""));
   }
 
   private Study createStudy() {

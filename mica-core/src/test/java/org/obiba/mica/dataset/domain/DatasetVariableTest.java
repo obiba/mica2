@@ -10,10 +10,11 @@
 
 package org.obiba.mica.dataset.domain;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.obiba.mica.core.support.SpecialCharCodecFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class DatasetVariableTest {
 
@@ -27,25 +28,25 @@ public class DatasetVariableTest {
         DatasetVariable.Type.Harmonized, "53c3ef8704a61f0e17f6fe72");
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void test_id_resolver_empty_id() throws Exception {
-    DatasetVariable.IdResolver.from("");
+    assertThrows(IllegalArgumentException.class, () -> DatasetVariable.IdResolver.from(""));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void test_id_resolver_null_id() throws Exception {
-    DatasetVariable.IdResolver.from(null);
+    assertThrows(IllegalArgumentException.class, () -> DatasetVariable.IdResolver.from(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void test_id_resolver_invalid_type() throws Exception {
-    DatasetVariable.IdResolver.from("53c3ef8804a61f0e17f6fe78:LAB_TSC:pwel");
+    assertThrows(IllegalArgumentException.class, () -> DatasetVariable.IdResolver.from("53c3ef8804a61f0e17f6fe78:LAB_TSC:pwel"));
   }
 
   @Test
   public void test_id_encoderDecoder() {
     String source = "53c3ef8804a61f0e17f6fe78:LAB_TSC (Month) <year>,a=b|2&2:Dataschema";
-    String expected = "53c3ef8804a61f0e17f6fe78:LAB_TSC _28Month_29 _3cyear_3e_2ca_3db_7c2_262:Dataschema";
+    String expected = "53c3ef8804a61f0e17f6fe78:LAB_TSC rqlx28rqlMonthrqlx29rql rqlx3crqlyearrqlx3erqlrqlx2crqlarqlx3drqlbrqlx7crql2rqlx26rql2:Dataschema";
     DatasetVariable.IdResolver resolver = DatasetVariable.IdResolver.from(source);
     assertThat(resolver.getId()).isEqualTo(expected);
     String decoded = SpecialCharCodecFactory.get().decode(expected);

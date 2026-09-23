@@ -11,7 +11,7 @@
 package org.obiba.mica.file.service;
 
 import org.apache.commons.math3.util.Pair;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

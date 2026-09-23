@@ -10,7 +10,7 @@
 
 package org.obiba.mica.micaConfig.service;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Term;
@@ -21,39 +21,44 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TaxonomyConfigServiceTest {
 
-  @Test(expected = VocabularyDuplicateAliasException.class)
+  @Test
   public void validateTaxonomyDuplicateAlias() {
-    Taxonomy taxonomy = new Taxonomy("tax001");
-    taxonomy.addVocabulary(
-      createVocabulary("voc001",
-        null,
-        AttributeBuilder.newBuilder().field("tax.voc").alias("tax-voc").build()));
+    assertThrows(VocabularyDuplicateAliasException.class, () -> {
+      Taxonomy taxonomy = new Taxonomy("tax001");
+      taxonomy.addVocabulary(
+        createVocabulary("voc001",
+          null,
+          AttributeBuilder.newBuilder().field("tax.voc").alias("tax-voc").build()));
 
-    taxonomy.addVocabulary(
-      createVocabulary("voc002",
-        null,
-        AttributeBuilder.newBuilder().field("tax.voc").alias("tax-voc").build()));
+      taxonomy.addVocabulary(
+        createVocabulary("voc002",
+          null,
+          AttributeBuilder.newBuilder().field("tax.voc").alias("tax-voc").build()));
 
-    new TaxonomyConfigService().validateTaxonomy(taxonomy);
+      new TaxonomyConfigService().validateTaxonomy(taxonomy);
+    });
   }
 
-  @Test(expected = VocabularyDuplicateAliasException.class)
+  @Test
   public void validateTaxonomyDuplicateAliasRange() {
-    Taxonomy taxonomy = new Taxonomy("tax001");
-    taxonomy.addVocabulary(
-      createVocabulary("voc001",
-        createTerms("term001", "term002"),
-        AttributeBuilder.newBuilder().field("tax.voc").alias("tax-voc-range").range("true").build()));
+    assertThrows(VocabularyDuplicateAliasException.class, () -> {
+      Taxonomy taxonomy = new Taxonomy("tax001");
+      taxonomy.addVocabulary(
+        createVocabulary("voc001",
+          createTerms("term001", "term002"),
+          AttributeBuilder.newBuilder().field("tax.voc").alias("tax-voc-range").range("true").build()));
 
-    taxonomy.addVocabulary(
-      createVocabulary("voc002",
-        createTerms("term001", "term002"),
-        AttributeBuilder.newBuilder().field("tax.voc").alias("tax-voc-range").range("true").build()));
+      taxonomy.addVocabulary(
+        createVocabulary("voc002",
+          createTerms("term001", "term002"),
+          AttributeBuilder.newBuilder().field("tax.voc").alias("tax-voc-range").range("true").build()));
 
-    new TaxonomyConfigService().validateTaxonomy(taxonomy);
+      new TaxonomyConfigService().validateTaxonomy(taxonomy);
+    });
   }
 
   @Test
@@ -66,14 +71,16 @@ public class TaxonomyConfigServiceTest {
     new TaxonomyConfigService().validateTaxonomy(taxonomy);
   }
 
-  @Test(expected = VocabularyMissingRangeTermsException.class)
+  @Test
   public void validateRangeTaxonomyWithoutTerms() {
-    Taxonomy taxonomy = new Taxonomy("tax001");
-    taxonomy.addVocabulary(
-      createVocabulary("voc001",
-      null,
-      AttributeBuilder.newBuilder().field("tax.voc").alias("tax-voc-range").range("true").type("integer").build()));
-    new TaxonomyConfigService().validateTaxonomy(taxonomy);
+    assertThrows(VocabularyMissingRangeTermsException.class, () -> {
+      Taxonomy taxonomy = new Taxonomy("tax001");
+      taxonomy.addVocabulary(
+        createVocabulary("voc001",
+        null,
+        AttributeBuilder.newBuilder().field("tax.voc").alias("tax-voc-range").range("true").type("integer").build()));
+      new TaxonomyConfigService().validateTaxonomy(taxonomy);
+    });
   }
 
   @Test
@@ -86,14 +93,16 @@ public class TaxonomyConfigServiceTest {
     new TaxonomyConfigService().validateTaxonomy(taxonomy);
   }
 
-  @Test(expected = VocabularyMissingRangeAttributeException.class)
+  @Test
   public void validateRangeTaxonomyWithoutRangeAttribute() {
-    Taxonomy taxonomy = new Taxonomy("tax001");
-    taxonomy.addVocabulary(
-      createVocabulary("voc001",
-        createTerms("term001", "term002"),
-        AttributeBuilder.newBuilder().field("tax.voc").alias("tax-voc-range").type("integer").build()));
-    new TaxonomyConfigService().validateTaxonomy(taxonomy);
+    assertThrows(VocabularyMissingRangeAttributeException.class, () -> {
+      Taxonomy taxonomy = new Taxonomy("tax001");
+      taxonomy.addVocabulary(
+        createVocabulary("voc001",
+          createTerms("term001", "term002"),
+          AttributeBuilder.newBuilder().field("tax.voc").alias("tax-voc-range").type("integer").build()));
+      new TaxonomyConfigService().validateTaxonomy(taxonomy);
+    });
   }
 
   @Test

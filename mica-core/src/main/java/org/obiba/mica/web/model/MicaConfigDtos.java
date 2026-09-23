@@ -218,7 +218,7 @@ class MicaConfigDtos {
     if(dto.hasIsUsePublicUrlForSharedLink()) config.setUsePublicUrlForSharedLink(dto.getIsUsePublicUrlForSharedLink());
 
     dto.getLanguagesList().forEach(lang -> config.getLocales().add(new Locale(lang)));
-    config.setOpal(dto.getOpal());
+    if (dto.hasOpal()) config.setOpal(dto.getOpal());
     if (dto.hasPrivacyThreshold()) config.setPrivacyThreshold(dto.getPrivacyThreshold());
 
     config.setRoles(dto.getRolesList());

@@ -11,7 +11,7 @@
 package org.obiba.mica.web.model;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.obiba.mica.study.domain.Population;
 
 import java.util.ArrayList;

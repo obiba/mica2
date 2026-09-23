@@ -11,7 +11,7 @@
 package org.obiba.mica.access.export;
 
 import org.assertj.core.util.Strings;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;

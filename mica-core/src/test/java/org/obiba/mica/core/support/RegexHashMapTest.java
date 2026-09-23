@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class RegexHashMapTest {
 
@@ -19,9 +19,9 @@ public class RegexHashMapTest {
     map.put("populations[0].dataCollectionEvents[2].model.startDate", "startDate");
     map.put("model.objectives", "objectives");
 
-    Assert.assertEquals("criteria", map.get("populations2.model.selectionCriteria,criteria"));
-    Assert.assertEquals(null, map.get("populations[0].dataCollectionEvents[2].model.startDate"));
-    Assert.assertEquals("objectives", map.get("model.objectives"));
+    Assertions.assertEquals("criteria", map.get("populations2.model.selectionCriteria,criteria"));
+    Assertions.assertEquals(null, map.get("populations[0].dataCollectionEvents[2].model.startDate"));
+    Assertions.assertEquals("objectives", map.get("model.objectives"));
   }
 
   @Test
@@ -32,14 +32,14 @@ public class RegexHashMapTest {
     map.put("^populations\\[\\d+\\]\\.dataCollectionEvents\\[\\d+\\]\\.model\\.startDate$", "startDate");
     map.put("^model\\.objectives$", "objectives");
 
-    Assert.assertEquals("criteria", map.get("populations[2].model.selectionCriteria.criteria"));
-    Assert.assertEquals("criteria", map.get("populations[12].model.selectionCriteria.criteria"));
+    Assertions.assertEquals("criteria", map.get("populations[2].model.selectionCriteria.criteria"));
+    Assertions.assertEquals("criteria", map.get("populations[12].model.selectionCriteria.criteria"));
 
-    Assert.assertEquals("startDate", map.get("populations[0].dataCollectionEvents[2].model.startDate"));
-    Assert.assertEquals("startDate", map.get("populations[14].dataCollectionEvents[3].model.startDate"));
-    Assert.assertEquals(null, map.get("populations[4].dataCollectionEvents[-2].model.startDate"));
+    Assertions.assertEquals("startDate", map.get("populations[0].dataCollectionEvents[2].model.startDate"));
+    Assertions.assertEquals("startDate", map.get("populations[14].dataCollectionEvents[3].model.startDate"));
+    Assertions.assertEquals(null, map.get("populations[4].dataCollectionEvents[-2].model.startDate"));
 
-    Assert.assertEquals("objectives", map.get("model.objectives"));
+    Assertions.assertEquals("objectives", map.get("model.objectives"));
   }
 
   @Test
@@ -50,9 +50,9 @@ public class RegexHashMapTest {
     map.put("^populations\\[\\d+\\]\\.dataCollectionEvents\\[\\d+\\]\\." + Pattern.quote("model.startDate"), "startDate");
     map.put(Pattern.quote("model.objectives"), "objectives");
 
-    Assert.assertEquals("criteria", map.get("populations[2].model.selectionCriteria.criteria"));
-    Assert.assertEquals("startDate", map.get("populations[0].dataCollectionEvents[2].model.startDate"));
-    Assert.assertEquals("objectives", map.get("model.objectives"));
+    Assertions.assertEquals("criteria", map.get("populations[2].model.selectionCriteria.criteria"));
+    Assertions.assertEquals("startDate", map.get("populations[0].dataCollectionEvents[2].model.startDate"));
+    Assertions.assertEquals("objectives", map.get("model.objectives"));
   }
 
   @Test
@@ -68,11 +68,11 @@ public class RegexHashMapTest {
     map.put("^populations\\[\\d+\\]\\.model\\.selectionCriteria\\." + Pattern.quote("criteria") + "(" + joinedLocales + ")?", "criteria");
     map.put(Pattern.quote("model.objectives") + "(" + joinedSingleLocale + ")?", "objectives");
 
-    Assert.assertEquals("criteria", map.get("populations[2].model.selectionCriteria.criteria"));
-    Assert.assertEquals("criteria", map.get("populations[2].model.selectionCriteria.criteria.en"));
-    Assert.assertEquals(null, map.get("populations[2].model.selectionCriteria.criteria."));
-    Assert.assertEquals("objectives", map.get("model.objectives"));
-    Assert.assertEquals("objectives", map.get("model.objectives.fr"));
-    Assert.assertEquals(null, map.get("model.objectives.en"));
+    Assertions.assertEquals("criteria", map.get("populations[2].model.selectionCriteria.criteria"));
+    Assertions.assertEquals("criteria", map.get("populations[2].model.selectionCriteria.criteria.en"));
+    Assertions.assertEquals(null, map.get("populations[2].model.selectionCriteria.criteria."));
+    Assertions.assertEquals("objectives", map.get("model.objectives"));
+    Assertions.assertEquals("objectives", map.get("model.objectives.fr"));
+    Assertions.assertEquals(null, map.get("model.objectives.en"));
   }
 }

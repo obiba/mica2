@@ -10,13 +10,15 @@
 
 package org.obiba.mica.web.model;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.obiba.mica.core.domain.HarmonizationStudyTable;
 import org.obiba.mica.core.source.OpalTableSource;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
@@ -39,7 +41,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+// stubs set up for all tests in before(), not every test uses them all
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class DatasetDtosTest {
 
   @InjectMocks
@@ -67,13 +71,14 @@ public class DatasetDtosTest {
   @Mock
   private PermissionsDtos permissionsDtos;
 
-  @Before
+  @BeforeEach
   public void before() {
     MicaConfig config = new MicaConfig();
     config.setLocales(Arrays.asList(Locale.ENGLISH, Locale.FRENCH));
     when(micaConfigService.getConfig()).thenReturn(config);
 
     when(subjectAclService.isPermitted(anyString(), anyString(), anyString())).thenReturn(true);
+    when(subjectAclService.isAccessible(anyString(), anyString())).thenReturn(true);
     when(publishedStudyService.findById(anyString())).thenReturn(new HarmonizationStudy());
 
     when(studySummaryDtos.asHarmoStudyDto(anyString())).thenReturn(Mica.StudySummaryDto.newBuilder().setId("123").setPublished(true).build());
