@@ -11,7 +11,7 @@
         <q-tabs v-model="lang" dense align="left" class="text-grey-7" active-color="primary">
           <q-tab v-for="language in languages" :key="language" :name="language" :label="language.toUpperCase()" />
         </q-tabs>
-        <q-tab-panels v-model="lang" animated>
+        <q-tab-panels v-model="lang">
           <q-tab-panel v-for="language in languages" :key="language" :name="language" class="q-px-none">
             <q-input v-model="description[language]" dense outlined type="textarea" autogrow />
           </q-tab-panel>

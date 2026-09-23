@@ -11,7 +11,7 @@
       <div class="row items-start">
         <div class="col">
           <div class="text-h5 q-mb-sm">{{ t('config.statistics.title') }}</div>
-          <p class="text-grey-8">{{ t('config.statistics.info') }}</p>
+          <div class="text-grey-8 q-mb-lg">{{ t('config.statistics.info') }}</div>
         </div>
         <div v-if="!failed" class="col-auto text-right">
           <q-btn
@@ -57,9 +57,9 @@
           </q-card>
         </div>
       </div>
-      <p v-else-if="!failed && (!metrics || metrics.types.length === 0)" class="text-hint">
+      <div v-else-if="!failed && (!metrics || metrics.types.length === 0)" class="text-hint q-mb-lg">
         {{ t('config.statistics.none') }}
-      </p>
+      </div>
       <div v-else-if="metrics" class="row q-col-gutter-md">
         <div v-for="typeMetrics in metrics.types" :key="typeMetrics.type" class="col-12 col-md-6 col-lg-4">
           <variables-metrics-card v-if="typeMetrics.type === 'DatasetVariable'" :metrics="typeMetrics" />

@@ -3,7 +3,7 @@
     <q-toolbar class="bg-grey-3">
       <q-breadcrumbs>
         <q-breadcrumbs-el icon="home" to="/" />
-        <q-breadcrumbs-el :label="t('settings')" />
+        <q-breadcrumbs-el :label="t('settings.title')" />
       </q-breadcrumbs>
     </q-toolbar>
     <q-page padding>
@@ -77,6 +77,14 @@
         <div class="col-4 col-sm-4 col-xs-12">
           <q-list separator>
             <q-item-label header class="text-uppercase">{{ t('settings.search') }}</q-item-label>
+            <q-item>
+              <q-item-section>
+                <q-item-label>
+                  <router-link to="/settings/taxonomies">{{ t('settings.taxonomies') }}</router-link>
+                </q-item-label>
+                <q-item-label caption lines="2">{{ t('settings.taxonomies_caption') }}</q-item-label>
+              </q-item-section>
+            </q-item>
             <q-item>
               <q-item-section>
                 <q-item-label>
