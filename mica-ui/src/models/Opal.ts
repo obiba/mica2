@@ -20,3 +20,33 @@ export interface TaxonomySummaryDto {
 export interface TaxonomiesDto {
   summaries: TaxonomySummaryDto[];
 }
+
+export interface AttributeDto {
+  key: string;
+  value: string;
+}
+
+export interface TermDto {
+  name: string;
+  title?: LocaleTextDto[];
+  description?: LocaleTextDto[];
+  keywords?: LocaleTextDto[];
+  attributes?: AttributeDto[];
+  terms?: TermDto[];
+}
+
+export interface VocabularyDto extends TermDto {
+  repeatable?: boolean;
+}
+
+/** `GET /taxonomies/_filter`, `GET /meta-taxonomy` */
+export interface TaxonomyDto {
+  name: string;
+  author?: string;
+  license?: string;
+  title?: LocaleTextDto[];
+  description?: LocaleTextDto[];
+  keywords?: LocaleTextDto[];
+  attributes?: AttributeDto[];
+  vocabularies?: VocabularyDto[];
+}

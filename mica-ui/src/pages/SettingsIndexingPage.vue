@@ -9,7 +9,7 @@
     </q-toolbar>
     <q-page padding>
       <div class="text-h5 q-mb-sm">{{ t('config.indexing.title') }}</div>
-      <p class="text-grey-8">{{ t('config.indexing.info') }}</p>
+      <div class="text-grey-8 q-mb-lg">{{ t('config.indexing.info') }}</div>
       <div class="row">
         <div class="col-12 col-md-8">
           <indices-panel />
