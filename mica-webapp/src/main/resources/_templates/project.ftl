@@ -1,5 +1,6 @@
 <!-- Macros -->
 <#include "libs/header.ftl">
+<#include "models/files.ftl">
 <#include "models/project.ftl">
 
 <!DOCTYPE html>
@@ -46,6 +47,11 @@
 
         <@projectModel project=project/>
 
+        <!-- Files -->
+        <#if showProjectFiles>
+          <@projectFilesBrowser project=project/>
+        </#if>
+
       </div><!-- /.container-fluid -->
     </div>
     <!-- /.content -->
@@ -57,6 +63,7 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
+<#include "libs/project-scripts.ftl">
 
 </body>
 </html>

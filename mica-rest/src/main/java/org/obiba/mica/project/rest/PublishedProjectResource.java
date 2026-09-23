@@ -10,20 +10,28 @@
 
 package org.obiba.mica.project.rest;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.file.Attachment;
+import org.obiba.mica.file.rest.FileResource;
+import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.service.NoSuchProjectException;
 import org.obiba.mica.project.service.PublishedProjectService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -46,6 +54,12 @@ public class PublishedProjectResource {
   @Inject
   private SubjectAclService subjectAclService;
 
+  @Inject
+  private FileSystemService fileSystemService;
+
+  @Inject
+  private ApplicationContext applicationContext;
+
   private String id;
 
   public void setId(String id) {
@@ -65,6 +79,18 @@ public class PublishedProjectResource {
   public Map<String, Object> getModel() {
     checkAccess();
     return getProject().getModel();
+  }
+
+  @Path("/file/{fileId}")
+  public FileResource file(@PathParam("fileId") String fileId) {
+    checkAccess();
+    FileResource fileResource = applicationContext.getBean(FileResource.class);
+    List<Attachment> attachments = fileSystemService
+      .findAttachments(String.format("^/project/%s", id), true).stream()
+      .filter(a -> a.getId().equals(fileId)).collect(Collectors.toList());
+    if (attachments.isEmpty()) throw NoSuchEntityException.withId(Attachment.class, fileId);
+    fileResource.setAttachment(attachments.get(0));
+    return fileResource;
   }
 
   private void checkAccess() {
