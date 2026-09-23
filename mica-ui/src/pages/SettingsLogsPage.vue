@@ -9,7 +9,7 @@
     </q-toolbar>
     <q-page padding>
       <div class="text-h5 q-mb-sm">{{ t('config.logs.title') }}</div>
-      <p class="text-grey-8">{{ t('config.logs.info') }}</p>
+      <div class="text-grey-8 q-mb-lg">{{ t('config.logs.info') }}</div>
       <loggers-table />
     </q-page>
   </div>

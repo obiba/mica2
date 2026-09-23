@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p class="text-grey-8" v-html="info" />
+    <div class="text-grey-8 q-mb-lg" v-html="info" />
     <q-banner v-if="state.legacy && legacyMessage" rounded class="bg-warning text-dark q-mb-md">
       <template #avatar>
         <q-icon name="warning" />
