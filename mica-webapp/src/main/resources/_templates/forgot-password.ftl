@@ -47,9 +47,12 @@
 <#include "libs/scripts.ftl">
 
 <script>
-  UserService.forgotPassword("#form", function() {
+  UserService.forgotPassword("#form", function(messageTemplate) {
     var alertId = "#alertFailure";
-    $(alertId).removeClass("d-none");
+    var msg = messageTemplate === "server.error.too-many-requests"
+      ? "<@message "server.error.too-many-requests"/>"
+      : "<@message "reset-password-failed"/>";
+    $(alertId).html('<small>' + msg + '</small>').removeClass("d-none");
     setTimeout(function() {
       $(alertId).addClass("d-none");
     }, 5000);

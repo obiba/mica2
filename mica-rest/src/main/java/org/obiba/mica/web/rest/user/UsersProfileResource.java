@@ -29,6 +29,7 @@ import org.obiba.mica.security.Roles;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
+import org.obiba.mica.web.rest.security.RateLimiter;
 import org.owasp.esapi.ESAPI;
 import org.springframework.stereotype.Component;
 
@@ -51,6 +52,9 @@ public class UsersProfileResource {
   @Inject
   private Dtos dtos;
 
+  @Inject
+  private RateLimiter rateLimiter;
+
   @GET
   @Path("/application/{application}")
   @RequiresRoles(Roles.MICA_DAO)
@@ -68,6 +72,7 @@ public class UsersProfileResource {
 
   @POST
   public Response userJoin(@Context HttpServletRequest request) {
+    rateLimiter.check(RateLimiter.Bucket.SIGNUP, request);
     ObjectMapper mapper = new ObjectMapper();
     Map<String, Object> params;
 
@@ -82,16 +87,19 @@ public class UsersProfileResource {
 
   @POST
   @Path("/_forgot_password")
-  public Response resetPassword(@FormParam("username") String username) {
+  public Response resetPassword(@Context HttpServletRequest request, @FormParam("username") String username) {
+    rateLimiter.check(RateLimiter.Bucket.FORGOT_PASSWORD, request);
     userProfileService.resetPassword(username);
     return Response.ok().build();
   }
 
   @POST
   @Path("/_contact")
-  public Response contact(@FormParam("name") String name, @FormParam("email") String email,
+  public Response contact(@Context HttpServletRequest request,
+                          @FormParam("name") String name, @FormParam("email") String email,
                           @FormParam("subject") String subject, @FormParam("message") String message,
                           @FormParam("g-recaptcha-response") String reCaptcha) {
+    rateLimiter.check(RateLimiter.Bucket.CONTACT, request);
     if (Strings.isNullOrEmpty(name) || Strings.isNullOrEmpty(email) || Strings.isNullOrEmpty(subject) || Strings.isNullOrEmpty(message)) {
       throw new BadRequestException();
     }
