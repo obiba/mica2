@@ -164,6 +164,16 @@ export function useTranslations() {
     }
   }
 
+  /** the complete translations (default and custom) of a language, in the Gettext format */
+  async function exportGettext(locale: string): Promise<string | undefined> {
+    try {
+      return (await api.get<string>(`/config/i18n/${locale}.po`, { responseType: 'text' })).data;
+    } catch (error) {
+      notifyError(error);
+      return undefined;
+    }
+  }
+
   /**
    * Imports the custom translations of an export, merged into the current ones or replacing them (a language
    * missing from the export is then emptied), then reloads; tells whether it was imported.
@@ -202,6 +212,7 @@ export function useTranslations() {
     load,
     save,
     exportAll,
+    exportGettext,
     importAll,
   };
 }

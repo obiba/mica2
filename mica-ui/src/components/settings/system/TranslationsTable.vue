@@ -28,15 +28,31 @@
           :label="t('config.translations.add')"
           @click="onAdd"
         />
-        <q-btn
+        <q-btn-dropdown
           outline
           no-caps
           color="grey-8"
           icon="download"
           size="sm"
           :label="t('config.translations.export')"
-          @click="onExport"
-        />
+        >
+          <q-list>
+            <q-item clickable v-close-popup @click="onExportJson">
+              <q-item-section>
+                <q-item-label>{{ t('config.translations.export_json') }}</q-item-label>
+                <q-item-label caption>{{ t('config.translations.export_json_help') }}</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item v-for="locale in languages" :key="locale" clickable v-close-popup @click="onExportGettext(locale)">
+              <q-item-section>
+                <q-item-label>{{
+                  t('config.translations.export_gettext', { locale: locale.toUpperCase() })
+                }}</q-item-label>
+                <q-item-label caption>{{ t('config.translations.export_gettext_help') }}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
         <q-btn
           outline
           no-caps
@@ -51,14 +67,24 @@
       </div>
       <q-space />
       <div class="col-auto">
-        <q-btn color="primary" icon="save" :label="t('save')" :disable="!dirty" :loading="saving" @click="onSave" />
+        <q-btn
+          color="primary"
+          icon="save"
+          size="sm"
+          :label="t('save')"
+          :disable="!dirty"
+          :loading="saving"
+          @click="onSave"
+        />
       </div>
     </div>
+    <q-resize-observer :debounce="200" @resize="(size) => (tableWidth = size.width)" />
     <q-table
       flat
       bordered
       dense
       wrap-cells
+      class="translations-table"
       :rows="rows"
       :columns="columns"
       row-key="key"
@@ -98,6 +124,7 @@
             :class="{ 'bg-blue-1': isCustomized(props.row.key, locale) }"
           >
             <q-input
+              :key="tableWidth"
               :model-value="value(props.row.key, locale)"
               dense
               borderless
@@ -149,6 +176,7 @@ const {
   load,
   save,
   exportAll,
+  exportGettext,
   importAll,
 } = useTranslations();
 useConfirmLeave(dirty);
@@ -156,6 +184,8 @@ useConfirmLeave(dirty);
 const filter = ref<string | null>('');
 const customizedOnly = ref(false);
 const fileInput = ref<HTMLInputElement>();
+/** the autogrow inputs measure their height only when mounted or edited: remounted when the width changes */
+const tableWidth = ref(0);
 
 const rows = computed(() => filterKeys(filter.value ?? '', customizedOnly.value).map((key) => ({ key })));
 
@@ -187,9 +217,14 @@ async function onSave() {
   if (await save()) notifySuccess('config.translations.saved');
 }
 
-async function onExport() {
+async function onExportJson() {
   const data = await exportAll();
-  if (data) exportFile('mica-translations.json', JSON.stringify(data, null, 2), 'application/json');
+  if (data) exportFile('mica-all.json', JSON.stringify(data, null, 2), 'application/json');
+}
+
+async function onExportGettext(locale: string) {
+  const data = await exportGettext(locale);
+  if (data !== undefined) exportFile(`mica-${locale}.po`, data, 'text/plain');
 }
 
 async function onImport(event: Event) {
@@ -215,6 +250,10 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+/* fixed column widths, not depending on the texts */
+.translations-table :deep(table) {
+  table-layout: fixed;
+}
 .translation-key code {
   font-size: 0.8rem;
   word-break: break-all;
