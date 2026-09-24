@@ -116,11 +116,11 @@ const ICONS: Partial<Record<MetricsType, string>> = {
 
 /** light background by entity: networks blue, studies green, datasets yellow */
 const COLORS: Partial<Record<MetricsType, string>> = {
-  Network: 'bg-light-blue-2',
-  Study: 'bg-light-green-2',
-  HarmonizationStudy: 'bg-light-green-2',
-  StudyDataset: 'bg-yellow-2',
-  HarmonizationDataset: 'bg-yellow-2',
+  Network: 'bg-grey-3',
+  Study: 'bg-grey-2',
+  HarmonizationStudy: 'bg-grey-2',
+  StudyDataset: 'bg-grey-1',
+  HarmonizationDataset: 'bg-grey-1',
 };
 
 const counts = computed(() => props.metrics.counts);
