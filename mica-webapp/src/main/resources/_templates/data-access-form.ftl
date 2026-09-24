@@ -119,11 +119,6 @@
                             data-bs-target="#modal-diff"><i class="fa-solid fa-code-branch"></i> <@message "form-diff"/></button>
                   </#if>
                   <#if isAdministrator || isDAO>
-                    <#if !accessConfig.downloadPdf>
-                      <a href="#" onclick="window.print()" class="btn btn-secondary">
-                        <i class="fa-solid fa-print"></i> <@message "global.print"/>
-                      </a>
-                    </#if>
                     <div class="btn-group">
                       <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fa-solid fa-download"></i> <@message "download"/>
@@ -138,11 +133,18 @@
                             <i class="fa-solid fa-file-word"></i> <@message "form"/>
                           </a>
                         </#if>
-                        <a class="dropdown-item" href="#" ng-click="downloadFiles('${contextPath}/ws/data-access-request/${dar.id}/files/_download')">
-                          <i class="fa-solid fa-file-zipper"></i> <@message "files"/>
-                        </a>
+                        <#if hasFiles>
+                          <a class="dropdown-item" href="${contextPath}/ws/data-access-request/${dar.id}/files/_download">
+                            <i class="fa-solid fa-file-zipper"></i> <@message "files"/>
+                          </a>
+                        </#if>
                       </div>
                     </div>
+                    <#if !accessConfig.downloadPdf>
+                      <a href="#" onclick="window.print()" class="btn btn-secondary">
+                        <i class="fa-solid fa-print"></i> <@message "global.print"/>
+                      </a>
+                    </#if>
                   <#else>
                     <#if accessConfig.downloadPdf>
                       <a href="${contextPath}/ws/data-access-request/${dar.id}/_pdf?lang=${.lang}" class="btn btn-secondary">

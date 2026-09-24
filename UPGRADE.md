@@ -22,14 +22,11 @@ authorization added on two administration endpoints.
    ls signin.ftl libs/signin-scripts.ftl libs/scripts.ftl compare.ftl dataset.ftl variable.ftl \
       project.ftl libs/project.ftl libs/settings.ftl \
       data-access-form.ftl data-access-preliminary-form.ftl data-access-feasibility-form.ftl \
-      data-access-amendment-form.ftl data-access-agreement-form.ftl libs/data-access-form.ftl \
-      libs/data-access-form-scripts.ftl
+      data-access-amendment-form.ftl data-access-agreement-form.ftl libs/data-access-form.ftl
    ```
 
    If any exists, keep a copy of the current bundled version
    (`$MICA_DIST/WEB-INF/classes/_templates`) to compare against.
-   If your portal also serves its own copy of `assets/js/mica-data-access-form.js` (outside of
-   `$MICA_HOME/conf/templates`, e.g. a themed/rebuilt webapp), keep a copy of that too.
 3. **Check custom page names.** Custom pages (`$MICA_HOME/conf/templates/<name>.ftl` served
    at `/page/<name>`) are now only reachable when `<name>` is made of letters, digits, `_`
    and `-`, starts with a letter or digit, and is not the name of a bundled template.
@@ -50,6 +47,12 @@ authorization added on two administration endpoints.
      one identified by its cookie), 404 for any other session ID.
    - `PUT /ws/config/i18n/custom/{locale}.json`, `PUT /ws/config/i18n/custom/import`
      and `/ws/logs` now require the `mica-administrator` role.
+   - The Word export of the preliminary, feasibility, amendment and agreement forms
+     (`/ws/data-access-request/{id}/.../_word`) now checks the view permission on the form
+     itself, like the other endpoints of these forms. Users allowed to view one of these forms
+     can now export it; this used to be refused (403) to anyone without an administrator or DAO
+     role. The portal only offers this export to administrators and
+     DAOs.
 
 ### Upgrade
 
@@ -77,19 +80,15 @@ Install the new version and restart as usual. No database migration runs at star
      include of the new `libs/project-scripts.ftl` (nothing to reconcile there, the file
      is new). If your copy of `project.ftl` or `libs/project.ftl` is not updated, the file
      browser stays absent from the project page, same as before this release.
-   - `data-access-form.ftl`, `data-access-{preliminary,feasibility,amendment,agreement}-form.ftl`,
-     `libs/data-access-form.ftl` and `libs/data-access-form-scripts.ftl`: administrators and DAOs
-     get a **Download** menu on data access forms offering the form (Word or PDF, as before) and
-     a new ZIP download of all the files attached to it (macro `dataAccessDownloadButtons` in
-     `libs/data-access-form.ftl`, used by the 4 sub-form templates). The download is triggered by
-     a new `downloadFiles()` function added to `FormController` in the bundled
-     `assets/js/mica-data-access-form.js`, wired from the templates above via `ng-click`; it shows
-     a warning toast instead of downloading when the form has no files. If your copies of the
-     templates are not updated, the ZIP download is not offered in the UI (the underlying
-     `/files/_download` endpoints still work regardless). If you serve your own copy of
-     `mica-data-access-form.js` (rather than the bundled one), merge in the `downloadFiles()`
-     function as well — with the templates updated but not the JS, the Files menu item does
-     nothing when clicked, with no error shown.
+   - `data-access-form.ftl`, `data-access-{preliminary,feasibility,amendment,agreement}-form.ftl`
+     and `libs/data-access-form.ftl`: administrators and DAOs get a **Download** menu on data
+     access forms offering the form (Word or PDF, as before) and, when the form has files
+     attached, a new ZIP download of these files (macro `dataAccessDownloadButtons` in
+     `libs/data-access-form.ftl`, used by the 4 sub-form templates; shown only when the new
+     `hasFiles` page variable is true). Files that cannot be retrieved from the file store are
+     left out of the ZIP and listed in a `MISSING.txt` entry. If your copies of the templates are
+     not updated, the ZIP download is not offered in the UI (the underlying `/files/_download`
+     endpoints still work regardless).
 2. **Custom translations**: the messages `sign-in-otp-failed` and `files` were added, bundled
    in English and French. Add them to any other language you provide.
 3. **Response headers.** Mica now sends `X-Content-Type-Options: nosniff`,

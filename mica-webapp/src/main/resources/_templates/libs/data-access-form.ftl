@@ -162,9 +162,11 @@
         <a class="dropdown-item" href="${wordUrl}">
           <i class="fa-solid fa-file-word"></i> <@message "form"/>
         </a>
-        <a class="dropdown-item" href="#" ng-click="downloadFiles('${filesUrl}')">
-          <i class="fa-solid fa-file-zipper"></i> <@message "files"/>
-        </a>
+        <#if hasFiles>
+          <a class="dropdown-item" href="${filesUrl}">
+            <i class="fa-solid fa-file-zipper"></i> <@message "files"/>
+          </a>
+        </#if>
       </div>
     </div>
   </#if>

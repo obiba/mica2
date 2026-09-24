@@ -38,8 +38,7 @@
         validationSuccess: "<@message "form-validation-success"/>",
         validationError: "<@message "form-validation-error"/>",
         validationErrorOnSubmit: "<@message "form-validation-submit-error"/>",
-        errorOnSave: "<@message "form-save-error"/>",
-        noFiles: "<@message "no-files"/>"
+        errorOnSave: "<@message "form-save-error"/>"
     };
 </script>
 

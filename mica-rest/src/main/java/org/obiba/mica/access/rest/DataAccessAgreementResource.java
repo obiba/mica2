@@ -162,7 +162,7 @@ public class DataAccessAgreementResource extends DataAccessEntityResource<DataAc
   @Timed
   @Path("/_word")
   public Response getWordDocument(@QueryParam("lang") String lang) throws IOException {
-    subjectAclService.checkPermission(getParentResourcePath(), "VIEW", id);
+    subjectAclService.checkPermission(getResourcePath(), "VIEW", id);
 
     if (Strings.isNullOrEmpty(lang)) lang = LANGUAGE_TAG_UNDETERMINED;
 

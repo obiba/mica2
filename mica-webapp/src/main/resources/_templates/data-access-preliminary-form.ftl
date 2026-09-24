@@ -116,10 +116,10 @@
                     <button type="button" class="btn btn-outline-info" data-bs-toggle="modal"
                             data-bs-target="#modal-diff"><i class="fa-solid fa-code-branch"></i> <@message "form-diff"/></button>
                   </#if>
+                  <@dataAccessDownloadButtons wordUrl="${contextPath}/ws/data-access-request/${dar.id}/prelim/_word?lang=${.lang}" filesUrl="${contextPath}/ws/data-access-request/${dar.id}/prelim/files/_download"/>
                   <a href="#" onclick="window.print()" class="btn btn-secondary">
                     <i class="fa-solid fa-print"></i> <@message "global.print"/>
                   </a>
-                  <@dataAccessDownloadButtons wordUrl="${contextPath}/ws/data-access-request/${dar.id}/prelim/_word?lang=${.lang}" filesUrl="${contextPath}/ws/data-access-request/${dar.id}/prelim/files/_download"/>
                 </span>
               </div>
             </div>

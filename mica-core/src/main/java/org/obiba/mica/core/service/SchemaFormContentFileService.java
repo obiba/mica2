@@ -30,6 +30,7 @@ import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -42,6 +43,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class SchemaFormContentFileService {
 
   private static final Logger log = getLogger(SchemaFormContentFileService.class);
+
+  private static final String MISSING_ENTRY_NAME = "MISSING.txt";
 
   @Inject
   private FileStoreService fileStoreService;
@@ -131,15 +134,16 @@ public class SchemaFormContentFileService {
   }
 
   /**
-   * Streams a ZIP archive of all the files attached to the entity's content. Each file is opened only
-   * when its entry is written; a file that fails to open is skipped and logged, the rest of the archive
-   * is still produced.
+   * Streams a ZIP archive of the given file entries (see {@link #getFileEntries(SchemaFormContentAware)}).
+   * Each file is opened only when its entry is written; a file that fails to open is skipped and logged,
+   * the rest of the archive is still produced and the skipped files are listed in a {@value #MISSING_ENTRY_NAME}
+   * entry.
    *
-   * @param entity
+   * @param entries entry name -> file ID
    * @param output
    */
-  public void writeZip(@NotNull SchemaFormContentAware entity, OutputStream output) throws IOException {
-    Map<String, String> entries = getFileEntries(entity);
+  public void writeZip(@NotNull Map<String, String> entries, OutputStream output) throws IOException {
+    List<String> missing = new ArrayList<>();
 
     try (ZipOutputStream zos = new ZipOutputStream(output)) {
       for (Map.Entry<String, String> entry : entries.entrySet()) {
@@ -151,7 +155,17 @@ public class SchemaFormContentFileService {
           zos.closeEntry();
         } catch (FileRuntimeException e) {
           log.warn("Failed to retrieve file {}: {}", fileId, e.getMessage());
+          missing.add(name);
         }
+      }
+
+      if (!missing.isEmpty()) {
+        String missingName = MISSING_ENTRY_NAME;
+        while (entries.containsKey(missingName)) missingName = "_" + missingName;
+        zos.putNextEntry(new ZipEntry(missingName));
+        zos.write(("The following files could not be retrieved:\n" + String.join("\n", missing) + "\n")
+          .getBytes(StandardCharsets.UTF_8));
+        zos.closeEntry();
       }
     }
   }

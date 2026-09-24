@@ -23,6 +23,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -88,9 +89,10 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
   //
 
   protected Response downloadEntityFiles(DataAccessEntity entity, String prefix) {
-    if (schemaFormContentFileService.getFileEntries(entity).isEmpty()) return Response.noContent().build();
+    Map<String, String> entries = schemaFormContentFileService.getFileEntries(entity);
+    if (entries.isEmpty()) return Response.noContent().build();
 
-    StreamingOutput streamingOutput = output -> schemaFormContentFileService.writeZip(entity, output);
+    StreamingOutput streamingOutput = output -> schemaFormContentFileService.writeZip(entries, output);
 
     return Response.ok(streamingOutput)
       .header("Content-Disposition", "attachment; filename=\"" + prefix + "-" + entity.getId() + "-files.zip\"")

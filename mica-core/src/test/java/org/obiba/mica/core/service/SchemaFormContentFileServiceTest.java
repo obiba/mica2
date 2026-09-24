@@ -30,6 +30,7 @@ import java.util.zip.ZipInputStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -131,7 +132,7 @@ public class SchemaFormContentFileServiceTest {
     when(fileStoreService.getFile("f2")).thenReturn(stream("content-b"));
 
     ByteArrayOutputStream output = new ByteArrayOutputStream();
-    schemaFormContentFileService.writeZip(entity(content), output);
+    schemaFormContentFileService.writeZip(schemaFormContentFileService.getFileEntries(entity(content)), output);
 
     Map<String, String> zipContent = readZip(output);
     assertThat(zipContent.keySet(), contains("a.pdf", "b.pdf"));
@@ -140,7 +141,7 @@ public class SchemaFormContentFileServiceTest {
   }
 
   @Test
-  public void write_zip__missing_file__is_skipped_others_written() throws Exception {
+  public void write_zip__missing_file__is_skipped_others_written_and_listed() throws Exception {
     String content = "{\"field1\":{\"obibaFiles\":["
       + "{\"id\":\"f1\",\"fileName\":\"a.pdf\"},"
       + "{\"id\":\"f2\",\"fileName\":\"b.pdf\"},"
@@ -151,16 +152,46 @@ public class SchemaFormContentFileServiceTest {
     when(fileStoreService.getFile("f3")).thenReturn(stream("content-c"));
 
     ByteArrayOutputStream output = new ByteArrayOutputStream();
-    schemaFormContentFileService.writeZip(entity(content), output);
+    schemaFormContentFileService.writeZip(schemaFormContentFileService.getFileEntries(entity(content)), output);
 
     Map<String, String> zipContent = readZip(output);
-    assertThat(zipContent.keySet(), contains("a.pdf", "c.pdf"));
+    assertThat(zipContent.keySet(), contains("a.pdf", "c.pdf", "MISSING.txt"));
+    assertThat(zipContent.get("MISSING.txt"), containsString("b.pdf"));
+  }
+
+  @Test
+  public void write_zip__missing_file_with_existing_missing_txt__does_not_overwrite_it() throws Exception {
+    String content = "{\"field1\":{\"obibaFiles\":["
+      + "{\"id\":\"f1\",\"fileName\":\"MISSING.txt\"},"
+      + "{\"id\":\"f2\",\"fileName\":\"b.pdf\"}"
+      + "]}}";
+    when(fileStoreService.getFile("f1")).thenReturn(stream("user-file"));
+    when(fileStoreService.getFile("f2")).thenThrow(new FileRuntimeException("f2"));
+
+    ByteArrayOutputStream output = new ByteArrayOutputStream();
+    schemaFormContentFileService.writeZip(schemaFormContentFileService.getFileEntries(entity(content)), output);
+
+    Map<String, String> zipContent = readZip(output);
+    assertThat(zipContent.keySet(), contains("MISSING.txt", "_MISSING.txt"));
+    assertThat(zipContent.get("MISSING.txt"), is("user-file"));
+    assertThat(zipContent.get("_MISSING.txt"), containsString("b.pdf"));
+  }
+
+  @Test
+  public void write_zip__all_files_retrieved__no_missing_entry() throws Exception {
+    String content = "{\"field1\":{\"obibaFiles\":[{\"id\":\"f1\",\"fileName\":\"a.pdf\"}]}}";
+    when(fileStoreService.getFile("f1")).thenReturn(stream("content-a"));
+
+    ByteArrayOutputStream output = new ByteArrayOutputStream();
+    schemaFormContentFileService.writeZip(schemaFormContentFileService.getFileEntries(entity(content)), output);
+
+    assertThat(readZip(output).keySet(), contains("a.pdf"));
   }
 
   @Test
   public void write_zip__no_files__produces_valid_empty_zip() throws Exception {
     ByteArrayOutputStream output = new ByteArrayOutputStream();
-    schemaFormContentFileService.writeZip(entity(null), output);
+    schemaFormContentFileService.writeZip(schemaFormContentFileService.getFileEntries(entity(null)), output);
 
     Map<String, String> zipContent = readZip(output);
     assertThat(zipContent.isEmpty(), is(true));

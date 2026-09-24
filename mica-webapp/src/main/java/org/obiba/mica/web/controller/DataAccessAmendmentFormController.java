@@ -98,6 +98,7 @@ public class DataAccessAmendmentFormController extends BaseDataAccessController 
     DataAccessAmendmentForm dataAccessAmendmentForm = getDataAccessAmendmentForm(amendment);
     params.put("formConfig", new SchemaFormConfig(micaConfigService, dataAccessAmendmentForm.getSchema(), dataAccessAmendmentForm.getDefinition(), amendment.getContent(), locale, readOnly));
     params.put("accessConfig", getConfig());
+    addHasFiles(params, amendment);
   }
 
   private boolean isAmendmentPermitted(String action, String id, String amendmentId) {
