@@ -11,9 +11,12 @@ import type { ChosenField, DocumentDiff } from 'src/utils/restoreFields';
 
 /**
  * The revisions of a draft document: the commits, a revision's content, the diff of two
- * revisions, and the restoration of a revision or of some of its fields.
+ * revisions, and the restoration of a revision or of some of its fields. Also serves the other
+ * revisioned drafts (persons): only the restoration of some fields needs a document type.
  */
-export function useDocumentHistory<T extends object>(target: MaybeRefOrGetter<DocumentTarget>) {
+export function useDocumentHistory<T extends object>(
+  target: MaybeRefOrGetter<Pick<DocumentTarget, 'path'> & Partial<Pick<DocumentTarget, 'type'>>>,
+) {
   const { locale } = useI18n({ useScope: 'global' });
 
   const commits = ref<GitCommitInfoDto[]>([]);
@@ -74,7 +77,8 @@ export function useDocumentHistory<T extends object>(target: MaybeRefOrGetter<Do
   /** the chosen fields of an older revision are applied to the current document (a new commit) */
   function restoreFields(chosen: ChosenField[]) {
     return run(async () => {
-      const fields = MANDATORY_FIELDS[toValue(target).type].localized;
+      const type = toValue(target).type;
+      const fields = type ? MANDATORY_FIELDS[type].localized : [];
       const current = (await api.get<T>(path())).data;
       const restored = fromRestorable<T>(applyChosenFields(toRestorable(current, fields), chosen), fields);
       await api.put(path(), restored, { params: { comment: t('history.restored_fields_comment') } });
