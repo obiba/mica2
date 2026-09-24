@@ -87,7 +87,7 @@
           <q-item-label>{{ t('files.title') }}</q-item-label>
         </q-item-section>
       </q-item>
-      <q-item :to="`/persons`">
+      <q-item v-if="authStore.isAdministrator" :to="`/persons`">
         <q-item-section avatar>
           <q-icon name="people" />
         </q-item-section>
