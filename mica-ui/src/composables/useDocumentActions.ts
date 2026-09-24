@@ -1,7 +1,7 @@
 import type { MaybeRefOrGetter } from 'vue';
 import { api } from 'src/boot/api';
 import { t } from 'src/boot/i18n';
-import { notifyError, notifySuccess } from 'src/utils/notify';
+import { notifyError, notifySuccess, notifyWarning } from 'src/utils/notify';
 import type { DocumentTarget } from 'src/composables/useDocumentTarget';
 import type { RevisionStatus } from 'src/composables/useDocumentState';
 
@@ -36,7 +36,10 @@ export function useDocumentActions(target: MaybeRefOrGetter<DocumentTarget>) {
     return Array.isArray(response.data) && response.data.length > 0;
   }
 
-  async function run(operation: () => Promise<unknown>, onDone: DocumentActionResult = 'updated'): Promise<DocumentActionResult> {
+  async function run(
+    operation: () => Promise<unknown>,
+    onDone: DocumentActionResult = 'updated',
+  ): Promise<DocumentActionResult> {
     busy.value = true;
     try {
       await operation();
@@ -78,7 +81,7 @@ export function useDocumentActions(target: MaybeRefOrGetter<DocumentTarget>) {
         await api.delete(path());
         notifySuccess('document.deleted');
       } catch (error) {
-        throw deleteConflictError(error);
+        throw conflictError(error);
       }
     }, 'deleted');
   }
@@ -99,25 +102,33 @@ export function useDocumentActions(target: MaybeRefOrGetter<DocumentTarget>) {
   return { busy, publish, unpublish, toStatus, index, remove, apply, hasFilesUnderReview };
 }
 
-interface DeleteConflict {
-  network?: string[];
-  dataset?: string[];
-  study?: string[];
+/** the documents referencing another one, by type: `{ network: [ids], dataset: [ids] }` */
+export type Conflicts = Partial<Record<(typeof CONFLICT_TYPES)[number], string[]>>;
+
+const CONFLICT_TYPES = ['network', 'study', 'dataset', 'studyDataset', 'harmonizationDataset'] as const;
+
+/** the referencing documents as a readable list, empty when there are none */
+export function conflictReferences(conflicts: Conflicts | null | undefined): string {
+  return CONFLICT_TYPES.filter((key) => (conflicts?.[key] ?? []).length > 0)
+    .map((key) => `${t(`document.references.${key}`)}: ${conflicts?.[key]?.join(', ')}`)
+    .join('; ');
 }
 
 /**
- * A 409 on delete lists the documents referencing this one (`{ network: [ids], dataset: [ids] }`):
+ * A 409 lists the documents referencing the ones deleted (`{ network: [ids], dataset: [ids] }`):
  * turn it into a readable message, other errors pass through.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function deleteConflictError(error: any): unknown {
+export function conflictError(error: any, messageKey = 'document.delete_conflict'): unknown {
   if (error?.response?.status !== 409 || typeof error.response.data !== 'object' || error.response.data === null) {
     return error;
   }
-  const conflict = error.response.data as DeleteConflict;
-  const references = (['network', 'study', 'dataset'] as const)
-    .filter((key) => (conflict[key] ?? []).length > 0)
-    .map((key) => `${t(`document.references.${key}`)}: ${conflict[key]?.join(', ')}`)
-    .join('; ');
-  return references ? new Error(t('document.delete_conflict', { references })) : error;
+  const references = conflictReferences(error.response.data as Conflicts);
+  return references ? new Error(t(messageKey, { references })) : error;
+}
+
+/** warns about the documents that a study save may affect (the `potentialConflicts` of the save response) */
+export function notifyPotentialConflicts(response: unknown) {
+  const references = conflictReferences((response as { potentialConflicts?: Conflicts } | null)?.potentialConflicts);
+  if (references) notifyWarning(t('study.potential_conflicts', { references }));
 }
