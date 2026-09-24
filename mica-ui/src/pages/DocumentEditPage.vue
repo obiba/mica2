@@ -18,6 +18,25 @@
           :disable="saving"
           class="q-mb-md"
         />
+        <div v-if="withSchema" class="row items-center q-gutter-sm q-mb-md">
+          <span class="text-subtitle1">{{ t('dataset.data_schema') }} *</span>
+          <span v-if="schema">{{ schema.studyId }} - {{ sourceText(tableSource(schema)) }}</span>
+          <span v-else class="text-grey-7">{{ t('dataset.no_data_schema') }}</span>
+          <q-btn
+            color="primary"
+            :icon="schema ? 'edit' : 'add'"
+            :label="t(schema ? 'edit' : 'dataset.set_data_schema')"
+            size="sm"
+            :disable="saving"
+            @click="showSchema = true"
+          />
+          <dataset-table-dialog
+            v-model="showSchema"
+            mode="schema"
+            :table="schema"
+            @save="(table) => (schema = table)"
+          />
+        </div>
         <entity-json-form ref="form" v-model="model" :form-path="target.formPath" />
         <div v-if="invalid" class="text-negative q-mt-sm">{{ t('missing_required_fields') }}</div>
         <document-save-bar
@@ -38,7 +57,8 @@
 <script setup lang="ts">
 import { onBeforeRouteLeave } from 'vue-router';
 import { useQuasar } from 'quasar';
-import type { AttachmentDto } from 'src/models/Mica';
+import type { AttachmentDto, DatasetDto } from 'src/models/Mica';
+import DatasetTableDialog from 'src/components/datasets/DatasetTableDialog.vue';
 import DocumentLogoInput from 'src/components/documents/DocumentLogoInput.vue';
 import DocumentSaveBar from 'src/components/documents/DocumentSaveBar.vue';
 import EntityJsonForm from 'src/components/forms/EntityJsonForm.vue';
@@ -46,6 +66,7 @@ import { useDocumentTarget, useRouteDocumentType } from 'src/composables/useDocu
 import { useDocumentModel, type FormModel } from 'src/composables/useDocumentModel';
 import type { DocumentDto } from 'src/stores/documents';
 import { notifyError } from 'src/utils/notify';
+import { sourceText, tableSource, type DatasetTable } from 'src/utils/datasets';
 
 const documentsStore = useDocumentsStore();
 const systemStore = useSystemStore();
@@ -67,6 +88,10 @@ const invalid = ref(false);
 const document = ref<DocumentDto>();
 const model = ref<FormModel>({});
 const logo = ref<AttachmentDto>();
+/** a harmonized dataset cannot be created without its data schema, edited afterwards in the tables tab */
+const withSchema = computed(() => !id.value && type.value === 'harmonized-dataset');
+const schema = ref<DatasetTable>();
+const showSchema = ref(false);
 /** snapshot of what was loaded, for the dirty check */
 const snapshot = ref('');
 let saved = false;
@@ -75,7 +100,7 @@ const commentRequired = computed(() => systemStore.configuration.isCommentsRequi
 const isDirty = computed(() => snapshotOf() !== snapshot.value);
 
 function snapshotOf() {
-  return JSON.stringify({ model: model.value, logo: logo.value?.id });
+  return JSON.stringify({ model: model.value, logo: logo.value?.id, schema: schema.value });
 }
 
 async function initialize() {
@@ -99,9 +124,12 @@ async function initialize() {
 async function onSave(comment: string | undefined) {
   const current = document.value;
   if (!current) return;
-  invalid.value = !form.value?.validate();
+  invalid.value = !form.value?.validate() || (withSchema.value && !schema.value);
   if (invalid.value) return;
   const dto = fromModel(current, model.value);
+  if (withSchema.value && schema.value) {
+    (dto as DatasetDto).protocol = { harmonizationTable: schema.value, studyTables: [], harmonizationTables: [] };
+  }
   if (target.value.withLogo) {
     const withLogo = dto as { logo?: AttachmentDto | undefined };
     if (logo.value) {
