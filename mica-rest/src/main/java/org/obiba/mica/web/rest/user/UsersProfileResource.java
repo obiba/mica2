@@ -29,7 +29,6 @@ import org.obiba.mica.security.Roles;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
-import org.owasp.esapi.ESAPI;
 import org.springframework.stereotype.Component;
 
 import jakarta.inject.Inject;
@@ -98,8 +97,9 @@ public class UsersProfileResource {
     if (userAuthService.isReCaptchaEnabled() && Strings.isNullOrEmpty(reCaptcha)) {
       throw new BadRequestException();
     }
-    userProfileService.sendContactEmail(ESAPI.encoder().encodeForHTML(name), ESAPI.encoder().encodeForHTML(email),
-      ESAPI.encoder().encodeForHTML(subject), ESAPI.encoder().encodeForHTML(message), reCaptcha);
+    // do not HTML-encode here: Agate's contactUs.ftl auto-escapes on render since HTMLOutputFormat
+    // was enabled (obiba/agate#724) - pre-encoding double-escapes (e.g. "@" -> "&#x40;" -> "&amp;#x40;")
+    userProfileService.sendContactEmail(name, email, subject, message, reCaptcha);
     return Response.ok().build();
   }
 }
