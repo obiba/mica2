@@ -51,10 +51,22 @@
             <document-view-panel :target="target" :document="document" />
           </q-tab-panel>
           <template v-if="network">
-            <q-tab-panel v-for="kind in NETWORK_LINK_KINDS" :key="kind" :name="NETWORK_TAB[kind]" class="q-pa-none">
+            <q-tab-panel name="studies" class="q-pa-none">
+              <div v-for="(kind, index) in STUDY_KINDS" :key="kind" :class="{ 'q-mt-lg': index > 0 }">
+                <div class="text-h6 q-mb-sm">{{ t(documentTarget(kind, '').labels.title) }}</div>
+                <network-links-panel
+                  :network="network"
+                  :kind="kind"
+                  :can-edit="canEdit"
+                  :busy="saving"
+                  @change="onNetworkChange"
+                />
+              </div>
+            </q-tab-panel>
+            <q-tab-panel name="networks" class="q-pa-none">
               <network-links-panel
                 :network="network"
-                :kind="kind"
+                kind="network"
                 :can-edit="canEdit"
                 :busy="saving"
                 @change="onNetworkChange"
@@ -98,7 +110,7 @@ import FileBrowser from 'src/components/files/FileBrowser.vue';
 import DataAccessRequestLink from 'src/components/projects/DataAccessRequestLink.vue';
 import NetworkLinksPanel from 'src/components/networks/NetworkLinksPanel.vue';
 import NetworkMembersPanel from 'src/components/networks/NetworkMembersPanel.vue';
-import { useDocumentTarget, useRouteDocumentType } from 'src/composables/useDocumentTarget';
+import { documentTarget, useDocumentTarget, useRouteDocumentType } from 'src/composables/useDocumentTarget';
 import { useDocumentState } from 'src/composables/useDocumentState';
 import { useDocumentActions, type DocumentAction } from 'src/composables/useDocumentActions';
 import type { DocumentDto } from 'src/stores/documents';
@@ -106,14 +118,9 @@ import type { NetworkLinkKind } from 'src/utils/networks';
 import { notifyError } from 'src/utils/notify';
 
 const TABS = ['view', 'history', 'files', 'comments', 'permissions'];
-const NETWORK_LINK_KINDS: NetworkLinkKind[] = ['individual-study', 'harmonization-study', 'network'];
-/** the tab of the entities linked to a network */
-const NETWORK_TAB: Record<NetworkLinkKind, string> = {
-  'individual-study': 'studies',
-  'harmonization-study': 'initiatives',
-  network: 'networks',
-};
-const NETWORK_TABS = [...Object.values(NETWORK_TAB), 'members'];
+/** the sections of the studies tab of a network */
+const STUDY_KINDS: NetworkLinkKind[] = ['individual-study', 'harmonization-study'];
+const NETWORK_TABS = ['studies', 'networks', 'members'];
 
 const documentsStore = useDocumentsStore();
 const systemStore = useSystemStore();
@@ -139,8 +146,7 @@ const menu = computed(() => [
   { name: 'view', icon: 'visibility', label: 'view' },
   ...(network.value
     ? [
-        { name: 'studies', icon: 'book', label: 'individual.studies.title' },
-        { name: 'initiatives', icon: 'book', label: 'harmonization.studies.title' },
+        { name: 'studies', icon: 'book', label: 'network_links.studies' },
         { name: 'networks', icon: 'hub', label: 'networks.title' },
         { name: 'members', icon: 'people', label: 'network_members.title' },
       ]

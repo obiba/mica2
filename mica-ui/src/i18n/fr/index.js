@@ -281,6 +281,7 @@ export default {
     },
   },
   network_links: {
+    studies: 'Études',
     add_title: 'Ajouter des liens',
     all_linked: 'Tous sont déjà liés.',
     published: 'Publié',
