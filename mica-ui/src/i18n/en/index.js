@@ -15,6 +15,10 @@ export default {
     validate: 'Validate',
     signin_with: 'Sign in with {provider}',
   },
+  dashboard: {
+    title: 'Dashboard',
+    info: 'Documents by publication and revision status.',
+  },
   logo: 'Logo',
   networks: {
     title: 'Networks',
