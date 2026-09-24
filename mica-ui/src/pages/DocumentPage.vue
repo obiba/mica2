@@ -76,12 +76,20 @@
             />
           </q-tab-panel>
           <q-tab-panel v-if="dataset" name="tables" class="q-pa-none">
-            <dataset-tables-panel
+            <collected-table-panel
+              v-if="type === 'collected-dataset'"
               :dataset="dataset"
               :can-edit="canEdit"
               :busy="saving"
               @change="onDocumentChange"
               @refresh="refresh"
+            />
+            <harmonized-tables-panel
+              v-else
+              :dataset="dataset"
+              :can-edit="canEdit"
+              :busy="saving"
+              @change="onDocumentChange"
             />
           </q-tab-panel>
           <template v-if="network">
@@ -152,7 +160,8 @@ import NetworkLinksPanel from 'src/components/networks/NetworkLinksPanel.vue';
 import MembersPanel from 'src/components/persons/MembersPanel.vue';
 import StudyPopulationsPanel from 'src/components/studies/StudyPopulationsPanel.vue';
 import StudyTimeline from 'src/components/studies/StudyTimeline.vue';
-import DatasetTablesPanel from 'src/components/datasets/DatasetTablesPanel.vue';
+import CollectedTablePanel from 'src/components/datasets/CollectedTablePanel.vue';
+import HarmonizedTablesPanel from 'src/components/datasets/HarmonizedTablesPanel.vue';
 import {
   documentTarget,
   useDocumentTarget,
@@ -175,6 +184,7 @@ const TABS = ['view', 'history', 'files', 'comments', 'permissions'];
 /** the sections of the studies tab of a network */
 const STUDY_KINDS: NetworkLinkKind[] = ['individual-study', 'harmonization-study'];
 const NETWORK_TABS = ['studies', 'networks'];
+const DATASET_TYPES: DocumentType[] = ['collected-dataset', 'harmonized-dataset'];
 /** the documents with members, by the kind of their memberships */
 const MEMBERS_PARENTS: Partial<Record<DocumentType, MembersParent>> = {
   network: 'network',
@@ -198,7 +208,7 @@ const tab = computed(() => {
     ...TABS,
     ...(type.value === 'network' ? NETWORK_TABS : []),
     ...(type.value === 'individual-study' ? ['populations'] : []),
-    ...(type.value === 'collected-dataset' ? ['tables'] : []),
+    ...(DATASET_TYPES.includes(type.value) ? ['tables'] : []),
     ...(membersParent.value ? ['members'] : []),
   ];
   return name && tabs.includes(name) ? name : 'view';
@@ -217,7 +227,7 @@ const study = computed(() =>
 );
 /** the document when it is a dataset (with tables) */
 const dataset = computed(() =>
-  type.value === 'collected-dataset' ? (document.value as DatasetDto | undefined) : undefined,
+  DATASET_TYPES.includes(type.value) ? (document.value as DatasetDto | undefined) : undefined,
 );
 const hasEvents = computed(() =>
   (study.value?.populations ?? []).some((population) => (population.dataCollectionEvents ?? []).length > 0),
