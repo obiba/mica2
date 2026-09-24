@@ -36,6 +36,7 @@ import org.obiba.mica.access.service.DataAccessAgreementService;
 import org.obiba.mica.access.service.DataAccessEntityService;
 import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
+import org.obiba.mica.core.service.SchemaFormContentFileService;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.domain.AbstractDataAccessEntityForm;
@@ -85,8 +86,9 @@ public class DataAccessAgreementResource extends DataAccessEntityResource<DataAc
     DataAccessAgreementFormService dataAccessAgreementFormService,
     VariableSetService variableSetService,
     DataAccessRequestUtilService dataAccessRequestUtilService,
-    SchemaFormConfigService schemaFormConfigService) {
-    super(subjectAclService, fileStoreService, dataAccessConfigService, variableSetService, dataAccessRequestUtilService, schemaFormConfigService);
+    SchemaFormConfigService schemaFormConfigService,
+    SchemaFormContentFileService schemaFormContentFileService) {
+    super(subjectAclService, fileStoreService, dataAccessConfigService, variableSetService, dataAccessRequestUtilService, schemaFormConfigService, schemaFormContentFileService);
     this.dtos = dtos;
     this.dataAccessRequestService = dataAccessRequestService;
     this.dataAccessAgreementService = dataAccessAgreementService;
@@ -160,7 +162,7 @@ public class DataAccessAgreementResource extends DataAccessEntityResource<DataAc
   @Timed
   @Path("/_word")
   public Response getWordDocument(@QueryParam("lang") String lang) throws IOException {
-    subjectAclService.checkPermission(getParentResourcePath(), "VIEW", id);
+    subjectAclService.checkPermission(getResourcePath(), "VIEW", id);
 
     if (Strings.isNullOrEmpty(lang)) lang = LANGUAGE_TAG_UNDETERMINED;
 
@@ -172,6 +174,14 @@ public class DataAccessAgreementResource extends DataAccessEntityResource<DataAc
     String status = schemaFormConfigService.getTranslator(lang).translate(entity.getStatus().toString());
     return Response.ok(exporter.export(title, status, id).toByteArray())
       .header("Content-Disposition", "attachment; filename=\"" + "data-access-request-agreement-" + id + ".docx" + "\"").build();
+  }
+
+  @GET
+  @Timed
+  @Path("/files/_download")
+  public Response downloadFiles() {
+    subjectAclService.checkPermission(getResourcePath(), "VIEW", id);
+    return downloadEntityFiles(getService().findById(id), "data-access-request-agreement");
   }
 
   @PUT

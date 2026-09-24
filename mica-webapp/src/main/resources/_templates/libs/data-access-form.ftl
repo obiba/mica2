@@ -151,6 +151,27 @@
   <!-- /.modal -->
 </#macro>
 
+<!-- Download and print buttons for sub-forms (agreement, amendment, feasibility, preliminary) -->
+<#macro dataAccessDownloadButtons wordUrl filesUrl>
+  <#if isAdministrator || isDAO>
+    <div class="btn-group">
+      <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fa-solid fa-download"></i> <@message "download"/>
+      </button>
+      <div class="dropdown-menu dropdown-menu-end">
+        <a class="dropdown-item" href="${wordUrl}">
+          <i class="fa-solid fa-file-word"></i> <@message "form"/>
+        </a>
+        <#if hasFiles>
+          <a class="dropdown-item" href="${filesUrl}">
+            <i class="fa-solid fa-file-zipper"></i> <@message "files"/>
+          </a>
+        </#if>
+      </div>
+    </div>
+  </#if>
+</#macro>
+
 <!-- Variables linking -->
 <#assign variablesEnabled = accessConfig.variablesEnabled && config.cartEnabled/>
 <#assign preliminaryVariablesEnabled = accessConfig.preliminaryVariablesEnabled && config.cartEnabled/>

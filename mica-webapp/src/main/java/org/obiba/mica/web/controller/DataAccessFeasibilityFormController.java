@@ -98,6 +98,7 @@ public class DataAccessFeasibilityFormController extends BaseDataAccessControlle
     DataAccessFeasibilityForm form = getDataAccessFeasibilityForm(feasibility);
     params.put("formConfig", new SchemaFormConfig(micaConfigService, form.getSchema(), form.getDefinition(), feasibility.getContent(), locale, readOnly));
     params.put("accessConfig", getConfig());
+    addHasFiles(params, feasibility);
   }
 
   private boolean isFeasibilityPermitted(String action, String id, String feasibilityId) {

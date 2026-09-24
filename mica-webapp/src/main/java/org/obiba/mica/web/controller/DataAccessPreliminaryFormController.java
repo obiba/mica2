@@ -82,6 +82,7 @@ public class DataAccessPreliminaryFormController extends BaseDataAccessControlle
     DataAccessPreliminaryForm form = dataAccessPreliminaryFormService.findByRevision(preliminary.hasFormRevision() ? preliminary.getFormRevision().toString() : "latest").get();
     params.put("formConfig", new SchemaFormConfig(micaConfigService, form.getSchema(), form.getDefinition(), preliminary.getContent(), locale, readOnly));
     params.put("accessConfig", getConfig());
+    addHasFiles(params, preliminary);
   }
 
 }

@@ -20,7 +20,9 @@ authorization added on two administration endpoints.
    ```sh
    cd $MICA_HOME/conf/templates
    ls signin.ftl libs/signin-scripts.ftl libs/scripts.ftl compare.ftl dataset.ftl variable.ftl \
-      project.ftl libs/project.ftl libs/settings.ftl
+      project.ftl libs/project.ftl libs/settings.ftl \
+      data-access-form.ftl data-access-preliminary-form.ftl data-access-feasibility-form.ftl \
+      data-access-amendment-form.ftl data-access-agreement-form.ftl libs/data-access-form.ftl
    ```
 
    If any exists, keep a copy of the current bundled version
@@ -45,6 +47,12 @@ authorization added on two administration endpoints.
      one identified by its cookie), 404 for any other session ID.
    - `PUT /ws/config/i18n/custom/{locale}.json`, `PUT /ws/config/i18n/custom/import`
      and `/ws/logs` now require the `mica-administrator` role.
+   - The Word export of the preliminary, feasibility, amendment and agreement forms
+     (`/ws/data-access-request/{id}/.../_word`) now checks the view permission on the form
+     itself, like the other endpoints of these forms. Users allowed to view one of these forms
+     can now export it; this used to be refused (403) to anyone without an administrator or DAO
+     role. The portal only offers this export to administrators and
+     DAOs.
 
 ### Upgrade
 
@@ -72,8 +80,17 @@ Install the new version and restart as usual. No database migration runs at star
      include of the new `libs/project-scripts.ftl` (nothing to reconcile there, the file
      is new). If your copy of `project.ftl` or `libs/project.ftl` is not updated, the file
      browser stays absent from the project page, same as before this release.
-2. **Custom translations**: the message `sign-in-otp-failed` was added, bundled in English
-   and French. Add it to any other language you provide.
+   - `data-access-form.ftl`, `data-access-{preliminary,feasibility,amendment,agreement}-form.ftl`
+     and `libs/data-access-form.ftl`: administrators and DAOs get a **Download** menu on data
+     access forms offering the form (Word or PDF, as before) and, when the form has files
+     attached, a new ZIP download of these files (macro `dataAccessDownloadButtons` in
+     `libs/data-access-form.ftl`, used by the 4 sub-form templates; shown only when the new
+     `hasFiles` page variable is true). Files that cannot be retrieved from the file store are
+     left out of the ZIP and listed in a `MISSING.txt` entry. If your copies of the templates are
+     not updated, the ZIP download is not offered in the UI (the underlying `/files/_download`
+     endpoints still work regardless).
+2. **Custom translations**: the messages `sign-in-otp-failed` and `files` were added, bundled
+   in English and French. Add them to any other language you provide.
 3. **Response headers.** Mica now sends `X-Content-Type-Options: nosniff`,
    `Referrer-Policy: strict-origin-when-cross-origin` and, when the request reaches Mica
    over TLS, `Strict-Transport-Security: max-age=31536000; includeSubDomains`. If your

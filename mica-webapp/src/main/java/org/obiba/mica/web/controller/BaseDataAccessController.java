@@ -11,13 +11,18 @@
 package org.obiba.mica.web.controller;
 
 import com.google.common.collect.Lists;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.*;
 import org.obiba.mica.access.service.*;
+import org.obiba.mica.core.domain.SchemaFormContentAware;
 import org.obiba.mica.core.service.CommentsService;
+import org.obiba.mica.core.service.SchemaFormContentFileService;
 import org.obiba.mica.micaConfig.domain.AgreementOpenedPolicy;
 import org.obiba.mica.micaConfig.domain.DataAccessConfig;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
+import org.obiba.mica.security.Roles;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.controller.domain.FormStatusChangeEvent;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -59,6 +64,9 @@ public class BaseDataAccessController extends BaseController {
 
   @Inject
   protected DataAccessRequestUtilService dataAccessRequestUtilService;
+
+  @Inject
+  private SchemaFormContentFileService schemaFormContentFileService;
 
   protected DataAccessRequest getDataAccessRequest(Map<String, Object> params) {
     return (DataAccessRequest) params.get("dar");
@@ -172,6 +180,15 @@ public class BaseDataAccessController extends BaseController {
 
   protected List<String> getPermissions(Map<String, Object> params) {
     return (List<String>) params.get("permissions");
+  }
+
+  /**
+   * Whether the form content has files attached, only looked up for the users who are offered their download.
+   */
+  protected void addHasFiles(Map<String, Object> params, SchemaFormContentAware entity) {
+    Subject subject = SecurityUtils.getSubject();
+    params.put("hasFiles", (subject.hasRole(Roles.MICA_ADMIN) || subject.hasRole(Roles.MICA_DAO))
+      && !schemaFormContentFileService.getFileEntries(entity).isEmpty());
   }
 
   @ExceptionHandler(NoSuchDataAccessRequestException.class)
