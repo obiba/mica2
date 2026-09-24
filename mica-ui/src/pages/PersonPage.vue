@@ -34,7 +34,7 @@
             {{ t('last_modified') }}: {{ getDateLabel(person.timestamps?.lastUpdate) }}
           </div>
           <div class="col-auto q-gutter-sm">
-            <q-btn color="primary" icon="edit" :label="t('edit')" size="sm" :to="`/persons/${id}/edit`" />
+            <q-btn color="primary" icon="edit" :label="t('edit')" size="sm" :disable="busy" @click="showEdit = true" />
             <q-btn
               outline
               color="negative"
@@ -73,6 +73,7 @@
       </div>
     </q-page>
 
+    <person-dialog v-model="showEdit" :person="person" @saved="person = $event" />
     <confirm-dialog
       v-model="showDelete"
       :title="t('persons.delete_title')"
@@ -86,6 +87,7 @@
 import type { PersonDto } from 'src/models/Mica';
 import ConfirmDialog from 'src/components/ConfirmDialog.vue';
 import DrawerLayout from 'src/components/DrawerLayout.vue';
+import PersonDialog from 'src/components/persons/PersonDialog.vue';
 import PersonForm from 'src/components/persons/PersonForm.vue';
 import PersonHistoryPanel from 'src/components/persons/PersonHistoryPanel.vue';
 import PersonMembershipsPanel from 'src/components/persons/PersonMembershipsPanel.vue';
@@ -114,6 +116,7 @@ const person = ref<PersonDto>();
 const loading = ref(true);
 const busy = ref(false);
 const showDelete = ref(false);
+const showEdit = ref(false);
 
 const hasMemberships = computed(
   () => (person.value?.studyMemberships?.length ?? 0) + (person.value?.networkMemberships?.length ?? 0) > 0,

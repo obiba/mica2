@@ -23,7 +23,7 @@
       >
         <template v-slot:top-left>
           <div class="q-gutter-sm">
-            <q-btn color="primary" icon="add" :label="t('persons.new')" size="sm" to="/persons/new" />
+            <q-btn color="primary" icon="add" :label="t('persons.new')" size="sm" @click="showNew = true" />
             <q-btn
               outline
               color="primary"
@@ -56,12 +56,14 @@
         </template>
       </q-table>
     </q-page>
+    <person-dialog v-model="showNew" @saved="(person) => router.push(`/persons/${person.id}`)" />
   </div>
 </template>
 
 <script setup lang="ts">
 import type { QTableColumn, QTableProps } from 'quasar';
 import type { PersonDto, TimestampsDto } from 'src/models/Mica';
+import PersonDialog from 'src/components/persons/PersonDialog.vue';
 import { getDateLabel } from 'src/utils/dates';
 import { notifyError } from 'src/utils/notify';
 import { fullName, groupMemberships, MEMBERSHIP_INFO, MEMBERSHIP_KINDS, searchQuery } from 'src/utils/persons';
@@ -78,6 +80,7 @@ const router = useRouter();
 const { t, locale } = useI18n();
 
 const loading = ref(false);
+const showNew = ref(false);
 const rows = ref<PersonDto[]>([]);
 
 // the search, the sort and the page are kept in the route query
