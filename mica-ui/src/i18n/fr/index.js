@@ -15,6 +15,10 @@ export default {
     validate: 'Valider',
     signin_with: "S'identifier avec {provider}",
   },
+  dashboard: {
+    title: 'Tableau de bord',
+    info: 'Documents par statut de publication et de révision.',
+  },
   logo: 'Logo',
   networks: {
     title: 'Réseaux',
