@@ -50,6 +50,32 @@
           <q-tab-panel name="view" class="q-pa-none">
             <document-view-panel :target="target" :document="document" />
           </q-tab-panel>
+          <template v-if="network">
+            <q-tab-panel name="studies" class="q-pa-none">
+              <div v-for="(kind, index) in STUDY_KINDS" :key="kind" :class="{ 'q-mt-lg': index > 0 }">
+                <div class="text-h6 q-mb-sm">{{ t(documentTarget(kind, '').labels.title) }}</div>
+                <network-links-panel
+                  :network="network"
+                  :kind="kind"
+                  :can-edit="canEdit"
+                  :busy="saving"
+                  @change="onNetworkChange"
+                />
+              </div>
+            </q-tab-panel>
+            <q-tab-panel name="networks" class="q-pa-none">
+              <network-links-panel
+                :network="network"
+                kind="network"
+                :can-edit="canEdit"
+                :busy="saving"
+                @change="onNetworkChange"
+              />
+            </q-tab-panel>
+            <q-tab-panel name="members" class="q-pa-none">
+              <network-members-panel :network="network" :can-edit="canEdit" :busy="saving" @change="onNetworkChange" />
+            </q-tab-panel>
+          </template>
           <q-tab-panel name="history" class="q-pa-none">
             <document-history-panel :target="target" :state="state" :can-restore="canEdit" @restored="refresh" />
           </q-tab-panel>
@@ -72,7 +98,8 @@
 </template>
 
 <script setup lang="ts">
-import type { EntityStateDto } from 'src/models/Mica';
+import { useQuasar } from 'quasar';
+import type { EntityStateDto, NetworkDto } from 'src/models/Mica';
 import DrawerLayout from 'src/components/DrawerLayout.vue';
 import DocumentHeader from 'src/components/documents/DocumentHeader.vue';
 import DocumentViewPanel from 'src/components/documents/DocumentViewPanel.vue';
@@ -81,14 +108,23 @@ import DocumentAclPanel from 'src/components/permissions/DocumentAclPanel.vue';
 import CommentsPanel from 'src/components/comments/CommentsPanel.vue';
 import FileBrowser from 'src/components/files/FileBrowser.vue';
 import DataAccessRequestLink from 'src/components/projects/DataAccessRequestLink.vue';
-import { useDocumentTarget, useRouteDocumentType } from 'src/composables/useDocumentTarget';
+import NetworkLinksPanel from 'src/components/networks/NetworkLinksPanel.vue';
+import NetworkMembersPanel from 'src/components/networks/NetworkMembersPanel.vue';
+import { documentTarget, useDocumentTarget, useRouteDocumentType } from 'src/composables/useDocumentTarget';
 import { useDocumentState } from 'src/composables/useDocumentState';
 import { useDocumentActions, type DocumentAction } from 'src/composables/useDocumentActions';
 import type { DocumentDto } from 'src/stores/documents';
+import type { NetworkLinkKind } from 'src/utils/networks';
+import { notifyError } from 'src/utils/notify';
 
 const TABS = ['view', 'history', 'files', 'comments', 'permissions'];
+/** the sections of the studies tab of a network */
+const STUDY_KINDS: NetworkLinkKind[] = ['individual-study', 'harmonization-study'];
+const NETWORK_TABS = ['studies', 'networks', 'members'];
 
 const documentsStore = useDocumentsStore();
+const systemStore = useSystemStore();
+const $q = useQuasar();
 const route = useRoute();
 const router = useRouter();
 const { t } = useI18n();
@@ -97,7 +133,8 @@ const type = useRouteDocumentType();
 const id = computed(() => route.params.id as string);
 const tab = computed(() => {
   const name = route.params.tab as string | undefined;
-  return name && TABS.includes(name) ? name : 'view';
+  const tabs = type.value === 'network' ? [...TABS, ...NETWORK_TABS] : TABS;
+  return name && tabs.includes(name) ? name : 'view';
 });
 
 const { target } = useDocumentTarget(type, id);
@@ -107,12 +144,22 @@ const { canEdit, canManagePermissions } = useDocumentState(state);
 /** the drawer entries, one per tab */
 const menu = computed(() => [
   { name: 'view', icon: 'visibility', label: 'view' },
+  ...(network.value
+    ? [
+        { name: 'studies', icon: 'book', label: 'network_links.studies' },
+        { name: 'networks', icon: 'hub', label: 'networks.title' },
+        { name: 'members', icon: 'people', label: 'network_members.title' },
+      ]
+    : []),
   { name: 'history', icon: 'history', label: 'history.title' },
   { name: 'files', icon: 'folder', label: 'files.title' },
   { name: 'comments', icon: 'comment', label: 'comments.title' },
   ...(canManagePermissions.value ? [{ name: 'permissions', icon: 'lock', label: 'permissions' }] : []),
 ]);
 const { busy, apply } = useDocumentActions(target);
+/** the document when it is a network */
+const network = computed(() => (type.value === 'network' ? (document.value as NetworkDto | undefined) : undefined));
+const saving = ref(false);
 /** the data access request a research project comes from */
 const request = computed(() => (document.value && 'request' in document.value ? document.value.request : undefined));
 
@@ -145,6 +192,39 @@ async function initialize() {
   state.value = undefined;
   await refresh();
   loading.value = false;
+}
+
+/** the revision comment, undefined when cancelled */
+function promptComment() {
+  return new Promise<string | undefined>((resolve) => {
+    $q.dialog({
+      title: t('document.comment'),
+      message: t('document.comment_hint'),
+      prompt: { model: '', isValid: (value: string) => value.trim() !== '', type: 'text' },
+      cancel: true,
+      persistent: true,
+    })
+      .onOk((value: string) => resolve(value.trim()))
+      .onCancel(() => resolve(undefined));
+  });
+}
+
+/** saves the network changed in a tab (links, members order) */
+async function onNetworkChange(dto: NetworkDto) {
+  let comment: string | undefined;
+  if (systemStore.configuration.isCommentsRequiredOnDocumentSave === true) {
+    comment = await promptComment();
+    if (comment === undefined) return;
+  }
+  saving.value = true;
+  try {
+    await documentsStore.saveDocument(target.value, dto, comment);
+    await refresh();
+  } catch (error) {
+    notifyError(error);
+  } finally {
+    saving.value = false;
+  }
 }
 
 async function onAction(action: DocumentAction) {
