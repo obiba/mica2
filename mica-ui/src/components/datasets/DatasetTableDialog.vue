@@ -82,9 +82,12 @@
         </div>
 
         <div class="text-subtitle1 q-mt-md">{{ t('dataset.table_labels') }}</div>
-        <localized-input v-model="name" :label="t('name')" />
-        <localized-input v-model="description" :label="t('description')" :rows="3" />
-        <localized-input v-model="additionalInformation" :label="t('dataset.additional_information')" :rows="3" />
+        <q-json-form
+          v-model="labels"
+          :schema="labelsForm.schema"
+          :uischema="labelsForm.uischema"
+          :languages="systemStore.languages"
+        />
       </q-card-section>
       <q-separator />
       <q-card-actions align="right" class="bg-grey-3">
@@ -99,7 +102,8 @@
 import { api } from 'src/boot/api';
 import type { DatasetDto_StudyTableDto, LocalizedStringDto, StudySummaryDto } from 'src/models/Mica';
 import type { ProjectDto } from 'src/models/Opal';
-import LocalizedInput from 'src/components/commons/LocalizedInput.vue';
+import { QJsonForm, toJsonForms } from '@obiba/quasar-ui-json-form';
+import { localizedToArray, localizedToObject, type FormModel } from 'src/composables/useDocumentModel';
 import { documentTarget } from 'src/composables/useDocumentTarget';
 import { isSourceComplete, SOURCE_NAMESPACES, tableSource, withSource, type TableSource } from 'src/utils/datasets';
 import { notifyError } from 'src/utils/notify';
@@ -114,6 +118,7 @@ const props = defineProps<Props>();
 const show = defineModel<boolean>({ required: true });
 const emit = defineEmits<{ save: [table: DatasetDto_StudyTableDto] }>();
 const documentsStore = useDocumentsStore();
+const systemStore = useSystemStore();
 const { t, locale } = useI18n();
 
 const studies = ref<StudySummaryDto[]>([]);
@@ -126,9 +131,30 @@ const studyId = ref<string>();
 const populationId = ref<string>();
 const dceId = ref<string>();
 const source = ref<TableSource>({ namespace: 'opal' });
-const name = ref<LocalizedStringDto[]>([]);
-const description = ref<LocalizedStringDto[]>([]);
-const additionalInformation = ref<LocalizedStringDto[]>([]);
+/** the localized labels of the table, as `{field: {lang: value}}` */
+const labels = ref<FormModel>({});
+
+// the table labels form of the legacy admin app (`dataset-opal-table-schemaform.js`), with the additional information
+const LOCALIZED = { type: 'object', format: 'localizedString' };
+const LABEL_FIELDS = ['name', 'description', 'additionalInformation'] as const;
+const labelsForm = computed(() =>
+  toJsonForms(
+    {
+      type: 'object',
+      properties: {
+        name: { title: 't(name)', ...LOCALIZED },
+        description: { title: 't(description)', ...LOCALIZED },
+        additionalInformation: { title: 't(dataset.additional_information)', ...LOCALIZED },
+      },
+    },
+    [
+      { key: 'name', type: 'localizedstring' },
+      { key: 'description', type: 'localizedstring', rows: 3 },
+      { key: 'additionalInformation', type: 'localizedstring', rows: 3 },
+    ],
+    { translate: (key: string) => t(key) },
+  ),
+);
 
 function option(id: string, label: LocalizedStringDto[]) {
   const text = localized(label, locale.value);
@@ -214,9 +240,7 @@ function onShow() {
   populationId.value = props.table?.populationId || undefined;
   dceId.value = props.table?.dataCollectionEventId || undefined;
   source.value = props.table ? tableSource(props.table) : { namespace: 'opal', project: '', table: '' };
-  name.value = props.table?.name ?? [];
-  description.value = props.table?.description ?? [];
-  additionalInformation.value = props.table?.additionalInformation ?? [];
+  labels.value = Object.fromEntries(LABEL_FIELDS.map((field) => [field, localizedToObject(props.table?.[field])]));
   loadStudies();
 }
 
@@ -233,9 +257,9 @@ function onSave() {
         studyId: studyId.value ?? '',
         populationId: populationId.value,
         dataCollectionEventId: dceId.value,
-        name: name.value,
-        description: description.value,
-        additionalInformation: additionalInformation.value,
+        name: localizedToArray(labels.value.name) ?? [],
+        description: localizedToArray(labels.value.description) ?? [],
+        additionalInformation: localizedToArray(labels.value.additionalInformation) ?? [],
       },
       source.value,
     ),
