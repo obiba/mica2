@@ -94,6 +94,7 @@
 import type { QTableColumn } from 'quasar';
 import type { PersonDto } from 'src/models/Mica';
 import ConfirmDialog from 'src/components/ConfirmDialog.vue';
+import { useRoleLabels } from 'src/composables/useRoleLabels';
 import AddMembershipsDialog from 'src/components/persons/AddMembershipsDialog.vue';
 import {
   fullName,
@@ -117,10 +118,11 @@ const props = defineProps<Props>();
 const emit = defineEmits<{ change: [person: PersonDto] }>();
 const { t, locale } = useI18n();
 const systemStore = useSystemStore();
+const { roleLabel } = useRoleLabels();
 
 const entities = computed(() => groupMemberships(props.person, props.kind, locale.value));
 const roleOptions = computed(() =>
-  (systemStore.configuration.roles ?? []).map((role) => ({ label: role, value: role })),
+  (systemStore.configuration.roles ?? []).map((role) => ({ label: roleLabel(role), value: role })),
 );
 
 const columns = computed<QTableColumn[]>(() => [
@@ -131,7 +133,7 @@ const columns = computed<QTableColumn[]>(() => [
     label: t('persons.roles'),
     field: 'roles',
     align: 'left',
-    format: (roles: string[]) => roles.join(', '),
+    format: (roles: string[]) => roles.map(roleLabel).join(', '),
   },
   { name: 'actions', label: '', field: 'id', align: 'right' },
 ]);
