@@ -21,7 +21,7 @@
         </q-item-section>
       </q-item>
       <q-separator v-if="authStore.isAuthenticated" />
-      <q-item to="/">
+      <q-item to="/" exact>
         <q-item-section avatar>
           <q-icon name="dashboard" />
         </q-item-section>
