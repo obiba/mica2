@@ -894,19 +894,19 @@
     "add": {
       "member": "Ajouter {{type}}",
       "contact": "Ajouter un contact",
-      "investigator": "Ajouter un enquêteur"
+      "investigator": "Ajouter un investigateur"
     },
     "list": {
       "contact":"Liste des contacts",
-      "investigator":"Liste d'enquêteurs"
+      "investigator":"Liste d'investigateurs"
     },
     "label-plurial": {
       "contact": "Contacts",
-      "investigator": "Enquêteurs"
+      "investigator": "Investigateurs"
     },
     "label": {
       "contact": "Contact",
-      "investigator": "Enquêteur"
+      "investigator": "Investigateur"
     },
     "delete": {
       "member": {
@@ -1669,7 +1669,7 @@
       "translations": "Gérer les traductions des libellés.",
       "cart": "Panier de variables.",
       "sets": "Listes de variables.",
-      "persons": "Gérer les personnes associées aux études et aux réseaux par un rôle tel que contact ou enquêteur.",
+      "persons": "Gérer les personnes associées aux études et aux réseaux par un rôle tel que contact ou investigateur.",
       "entity-statistics-summary": "Résumé statistique des documents de contenu Mica."
     }
   },
