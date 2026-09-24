@@ -50,3 +50,10 @@ export interface TaxonomyDto {
   attributes?: AttributeDto[];
   vocabularies?: VocabularyDto[];
 }
+
+/** an Opal project, as listed by `/config/opal-projects` and `/draft/study-state/{id}/opal-projects` */
+export interface ProjectDto {
+  name: string;
+  title?: string;
+  datasource?: { name: string; table?: string[] };
+}
