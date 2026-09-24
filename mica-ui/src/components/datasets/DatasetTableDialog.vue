@@ -2,17 +2,28 @@
   <q-dialog v-model="show" persistent @before-show="onShow">
     <q-card class="dialog-lg">
       <q-card-section>
-        <div class="text-h6">{{ t('dataset.study_table') }}</div>
-        <div class="text-hint">{{ t('dataset.study_table_info') }}</div>
+        <div class="text-h6">{{ t(TITLES[mode]) }}</div>
+        <div class="text-hint">{{ t(`${TITLES[mode]}_info`) }}</div>
       </q-card-section>
       <q-separator />
       <q-card-section style="max-height: 70vh" class="scroll q-gutter-y-sm">
+        <q-option-group
+          v-if="mode === 'harmonized'"
+          :model-value="initiative"
+          :options="[
+            { value: false, label: t('dataset.study') },
+            { value: true, label: t('dataset.initiative') },
+          ]"
+          inline
+          dense
+          @update:model-value="onKindChange"
+        />
         <q-select
           v-model="studyId"
           :options="studyOptions"
           emit-value
           map-options
-          :label="`${t('dataset.study')} *`"
+          :label="`${t(initiative ? 'dataset.initiative' : 'dataset.study')} *`"
           use-input
           fill-input
           hide-selected
@@ -22,13 +33,14 @@
           @filter="onStudyFilter"
           @update:model-value="onStudyChange"
         />
-        <div class="row q-col-gutter-md">
+        <div v-if="!initiative" class="row q-col-gutter-md">
           <q-select
             v-model="populationId"
             :options="populationOptions"
             emit-value
             map-options
-            :label="`${t('study.population')} *`"
+            :label="t('study.population') + required"
+            :clearable="mode === 'harmonized'"
             dense
             class="col-6"
             @update:model-value="dceId = undefined"
@@ -38,7 +50,8 @@
             :options="dceOptions"
             emit-value
             map-options
-            :label="`${t('dataset.dce')} *`"
+            :label="t('dataset.dce') + required"
+            :clearable="mode === 'harmonized'"
             dense
             class="col-6"
           />
@@ -81,15 +94,17 @@
           <q-input v-model="source.nss" :label="`${t('dataset.source.other.nss')} *`" dense class="col-6" />
         </div>
 
-        <div class="text-subtitle1 q-mt-md">{{ t('dataset.table_labels') }}</div>
-        <q-json-form
-          v-model="labels"
-          :schema="labelsSchema"
-          :uischema="labelsForm.uischema"
-          :languages="systemStore.languages"
-          :validation-mode="validationMode"
-          @update:errors="labelErrors = $event"
-        />
+        <template v-if="mode !== 'schema'">
+          <div class="text-subtitle1 q-mt-md">{{ t('dataset.table_labels') }}</div>
+          <q-json-form
+            v-model="labels"
+            :schema="labelsSchema"
+            :uischema="labelsForm.uischema"
+            :languages="systemStore.languages"
+            :validation-mode="validationMode"
+            @update:errors="labelErrors = $event"
+          />
+        </template>
       </q-card-section>
       <q-separator />
       <q-card-actions align="right" class="bg-grey-3">
@@ -109,18 +124,42 @@ import type { ValidationMode } from '@jsonforms/core';
 import { QJsonForm, toJsonForms } from '@obiba/quasar-ui-json-form';
 import { localizedToArray, localizedToObject, type FormModel } from 'src/composables/useDocumentModel';
 import { documentTarget } from 'src/composables/useDocumentTarget';
-import { isSourceComplete, SOURCE_NAMESPACES, tableSource, withSource, type TableSource } from 'src/utils/datasets';
+import {
+  isSourceComplete,
+  SOURCE_NAMESPACES,
+  tableSource,
+  withSource,
+  type DatasetTable,
+  type TableSource,
+} from 'src/utils/datasets';
 import { notifyError } from 'src/utils/notify';
 import { localized } from 'src/utils/persons';
 
+/**
+ * `collected`: the study table of a collected dataset (population and event required);
+ * `harmonized`: a table of a harmonized dataset, of an individual study (population and event optional)
+ * or of a harmonization initiative; `schema`: the data schema of a harmonized dataset (initiative, no labels).
+ */
+type Mode = 'collected' | 'harmonized' | 'schema';
+
+const TITLES: Record<Mode, string> = {
+  collected: 'dataset.study_table',
+  harmonized: 'dataset.harmonized_table',
+  schema: 'dataset.data_schema',
+};
+
 interface Props {
   /** the table to edit, a new one when undefined */
-  table?: DatasetDto_StudyTableDto | undefined;
+  table?: DatasetTable | undefined;
+  mode?: Mode;
+  /** the table is of a harmonization initiative (always in the schema mode) */
+  harmonization?: boolean;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), { mode: 'collected', harmonization: false });
 const show = defineModel<boolean>({ required: true });
-const emit = defineEmits<{ save: [table: DatasetDto_StudyTableDto] }>();
+/** the table, and whether it is of a harmonization initiative */
+const emit = defineEmits<{ save: [table: DatasetTable, harmonization: boolean] }>();
 const documentsStore = useDocumentsStore();
 const systemStore = useSystemStore();
 const { t, locale } = useI18n();
@@ -131,6 +170,8 @@ const studyFilter = ref('');
 const projects = ref<ProjectDto[]>([]);
 const loadingProjects = ref(false);
 
+/** the table is of a harmonization initiative */
+const initiative = ref(false);
 const studyId = ref<string>();
 const populationId = ref<string>();
 const dceId = ref<string>();
@@ -206,8 +247,12 @@ const tableNames = computed(() =>
     source.value.table,
   ),
 );
+const required = computed(() => (props.mode === 'collected' ? ' *' : ''));
 const complete = computed(
-  () => !!studyId.value && !!populationId.value && !!dceId.value && isSourceComplete(source.value),
+  () =>
+    !!studyId.value &&
+    (props.mode !== 'collected' || (!!populationId.value && !!dceId.value)) &&
+    isSourceComplete(source.value),
 );
 
 function withCurrent(names: string[], current: string | undefined) {
@@ -221,8 +266,9 @@ function onStudyFilter(value: string, update: (callback: () => void) => void) {
 async function loadStudies() {
   loadingStudies.value = true;
   try {
-    // the individual study states carry the population and event summaries
-    studies.value = (await documentsStore.fetchDocuments(documentTarget('individual-study', ''))) as StudySummaryDto[];
+    // the study states carry the population and event summaries
+    const type = initiative.value ? 'harmonization-study' : 'individual-study';
+    studies.value = (await documentsStore.fetchDocuments(documentTarget(type, ''))) as StudySummaryDto[];
   } catch (error) {
     notifyError(error);
   } finally {
@@ -251,11 +297,22 @@ function onStudyChange() {
   dceId.value = undefined;
 }
 
+function onKindChange(value: boolean) {
+  initiative.value = value;
+  studyId.value = undefined;
+  onStudyChange();
+  studies.value = [];
+  loadStudies();
+}
+
 function onShow() {
   studyFilter.value = '';
+  initiative.value = props.mode === 'schema' || props.harmonization;
+  studies.value = [];
   studyId.value = props.table?.studyId || undefined;
-  populationId.value = props.table?.populationId || undefined;
-  dceId.value = props.table?.dataCollectionEventId || undefined;
+  const table = props.table as DatasetDto_StudyTableDto | undefined;
+  populationId.value = table?.populationId || undefined;
+  dceId.value = table?.dataCollectionEventId || undefined;
   source.value = props.table ? tableSource(props.table) : { namespace: 'opal', project: '', table: '' };
   validationMode.value = 'ValidateAndHide';
   labels.value = Object.fromEntries(LABEL_FIELDS.map((field) => [field, localizedToObject(props.table?.[field])]));
@@ -268,29 +325,28 @@ function labelValues(field: (typeof LABEL_FIELDS)[number]) {
 }
 
 function onSave() {
-  if (labelErrors.value.length > 0) {
+  // no labels in the schema mode
+  if (props.mode !== 'schema' && labelErrors.value.length > 0) {
     validationMode.value = 'ValidateAndShow';
     return;
   }
   // the study summary and the event unique id are computed by the server
-  const table = { ...props.table };
+  const table: DatasetDto_StudyTableDto = {
+    ...(props.table as DatasetDto_StudyTableDto | undefined),
+    studyId: studyId.value ?? '',
+    populationId: populationId.value,
+    dataCollectionEventId: dceId.value,
+    name: labelValues('name'),
+    description: labelValues('description'),
+    additionalInformation: labelValues('additionalInformation'),
+  };
   delete table.studySummary;
   delete table.dceId;
-  emit(
-    'save',
-    withSource(
-      {
-        ...table,
-        studyId: studyId.value ?? '',
-        populationId: populationId.value,
-        dataCollectionEventId: dceId.value,
-        name: labelValues('name'),
-        description: labelValues('description'),
-        additionalInformation: labelValues('additionalInformation'),
-      },
-      source.value,
-    ),
-  );
+  if (initiative.value) {
+    delete table.populationId;
+    delete table.dataCollectionEventId;
+  }
+  emit('save', withSource(table, source.value), initiative.value);
   show.value = false;
 }
 </script>
