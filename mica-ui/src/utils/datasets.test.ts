@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import type { DatasetDto_StudyTableDto } from 'src/models/Mica';
-import { isSourceComplete, sourceUrn, tableSource, withSource, type TableSource } from './datasets';
+import {
+  harmonizedTables,
+  isSourceComplete,
+  sourceText,
+  sourceUrn,
+  tableSource,
+  withHarmonizedTables,
+  withSource,
+  type TableSource,
+} from './datasets';
 
 describe('tableSource / sourceUrn', () => {
   const cases: [string, TableSource][] = [
@@ -51,5 +60,49 @@ describe('withSource', () => {
       additionalInformation: [],
     });
     expect(table.project).toBe('p');
+  });
+});
+
+describe('harmonizedTables / withHarmonizedTables', () => {
+  const table = (studyId: string, weight: number) => ({
+    studyId,
+    weight,
+    name: [],
+    description: [],
+    additionalInformation: [],
+  });
+
+  it('merges the study and initiative tables by weight, and splits them back reweighted', () => {
+    const protocol = {
+      harmonizationTable: { ...table('h0', 0), source: 'urn:opal:p.t' },
+      studyTables: [table('s1', 2), table('s2', 0)],
+      harmonizationTables: [table('h1', 1)],
+    };
+    const tables = harmonizedTables(protocol);
+    expect(tables.map((item) => [item.harmonization, item.table.studyId])).toEqual([
+      [false, 's2'],
+      [true, 'h1'],
+      [false, 's1'],
+    ]);
+    const reordered = withHarmonizedTables(protocol, [tables[2]!, tables[0]!]);
+    expect(reordered.harmonizationTable).toBe(protocol.harmonizationTable);
+    expect(reordered.studyTables.map((item) => [item.studyId, item.weight])).toEqual([
+      ['s1', 0],
+      ['s2', 1],
+    ]);
+    expect(reordered.harmonizationTables).toEqual([]);
+    expect(protocol.studyTables[0]!.weight).toBe(2);
+  });
+
+  it('handles a dataset without protocol', () => {
+    expect(harmonizedTables(undefined)).toEqual([]);
+  });
+});
+
+describe('sourceText', () => {
+  it('drops the URN prefix', () => {
+    expect(sourceText({ namespace: 'opal', project: 'p', table: 't' })).toBe('p.t');
+    expect(sourceText({ namespace: 'file', path: 'a.xlsx', table: 'x' })).toBe('a.xlsx:x');
+    expect(sourceText({ namespace: 'other', nid: 'n', nss: 's' })).toBe('n:s');
   });
 });
