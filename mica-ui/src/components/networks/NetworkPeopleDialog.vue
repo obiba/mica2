@@ -35,7 +35,7 @@
             <q-td :props="props" style="white-space: normal">
               <span v-for="(entity, index) in groupMemberships(props.row, kind, locale)" :key="entity.id">
                 <router-link :to="entity.route" class="text-primary">{{ entity.acronym }}</router-link>
-                <em class="text-grey-7"> ({{ entity.roles.join(', ') }})</em
+                <em class="text-grey-7"> ({{ entity.roles.map(roleLabel).join(', ') }})</em
                 ><span v-if="index < groupMemberships(props.row, kind, locale).length - 1">, </span>
               </span>
             </q-td>
@@ -62,6 +62,7 @@
 <script setup lang="ts">
 import type { QTableColumn } from 'quasar';
 import type { NetworkDto, PersonDto } from 'src/models/Mica';
+import { useRoleLabels } from 'src/composables/useRoleLabels';
 import { usePersonsStore } from 'src/stores/persons';
 import { associatedPeopleQuery } from 'src/utils/networks';
 import { notifyError } from 'src/utils/notify';
@@ -78,6 +79,7 @@ const props = defineProps<Props>();
 const show = defineModel<boolean>({ required: true });
 const { t, locale } = useI18n();
 const personsStore = usePersonsStore();
+const { roleLabel } = useRoleLabels();
 
 const columns = computed<QTableColumn[]>(() => [
   { name: 'name', label: t('name'), field: (row: PersonDto) => fullName(row), align: 'left', sortable: true },

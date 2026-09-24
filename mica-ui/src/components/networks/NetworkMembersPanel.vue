@@ -15,7 +15,7 @@
       <div v-for="item in members" :key="item.role" class="col-12 col-md-6">
         <q-card flat bordered>
           <q-card-section class="row items-center q-py-sm">
-            <div class="text-subtitle1 col">{{ item.role }}</div>
+            <div class="text-subtitle1 col">{{ roleLabel(item.role) }}</div>
             <q-btn
               v-if="canEdit"
               flat
@@ -82,7 +82,7 @@
 
     <add-member-dialog
       v-model="showAdd"
-      :role="addRole?.role ?? ''"
+      :role="roleLabel(addRole?.role ?? '')"
       :exclude="(addRole?.persons ?? []).map((person) => person.id ?? '')"
       @add="onAdd"
     />
@@ -91,7 +91,9 @@
     <confirm-dialog
       :model-value="toRemove !== undefined"
       :title="t('network_members.remove_title')"
-      :text="t('network_members.remove_text', { name: fullName(toRemove?.person), role: toRemove?.role })"
+      :text="
+        t('network_members.remove_text', { name: fullName(toRemove?.person), role: roleLabel(toRemove?.role ?? '') })
+      "
       @update:model-value="toRemove = undefined"
       @confirm="onRemove"
     />
@@ -101,6 +103,7 @@
 <script setup lang="ts">
 import type { NetworkDto, PersonDto } from 'src/models/Mica';
 import ConfirmDialog from 'src/components/ConfirmDialog.vue';
+import { useRoleLabels } from 'src/composables/useRoleLabels';
 import AddMemberDialog from 'src/components/networks/AddMemberDialog.vue';
 import NetworkPeopleDialog from 'src/components/networks/NetworkPeopleDialog.vue';
 import { usePersonsStore } from 'src/stores/persons';
@@ -121,6 +124,7 @@ const emit = defineEmits<{ change: [network: NetworkDto] }>();
 const { t, locale } = useI18n();
 const personsStore = usePersonsStore();
 const systemStore = useSystemStore();
+const { roleLabel } = useRoleLabels();
 
 const loading = ref(false);
 const saving = ref(false);

@@ -50,7 +50,7 @@
           <q-td :props="props">
             <div v-for="entity in groupMemberships(props.row, kind, locale)" :key="entity.id">
               <router-link :to="entity.route" class="text-primary">{{ entity.acronym }}</router-link>
-              <span class="text-grey-7 q-ml-xs">({{ entity.roles.join(', ') }})</span>
+              <span class="text-grey-7 q-ml-xs">({{ entity.roles.map(roleLabel).join(', ') }})</span>
             </div>
           </q-td>
         </template>
@@ -68,6 +68,7 @@ import { getDateLabel } from 'src/utils/dates';
 import { notifyError } from 'src/utils/notify';
 import { fullName, groupMemberships, MEMBERSHIP_INFO, MEMBERSHIP_KINDS, searchQuery } from 'src/utils/persons';
 import { usePersonsStore } from 'src/stores/persons';
+import { useRoleLabels } from 'src/composables/useRoleLabels';
 
 type Pagination = NonNullable<QTableProps['pagination']>;
 
@@ -75,6 +76,7 @@ type Pagination = NonNullable<QTableProps['pagination']>;
 const SORT_FIELDS: Record<string, string> = { name: 'lastName', lastUpdate: 'lastModifiedDate' };
 
 const personsStore = usePersonsStore();
+const { roleLabel } = useRoleLabels();
 const route = useRoute();
 const router = useRouter();
 const { t, locale } = useI18n();

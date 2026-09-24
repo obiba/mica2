@@ -19,6 +19,7 @@
 <script setup lang="ts">
 import type { PersonDto } from 'src/models/Mica';
 import SelectDocumentsDialog from 'src/components/documents/SelectDocumentsDialog.vue';
+import { useRoleLabels } from 'src/composables/useRoleLabels';
 import {
   fullName,
   groupMemberships,
@@ -37,9 +38,10 @@ const show = defineModel<boolean>({ required: true });
 const emit = defineEmits<{ add: [parents: MembershipParent[], roles: string[]] }>();
 const { t, locale } = useI18n();
 const systemStore = useSystemStore();
+const { roleLabel } = useRoleLabels();
 
 const roleOptions = computed(() =>
-  (systemStore.configuration.roles ?? []).map((role) => ({ label: role, value: role })),
+  (systemStore.configuration.roles ?? []).map((role) => ({ label: roleLabel(role), value: role })),
 );
 /** the entities of the kind the person is member of, not to be selected */
 const members = computed(() => groupMemberships(props.person, props.kind, locale.value).map((entity) => entity.id));
