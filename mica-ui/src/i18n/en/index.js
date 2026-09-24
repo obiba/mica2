@@ -295,7 +295,7 @@ export default {
       network: 'No networks.',
     },
   },
-  network_members: {
+  members: {
     title: 'Members',
     none: 'None.',
     person: 'Person',

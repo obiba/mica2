@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { api, toServerUrl } from 'src/boot/api';
 import type { PersonDto, PersonsDto } from 'src/models/Mica';
-import { checkDuplicates, duplicateQuery, type DuplicateCheck } from 'src/utils/persons';
+import { checkDuplicates, duplicateQuery, type DuplicateCheck, type MembersParent } from 'src/utils/persons';
 
 export interface PersonsSearch {
   /** a search query, see `searchQuery()` */
@@ -27,9 +27,9 @@ export const usePersonsStore = defineStore('persons', () => {
     return toServerUrl(`/draft/persons/_search/_download?${params}`);
   }
 
-  /** the persons member of the network */
-  async function fetchNetworkMembers(networkId: string): Promise<PersonDto[]> {
-    return (await api.get<PersonDto[]>(`/draft/persons/network/${networkId}`)).data ?? [];
+  /** the persons member of the network or study */
+  async function fetchMembers(parent: MembersParent, parentId: string): Promise<PersonDto[]> {
+    return (await api.get<PersonDto[]>(`/draft/persons/${parent}/${parentId}`)).data ?? [];
   }
 
   async function get(id: string): Promise<PersonDto> {
@@ -44,13 +44,14 @@ export const usePersonsStore = defineStore('persons', () => {
     return (await api.put<PersonDto>(`/draft/person/${person.id}`, person)).data;
   }
 
-  /** adds the role of the person in the network, only the network edit permission is required */
-  async function addNetworkRole(id: string, networkId: string, role: string): Promise<PersonDto> {
-    return (await api.put<PersonDto>(`/draft/person/${id}/network/${networkId}/role/${encodeURIComponent(role)}`)).data;
+  /** adds the role of the person in the network or study, only its edit permission is required */
+  async function addRole(id: string, parent: MembersParent, parentId: string, role: string): Promise<PersonDto> {
+    return (await api.put<PersonDto>(`/draft/person/${id}/${parent}/${parentId}/role/${encodeURIComponent(role)}`))
+      .data;
   }
 
-  async function removeNetworkRole(id: string, networkId: string, role: string): Promise<PersonDto> {
-    return (await api.delete<PersonDto>(`/draft/person/${id}/network/${networkId}/role/${encodeURIComponent(role)}`))
+  async function removeRole(id: string, parent: MembersParent, parentId: string, role: string): Promise<PersonDto> {
+    return (await api.delete<PersonDto>(`/draft/person/${id}/${parent}/${parentId}/role/${encodeURIComponent(role)}`))
       .data;
   }
 
@@ -69,12 +70,12 @@ export const usePersonsStore = defineStore('persons', () => {
   return {
     search,
     downloadUrl,
-    fetchNetworkMembers,
+    fetchMembers,
     get,
     create,
     update,
-    addNetworkRole,
-    removeNetworkRole,
+    addRole,
+    removeRole,
     remove,
     findDuplicates,
   };
