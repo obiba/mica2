@@ -28,6 +28,13 @@ export const MANDATORY_FIELDS: Record<DocumentType, MandatoryFields> = {
   project: { localized: ['title', 'summary'], plain: [] },
 };
 
+/** the fields of the populations and of their data collection events, edited as the documents ones */
+export const POPULATION_FIELDS: MandatoryFields = { localized: ['name', 'description'], plain: ['id'] };
+export const DCE_FIELDS: MandatoryFields = {
+  localized: ['name', 'description'],
+  plain: ['id', 'startYear', 'startMonth', 'startDay', 'endYear', 'endMonth', 'endDay'],
+};
+
 export function modelKey(field: string) {
   return `_${field}`;
 }
