@@ -44,8 +44,8 @@ beforeEach(() => {
 describe('normalizeMetrics', () => {
   it('orders the types, maps the counts and derives the documents requiring indexing', () => {
     const metrics = normalizeMetrics(dto);
-    expect(metrics.types.map((m) => m.type)).toEqual(['Study', 'Network', 'DatasetVariable']);
-    expect(metrics.types[1]?.counts).toEqual({
+    expect(metrics.types.map((m) => m.type)).toEqual(['Network', 'Study', 'DatasetVariable']);
+    expect(metrics.types[0]?.counts).toEqual({
       total: 3,
       published: 2,
       under_review: 0,
@@ -53,8 +53,8 @@ describe('normalizeMetrics', () => {
       to_delete: 0,
       indexed: 1,
     });
-    expect(metrics.types[1]?.notIndexed).toBe(1);
-    expect(metrics.types[0]?.notIndexed).toBe(0);
+    expect(metrics.types[0]?.notIndexed).toBe(1);
+    expect(metrics.types[1]?.notIndexed).toBe(0);
     expect(metrics.types[2]?.notIndexed).toBeUndefined();
     expect(metrics.notIndexed).toBe(1);
   });
