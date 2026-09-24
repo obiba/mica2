@@ -49,6 +49,24 @@
         <q-tab-panels v-model="tab">
           <q-tab-panel name="view" class="q-pa-none">
             <document-view-panel :target="target" :document="document" />
+            <div v-if="study && hasEvents" class="q-mt-lg">
+              <div class="text-h6 q-mb-sm">{{ t('study.timeline') }}</div>
+              <study-timeline
+                :populations="study.populations"
+                @select="(event) => onPopulationSelect(event.populationId, event.dceId)"
+              />
+            </div>
+          </q-tab-panel>
+          <q-tab-panel v-if="study" name="populations" class="q-pa-none">
+            <study-populations-panel
+              :study="study"
+              :population-id="queryValue('population')"
+              :dce-id="queryValue('dce')"
+              :can-edit="canEdit"
+              :busy="saving"
+              @change="onDocumentChange"
+              @select="onPopulationSelect"
+            />
           </q-tab-panel>
           <template v-if="network">
             <q-tab-panel name="studies" class="q-pa-none">
@@ -116,6 +134,8 @@ import FileBrowser from 'src/components/files/FileBrowser.vue';
 import DataAccessRequestLink from 'src/components/projects/DataAccessRequestLink.vue';
 import NetworkLinksPanel from 'src/components/networks/NetworkLinksPanel.vue';
 import MembersPanel from 'src/components/persons/MembersPanel.vue';
+import StudyPopulationsPanel from 'src/components/studies/StudyPopulationsPanel.vue';
+import StudyTimeline from 'src/components/studies/StudyTimeline.vue';
 import {
   documentTarget,
   useDocumentTarget,
@@ -123,7 +143,12 @@ import {
   type DocumentType,
 } from 'src/composables/useDocumentTarget';
 import { useDocumentState } from 'src/composables/useDocumentState';
-import { useDocumentActions, type DocumentAction } from 'src/composables/useDocumentActions';
+import {
+  conflictError,
+  notifyPotentialConflicts,
+  useDocumentActions,
+  type DocumentAction,
+} from 'src/composables/useDocumentActions';
 import type { DocumentDto } from 'src/stores/documents';
 import type { NetworkLinkKind } from 'src/utils/networks';
 import type { MembersParent } from 'src/utils/persons';
@@ -149,20 +174,32 @@ const { t } = useI18n();
 
 const type = useRouteDocumentType();
 const membersParent = computed(() => MEMBERS_PARENTS[type.value]);
-/** the document when it has members */
-const membersDocument = computed(() =>
-  membersParent.value ? (document.value as NetworkDto | StudyDto | undefined) : undefined,
-);
 const id = computed(() => route.params.id as string);
 const tab = computed(() => {
   const name = route.params.tab as string | undefined;
-  const tabs = [...TABS, ...(type.value === 'network' ? NETWORK_TABS : []), ...(membersParent.value ? ['members'] : [])];
+  const tabs = [
+    ...TABS,
+    ...(type.value === 'network' ? NETWORK_TABS : []),
+    ...(type.value === 'individual-study' ? ['populations'] : []),
+    ...(membersParent.value ? ['members'] : []),
+  ];
   return name && tabs.includes(name) ? name : 'view';
 });
 
 const { target } = useDocumentTarget(type, id);
 const document = ref<DocumentDto>();
 const state = ref<EntityStateDto>();
+/** the document when it has members */
+const membersDocument = computed(() =>
+  membersParent.value ? (document.value as NetworkDto | StudyDto | undefined) : undefined,
+);
+/** the document when it is an individual study (with populations) */
+const study = computed(() =>
+  type.value === 'individual-study' ? (document.value as StudyDto | undefined) : undefined,
+);
+const hasEvents = computed(() =>
+  (study.value?.populations ?? []).some((population) => (population.dataCollectionEvents ?? []).length > 0),
+);
 const { canEdit, canManagePermissions } = useDocumentState(state);
 /** the drawer entries, one per tab */
 const menu = computed(() => [
@@ -173,6 +210,7 @@ const menu = computed(() => [
         { name: 'networks', icon: 'hub', label: 'networks.title' },
       ]
     : []),
+  ...(study.value ? [{ name: 'populations', icon: 'groups', label: 'study.populations' }] : []),
   ...(membersParent.value ? [{ name: 'members', icon: 'people', label: 'members.title' }] : []),
   { name: 'history', icon: 'history', label: 'history.title' },
   { name: 'files', icon: 'folder', label: 'files.title' },
@@ -193,6 +231,18 @@ const filePath = computed(() => (typeof route.query.path === 'string' ? route.qu
 
 function onFilePath(value: string) {
   router.replace({ query: { ...route.query, path: value === target.value.filesPath ? undefined : value } });
+}
+
+function queryValue(name: string) {
+  const value = route.query[name];
+  return typeof value === 'string' ? value : undefined;
+}
+
+/** shows a population in the populations tab, with one of its events opened */
+function onPopulationSelect(populationId: string, dceId?: string) {
+  const query = { population: populationId, ...(dceId ? { dce: dceId } : {}) };
+  if (tab.value === 'populations') router.replace({ query });
+  else router.push({ path: tabRoute('populations'), query });
 }
 
 function tabRoute(name: string) {
@@ -232,8 +282,8 @@ function promptComment() {
   });
 }
 
-/** saves the document changed in a tab (network links, members order) */
-async function onDocumentChange(dto: DocumentDto) {
+/** saves the document changed in a tab (network links, members order, study populations) */
+async function onDocumentChange(dto: DocumentDto, params: Record<string, boolean> = {}) {
   let comment: string | undefined;
   if (systemStore.configuration.isCommentsRequiredOnDocumentSave === true) {
     comment = await promptComment();
@@ -241,10 +291,10 @@ async function onDocumentChange(dto: DocumentDto) {
   }
   saving.value = true;
   try {
-    await documentsStore.saveDocument(target.value, dto, comment);
+    notifyPotentialConflicts(await documentsStore.saveDocument(target.value, dto, comment, params));
     await refresh();
   } catch (error) {
-    notifyError(error);
+    notifyError(study.value ? conflictError(error, 'study.population_conflict') : error);
   } finally {
     saving.value = false;
   }
