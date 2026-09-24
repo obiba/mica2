@@ -1,5 +1,5 @@
 <template>
-  <q-card flat bordered class="metrics-card full-height">
+  <q-card flat bordered :class="['metrics-card full-height', color]">
     <q-card-section class="q-pb-none">
       <div class="row items-center no-wrap">
         <q-icon :name="icon" size="sm" color="grey-7" class="q-mr-sm" />
@@ -9,7 +9,7 @@
         </div>
         <q-space />
         <index-health-chip
-          v-if="metrics.notIndexed !== undefined"
+          v-if="!hideIndexHealth && metrics.notIndexed !== undefined"
           :count="metrics.notIndexed"
           @click="emit('index', metrics.type)"
         />
@@ -40,7 +40,7 @@
           dense
           outline
           square
-          :color="chip.value > 0 ? 'grey-8' : 'grey-5'"
+          :color="chip.value > 0 ? 'grey-9' : 'grey-6'"
           :icon="chip.icon"
           :clickable="chip.to !== undefined"
           @click="chip.to && router.push(chip.to)"
@@ -81,13 +81,20 @@
 import IndexHealthChip from 'src/components/settings/statistics/IndexHealthChip.vue';
 import PublicationBar from 'src/components/settings/statistics/PublicationBar.vue';
 import StatTile from 'src/components/settings/statistics/StatTile.vue';
-import { documentsListRoute, portalSearchUrl, type MetricsType, type TypeMetrics } from 'src/composables/useContentMetrics';
+import {
+  documentsListRoute,
+  portalSearchUrl,
+  type MetricsType,
+  type TypeMetrics,
+} from 'src/composables/useContentMetrics';
 import type { StateFilter } from 'src/composables/useDocumentState';
 import { formatNumber } from 'src/utils/numbers';
 
 /** the metrics of a document type: publication share, revision statuses, files, variables, index health */
 const props = defineProps<{
   metrics: TypeMetrics;
+  /** hide the index health chip (outside of the statistics settings page) */
+  hideIndexHealth?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -107,9 +114,19 @@ const ICONS: Partial<Record<MetricsType, string>> = {
   Project: 'work',
 };
 
+/** light background by entity: networks blue, studies green, datasets yellow */
+const COLORS: Partial<Record<MetricsType, string>> = {
+  Network: 'bg-light-blue-2',
+  Study: 'bg-light-green-2',
+  HarmonizationStudy: 'bg-light-green-2',
+  StudyDataset: 'bg-yellow-2',
+  HarmonizationDataset: 'bg-yellow-2',
+};
+
 const counts = computed(() => props.metrics.counts);
 const total = computed(() => counts.value.total ?? 0);
 const published = computed(() => counts.value.published ?? 0);
+const color = computed(() => COLORS[props.metrics.type]);
 const icon = computed(() => ICONS[props.metrics.type] ?? 'folder');
 const title = computed(() => t(`config.statistics.types.${props.metrics.type}`));
 
