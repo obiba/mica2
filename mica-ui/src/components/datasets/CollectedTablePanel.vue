@@ -67,7 +67,7 @@ import FieldsList, { type FieldItem } from 'src/components/FieldsList.vue';
 import DatasetTableDialog from 'src/components/datasets/DatasetTableDialog.vue';
 import { documentTarget } from 'src/composables/useDocumentTarget';
 import { useDocumentActions } from 'src/composables/useDocumentActions';
-import { tableSource } from 'src/utils/datasets';
+import { sourceFields, tableSource, type DatasetTable } from 'src/utils/datasets';
 import { notifyError, notifySuccess } from 'src/utils/notify';
 import { localized } from 'src/utils/persons';
 
@@ -117,41 +117,23 @@ const rows = computed(() => {
   };
 });
 
-const items = computed<FieldItem[]>(() => {
-  const namespace = source.value.namespace;
-  const sourceFields: FieldItem[] =
-    namespace === 'opal'
-      ? [
-          { field: 'project', label: 'dataset.project' },
-          { field: 'table', label: 'dataset.table' },
-        ]
-      : namespace === 'file'
-        ? [
-            { field: 'path', label: 'dataset.source.file.path' },
-            { field: 'table', label: 'dataset.table' },
-          ]
-        : [
-            { field: 'nid', label: 'dataset.source.other.nid' },
-            { field: 'nss', label: 'dataset.source.other.nss' },
-          ];
-  return [
-    {
-      field: 'study',
-      label: 'dataset.study',
-      links: (row) => [{ label: row.study, to: `/individual-study/${table.value?.studyId}` }],
-    },
-    { field: 'population', label: 'study.population' },
-    { field: 'dce', label: 'dataset.dce' },
-    { field: 'namespace', label: 'dataset.source.title' },
-    ...sourceFields,
-    { field: 'name', label: 'name' },
-    { field: 'description', label: 'description' },
-    { field: 'additionalInformation', label: 'dataset.additional_information' },
-  ];
-});
+const items = computed<FieldItem[]>(() => [
+  {
+    field: 'study',
+    label: 'dataset.study',
+    links: (row) => [{ label: row.study, to: `/individual-study/${table.value?.studyId}` }],
+  },
+  { field: 'population', label: 'study.population' },
+  { field: 'dce', label: 'dataset.dce' },
+  { field: 'namespace', label: 'dataset.source.title' },
+  ...sourceFields(source.value.namespace),
+  { field: 'name', label: 'name' },
+  { field: 'description', label: 'description' },
+  { field: 'additionalInformation', label: 'dataset.additional_information' },
+]);
 
-function onSave(studyTable: DatasetDto_StudyTableDto) {
-  emit('change', { ...props.dataset, collected: { studyTable } });
+function onSave(studyTable: DatasetTable) {
+  emit('change', { ...props.dataset, collected: { studyTable: studyTable as DatasetDto_StudyTableDto } });
 }
 
 function onDelete() {

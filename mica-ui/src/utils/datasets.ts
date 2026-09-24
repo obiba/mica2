@@ -1,4 +1,4 @@
-import type { DatasetDto_HarmonizationTableDto, DatasetDto_StudyTableDto } from 'src/models/Mica';
+import type { DatasetDto_HarmonizationTableDto, DatasetDto_StudyTableDto, HarmonizedDatasetDto } from 'src/models/Mica';
 
 /** where the data dictionary of a dataset table comes from */
 export type SourceNamespace = 'opal' | 'file' | 'other';
@@ -76,4 +76,62 @@ export function withSource<T extends DatasetTable>(table: T, source: TableSource
   delete updated.project;
   delete updated.table;
   return updated;
+}
+
+/** the source in short, without the URN prefix */
+export function sourceText(source: TableSource): string {
+  return sourceUrn(source)
+    .replace(/^urn:(opal|file):/, '')
+    .replace(/^urn:/, '');
+}
+
+/** the fields describing a source of the namespace, with their i18n labels */
+export function sourceFields(namespace: SourceNamespace): { field: keyof TableSource; label: string }[] {
+  switch (namespace) {
+    case 'opal':
+      return [
+        { field: 'project', label: 'dataset.project' },
+        { field: 'table', label: 'dataset.table' },
+      ];
+    case 'file':
+      return [
+        { field: 'path', label: 'dataset.source.file.path' },
+        { field: 'table', label: 'dataset.table' },
+      ];
+    default:
+      return [
+        { field: 'nid', label: 'dataset.source.other.nid' },
+        { field: 'nss', label: 'dataset.source.other.nss' },
+      ];
+  }
+}
+
+/** a table of a harmonized dataset: of an individual study, or of a harmonization initiative */
+export interface HarmonizedTable {
+  harmonization: boolean;
+  table: DatasetTable;
+}
+
+/** the study and initiative tables of a harmonized dataset, in one list ordered by weight */
+export function harmonizedTables(protocol: HarmonizedDatasetDto | undefined): HarmonizedTable[] {
+  return [
+    ...(protocol?.studyTables ?? []).map((table) => ({ harmonization: false, table })),
+    ...(protocol?.harmonizationTables ?? []).map((table) => ({ harmonization: true, table })),
+  ].sort((a, b) => (a.table.weight ?? 0) - (b.table.weight ?? 0));
+}
+
+/** a copy of the protocol with the tables, weighted by their position */
+export function withHarmonizedTables(
+  protocol: HarmonizedDatasetDto | undefined,
+  tables: HarmonizedTable[],
+): HarmonizedDatasetDto {
+  const weighted = tables.map((item, weight) => ({ ...item, table: { ...item.table, weight } }));
+  return {
+    ...protocol,
+    harmonizationTable: protocol?.harmonizationTable,
+    studyTables: weighted.filter((item) => !item.harmonization).map((item) => item.table as DatasetDto_StudyTableDto),
+    harmonizationTables: weighted
+      .filter((item) => item.harmonization)
+      .map((item) => item.table as DatasetDto_HarmonizationTableDto),
+  };
 }
