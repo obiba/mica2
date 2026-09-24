@@ -27,6 +27,11 @@ export const usePersonsStore = defineStore('persons', () => {
     return toServerUrl(`/draft/persons/_search/_download?${params}`);
   }
 
+  /** the persons member of the network */
+  async function fetchNetworkMembers(networkId: string): Promise<PersonDto[]> {
+    return (await api.get<PersonDto[]>(`/draft/persons/network/${networkId}`)).data ?? [];
+  }
+
   async function get(id: string): Promise<PersonDto> {
     return (await api.get<PersonDto>(`/draft/person/${id}`)).data;
   }
@@ -37,6 +42,16 @@ export const usePersonsStore = defineStore('persons', () => {
 
   async function update(person: PersonDto): Promise<PersonDto> {
     return (await api.put<PersonDto>(`/draft/person/${person.id}`, person)).data;
+  }
+
+  /** adds the role of the person in the network, only the network edit permission is required */
+  async function addNetworkRole(id: string, networkId: string, role: string): Promise<PersonDto> {
+    return (await api.put<PersonDto>(`/draft/person/${id}/network/${networkId}/role/${encodeURIComponent(role)}`)).data;
+  }
+
+  async function removeNetworkRole(id: string, networkId: string, role: string): Promise<PersonDto> {
+    return (await api.delete<PersonDto>(`/draft/person/${id}/network/${networkId}/role/${encodeURIComponent(role)}`))
+      .data;
   }
 
   async function remove(id: string): Promise<void> {
@@ -51,5 +66,16 @@ export const usePersonsStore = defineStore('persons', () => {
     return checkDuplicates(person, found);
   }
 
-  return { search, downloadUrl, get, create, update, remove, findDuplicates };
+  return {
+    search,
+    downloadUrl,
+    fetchNetworkMembers,
+    get,
+    create,
+    update,
+    addNetworkRole,
+    removeNetworkRole,
+    remove,
+    findDuplicates,
+  };
 });
