@@ -39,6 +39,7 @@ const routes: RouteRecordRaw[] = [
       ...DOCUMENT_TYPES.flatMap(documentRoutes),
       { path: 'files', component: () => import('pages/FilesPage.vue') },
       { path: 'persons', component: () => import('pages/PersonsPage.vue') },
+      { path: 'persons/:id/:tab?', component: () => import('pages/PersonPage.vue') },
     ],
   },
 

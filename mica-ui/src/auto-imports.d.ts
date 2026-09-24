@@ -91,6 +91,7 @@ declare global {
   const useLink: typeof import('vue-router').useLink
   const useModel: typeof import('vue').useModel
   const useNetworksStore: typeof import('./stores/networks').useNetworksStore
+  const usePersonsStore: typeof import('./stores/persons').usePersonsStore
   const usePluginsStore: (typeof import('./stores/plugins'))['usePluginsStore']
   const useProfileAclsStore: (typeof import('./stores/profile-acls'))['useProfileAclsStore']
   const useProfileActivityStore: (typeof import('./stores/profile-activity'))['useProfileActivityStore']
@@ -135,6 +136,9 @@ declare global {
   // @ts-ignore
   export type { PiniaCustomProperties } from './stores/index'
   import('./stores/index')
+  // @ts-ignore
+  export type { PersonsSearch } from './stores/persons'
+  import('./stores/persons')
 }
 
 // for vue template auto import
@@ -210,6 +214,7 @@ declare module 'vue' {
     readonly useId: UnwrapRef<typeof import('vue')['useId']>
     readonly useLink: UnwrapRef<typeof import('vue-router')['useLink']>
     readonly useModel: UnwrapRef<typeof import('vue')['useModel']>
+    readonly usePersonsStore: UnwrapRef<typeof import('./stores/persons')['usePersonsStore']>
     readonly useRoute: UnwrapRef<typeof import('vue-router')['useRoute']>
     readonly useRouter: UnwrapRef<typeof import('vue-router')['useRouter']>
     readonly useSlots: UnwrapRef<typeof import('vue')['useSlots']>
