@@ -5,12 +5,20 @@ import {
   duplicateQuery,
   fromPersonModel,
   groupMemberships,
+  membersByRole,
+  moveMember,
   searchQuery,
   toPersonModel,
   withMemberships,
 } from './persons';
 
 const en = (value: string) => [{ lang: 'en', value }];
+
+function member(id: string, ...roles: string[]): PersonDto {
+  const memberships = (parentId: string) =>
+    roles.map((role) => ({ role, parentId, parentAcronym: [], parentName: [] }));
+  return { id, lastName: id, studyMemberships: memberships('s1'), networkMemberships: memberships('n1') };
+}
 
 const person: PersonDto = {
   id: 'p1',
@@ -120,5 +128,27 @@ describe('persons', () => {
     expect(searchQuery('jan do')).toBe('jan* do*');
     expect(searchQuery('a:b')).toBe('a\\:b*');
     expect(searchQuery('"jane doe"')).toBe('"jane doe"');
+  });
+
+  it('groups the members by role in the sort order', () => {
+    const persons = [member('a', 'contact'), member('b', 'contact', 'investigator'), member('c', 'other')];
+    const members = membersByRole(persons, 'network', 'n1', ['investigator', 'contact'], [{ role: 'contact', personIds: ['b'] }]);
+    expect(members.map((item) => [item.role, item.persons.map((person) => person.id)])).toEqual([
+      ['investigator', ['b']],
+      ['contact', ['b', 'a']],
+      ['other', ['c']],
+    ]);
+    expect(moveMember(members, 'contact', 'a', -1)).toEqual([
+      { role: 'investigator', personIds: ['b'] },
+      { role: 'contact', personIds: ['a', 'b'] },
+      { role: 'other', personIds: ['c'] },
+    ]);
+    expect(membersByRole(persons, 'study', 's1', [], undefined).map((item) => item.role)).toEqual([
+      'contact',
+      'investigator',
+      'other',
+    ]);
+    expect(membersByRole(persons, 'study', 'n1', [], undefined)).toEqual([]);
+    expect(moveMember(members, 'contact', 'a', 1)[1]).toEqual({ role: 'contact', personIds: ['b', 'a'] });
   });
 });

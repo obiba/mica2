@@ -2,8 +2,8 @@
   <q-dialog v-model="show" @before-show="onShow">
     <q-card class="dialog-md">
       <q-card-section>
-        <div class="text-h6">{{ t('network_members.add_title', { role }) }}</div>
-        <div class="text-hint">{{ t('network_members.add_help') }}</div>
+        <div class="text-h6">{{ t('members.add_title', { role }) }}</div>
+        <div class="text-hint">{{ t('members.add_help') }}</div>
       </q-card-section>
       <q-separator />
       <q-card-section>
@@ -12,7 +12,7 @@
           :options="options"
           :option-label="optionLabel"
           option-value="id"
-          :label="t('network_members.person')"
+          :label="t('members.person')"
           use-input
           input-debounce="300"
           dense

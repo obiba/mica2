@@ -1,11 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import type { NetworkDto, PersonDto } from 'src/models/Mica';
+import type { NetworkDto } from 'src/models/Mica';
 import {
   addLinks,
   associatedPeopleQuery,
   linkedIds,
-  membersByRole,
-  moveMember,
   networkLinks,
   removeLinks,
 } from './networks';
@@ -55,15 +53,6 @@ const network: NetworkDto = {
   published: false,
 };
 
-function member(id: string, ...roles: string[]): PersonDto {
-  return {
-    id,
-    lastName: id,
-    studyMemberships: [],
-    networkMemberships: roles.map((role) => ({ role, parentId: 'n1', parentAcronym: [], parentName: [] })),
-  };
-}
-
 describe('networks', () => {
   it('lists the links of a kind, routed when viewable', () => {
     expect(networkLinks(network, 'individual-study', 'en')).toEqual([
@@ -82,21 +71,6 @@ describe('networks', () => {
     expect(linkedIds(network, 'network')).toEqual(['n2', 'n1']);
   });
 
-  it('groups the members by role in the sort order', () => {
-    const persons = [member('a', 'contact'), member('b', 'contact', 'investigator'), member('c', 'other')];
-    const members = membersByRole(persons, 'n1', ['investigator', 'contact'], [{ role: 'contact', personIds: ['b'] }]);
-    expect(members.map((item) => [item.role, item.persons.map((person) => person.id)])).toEqual([
-      ['investigator', ['b']],
-      ['contact', ['b', 'a']],
-      ['other', ['c']],
-    ]);
-    expect(moveMember(members, 'contact', 'a', -1)).toEqual([
-      { role: 'investigator', personIds: ['b'] },
-      { role: 'contact', personIds: ['a', 'b'] },
-      { role: 'other', personIds: ['c'] },
-    ]);
-    expect(moveMember(members, 'contact', 'a', 1)[1]).toEqual({ role: 'contact', personIds: ['b', 'a'] });
-  });
 
   it('queries the associated people', () => {
     expect(associatedPeopleQuery(network)).toBe(
