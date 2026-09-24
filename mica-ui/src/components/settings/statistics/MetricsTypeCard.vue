@@ -9,7 +9,7 @@
         </div>
         <q-space />
         <index-health-chip
-          v-if="metrics.notIndexed !== undefined"
+          v-if="!hideIndexHealth && metrics.notIndexed !== undefined"
           :count="metrics.notIndexed"
           @click="emit('index', metrics.type)"
         />
@@ -81,13 +81,20 @@
 import IndexHealthChip from 'src/components/settings/statistics/IndexHealthChip.vue';
 import PublicationBar from 'src/components/settings/statistics/PublicationBar.vue';
 import StatTile from 'src/components/settings/statistics/StatTile.vue';
-import { documentsListRoute, portalSearchUrl, type MetricsType, type TypeMetrics } from 'src/composables/useContentMetrics';
+import {
+  documentsListRoute,
+  portalSearchUrl,
+  type MetricsType,
+  type TypeMetrics,
+} from 'src/composables/useContentMetrics';
 import type { StateFilter } from 'src/composables/useDocumentState';
 import { formatNumber } from 'src/utils/numbers';
 
 /** the metrics of a document type: publication share, revision statuses, files, variables, index health */
 const props = defineProps<{
   metrics: TypeMetrics;
+  /** hide the index health chip (outside of the statistics settings page) */
+  hideIndexHealth?: boolean;
 }>();
 
 const emit = defineEmits<{
