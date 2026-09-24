@@ -116,8 +116,14 @@ export const useDocumentsStore = defineStore('documents', () => {
     return location.substring(location.lastIndexOf('/') + 1);
   }
 
-  async function saveDocument(target: DocumentTarget, dto: DocumentDto, comment?: string): Promise<void> {
-    await api.put(target.path, dto, { params: comment ? { comment } : {} });
+  /** saves the document, the response is the one of the type (a study one tells the potential conflicts) */
+  async function saveDocument(
+    target: DocumentTarget,
+    dto: DocumentDto,
+    comment?: string,
+    params: Record<string, string | boolean> = {},
+  ): Promise<unknown> {
+    return (await api.put(target.path, dto, { params: comment ? { ...params, comment } : params })).data;
   }
 
   return {

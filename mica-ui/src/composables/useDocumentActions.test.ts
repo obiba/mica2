@@ -14,10 +14,14 @@ vi.mock('src/boot/i18n', () => ({
 import { api } from 'src/boot/api';
 import { notifyError, notifySuccess } from 'src/utils/notify';
 import { documentTarget } from './useDocumentTarget';
-import { deleteConflictError, useDocumentActions } from './useDocumentActions';
+import { conflictError, useDocumentActions } from './useDocumentActions';
 
 const target = documentTarget('network', 'net1');
-const mocked = api as unknown as { get: ReturnType<typeof vi.fn>; put: ReturnType<typeof vi.fn>; delete: ReturnType<typeof vi.fn> };
+const mocked = api as unknown as {
+  get: ReturnType<typeof vi.fn>;
+  put: ReturnType<typeof vi.fn>;
+  delete: ReturnType<typeof vi.fn>;
+};
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -72,17 +76,25 @@ describe('useDocumentActions', () => {
     expect(await remove()).toBe('failed');
     expect(notifyError).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: 'document.delete_conflict {"references":"document.references.network: n1, n2; document.references.dataset: d1"}',
+        message:
+          'document.delete_conflict {"references":"document.references.network: n1, n2; document.references.dataset: d1"}',
       }),
     );
   });
 });
 
-describe('deleteConflictError', () => {
+describe('conflictError', () => {
   it('passes other errors through', () => {
     const error = { response: { status: 500, data: 'oops' } };
-    expect(deleteConflictError(error)).toBe(error);
+    expect(conflictError(error)).toBe(error);
     const empty = { response: { status: 409, data: {} } };
-    expect(deleteConflictError(empty)).toBe(empty);
+    expect(conflictError(empty)).toBe(empty);
+  });
+
+  it('explains a study save conflict', () => {
+    const error = { response: { status: 409, data: { studyDataset: ['ds1'], harmonizationDataset: [] } } };
+    expect((conflictError(error, 'study.population_conflict') as Error).message).toBe(
+      'study.population_conflict {"references":"document.references.studyDataset: ds1"}',
+    );
   });
 });
