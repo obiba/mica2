@@ -3,6 +3,7 @@ import type { DocumentType } from 'src/composables/useDocumentTarget';
 import {
   PersonDto_Type,
   type LocalizedStringDto,
+  type MembershipSortOrderDto,
   type PersonDto,
   type PersonDto_MembershipDto,
   type PersonsDto,
@@ -225,4 +226,67 @@ export function searchQuery(text: string | undefined): string | undefined {
     .split(/\s+/)
     .map((word) => `${word.replace(LUCENE_SPECIAL, '\\$&')}*`)
     .join(' ');
+}
+
+/** the entities with members: the network ones, the study ones (individual studies and initiatives) */
+export type MembersParent = 'network' | 'study';
+
+/** the members of a network or study with a role */
+export interface RoleMembers {
+  role: string;
+  persons: PersonDto[];
+}
+
+/**
+ * The members of the network or study by role: the configured roles first, then the other roles found, the
+ * persons ordered as in the sort order, the ones not in it last.
+ */
+export function membersByRole(
+  persons: PersonDto[],
+  parent: MembersParent,
+  parentId: string,
+  roles: string[],
+  sortOrder: MembershipSortOrderDto[] | undefined,
+): RoleMembers[] {
+  const found = persons.flatMap((person) =>
+    (person[`${parent}Memberships`] ?? [])
+      .filter((membership) => membership.parentId === parentId)
+      .map((membership) => membership.role),
+  );
+  const allRoles = [...new Set([...roles, ...found])];
+  return allRoles.map((role) => {
+    const order = sortOrder?.find((item) => item.role === role)?.personIds ?? [];
+    const rank = (person: PersonDto) => {
+      const index = order.indexOf(person.id ?? '');
+      return index < 0 ? order.length : index;
+    };
+    const members = persons
+      .filter((person) =>
+        (person[`${parent}Memberships`] ?? []).some(
+          (membership) => membership.parentId === parentId && membership.role === role,
+        ),
+      )
+      .sort((a, b) => rank(a) - rank(b));
+    return { role, persons: members };
+  });
+}
+
+/** the sort order of the members, with a person moved by delta positions in a role */
+export function moveMember(
+  members: RoleMembers[],
+  role: string,
+  personId: string,
+  delta: number,
+): MembershipSortOrderDto[] {
+  return members.map((item) => {
+    const personIds = item.persons.map((person) => person.id ?? '');
+    if (item.role === role) {
+      const from = personIds.indexOf(personId);
+      const to = from + delta;
+      if (from >= 0 && to >= 0 && to < personIds.length) {
+        personIds.splice(to, 0, ...personIds.splice(from, 1));
+      }
+    }
+    return { role: item.role, personIds };
+  });
 }

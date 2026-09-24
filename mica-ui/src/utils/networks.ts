@@ -1,4 +1,4 @@
-import type { MembershipSortOrderDto, NetworkDto, PersonDto } from 'src/models/Mica';
+import type { NetworkDto } from 'src/models/Mica';
 import { localized } from 'src/utils/persons';
 
 /** the kinds of entities a network links to */
@@ -53,65 +53,6 @@ export function addLinks(network: NetworkDto, kind: NetworkLinkKind, ids: string
 export function removeLinks(network: NetworkDto, kind: NetworkLinkKind, ids: string[]): NetworkDto {
   const field = linkField(kind);
   return { ...network, [field]: (network[field] ?? []).filter((id) => !ids.includes(id)) };
-}
-
-/** the members of a network with a role */
-export interface RoleMembers {
-  role: string;
-  persons: PersonDto[];
-}
-
-/**
- * The members of the network by role: the configured roles first, then the other roles found, the
- * persons ordered as in the sort order, the ones not in it last.
- */
-export function membersByRole(
-  persons: PersonDto[],
-  networkId: string,
-  roles: string[],
-  sortOrder: MembershipSortOrderDto[] | undefined,
-): RoleMembers[] {
-  const found = persons.flatMap((person) =>
-    (person.networkMemberships ?? [])
-      .filter((membership) => membership.parentId === networkId)
-      .map((membership) => membership.role),
-  );
-  const allRoles = [...new Set([...roles, ...found])];
-  return allRoles.map((role) => {
-    const order = sortOrder?.find((item) => item.role === role)?.personIds ?? [];
-    const rank = (person: PersonDto) => {
-      const index = order.indexOf(person.id ?? '');
-      return index < 0 ? order.length : index;
-    };
-    const members = persons
-      .filter((person) =>
-        (person.networkMemberships ?? []).some(
-          (membership) => membership.parentId === networkId && membership.role === role,
-        ),
-      )
-      .sort((a, b) => rank(a) - rank(b));
-    return { role, persons: members };
-  });
-}
-
-/** the sort order of the members, with a person moved by delta positions in a role */
-export function moveMember(
-  members: RoleMembers[],
-  role: string,
-  personId: string,
-  delta: number,
-): MembershipSortOrderDto[] {
-  return members.map((item) => {
-    const personIds = item.persons.map((person) => person.id ?? '');
-    if (item.role === role) {
-      const from = personIds.indexOf(personId);
-      const to = from + delta;
-      if (from >= 0 && to >= 0 && to < personIds.length) {
-        personIds.splice(to, 0, ...personIds.splice(from, 1));
-      }
-    }
-    return { role: item.role, personIds };
-  });
 }
 
 /**
