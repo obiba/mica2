@@ -21,6 +21,14 @@
         </q-item-section>
       </q-item>
       <q-separator v-if="authStore.isAuthenticated" />
+      <q-item to="/">
+        <q-item-section avatar>
+          <q-icon name="dashboard" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>{{ t('dashboard.title') }}</q-item-label>
+        </q-item-section>
+      </q-item>
       <q-item to="/networks">
         <q-item-section avatar>
           <q-icon name="hub" />
