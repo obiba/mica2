@@ -84,15 +84,17 @@
         <div class="text-subtitle1 q-mt-md">{{ t('dataset.table_labels') }}</div>
         <q-json-form
           v-model="labels"
-          :schema="labelsForm.schema"
+          :schema="labelsSchema"
           :uischema="labelsForm.uischema"
           :languages="systemStore.languages"
+          :validation-mode="validationMode"
+          @update:errors="labelErrors = $event"
         />
       </q-card-section>
       <q-separator />
       <q-card-actions align="right" class="bg-grey-3">
         <q-btn flat :label="t('cancel')" color="secondary" v-close-popup />
-        <q-btn flat :label="t('save')" color="primary" :disable="!complete" v-close-popup @click="onSave" />
+        <q-btn flat :label="t('save')" color="primary" :disable="!complete" @click="onSave" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -102,6 +104,8 @@
 import { api } from 'src/boot/api';
 import type { DatasetDto_StudyTableDto, LocalizedStringDto, StudySummaryDto } from 'src/models/Mica';
 import type { ProjectDto } from 'src/models/Opal';
+import type { ErrorObject } from 'ajv';
+import type { ValidationMode } from '@jsonforms/core';
 import { QJsonForm, toJsonForms } from '@obiba/quasar-ui-json-form';
 import { localizedToArray, localizedToObject, type FormModel } from 'src/composables/useDocumentModel';
 import { documentTarget } from 'src/composables/useDocumentTarget';
@@ -155,6 +159,19 @@ const labelsForm = computed(() =>
     { translate: (key: string) => t(key) },
   ),
 );
+
+function hasText(value: unknown) {
+  return typeof value === 'object' && value !== null && Object.values(value).some((text) => `${text ?? ''}`.trim());
+}
+
+/** a label is optional, but once given it must be completed in all languages (the form checks the required ones) */
+const labelsSchema = computed(() => ({
+  ...labelsForm.value.schema,
+  required: LABEL_FIELDS.filter((field) => hasText(labels.value[field])),
+}));
+// errors are shown after the first save attempt only, as in the documents forms
+const validationMode = ref<ValidationMode>('ValidateAndHide');
+const labelErrors = ref<ErrorObject[]>([]);
 
 function option(id: string, label: LocalizedStringDto[]) {
   const text = localized(label, locale.value);
@@ -240,11 +257,21 @@ function onShow() {
   populationId.value = props.table?.populationId || undefined;
   dceId.value = props.table?.dataCollectionEventId || undefined;
   source.value = props.table ? tableSource(props.table) : { namespace: 'opal', project: '', table: '' };
+  validationMode.value = 'ValidateAndHide';
   labels.value = Object.fromEntries(LABEL_FIELDS.map((field) => [field, localizedToObject(props.table?.[field])]));
   loadStudies();
 }
 
+/** the localized strings of a label, none when it has no text */
+function labelValues(field: (typeof LABEL_FIELDS)[number]) {
+  return hasText(labels.value[field]) ? (localizedToArray(labels.value[field]) ?? []) : [];
+}
+
 function onSave() {
+  if (labelErrors.value.length > 0) {
+    validationMode.value = 'ValidateAndShow';
+    return;
+  }
   // the study summary and the event unique id are computed by the server
   const table = { ...props.table };
   delete table.studySummary;
@@ -257,12 +284,13 @@ function onSave() {
         studyId: studyId.value ?? '',
         populationId: populationId.value,
         dataCollectionEventId: dceId.value,
-        name: localizedToArray(labels.value.name) ?? [],
-        description: localizedToArray(labels.value.description) ?? [],
-        additionalInformation: localizedToArray(labels.value.additionalInformation) ?? [],
+        name: labelValues('name'),
+        description: labelValues('description'),
+        additionalInformation: labelValues('additionalInformation'),
       },
       source.value,
     ),
   );
+  show.value = false;
 }
 </script>
