@@ -80,7 +80,7 @@
 
         <#if config.dataAccessEnabled>
           <li id="dataAccessMenu" class="nav-item <#if config.repositoryEnabled && !config.projectEnabled>ms-3</#if>">
-            <a href="${contextPath}/data-accesses" class="btn btn-warning"><@message "data-access"/> <i class="fa-solid fa-arrow-circle-right"></i></a>
+            <a href="${contextPath}/data-accesses" class="btn btn-warning text-nowrap"><@message "data-access"/> <i class="fa-solid fa-arrow-circle-right"></i></a>
           </li>
         </#if>
     </#if>
