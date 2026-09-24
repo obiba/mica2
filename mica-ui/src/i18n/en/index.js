@@ -280,6 +280,33 @@ export default {
       dataset: 'datasets',
     },
   },
+  network_links: {
+    add_title: 'Add links',
+    all_linked: 'All of them are already linked.',
+    published: 'Published',
+    remove_selected: 'Remove selected',
+    remove_title: 'Remove links',
+    remove_text: 'Remove the links to {names}?',
+    report: 'Report',
+    none: {
+      'individual-study': 'No individual studies.',
+      'harmonization-study': 'No harmonization initiatives.',
+      network: 'No networks.',
+    },
+  },
+  network_members: {
+    title: 'Members',
+    none: 'None.',
+    person: 'Person',
+    add_title: 'Add member: {role}',
+    add_help: 'Search a person by name, or create a new one.',
+    move_up: 'Move up',
+    move_down: 'Move down',
+    remove_title: 'Remove member',
+    remove_text: 'Remove {name} as {role}?',
+    associated_people: 'Associated people',
+    associated_people_help: 'The members of the studies, initiatives and networks linked to this network.',
+  },
   documents: {
     filter: {
       ALL: 'All',

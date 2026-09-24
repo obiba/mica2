@@ -280,6 +280,33 @@ export default {
       dataset: 'jeux de données',
     },
   },
+  network_links: {
+    add_title: 'Ajouter des liens',
+    all_linked: 'Tous sont déjà liés.',
+    published: 'Publié',
+    remove_selected: 'Retirer la sélection',
+    remove_title: 'Retirer des liens',
+    remove_text: 'Retirer les liens vers {names} ?',
+    report: 'Rapport',
+    none: {
+      'individual-study': 'Aucune étude individuelle.',
+      'harmonization-study': "Aucune initiative d'harmonisation.",
+      network: 'Aucun réseau.',
+    },
+  },
+  network_members: {
+    title: 'Membres',
+    none: 'Aucun.',
+    person: 'Personne',
+    add_title: 'Ajouter un membre : {role}',
+    add_help: 'Rechercher une personne par son nom, ou en créer une nouvelle.',
+    move_up: 'Monter',
+    move_down: 'Descendre',
+    remove_title: 'Retirer le membre',
+    remove_text: 'Retirer {name} en tant que {role} ?',
+    associated_people: 'Personnes associées',
+    associated_people_help: 'Les membres des études, initiatives et réseaux liés à ce réseau.',
+  },
   documents: {
     filter: {
       ALL: 'Tous',

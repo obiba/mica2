@@ -27,6 +27,11 @@ export const usePersonsStore = defineStore('persons', () => {
     return toServerUrl(`/draft/persons/_search/_download?${params}`);
   }
 
+  /** the persons member of the network */
+  async function fetchNetworkMembers(networkId: string): Promise<PersonDto[]> {
+    return (await api.get<PersonDto[]>(`/draft/persons/network/${networkId}`)).data ?? [];
+  }
+
   async function get(id: string): Promise<PersonDto> {
     return (await api.get<PersonDto>(`/draft/person/${id}`)).data;
   }
@@ -51,5 +56,5 @@ export const usePersonsStore = defineStore('persons', () => {
     return checkDuplicates(person, found);
   }
 
-  return { search, downloadUrl, get, create, update, remove, findDuplicates };
+  return { search, downloadUrl, fetchNetworkMembers, get, create, update, remove, findDuplicates };
 });
