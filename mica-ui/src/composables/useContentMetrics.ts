@@ -6,11 +6,11 @@ import { notifyError } from 'src/utils/notify';
 
 /** the document types of the metrics (`/config/metrics`), in display order */
 export const METRICS_TYPES = [
+  'Network',
   'Study',
   'HarmonizationStudy',
   'StudyDataset',
   'HarmonizationDataset',
-  'Network',
   'DatasetVariable',
   'Project',
   'DataAccessRequest',

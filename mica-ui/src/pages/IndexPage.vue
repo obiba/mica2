@@ -67,8 +67,8 @@ import { useContentMetrics, type MetricsType, type TypeMetrics } from 'src/compo
 const DASHBOARD_TYPES: MetricsType[] = [
   'Network',
   'Study',
-  'StudyDataset',
   'HarmonizationStudy',
+  'StudyDataset',
   'HarmonizationDataset',
 ];
 
