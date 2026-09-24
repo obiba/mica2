@@ -109,7 +109,7 @@ import NetworkPeopleDialog from 'src/components/networks/NetworkPeopleDialog.vue
 import { usePersonsStore } from 'src/stores/persons';
 import { notifyError } from 'src/utils/notify';
 import { associatedPeopleQuery, membersByRole, moveMember, type RoleMembers } from 'src/utils/networks';
-import { fullName, localized, withMemberships } from 'src/utils/persons';
+import { fullName, localized } from 'src/utils/persons';
 
 interface Props {
   network: NetworkDto;
@@ -158,19 +158,11 @@ async function load() {
   }
 }
 
-/** the roles of the person in the network */
-function rolesOf(person: PersonDto): string[] {
-  return (person.networkMemberships ?? [])
-    .filter((membership) => membership.parentId === networkId.value)
-    .map((membership) => membership.role);
-}
-
-/** saves the person with the given roles in the network, then reloads the members */
-async function saveRoles(person: PersonDto, roles: string[]) {
-  const parent = { id: networkId.value, acronym: props.network.acronym, name: props.network.name };
+/** changes a role of the person in the network, then reloads the members */
+async function changeRole(change: () => Promise<unknown>) {
   saving.value = true;
   try {
-    await personsStore.update(withMemberships(person, 'network', [parent], roles));
+    await change();
     await load();
   } catch (error) {
     notifyError(error);
@@ -186,23 +178,14 @@ function onShowAdd(item: RoleMembers) {
 
 async function onAdd(person: PersonDto) {
   const role = addRole.value?.role;
-  if (!role || !person.id) return;
-  try {
-    // the search gives the indexed person, the draft one is saved
-    const draft = await personsStore.get(person.id);
-    await saveRoles(draft, [...new Set([...rolesOf(draft), role])]);
-  } catch (error) {
-    notifyError(error);
-  }
+  const id = person.id;
+  if (role && id) await changeRole(() => personsStore.addNetworkRole(id, networkId.value, role));
 }
 
 async function onRemove() {
   const removed = toRemove.value;
-  if (removed)
-    await saveRoles(
-      removed.person,
-      rolesOf(removed.person).filter((role) => role !== removed.role),
-    );
+  const id = removed?.person.id;
+  if (removed && id) await changeRole(() => personsStore.removeNetworkRole(id, networkId.value, removed.role));
 }
 
 function onMove(item: RoleMembers, person: PersonDto, delta: number) {

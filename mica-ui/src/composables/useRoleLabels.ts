@@ -13,7 +13,9 @@ export function useRoleLabels() {
   watch(
     locale,
     async (language) => {
-      messages.value = await formsStore.getBundle(language);
+      const bundle = await formsStore.getBundle(language);
+      // a later language switch may have resolved first
+      if (locale.value === language) messages.value = bundle;
     },
     { immediate: true },
   );
