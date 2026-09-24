@@ -2,8 +2,8 @@
   <q-dialog v-model="show" @before-show="onShow">
     <q-card class="dialog-lg">
       <q-card-section>
-        <div class="text-h6">{{ t('network_members.associated_people') }}</div>
-        <div class="text-hint">{{ t('network_members.associated_people_help') }}</div>
+        <div class="text-h6">{{ t('members.associated_people') }}</div>
+        <div class="text-hint">{{ t('members.associated_people_help') }}</div>
       </q-card-section>
       <q-separator />
       <q-card-section style="max-height: 70vh" class="scroll">
