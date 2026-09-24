@@ -1,5 +1,5 @@
 <template>
-  <q-card flat bordered class="metrics-card full-height">
+  <q-card flat bordered :class="['metrics-card full-height', color]">
     <q-card-section class="q-pb-none">
       <div class="row items-center no-wrap">
         <q-icon :name="icon" size="sm" color="grey-7" class="q-mr-sm" />
@@ -40,7 +40,7 @@
           dense
           outline
           square
-          :color="chip.value > 0 ? 'grey-8' : 'grey-5'"
+          :color="chip.value > 0 ? 'grey-9' : 'grey-6'"
           :icon="chip.icon"
           :clickable="chip.to !== undefined"
           @click="chip.to && router.push(chip.to)"
@@ -114,9 +114,19 @@ const ICONS: Partial<Record<MetricsType, string>> = {
   Project: 'work',
 };
 
+/** light background by entity: networks blue, studies green, datasets yellow */
+const COLORS: Partial<Record<MetricsType, string>> = {
+  Network: 'bg-light-blue-2',
+  Study: 'bg-light-green-2',
+  HarmonizationStudy: 'bg-light-green-2',
+  StudyDataset: 'bg-yellow-2',
+  HarmonizationDataset: 'bg-yellow-2',
+};
+
 const counts = computed(() => props.metrics.counts);
 const total = computed(() => counts.value.total ?? 0);
 const published = computed(() => counts.value.published ?? 0);
+const color = computed(() => COLORS[props.metrics.type]);
 const icon = computed(() => ICONS[props.metrics.type] ?? 'folder');
 const title = computed(() => t(`config.statistics.types.${props.metrics.type}`));
 
