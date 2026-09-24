@@ -185,6 +185,7 @@
 <#assign showStudyPopulationFiles = showStudyFiles/>
 <#assign showStudyDCEFiles = showStudyFiles/>
 <#assign showDatasetFiles = showFiles/>
+<#assign showProjectFiles = showFiles/>
 
 <!-- Variables classifications charts -->
 <!-- if taxonomies list is null or empty, no variables classifications is shown -->

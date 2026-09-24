@@ -19,7 +19,8 @@ authorization added on two administration endpoints.
 
    ```sh
    cd $MICA_HOME/conf/templates
-   ls signin.ftl libs/signin-scripts.ftl libs/scripts.ftl compare.ftl dataset.ftl variable.ftl
+   ls signin.ftl libs/signin-scripts.ftl libs/scripts.ftl compare.ftl dataset.ftl variable.ftl \
+      project.ftl libs/project.ftl libs/settings.ftl
    ```
 
    If any exists, keep a copy of the current bundled version
@@ -64,6 +65,13 @@ Install the new version and restart as usual. No database migration runs at star
    - `compare.ftl`, `variable.ftl` and `dataset.ftl`: escaping fixes, re-apply them in
      your copy.
    - `test.ftl` was removed from the bundle. Delete any copy of it.
+   - `project.ftl`, `libs/project.ftl` and `libs/settings.ftl`: research projects now get
+     the same published-side file browser as studies and networks (attachments become
+     browseable from the portal), gated by a new `showProjectFiles` flag next to
+     `showStudyFiles`/`showNetworkFiles`/`showDatasetFiles`. `project.ftl` also gains an
+     include of the new `libs/project-scripts.ftl` (nothing to reconcile there, the file
+     is new). If your copy of `project.ftl` or `libs/project.ftl` is not updated, the file
+     browser stays absent from the project page, same as before this release.
 2. **Custom translations**: the message `sign-in-otp-failed` was added, bundled in English
    and French. Add it to any other language you provide.
 3. **Response headers.** Mica now sends `X-Content-Type-Options: nosniff`,

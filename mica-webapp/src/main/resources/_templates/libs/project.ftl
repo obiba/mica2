@@ -60,3 +60,17 @@
     </div>
   </#if>
 </#macro>
+
+<!-- Files -->
+<#macro projectFilesBrowser project>
+  <div id="project-files-app-container" style="display: none;" class="card card-info card-outline">
+    <div class="card-header">
+      <h3 class="card-title"><@message "files"/></h3>
+    </div>
+    <div class="card-body">
+      <div id="project-files-app">
+        <@filesBrowser/>
+      </div>
+    </div>
+  </div>
+</#macro>
