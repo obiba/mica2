@@ -48,6 +48,13 @@
         </document-header>
         <q-tab-panels v-model="tab">
           <q-tab-panel name="view" class="q-pa-none">
+            <q-banner v-if="dataset && state?.requireIndexing" dense rounded class="bg-warning text-white q-mb-md">
+              <template #avatar><q-icon name="warning" /></template>
+              {{ t('dataset.require_indexing') }}
+              <template #action>
+                <q-btn flat dense :label="t('dataset.go_indexing')" to="/settings/indexing" />
+              </template>
+            </q-banner>
             <document-view-panel :target="target" :document="document" />
             <div v-if="study && hasEvents" class="q-mt-lg">
               <div class="text-h6 q-mb-sm">{{ t('study.timeline') }}</div>
@@ -66,6 +73,15 @@
               :busy="saving"
               @change="onDocumentChange"
               @select="onPopulationSelect"
+            />
+          </q-tab-panel>
+          <q-tab-panel v-if="dataset" name="tables" class="q-pa-none">
+            <dataset-tables-panel
+              :dataset="dataset"
+              :can-edit="canEdit"
+              :busy="saving"
+              @change="onDocumentChange"
+              @refresh="refresh"
             />
           </q-tab-panel>
           <template v-if="network">
@@ -123,7 +139,7 @@
 
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
-import type { EntityStateDto, NetworkDto, StudyDto } from 'src/models/Mica';
+import type { DatasetDto, EntityStateDto, NetworkDto, StudyDto } from 'src/models/Mica';
 import DrawerLayout from 'src/components/DrawerLayout.vue';
 import DocumentHeader from 'src/components/documents/DocumentHeader.vue';
 import DocumentViewPanel from 'src/components/documents/DocumentViewPanel.vue';
@@ -136,6 +152,7 @@ import NetworkLinksPanel from 'src/components/networks/NetworkLinksPanel.vue';
 import MembersPanel from 'src/components/persons/MembersPanel.vue';
 import StudyPopulationsPanel from 'src/components/studies/StudyPopulationsPanel.vue';
 import StudyTimeline from 'src/components/studies/StudyTimeline.vue';
+import DatasetTablesPanel from 'src/components/datasets/DatasetTablesPanel.vue';
 import {
   documentTarget,
   useDocumentTarget,
@@ -181,6 +198,7 @@ const tab = computed(() => {
     ...TABS,
     ...(type.value === 'network' ? NETWORK_TABS : []),
     ...(type.value === 'individual-study' ? ['populations'] : []),
+    ...(type.value === 'collected-dataset' ? ['tables'] : []),
     ...(membersParent.value ? ['members'] : []),
   ];
   return name && tabs.includes(name) ? name : 'view';
@@ -197,6 +215,10 @@ const membersDocument = computed(() =>
 const study = computed(() =>
   type.value === 'individual-study' ? (document.value as StudyDto | undefined) : undefined,
 );
+/** the document when it is a dataset (with tables) */
+const dataset = computed(() =>
+  type.value === 'collected-dataset' ? (document.value as DatasetDto | undefined) : undefined,
+);
 const hasEvents = computed(() =>
   (study.value?.populations ?? []).some((population) => (population.dataCollectionEvents ?? []).length > 0),
 );
@@ -211,6 +233,7 @@ const menu = computed(() => [
       ]
     : []),
   ...(study.value ? [{ name: 'populations', icon: 'groups', label: 'study.populations' }] : []),
+  ...(dataset.value ? [{ name: 'tables', icon: 'table_chart', label: 'dataset.tables' }] : []),
   ...(membersParent.value ? [{ name: 'members', icon: 'people', label: 'members.title' }] : []),
   { name: 'history', icon: 'history', label: 'history.title' },
   { name: 'files', icon: 'folder', label: 'files.title' },
