@@ -59,7 +59,7 @@
                   :kind="kind"
                   :can-edit="canEdit"
                   :busy="saving"
-                  @change="onNetworkChange"
+                  @change="onDocumentChange"
                 />
               </div>
             </q-tab-panel>
@@ -69,13 +69,19 @@
                 kind="network"
                 :can-edit="canEdit"
                 :busy="saving"
-                @change="onNetworkChange"
+                @change="onDocumentChange"
               />
             </q-tab-panel>
-            <q-tab-panel name="members" class="q-pa-none">
-              <network-members-panel :network="network" :can-edit="canEdit" :busy="saving" @change="onNetworkChange" />
-            </q-tab-panel>
           </template>
+          <q-tab-panel v-if="membersParent && membersDocument" name="members" class="q-pa-none">
+            <members-panel
+              :document="membersDocument"
+              :parent="membersParent"
+              :can-edit="canEdit"
+              :busy="saving"
+              @change="onDocumentChange"
+            />
+          </q-tab-panel>
           <q-tab-panel name="history" class="q-pa-none">
             <document-history-panel :target="target" :state="state" :can-restore="canEdit" @restored="refresh" />
           </q-tab-panel>
@@ -99,7 +105,7 @@
 
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
-import type { EntityStateDto, NetworkDto } from 'src/models/Mica';
+import type { EntityStateDto, NetworkDto, StudyDto } from 'src/models/Mica';
 import DrawerLayout from 'src/components/DrawerLayout.vue';
 import DocumentHeader from 'src/components/documents/DocumentHeader.vue';
 import DocumentViewPanel from 'src/components/documents/DocumentViewPanel.vue';
@@ -109,18 +115,30 @@ import CommentsPanel from 'src/components/comments/CommentsPanel.vue';
 import FileBrowser from 'src/components/files/FileBrowser.vue';
 import DataAccessRequestLink from 'src/components/projects/DataAccessRequestLink.vue';
 import NetworkLinksPanel from 'src/components/networks/NetworkLinksPanel.vue';
-import NetworkMembersPanel from 'src/components/networks/NetworkMembersPanel.vue';
-import { documentTarget, useDocumentTarget, useRouteDocumentType } from 'src/composables/useDocumentTarget';
+import MembersPanel from 'src/components/persons/MembersPanel.vue';
+import {
+  documentTarget,
+  useDocumentTarget,
+  useRouteDocumentType,
+  type DocumentType,
+} from 'src/composables/useDocumentTarget';
 import { useDocumentState } from 'src/composables/useDocumentState';
 import { useDocumentActions, type DocumentAction } from 'src/composables/useDocumentActions';
 import type { DocumentDto } from 'src/stores/documents';
 import type { NetworkLinkKind } from 'src/utils/networks';
+import type { MembersParent } from 'src/utils/persons';
 import { notifyError } from 'src/utils/notify';
 
 const TABS = ['view', 'history', 'files', 'comments', 'permissions'];
 /** the sections of the studies tab of a network */
 const STUDY_KINDS: NetworkLinkKind[] = ['individual-study', 'harmonization-study'];
-const NETWORK_TABS = ['studies', 'networks', 'members'];
+const NETWORK_TABS = ['studies', 'networks'];
+/** the documents with members, by the kind of their memberships */
+const MEMBERS_PARENTS: Partial<Record<DocumentType, MembersParent>> = {
+  network: 'network',
+  'individual-study': 'study',
+  'harmonization-study': 'study',
+};
 
 const documentsStore = useDocumentsStore();
 const systemStore = useSystemStore();
@@ -130,10 +148,15 @@ const router = useRouter();
 const { t } = useI18n();
 
 const type = useRouteDocumentType();
+const membersParent = computed(() => MEMBERS_PARENTS[type.value]);
+/** the document when it has members */
+const membersDocument = computed(() =>
+  membersParent.value ? (document.value as NetworkDto | StudyDto | undefined) : undefined,
+);
 const id = computed(() => route.params.id as string);
 const tab = computed(() => {
   const name = route.params.tab as string | undefined;
-  const tabs = type.value === 'network' ? [...TABS, ...NETWORK_TABS] : TABS;
+  const tabs = [...TABS, ...(type.value === 'network' ? NETWORK_TABS : []), ...(membersParent.value ? ['members'] : [])];
   return name && tabs.includes(name) ? name : 'view';
 });
 
@@ -148,9 +171,9 @@ const menu = computed(() => [
     ? [
         { name: 'studies', icon: 'book', label: 'network_links.studies' },
         { name: 'networks', icon: 'hub', label: 'networks.title' },
-        { name: 'members', icon: 'people', label: 'network_members.title' },
       ]
     : []),
+  ...(membersParent.value ? [{ name: 'members', icon: 'people', label: 'members.title' }] : []),
   { name: 'history', icon: 'history', label: 'history.title' },
   { name: 'files', icon: 'folder', label: 'files.title' },
   { name: 'comments', icon: 'comment', label: 'comments.title' },
@@ -209,8 +232,8 @@ function promptComment() {
   });
 }
 
-/** saves the network changed in a tab (links, members order) */
-async function onNetworkChange(dto: NetworkDto) {
+/** saves the document changed in a tab (network links, members order) */
+async function onDocumentChange(dto: DocumentDto) {
   let comment: string | undefined;
   if (systemStore.configuration.isCommentsRequiredOnDocumentSave === true) {
     comment = await promptComment();

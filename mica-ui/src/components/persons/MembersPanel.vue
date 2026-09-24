@@ -5,7 +5,7 @@
         v-if="peopleQuery"
         color="secondary"
         icon="groups"
-        :label="t('network_members.associated_people')"
+        :label="t('members.associated_people')"
         size="sm"
         @click="showPeople = true"
       />
@@ -46,7 +46,7 @@
                     dense
                     size="sm"
                     icon="arrow_upward"
-                    :title="t('network_members.move_up')"
+                    :title="t('members.move_up')"
                     :disable="working || index === 0"
                     @click="onMove(item, person, -1)"
                   />
@@ -55,7 +55,7 @@
                     dense
                     size="sm"
                     icon="arrow_downward"
-                    :title="t('network_members.move_down')"
+                    :title="t('members.move_down')"
                     :disable="working || index === item.persons.length - 1"
                     @click="onMove(item, person, 1)"
                   />
@@ -73,7 +73,7 @@
               </q-item-section>
             </q-item>
             <q-item v-if="item.persons.length === 0">
-              <q-item-section class="text-hint">{{ t('network_members.none') }}</q-item-section>
+              <q-item-section class="text-hint">{{ t('members.none') }}</q-item-section>
             </q-item>
           </q-list>
         </q-card>
@@ -86,13 +86,13 @@
       :exclude="(addRole?.persons ?? []).map((person) => person.id ?? '')"
       @add="onAdd"
     />
-    <network-people-dialog v-model="showPeople" :network="network" />
+    <network-people-dialog v-if="network" v-model="showPeople" :network="network" />
 
     <confirm-dialog
       :model-value="toRemove !== undefined"
-      :title="t('network_members.remove_title')"
+      :title="t('members.remove_title')"
       :text="
-        t('network_members.remove_text', { name: fullName(toRemove?.person), role: roleLabel(toRemove?.role ?? '') })
+        t('members.remove_text', { name: fullName(toRemove?.person), role: roleLabel(toRemove?.role ?? '') })
       "
       @update:model-value="toRemove = undefined"
       @confirm="onRemove"
@@ -101,26 +101,30 @@
 </template>
 
 <script setup lang="ts">
-import type { NetworkDto, PersonDto } from 'src/models/Mica';
+import type { NetworkDto, PersonDto, StudyDto } from 'src/models/Mica';
 import ConfirmDialog from 'src/components/ConfirmDialog.vue';
 import { useRoleLabels } from 'src/composables/useRoleLabels';
-import AddMemberDialog from 'src/components/networks/AddMemberDialog.vue';
+import AddMemberDialog from 'src/components/persons/AddMemberDialog.vue';
 import NetworkPeopleDialog from 'src/components/networks/NetworkPeopleDialog.vue';
 import { usePersonsStore } from 'src/stores/persons';
 import { notifyError } from 'src/utils/notify';
-import { associatedPeopleQuery, membersByRole, moveMember, type RoleMembers } from 'src/utils/networks';
-import { fullName, localized } from 'src/utils/persons';
+import { associatedPeopleQuery } from 'src/utils/networks';
+import { fullName, localized, membersByRole, moveMember, type MembersParent, type RoleMembers } from 'src/utils/persons';
+
+type Document = NetworkDto | StudyDto;
 
 interface Props {
-  network: NetworkDto;
+  /** the network or the study (individual study or initiative) */
+  document: Document;
+  parent: MembersParent;
   canEdit: boolean;
   /** a change of the network is being saved */
   busy?: boolean;
 }
 
 const props = defineProps<Props>();
-/** the network with the members order changed, to be saved */
-const emit = defineEmits<{ change: [network: NetworkDto] }>();
+/** the document with the members order changed, to be saved */
+const emit = defineEmits<{ change: [document: Document] }>();
 const { t, locale } = useI18n();
 const personsStore = usePersonsStore();
 const systemStore = useSystemStore();
@@ -130,16 +134,19 @@ const loading = ref(false);
 const saving = ref(false);
 const working = computed(() => props.busy || saving.value);
 const persons = ref<PersonDto[]>([]);
-const networkId = computed(() => props.network.id ?? '');
+const parentId = computed(() => props.document.id ?? '');
 const members = computed(() =>
   membersByRole(
     persons.value,
-    networkId.value,
+    props.parent,
+    parentId.value,
     systemStore.configuration.roles ?? [],
-    props.network.membershipSortOrder,
+    props.document.membershipSortOrder,
   ),
 );
-const peopleQuery = computed(() => associatedPeopleQuery(props.network));
+/** the document when it is a network, its members can be completed by the associated people */
+const network = computed(() => (props.parent === 'network' ? (props.document as NetworkDto) : undefined));
+const peopleQuery = computed(() => (network.value ? associatedPeopleQuery(network.value) : undefined));
 
 const showAdd = ref(false);
 const addRole = ref<RoleMembers>();
@@ -149,7 +156,7 @@ const toRemove = ref<{ role: string; person: PersonDto }>();
 async function load() {
   loading.value = true;
   try {
-    persons.value = await personsStore.fetchNetworkMembers(networkId.value);
+    persons.value = await personsStore.fetchMembers(props.parent, parentId.value);
   } catch (error) {
     persons.value = [];
     notifyError(error);
@@ -158,7 +165,7 @@ async function load() {
   }
 }
 
-/** changes a role of the person in the network, then reloads the members */
+/** changes a role of the person in the document, then reloads the members */
 async function changeRole(change: () => Promise<unknown>) {
   saving.value = true;
   try {
@@ -179,21 +186,21 @@ function onShowAdd(item: RoleMembers) {
 async function onAdd(person: PersonDto) {
   const role = addRole.value?.role;
   const id = person.id;
-  if (role && id) await changeRole(() => personsStore.addNetworkRole(id, networkId.value, role));
+  if (role && id) await changeRole(() => personsStore.addRole(id, props.parent, parentId.value, role));
 }
 
 async function onRemove() {
   const removed = toRemove.value;
   const id = removed?.person.id;
-  if (removed && id) await changeRole(() => personsStore.removeNetworkRole(id, networkId.value, removed.role));
+  if (removed && id) await changeRole(() => personsStore.removeRole(id, props.parent, parentId.value, removed.role));
 }
 
 function onMove(item: RoleMembers, person: PersonDto, delta: number) {
   emit('change', {
-    ...props.network,
+    ...props.document,
     membershipSortOrder: moveMember(members.value, item.role, person.id ?? '', delta),
   });
 }
 
-watch(networkId, load, { immediate: true });
+watch(parentId, load, { immediate: true });
 </script>
