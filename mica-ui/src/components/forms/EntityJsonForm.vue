@@ -9,6 +9,7 @@
       :readonly="readonly"
       :languages="languages"
       :validation-mode="validationMode"
+      :additional-errors="additionalErrors ?? []"
       @update:model-value="emit('update:modelValue', $event)"
       @update:errors="onErrors"
     />
@@ -27,6 +28,8 @@ interface Props {
   /** REST path of the form configuration: `/config/network/form` */
   formPath: string;
   readonly?: boolean;
+  /** errors found apart from the schema ones (unique id...), shown on their controls */
+  additionalErrors?: ErrorObject[];
 }
 
 const props = defineProps<Props>();
@@ -38,10 +41,7 @@ const emit = defineEmits<{
 const systemStore = useSystemStore();
 const languages = computed(() => systemStore.languages);
 
-const { loading, schema, uischema } = useEntityForm(
-  () => props.formPath,
-  { readonly: () => props.readonly === true },
-);
+const { loading, schema, uischema } = useEntityForm(() => props.formPath, { readonly: () => props.readonly === true });
 const converted = computed(() =>
   schema.value && uischema.value ? { schema: schema.value, uischema: uischema.value } : undefined,
 );
