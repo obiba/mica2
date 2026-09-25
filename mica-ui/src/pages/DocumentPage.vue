@@ -43,7 +43,7 @@
               icon="edit"
               :label="t('edit')"
               size="sm"
-              :to="`${target.routeBase}/${id}/edit`"
+              @click="showEdit = true"
             />
             <q-btn
               v-if="canChangeStatus"
@@ -98,6 +98,7 @@
               :busy="saving"
               @change="onDocumentChange"
               @select="onPopulationSelect"
+              @refresh="refresh"
             />
           </q-tab-panel>
           <q-tab-panel v-if="dataset" name="tables" class="q-pa-none">
@@ -188,6 +189,7 @@
           </q-tab-panel>
         </q-tab-panels>
         <share-document-dialog v-model="showShare" :target="target" />
+        <document-edit-dialog v-model="showEdit" :type="type" :id="id" @saved="refresh" />
       </drawer-layout>
       <div v-else class="q-pa-md">
         {{ t('document.not_found') }}
@@ -201,6 +203,7 @@ import { useQuasar } from 'quasar';
 import type { DatasetDto, EntityStateDto, NetworkDto, StudyDto } from 'src/models/Mica';
 import DrawerLayout from 'src/components/DrawerLayout.vue';
 import DocumentHeader from 'src/components/documents/DocumentHeader.vue';
+import DocumentEditDialog from 'src/components/documents/DocumentEditDialog.vue';
 import ShareDocumentDialog from 'src/components/documents/ShareDocumentDialog.vue';
 import DocumentViewPanel from 'src/components/documents/DocumentViewPanel.vue';
 import DocumentHistoryPanel from 'src/components/history/DocumentHistoryPanel.vue';
@@ -329,6 +332,7 @@ const request = computed(() => (document.value && 'request' in document.value ? 
 
 const loading = ref(true);
 const showShare = ref(false);
+const showEdit = ref(false);
 
 function print() {
   window.print();
@@ -370,6 +374,7 @@ async function refresh() {
 async function initialize() {
   loading.value = true;
   showShare.value = false;
+  showEdit.value = false;
   document.value = undefined;
   state.value = undefined;
   await refresh();

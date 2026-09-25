@@ -2,37 +2,14 @@ import type { RouteRecordRaw } from 'vue-router';
 import { DOCUMENT_TYPES, documentTarget, type DocumentType } from 'src/composables/useDocumentTarget';
 import { entityConfigRoute } from 'src/utils/entityConfigs';
 
-/** the list, creation, edition and view routes of a document type, served by the shared pages */
+/** the list and view routes of a document type, served by the shared pages */
 function documentRoutes(documentType: DocumentType): RouteRecordRaw[] {
   const meta = { documentType };
   const { listRoute } = documentTarget(documentType, '');
   return [
     { path: listRoute.substring(1), component: () => import('pages/DocumentsPage.vue'), meta },
-    { path: `${documentType}/new`, component: () => import('pages/DocumentEditPage.vue'), meta },
-    { path: `${documentType}/:id/edit`, component: () => import('pages/DocumentEditPage.vue'), meta },
     { path: `${documentType}/:id/:tab?`, component: () => import('pages/DocumentPage.vue'), meta },
   ];
-}
-
-/** the editors of the populations of an individual study and of their data collection events */
-function studyPopulationRoutes(): RouteRecordRaw[] {
-  const component = () => import('pages/StudyPopulationEditPage.vue');
-  const population = { documentType: 'individual-study' as const, studyPart: 'population' as const };
-  const dce = { ...population, studyPart: 'dce' as const };
-  const base = 'individual-study/:id/population';
-  return [
-    { path: `${base}/new`, component, meta: population },
-    { path: `${base}/:pid/edit`, component, meta: population },
-    { path: `${base}/:pid/dce/new`, component, meta: dce },
-    { path: `${base}/:pid/dce/:dceId/edit`, component, meta: dce },
-  ];
-}
-
-declare module 'vue-router' {
-  interface RouteMeta {
-    /** the part of the study a study editor route edits */
-    studyPart?: 'population' | 'dce';
-  }
 }
 
 const routes: RouteRecordRaw[] = [
@@ -57,7 +34,6 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/SettingsEntityConfigPage.vue'),
         meta: { documentType },
       })),
-      ...studyPopulationRoutes(),
       ...DOCUMENT_TYPES.flatMap(documentRoutes),
       { path: 'files', component: () => import('pages/FilesPage.vue') },
       { path: 'persons', component: () => import('pages/PersonsPage.vue') },
