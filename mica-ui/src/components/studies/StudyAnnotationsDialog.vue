@@ -24,9 +24,9 @@
             @click="taxonomyName = item.taxonomy.name"
           >
             <q-item-section>
-              <q-item-label class="text-weight-medium">{{ title(item.taxonomy) }}</q-item-label>
-              <q-item-label v-if="description(item.taxonomy)" caption lines="3">
-                {{ description(item.taxonomy) }}
+              <q-item-label class="text-weight-medium">{{ title(item.taxonomy, locale) }}</q-item-label>
+              <q-item-label v-if="description(item.taxonomy, locale)" caption lines="3">
+                {{ description(item.taxonomy, locale) }}
               </q-item-label>
             </q-item-section>
             <q-item-section v-if="selectedCount(item.taxonomy.name) > 0" side top>
@@ -40,9 +40,9 @@
         <q-separator vertical />
         <div v-if="current" class="col scroll">
           <div class="q-pa-md bg-grey-1">
-            <div class="text-subtitle1 text-weight-medium">{{ title(current.taxonomy) }}</div>
-            <div v-if="description(current.taxonomy)" class="text-body2 text-grey-8">
-              {{ description(current.taxonomy) }}
+            <div class="text-subtitle1 text-weight-medium">{{ title(current.taxonomy, locale) }}</div>
+            <div v-if="description(current.taxonomy, locale)" class="text-body2 text-grey-8">
+              {{ description(current.taxonomy, locale) }}
             </div>
           </div>
           <q-separator />
@@ -65,9 +65,9 @@
                 />
               </q-item-section>
               <q-item-section>
-                <q-item-label class="text-weight-medium">{{ title(vocabulary) }}</q-item-label>
-                <q-item-label v-if="description(vocabulary)" class="text-body2 text-grey-8">
-                  {{ description(vocabulary) }}
+                <q-item-label class="text-weight-medium">{{ title(vocabulary, locale) }}</q-item-label>
+                <q-item-label v-if="description(vocabulary, locale)" class="text-body2 text-grey-8">
+                  {{ description(vocabulary, locale) }}
                 </q-item-label>
                 <q-item-label caption>
                   <code>{{ vocabulary.name }}</code>
@@ -98,9 +98,8 @@
 
 <script setup lang="ts">
 import type { AttributeDto } from 'src/models/Mica';
-import type { TaxonomyDto, TermDto } from 'src/models/Opal';
-import { isAnnotated, matchesFilter, type Annotation } from 'src/utils/annotations';
-import { localeText } from 'src/utils/config';
+import type { TaxonomyDto } from 'src/models/Opal';
+import { description, isAnnotated, matchesFilter, title, type Annotation } from 'src/utils/annotations';
 
 interface Props {
   /** the taxonomies usable for annotation */
@@ -131,14 +130,6 @@ const shown = computed(() => {
     .filter((item) => item.vocabularies.length > 0);
 });
 const current = computed(() => shown.value.find((item) => item.taxonomy.name === taxonomyName.value) ?? shown.value[0]);
-
-function title(entity: TaxonomyDto | TermDto) {
-  return localeText(entity.title, locale.value, entity.name);
-}
-
-function description(entity: TaxonomyDto | TermDto) {
-  return localeText(entity.description, locale.value);
-}
 
 function annotated(namespace: string, name: string) {
   return isAnnotated(props.attributes, { namespace, name });

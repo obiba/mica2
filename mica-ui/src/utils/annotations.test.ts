@@ -59,6 +59,10 @@ describe('annotations', () => {
     ]);
   });
 
+  it('never considers Mica_variable as configured', () => {
+    expect(groupAnnotations([attribute('Mica_variable', 'x')], taxonomies, [])[0]!.configured).toBe(false);
+  });
+
   it('adds and removes annotations', () => {
     const attributes = addAnnotations(
       [attribute('AreaOfInformation', 'Lifestyle')],
