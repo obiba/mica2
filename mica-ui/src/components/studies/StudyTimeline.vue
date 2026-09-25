@@ -95,6 +95,11 @@ function period(event: TimelineEvent) {
 </script>
 
 <style scoped>
+/* the bars are background colors, which browsers drop when printing */
+.study-timeline {
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
 .timeline-label {
   width: 160px;
   flex: none;
@@ -136,7 +141,8 @@ function period(event: TimelineEvent) {
   outline-offset: 1px;
 }
 .timeline-axis {
-  height: 18px;
+  /* the border and the year labels (caption line height), else they overflow the tab panel, which scrolls */
+  height: 21px;
   border-top: 1px solid rgba(0, 0, 0, 0.2);
 }
 .timeline-tick {
