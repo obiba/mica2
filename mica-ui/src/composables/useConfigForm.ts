@@ -104,8 +104,16 @@ export interface PreparedForm {
 export function prepareForm(model: FormModel): PreparedForm {
   // a detached copy: the builder keeps its model
   const copy = fromDefinition(toDefinition(model));
+  const texts = toDefinition(copy).translations;
   pruneTranslations(copy);
   const definition = toDefinition(copy);
+  // the keys the builder has no text slot for (option captions, validation messages...) are not pruned
+  const used = new Set([...translatableStrings(definition.schema), ...translatableStrings(definition.uischema)]);
+  Object.entries(texts).forEach(([language, messages]) => {
+    Object.entries(messages).forEach(([key, text]) => {
+      if (used.has(key)) (definition.translations[language] ??= {})[key] ??= text;
+    });
+  });
   const isKnown = knownKeys(definition.translations);
   return {
     schema: wrapKeys(definition.schema, isKnown),
