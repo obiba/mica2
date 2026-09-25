@@ -437,6 +437,21 @@ describe('prepareForm', () => {
     });
   });
 
+  it('keeps the texts of the keys the builder has no text slot for', () => {
+    const model = fromDefinition({
+      schema: { type: 'object', properties: { start: { title: 'start.title', type: 'string', format: 'date' } } },
+      uischema: {
+        type: 'VerticalLayout',
+        elements: [{ type: 'Control', scope: '#/properties/start', options: { validationMessage: 'date-error' } }],
+      },
+      translations: { en: { 'start.title': 'Start', 'date-error': 'Invalid date', orphan: 'Unused' } },
+    });
+    const prepared = prepareForm(model);
+    const control = (prepared.uischema.elements as { options: { validationMessage: string } }[])[0];
+    expect(control?.options.validationMessage).toBe('t(date-error)');
+    expect(prepared.translations).toEqual({ en: { 'start.title': 'Start', 'date-error': 'Invalid date' } });
+  });
+
   it('does not touch the model of the builder', () => {
     const model = fromDefinition({
       schema: { type: 'object', properties: { phone: { title: 'phone.title', type: 'string' } } },
