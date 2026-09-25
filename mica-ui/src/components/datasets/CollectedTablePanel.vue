@@ -48,7 +48,12 @@
       <fields-list :items="items" :dbobject="rows" />
     </template>
 
-    <dataset-table-dialog v-model="showEdit" :table="table" @save="onSave" />
+    <dataset-table-dialog
+      v-model="showEdit"
+      :table="table"
+      :folder="`/collected-dataset/${dataset.id}`"
+      @save="onSave"
+    />
     <confirm-dialog
       v-model="showDelete"
       :title="t('dataset.delete_study_table')"

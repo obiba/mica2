@@ -86,7 +86,21 @@
           />
         </div>
         <div v-else-if="source.namespace === 'file'" class="row q-col-gutter-md">
-          <q-input v-model="source.path" :label="`${t('dataset.source.file.path')} *`" dense class="col-6" />
+          <q-input v-model="source.path" :label="`${t('dataset.source.file.path')} *`" dense class="col-6">
+            <template v-slot:append>
+              <q-btn
+                outline
+                unelevated
+                no-caps
+                color="primary"
+                size="sm"
+                icon="more_horiz"
+                :label="t('files.select')"
+                :title="t('files.select_file')"
+                @click="showFiles = true"
+              />
+            </template>
+          </q-input>
           <q-input v-model="source.table" :label="t('dataset.table')" dense class="col-6" />
         </div>
         <div v-else class="row q-col-gutter-md">
@@ -112,11 +126,18 @@
         <q-btn :label="t('save')" color="primary" :disable="!complete" @click="onSave" />
       </q-card-actions>
     </q-card>
+    <file-select-dialog
+      v-model="showFiles"
+      :folder="filesFolder"
+      :extensions="['.xlsx']"
+      @select="(path) => (source.path = path)"
+    />
   </q-dialog>
 </template>
 
 <script setup lang="ts">
 import { api } from 'src/boot/api';
+import FileSelectDialog from 'src/components/files/FileSelectDialog.vue';
 import type { DatasetDto_StudyTableDto, LocalizedStringDto, StudySummaryDto } from 'src/models/Mica';
 import type { ProjectDto } from 'src/models/Opal';
 import type { ErrorObject } from 'ajv';
@@ -132,6 +153,7 @@ import {
   type DatasetTable,
   type TableSource,
 } from 'src/utils/datasets';
+import { parentPath } from 'src/utils/files';
 import { notifyError } from 'src/utils/notify';
 import { localized } from 'src/utils/persons';
 
@@ -154,6 +176,8 @@ interface Props {
   mode?: Mode;
   /** the table is of a harmonization initiative (always in the schema mode) */
   harmonization?: boolean;
+  /** the folder of the dataset, where the file sources are looked up first */
+  folder?: string | undefined;
 }
 
 const props = withDefaults(defineProps<Props>(), { mode: 'collected', harmonization: false });
@@ -176,6 +200,11 @@ const studyId = ref<string>();
 const populationId = ref<string>();
 const dceId = ref<string>();
 const source = ref<TableSource>({ namespace: 'opal' });
+const showFiles = ref(false);
+/** the folder of the file source when its path is absolute, the dataset folder otherwise */
+const filesFolder = computed(() =>
+  source.value.path?.startsWith('/') ? parentPath(source.value.path) : (props.folder ?? '/'),
+);
 /** the localized labels of the table, as `{field: {lang: value}}` */
 const labels = ref<FormModel>({});
 
