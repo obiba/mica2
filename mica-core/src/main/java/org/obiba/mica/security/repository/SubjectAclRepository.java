@@ -26,6 +26,8 @@ public interface SubjectAclRepository extends MongoRepository<SubjectAcl, String
 
   List<SubjectAcl> findByResourceAndInstance(String resource, String instance);
 
+  List<SubjectAcl> findByResource(String resource);
+
   List<SubjectAcl> findByResourceAndInstance(String resource, String instance, Sort sort);
 
   List<SubjectAcl> findByResourceStartingWith(String regex);

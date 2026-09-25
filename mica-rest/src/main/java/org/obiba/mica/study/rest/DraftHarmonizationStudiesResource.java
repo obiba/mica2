@@ -92,8 +92,6 @@ public class DraftHarmonizationStudiesResource {
 
     if (SecurityUtils.getSubject().hasRole(Roles.MICA_EXTERNAL_EDITOR)) {
       subjectAclService.addPermission("/draft/harmonization-study", "VIEW,EDIT,ADD", study.getId());
-      subjectAclService.addPermission("/draft/harmonization-study/" + study.getId(), "EDIT", "_status");
-      subjectAclService.addPermission("/draft/harmonization-study/" + study.getId() + "/_attachments", "EDIT");
     }
 
     return Response.created(uriInfo.getBaseUriBuilder().path(DraftHarmonizationStudiesResource.class, "study").build(study.getId()))

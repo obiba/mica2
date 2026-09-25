@@ -99,8 +99,6 @@ public class DraftIndividualStudiesResource {
 
     if (SecurityUtils.getSubject().hasRole(Roles.MICA_EXTERNAL_EDITOR)) {
       subjectAclService.addPermission("/draft/individual-study", "VIEW,EDIT,ADD", study.getId());
-      subjectAclService.addPermission("/draft/individual-study/" + study.getId(), "EDIT", "_status");
-      subjectAclService.addPermission("/draft/individual-study/" + study.getId() + "/_attachments", "EDIT");
     }
 
     return Response.created(uriInfo.getBaseUriBuilder().path(DraftIndividualStudiesResource.class, "study").build(study.getId()))
