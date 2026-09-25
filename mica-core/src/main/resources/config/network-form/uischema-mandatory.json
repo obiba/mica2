@@ -3,7 +3,7 @@
   "elements": [
     {
       "type": "Label",
-      "text": "<h3>t(network.general-info)</h3>"
+      "text": "t(network.general-info)"
     },
     {
       "type": "Control",
