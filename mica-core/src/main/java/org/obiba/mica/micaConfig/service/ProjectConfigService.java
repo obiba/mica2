@@ -58,7 +58,7 @@ public class ProjectConfigService extends EntityConfigService<ProjectConfig> {
 
   @Override
   protected String getDefaultDefinitionResourcePath() {
-    return "classpath:config/project-form/definition.json";
+    return "classpath:config/project-form/uischema.json";
   }
 
   @Override

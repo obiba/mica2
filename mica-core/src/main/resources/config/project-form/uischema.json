@@ -1,0 +1,83 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "Label",
+          "text": "t(label.1.text)"
+        },
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "row q-col-gutter-md"
+          },
+          "elements": [
+            {
+              "type": "VerticalLayout",
+              "options": {
+                "class": "col-6"
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/startDate",
+                  "hint": "t(research-project.default.status.start-help)",
+                  "options": {
+                    "validationMessage": "t(research-project.default.status.date-error)",
+                    "dateOptions": {
+                      "dateFormat": "yyyy-MM-dd"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "VerticalLayout",
+              "options": {
+                "class": "col-6"
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/endDate",
+                  "hint": "t(research-project.default.status.end-help)",
+                  "options": {
+                    "validationMessage": "t(research-project.default.status.date-error)",
+                    "dateOptions": {
+                      "dateFormat": "yyyy-MM-dd"
+                    }
+                  },
+                  "rules": {
+                    "min": "startDate"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "Label",
+          "text": "t(label.2.text)"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/name"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/institution",
+          "options": {
+            "rows": 3
+          }
+        }
+      ]
+    }
+  ]
+}

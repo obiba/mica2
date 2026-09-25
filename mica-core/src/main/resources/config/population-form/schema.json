@@ -64,37 +64,70 @@
           "default": [],
           "items": {
             "type": "string",
-            "enum": [
-              "general_population",
-              "specific_population",
-              "exist_studies",
-              "other"
+            "oneOf": [
+              {
+                "const": "general_population",
+                "title": "t(study_taxonomy.vocabulary.populations-recruitment-dataSources.term.general_population.title)"
+              },
+              {
+                "const": "specific_population",
+                "title": "t(study_taxonomy.vocabulary.populations-recruitment-dataSources.term.specific_population.title)"
+              },
+              {
+                "const": "exist_studies",
+                "title": "t(study_taxonomy.vocabulary.populations-recruitment-dataSources.term.exist_studies.title)"
+              },
+              {
+                "const": "other",
+                "title": "t(study_taxonomy.vocabulary.populations-recruitment-dataSources.term.other.title)"
+              }
             ]
-          }
+          },
+          "uniqueItems": true
         },
         "generalPopulationSources": {
           "type": "array",
           "title": "t(study.recruitment-sources.general-population)",
           "items": {
             "type": "string",
-            "enum": [
-              "volunteer",
-              "selected_samples",
-              "random"
+            "oneOf": [
+              {
+                "const": "volunteer",
+                "title": "t(study_taxonomy.vocabulary.populations-recruitment-generalPopulationSources.term.volunteer.title)"
+              },
+              {
+                "const": "selected_samples",
+                "title": "t(study_taxonomy.vocabulary.populations-recruitment-generalPopulationSources.term.selected_samples.title)"
+              },
+              {
+                "const": "random",
+                "title": "t(study_taxonomy.vocabulary.populations-recruitment-generalPopulationSources.term.random.title)"
+              }
             ]
-          }
+          },
+          "uniqueItems": true
         },
         "specificPopulationSources": {
           "type": "array",
           "title": "t(study.recruitment-sources.specific-population)",
           "items": {
             "type": "string",
-            "enum": [
-              "clinic_patients",
-              "specific_association",
-              "other"
+            "oneOf": [
+              {
+                "const": "clinic_patients",
+                "title": "t(study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.term.clinic_patients.title)"
+              },
+              {
+                "const": "specific_association",
+                "title": "t(study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.term.specific_association.title)"
+              },
+              {
+                "const": "other",
+                "title": "t(study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.term.other.title)"
+              }
             ]
-          }
+          },
+          "uniqueItems": true
         },
         "otherSpecificPopulationSource": {
           "type": "object",
@@ -124,12 +157,21 @@
             "null",
             "string"
           ],
-          "enum": [
-            "men",
-            "women",
-            null
-          ],
-          "title": "t(population.gender)"
+          "title": "t(population.gender)",
+          "oneOf": [
+            {
+              "const": null,
+              "title": "t(global.not-applicable)"
+            },
+            {
+              "const": "men",
+              "title": "t(study.selection-criteria.gender.men)"
+            },
+            {
+              "const": "women",
+              "title": "t(study.selection-criteria.gender.women)"
+            }
+          ]
         },
         "ageMin": {
           "type": "number",
@@ -191,13 +233,23 @@
           "type": "array",
           "items": {
             "type": "string",
-            "enum": [
-              "first_trimester",
-              "second_trimester",
-              "third_trimester"
+            "oneOf": [
+              {
+                "const": "first_trimester",
+                "title": "t(study_taxonomy.vocabulary.populations-selectionCriteria-pregnantWomen.term.first_trimester.title)"
+              },
+              {
+                "const": "second_trimester",
+                "title": "t(study_taxonomy.vocabulary.populations-selectionCriteria-pregnantWomen.term.second_trimester.title)"
+              },
+              {
+                "const": "third_trimester",
+                "title": "t(study_taxonomy.vocabulary.populations-selectionCriteria-pregnantWomen.term.third_trimester.title)"
+              }
             ]
           },
-          "title": "t(study.selection-criteria.pregnant-women)"
+          "title": "t(study.selection-criteria.pregnant-women)",
+          "uniqueItems": true
         },
         "newborn": {
           "type": "boolean",

@@ -49,7 +49,7 @@ public class IndividualStudyConfigService extends EntityConfigService<StudyConfi
 
   @Override
   protected String getDefaultDefinitionResourcePath() {
-    return "classpath:config/study-form/collection-definition.json";
+    return "classpath:config/study-form/collection-uischema.json";
   }
 
   @Override

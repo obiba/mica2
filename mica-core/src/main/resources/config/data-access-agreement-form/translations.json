@@ -1,0 +1,10 @@
+{
+  "en": {
+    "data-access-agreement.default.signature.check": "I declare that I understand the final steps required before obtaining access to the requested material.",
+    "label.1.text": "<h3>Signature</h3>"
+  },
+  "fr": {
+    "data-access-agreement.default.signature.check": "Je déclare comprendre les dernières étapes requises avant l'obtention du matériel demandé.",
+    "label.1.text": "<h3>Signature</h3>"
+  }
+}
