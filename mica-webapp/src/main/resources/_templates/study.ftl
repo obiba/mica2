@@ -26,7 +26,7 @@
 <head>
   <#include "libs/head.ftl">
   <title>${config.name!""} | ${localize(study.acronym)}</title>
-  <link rel="stylesheet" href="${contextPath}/bower_components/mica-study-timeline/dist/mica-study-timeline.css" />
+  <link rel="stylesheet" href="${assetsPath}/libs/node_modules/mica-study-timeline/dist/mica-study-timeline.min.css" />
 </head>
 <body id="${type?lower_case}-study-page" class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="app-wrapper d-flex flex-column min-vh-100">

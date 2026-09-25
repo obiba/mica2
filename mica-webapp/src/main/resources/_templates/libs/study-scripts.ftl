@@ -1,6 +1,6 @@
 <!-- Timeline -->
-<script src="${contextPath}/bower_components/d3/d3.js"></script>
-<script src="${contextPath}/bower_components/mica-study-timeline/dist/mica-study-timeline.js"></script>
+<script src="${assetsPath}/libs/node_modules/d3/d3.min.js"></script>
+<script src="${assetsPath}/libs/node_modules/mica-study-timeline/dist/mica-study-timeline.min.js"></script>
 
 <!-- ChartJS -->
 <script src="${assetsPath}/libs/node_modules/chart.js/dist/chart.umd.js"></script>

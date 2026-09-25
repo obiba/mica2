@@ -10,12 +10,11 @@ Web data portal application server.
 
 ## For developers
 
-Install NodeJS, Grunt, Bower and Debian packaging utils
+Install NodeJS and Debian packaging utils
 
 ```
 sudo add-apt-repository -y ppa:chris-lea/node.js
 sudo apt-get install -y nodejs devscripts
-npm install -g grunt-cli bower
 ```
 
 If you run mica2 server for the first time, run `make npm-install`.
@@ -30,7 +29,7 @@ sudo update-alternatives --config javac
 During development, run
 
 * `make all drop-mongo run` in one terminal to start a fresh empty mica REST server on [HTTP port 8082](http://localhost:8082) or [HTTPS port 8445](https://localhost:8445)
-* `make grunt` in another terminal to start Grunt server with live reload on port **9000**
+* `cd mica-ui && npx quasar dev` in another terminal to start the administration app with live reload on port **9000**
 
 See `make help` for other targets.
 
