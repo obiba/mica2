@@ -127,6 +127,10 @@ export default {
     duplicate_email: 'Another person with the same name has the email {email}: not saved.',
     duplicate_name_title: 'Possible duplicate',
     duplicate_name_text: 'Another person is named {name}. Save anyway?',
+    remove_duplicates: 'Remove duplicates',
+    remove_duplicates_title: 'Remove duplicates',
+    remove_duplicates_text: 'Remove the persons that are exact copies of another one (same fields and memberships)? The oldest copy is kept.',
+    duplicates_removed: '{count} duplicate(s) removed',
     identification: 'Identification',
     institution: 'Institution',
     field: {
