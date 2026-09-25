@@ -28,9 +28,11 @@ export interface AnnotationGroup {
 
 /** the variable taxonomies usable for annotation: all of them (except `Mica_variable`) when none is configured */
 export function annotationTaxonomies(taxonomies: TaxonomyDto[], configured: string[]): TaxonomyDto[] {
-  return taxonomies.filter(
-    (taxonomy) => taxonomy.name !== 'Mica_variable' && (configured.length === 0 || configured.includes(taxonomy.name)),
-  );
+  return taxonomies.filter((taxonomy) => isConfigured(taxonomy.name, configured));
+}
+
+function isConfigured(name: string, configured: string[]): boolean {
+  return name !== 'Mica_variable' && (configured.length === 0 || configured.includes(name));
 }
 
 /** the annotations grouped by taxonomy, in the taxonomies order, the unknown taxonomies and vocabularies last */
@@ -47,7 +49,7 @@ export function groupAnnotations(
       group = {
         name: attribute.namespace,
         taxonomy: taxonomies.find((taxonomy) => taxonomy.name === attribute.namespace),
-        configured: configured.length === 0 || configured.includes(attribute.namespace),
+        configured: isConfigured(attribute.namespace, configured),
         vocabularies: [],
       };
       groups.push(group);
@@ -68,6 +70,15 @@ export function groupAnnotations(
     group.vocabularies.sort((a, b) => rank(names, a.name) - rank(names, b.name));
   });
   return groups.sort((a, b) => rank(taxonomyNames, a.name) - rank(taxonomyNames, b.name));
+}
+
+/** the title of the taxonomy or vocabulary in the locale, its name when it has none */
+export function title(entity: TaxonomyDto | TermDto, locale: string): string {
+  return localeText(entity.title, locale, entity.name);
+}
+
+export function description(entity: TaxonomyDto | TermDto, locale: string): string {
+  return localeText(entity.description, locale);
 }
 
 export function isAnnotated(attributes: AttributeDto[], annotation: Annotation): boolean {
