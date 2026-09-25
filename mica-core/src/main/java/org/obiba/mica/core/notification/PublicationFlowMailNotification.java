@@ -59,6 +59,27 @@ public abstract class PublicationFlowMailNotification {
     return ctx;
   }
 
+  /**
+   * Custom notification subject configured for the entity type, null if the type has none.
+   */
+  protected String getNotificationsSubject(String typeName) {
+    switch(typeName) {
+      case "individual-study":
+      case "harmonization-study":
+        return micaConfigService.getConfig().getStudyNotificationsSubject();
+      case "network":
+        return micaConfigService.getConfig().getNetworkNotificationsSubject();
+      case "collected-dataset":
+        return micaConfigService.getConfig().getStudyDatasetNotificationsSubject();
+      case "harmonized-dataset":
+        return micaConfigService.getConfig().getHarmonizationDatasetNotificationsSubject();
+      case "project":
+        return micaConfigService.getConfig().getProjectNotificationsSubject();
+      default:
+        return null;
+    }
+  }
+
   protected void sendNotification(RevisionStatus status, Map<String, String> ctx, String subject,
     String template, List<SubjectAcl> acls) {
 

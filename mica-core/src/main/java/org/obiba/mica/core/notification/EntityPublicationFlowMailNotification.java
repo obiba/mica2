@@ -37,7 +37,7 @@ public class EntityPublicationFlowMailNotification extends PublicationFlowMailNo
       List<SubjectAcl> acls = getResourceAcls(String.format("/draft/%s", typeName), id);
       acls.addAll(getResourceAcls(String.format("/draft/%s", typeName), "*"));
       String subject = mailService
-        .getSubject(micaConfigService.getConfig().getStudyNotificationsSubject(), ctx, getMailEntityTitle(typeName));
+        .getSubject(getNotificationsSubject(typeName), ctx, getMailEntityTitle(typeName));
 
       sendNotification(status, ctx, subject, String.format(ENTITY_NOTIFICATION_TEMPLATE_FORMAT, typeName), acls);
     }
