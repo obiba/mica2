@@ -92,7 +92,6 @@
           </div>
         </div>
 
-
         <div class="row items-center q-mb-sm">
           <div class="text-subtitle1 col">
             {{ t('study.dces') }}
@@ -120,7 +119,7 @@
               </q-item-section>
               <q-item-section>
                 <q-item-label>{{ localized(dce.name, locale) || dce.id }}</q-item-label>
-                <q-item-label caption>{{ period(dce) }}</q-item-label>
+                <q-item-label caption>{{ dcePeriod(dce, t('study.ongoing')) }}</q-item-label>
               </q-item-section>
               <q-item-section side class="text-no-wrap" @click.stop>
                 <div>
@@ -190,12 +189,7 @@
             <q-item-section class="text-hint">{{ t('study.no_dces') }}</q-item-section>
           </q-item>
         </q-list>
-        <q-expansion-item
-          dense
-          :label="t('study.definition')"
-          header-class="text-subtitle1 q-px-none"
-          class="q-mt-md"
-        >
+        <q-expansion-item dense :label="t('study.definition')" header-class="text-subtitle1 q-px-none" class="q-mt-md">
           <entity-json-form
             :model-value="toModel(population, POPULATION_FIELDS)"
             form-path="/config/population/form"
@@ -223,7 +217,7 @@ import EntityJsonForm from 'src/components/forms/EntityJsonForm.vue';
 import StudyTimeline from 'src/components/studies/StudyTimeline.vue';
 import { DCE_FIELDS, POPULATION_FIELDS, toModel } from 'src/composables/useDocumentModel';
 import { localized } from 'src/utils/persons';
-import { byWeight, cloneEvent, moveItem } from 'src/utils/studies';
+import { byWeight, cloneEvent, dcePeriod, moveItem } from 'src/utils/studies';
 
 interface Props {
   study: StudyDto;
@@ -261,13 +255,6 @@ const removedName = computed(() => {
   const removed = toRemove.value?.dce ?? toRemove.value?.population;
   return removed ? localized(removed.name, locale.value) || removed.id : '';
 });
-
-function period(dce: DceDto) {
-  const date = (year: number | undefined, month: number | undefined, day: string | undefined) =>
-    day ?? (month ? `${year}-${String(month).padStart(2, '0')}` : `${year}`);
-  const end = dce.endYear ? date(dce.endYear, dce.endMonth, dce.endDay) : t('study.ongoing');
-  return `${date(dce.startYear, dce.startMonth, dce.startDay)} – ${end}`;
-}
 
 function filesRoute(dce: DceDto) {
   const path = `${base.value}/population/${population.value?.id}/data-collection-event/${dce.id}`;
