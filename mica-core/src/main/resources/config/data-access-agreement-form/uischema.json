@@ -6,7 +6,7 @@
       "elements": [
         {
           "type": "Label",
-          "text": "<h3>t(data-access-agreement.default.signature.title)</h3>"
+          "text": "t(label.1.text)"
         },
         {
           "type": "Control",

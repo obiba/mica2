@@ -72,8 +72,9 @@ public class DataAccessFormServicesTest {
     assertTrue(uischema.isObject(), form.getDefinition());
     assertEquals("VerticalLayout", uischema.get("type").asText());
     assertTrue(uischema.get("elements").isArray() && uischema.get("elements").size() > 0);
-    // the t() tokens are kept for the server to resolve them
+    // the t() tokens are kept for the server to resolve them, from the texts of the form
     assertTrue(form.getSchema().contains("\"t(") || form.getDefinition().contains("t("));
+    EntityConfigServiceTest.assertTranslated(form.getClass().getSimpleName(), form);
     assertEquals(0, form.getRevision());
     assertNotNull(form.getLastUpdateDate());
   }
