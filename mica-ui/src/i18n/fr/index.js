@@ -99,6 +99,8 @@ export default {
     restore_text: 'Faire de la révision du {date} le brouillon courant du fichier ?',
     revision: 'Révision',
     revisions: 'Révisions',
+    select: 'Sélectionner',
+    select_file: 'Sélectionner un fichier',
     search: 'Chercher des fichiers par nom',
     shortcut: {
       NOT_PUBLISHED: 'Non publiés',
