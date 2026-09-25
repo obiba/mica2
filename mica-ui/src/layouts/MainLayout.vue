@@ -3,7 +3,7 @@
     <q-header elevated class="bg-dark text-white">
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
-        <q-btn flat to="/" no-caps size="lg">
+        <q-btn flat type="a" :href="toPortalUrl('/')" no-caps size="lg">
           {{ appName }}
         </q-btn>
         <q-space />
