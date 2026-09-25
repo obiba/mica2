@@ -50,7 +50,7 @@ public class HarmonizationStudyConfigService extends EntityConfigService<Harmoni
 
   @Override
   protected String getDefaultDefinitionResourcePath() {
-    return "classpath:config/study-form/harmonization-definition.json";
+    return "classpath:config/study-form/harmonization-uischema.json";
   }
 
   @Override

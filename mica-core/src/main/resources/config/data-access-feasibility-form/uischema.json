@@ -6,7 +6,7 @@
       "elements": [
         {
           "type": "Label",
-          "text": "<h3>t(data-access-feasibility.default.grant-submission.title)</h3>"
+          "text": "t(label.1.text)"
         },
         {
           "type": "Control",
@@ -16,12 +16,21 @@
     },
     {
       "type": "Group",
+      "rules": {
+        "visible": "!!grantSubmission"
+      },
       "elements": [
         {
           "type": "VerticalLayout",
+          "options": {
+            "class": "row q-col-gutter-md"
+          },
           "elements": [
             {
               "type": "VerticalLayout",
+              "options": {
+                "class": "col-6"
+              },
               "elements": [
                 {
                   "type": "Control",
@@ -37,39 +46,30 @@
                     }
                   }
                 }
-              ],
-              "options": {
-                "class": "col-6"
-              }
+              ]
             },
             {
               "type": "VerticalLayout",
+              "options": {
+                "class": "col-6"
+              },
               "elements": [
                 {
                   "type": "Control",
                   "scope": "#/properties/grantCompetition"
                 }
-              ],
-              "options": {
-                "class": "col-6"
-              }
+              ]
             }
-          ],
-          "options": {
-            "class": "row q-col-gutter-md"
-          }
+          ]
         }
-      ],
-      "rules": {
-        "visible": "!!grantSubmission"
-      }
+      ]
     },
     {
       "type": "Group",
       "elements": [
         {
           "type": "Label",
-          "text": "<h3>t(data-access-feasibility.default.applicant-info.title)</h3>"
+          "text": "t(label.2.text)"
         }
       ]
     },
@@ -78,9 +78,15 @@
       "elements": [
         {
           "type": "VerticalLayout",
+          "options": {
+            "class": "row q-col-gutter-md"
+          },
           "elements": [
             {
               "type": "VerticalLayout",
+              "options": {
+                "class": "col-6"
+              },
               "elements": [
                 {
                   "type": "Control",
@@ -104,13 +110,13 @@
                   "type": "Control",
                   "scope": "#/properties/currentPosition"
                 }
-              ],
-              "options": {
-                "class": "col-6"
-              }
+              ]
             },
             {
               "type": "VerticalLayout",
+              "options": {
+                "class": "col-6"
+              },
               "elements": [
                 {
                   "type": "Control",
@@ -127,15 +133,9 @@
                     "rows": 3
                   }
                 }
-              ],
-              "options": {
-                "class": "col-6"
-              }
+              ]
             }
-          ],
-          "options": {
-            "class": "row q-col-gutter-md"
-          }
+          ]
         }
       ]
     },
@@ -144,7 +144,7 @@
       "elements": [
         {
           "type": "Label",
-          "text": "<h3>t(data-access-feasibility.default.project-info.title)</h3>"
+          "text": "t(label.3.text)"
         }
       ]
     },
@@ -179,7 +179,7 @@
       "elements": [
         {
           "type": "Label",
-          "text": "<h3>t(data-access-feasibility.default.data.title)</h3>"
+          "text": "t(label.4.text)"
         }
       ]
     },
@@ -224,7 +224,7 @@
       "elements": [
         {
           "type": "Label",
-          "text": "<h3>t(data-access-feasibility.default.biospecimens.title)</h3>"
+          "text": "t(label.5.text)"
         },
         {
           "type": "Control",
@@ -234,6 +234,9 @@
     },
     {
       "type": "Group",
+      "rules": {
+        "visible": "!!includeBiospecimens"
+      },
       "elements": [
         {
           "type": "VerticalLayout",
@@ -273,17 +276,14 @@
             }
           ]
         }
-      ],
-      "rules": {
-        "visible": "!!includeBiospecimens"
-      }
+      ]
     },
     {
       "type": "Group",
       "elements": [
         {
           "type": "Label",
-          "text": "<h3>t(data-access-feasibility.default.linkage.title)</h3>"
+          "text": "t(label.6.text)"
         }
       ]
     },

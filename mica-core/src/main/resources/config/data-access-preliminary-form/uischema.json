@@ -3,20 +3,26 @@
   "elements": [
     {
       "type": "Label",
-      "text": "<h2>I - t(data-access-request.default.I.title)</h2>"
+      "text": "t(label.1.text)"
     },
     {
       "type": "Group",
       "elements": [
         {
           "type": "Label",
-          "text": "<h3>A. t(data-access-request.default.I.A.title)</h3><p class='help-block'>t(data-access-request.default.I.A.info)</p>"
+          "text": "t(label.2.text)"
         },
         {
           "type": "VerticalLayout",
+          "options": {
+            "class": "row q-col-gutter-md"
+          },
           "elements": [
             {
               "type": "VerticalLayout",
+              "options": {
+                "class": "col-6"
+              },
               "elements": [
                 {
                   "type": "Control",
@@ -34,13 +40,13 @@
                   "type": "Control",
                   "scope": "#/properties/institution"
                 }
-              ],
-              "options": {
-                "class": "col-6"
-              }
+              ]
             },
             {
               "type": "VerticalLayout",
+              "options": {
+                "class": "col-6"
+              },
               "elements": [
                 {
                   "type": "Control",
@@ -61,15 +67,9 @@
                     "rows": 3
                   }
                 }
-              ],
-              "options": {
-                "class": "col-6"
-              }
+              ]
             }
-          ],
-          "options": {
-            "class": "row q-col-gutter-md"
-          }
+          ]
         }
       ]
     },
@@ -78,13 +78,19 @@
       "elements": [
         {
           "type": "Label",
-          "text": "<h3>B. t(data-access-request.default.I.B.title)</h3><p class='help-block'>t(data-access-request.default.I.B.info)</p>"
+          "text": "t(label.3.text)"
         },
         {
           "type": "VerticalLayout",
+          "options": {
+            "class": "row q-col-gutter-md"
+          },
           "elements": [
             {
               "type": "VerticalLayout",
+              "options": {
+                "class": "col-6"
+              },
               "elements": [
                 {
                   "type": "Control",
@@ -102,13 +108,13 @@
                   "type": "Control",
                   "scope": "#/properties/repInstitution"
                 }
-              ],
-              "options": {
-                "class": "col-6"
-              }
+              ]
             },
             {
               "type": "VerticalLayout",
+              "options": {
+                "class": "col-6"
+              },
               "elements": [
                 {
                   "type": "Control",
@@ -125,15 +131,9 @@
                     "rows": 3
                   }
                 }
-              ],
-              "options": {
-                "class": "col-6"
-              }
+              ]
             }
-          ],
-          "options": {
-            "class": "row q-col-gutter-md"
-          }
+          ]
         }
       ]
     },
@@ -142,7 +142,7 @@
       "elements": [
         {
           "type": "Label",
-          "text": "<h3>C. t(data-access-request.default.I.C.title)</h3>"
+          "text": "t(label.4.text)"
         },
         {
           "type": "Control",
@@ -154,31 +154,31 @@
         },
         {
           "type": "VerticalLayout",
+          "options": {
+            "class": "row q-col-gutter-md"
+          },
           "elements": [
             {
               "type": "VerticalLayout",
+              "options": {
+                "class": "col-6"
+              },
               "elements": [
                 {
                   "type": "Control",
                   "scope": "#/properties/projectWebsite",
                   "hint": "t(data-access-request.default.I.C.website-help)"
                 }
-              ],
-              "options": {
-                "class": "col-6"
-              }
+              ]
             },
             {
               "type": "VerticalLayout",
-              "elements": [],
               "options": {
                 "class": "col-6"
-              }
+              },
+              "elements": []
             }
-          ],
-          "options": {
-            "class": "row q-col-gutter-md"
-          }
+          ]
         }
       ]
     },
@@ -187,7 +187,7 @@
       "elements": [
         {
           "type": "Label",
-          "text": "<h3>F. t(data-access-request.default.I.F.title)</h3><p class='help-block'>t(data-access-request.default.I.F.info)</p>"
+          "text": "t(label.5.text)"
         },
         {
           "type": "Control",
@@ -205,7 +205,7 @@
     },
     {
       "type": "Label",
-      "text": "<h2>II - t(data-access-request.default.documents.title)</h2>"
+      "text": "t(label.6.text)"
     },
     {
       "type": "Group",
