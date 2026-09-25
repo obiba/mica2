@@ -13,6 +13,13 @@ export function isFolder(document: FileDto | undefined): boolean {
   return document?.type === 'FOLDER';
 }
 
+/** whether the name ends with one of the extensions (e.g. `.xlsx`, case insensitive), any name when none */
+export function hasExtension(name: string, extensions: string[]): boolean {
+  return (
+    extensions.length === 0 || extensions.some((extension) => name.toLowerCase().endsWith(extension.toLowerCase()))
+  );
+}
+
 /** the parent path, `/` for the top-level ones */
 export function parentPath(path: string): string {
   const index = path.lastIndexOf('/');
