@@ -120,7 +120,7 @@
                 :can-edit="canEdit"
                 :busy="saving"
                 @change="onDocumentChange"
-              />
+            />
             </div>
           </q-tab-panel>
           <template v-if="network">
