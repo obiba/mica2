@@ -30,7 +30,7 @@
         <q-btn flat icon="add" :label="t('persons.new')" color="primary" @click="showNew = true" />
         <q-space />
         <q-btn flat :label="t('cancel')" color="secondary" v-close-popup />
-        <q-btn flat :label="t('add')" color="primary" :disable="!person" v-close-popup @click="onAdd" />
+        <q-btn :label="t('add')" color="primary" :disable="!person" v-close-popup @click="onAdd" />
       </q-card-actions>
     </q-card>
     <person-dialog v-model="showNew" @saved="onCreated" />
