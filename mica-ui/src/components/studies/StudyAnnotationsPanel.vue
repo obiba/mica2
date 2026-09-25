@@ -25,13 +25,13 @@
         <q-card-section class="row items-start no-wrap bg-grey-1">
           <div class="col">
             <div class="text-subtitle1 text-weight-medium">
-              {{ group.taxonomy ? title(group.taxonomy) : group.name }}
+              {{ group.taxonomy ? title(group.taxonomy, locale) : group.name }}
               <q-icon v-if="!group.taxonomy || !group.configured" name="warning" color="warning" size="xs" class="q-ml-xs">
                 <q-tooltip>{{ t(group.taxonomy ? 'annotations.not_configured' : 'annotations.unknown') }}</q-tooltip>
               </q-icon>
             </div>
-            <div v-if="group.taxonomy && description(group.taxonomy)" class="text-body2 text-grey-8">
-              {{ description(group.taxonomy) }}
+            <div v-if="group.taxonomy && description(group.taxonomy, locale)" class="text-body2 text-grey-8">
+              {{ description(group.taxonomy, locale) }}
             </div>
           </div>
           <q-btn
@@ -50,13 +50,13 @@
           <q-item v-for="item in group.vocabularies" :key="item.name">
             <q-item-section>
               <q-item-label class="text-weight-medium">
-                {{ item.vocabulary ? title(item.vocabulary) : item.name }}
+                {{ item.vocabulary ? title(item.vocabulary, locale) : item.name }}
                 <q-icon v-if="!item.vocabulary" name="warning" color="warning" size="xs" class="q-ml-xs">
                   <q-tooltip>{{ t('annotations.unknown') }}</q-tooltip>
                 </q-icon>
               </q-item-label>
-              <q-item-label v-if="item.vocabulary && description(item.vocabulary)" class="text-body2 text-grey-8">
-                {{ description(item.vocabulary) }}
+              <q-item-label v-if="item.vocabulary && description(item.vocabulary, locale)" class="text-body2 text-grey-8">
+                {{ description(item.vocabulary, locale) }}
               </q-item-label>
               <q-item-label caption>
                 <code>{{ item.name }}</code>
@@ -93,19 +93,20 @@
 <script setup lang="ts">
 import { api } from 'src/boot/api';
 import type { AttributeDto } from 'src/models/Mica';
-import type { TaxonomyDto, TermDto } from 'src/models/Opal';
+import type { TaxonomyDto } from 'src/models/Opal';
 import ConfirmDialog from 'src/components/ConfirmDialog.vue';
 import StudyAnnotationsDialog from 'src/components/studies/StudyAnnotationsDialog.vue';
 import type { DocumentTarget } from 'src/composables/useDocumentTarget';
 import {
   addAnnotations,
   annotationTaxonomies,
+  description,
   groupAnnotations,
   removeAnnotations,
+  title,
   toAttributesBody,
   type Annotation,
 } from 'src/utils/annotations';
-import { localeText } from 'src/utils/config';
 import { notifyError } from 'src/utils/notify';
 
 interface Props {
@@ -134,30 +135,27 @@ const removeLabels = computed(() => {
   const group = groups.value.find((item) => item.name === toRemove.value?.namespace);
   const vocabulary = group?.vocabularies.find((item) => item.name === toRemove.value?.name);
   return {
-    taxonomy: group?.taxonomy ? title(group.taxonomy) : toRemove.value?.namespace,
-    vocabulary: vocabulary?.vocabulary ? title(vocabulary.vocabulary) : toRemove.value?.name,
+    taxonomy: group?.taxonomy ? title(group.taxonomy, locale.value) : toRemove.value?.namespace,
+    vocabulary: vocabulary?.vocabulary ? title(vocabulary.vocabulary, locale.value) : toRemove.value?.name,
   };
 });
-
-function title(entity: TaxonomyDto | TermDto) {
-  return localeText(entity.title, locale.value, entity.name);
-}
-
-function description(entity: TaxonomyDto | TermDto) {
-  return localeText(entity.description, locale.value);
-}
 
 async function save(attributes: AttributeDto[]) {
   saving.value = true;
   try {
     await api.put(`${props.target.path}/attributes`, toAttributesBody(attributes));
+    // still saving until the reloaded attributes arrive: an edit of the stale ones would undo this one
     emit('saved');
   } catch (error) {
     notifyError(error);
-  } finally {
     saving.value = false;
   }
 }
+
+watch(
+  () => props.attributes,
+  () => (saving.value = false),
+);
 
 function onAdd(annotations: Annotation[]) {
   void save(addAnnotations(props.attributes, annotations));
