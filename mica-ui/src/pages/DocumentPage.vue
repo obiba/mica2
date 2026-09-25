@@ -149,6 +149,11 @@
               />
             </q-tab-panel>
           </template>
+          <q-tab-panel v-if="annotated && canEdit" name="annotations" class="q-pa-none">
+            <div class="text-h5 q-mb-sm">{{ t('annotations.title') }}</div>
+            <q-separator class="q-mb-md" />
+            <study-annotations-panel :target="target" :attributes="annotated.attributes ?? []" @saved="refresh" />
+          </q-tab-panel>
           <q-tab-panel v-if="membersParent && membersDocument" name="members" class="q-pa-none">
             <div class="text-h5 q-mb-sm">{{ t('members.title') }}</div>
             <q-separator class="q-mb-md" />
@@ -207,6 +212,7 @@ import NetworkLinksPanel from 'src/components/networks/NetworkLinksPanel.vue';
 import MembersPanel from 'src/components/persons/MembersPanel.vue';
 import StudyPopulationsPanel from 'src/components/studies/StudyPopulationsPanel.vue';
 import StudyPopulationsPrint from 'src/components/studies/StudyPopulationsPrint.vue';
+import StudyAnnotationsPanel from 'src/components/studies/StudyAnnotationsPanel.vue';
 import StudyTimeline from 'src/components/studies/StudyTimeline.vue';
 import CollectedTablePanel from 'src/components/datasets/CollectedTablePanel.vue';
 import HarmonizedTablesPanel from 'src/components/datasets/HarmonizedTablesPanel.vue';
@@ -234,6 +240,7 @@ const TABS = ['view', 'history', 'files', 'comments', 'permissions'];
 const STUDY_KINDS: NetworkLinkKind[] = ['individual-study', 'harmonization-study'];
 const NETWORK_TABS = ['studies', 'networks'];
 const DATASET_TYPES: DocumentType[] = ['collected-dataset', 'harmonized-dataset'];
+const STUDY_TYPES: DocumentType[] = ['individual-study', 'harmonization-study'];
 /** the documents with members, by the kind of their memberships */
 const MEMBERS_PARENTS: Partial<Record<DocumentType, MembersParent>> = {
   network: 'network',
@@ -258,6 +265,7 @@ const tab = computed(() => {
     ...(type.value === 'network' ? NETWORK_TABS : []),
     ...(type.value === 'individual-study' ? ['populations'] : []),
     ...(DATASET_TYPES.includes(type.value) ? ['tables'] : []),
+    ...(STUDY_TYPES.includes(type.value) ? ['annotations'] : []),
     ...(membersParent.value ? ['members'] : []),
   ];
   return name && tabs.includes(name) ? name : 'view';
@@ -273,6 +281,10 @@ const membersDocument = computed(() =>
 /** the document when it is an individual study (with populations) */
 const study = computed(() =>
   type.value === 'individual-study' ? (document.value as StudyDto | undefined) : undefined,
+);
+/** the document when it is a study or an initiative (with annotations) */
+const annotated = computed(() =>
+  STUDY_TYPES.includes(type.value) ? (document.value as StudyDto | undefined) : undefined,
 );
 /** the document when it is a dataset (with tables) */
 const dataset = computed(() =>
@@ -301,6 +313,7 @@ const menu = computed(() => [
         },
       ]
     : []),
+  ...(annotated.value && canEdit.value ? [{ name: 'annotations', icon: 'sell', label: 'annotations.title' }] : []),
   ...(membersParent.value ? [{ name: 'members', icon: 'people', label: 'members.title' }] : []),
   { name: 'history', icon: 'history', label: 'history.title' },
   { name: 'files', icon: 'folder', label: 'files.title' },
