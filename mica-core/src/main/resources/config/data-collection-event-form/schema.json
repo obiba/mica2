@@ -6,29 +6,61 @@
       "default": [],
       "items": {
         "type": "string",
-        "enum": [
-          "questionnaires",
-          "cognitive_measures",
-          "physical_measures",
-          "biological_samples",
-          "administratives_databases",
-          "others"
+        "oneOf": [
+          {
+            "const": "questionnaires",
+            "title": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.questionnaires.title)"
+          },
+          {
+            "const": "cognitive_measures",
+            "title": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.cognitive_measures.title)"
+          },
+          {
+            "const": "physical_measures",
+            "title": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.physical_measures.title)"
+          },
+          {
+            "const": "biological_samples",
+            "title": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.biological_samples.title)"
+          },
+          {
+            "const": "administratives_databases",
+            "title": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.administratives_databases.title)"
+          },
+          {
+            "const": "others",
+            "title": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.others.title)"
+          }
         ]
       },
-      "title": "t(data-collection-event.data-sources)"
+      "title": "t(data-collection-event.data-sources)",
+      "uniqueItems": true
     },
     "administrativeDatabases": {
       "type": "array",
       "title": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.administratives_databases.title)",
       "items": {
         "type": "string",
-        "enum": [
-          "health_databases",
-          "vital_statistics_databases",
-          "socioeconomic_databases",
-          "environmental_databases"
+        "oneOf": [
+          {
+            "const": "health_databases",
+            "title": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-administrativeDatabases.term.health_databases.title)"
+          },
+          {
+            "const": "vital_statistics_databases",
+            "title": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-administrativeDatabases.term.vital_statistics_databases.title)"
+          },
+          {
+            "const": "socioeconomic_databases",
+            "title": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-administrativeDatabases.term.socioeconomic_databases.title)"
+          },
+          {
+            "const": "environmental_databases",
+            "title": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-administrativeDatabases.term.environmental_databases.title)"
+          }
         ]
-      }
+      },
+      "uniqueItems": true
     },
     "otherDataSources": {
       "type": "object",
@@ -41,18 +73,46 @@
       "default": [],
       "items": {
         "type": "string",
-        "enum": [
-          "blood",
-          "urine",
-          "saliva",
-          "hair",
-          "cord_blood",
-          "tissues",
-          "nail",
-          "buccal_cells",
-          "others"
+        "oneOf": [
+          {
+            "const": "blood",
+            "title": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.blood.title)"
+          },
+          {
+            "const": "urine",
+            "title": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.urine.title)"
+          },
+          {
+            "const": "saliva",
+            "title": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.saliva.title)"
+          },
+          {
+            "const": "hair",
+            "title": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.hair.title)"
+          },
+          {
+            "const": "cord_blood",
+            "title": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.cord_blood.title)"
+          },
+          {
+            "const": "tissues",
+            "title": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.tissues.title)"
+          },
+          {
+            "const": "nail",
+            "title": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.nail.title)"
+          },
+          {
+            "const": "buccal_cells",
+            "title": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.buccal_cells.title)"
+          },
+          {
+            "const": "others",
+            "title": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.others.title)"
+          }
         ]
-      }
+      },
+      "uniqueItems": true
     },
     "tissueTypes": {
       "type": "object",

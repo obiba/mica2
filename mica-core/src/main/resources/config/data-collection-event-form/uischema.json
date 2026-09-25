@@ -1,0 +1,89 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "VerticalLayout",
+      "options": {
+        "class": "row q-col-gutter-md"
+      },
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "col-6"
+          },
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/dataSources",
+              "hint": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.description)",
+              "options": {
+                "format": "checkbox"
+              }
+            }
+          ]
+        },
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "col-6"
+          },
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/bioSamples",
+              "hint": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.biological_samples.description)",
+              "options": {
+                "format": "checkbox"
+              },
+              "rules": {
+                "visible": "contains(dataSources, \"biological_samples\")"
+              }
+            },
+            {
+              "type": "VerticalLayout",
+              "options": {
+                "class": "hoffset3"
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/tissueTypes",
+                  "rules": {
+                    "visible": "contains(bioSamples, \"tissues\")"
+                  }
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/otherBioSamples",
+                  "rules": {
+                    "visible": "contains(bioSamples, \"others\")"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/administrativeDatabases",
+              "hint": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.administratives_databases.description)",
+              "options": {
+                "format": "checkbox"
+              },
+              "rules": {
+                "visible": "contains(dataSources, \"administratives_databases\")"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/otherDataSources",
+              "hint": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.others.description)",
+              "rules": {
+                "visible": "contains(dataSources, \"others\")"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
