@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Test;
+import org.obiba.mica.micaConfig.domain.EntityConfig;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 
@@ -23,6 +24,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
@@ -198,6 +201,40 @@ public class EntityConfigServiceTest {
       schema.get("properties").fieldNames()
         .forEachRemaining(property -> assertThat(path, scopes, hasItem("#/properties/" + property)));
     }
+  }
+
+  @Test
+  public void every_default_form_is_a_json_forms_pair_with_its_texts() throws Exception {
+    List<EntityConfigService<?>> services = List.of(
+      new NetworkConfigService(),
+      new IndividualStudyConfigService(),
+      new HarmonizationStudyConfigService(),
+      new PopulationConfigService(),
+      new DataCollectionEventConfigService(),
+      new StudyDatasetConfigService(),
+      new HarmonizationDatasetConfigService(),
+      new ProjectConfigService());
+
+    for (EntityConfigService<?> service : services) {
+      EntityConfig form = service.createDefaultForm();
+      String path = service.getDefaultDefinitionResourcePath();
+      JsonNode uischema = new ObjectMapper().readTree(form.getDefinition());
+      assertThat(path, uischema.get("type").asText(), is("VerticalLayout"));
+      assertThat(path, new ObjectMapper().readTree(form.getSchema()).isObject(), is(true));
+      assertTranslated(path, form);
+    }
+  }
+
+  /** every t(key) token of the form is translated by the texts of the form, in english and in french */
+  static void assertTranslated(String name, EntityConfig form) throws IOException {
+    Matcher tokens = Pattern.compile("t\\(([^()]+)\\)").matcher(form.getSchema() + form.getDefinition());
+    if (!tokens.find()) return;
+    JsonNode translations = new ObjectMapper().readTree(form.getTranslations());
+    do {
+      for (String locale : List.of("en", "fr")) {
+        assertThat(name + " " + locale, translations.path(locale).has(tokens.group(1)), is(true));
+      }
+    } while (tokens.find());
   }
 
   private String readResource(String path) throws IOException {

@@ -40,7 +40,7 @@ public class StudyDatasetConfigService extends EntityConfigService<StudyDatasetC
 
   @Override
   protected String getDefaultDefinitionResourcePath() {
-    return "classpath:config/dataset-form/definition.json";
+    return "classpath:config/dataset-form/uischema.json";
   }
 
   @Override

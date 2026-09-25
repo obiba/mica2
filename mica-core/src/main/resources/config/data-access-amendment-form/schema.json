@@ -48,7 +48,7 @@
           },
           {
             "const": "IIrdCV",
-            "title": "t(data-access-amendment.default.documents.cv)t"
+            "title": "t(modificationNature.options.IIrdCV)"
           },
           {
             "const": "IIrdPeerReview",
