@@ -209,4 +209,6 @@ async function load() {
 }
 
 watch([() => props.target.type, searchText, () => searchField.value.value], load, { immediate: true });
+
+defineExpose({ load });
 </script>
