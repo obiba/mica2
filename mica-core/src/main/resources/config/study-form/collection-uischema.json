@@ -1,0 +1,598 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "Label",
+      "text": "<div class='alert alert-info' role='alert'><strong>License Info.</strong>This model (version <a href='https://github.com/maelstrom-research/maelstrom-models/tree/1.1.3' target='_blank'>1.1.3</a>) was released by <a href='https://www.maelstrom-research.org/' target='_blank'>Maelstrom Research</a> under the <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/' target='_blank'>Creative Commons License with Non Commercial and No Derivatives</a> constraints.</div>"
+    },
+    {
+      "type": "VerticalLayout",
+      "options": {
+        "class": "row q-col-gutter-md"
+      },
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "col-6"
+          },
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/startYear"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/endYear"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/website"
+            }
+          ]
+        },
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "col-6"
+          },
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/funding"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/info",
+              "options": {
+                "rows": 3,
+                "marked": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Label",
+      "text": "t(label.1.text)"
+    },
+    {
+      "type": "VerticalLayout",
+      "options": {
+        "class": "row q-col-gutter-md"
+      },
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "col-6"
+          },
+          "elements": [
+            {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Label",
+                  "text": "t(label.2.text)"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/methods/properties/design",
+                  "label": false,
+                  "hint": "t(study_taxonomy.vocabulary.methods-design.description)",
+                  "options": {
+                    "format": "radio"
+                  }
+                },
+                {
+                  "type": "VerticalLayout",
+                  "options": {
+                    "class": "hoffset3"
+                  },
+                  "elements": [
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/methods/properties/otherDesign",
+                      "rules": {
+                        "visible": "methods.design == \"other\""
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/methods/properties/followUpInfo",
+                  "hint": "t(study.follow-up-help)",
+                  "options": {
+                    "rows": 3,
+                    "marked": true
+                  }
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/methods/properties/info",
+                  "options": {
+                    "rows": 3,
+                    "marked": true
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "col-6"
+          },
+          "elements": [
+            {
+              "type": "Label",
+              "text": "t(label.3.text)"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/methods/properties/recruitments",
+              "label": false,
+              "hint": "t(study_taxonomy.vocabulary.methods-recruitments.description)",
+              "options": {
+                "format": "checkbox"
+              }
+            },
+            {
+              "type": "VerticalLayout",
+              "options": {
+                "class": "hoffset3"
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/methods/properties/otherRecruitment",
+                  "rules": {
+                    "visible": "contains(methods.recruitments, \"other\")"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "Label",
+              "text": "t(label.4.text)"
+            },
+            {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "VerticalLayout",
+                  "elements": [
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/numberOfParticipants/properties/participant/properties/number"
+                    },
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/numberOfParticipants/properties/participant/properties/noLimit"
+                    }
+                  ]
+                },
+                {
+                  "type": "VerticalLayout",
+                  "elements": [
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/numberOfParticipants/properties/sample/properties/number"
+                    },
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/numberOfParticipants/properties/sample/properties/noLimit"
+                    }
+                  ]
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/numberOfParticipants/properties/info",
+                  "options": {
+                    "rows": 3,
+                    "marked": true
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "VerticalLayout",
+      "options": {
+        "class": "row q-col-gutter-md"
+      },
+      "elements": [
+        {
+          "type": "Label",
+          "text": "t(label.5.text)"
+        },
+        {
+          "type": "Label",
+          "text": "t(label.6.text)"
+        },
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "row q-col-gutter-md"
+          },
+          "elements": [
+            {
+              "type": "VerticalLayout",
+              "options": {
+                "class": "col-md-6"
+              },
+              "elements": [
+                {
+                  "type": "Label",
+                  "text": "t(label.7.text)"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/access",
+                  "label": false
+                },
+                {
+                  "type": "VerticalLayout",
+                  "options": {
+                    "class": "hoffset3"
+                  },
+                  "elements": [
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/otherAccess",
+                      "options": {
+                        "rows": 2
+                      },
+                      "rules": {
+                        "visible": "access.access_other == \"yes\""
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "VerticalLayout",
+              "options": {
+                "class": "col-md-6"
+              },
+              "elements": [
+                {
+                  "type": "Label",
+                  "text": "t(label.8.text)"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/access_info_location",
+                  "label": false,
+                  "options": {
+                    "format": "checkbox"
+                  }
+                },
+                {
+                  "type": "VerticalLayout",
+                  "rules": {
+                    "visible": "contains(access_info_location, \"study_representative\")"
+                  },
+                  "elements": [
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/access_info_representative/properties/name"
+                    },
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/access_info_representative/properties/title"
+                    },
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/access_info_representative/properties/email"
+                    },
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/access_info_representative/properties/telephone"
+                    },
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/access_info_representative/properties/institution"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "col-12"
+          },
+          "rules": {
+            "visible": "access.access_data == \"yes\" || access.access_bio_samples == \"yes\" || access.access_other == \"yes\""
+          },
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/access_restrictions"
+            }
+          ]
+        },
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "col-12"
+          },
+          "rules": {
+            "visible": "!!access_restrictions && (access.access_data == \"yes\" || access.access_bio_samples == \"yes\" || access.access_other == \"yes\")"
+          },
+          "elements": [
+            {
+              "type": "Label",
+              "text": "t(label.9.text)"
+            },
+            {
+              "type": "Label",
+              "text": "t(label.10.text)"
+            },
+            {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "VerticalLayout",
+                  "options": {
+                    "class": "row q-col-gutter-md"
+                  },
+                  "elements": [
+                    {
+                      "type": "VerticalLayout",
+                      "options": {
+                        "class": "col-6"
+                      },
+                      "elements": [
+                        {
+                          "type": "Label",
+                          "text": "t(label.11.text)"
+                        },
+                        {
+                          "type": "Control",
+                          "scope": "#/properties/access_permission_data",
+                          "label": false
+                        },
+                        {
+                          "type": "Label",
+                          "text": "t(label.12.text)"
+                        },
+                        {
+                          "type": "Control",
+                          "scope": "#/properties/access_permission_biological_samples",
+                          "label": false
+                        },
+                        {
+                          "type": "Label",
+                          "text": "t(label.13.text)"
+                        },
+                        {
+                          "type": "Control",
+                          "scope": "#/properties/access_permission_additional_info",
+                          "label": false,
+                          "options": {
+                            "rows": 2
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "VerticalLayout",
+                      "options": {
+                        "class": "col-6"
+                      },
+                      "elements": [
+                        {
+                          "type": "Label",
+                          "text": "t(label.14.text)"
+                        },
+                        {
+                          "type": "Control",
+                          "scope": "#/properties/access_data_can_leave"
+                        },
+                        {
+                          "type": "Control",
+                          "scope": "#/properties/access_biological_samples_can_leave"
+                        },
+                        {
+                          "type": "Label",
+                          "text": "t(label.15.text)"
+                        },
+                        {
+                          "type": "Control",
+                          "scope": "#/properties/access_special_conditions_to_leave",
+                          "label": false,
+                          "options": {
+                            "rows": 2
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "col-12"
+          },
+          "rules": {
+            "visible": "access.access_data == \"yes\" || access.access_bio_samples == \"yes\" || access.access_other == \"yes\""
+          },
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/access_fees"
+            }
+          ]
+        },
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "col-12"
+          },
+          "rules": {
+            "visible": "!!access_fees && (access.access_data == \"yes\" || access.access_bio_samples == \"yes\" || access.access_other == \"yes\")"
+          },
+          "elements": [
+            {
+              "type": "VerticalLayout",
+              "options": {
+                "class": "row q-col-gutter-md"
+              },
+              "elements": [
+                {
+                  "type": "VerticalLayout",
+                  "options": {
+                    "class": "col-12"
+                  },
+                  "elements": [
+                    {
+                      "type": "Label",
+                      "text": "t(label.16.text)"
+                    },
+                    {
+                      "type": "Label",
+                      "text": "t(label.17.text)"
+                    },
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/access_data_sharing_cost",
+                      "label": false
+                    }
+                  ]
+                },
+                {
+                  "type": "VerticalLayout",
+                  "options": {
+                    "class": "col-md-6"
+                  },
+                  "elements": [
+                    {
+                      "type": "Label",
+                      "text": "t(label.18.text)"
+                    },
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/access_cost_reduction_consideration",
+                      "label": false
+                    }
+                  ]
+                },
+                {
+                  "type": "VerticalLayout",
+                  "options": {
+                    "class": "col-md-6"
+                  },
+                  "elements": [
+                    {
+                      "type": "VerticalLayout",
+                      "elements": [
+                        {
+                          "type": "Label",
+                          "text": "t(label.19.text)"
+                        },
+                        {
+                          "type": "Control",
+                          "scope": "#/properties/access_cost_reduction_consideration_specification",
+                          "label": false,
+                          "options": {
+                            "rows": 2
+                          }
+                        },
+                        {
+                          "type": "Label",
+                          "text": "t(label.20.text)"
+                        },
+                        {
+                          "type": "Control",
+                          "scope": "#/properties/access_cost_additional_information",
+                          "label": false,
+                          "options": {
+                            "rows": 2
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "col-12"
+          },
+          "rules": {
+            "visible": "access.access_data == \"yes\" || access.access_bio_samples == \"yes\" || access.access_other == \"yes\""
+          },
+          "elements": [
+            {
+              "type": "Label",
+              "text": "t(label.21.text)"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/access_supplementary_info",
+              "label": false,
+              "options": {
+                "rows": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "VerticalLayout",
+      "options": {
+        "class": "row q-col-gutter-md"
+      },
+      "elements": [
+        {
+          "type": "Label",
+          "text": "<hr>"
+        },
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "col-6"
+          },
+          "elements": [
+            {
+              "type": "Label",
+              "text": "t(label.22.text)"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/markerPaper",
+              "label": false,
+              "options": {
+                "rows": 3
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/pubmedId"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

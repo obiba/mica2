@@ -39,7 +39,7 @@ public class DataCollectionEventConfigService extends EntityConfigService<DataCo
 
   @Override
   protected String getDefaultDefinitionResourcePath() {
-    return "classpath:config/data-collection-event-form/definition.json";
+    return "classpath:config/data-collection-event-form/uischema.json";
   }
 
   @Override

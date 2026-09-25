@@ -1,0 +1,49 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "row q-col-gutter-md"
+          },
+          "elements": [
+            {
+              "type": "VerticalLayout",
+              "options": {
+                "class": "col-12 col-md-6"
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/startYear"
+                }
+              ]
+            },
+            {
+              "type": "VerticalLayout",
+              "options": {
+                "class": "col-12 col-md-6"
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/endYear"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/additionalInformation",
+      "options": {
+        "marked": true
+      }
+    }
+  ]
+}

@@ -23,13 +23,31 @@
         "design": {
           "type": "string",
           "title": "t(study_taxonomy.vocabulary.methods-design.title)",
-          "enum": [
-            "cohort_study",
-            "case_control",
-            "case_only",
-            "cross_sectional",
-            "clinical_trial",
-            "other"
+          "oneOf": [
+            {
+              "const": "cohort_study",
+              "title": "t(study_taxonomy.vocabulary.methods-design.term.cohort_study.title)"
+            },
+            {
+              "const": "case_control",
+              "title": "t(study_taxonomy.vocabulary.methods-design.term.case_control.title)"
+            },
+            {
+              "const": "case_only",
+              "title": "t(study_taxonomy.vocabulary.methods-design.term.case_only.title)"
+            },
+            {
+              "const": "cross_sectional",
+              "title": "t(study_taxonomy.vocabulary.methods-design.term.cross_sectional.title)"
+            },
+            {
+              "const": "clinical_trial",
+              "title": "t(study_taxonomy.vocabulary.methods-design.term.clinical_trial.title)"
+            },
+            {
+              "const": "other",
+              "title": "t(study_taxonomy.vocabulary.methods-design.term.other.title)"
+            }
           ]
         },
         "otherDesign": {
@@ -46,13 +64,23 @@
           "type": "array",
           "items": {
             "type": "string",
-            "enum": [
-              "individuals",
-              "families",
-              "other"
+            "oneOf": [
+              {
+                "const": "individuals",
+                "title": "t(study_taxonomy.vocabulary.methods-recruitments.term.individuals.title)"
+              },
+              {
+                "const": "families",
+                "title": "t(study_taxonomy.vocabulary.methods-recruitments.term.families.title)"
+              },
+              {
+                "const": "other",
+                "title": "t(study_taxonomy.vocabulary.methods-recruitments.term.other.title)"
+              }
             ]
           },
-          "title": "t(study.recruitment-sources.label)"
+          "title": "t(study.recruitment-sources.label)",
+          "uniqueItems": true
         },
         "otherRecruitment": {
           "type": "object",
@@ -115,9 +143,18 @@
       "type": "object",
       "format": "radioGroupCollection",
       "values": [
-        {"key": "yes", "caption":"t(global.yes)"},
-        {"key": "no", "caption":"t(global.no)"},
-        {"key": "na", "caption":"t(global.not-applicable)"}
+        {
+          "key": "yes",
+          "caption": "t(global.yes)"
+        },
+        {
+          "key": "no",
+          "caption": "t(global.no)"
+        },
+        {
+          "key": "na",
+          "caption": "t(global.not-applicable)"
+        }
       ],
       "items": [
         {
@@ -144,11 +181,18 @@
       "type": "array",
       "items": {
         "type": "string",
-        "enum": [
-          "study_website",
-          "study_representative"
+        "oneOf": [
+          {
+            "const": "study_website",
+            "title": "t(study.access.external_researchers_obtaining_study_data_bio_info.access_info_location.study_website)"
+          },
+          {
+            "const": "study_representative",
+            "title": "t(study.access.external_researchers_obtaining_study_data_bio_info.access_info_location.study_representative)"
+          }
         ]
-      }
+      },
+      "uniqueItems": true
     },
     "access_info_representative": {
       "type": "object",
@@ -181,10 +225,22 @@
       "format": "radioGroupCollection",
       "title": "Data",
       "values": [
-        {"key": "yes", "caption":"t(global.yes)"},
-        {"key": "no", "caption":"t(global.no)"},
-        {"key": "na", "caption":"t(global.not-applicable)"},
-        {"key": "dk", "caption":"t(global.don-know)"}
+        {
+          "key": "yes",
+          "caption": "t(global.yes)"
+        },
+        {
+          "key": "no",
+          "caption": "t(global.no)"
+        },
+        {
+          "key": "na",
+          "caption": "t(global.not-applicable)"
+        },
+        {
+          "key": "dk",
+          "caption": "t(global.don-know)"
+        }
       ],
       "items": [
         {
@@ -210,10 +266,22 @@
       "format": "radioGroupCollection",
       "title": "Biological Samples",
       "values": [
-        {"key": "yes", "caption":"t(global.yes)"},
-        {"key": "no", "caption":"t(global.no)"},
-        {"key": "na", "caption":"t(global.not-applicable)"},
-        {"key": "dk", "caption":"t(global.don-know)"}
+        {
+          "key": "yes",
+          "caption": "t(global.yes)"
+        },
+        {
+          "key": "no",
+          "caption": "t(global.no)"
+        },
+        {
+          "key": "na",
+          "caption": "t(global.not-applicable)"
+        },
+        {
+          "key": "dk",
+          "caption": "t(global.don-know)"
+        }
       ],
       "items": [
         {
@@ -239,10 +307,22 @@
       "title": "t(study_taxonomy.vocabulary.access_data.title)",
       "format": "radioGroupCollection",
       "values": [
-        {"key": "yes", "caption":"t(global.yes)"},
-        {"key": "no", "caption":"t(global.no)"},
-        {"key": "na", "caption":"t(global.not-applicable)"},
-        {"key": "dk", "caption":"t(global.don-know)"}
+        {
+          "key": "yes",
+          "caption": "t(global.yes)"
+        },
+        {
+          "key": "no",
+          "caption": "t(global.no)"
+        },
+        {
+          "key": "na",
+          "caption": "t(global.not-applicable)"
+        },
+        {
+          "key": "dk",
+          "caption": "t(global.don-know)"
+        }
       ],
       "items": [
         {
@@ -260,10 +340,22 @@
       "title": "t(study_taxonomy.vocabulary.access_bio_samples.title)",
       "format": "radioGroupCollection",
       "values": [
-        {"key": "yes", "caption":"t(global.yes)"},
-        {"key": "no", "caption":"t(global.no)"},
-        {"key": "na", "caption":"t(global.not-applicable)"},
-        {"key": "dk", "caption":"t(global.don-know)"}
+        {
+          "key": "yes",
+          "caption": "t(global.yes)"
+        },
+        {
+          "key": "no",
+          "caption": "t(global.no)"
+        },
+        {
+          "key": "na",
+          "caption": "t(global.not-applicable)"
+        },
+        {
+          "key": "dk",
+          "caption": "t(global.don-know)"
+        }
       ],
       "items": [
         {
@@ -288,7 +380,6 @@
       "type": "object",
       "format": "radioGroupCollection",
       "values": [
-
         {
           "key": "no_cost",
           "caption": "t(study.access.access_data_sharing_cost.no_cost)"
@@ -337,9 +428,18 @@
         }
       },
       "values": [
-        {"key": "yes", "caption":"t(global.yes)"},
-        {"key": "no", "caption":"t(global.no)"},
-        {"key": "na", "caption":"t(global.not-applicable)"}
+        {
+          "key": "yes",
+          "caption": "t(global.yes)"
+        },
+        {
+          "key": "no",
+          "caption": "t(global.no)"
+        },
+        {
+          "key": "na",
+          "caption": "t(global.not-applicable)"
+        }
       ],
       "items": [
         {

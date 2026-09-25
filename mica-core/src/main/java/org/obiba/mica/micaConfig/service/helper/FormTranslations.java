@@ -28,6 +28,8 @@ import java.util.Map;
  */
 public final class FormTranslations {
 
+  private static final String DEFAULT_LOCALE = "en";
+
   private static final Logger logger = LoggerFactory.getLogger(FormTranslations.class);
 
   private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -50,11 +52,12 @@ public final class FormTranslations {
   }
 
   /**
-   * A translator resolving the keys from the texts of the form in the locale, else from the fallback
-   * (the Mica translations).
+   * A translator resolving the keys from the texts of the form in the locale, else in english (a language
+   * the form does not translate), else from the fallback (the Mica translations).
    */
   public static Translator translator(EntityConfig config, String locale, Translator fallback) {
-    Map<String, String> texts = of(config, locale);
+    Map<String, String> texts = of(config, DEFAULT_LOCALE);
+    texts.putAll(of(config, locale));
     if (texts.isEmpty()) return fallback;
     return key -> {
       String text = texts.get(key);

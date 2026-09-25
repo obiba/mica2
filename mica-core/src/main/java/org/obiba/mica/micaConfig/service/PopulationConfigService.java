@@ -39,7 +39,7 @@ public class PopulationConfigService extends EntityConfigService<PopulationConfi
 
   @Override
   protected String getDefaultDefinitionResourcePath() {
-    return "classpath:config/population-form/definition.json";
+    return "classpath:config/population-form/uischema.json";
   }
 
   @Override
