@@ -1,21 +1,23 @@
 <template>
-  <div class="row items-center q-gutter-sm q-mt-md">
+  <q-card-actions class="bg-grey-3 items-start">
     <q-input
       v-if="withComment"
       v-model="comment"
-      class="col-12 col-md-6"
+      class="col q-mr-md"
       dense
       outlined
+      bg-color="white"
       :label="t('document.comment') + (commentRequired ? ' *' : '')"
       :hint="t('document.comment_hint')"
       :error="commentRequired && attempted && !comment"
       :error-message="t('required')"
     />
-    <div class="col-12">
+    <q-space v-else />
+    <div class="text-no-wrap q-pt-xs">
       <q-btn flat :label="t('cancel')" color="secondary" :disable="saving" @click="emit('cancel')" />
       <q-btn :label="t('save')" color="primary" :loading="saving" class="q-ml-sm" @click="onSave" />
     </div>
-  </div>
+  </q-card-actions>
 </template>
 
 <script setup lang="ts">
