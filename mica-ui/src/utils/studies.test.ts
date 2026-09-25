@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { PopulationDto, PopulationDto_DataCollectionEventDto as DceDto } from 'src/models/Mica';
-import { byWeight, cloneEvent, isValidId, moveItem, nextId, studyTimeline } from './studies';
+import { byWeight, cloneEvent, dcePeriod, isValidId, moveItem, nextId, studyTimeline } from './studies';
 
 const en = (value: string) => [{ lang: 'en', value }];
 
@@ -82,5 +82,12 @@ describe('studies', () => {
     expect(timeline?.populations[0]?.lanes[1]?.[0]?.start).toEqual(new Date(2002, 5, 15));
     expect(timeline?.populations[1]?.lanes[0]?.[0]?.end).toEqual(new Date(2006, 1, 28));
     expect(studyTimeline([population('1', 0, [])], 'en')).toBeUndefined();
+  });
+});
+
+describe('dcePeriod', () => {
+  it('formats the start and end dates, the end when ongoing', () => {
+    expect(dcePeriod(dce('1', 0, { startMonth: 3, endYear: 2012 }), 'ongoing')).toBe('2000-03 – 2012');
+    expect(dcePeriod(dce('1', 0, { startDay: '2000-03-15' }), 'ongoing')).toBe('2000-03-15 – ongoing');
   });
 });

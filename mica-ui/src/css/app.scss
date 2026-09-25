@@ -162,3 +162,14 @@ code {
     font-size: 1rem;
   }
 }
+
+// the page only, without the app header and drawer, nor the room they take
+@media print {
+  .q-header,
+  .q-drawer-container {
+    display: none !important;
+  }
+  .q-page-container {
+    padding: 0 !important;
+  }
+}
