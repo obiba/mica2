@@ -95,12 +95,19 @@
       </template>
     </q-table>
 
-    <dataset-table-dialog v-model="showSchema" mode="schema" :table="schema" @save="onSchemaSave" />
+    <dataset-table-dialog
+      v-model="showSchema"
+      mode="schema"
+      :table="schema"
+      :folder="`/harmonized-dataset/${dataset.id}`"
+      @save="onSchemaSave"
+    />
     <dataset-table-dialog
       v-model="showTable"
       mode="harmonized"
       :table="edited?.table"
       :harmonization="edited?.harmonization ?? false"
+      :folder="`/harmonized-dataset/${dataset.id}`"
       @save="onTableSave"
     />
     <confirm-dialog

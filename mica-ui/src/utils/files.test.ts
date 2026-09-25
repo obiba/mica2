@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { FileDto } from 'src/models/Mica';
 import { FileType } from 'src/models/Mica';
-import { breadcrumbsOf, canGoTo, canPublish, fileIcon, isUnder, isUpToDate, joinPath, parentPath, sizeLabel } from './files';
+import { breadcrumbsOf, canGoTo, canPublish, fileIcon, hasExtension, isUnder, isUpToDate, joinPath, parentPath, sizeLabel } from './files';
 
 function file(overrides: Partial<FileDto> = {}): FileDto {
   return {
@@ -63,5 +63,13 @@ describe('files', () => {
     expect(canGoTo(file({ revisionStatus: 'DELETED' }), 'DELETED')).toBe(false);
     expect(canPublish(file())).toBe(false);
     expect(canPublish(file({ revisionStatus: 'UNDER_REVIEW' }))).toBe(true);
+  });
+});
+
+describe('hasExtension', () => {
+  it('matches the extensions, case insensitive', () => {
+    expect(hasExtension('data.XLSX', ['.xlsx'])).toBe(true);
+    expect(hasExtension('data.xls', ['.xlsx'])).toBe(false);
+    expect(hasExtension('data.csv', [])).toBe(true);
   });
 });

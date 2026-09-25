@@ -99,6 +99,8 @@ export default {
     restore_text: 'Make the revision of {date} the current draft of the file?',
     revision: 'Revision',
     revisions: 'Revisions',
+    select: 'Select',
+    select_file: 'Select a file',
     search: 'Search files by name',
     shortcut: {
       NOT_PUBLISHED: 'Not published',
