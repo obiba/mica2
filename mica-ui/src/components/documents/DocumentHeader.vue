@@ -7,7 +7,7 @@
       </div>
       <slot name="info" />
     </div>
-    <div class="col-auto row items-center q-gutter-sm">
+    <div class="col-auto row items-center q-gutter-sm print-hide">
       <slot name="actions" />
       <document-status-buttons :id="id" :state="state" :disable="disable" @action="emit('action', $event)" />
     </div>

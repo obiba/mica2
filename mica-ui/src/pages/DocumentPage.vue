@@ -44,6 +44,27 @@
               size="sm"
               :to="`${target.routeBase}/${id}/edit`"
             />
+            <q-btn
+              v-if="canChangeStatus"
+              outline
+              color="primary"
+              icon="share"
+              :label="t('document.share')"
+              size="sm"
+              @click="showShare = true"
+            />
+            <q-btn
+              v-if="type.endsWith('-study')"
+              outline
+              color="primary"
+              icon="download"
+              :label="t('document.export_csv')"
+              size="sm"
+              type="a"
+              :href="toServerUrl(`${target.path}/export_csv`)"
+              target="_blank"
+            />
+            <q-btn outline color="primary" icon="print" :label="t('document.print')" size="sm" @click="print" />
           </template>
         </document-header>
         <q-tab-panels v-model="tab">
@@ -63,6 +84,7 @@
                 @select="(event) => onPopulationSelect(event.populationId, event.dceId)"
               />
             </div>
+            <study-populations-print v-if="study" :study="study" />
           </q-tab-panel>
           <q-tab-panel v-if="study" name="populations" class="q-pa-none">
             <study-populations-panel
@@ -137,6 +159,7 @@
             <document-acl-panel :target="target" :can-edit="canManagePermissions" />
           </q-tab-panel>
         </q-tab-panels>
+        <share-document-dialog v-model="showShare" :target="target" />
       </drawer-layout>
       <div v-else class="q-pa-md">
         {{ t('document.not_found') }}
@@ -150,6 +173,7 @@ import { useQuasar } from 'quasar';
 import type { DatasetDto, EntityStateDto, NetworkDto, StudyDto } from 'src/models/Mica';
 import DrawerLayout from 'src/components/DrawerLayout.vue';
 import DocumentHeader from 'src/components/documents/DocumentHeader.vue';
+import ShareDocumentDialog from 'src/components/documents/ShareDocumentDialog.vue';
 import DocumentViewPanel from 'src/components/documents/DocumentViewPanel.vue';
 import DocumentHistoryPanel from 'src/components/history/DocumentHistoryPanel.vue';
 import DocumentAclPanel from 'src/components/permissions/DocumentAclPanel.vue';
@@ -159,6 +183,7 @@ import DataAccessRequestLink from 'src/components/projects/DataAccessRequestLink
 import NetworkLinksPanel from 'src/components/networks/NetworkLinksPanel.vue';
 import MembersPanel from 'src/components/persons/MembersPanel.vue';
 import StudyPopulationsPanel from 'src/components/studies/StudyPopulationsPanel.vue';
+import StudyPopulationsPrint from 'src/components/studies/StudyPopulationsPrint.vue';
 import StudyTimeline from 'src/components/studies/StudyTimeline.vue';
 import CollectedTablePanel from 'src/components/datasets/CollectedTablePanel.vue';
 import HarmonizedTablesPanel from 'src/components/datasets/HarmonizedTablesPanel.vue';
@@ -179,6 +204,7 @@ import type { DocumentDto } from 'src/stores/documents';
 import type { NetworkLinkKind } from 'src/utils/networks';
 import type { MembersParent } from 'src/utils/persons';
 import { notifyError } from 'src/utils/notify';
+import { toServerUrl } from 'src/boot/api';
 
 const TABS = ['view', 'history', 'files', 'comments', 'permissions'];
 /** the sections of the studies tab of a network */
@@ -232,7 +258,7 @@ const dataset = computed(() =>
 const hasEvents = computed(() =>
   (study.value?.populations ?? []).some((population) => (population.dataCollectionEvents ?? []).length > 0),
 );
-const { canEdit, canManagePermissions } = useDocumentState(state);
+const { canEdit, canChangeStatus, canManagePermissions } = useDocumentState(state);
 /** the drawer entries, one per tab */
 const menu = computed(() => [
   { name: 'view', icon: 'visibility', label: 'view' },
@@ -258,6 +284,11 @@ const saving = ref(false);
 const request = computed(() => (document.value && 'request' in document.value ? document.value.request : undefined));
 
 const loading = ref(true);
+const showShare = ref(false);
+
+function print() {
+  window.print();
+}
 
 /** the folder opened in the files tab, kept in the route */
 const filePath = computed(() => (typeof route.query.path === 'string' ? route.query.path : undefined));
@@ -294,6 +325,7 @@ async function refresh() {
 
 async function initialize() {
   loading.value = true;
+  showShare.value = false;
   document.value = undefined;
   state.value = undefined;
   await refresh();
