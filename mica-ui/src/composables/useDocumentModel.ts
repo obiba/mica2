@@ -91,6 +91,25 @@ export function fromModel<T extends ModelledDocument>(document: T, model: FormMo
   return updated as T;
 }
 
+function pruned(value: unknown): unknown {
+  if (Array.isArray(value)) return value.length === 0 ? undefined : value.map(pruned);
+  if (value !== null && typeof value === 'object') {
+    const entries = Object.entries(value)
+      .map(([key, item]) => [key, pruned(item)])
+      .filter(([, item]) => item !== undefined);
+    return entries.length === 0 ? undefined : Object.fromEntries(entries);
+  }
+  return value;
+}
+
+/**
+ * The form model as a string for the dirty check: the empty arrays and objects the form fills in
+ * when it opens are left out.
+ */
+export function modelSnapshot(model: unknown): string {
+  return JSON.stringify(pruned(model) ?? {});
+}
+
 /** the DTO <-> form model mapping of a document type */
 export function useDocumentModel(type: MaybeRefOrGetter<DocumentType>) {
   const fields = () => MANDATORY_FIELDS[toValue(type)];

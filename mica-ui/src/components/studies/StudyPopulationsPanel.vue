@@ -19,7 +19,7 @@
           icon="add"
           size="sm"
           :label="t('study.add_population')"
-          :to="`${base}/population/new`"
+          @click="openEditor({})"
           :disable="busy"
           class="q-mb-sm"
         />
@@ -77,7 +77,7 @@
               color="primary"
               :title="t('edit')"
               :disable="busy"
-              :to="`${base}/population/${population.id}/edit`"
+              @click="openEditor({ populationId: population.id })"
             />
             <q-btn
               flat
@@ -102,7 +102,7 @@
             icon="add"
             size="sm"
             :label="t('study.add_dce')"
-            :to="`${base}/population/${population.id}/dce/new`"
+            @click="openEditor({ populationId: population.id, isDce: true })"
             :disable="busy"
           />
         </div>
@@ -150,7 +150,7 @@
                       color="primary"
                       :title="t('edit')"
                       :disable="busy"
-                      :to="`${base}/population/${population.id}/dce/${dce.id}/edit`"
+                      @click="openEditor({ populationId: population?.id, dceId: dce.id, isDce: true })"
                     />
                     <q-btn
                       flat
@@ -206,6 +206,14 @@
       @update:model-value="toRemove = undefined"
       @confirm="onRemove"
     />
+    <study-population-dialog
+      v-model="showEditor"
+      :study="study"
+      :population-id="editor.populationId"
+      :dce-id="editor.dceId"
+      :is-dce="!!editor.isDce"
+      @saved="onSaved"
+    />
   </div>
 </template>
 
@@ -214,6 +222,7 @@ import { useQuasar } from 'quasar';
 import type { PopulationDto, PopulationDto_DataCollectionEventDto as DceDto, StudyDto } from 'src/models/Mica';
 import ConfirmDialog from 'src/components/ConfirmDialog.vue';
 import EntityJsonForm from 'src/components/forms/EntityJsonForm.vue';
+import StudyPopulationDialog from 'src/components/studies/StudyPopulationDialog.vue';
 import StudyTimeline from 'src/components/studies/StudyTimeline.vue';
 import { DCE_FIELDS, POPULATION_FIELDS, toModel } from 'src/composables/useDocumentModel';
 import { localized } from 'src/utils/persons';
@@ -236,6 +245,8 @@ const emit = defineEmits<{
   change: [study: StudyDto, params: Record<string, boolean>];
   /** a population is shown, an event of it opened */
   select: [populationId: string, dceId?: string];
+  /** a population or an event was saved, the study is to be reloaded */
+  refresh: [];
 }>();
 const { t, locale } = useI18n();
 const $q = useQuasar();
@@ -249,6 +260,20 @@ const populationIndex = computed(() => populations.value.findIndex((item) => ite
 const events = computed(() => byWeight(population.value?.dataCollectionEvents));
 const expanded = computed(() => props.dceId);
 const hasEvents = computed(() => populations.value.some((item) => (item.dataCollectionEvents ?? []).length > 0));
+
+/** the population or event edited in the dialog, a new one when its id is undefined */
+const editor = ref<{ populationId?: string | undefined; dceId?: string | undefined; isDce?: boolean }>({});
+const showEditor = ref(false);
+
+function openEditor(value: typeof editor.value) {
+  editor.value = value;
+  showEditor.value = true;
+}
+
+function onSaved(populationId: string, dceId?: string) {
+  emit('refresh');
+  emit('select', populationId, dceId);
+}
 
 const toRemove = ref<{ population: PopulationDto; dce?: DceDto }>();
 const removedName = computed(() => {
