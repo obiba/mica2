@@ -4,6 +4,7 @@ import {
   fromModel,
   localizedToArray,
   localizedToObject,
+  modelSnapshot,
   toModel,
   useDocumentModel,
   type ModelledDocument,
@@ -92,5 +93,14 @@ describe('useDocumentModel', () => {
     expect(localizedToObject(undefined)).toEqual({});
     expect(localizedToArray('not an object')).toBeUndefined();
     expect(localizedToArray({ en: 'a', fr: 1 })).toEqual([{ lang: 'en', value: 'a' }]);
+  });
+});
+
+describe('modelSnapshot', () => {
+  it('ignores the empty arrays and objects the form fills in', () => {
+    const opened = { _id: '5' };
+    const filled = { _id: '5', dataSources: [], selectionCriteria: { pregnantWomen: [] } };
+    expect(modelSnapshot(filled)).toBe(modelSnapshot(opened));
+    expect(modelSnapshot({ ...filled, dataSources: ['cohort'] })).not.toBe(modelSnapshot(opened));
   });
 });
