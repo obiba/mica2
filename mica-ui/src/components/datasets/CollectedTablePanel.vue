@@ -1,6 +1,5 @@
 <template>
   <div>
-    <div class="text-h6">{{ t('dataset.study_table') }}</div>
     <div class="text-hint q-mb-md">{{ t('dataset.study_table_info') }}</div>
 
     <div v-if="!table">
