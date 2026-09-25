@@ -38,9 +38,6 @@ jobs:
         with:
           node-version: 24
 
-      - name: Install global npm tools
-        run: npm install -g grunt-cli bower
-
       - name: Cache Maven and general cache
         uses: actions/cache@v4
         with:

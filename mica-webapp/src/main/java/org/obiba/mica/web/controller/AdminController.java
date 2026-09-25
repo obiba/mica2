@@ -78,8 +78,15 @@ public class AdminController extends BaseController {
       || subject.hasRole(Roles.MICA_DAO)
       || subject.hasRole(Roles.MICA_EDITOR)
       || subject.hasRole(Roles.MICA_REVIEWER)
-      || hasPermissionOnAnyDraftDocument())
-      return new ModelAndView("admin");
+      || hasPermissionOnAnyDraftDocument()) {
+      ModelAndView mv = new ModelAndView("admin");
+      try {
+        includeEntryPoints(mv);
+      } catch (IOException e) {
+        log.error("Error while reading SPA entry points", e);
+      }
+      return mv;
+    }
 
     return new ModelAndView("redirect:/");
   }
@@ -98,30 +105,6 @@ public class AdminController extends BaseController {
       String agateUrl = agateServerConfigService.getAgateUrl();
       ModelAndView mv = new ModelAndView("administration");
       mv.getModel().put("agateUrl", agateUrl);
-      return mv;
-    }
-
-    return new ModelAndView("redirect:/");
-  }
-
-  @GetMapping("/admin2")
-  public ModelAndView admin2() {
-    Subject subject = SecurityUtils.getSubject();
-    String contextPath = micaConfigService.getContextPath();
-    if (!subject.isAuthenticated())
-      return new ModelAndView("redirect:signin?redirect=" + contextPath + "/admin2");
-
-    if (subject.hasRole(Roles.MICA_ADMIN)
-      || subject.hasRole(Roles.MICA_DAO)
-      || subject.hasRole(Roles.MICA_EDITOR)
-      || subject.hasRole(Roles.MICA_REVIEWER)
-      || hasPermissionOnAnyDraftDocument()) {
-      ModelAndView mv = new ModelAndView("admin2");
-      try {
-        includeEntryPoints(mv);
-      } catch (IOException e) {
-        log.error("Error while reading SPA entry points", e);
-      }
       return mv;
     }
 
