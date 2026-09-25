@@ -228,6 +228,20 @@ export function searchQuery(text: string | undefined): string | undefined {
     .join(' ');
 }
 
+/**
+ * The search query restricted to a field, `all` for no restriction. A localized field is searched
+ * in the given locale, in its analyzed form.
+ */
+export function fieldQuery(query: string, field: string, localized: boolean, locale: string): string {
+  if (field === 'all') return query;
+  const name = localized ? `${field}.${locale}.analyzed` : field;
+  if (/^".+"$/.test(query)) return `${name}:${query}`;
+  return query
+    .split(' ')
+    .map((part) => `${name}:${part}`)
+    .join(' ');
+}
+
 /** the entities with members: the network ones, the study ones (individual studies and initiatives) */
 export type MembersParent = 'network' | 'study';
 

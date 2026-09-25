@@ -3,6 +3,7 @@ import { PersonDto_Type, type PersonDto } from 'src/models/Mica';
 import {
   checkDuplicates,
   duplicateQuery,
+  fieldQuery,
   fromPersonModel,
   groupMemberships,
   membersByRole,
@@ -128,6 +129,13 @@ describe('persons', () => {
     expect(searchQuery('jan do')).toBe('jan* do*');
     expect(searchQuery('a:b')).toBe('a\\:b*');
     expect(searchQuery('"jane doe"')).toBe('"jane doe"');
+  });
+
+  it('restricts the search query to a field', () => {
+    expect(fieldQuery('jan* do*', 'all', false, 'en')).toBe('jan* do*');
+    expect(fieldQuery('jan* do*', 'id', false, 'en')).toBe('id:jan* id:do*');
+    expect(fieldQuery('jan*', 'name', true, 'fr')).toBe('name.fr.analyzed:jan*');
+    expect(fieldQuery('"jane doe"', 'acronym', true, 'en')).toBe('acronym.en.analyzed:"jane doe"');
   });
 
   it('groups the members by role in the sort order', () => {
