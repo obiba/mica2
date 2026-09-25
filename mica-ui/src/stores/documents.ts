@@ -42,13 +42,14 @@ export const useDocumentsStore = defineStore('documents', () => {
 
   async function fetchDocuments(
     target: DocumentTarget,
+    query?: string,
     from: number = 0,
     limit: number = 1000,
     order: string = 'asc',
     sort: string = 'id',
   ) {
     const response = await api.get<DocumentSummary[] | Record<string, unknown>>(target.listPath, {
-      params: { ...target.listParams, from, limit, order, sort },
+      params: { ...target.listParams, ...(query ? { query } : {}), from, limit, order, sort },
     });
     const data = response.data;
     // the projects list is wrapped ({projects: [...], total}), the others are plain lists

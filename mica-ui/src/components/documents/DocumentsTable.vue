@@ -21,6 +21,28 @@
       >
         {{ t(`documents.filter.${filter}`) }}
       </q-chip>
+      <q-space />
+      <q-select
+        :model-value="searchField.value"
+        :options="searchFields"
+        dense
+        options-dense
+        emit-value
+        map-options
+        @update:model-value="setSearchField"
+      />
+      <q-input
+        :model-value="searchText"
+        dense
+        clearable
+        debounce="500"
+        :placeholder="t('search')"
+        @update:model-value="setSearchText"
+      >
+        <template v-slot:append>
+          <q-icon name="search" />
+        </template>
+      </q-input>
     </div>
     <q-table
       flat
@@ -67,6 +89,7 @@ import type { DocumentSummary } from 'src/stores/documents';
 import { ROWS_PER_PAGE } from 'src/utils/constants';
 import { getDateLabel } from 'src/utils/dates';
 import { notifyError } from 'src/utils/notify';
+import { fieldQuery, searchQuery } from 'src/utils/persons';
 
 interface Props {
   /** the target of the type, the id is not used */
@@ -75,7 +98,8 @@ interface Props {
 
 const props = defineProps<Props>();
 const documentsStore = useDocumentsStore();
-const { t } = useI18n();
+const systemStore = useSystemStore();
+const { t, locale } = useI18n();
 const route = useRoute();
 const router = useRouter();
 
@@ -97,11 +121,53 @@ function setStatusFilter(filter: StateFilter | undefined) {
   router.replace({ query });
 }
 
+/** the free text search, carried by the `q` route query, searched by the server */
+const searchText = computed(() => (typeof route.query.q === 'string' ? route.query.q : ''));
+
+function setSearchText(text: string | number | null) {
+  const query = { ...route.query };
+  if (text) query.q = String(text);
+  else delete query.q;
+  router.replace({ query });
+}
+
+/** the fields the search can be restricted to, the projects have a title instead of an acronym and a name */
+const searchFields = computed(() => [
+  { value: 'all', label: t('documents.search_all'), localized: false },
+  { value: 'id', label: 'ID', localized: false },
+  ...(props.target.type === 'project'
+    ? [{ value: 'title', label: t('documents.search_title'), localized: true }]
+    : [
+        { value: 'acronym', label: t('acronym'), localized: true },
+        { value: 'name', label: t('name'), localized: true },
+      ]),
+]);
+
+/** the field the search is restricted to, carried by the `field` route query */
+const searchField = computed(
+  () => searchFields.value.find((field) => field.value === route.query.field) ?? searchFields.value[0]!,
+);
+
+function setSearchField(field: string) {
+  const query = { ...route.query };
+  if (field !== 'all') query.field = field;
+  else delete query.field;
+  router.replace({ query });
+}
+
+/** the search query of the text restricted to the field, the localized fields in the UI language if configured */
+function documentsQuery(): string | undefined {
+  const query = searchQuery(searchText.value);
+  if (!query) return undefined;
+  const lang = systemStore.languages.includes(locale.value) ? locale.value : 'en';
+  return fieldQuery(query, searchField.value.value, searchField.value.localized, lang);
+}
+
 const columns = computed(() => [
   { name: 'id', label: 'ID', field: 'id', sortable: true, align: 'left' as const },
   {
     name: 'name',
-    label: t('name'),
+    label: props.target.type === 'project' ? t('documents.search_title') : t('name'),
     field: (row: DocumentSummary) => row.name ?? row.title ?? [],
     sortable: true,
     align: 'left' as const,
@@ -134,7 +200,7 @@ const columns = computed(() => [
 async function load() {
   loading.value = true;
   try {
-    await documentsStore.fetchDocuments(props.target);
+    await documentsStore.fetchDocuments(props.target, documentsQuery());
   } catch (error) {
     notifyError(error);
   } finally {
@@ -142,5 +208,5 @@ async function load() {
   }
 }
 
-watch(() => props.target.type, load, { immediate: true });
+watch([() => props.target.type, searchText, () => searchField.value.value], load, { immediate: true });
 </script>
