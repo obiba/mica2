@@ -13,19 +13,20 @@
       <drawer-layout v-else-if="document" class="col">
         <template #drawer>
           <q-list padding role="none">
-            <q-item
-              v-for="item in menu"
-              :key="item.name"
-              clickable
-              v-ripple
-              :active="tab === item.name"
-              :to="tabRoute(item.name)"
-            >
-              <q-item-section avatar>
-                <q-icon :name="item.icon" />
-              </q-item-section>
-              <q-item-section>{{ t(item.label) }}</q-item-section>
-            </q-item>
+            <template v-for="item in menu" :key="item.name">
+              <q-separator v-if="item.name === 'history'" />
+              <q-item
+                clickable
+                v-ripple
+                :active="tab === item.name"
+                :to="tabRoute(item.name)"
+              >
+                <q-item-section avatar>
+                  <q-icon :name="item.icon" />
+                </q-item-section>
+                <q-item-section>{{ t(item.label) }}</q-item-section>
+              </q-item>
+            </template>
           </q-list>
         </template>
 
@@ -87,6 +88,8 @@
             <study-populations-print v-if="study" :study="study" />
           </q-tab-panel>
           <q-tab-panel v-if="study" name="populations" class="q-pa-none">
+            <div class="text-h5 q-mb-sm">{{ t('study.populations') }}</div>
+            <q-separator class="q-mb-md" />
             <study-populations-panel
               :study="study"
               :population-id="queryValue('population')"
@@ -98,26 +101,33 @@
             />
           </q-tab-panel>
           <q-tab-panel v-if="dataset" name="tables" class="q-pa-none">
-            <collected-table-panel
-              v-if="type === 'collected-dataset'"
-              :dataset="dataset"
-              :can-edit="canEdit"
-              :busy="saving"
-              @change="onDocumentChange"
-              @refresh="refresh"
+            <div v-if="type === 'collected-dataset'">
+              <div class="text-h5 q-mb-sm">{{ t('dataset.table') }}</div>
+              <q-separator class="q-mb-md" />
+              <collected-table-panel
+                :dataset="dataset"
+                :can-edit="canEdit"
+                :busy="saving"
+                @change="onDocumentChange"
+                @refresh="refresh"
+              />
+            </div>
+            <div v-else>
+              <div class="text-h5 q-mb-sm">{{ t('dataset.tables') }}</div>
+              <q-separator class="q-mb-md" />
+              <harmonized-tables-panel
+                :dataset="dataset"
+                :can-edit="canEdit"
+                :busy="saving"
+                @change="onDocumentChange"
             />
-            <harmonized-tables-panel
-              v-else
-              :dataset="dataset"
-              :can-edit="canEdit"
-              :busy="saving"
-              @change="onDocumentChange"
-            />
+            </div>
           </q-tab-panel>
           <template v-if="network">
             <q-tab-panel name="studies" class="q-pa-none">
               <div v-for="(kind, index) in STUDY_KINDS" :key="kind" :class="{ 'q-mt-lg': index > 0 }">
-                <div class="text-h6 q-mb-sm">{{ t(documentTarget(kind, '').labels.title) }}</div>
+                <div class="text-h5 q-mb-sm">{{ t(documentTarget(kind, '').labels.title) }}</div>
+                <q-separator class="q-mb-md" />
                 <network-links-panel
                   :network="network"
                   :kind="kind"
@@ -128,6 +138,8 @@
               </div>
             </q-tab-panel>
             <q-tab-panel name="networks" class="q-pa-none">
+              <div class="text-h5 q-mb-sm">{{ t('networks.title') }}</div>
+              <q-separator class="q-mb-md" />
               <network-links-panel
                 :network="network"
                 kind="network"
@@ -138,6 +150,8 @@
             </q-tab-panel>
           </template>
           <q-tab-panel v-if="membersParent && membersDocument" name="members" class="q-pa-none">
+            <div class="text-h5 q-mb-sm">{{ t('members.title') }}</div>
+            <q-separator class="q-mb-md" />
             <members-panel
               :document="membersDocument"
               :parent="membersParent"
@@ -147,15 +161,24 @@
             />
           </q-tab-panel>
           <q-tab-panel name="history" class="q-pa-none">
+            <div class="text-h5 q-mb-sm">{{ t('history.title') }}</div>
+            <q-separator class="q-mb-md" />
             <document-history-panel :target="target" :state="state" :can-restore="canEdit" @restored="refresh" />
+            <q-separator class="q-mb-md" />
           </q-tab-panel>
           <q-tab-panel name="files" class="q-pa-none">
+            <div class="text-h5 q-mb-sm">{{ t('files.title') }}</div>
+            <q-separator class="q-mb-md" />
             <file-browser :root="target.filesPath" :path="filePath" @update:path="onFilePath" />
           </q-tab-panel>
           <q-tab-panel name="comments" class="q-pa-none">
+            <div class="text-h5 q-mb-sm">{{ t('comments.title') }}</div>
+            <q-separator class="q-mb-md" />
             <comments-panel :path="target.path" />
           </q-tab-panel>
           <q-tab-panel name="permissions" class="q-pa-none">
+            <div class="text-h5 q-mb-sm">{{ t('permissions') }}</div>
+            <q-separator class="q-mb-md" />
             <document-acl-panel :target="target" :can-edit="canManagePermissions" />
           </q-tab-panel>
         </q-tab-panels>
@@ -269,7 +292,15 @@ const menu = computed(() => [
       ]
     : []),
   ...(study.value ? [{ name: 'populations', icon: 'groups', label: 'study.populations' }] : []),
-  ...(dataset.value ? [{ name: 'tables', icon: 'table_chart', label: 'dataset.tables' }] : []),
+  ...(dataset.value
+    ? [
+        {
+          name: 'tables',
+          icon: 'table_chart',
+          label: type.value === 'collected-dataset' ? 'dataset.table' : 'dataset.tables',
+        },
+      ]
+    : []),
   ...(membersParent.value ? [{ name: 'members', icon: 'people', label: 'members.title' }] : []),
   { name: 'history', icon: 'history', label: 'history.title' },
   { name: 'files', icon: 'folder', label: 'files.title' },

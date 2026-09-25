@@ -12,7 +12,7 @@
       <q-separator />
       <q-card-actions align="right" class="bg-grey-3">
         <q-btn flat :label="t('cancel')" color="secondary" :disable="saving" @click="onCancel" />
-        <q-btn flat :label="t('save')" color="primary" :loading="saving" @click="onSave" />
+        <q-btn :label="t('save')" color="primary" :loading="saving" @click="onSave" />
       </q-card-actions>
     </q-card>
   </q-dialog>

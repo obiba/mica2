@@ -15,7 +15,7 @@
 
       <q-card-actions align="right" class="bg-grey-3">
         <q-btn flat :label="t('cancel')" color="secondary" @click="onCancel" v-close-popup />
-        <q-btn flat :label="t('confirm')" color="primary" @click="onConfirm" v-close-popup />
+        <q-btn :label="t('confirm')" color="primary" @click="onConfirm" v-close-popup />
       </q-card-actions>
     </q-card>
   </q-dialog>
