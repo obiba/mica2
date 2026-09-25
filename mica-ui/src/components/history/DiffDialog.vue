@@ -44,7 +44,6 @@
         <q-btn flat :label="t('cancel')" color="secondary" v-close-popup />
         <q-btn
           v-if="selectable && !empty"
-          flat
           :label="checked.size > 0 ? `${t('history.restore')} (${checked.size})` : t('history.restore')"
           color="primary"
           v-close-popup

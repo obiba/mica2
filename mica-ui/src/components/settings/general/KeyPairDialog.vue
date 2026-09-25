@@ -97,7 +97,7 @@
         <q-separator />
         <q-card-actions align="right" class="bg-grey-3">
           <q-btn flat :label="t('cancel')" color="secondary" :disable="saving" v-close-popup />
-          <q-btn flat type="submit" :label="t('save')" color="primary" :loading="saving" />
+          <q-btn type="submit" :label="t('save')" color="primary" :loading="saving" />
         </q-card-actions>
       </q-form>
     </q-card>

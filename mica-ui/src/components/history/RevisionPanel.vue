@@ -4,7 +4,7 @@
       {{ t('history.revision_date') }}: {{ getDateLabel(commit.date) }} ({{ commit.author }})
       <span v-if="commit.comment" class="q-ml-sm">{{ commit.comment }}</span>
     </div>
-    <q-card flat bordered>
+    <q-card flat bordered class="bg-grey-2">
       <q-card-section>
         <q-spinner-dots v-if="loading" color="primary" size="2em" />
         <slot v-else />

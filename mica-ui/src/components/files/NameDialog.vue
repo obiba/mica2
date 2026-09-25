@@ -20,7 +20,7 @@
       <q-separator />
       <q-card-actions align="right" class="bg-grey-3">
         <q-btn flat :label="t('cancel')" color="secondary" v-close-popup />
-        <q-btn flat :label="t('save')" color="primary" @click="onSubmit" />
+        <q-btn :label="t('save')" color="primary" @click="onSubmit" />
       </q-card-actions>
     </q-card>
   </q-dialog>
