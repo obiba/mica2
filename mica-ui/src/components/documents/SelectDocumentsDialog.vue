@@ -35,7 +35,6 @@
       <q-card-actions align="right" class="bg-grey-3">
         <q-btn flat :label="t('cancel')" color="secondary" v-close-popup />
         <q-btn
-          flat
           :label="t('add')"
           color="primary"
           :disable="disable || selected.length === 0"

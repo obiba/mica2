@@ -3,12 +3,16 @@
     <aside
       class="drawer-layout__aside bg-grey-3 print-hide"
       :class="{ 'drawer-layout__aside--mini': miniState && !animating }"
-      :style="{ width: `${miniState ? miniWidth : width}px` }"
+      :style="{ width: `${miniWidth}px` }"
       @mouseenter="onMouseEnter"
       @mouseleave="onMouseLeave"
-      @transitionend="onTransitionEnd"
     >
-      <div class="drawer-layout__sticky" :style="{ top: `${top}px`, maxHeight: `calc(100vh - ${top}px)` }">
+      <div
+        ref="drawer"
+        class="drawer-layout__sticky bg-grey-3"
+        :style="{ top: `${top}px`, maxHeight: `calc(100vh - ${top}px)`, width: drawerWidth }"
+        @transitionend="onTransitionEnd"
+      >
         <slot name="drawer" />
       </div>
     </aside>
@@ -23,7 +27,6 @@
 import { useQuasar } from 'quasar';
 
 interface Props {
-  width?: number;
   miniWidth?: number;
   top?: number;
   /** below this screen width (px) the drawer stays collapsed */
@@ -31,7 +34,6 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  width: 200,
   miniWidth: 57,
   top: 50,
   breakpoint: 500,
@@ -39,8 +41,16 @@ const props = withDefaults(defineProps<Props>(), {
 
 const $q = useQuasar();
 
+const drawer = ref<HTMLElement>();
 const miniState = ref(true);
 const animating = ref(false);
+// measured once expanded, so collapsing back can be animated
+const expandedWidth = ref(0);
+
+const drawerWidth = computed(() => {
+  if (miniState.value) return `${props.miniWidth}px`;
+  return expandedWidth.value ? `${expandedWidth.value}px` : 'max-content';
+});
 
 const canExpand = computed(() => $q.screen.width >= props.breakpoint);
 
@@ -51,10 +61,14 @@ watch(canExpand, (value) => {
   }
 });
 
-function onMouseEnter() {
+async function onMouseEnter() {
   if (!canExpand.value) return;
   miniState.value = false;
   animating.value = false;
+  // re-measuring while the width transition runs would latch the mini width
+  if (expandedWidth.value) return;
+  await nextTick();
+  expandedWidth.value = drawer.value?.offsetWidth ?? 0;
 }
 
 function onMouseLeave() {
@@ -75,15 +89,17 @@ function onTransitionEnd(event: TransitionEvent) {
 .drawer-layout__aside {
   flex: 0 0 auto;
   border-right: 1px solid $grey-4;
-  overflow-x: hidden;
-  transition: width 0.15s ease;
 }
 
 .drawer-layout__sticky {
   position: sticky;
+  z-index: 1;
+  border-right: 1px solid $grey-4;
+  margin-right: -1px;
   overflow-x: hidden;
   overflow-y: auto;
   white-space: nowrap;
+  transition: width 0.15s ease;
 }
 
 .drawer-layout__aside--mini {
