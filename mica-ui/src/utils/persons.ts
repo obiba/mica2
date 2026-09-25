@@ -304,3 +304,33 @@ export function moveMember(
     return { role: item.role, personIds };
   });
 }
+
+/** the content of a person, without its id and timestamps, the memberships in any order */
+function personSignature(person: PersonDto): string {
+  const content = { ...person };
+  delete content.id;
+  delete content.timestamps;
+  const memberships = (list: PersonDto_MembershipDto[] | undefined) =>
+    (list ?? []).map((membership) => JSON.stringify(membership)).sort();
+  return JSON.stringify({
+    ...content,
+    studyMemberships: memberships(content.studyMemberships),
+    networkMemberships: memberships(content.networkMemberships),
+  });
+}
+
+/** the persons that are exact copies of another one, the oldest of each group being kept */
+export function redundantPersons(persons: PersonDto[]): PersonDto[] {
+  const created = (person: PersonDto) => person.timestamps?.created ?? '';
+  const kept = new Set<string>();
+  return [...persons]
+    .sort((a, b) => created(a).localeCompare(created(b)))
+    .filter((person) => {
+      const signature = personSignature(person);
+      if (!kept.has(signature)) {
+        kept.add(signature);
+        return false;
+      }
+      return true;
+    });
+}

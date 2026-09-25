@@ -32,6 +32,15 @@
               size="sm"
               :href="personsStore.downloadUrl(searchQuery(filter), pagination.rowsNumber ?? 0)"
             />
+            <q-btn
+              outline
+              color="primary"
+              icon="cleaning_services"
+              :label="t('persons.remove_duplicates')"
+              size="sm"
+              :loading="removing"
+              @click="onRemoveDuplicates"
+            />
           </div>
         </template>
         <template v-slot:top-right>
@@ -61,11 +70,11 @@
 </template>
 
 <script setup lang="ts">
-import type { QTableColumn, QTableProps } from 'quasar';
+import { useQuasar, type QTableColumn, type QTableProps } from 'quasar';
 import type { PersonDto, TimestampsDto } from 'src/models/Mica';
 import PersonDialog from 'src/components/persons/PersonDialog.vue';
 import { getDateLabel } from 'src/utils/dates';
-import { notifyError } from 'src/utils/notify';
+import { notifyError, notifySuccess } from 'src/utils/notify';
 import { fullName, groupMemberships, MEMBERSHIP_INFO, MEMBERSHIP_KINDS, searchQuery } from 'src/utils/persons';
 import { usePersonsStore } from 'src/stores/persons';
 import { useRoleLabels } from 'src/composables/useRoleLabels';
@@ -79,10 +88,12 @@ const personsStore = usePersonsStore();
 const { roleLabel } = useRoleLabels();
 const route = useRoute();
 const router = useRouter();
+const $q = useQuasar();
 const { t, locale } = useI18n();
 
 const loading = ref(false);
 const showNew = ref(false);
+const removing = ref(false);
 const rows = ref<PersonDto[]>([]);
 
 // the search, the sort and the page are kept in the route query
@@ -149,6 +160,26 @@ async function onRequest(props: { pagination: Pagination; filter?: unknown }) {
   } finally {
     loading.value = false;
   }
+}
+
+function onRemoveDuplicates() {
+  $q.dialog({
+    title: t('persons.remove_duplicates_title'),
+    message: t('persons.remove_duplicates_text'),
+    cancel: true,
+    persistent: true,
+  }).onOk(async () => {
+    removing.value = true;
+    try {
+      const count = await personsStore.removeRedundants();
+      notifySuccess(t('persons.duplicates_removed', { count }));
+      await onRequest({ pagination: pagination.value, filter: filter.value });
+    } catch (error) {
+      notifyError(error);
+    } finally {
+      removing.value = false;
+    }
+  });
 }
 
 onMounted(() => onRequest({ pagination: pagination.value, filter: filter.value }));
