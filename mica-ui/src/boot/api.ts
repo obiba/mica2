@@ -32,7 +32,7 @@ function toServerUrl(path: string): string {
   return baseUrl + path;
 }
 
-/** the URL of a page of the public portal (`/signin`, `/data-access/{id}`), relative to this app (`/admin2`) */
+/** the URL of a page of the public portal (`/signin`, `/data-access/{id}`), relative to this app (`/admin`) */
 function toPortalUrl(path: string): string {
   return `..${contextPath === '/' ? '' : contextPath}${path}`;
 }
