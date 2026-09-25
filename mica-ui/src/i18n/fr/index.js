@@ -396,6 +396,8 @@ export default {
     associated_people_help: 'Les membres des études, initiatives et réseaux liés à ce réseau.',
   },
   documents: {
+    search_all: 'Tous les champs',
+    search_title: 'Titre',
     filter: {
       ALL: 'Tous',
       PUBLISHED: 'Publiés',
