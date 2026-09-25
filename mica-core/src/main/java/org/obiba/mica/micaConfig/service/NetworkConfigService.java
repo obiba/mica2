@@ -39,7 +39,7 @@ public class NetworkConfigService extends EntityConfigService<NetworkConfig> {
 
   @Override
   protected String getDefaultDefinitionResourcePath() {
-    return "classpath:config/network-form/definition.json";
+    return "classpath:config/network-form/uischema.json";
   }
 
   @Override

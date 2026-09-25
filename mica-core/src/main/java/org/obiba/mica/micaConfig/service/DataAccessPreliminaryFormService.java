@@ -79,6 +79,7 @@ public class DataAccessPreliminaryFormService extends AbstractDataAccessEntityFo
   private DataAccessPreliminaryForm createDefaultDataAccessPreliminaryForm() {
     DataAccessPreliminaryForm form = new DataAccessPreliminaryForm();
     form.setDefinition(getDefaultDataAccessFormResourceAsString("uischema.json"));
+    form.setTranslations(getDefaultDataAccessFormResourceAsString("translations.json"));
     form.setSchema(getDefaultDataAccessFormResourceAsString("schema.json"));
     form.setTitleFieldPath("projectTitle");
     form.setSummaryFieldPath("summary");

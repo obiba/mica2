@@ -80,6 +80,7 @@ public class DataAccessFeasibilityFormService extends AbstractDataAccessEntityFo
   private DataAccessFeasibilityForm createDefaultDataAccessFeasibilityForm() {
     DataAccessFeasibilityForm form = new DataAccessFeasibilityForm();
     form.setDefinition(getDefaultDataAccessFormResourceAsString("uischema.json"));
+    form.setTranslations(getDefaultDataAccessFormResourceAsString("translations.json"));
     form.setSchema(getDefaultDataAccessFormResourceAsString("schema.json"));
     form.setTitleFieldPath("projectTitle");
     form.setSummaryFieldPath("summary");

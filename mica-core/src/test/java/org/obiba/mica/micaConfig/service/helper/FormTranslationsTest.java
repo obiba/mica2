@@ -24,7 +24,10 @@ public class FormTranslationsTest {
     assertEquals("unknown", en.translate("unknown"));
 
     assertEquals("Téléphone", FormTranslations.translator(config, "fr", bundle).translate("phone.title"));
-    assertEquals("phone.title", FormTranslations.translator(config, "de", bundle).translate("phone.title"));
+    Translator de = FormTranslations.translator(config, "de", bundle);
+    assertEquals("Phone", de.translate("phone.title"));
+    assertEquals("Website", de.translate("website"));
+    assertEquals("Digits", FormTranslations.translator(config, "fr", bundle).translate("nested.hint"));
 
     assertEquals("<h3>Phone</h3>", new PrefixedValueTranslator(en).translate("<h3>t(phone.title)</h3>"));
   }

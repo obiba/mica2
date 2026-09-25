@@ -1,0 +1,123 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "row q-col-gutter-md"
+          },
+          "elements": [
+            {
+              "type": "VerticalLayout",
+              "options": {
+                "class": "col-12 col-md-6"
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/version",
+                  "hint": "t(harmonization-protocol.version-help)"
+                }
+              ]
+            },
+            {
+              "type": "VerticalLayout",
+              "options": {
+                "class": "col-12 col-md-6"
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/participants"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "row q-col-gutter-md"
+          },
+          "elements": [
+            {
+              "type": "VerticalLayout",
+              "options": {
+                "class": "col-12 col-md-6"
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/qualitativeQuantitative",
+                  "hint": "t(harmonization-protocol.qualitative-quantitative.help)",
+                  "options": {
+                    "format": "radio"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "VerticalLayout",
+              "options": {
+                "class": "col-12 col-md-6"
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/prospectiveRetrospective",
+                  "hint": "t(harmonization-protocol.prospective-retrospective.help)",
+                  "options": {
+                    "format": "radio"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "Control",
+          "scope": "#/properties/informationContent",
+          "hint": "t(harmonization-protocol.information-content-help)",
+          "options": {
+            "marked": true
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/procedures",
+          "hint": "t(harmonization-protocol.procedures-help)"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/participantsInclusion",
+          "hint": "t(harmonization-protocol.participants-inclusion-help)"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/infrastructure",
+          "hint": "t(harmonization-protocol.infrastructure-help)"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/additionalInformation",
+          "options": {
+            "marked": true
+          }
+        }
+      ]
+    }
+  ]
+}
