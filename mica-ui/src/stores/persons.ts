@@ -1,7 +1,13 @@
 import { defineStore } from 'pinia';
 import { api, toServerUrl } from 'src/boot/api';
 import type { PersonDto, PersonsDto } from 'src/models/Mica';
-import { checkDuplicates, duplicateQuery, type DuplicateCheck, type MembersParent } from 'src/utils/persons';
+import {
+  checkDuplicates,
+  duplicateQuery,
+  redundantPersons,
+  type DuplicateCheck,
+  type MembersParent,
+} from 'src/utils/persons';
 
 export interface PersonsSearch {
   /** a search query, see `searchQuery()` */
@@ -59,6 +65,16 @@ export const usePersonsStore = defineStore('persons', () => {
     await api.delete(`/draft/person/${id}`);
   }
 
+  /** removes the persons that are exact copies of another one, returns how many were removed */
+  async function removeRedundants(): Promise<number> {
+    const { total } = await search({ from: 0, limit: 1, sort: 'lastName', order: 'asc' });
+    // ponytail: all persons in one search, capped by the search index result window (10000)
+    const { persons } = await search({ from: 0, limit: Math.max(total, 1), sort: 'lastName', order: 'asc' });
+    const redundants = redundantPersons(persons);
+    for (const person of redundants) await remove(person.id as string);
+    return redundants.length;
+  }
+
   /** the other persons with the same name, and the same email among them */
   async function findDuplicates(person: PersonDto): Promise<DuplicateCheck> {
     const query = duplicateQuery(person);
@@ -77,6 +93,7 @@ export const usePersonsStore = defineStore('persons', () => {
     addRole,
     removeRole,
     remove,
+    removeRedundants,
     findDuplicates,
   };
 });
