@@ -1,0 +1,12 @@
+{
+  "en": {
+    "study.start-year": "Start Year",
+    "study.end-year": "End Year",
+    "global.additional-information": "Additional Information"
+  },
+  "fr": {
+    "study.start-year": "Année de début",
+    "study.end-year": "Année de fin",
+    "global.additional-information": "Information additionnelle"
+  }
+}

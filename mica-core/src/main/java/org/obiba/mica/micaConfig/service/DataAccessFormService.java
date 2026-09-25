@@ -102,6 +102,7 @@ public class DataAccessFormService extends AbstractDataAccessEntityFormService<D
   private DataAccessForm createDefaultDataAccessForm() {
     DataAccessForm form = new DataAccessForm();
     form.setDefinition(getDefaultDataAccessFormResourceAsString("uischema.json"));
+    form.setTranslations(getDefaultDataAccessFormResourceAsString("translations.json"));
     form.setSchema(getDefaultDataAccessFormResourceAsString("schema.json"));
     form.setTitleFieldPath("projectTitle");
     form.setSummaryFieldPath("summary");

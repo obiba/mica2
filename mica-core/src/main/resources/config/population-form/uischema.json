@@ -1,0 +1,280 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "VerticalLayout",
+      "options": {
+        "class": "row q-col-gutter-md"
+      },
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "col-12"
+          },
+          "elements": [
+            {
+              "type": "Label",
+              "text": "t(label.1.text)"
+            }
+          ]
+        },
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "col-6"
+          },
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/selectionCriteria/properties/gender"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/selectionCriteria/properties/ageMin"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/selectionCriteria/properties/ageMax"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/selectionCriteria/properties/pregnantWomen",
+              "hint": "t(study_taxonomy.vocabulary.populations-selectionCriteria-pregnantWomen.description)",
+              "options": {
+                "format": "checkbox"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/selectionCriteria/properties/newborn",
+              "hint": "t(study_taxonomy.vocabulary.populations-selectionCriteria-newborn.description)"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/selectionCriteria/properties/twins",
+              "hint": "t(study_taxonomy.vocabulary.populations-selectionCriteria-twins.description)"
+            }
+          ]
+        },
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "col-6"
+          },
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/selectionCriteria/properties/countriesIso"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/selectionCriteria/properties/territory"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/selectionCriteria/properties/ethnicOrigin",
+              "options": {
+                "addLabel": "t(study.selection-criteria.add-ethnic-origin)",
+                "items": {
+                  "type": "Control",
+                  "label": false,
+                  "scope": "#"
+                }
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/selectionCriteria/properties/healthStatus",
+              "options": {
+                "addLabel": "t(study.selection-criteria.add-health-status)",
+                "items": {
+                  "type": "Control",
+                  "label": false,
+                  "scope": "#"
+                }
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/selectionCriteria/properties/otherCriteria"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/selectionCriteria/properties/info",
+              "options": {
+                "rows": 2,
+                "marked": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "VerticalLayout",
+      "options": {
+        "class": "row q-col-gutter-md"
+      },
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "col-12"
+          },
+          "elements": [
+            {
+              "type": "Label",
+              "text": "t(label.2.text)"
+            }
+          ]
+        },
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "col-6"
+          },
+          "elements": [
+            {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/recruitment/properties/dataSources",
+                  "hint": "t(study_taxonomy.vocabulary.populations-recruitment-dataSources.description)",
+                  "options": {
+                    "format": "checkbox"
+                  }
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/recruitment/properties/info",
+                  "options": {
+                    "rows": 2,
+                    "marked": true
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "col-6"
+          },
+          "elements": [
+            {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "VerticalLayout",
+                  "options": {
+                    "class": "hoffset3"
+                  },
+                  "elements": [
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/recruitment/properties/generalPopulationSources",
+                      "hint": "t(study_taxonomy.vocabulary.populations-recruitment-generalPopulationSources.description)",
+                      "options": {
+                        "format": "checkbox"
+                      },
+                      "rules": {
+                        "visible": "contains(recruitment.dataSources, \"general_population\")"
+                      }
+                    },
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/recruitment/properties/specificPopulationSources",
+                      "hint": "t(study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.description)",
+                      "options": {
+                        "format": "checkbox"
+                      },
+                      "rules": {
+                        "visible": "contains(recruitment.dataSources, \"specific_population\")"
+                      }
+                    },
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/recruitment/properties/otherSpecificPopulationSource",
+                      "rules": {
+                        "visible": "contains(recruitment.specificPopulationSources, \"other\")"
+                      }
+                    },
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/recruitment/properties/studies",
+                      "options": {
+                        "addLabel": "t(study.recruitment-sources.add-study)",
+                        "items": {
+                          "type": "Control",
+                          "scope": "#"
+                        }
+                      },
+                      "rules": {
+                        "visible": "contains(recruitment.dataSources, \"exist_studies\")"
+                      }
+                    },
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/recruitment/properties/otherSource",
+                      "rules": {
+                        "visible": "contains(recruitment.dataSources, \"other\")"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "VerticalLayout",
+      "options": {
+        "class": "row q-col-gutter-md"
+      },
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "col-6"
+          },
+          "elements": [
+            {
+              "type": "VerticalLayout",
+              "elements": [
+                {
+                  "type": "Label",
+                  "text": "t(label.3.text)"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/numberOfParticipants/properties/participant/properties/number"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/numberOfParticipants/properties/participant/properties/noLimit"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/numberOfParticipants/properties/sample/properties/number"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/numberOfParticipants/properties/sample/properties/noLimit"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/numberOfParticipants/properties/info"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

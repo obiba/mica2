@@ -1,0 +1,24 @@
+{
+  "en": {
+    "research-project.default.contact.name": "Name",
+    "research-project.default.contact.institution": "Institution",
+    "research-project.default.status.start": "Start Date",
+    "research-project.default.status.end": "End Date",
+    "research-project.default.status.start-help": "Start date of the project.",
+    "research-project.default.status.end-help": "Expected or effective end date of the project.",
+    "label.1.text": "<h3>Status</h3><p class='help-block'>Specify the timeline of the project.</p>",
+    "label.2.text": "<h3>Contact Details</h3><p class='help-block'>Specify the Principal Investigator's contact information.</p>",
+    "research-project.default.status.date-error": "Not a valid date."
+  },
+  "fr": {
+    "research-project.default.contact.name": "Nom",
+    "research-project.default.contact.institution": "Institution",
+    "research-project.default.status.start": "Date de début",
+    "research-project.default.status.end": "Date de fin",
+    "research-project.default.status.start-help": "Date de début du projet.",
+    "research-project.default.status.end-help": "Date de fin attendue ou effective du projet.",
+    "label.1.text": "<h3>Statut</h3><p class='help-block'>Spécifier le calendrier du projet.</p>",
+    "label.2.text": "<h3>Détails du contact</h3><p class='help-block'>Spécifier les coordonnées du chercheur principal .</p>",
+    "research-project.default.status.date-error": "Date non valide."
+  }
+}

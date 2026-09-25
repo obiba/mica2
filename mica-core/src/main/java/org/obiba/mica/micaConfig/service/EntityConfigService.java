@@ -80,10 +80,11 @@ public abstract class EntityConfigService<T extends EntityConfig> {
     return form.get();
   }
 
-  private T createDefaultForm() {
+  T createDefaultForm() {
     T form = createEmptyForm();
-    form.setDefinition(getResourceAsString(getDefaultDefinitionResourcePath(), "[]"));
+    form.setDefinition(getResourceAsString(getDefaultDefinitionResourcePath(), EMPTY_UISCHEMA));
     form.setSchema(getResourceAsString(getDefaultSchemaResourcePath(), "{}"));
+    form.setTranslations(getResourceAsString(getDefaultTranslationsResourcePath(), null));
     return form;
   }
 
@@ -238,6 +239,15 @@ public abstract class EntityConfigService<T extends EntityConfig> {
   protected abstract String getDefaultDefinitionResourcePath();
 
   protected abstract String getMandatoryDefinitionResourcePath();
+
+  /**
+   * The texts of the default form by locale: by default the `translations.json` beside the default UI schema
+   * (`collection-translations.json` beside `collection-uischema.json`).
+   */
+  protected String getDefaultTranslationsResourcePath() {
+    String path = getDefaultDefinitionResourcePath();
+    return StringUtils.isEmpty(path) ? path : path.replace("uischema.json", "translations.json");
+  }
 
   /**
    * The JSON Forms counterpart of the mandatory definition, merged into a custom definition of that
