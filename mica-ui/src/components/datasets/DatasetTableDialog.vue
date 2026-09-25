@@ -89,11 +89,13 @@
           <q-input v-model="source.path" :label="`${t('dataset.source.file.path')} *`" dense class="col-6">
             <template v-slot:append>
               <q-btn
-                flat
-                dense
-                round
+                outline
+                unelevated
+                no-caps
+                color="primary"
                 size="sm"
-                icon="folder_open"
+                icon="more_horiz"
+                :label="t('files.select')"
                 :title="t('files.select_file')"
                 @click="showFiles = true"
               />
