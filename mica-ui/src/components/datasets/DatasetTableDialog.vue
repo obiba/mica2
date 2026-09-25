@@ -33,7 +33,7 @@
           @filter="onStudyFilter"
           @update:model-value="onStudyChange"
         />
-        <div v-if="!initiative" class="row q-col-gutter-md">
+        <div v-if="!initiative" class="row q-col-gutter-md q-mt-sm">
           <q-select
             v-model="populationId"
             :options="populationOptions"
@@ -109,7 +109,7 @@
       <q-separator />
       <q-card-actions align="right" class="bg-grey-3">
         <q-btn flat :label="t('cancel')" color="secondary" v-close-popup />
-        <q-btn flat :label="t('save')" color="primary" :disable="!complete" @click="onSave" />
+        <q-btn :label="t('save')" color="primary" :disable="!complete" @click="onSave" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -187,9 +187,9 @@ const labelsForm = computed(() =>
     {
       type: 'object',
       properties: {
-        name: { title: 't(name)', ...LOCALIZED },
-        description: { title: 't(description)', ...LOCALIZED },
-        additionalInformation: { title: 't(dataset.additional_information)', ...LOCALIZED },
+        name: { label: 't(name)', "options": { "dense": true }, ...LOCALIZED },
+        description: { label: 't(description)', "options": { "dense": true }, ...LOCALIZED },
+        additionalInformation: { label: 't(dataset.additional_information)', "options": { "dense": true }, ...LOCALIZED },
       },
     },
     [

@@ -39,7 +39,6 @@
       <q-card-actions align="right" class="bg-grey-3">
         <q-btn flat :label="t('cancel')" color="secondary" v-close-popup />
         <q-btn
-          flat
           :label="`${t('config.statistics.index_dialog.index')} (${selected.length})`"
           color="primary"
           :disable="selected.length === 0"
