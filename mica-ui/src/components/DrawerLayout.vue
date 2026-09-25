@@ -1,7 +1,7 @@
 <template>
   <div class="drawer-layout row no-wrap">
     <aside
-      class="drawer-layout__aside bg-grey-3"
+      class="drawer-layout__aside bg-grey-3 print-hide"
       :class="{ 'drawer-layout__aside--mini': miniState && !animating }"
       :style="{ width: `${miniState ? miniWidth : width}px` }"
       @mouseenter="onMouseEnter"

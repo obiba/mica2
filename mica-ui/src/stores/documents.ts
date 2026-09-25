@@ -126,6 +126,11 @@ export const useDocumentsStore = defineStore('documents', () => {
     return (await api.put(target.path, dto, { params: comment ? { ...params, comment } : params })).data;
   }
 
+  /** a link to the draft document for people without an account, expiring at a date (YYYY-MM-DD) or never */
+  async function shareDocument(target: DocumentTarget, expire?: string): Promise<string> {
+    return (await api.put<string>(`${target.path}/_share`, null, { params: expire ? { expire } : {} })).data;
+  }
+
   return {
     lists,
     listOf,
@@ -135,5 +140,6 @@ export const useDocumentsStore = defineStore('documents', () => {
     newDocument,
     createDocument,
     saveDocument,
+    shareDocument,
   };
 });
