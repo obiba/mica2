@@ -141,7 +141,8 @@ function period(event: TimelineEvent) {
   outline-offset: 1px;
 }
 .timeline-axis {
-  height: 18px;
+  /* the border and the year labels (caption line height), else they overflow the tab panel, which scrolls */
+  height: 21px;
   border-top: 1px solid rgba(0, 0, 0, 0.2);
 }
 .timeline-tick {
