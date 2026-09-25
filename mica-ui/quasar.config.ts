@@ -65,7 +65,7 @@ export default defineConfig((ctx) => {
 
       // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
 
-      publicPath: '/admin2',
+      publicPath: '/admin',
       defineEnv: {
         API: ctx.dev ? 'http://localhost:8082/ws' : (process.env.MICA_URL ? process.env.MICA_URL : '') + '/ws',
       },

@@ -23,9 +23,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.obiba.mica.web.filter.CachingHttpHeadersFilter;
 import org.obiba.mica.web.filter.ClickjackingHttpHeadersFilter;
-import org.obiba.mica.web.filter.StaticResourcesProductionFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -163,42 +161,6 @@ public class WebConfiguration implements ServletContextInitializer, EnvironmentA
 
     bean.setFilter(new ClickjackingHttpHeadersFilter());
     bean.addUrlPatterns("/*");
-    bean.setAsyncSupported(true);
-
-    return bean;
-  }
-
-  @Bean
-  @Profile({"prod"})
-  public FilterRegistrationBean<StaticResourcesProductionFilter> staticResourcesProductionFilterRegistration() {
-    log.debug("Registering Static Resources Production Filter");
-    FilterRegistrationBean<StaticResourcesProductionFilter> bean = new FilterRegistrationBean<>();
-
-    bean.setFilter(new StaticResourcesProductionFilter());
-    bean.addUrlPatterns("/favicon.ico");
-    bean.addUrlPatterns("/robots.txt");
-    bean.addUrlPatterns("/index.html");
-    bean.addUrlPatterns("/images/*");
-    bean.addUrlPatterns("/fonts/*");
-    bean.addUrlPatterns("/scripts/*");
-    bean.addUrlPatterns("/styles/*");
-    bean.addUrlPatterns("/views/*");
-    bean.setAsyncSupported(true);
-
-    return bean;
-  }
-
-  @Bean
-  @Profile({"prod"})
-  public FilterRegistrationBean<CachingHttpHeadersFilter> cachingHttpHeadersFilterRegistration() {
-    log.debug("Registering Caching Htpp Headers Filter");
-    FilterRegistrationBean<CachingHttpHeadersFilter> bean = new FilterRegistrationBean<>();
-
-    bean.setFilter(new CachingHttpHeadersFilter());
-    bean.addUrlPatterns("/images/*");
-    bean.addUrlPatterns("/fonts/*");
-    bean.addUrlPatterns("/scripts/*");
-    bean.addUrlPatterns("/styles/*");
     bean.setAsyncSupported(true);
 
     return bean;
