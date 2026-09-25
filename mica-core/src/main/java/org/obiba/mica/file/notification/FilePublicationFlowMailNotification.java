@@ -32,6 +32,7 @@ public class FilePublicationFlowMailNotification extends PublicationFlowMailNoti
       String documentInstance = String.format("/%s/%s", documentParts[0], documentParts[1]);
 
       Map<String, String> ctx = createContext();
+      ctx.put("status", status.toString());
       ctx.put("document", documentInstance);
       ctx.put("documentType", documentParts[0]);
       ctx.put("documentId", documentParts[1]);
