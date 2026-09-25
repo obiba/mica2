@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.WordUtils;
 import org.obiba.mica.core.domain.RevisionStatus;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.security.domain.SubjectAcl;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +28,10 @@ public class EntityPublicationFlowMailNotification extends PublicationFlowMailNo
     = "[${organization}] ${documentId}: %s status has changed";
 
   public void send(String id, String typeName, RevisionStatus current, RevisionStatus status) {
-    if(isEntityNotificationEnabled(current, status, typeName)) {
+    if(current.equals(status)) return;
+
+    EntityNotificationSettings settings = getEntityNotificationSettings(typeName);
+    if(settings.enabled()) {
       Map<String, String> ctx = createContext();
       ctx.put("status", status.toString());
       ctx.put("documentType", typeName);
@@ -37,7 +41,7 @@ public class EntityPublicationFlowMailNotification extends PublicationFlowMailNo
       List<SubjectAcl> acls = getResourceAcls(String.format("/draft/%s", typeName), id);
       acls.addAll(getResourceAcls(String.format("/draft/%s", typeName), "*"));
       String subject = mailService
-        .getSubject(micaConfigService.getConfig().getStudyNotificationsSubject(), ctx, getMailEntityTitle(typeName));
+        .getSubject(settings.subject(), ctx, getMailEntityTitle(typeName));
 
       sendNotification(status, ctx, subject, String.format(ENTITY_NOTIFICATION_TEMPLATE_FORMAT, typeName), acls);
     }
@@ -47,25 +51,30 @@ public class EntityPublicationFlowMailNotification extends PublicationFlowMailNo
     return String.format(DEFAULT_ENTITY_NOTIFICATION_SUBJECT_FORMAT, WordUtils.capitalize(typeName.replace("-", " ")));
   }
 
-  private boolean isEntityNotificationEnabled(RevisionStatus current, RevisionStatus status, String typeName) {
-    if(current.equals(status)) {
-      return false;
-    }
+  /**
+   * Notification settings (enabled flag and custom subject) configured for the entity type.
+   */
+  private EntityNotificationSettings getEntityNotificationSettings(String typeName) {
+    MicaConfig config = micaConfigService.getConfig();
 
     switch(typeName) {
       case "individual-study":
       case "harmonization-study":
-        return micaConfigService.getConfig().isStudyNotificationsEnabled();
+        return new EntityNotificationSettings(config.isStudyNotificationsEnabled(), config.getStudyNotificationsSubject());
       case "network":
-        return micaConfigService.getConfig().isNetworkNotificationsEnabled();
+        return new EntityNotificationSettings(config.isNetworkNotificationsEnabled(), config.getNetworkNotificationsSubject());
       case "collected-dataset":
-        return micaConfigService.getConfig().isStudyDatasetNotificationsEnabled();
+        return new EntityNotificationSettings(config.isStudyDatasetNotificationsEnabled(),
+          config.getStudyDatasetNotificationsSubject());
       case "harmonized-dataset":
-        return micaConfigService.getConfig().isHarmonizationDatasetNotificationsEnabled();
+        return new EntityNotificationSettings(config.isHarmonizationDatasetNotificationsEnabled(),
+          config.getHarmonizationDatasetNotificationsSubject());
       case "project":
-        return micaConfigService.getConfig().isProjectNotificationsEnabled();
+        return new EntityNotificationSettings(config.isProjectNotificationsEnabled(), config.getProjectNotificationsSubject());
     }
 
     throw new IllegalArgumentException("Invalid state " + typeName);
   }
+
+  private record EntityNotificationSettings(boolean enabled, String subject) {}
 }
