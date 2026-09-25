@@ -127,6 +127,10 @@ export default {
     duplicate_email: 'Une autre personne du même nom a le courriel {email} : non enregistrée.',
     duplicate_name_title: 'Doublon possible',
     duplicate_name_text: 'Une autre personne se nomme {name}. Enregistrer quand même ?',
+    remove_duplicates: 'Supprimer les doublons',
+    remove_duplicates_title: 'Supprimer les doublons',
+    remove_duplicates_text: "Supprimer les personnes qui sont des copies exactes d'une autre (mêmes champs et appartenances) ? La plus ancienne copie est conservée.",
+    duplicates_removed: '{count} doublon(s) supprimé(s)',
     identification: 'Identification',
     institution: 'Institution',
     field: {
