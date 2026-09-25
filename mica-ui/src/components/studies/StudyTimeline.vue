@@ -95,6 +95,11 @@ function period(event: TimelineEvent) {
 </script>
 
 <style scoped>
+/* the bars are background colors, which browsers drop when printing */
+.study-timeline {
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
 .timeline-label {
   width: 160px;
   flex: none;

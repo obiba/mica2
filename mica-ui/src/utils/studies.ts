@@ -13,6 +13,14 @@ export function byWeight<T extends { weight?: number | undefined }>(items: T[] |
   return [...(items ?? [])].sort((a, b) => (a.weight ?? 0) - (b.weight ?? 0));
 }
 
+/** the dates of an event, `2010-03 – 2012` or `2010 – ongoing` */
+export function dcePeriod(dce: DceDto, ongoing: string): string {
+  const date = (year: number | undefined, month: number | undefined, day: string | undefined) =>
+    day ?? (month ? `${year}-${String(month).padStart(2, '0')}` : `${year}`);
+  const end = dce.endYear ? date(dce.endYear, dce.endMonth, dce.endDay) : ongoing;
+  return `${date(dce.startYear, dce.startMonth, dce.startDay)} – ${end}`;
+}
+
 /** the next id after the last one: its trailing number incremented (else `_1` appended), not already used */
 export function nextId(ids: string[]): string {
   let id = ids[ids.length - 1] ?? '0';
