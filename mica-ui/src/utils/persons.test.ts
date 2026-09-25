@@ -8,6 +8,7 @@ import {
   groupMemberships,
   membersByRole,
   moveMember,
+  redundantPersons,
   searchQuery,
   toPersonModel,
   withMemberships,
@@ -124,6 +125,23 @@ describe('persons', () => {
     });
   });
 
+  it('finds the redundant persons', () => {
+    const copy = (id: string, created: string, changes: Partial<PersonDto> = {}): PersonDto => ({
+      ...person,
+      id,
+      timestamps: { created, lastUpdate: created },
+      ...changes,
+    });
+    const persons = [
+      copy('p3', '2026-03-01', { studyMemberships: [...person.studyMemberships].reverse() }),
+      copy('p1', '2026-01-01'),
+      copy('p2', '2026-02-01'),
+      copy('p4', '2026-01-15', { email: 'other@example.org' }),
+    ];
+    expect(redundantPersons(persons).map((found) => found.id)).toEqual(['p2', 'p3']);
+    expect(redundantPersons([person])).toEqual([]);
+  });
+
   it('builds the search query of a free text', () => {
     expect(searchQuery('  ')).toBeUndefined();
     expect(searchQuery('jan do')).toBe('jan* do*');
@@ -140,7 +158,13 @@ describe('persons', () => {
 
   it('groups the members by role in the sort order', () => {
     const persons = [member('a', 'contact'), member('b', 'contact', 'investigator'), member('c', 'other')];
-    const members = membersByRole(persons, 'network', 'n1', ['investigator', 'contact'], [{ role: 'contact', personIds: ['b'] }]);
+    const members = membersByRole(
+      persons,
+      'network',
+      'n1',
+      ['investigator', 'contact'],
+      [{ role: 'contact', personIds: ['b'] }],
+    );
     expect(members.map((item) => [item.role, item.persons.map((person) => person.id)])).toEqual([
       ['investigator', ['b']],
       ['contact', ['b', 'a']],
