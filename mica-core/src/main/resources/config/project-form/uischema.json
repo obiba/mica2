@@ -6,7 +6,10 @@
       "elements": [
         {
           "type": "Label",
-          "text": "t(label.1.text)"
+          "text": "t(label.1.text)",
+          "options": {
+            "class": "text-h4"
+          }
         },
         {
           "type": "VerticalLayout",
@@ -66,7 +69,10 @@
       "elements": [
         {
           "type": "Label",
-          "text": "t(label.2.text)"
+          "text": "t(label.2.text)",
+          "options": {
+            "class": "text-h4"
+          }
         },
         {
           "type": "Control",
