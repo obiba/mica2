@@ -32,7 +32,7 @@ public class DataAccessAmendmentFormService extends AbstractDataAccessEntityForm
   public DataAccessAmendmentForm findDraft() {
     Optional<DataAccessAmendmentForm> form = dataAccessAmendmentFormRepository.findById(DataAccessAmendmentForm.DEFAULT_ID);
     if (!form.isPresent()) {
-      createOrUpdate(createDefaultDataAccessAmendmentForm());
+      createOrUpdate(createDefaultForm());
       form = dataAccessAmendmentFormRepository.findById(DataAccessAmendmentForm.DEFAULT_ID);
     }
     return form.get();
@@ -77,7 +77,8 @@ public class DataAccessAmendmentFormService extends AbstractDataAccessEntityForm
       .findFirst();
   }
 
-  private DataAccessAmendmentForm createDefaultDataAccessAmendmentForm() {
+  @Override
+  DataAccessAmendmentForm createDefaultForm() {
     DataAccessAmendmentForm form = new DataAccessAmendmentForm();
     form.setDefinition(getDefaultDataAccessFormResourceAsString("uischema.json"));
     form.setTranslations(getDefaultDataAccessFormResourceAsString("translations.json"));
