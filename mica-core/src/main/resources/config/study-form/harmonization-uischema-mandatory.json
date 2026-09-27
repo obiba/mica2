@@ -3,7 +3,10 @@
   "elements": [
     {
       "type": "Label",
-      "text": "<h3>t(study.general-info)</h3>"
+      "text": "t(study.general-info)",
+      "options": {
+        "class": "text-h4"
+      }
     },
     {
       "type": "VerticalLayout",
