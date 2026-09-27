@@ -255,6 +255,13 @@ Install the new version and restart as usual. No database migration runs at star
       docker compose start mica
       ```
 
+   A text of a JSON Forms form refers to its translations with a `t(key)` token (for
+   instance `"text": "t(label.1.text)"`): the portal resolves only these tokens, from the
+   texts of the form, then from the Mica translations. The builder adds them when it saves.
+   If you edit or import a schema or UI schema by other means, keep the tokens: a bare
+   `label.1.text` is displayed as is. Headings are no longer `<h3>` tags in the texts:
+   use the `class` option of the `Label` instead (`text-h3`, `text-h4`, `text-h5`).
+
 ### Rolling back
 
 Reinstall 6.3.x and restart. Mica itself changed no data. If you ran the cleanup scripts,
