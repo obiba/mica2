@@ -3,14 +3,20 @@
   "elements": [
     {
       "type": "Label",
-      "text": "label.1.text"
+      "text": "label.1.text",
+      "options": {
+        "class": "text-h3"
+      }
     },
     {
       "type": "Group",
       "elements": [
         {
           "type": "Label",
-          "text": "label.2.text"
+          "text": "label.2.text",
+          "options": {
+            "class": "text-h4"
+          }
         },
         {
           "type": "Control",
@@ -30,7 +36,10 @@
       "elements": [
         {
           "type": "Label",
-          "text": "label.3.text"
+          "text": "label.3.text",
+          "options": {
+            "class": "text-h4"
+          }
         },
         {
           "type": "VerticalLayout",
@@ -131,7 +140,10 @@
       "elements": [
         {
           "type": "Label",
-          "text": "label.4.text"
+          "text": "label.4.text",
+          "options": {
+            "class": "text-h4"
+          }
         },
         {
           "type": "VerticalLayout",
@@ -224,7 +236,10 @@
       "elements": [
         {
           "type": "Label",
-          "text": "label.5.text"
+          "text": "label.5.text",
+          "options": {
+            "class": "text-h4"
+          }
         },
         {
           "type": "Control",
@@ -271,7 +286,10 @@
       "elements": [
         {
           "type": "Label",
-          "text": "label.6.text"
+          "text": "label.6.text",
+          "options": {
+            "class": "text-h4"
+          }
         },
         {
           "type": "VerticalLayout",
@@ -351,7 +369,10 @@
       "elements": [
         {
           "type": "Label",
-          "text": "label.7.text"
+          "text": "label.7.text",
+          "options": {
+            "class": "text-h4"
+          }
         },
         {
           "type": "VerticalLayout",
@@ -431,7 +452,10 @@
       "elements": [
         {
           "type": "Label",
-          "text": "label.8.text"
+          "text": "label.8.text",
+          "options": {
+            "class": "text-h4"
+          }
         },
         {
           "type": "Control",
@@ -457,7 +481,10 @@
       "elements": [
         {
           "type": "Label",
-          "text": "label.9.text"
+          "text": "label.9.text",
+          "options": {
+            "class": "text-h4"
+          }
         },
         {
           "type": "Control",
@@ -483,7 +510,10 @@
       "elements": [
         {
           "type": "Label",
-          "text": "label.10.text"
+          "text": "label.10.text",
+          "options": {
+            "class": "text-h4"
+          }
         },
         {
           "type": "Control",
@@ -505,6 +535,9 @@
       "text": "label.11.text",
       "rules": {
         "visible": "contains(modificationNature, \"IIrdRebResearchProtocol\") || contains(modificationNature, \"IIrdRebDecisionLetter\") || contains(modificationNature, \"IIrdCV\") || contains(modificationNature, \"IIrdPeerReview\")"
+      },
+      "options": {
+        "class": "text-h3"
       }
     },
     {
@@ -594,7 +627,10 @@
       "elements": [
         {
           "type": "Label",
-          "text": "label.12.text"
+          "text": "label.12.text",
+          "options": {
+            "class": "text-h4"
+          }
         },
         {
           "type": "Control",
