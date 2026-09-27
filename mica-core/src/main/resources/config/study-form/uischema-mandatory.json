@@ -5,7 +5,7 @@
       "type": "Label",
       "text": "t(study.general-info)",
       "options": {
-        "class": "text-h4"
+        "class": "text-h5"
       }
     },
     {

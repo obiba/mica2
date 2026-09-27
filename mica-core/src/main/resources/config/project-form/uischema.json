@@ -8,7 +8,7 @@
           "type": "Label",
           "text": "t(label.1.text)",
           "options": {
-            "class": "text-h4"
+            "class": "text-h5"
           }
         },
         {
@@ -71,7 +71,7 @@
           "type": "Label",
           "text": "t(label.2.text)",
           "options": {
-            "class": "text-h4"
+            "class": "text-h5"
           }
         },
         {
