@@ -17,7 +17,7 @@
               "type": "Label",
               "text": "t(label.1.text)",
               "options": {
-                "class": "text-h5"
+                "class": "text-h6"
               }
             }
           ]
@@ -155,7 +155,7 @@
               "type": "Label",
               "text": "t(label.2.text)",
               "options": {
-                "class": "text-h5"
+                "class": "text-h6"
               }
             }
           ]
@@ -288,7 +288,7 @@
                   "type": "Label",
                   "text": "t(label.3.text)",
                   "options": {
-                    "class": "text-h5"
+                    "class": "text-h6"
                   }
                 },
                 {
