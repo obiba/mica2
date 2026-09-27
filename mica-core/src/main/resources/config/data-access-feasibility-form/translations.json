@@ -28,12 +28,12 @@
     "data-access-feasibility.default.biospecimens-pre-analytical-characteristics": "Biospecimens pre-analytical characteristics required, if applicable",
     "data-access-feasibility.default.biospecimens-analyze-methods": "Proposed methods for analyzing biospecimens",
     "data-access-feasibility.default.data-linkage": "Data to be linked (specify dataset(s), type of data, and their source), if applicable",
-    "label.1.text": "<h3>Grant Submission Details</h3>",
-    "label.2.text": "<h3>Applicant Information</h3>",
-    "label.3.text": "<h3>Project Overview</h3>",
-    "label.4.text": "<h3>Data Sought</h3>",
-    "label.5.text": "<h3>Biospecimens Sought</h3>",
-    "label.6.text": "<h3>Linkage of Participants with Other Datasets</h3>",
+    "label.1.text": "Grant Submission Details",
+    "label.2.text": "Applicant Information",
+    "label.3.text": "Project Overview",
+    "label.4.text": "Data Sought",
+    "label.5.text": "Biospecimens Sought",
+    "label.6.text": "Linkage of Participants with Other Datasets",
     "data-access-request.default.date-error": "Not a valid date"
   },
   "fr": {
@@ -65,12 +65,12 @@
     "data-access-feasibility.default.biospecimens-pre-analytical-characteristics": "Caractéristiques pré-analyse des échantillons biologiques, si applicable",
     "data-access-feasibility.default.biospecimens-analyze-methods": "Méthodes d'analyse envisagées pour les échantillons biologiques",
     "data-access-feasibility.default.data-linkage": "Données qui seront liées aux données demandées (préciser quel(s) ensembles de données, le type de données et leur origine), si applicable",
-    "label.1.text": "<h3>Détails de la demande de finance</h3>",
-    "label.2.text": "<h3>Information sur le demandeur</h3>",
-    "label.3.text": "<h3>Présentation du projet</h3>",
-    "label.4.text": "<h3>Données demandées</h3>",
-    "label.5.text": "<h3>Echantillons biologiques demandés</h3>",
-    "label.6.text": "<h3>Liens avec d'autres ensembles de données</h3>",
+    "label.1.text": "Détails de la demande de finance",
+    "label.2.text": "Information sur le demandeur",
+    "label.3.text": "Présentation du projet",
+    "label.4.text": "Données demandées",
+    "label.5.text": "Echantillons biologiques demandés",
+    "label.6.text": "Liens avec d'autres ensembles de données",
     "data-access-request.default.date-error": "Date invalide"
   }
 }

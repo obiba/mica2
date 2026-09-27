@@ -15,7 +15,10 @@
           "elements": [
             {
               "type": "Label",
-              "text": "t(label.1.text)"
+              "text": "t(label.1.text)",
+              "options": {
+                "class": "text-h5"
+              }
             }
           ]
         },
@@ -150,7 +153,10 @@
           "elements": [
             {
               "type": "Label",
-              "text": "t(label.2.text)"
+              "text": "t(label.2.text)",
+              "options": {
+                "class": "text-h5"
+              }
             }
           ]
         },
@@ -280,7 +286,10 @@
               "elements": [
                 {
                   "type": "Label",
-                  "text": "t(label.3.text)"
+                  "text": "t(label.3.text)",
+                  "options": {
+                    "class": "text-h5"
+                  }
                 },
                 {
                   "type": "Control",

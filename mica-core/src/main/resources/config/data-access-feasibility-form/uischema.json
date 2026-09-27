@@ -3,7 +3,10 @@
   "elements": [
     {
       "type": "Label",
-      "text": "label.1.text"
+      "text": "label.1.text",
+      "options": {
+        "class": "text-h4"
+      }
     },
     {
       "type": "Control",
@@ -66,7 +69,10 @@
     },
     {
       "type": "Label",
-      "text": "label.2.text"
+      "text": "label.2.text",
+      "options": {
+        "class": "text-h4"
+      }
     },
     {
       "type": "HorizontalLayout",
@@ -149,7 +155,10 @@
     },
     {
       "type": "Label",
-      "text": "label.3.text"
+      "text": "label.3.text",
+      "options": {
+        "class": "text-h4"
+      }
     },
     {
       "type": "HorizontalLayout",
@@ -180,7 +189,10 @@
     },
     {
       "type": "Label",
-      "text": "label.4.text"
+      "text": "label.4.text",
+      "options": {
+        "class": "text-h4"
+      }
     },
     {
       "type": "HorizontalLayout",
@@ -221,7 +233,10 @@
     },
     {
       "type": "Label",
-      "text": "label.5.text"
+      "text": "label.5.text",
+      "options": {
+        "class": "text-h4"
+      }
     },
     {
       "type": "Control",
@@ -278,7 +293,10 @@
     },
     {
       "type": "Label",
-      "text": "label.6.text"
+      "text": "label.6.text",
+      "options": {
+        "class": "text-h4"
+      }
     },
     {
       "type": "VerticalLayout",
