@@ -25,6 +25,7 @@
               </q-item-section>
               <q-item-section>{{ config.forms.length > 1 ? t(form.label) : t('config.form') }}</q-item-section>
             </q-item>
+            <q-separator />
             <q-item clickable v-ripple :active="tab === 'permissions'" @click="selectTab('permissions')">
               <q-item-section avatar>
                 <q-icon name="lock" />
