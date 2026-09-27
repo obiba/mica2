@@ -52,7 +52,15 @@ abstract class AbstractDataAccessEntityFormService<T extends AbstractDataAccessE
   abstract String getDataAccessEntityFormResourceLocation();
 
   /**
+   * Build the default form from the classpath resources (not saved).
+   *
+   * @return
+   */
+  abstract T createDefaultForm();
+
+  /**
    * Helper method to get the form by revision number or draft (revision=0) or latest (max revision) aliases.
+   * A revision number that cannot be found falls back on the default form.
    *
    * @param revision
    * @return
@@ -65,7 +73,7 @@ abstract class AbstractDataAccessEntityFormService<T extends AbstractDataAccessE
       d = Optional.ofNullable(findLatest());
     else
       try {
-        d = Optional.ofNullable(findByRevision(Integer.parseInt(revision)));
+        d = Optional.ofNullable(findByRevision(Integer.parseInt(revision))).or(() -> Optional.of(createDefaultForm()));
       } catch (NumberFormatException e) {
         d = Optional.empty();
       }
