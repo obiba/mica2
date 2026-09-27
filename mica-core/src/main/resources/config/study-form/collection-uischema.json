@@ -243,127 +243,119 @@
       ]
     },
     {
+      "type": "Label",
+      "text": "t(label.5.text)",
+      "options": {
+        "class": "text-h5"
+      }
+    },
+    {
+      "type": "Label",
+      "text": "t(label.6.text)",
+      "options": {
+        "class": "text-h6"
+      }
+    },
+    {
       "type": "VerticalLayout",
       "options": {
         "class": "row q-col-gutter-md"
       },
       "elements": [
         {
-          "type": "Label",
-          "text": "t(label.5.text)",
-          "options": {
-            "class": "text-h5"
-          }
-        },
-        {
-          "type": "Label",
-          "text": "t(label.6.text)",
-          "options": {
-            "class": "text-h6"
-          }
-        },
-        {
           "type": "VerticalLayout",
           "options": {
-            "class": "row q-col-gutter-md"
+            "class": "col-md-6"
           },
           "elements": [
             {
-              "type": "VerticalLayout",
-              "options": {
-                "class": "col-md-6"
-              },
-              "elements": [
-                {
-                  "type": "Label",
-                  "text": "t(label.7.text)"
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/access",
-                  "label": false
-                },
-                {
-                  "type": "VerticalLayout",
-                  "options": {
-                    "class": "hoffset3"
-                  },
-                  "elements": [
-                    {
-                      "type": "Control",
-                      "scope": "#/properties/otherAccess",
-                      "options": {
-                        "rows": 2,
-                        "dense": true
-                      },
-                      "rules": {
-                        "visible": "access.access_other == \"yes\""
-                      }
-                    }
-                  ]
-                }
-              ]
+              "type": "Label",
+              "text": "t(label.7.text)"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/access",
+              "label": false
             },
             {
               "type": "VerticalLayout",
               "options": {
-                "class": "col-md-6"
+                "class": "hoffset3"
               },
               "elements": [
                 {
-                  "type": "Label",
-                  "text": "t(label.8.text)"
-                },
+                  "type": "Control",
+                  "scope": "#/properties/otherAccess",
+                  "options": {
+                    "rows": 2,
+                    "dense": true
+                  },
+                  "rules": {
+                    "visible": "access.access_other == \"yes\""
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "col-md-6"
+          },
+          "elements": [
+            {
+              "type": "Label",
+              "text": "t(label.8.text)"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/access_info_location",
+              "label": false,
+              "options": {
+                "format": "checkbox"
+              }
+            },
+            {
+              "type": "VerticalLayout",
+              "rules": {
+                "visible": "contains(access_info_location, \"study_representative\")"
+              },
+              "elements": [
                 {
                   "type": "Control",
-                  "scope": "#/properties/access_info_location",
-                  "label": false,
+                  "scope": "#/properties/access_info_representative/properties/name",
                   "options": {
-                    "format": "checkbox"
+                    "dense": true
                   }
                 },
                 {
-                  "type": "VerticalLayout",
-                  "rules": {
-                    "visible": "contains(access_info_location, \"study_representative\")"
-                  },
-                  "elements": [
-                    {
-                      "type": "Control",
-                      "scope": "#/properties/access_info_representative/properties/name",
-                      "options": {
-                        "dense": true
-                      }
-                    },
-                    {
-                      "type": "Control",
-                      "scope": "#/properties/access_info_representative/properties/title",
-                      "options": {
-                        "dense": true
-                      }
-                    },
-                    {
-                      "type": "Control",
-                      "scope": "#/properties/access_info_representative/properties/email",
-                      "options": {
-                        "dense": true
-                      }
-                    },
-                    {
-                      "type": "Control",
-                      "scope": "#/properties/access_info_representative/properties/telephone",
-                      "options": {
-                        "dense": true
-                      }
-                    },
-                    {
-                      "type": "Control",
-                      "scope": "#/properties/access_info_representative/properties/institution",
-                      "options": {
-                        "dense": true
-                      }
-                    }
-                  ]
+                  "type": "Control",
+                  "scope": "#/properties/access_info_representative/properties/title",
+                  "options": {
+                    "dense": true
+                  }
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/access_info_representative/properties/email",
+                  "options": {
+                    "dense": true
+                  }
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/access_info_representative/properties/telephone",
+                  "options": {
+                    "dense": true
+                  }
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/access_info_representative/properties/institution",
+                  "options": {
+                    "dense": true
+                  }
                 }
               ]
             }
@@ -635,28 +627,24 @@
       ]
     },
     {
+      "type": "Label",
+      "text": "t(label.22.text)",
+      "options": {
+        "class": "text-h5"
+      }
+    },
+    {
       "type": "VerticalLayout",
       "options": {
         "class": "row q-col-gutter-md"
       },
       "elements": [
         {
-          "type": "Label",
-          "text": "<hr>"
-        },
-        {
           "type": "VerticalLayout",
           "options": {
             "class": "col-6"
           },
           "elements": [
-            {
-              "type": "Label",
-              "text": "t(label.22.text)",
-              "options": {
-                "class": "text-h5"
-              }
-            },
             {
               "type": "Control",
               "scope": "#/properties/markerPaper",
@@ -665,7 +653,15 @@
                 "rows": 3,
                 "dense": true
               }
-            },
+            }
+          ]
+        },
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "col-6"
+          },
+          "elements": [
             {
               "type": "Control",
               "scope": "#/properties/pubmedId",
