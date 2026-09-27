@@ -27,15 +27,24 @@
           "elements": [
             {
               "type": "Control",
-              "scope": "#/properties/selectionCriteria/properties/gender"
+              "scope": "#/properties/selectionCriteria/properties/gender",
+              "options": {
+                "dense": true
+              }
             },
             {
               "type": "Control",
-              "scope": "#/properties/selectionCriteria/properties/ageMin"
+              "scope": "#/properties/selectionCriteria/properties/ageMin",
+              "options": {
+                "dense": true
+              }
             },
             {
               "type": "Control",
-              "scope": "#/properties/selectionCriteria/properties/ageMax"
+              "scope": "#/properties/selectionCriteria/properties/ageMax",
+              "options": {
+                "dense": true
+              }
             },
             {
               "type": "Control",
@@ -48,12 +57,18 @@
             {
               "type": "Control",
               "scope": "#/properties/selectionCriteria/properties/newborn",
-              "hint": "t(study_taxonomy.vocabulary.populations-selectionCriteria-newborn.description)"
+              "hint": "t(study_taxonomy.vocabulary.populations-selectionCriteria-newborn.description)",
+              "options": {
+                "dense": true
+              }
             },
             {
               "type": "Control",
               "scope": "#/properties/selectionCriteria/properties/twins",
-              "hint": "t(study_taxonomy.vocabulary.populations-selectionCriteria-twins.description)"
+              "hint": "t(study_taxonomy.vocabulary.populations-selectionCriteria-twins.description)",
+              "options": {
+                "dense": true
+              }
             }
           ]
         },
@@ -65,11 +80,17 @@
           "elements": [
             {
               "type": "Control",
-              "scope": "#/properties/selectionCriteria/properties/countriesIso"
+              "scope": "#/properties/selectionCriteria/properties/countriesIso",
+              "options": {
+                "dense": true
+              }
             },
             {
               "type": "Control",
-              "scope": "#/properties/selectionCriteria/properties/territory"
+              "scope": "#/properties/selectionCriteria/properties/territory",
+              "options": {
+                "dense": true
+              }
             },
             {
               "type": "Control",
@@ -97,14 +118,18 @@
             },
             {
               "type": "Control",
-              "scope": "#/properties/selectionCriteria/properties/otherCriteria"
+              "scope": "#/properties/selectionCriteria/properties/otherCriteria",
+              "options": {
+                "dense": true
+              }
             },
             {
               "type": "Control",
               "scope": "#/properties/selectionCriteria/properties/info",
               "options": {
                 "rows": 2,
-                "marked": true
+                "marked": true,
+                "dense": true
               }
             }
           ]
@@ -151,7 +176,8 @@
                   "scope": "#/properties/recruitment/properties/info",
                   "options": {
                     "rows": 2,
-                    "marked": true
+                    "marked": true,
+                    "dense": true
                   }
                 }
               ]
@@ -198,6 +224,9 @@
                     {
                       "type": "Control",
                       "scope": "#/properties/recruitment/properties/otherSpecificPopulationSource",
+                      "options": {
+                        "dense": true
+                      },
                       "rules": {
                         "visible": "contains(recruitment.specificPopulationSources, \"other\")"
                       }
@@ -219,6 +248,9 @@
                     {
                       "type": "Control",
                       "scope": "#/properties/recruitment/properties/otherSource",
+                      "options": {
+                        "dense": true
+                      },
                       "rules": {
                         "visible": "contains(recruitment.dataSources, \"other\")"
                       }
@@ -252,7 +284,10 @@
                 },
                 {
                   "type": "Control",
-                  "scope": "#/properties/numberOfParticipants/properties/participant/properties/number"
+                  "scope": "#/properties/numberOfParticipants/properties/participant/properties/number",
+                  "options": {
+                    "dense": true
+                  }
                 },
                 {
                   "type": "Control",
@@ -260,7 +295,10 @@
                 },
                 {
                   "type": "Control",
-                  "scope": "#/properties/numberOfParticipants/properties/sample/properties/number"
+                  "scope": "#/properties/numberOfParticipants/properties/sample/properties/number",
+                  "options": {
+                    "dense": true
+                  }
                 },
                 {
                   "type": "Control",
@@ -268,7 +306,10 @@
                 },
                 {
                   "type": "Control",
-                  "scope": "#/properties/numberOfParticipants/properties/info"
+                  "scope": "#/properties/numberOfParticipants/properties/info",
+                  "options": {
+                    "dense": true
+                  }
                 }
               ]
             }

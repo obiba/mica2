@@ -14,17 +14,26 @@
             {
               "type": "Control",
               "scope": "#/properties/_name",
-              "hint": "t(study.name-help)"
+              "hint": "t(study.name-help)",
+              "options": {
+                "dense": true
+              }
             },
             {
               "type": "Control",
               "scope": "#/properties/_acronym",
-              "hint": "t(study.acronym-help)"
+              "hint": "t(study.acronym-help)",
+              "options": {
+                "dense": true
+              }
             },
             {
               "type": "Control",
               "scope": "#/properties/_opal",
-              "hint": "t(study.opal-help)"
+              "hint": "t(study.opal-help)",
+              "options": {
+                "dense": true
+              }
             }
           ],
           "options": {
@@ -39,6 +48,7 @@
               "scope": "#/properties/_objectives",
               "hint": "t(study.objectives-help)",
               "options": {
+                "dense": true,
                 "marked": true,
                 "rows": 3
               }

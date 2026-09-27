@@ -3,14 +3,14 @@
   "elements": [
     {
       "type": "Label",
-      "text": "t(label.1.text)"
+      "text": "label.1.text"
     },
     {
       "type": "Group",
       "elements": [
         {
           "type": "Label",
-          "text": "t(label.2.text)"
+          "text": "label.2.text"
         },
         {
           "type": "Control",
@@ -30,7 +30,7 @@
       "elements": [
         {
           "type": "Label",
-          "text": "t(label.3.text)"
+          "text": "label.3.text"
         },
         {
           "type": "VerticalLayout",
@@ -46,19 +46,35 @@
               "elements": [
                 {
                   "type": "Control",
-                  "scope": "#/properties/name"
+                  "scope": "#/properties/name",
+                  "options": {
+                    "outlined": true,
+                    "dense": true
+                  }
                 },
                 {
                   "type": "Control",
-                  "scope": "#/properties/title"
+                  "scope": "#/properties/title",
+                  "options": {
+                    "outlined": true,
+                    "dense": true
+                  }
                 },
                 {
                   "type": "Control",
-                  "scope": "#/properties/position"
+                  "scope": "#/properties/position",
+                  "options": {
+                    "outlined": true,
+                    "dense": true
+                  }
                 },
                 {
                   "type": "Control",
-                  "scope": "#/properties/institution"
+                  "scope": "#/properties/institution",
+                  "options": {
+                    "outlined": true,
+                    "dense": true
+                  }
                 }
               ]
             },
@@ -70,21 +86,35 @@
               "elements": [
                 {
                   "type": "Control",
-                  "scope": "#/properties/email"
+                  "scope": "#/properties/email",
+                  "options": {
+                    "outlined": true,
+                    "dense": true
+                  }
                 },
                 {
                   "type": "Control",
-                  "scope": "#/properties/emailAlt"
+                  "scope": "#/properties/emailAlt",
+                  "options": {
+                    "outlined": true,
+                    "dense": true
+                  }
                 },
                 {
                   "type": "Control",
-                  "scope": "#/properties/phone"
+                  "scope": "#/properties/phone",
+                  "options": {
+                    "outlined": true,
+                    "dense": true
+                  }
                 },
                 {
                   "type": "Control",
                   "scope": "#/properties/mailingAddress",
                   "options": {
-                    "rows": 3
+                    "rows": 3,
+                    "outlined": true,
+                    "dense": true
                   }
                 }
               ]
@@ -101,7 +131,7 @@
       "elements": [
         {
           "type": "Label",
-          "text": "t(label.4.text)"
+          "text": "label.4.text"
         },
         {
           "type": "VerticalLayout",
@@ -117,19 +147,35 @@
               "elements": [
                 {
                   "type": "Control",
-                  "scope": "#/properties/repName"
+                  "scope": "#/properties/repName",
+                  "options": {
+                    "outlined": true,
+                    "dense": true
+                  }
                 },
                 {
                   "type": "Control",
-                  "scope": "#/properties/repTitle"
+                  "scope": "#/properties/repTitle",
+                  "options": {
+                    "outlined": true,
+                    "dense": true
+                  }
                 },
                 {
                   "type": "Control",
-                  "scope": "#/properties/repPosition"
+                  "scope": "#/properties/repPosition",
+                  "options": {
+                    "outlined": true,
+                    "dense": true
+                  }
                 },
                 {
                   "type": "Control",
-                  "scope": "#/properties/repInstitution"
+                  "scope": "#/properties/repInstitution",
+                  "options": {
+                    "outlined": true,
+                    "dense": true
+                  }
                 }
               ]
             },
@@ -141,17 +187,27 @@
               "elements": [
                 {
                   "type": "Control",
-                  "scope": "#/properties/repEmail"
+                  "scope": "#/properties/repEmail",
+                  "options": {
+                    "outlined": true,
+                    "dense": true
+                  }
                 },
                 {
                   "type": "Control",
-                  "scope": "#/properties/repPhone"
+                  "scope": "#/properties/repPhone",
+                  "options": {
+                    "outlined": true,
+                    "dense": true
+                  }
                 },
                 {
                   "type": "Control",
                   "scope": "#/properties/repMailingAddress",
                   "options": {
-                    "rows": 3
+                    "rows": 3,
+                    "outlined": true,
+                    "dense": true
                   }
                 }
               ]
@@ -168,14 +224,16 @@
       "elements": [
         {
           "type": "Label",
-          "text": "t(label.5.text)"
+          "text": "label.5.text"
         },
         {
           "type": "Control",
           "scope": "#/properties/projectTitle",
           "label": false,
           "options": {
-            "rows": 3
+            "rows": 3,
+            "outlined": true,
+            "dense": true
           }
         },
         {
@@ -193,16 +251,13 @@
                 {
                   "type": "Control",
                   "scope": "#/properties/projectWebsite",
-                  "hint": "t(data-access-amendment.default.I.C.website-help)"
+                  "hint": "data-access-amendment.default.I.C.website-help",
+                  "options": {
+                    "outlined": true,
+                    "dense": true
+                  }
                 }
               ]
-            },
-            {
-              "type": "VerticalLayout",
-              "options": {
-                "class": "col-6"
-              },
-              "elements": []
             }
           ]
         }
@@ -216,7 +271,7 @@
       "elements": [
         {
           "type": "Label",
-          "text": "t(label.6.text)"
+          "text": "label.6.text"
         },
         {
           "type": "VerticalLayout",
@@ -245,19 +300,35 @@
                       "elements": [
                         {
                           "type": "Control",
-                          "scope": "#/properties/name"
+                          "scope": "#/properties/name",
+                          "options": {
+                            "outlined": true,
+                            "dense": true
+                          }
                         },
                         {
                           "type": "Control",
-                          "scope": "#/properties/title"
+                          "scope": "#/properties/title",
+                          "options": {
+                            "outlined": true,
+                            "dense": true
+                          }
                         },
                         {
                           "type": "Control",
-                          "scope": "#/properties/position"
+                          "scope": "#/properties/position",
+                          "options": {
+                            "outlined": true,
+                            "dense": true
+                          }
                         },
                         {
                           "type": "Control",
-                          "scope": "#/properties/email"
+                          "scope": "#/properties/email",
+                          "options": {
+                            "outlined": true,
+                            "dense": true
+                          }
                         }
                       ]
                     }
@@ -267,13 +338,6 @@
                   }
                 }
               ]
-            },
-            {
-              "type": "VerticalLayout",
-              "options": {
-                "class": "col-6"
-              },
-              "elements": []
             }
           ]
         }
@@ -287,7 +351,7 @@
       "elements": [
         {
           "type": "Label",
-          "text": "t(label.7.text)"
+          "text": "label.7.text"
         },
         {
           "type": "VerticalLayout",
@@ -316,19 +380,35 @@
                       "elements": [
                         {
                           "type": "Control",
-                          "scope": "#/properties/name"
+                          "scope": "#/properties/name",
+                          "options": {
+                            "outlined": true,
+                            "dense": true
+                          }
                         },
                         {
                           "type": "Control",
-                          "scope": "#/properties/title"
+                          "scope": "#/properties/title",
+                          "options": {
+                            "outlined": true,
+                            "dense": true
+                          }
                         },
                         {
                           "type": "Control",
-                          "scope": "#/properties/position"
+                          "scope": "#/properties/position",
+                          "options": {
+                            "outlined": true,
+                            "dense": true
+                          }
                         },
                         {
                           "type": "Control",
-                          "scope": "#/properties/email"
+                          "scope": "#/properties/email",
+                          "options": {
+                            "outlined": true,
+                            "dense": true
+                          }
                         }
                       ]
                     }
@@ -338,13 +418,6 @@
                   }
                 }
               ]
-            },
-            {
-              "type": "VerticalLayout",
-              "options": {
-                "class": "col-6"
-              },
-              "elements": []
             }
           ]
         }
@@ -358,7 +431,7 @@
       "elements": [
         {
           "type": "Label",
-          "text": "t(label.8.text)"
+          "text": "label.8.text"
         },
         {
           "type": "Control",
@@ -366,6 +439,8 @@
           "label": false,
           "options": {
             "rows": 3,
+            "outlined": true,
+            "dense": true,
             "wordLimit": "0:500",
             "validationMessage": {
               "wordLimitError": "The 500 words limit has been exceeded."
@@ -382,7 +457,7 @@
       "elements": [
         {
           "type": "Label",
-          "text": "t(label.9.text)"
+          "text": "label.9.text"
         },
         {
           "type": "Control",
@@ -390,6 +465,8 @@
           "label": false,
           "options": {
             "rows": 3,
+            "outlined": true,
+            "dense": true,
             "wordLimit": "0:200",
             "validationMessage": {
               "wordLimitError": "The 200 words limit has been exceeded."
@@ -406,14 +483,16 @@
       "elements": [
         {
           "type": "Label",
-          "text": "t(label.10.text)"
+          "text": "label.10.text"
         },
         {
           "type": "Control",
           "scope": "#/properties/endDate",
           "label": false,
           "options": {
-            "validationMessage": "t(data-access-amendment.default.date-error)",
+            "outlined": true,
+            "dense": true,
+            "validationMessage": "data-access-amendment.default.date-error",
             "dateOptions": {
               "dateFormat": "yyyy-MM-dd"
             }
@@ -423,7 +502,7 @@
     },
     {
       "type": "Label",
-      "text": "t(label.11.text)",
+      "text": "label.11.text",
       "rules": {
         "visible": "contains(modificationNature, \"IIrdRebResearchProtocol\") || contains(modificationNature, \"IIrdRebDecisionLetter\") || contains(modificationNature, \"IIrdCV\") || contains(modificationNature, \"IIrdPeerReview\")"
       }
@@ -435,10 +514,10 @@
           "type": "Control",
           "scope": "#/properties/rdRebResearchProtocol",
           "options": {
-            "emptyMessage": "t(data-access-request.no-documents)",
+            "emptyMessage": "data-access-request.no-documents",
             "validationMessage": {
-              "missingFiles": "t(missing-files)",
-              "minItems": "t(min-items)"
+              "missingFiles": "missing-files",
+              "minItems": "min-items"
             }
           },
           "rules": {
@@ -449,10 +528,10 @@
           "type": "Control",
           "scope": "#/properties/rdRebDecisionLetter",
           "options": {
-            "emptyMessage": "t(data-access-request.no-documents)",
+            "emptyMessage": "data-access-request.no-documents",
             "validationMessage": {
-              "missingFiles": "t(missing-files)",
-              "minItems": "t(min-items)"
+              "missingFiles": "missing-files",
+              "minItems": "min-items"
             }
           },
           "rules": {
@@ -463,10 +542,10 @@
           "type": "Control",
           "scope": "#/properties/rdCV",
           "options": {
-            "emptyMessage": "t(data-access-request.no-documents)",
+            "emptyMessage": "data-access-request.no-documents",
             "validationMessage": {
-              "missingFiles": "t(missing-files)",
-              "minItems": "t(min-items)"
+              "missingFiles": "missing-files",
+              "minItems": "min-items"
             }
           },
           "rules": {
@@ -477,10 +556,10 @@
           "type": "Control",
           "scope": "#/properties/rdPeerReview",
           "options": {
-            "emptyMessage": "t(data-access-request.no-documents)",
+            "emptyMessage": "data-access-request.no-documents",
             "validationMessage": {
-              "missingFiles": "t(missing-files)",
-              "minItems": "t(min-items)"
+              "missingFiles": "missing-files",
+              "minItems": "min-items"
             }
           },
           "rules": {
@@ -500,6 +579,8 @@
           "scope": "#/properties/other",
           "options": {
             "rows": 5,
+            "outlined": true,
+            "dense": true,
             "wordLimit": "0:500",
             "validationMessage": {
               "wordLimitError": "The 500 words limit has been exceeded."
@@ -513,7 +594,7 @@
       "elements": [
         {
           "type": "Label",
-          "text": "t(label.12.text)"
+          "text": "label.12.text"
         },
         {
           "type": "Control",

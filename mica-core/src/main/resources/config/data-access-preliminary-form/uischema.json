@@ -3,236 +3,270 @@
   "elements": [
     {
       "type": "Label",
-      "text": "t(label.1.text)"
+      "text": "label.1.text"
     },
     {
-      "type": "Group",
+      "type": "Label",
+      "text": "label.2.text"
+    },
+    {
+      "type": "HorizontalLayout",
+      "options": {
+        "class": "row q-col-gutter-md"
+      },
       "elements": [
         {
-          "type": "Label",
-          "text": "t(label.2.text)"
+          "type": "VerticalLayout",
+          "options": {
+            "class": "col-6"
+          },
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/name",
+              "options": {
+                "outlined": true,
+                "dense": true
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/title",
+              "options": {
+                "outlined": true,
+                "dense": true
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/position",
+              "options": {
+                "outlined": true,
+                "dense": true
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/institution",
+              "options": {
+                "outlined": true,
+                "dense": true
+              }
+            }
+          ]
         },
         {
           "type": "VerticalLayout",
           "options": {
-            "class": "row q-col-gutter-md"
+            "class": "col-6"
           },
           "elements": [
             {
-              "type": "VerticalLayout",
+              "type": "Control",
+              "scope": "#/properties/email",
               "options": {
-                "class": "col-6"
-              },
-              "elements": [
-                {
-                  "type": "Control",
-                  "scope": "#/properties/name"
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/title"
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/position"
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/institution"
-                }
-              ]
+                "outlined": true,
+                "dense": true
+              }
             },
             {
-              "type": "VerticalLayout",
+              "type": "Control",
+              "scope": "#/properties/emailAlt",
               "options": {
-                "class": "col-6"
-              },
-              "elements": [
-                {
-                  "type": "Control",
-                  "scope": "#/properties/email"
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/emailAlt"
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/phone"
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/mailingAddress",
-                  "options": {
-                    "rows": 3
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "Group",
-      "elements": [
-        {
-          "type": "Label",
-          "text": "t(label.3.text)"
-        },
-        {
-          "type": "VerticalLayout",
-          "options": {
-            "class": "row q-col-gutter-md"
-          },
-          "elements": [
-            {
-              "type": "VerticalLayout",
-              "options": {
-                "class": "col-6"
-              },
-              "elements": [
-                {
-                  "type": "Control",
-                  "scope": "#/properties/repName"
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/repTitle"
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/repPosition"
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/repInstitution"
-                }
-              ]
+                "outlined": true,
+                "dense": true
+              }
             },
             {
-              "type": "VerticalLayout",
+              "type": "Control",
+              "scope": "#/properties/phone",
               "options": {
-                "class": "col-6"
-              },
-              "elements": [
-                {
-                  "type": "Control",
-                  "scope": "#/properties/repEmail"
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/repPhone"
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/repMailingAddress",
-                  "options": {
-                    "rows": 3
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "Group",
-      "elements": [
-        {
-          "type": "Label",
-          "text": "t(label.4.text)"
-        },
-        {
-          "type": "Control",
-          "scope": "#/properties/projectTitle",
-          "label": false,
-          "options": {
-            "rows": 3
-          }
-        },
-        {
-          "type": "VerticalLayout",
-          "options": {
-            "class": "row q-col-gutter-md"
-          },
-          "elements": [
-            {
-              "type": "VerticalLayout",
-              "options": {
-                "class": "col-6"
-              },
-              "elements": [
-                {
-                  "type": "Control",
-                  "scope": "#/properties/projectWebsite",
-                  "hint": "t(data-access-request.default.I.C.website-help)"
-                }
-              ]
+                "outlined": true,
+                "dense": true
+              }
             },
             {
-              "type": "VerticalLayout",
+              "type": "Control",
+              "scope": "#/properties/mailingAddress",
               "options": {
-                "class": "col-6"
-              },
-              "elements": []
+                "rows": 3,
+                "outlined": true,
+                "dense": true
+              }
             }
           ]
-        }
-      ]
-    },
-    {
-      "type": "Group",
-      "elements": [
-        {
-          "type": "Label",
-          "text": "t(label.5.text)"
-        },
-        {
-          "type": "Control",
-          "scope": "#/properties/abstract",
-          "label": false,
-          "options": {
-            "rows": 3,
-            "wordLimit": "0:500",
-            "validationMessage": {
-              "wordLimitError": "The 500 words limit has been exceeded."
-            }
-          }
         }
       ]
     },
     {
       "type": "Label",
-      "text": "t(label.6.text)"
+      "text": "label.3.text"
     },
     {
-      "type": "Group",
+      "type": "HorizontalLayout",
+      "options": {
+        "class": "row q-col-gutter-md"
+      },
       "elements": [
         {
-          "type": "Control",
-          "scope": "#/properties/rdCV",
+          "type": "VerticalLayout",
           "options": {
-            "emptyMessage": "t(data-access-request.no-documents)",
-            "validationMessage": {
-              "missingFiles": "t(missing-files)",
-              "minItems": "t(min-items)"
+            "class": "col-6"
+          },
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/repName",
+              "options": {
+                "outlined": true,
+                "dense": true
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/repTitle",
+              "options": {
+                "outlined": true,
+                "dense": true
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/repPosition",
+              "options": {
+                "outlined": true,
+                "dense": true
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/repInstitution",
+              "options": {
+                "outlined": true,
+                "dense": true
+              }
             }
-          }
+          ]
         },
         {
-          "type": "Control",
-          "scope": "#/properties/rdPeerReview",
+          "type": "VerticalLayout",
           "options": {
-            "emptyMessage": "t(data-access-request.no-documents)",
-            "validationMessage": {
-              "missingFiles": "t(missing-files)",
-              "minItems": "t(min-items)"
+            "class": "col-6"
+          },
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/repEmail",
+              "options": {
+                "outlined": true,
+                "dense": true
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/repPhone",
+              "options": {
+                "outlined": true,
+                "dense": true
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/repMailingAddress",
+              "options": {
+                "rows": 3,
+                "outlined": true,
+                "dense": true
+              }
             }
-          }
+          ]
         }
       ]
+    },
+    {
+      "type": "Label",
+      "text": "label.4.text"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/projectTitle",
+      "label": false,
+      "options": {
+        "rows": 3,
+        "outlined": true,
+        "dense": true
+      }
+    },
+    {
+      "type": "HorizontalLayout",
+      "options": {
+        "class": "row q-col-gutter-md"
+      },
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "col-6"
+          },
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/projectWebsite",
+              "hint": "data-access-request.default.I.C.website-help",
+              "options": {
+                "outlined": true,
+                "dense": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Label",
+      "text": "label.5.text"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/abstract",
+      "label": false,
+      "options": {
+        "rows": 3,
+        "outlined": true,
+        "dense": true,
+        "wordLimit": "0:500",
+        "validationMessage": {
+          "wordLimitError": "The 500 words limit has been exceeded."
+        }
+      }
+    },
+    {
+      "type": "Label",
+      "text": "label.6.text"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/rdCV",
+      "options": {
+        "outlined": true,
+        "dense": true,
+        "emptyMessage": "data-access-request.no-documents",
+        "validationMessage": {
+          "missingFiles": "missing-files",
+          "minItems": "min-items"
+        }
+      }
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/rdPeerReview",
+      "options": {
+        "emptyMessage": "data-access-request.no-documents",
+        "validationMessage": {
+          "missingFiles": "missing-files",
+          "minItems": "min-items"
+        }
+      }
     }
   ]
 }
