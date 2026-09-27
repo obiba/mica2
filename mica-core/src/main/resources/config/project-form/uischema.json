@@ -25,6 +25,7 @@
                   "scope": "#/properties/startDate",
                   "hint": "t(research-project.default.status.start-help)",
                   "options": {
+                    "dense": true,
                     "validationMessage": "t(research-project.default.status.date-error)",
                     "dateOptions": {
                       "dateFormat": "yyyy-MM-dd"
@@ -44,6 +45,7 @@
                   "scope": "#/properties/endDate",
                   "hint": "t(research-project.default.status.end-help)",
                   "options": {
+                    "dense": true,
                     "validationMessage": "t(research-project.default.status.date-error)",
                     "dateOptions": {
                       "dateFormat": "yyyy-MM-dd"
@@ -68,12 +70,16 @@
         },
         {
           "type": "Control",
-          "scope": "#/properties/name"
+          "scope": "#/properties/name",
+          "options": {
+            "dense": true
+          }
         },
         {
           "type": "Control",
           "scope": "#/properties/institution",
           "options": {
+            "dense": true,
             "rows": 3
           }
         }

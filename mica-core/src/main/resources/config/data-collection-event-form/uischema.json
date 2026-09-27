@@ -49,6 +49,9 @@
                 {
                   "type": "Control",
                   "scope": "#/properties/tissueTypes",
+                  "options": {
+                    "dense": true
+                  },
                   "rules": {
                     "visible": "contains(bioSamples, \"tissues\")"
                   }
@@ -56,6 +59,9 @@
                 {
                   "type": "Control",
                   "scope": "#/properties/otherBioSamples",
+                  "options": {
+                    "dense": true
+                  },
                   "rules": {
                     "visible": "contains(bioSamples, \"others\")"
                   }
@@ -77,6 +83,9 @@
               "type": "Control",
               "scope": "#/properties/otherDataSources",
               "hint": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.others.description)",
+              "options": {
+                "dense": true
+              },
               "rules": {
                 "visible": "contains(dataSources, \"others\")"
               }
