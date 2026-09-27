@@ -31,7 +31,7 @@ public class DataAccessPreliminaryFormService extends AbstractDataAccessEntityFo
   public DataAccessPreliminaryForm findDraft() {
     Optional<DataAccessPreliminaryForm> form = dataAccessPreliminaryFormRepository.findById(DataAccessPreliminaryForm.DEFAULT_ID);
     if (!form.isPresent()) {
-      createOrUpdate(createDefaultDataAccessPreliminaryForm());
+      createOrUpdate(createDefaultForm());
       form = dataAccessPreliminaryFormRepository.findById(DataAccessPreliminaryForm.DEFAULT_ID);
     }
     return form.get();
@@ -76,7 +76,8 @@ public class DataAccessPreliminaryFormService extends AbstractDataAccessEntityFo
       .findFirst();
   }
 
-  private DataAccessPreliminaryForm createDefaultDataAccessPreliminaryForm() {
+  @Override
+  DataAccessPreliminaryForm createDefaultForm() {
     DataAccessPreliminaryForm form = new DataAccessPreliminaryForm();
     form.setDefinition(getDefaultDataAccessFormResourceAsString("uischema.json"));
     form.setTranslations(getDefaultDataAccessFormResourceAsString("translations.json"));
