@@ -3,7 +3,10 @@
   "elements": [
     {
       "type": "Control",
-      "scope": "#/properties/website"
+      "scope": "#/properties/website",
+      "options": {
+        "dense": true
+      }
     }
   ]
 }

@@ -18,7 +18,10 @@
               "elements": [
                 {
                   "type": "Control",
-                  "scope": "#/properties/startYear"
+                  "scope": "#/properties/startYear",
+                  "options": {
+                    "dense": true
+                  }
                 }
               ]
             },
@@ -30,7 +33,10 @@
               "elements": [
                 {
                   "type": "Control",
-                  "scope": "#/properties/endYear"
+                  "scope": "#/properties/endYear",
+                  "options": {
+                    "dense": true
+                  }
                 }
               ]
             }
@@ -42,6 +48,7 @@
       "type": "Control",
       "scope": "#/properties/additionalInformation",
       "options": {
+        "dense": true,
         "marked": true
       }
     }

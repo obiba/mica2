@@ -7,14 +7,18 @@
     },
     {
       "type": "Control",
-      "scope": "#/properties/_title"
+      "scope": "#/properties/_title",
+      "options": {
+        "dense": true
+      }
     },
     {
       "type": "Control",
       "scope": "#/properties/_summary",
       "options": {
         "marked": true,
-        "rows": 5
+        "rows": 5,
+        "dense": true
       }
     }
   ]

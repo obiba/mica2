@@ -2,17 +2,15 @@
   "type": "VerticalLayout",
   "elements": [
     {
-      "type": "Group",
-      "elements": [
-        {
-          "type": "Label",
-          "text": "t(label.1.text)"
-        },
-        {
-          "type": "Control",
-          "scope": "#/properties/signature"
-        }
-      ]
+      "type": "Label",
+      "text": "label.1.text",
+      "options": {
+        "class": "text-h4"
+      }
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/signature"
     }
   ]
 }

@@ -19,15 +19,24 @@
           "elements": [
             {
               "type": "Control",
-              "scope": "#/properties/startYear"
+              "scope": "#/properties/startYear",
+              "options": {
+                "dense": true
+              }
             },
             {
               "type": "Control",
-              "scope": "#/properties/endYear"
+              "scope": "#/properties/endYear",
+              "options": {
+                "dense": true
+              }
             },
             {
               "type": "Control",
-              "scope": "#/properties/website"
+              "scope": "#/properties/website",
+              "options": {
+                "dense": true
+              }
             }
           ]
         },
@@ -39,14 +48,18 @@
           "elements": [
             {
               "type": "Control",
-              "scope": "#/properties/funding"
+              "scope": "#/properties/funding",
+              "options": {
+                "dense": true
+              }
             },
             {
               "type": "Control",
               "scope": "#/properties/info",
               "options": {
                 "rows": 3,
-                "marked": true
+                "marked": true,
+                "dense": true
               }
             }
           ]
@@ -94,6 +107,9 @@
                     {
                       "type": "Control",
                       "scope": "#/properties/methods/properties/otherDesign",
+                      "options": {
+                        "dense": true
+                      },
                       "rules": {
                         "visible": "methods.design == \"other\""
                       }
@@ -106,7 +122,8 @@
                   "hint": "t(study.follow-up-help)",
                   "options": {
                     "rows": 3,
-                    "marked": true
+                    "marked": true,
+                    "dense": true
                   }
                 },
                 {
@@ -114,7 +131,8 @@
                   "scope": "#/properties/methods/properties/info",
                   "options": {
                     "rows": 3,
-                    "marked": true
+                    "marked": true,
+                    "dense": true
                   }
                 }
               ]
@@ -149,6 +167,9 @@
                 {
                   "type": "Control",
                   "scope": "#/properties/methods/properties/otherRecruitment",
+                  "options": {
+                    "dense": true
+                  },
                   "rules": {
                     "visible": "contains(methods.recruitments, \"other\")"
                   }
@@ -167,7 +188,10 @@
                   "elements": [
                     {
                       "type": "Control",
-                      "scope": "#/properties/numberOfParticipants/properties/participant/properties/number"
+                      "scope": "#/properties/numberOfParticipants/properties/participant/properties/number",
+                      "options": {
+                        "dense": true
+                      }
                     },
                     {
                       "type": "Control",
@@ -180,7 +204,10 @@
                   "elements": [
                     {
                       "type": "Control",
-                      "scope": "#/properties/numberOfParticipants/properties/sample/properties/number"
+                      "scope": "#/properties/numberOfParticipants/properties/sample/properties/number",
+                      "options": {
+                        "dense": true
+                      }
                     },
                     {
                       "type": "Control",
@@ -193,7 +220,8 @@
                   "scope": "#/properties/numberOfParticipants/properties/info",
                   "options": {
                     "rows": 3,
-                    "marked": true
+                    "marked": true,
+                    "dense": true
                   }
                 }
               ]
@@ -247,7 +275,8 @@
                       "type": "Control",
                       "scope": "#/properties/otherAccess",
                       "options": {
-                        "rows": 2
+                        "rows": 2,
+                        "dense": true
                       },
                       "rules": {
                         "visible": "access.access_other == \"yes\""
@@ -283,23 +312,38 @@
                   "elements": [
                     {
                       "type": "Control",
-                      "scope": "#/properties/access_info_representative/properties/name"
+                      "scope": "#/properties/access_info_representative/properties/name",
+                      "options": {
+                        "dense": true
+                      }
                     },
                     {
                       "type": "Control",
-                      "scope": "#/properties/access_info_representative/properties/title"
+                      "scope": "#/properties/access_info_representative/properties/title",
+                      "options": {
+                        "dense": true
+                      }
                     },
                     {
                       "type": "Control",
-                      "scope": "#/properties/access_info_representative/properties/email"
+                      "scope": "#/properties/access_info_representative/properties/email",
+                      "options": {
+                        "dense": true
+                      }
                     },
                     {
                       "type": "Control",
-                      "scope": "#/properties/access_info_representative/properties/telephone"
+                      "scope": "#/properties/access_info_representative/properties/telephone",
+                      "options": {
+                        "dense": true
+                      }
                     },
                     {
                       "type": "Control",
-                      "scope": "#/properties/access_info_representative/properties/institution"
+                      "scope": "#/properties/access_info_representative/properties/institution",
+                      "options": {
+                        "dense": true
+                      }
                     }
                   ]
                 }
@@ -381,7 +425,8 @@
                           "scope": "#/properties/access_permission_additional_info",
                           "label": false,
                           "options": {
-                            "rows": 2
+                            "rows": 2,
+                            "dense": true
                           }
                         }
                       ]
@@ -413,7 +458,8 @@
                           "scope": "#/properties/access_special_conditions_to_leave",
                           "label": false,
                           "options": {
-                            "rows": 2
+                            "rows": 2,
+                            "dense": true
                           }
                         }
                       ]
@@ -510,7 +556,8 @@
                           "scope": "#/properties/access_cost_reduction_consideration_specification",
                           "label": false,
                           "options": {
-                            "rows": 2
+                            "rows": 2,
+                            "dense": true
                           }
                         },
                         {
@@ -522,7 +569,8 @@
                           "scope": "#/properties/access_cost_additional_information",
                           "label": false,
                           "options": {
-                            "rows": 2
+                            "rows": 2,
+                            "dense": true
                           }
                         }
                       ]
@@ -551,7 +599,8 @@
               "scope": "#/properties/access_supplementary_info",
               "label": false,
               "options": {
-                "rows": 2
+                "rows": 2,
+                "dense": true
               }
             }
           ]
@@ -583,12 +632,16 @@
               "scope": "#/properties/markerPaper",
               "label": false,
               "options": {
-                "rows": 3
+                "rows": 3,
+                "dense": true
               }
             },
             {
               "type": "Control",
-              "scope": "#/properties/pubmedId"
+              "scope": "#/properties/pubmedId",
+              "options": {
+                "dense": true
+              }
             }
           ]
         }

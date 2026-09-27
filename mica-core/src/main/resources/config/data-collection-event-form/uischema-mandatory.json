@@ -11,6 +11,7 @@
               "type": "Control",
               "scope": "#/properties/_id",
               "options": {
+                "dense": true,
                 "validationMessage": {
                   "uniqueId": "t(global.messages.error.unique-id)"
                 }
@@ -26,7 +27,10 @@
           "elements": [
             {
               "type": "Control",
-              "scope": "#/properties/_name"
+              "scope": "#/properties/_name",
+              "options": {
+                "dense": true
+              }
             }
           ],
           "options": {
@@ -49,7 +53,8 @@
               "scope": "#/properties/_description",
               "options": {
                 "marked": true,
-                "rows": 3
+                "rows": 3,
+                "dense": true
               }
             }
           ],
@@ -70,11 +75,17 @@
           "elements": [
             {
               "type": "Control",
-              "scope": "#/properties/_startYear"
+              "scope": "#/properties/_startYear",
+              "options": {
+                "dense": true
+              }
             },
             {
               "type": "Control",
-              "scope": "#/properties/_endYear"
+              "scope": "#/properties/_endYear",
+              "options": {
+                "dense": true
+              }
             }
           ],
           "options": {
@@ -86,11 +97,17 @@
           "elements": [
             {
               "type": "Control",
-              "scope": "#/properties/_startMonth"
+              "scope": "#/properties/_startMonth",
+              "options": {
+                "dense": true
+              }
             },
             {
               "type": "Control",
-              "scope": "#/properties/_endMonth"
+              "scope": "#/properties/_endMonth",
+              "options": {
+                "dense": true
+              }
             }
           ],
           "options": {
@@ -104,6 +121,7 @@
               "type": "Control",
               "scope": "#/properties/_startDay",
               "options": {
+                "dense": true,
                 "dateOptions": {
                   "dateFormat": "yyyy-MM-dd",
                   "yearRef": "_startYear",
@@ -118,6 +136,7 @@
               "type": "Control",
               "scope": "#/properties/_endDay",
               "options": {
+                "dense": true,
                 "dateOptions": {
                   "dateFormat": "yyyy-MM-dd",
                   "yearRef": "_endYear",
