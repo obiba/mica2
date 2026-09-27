@@ -2,20 +2,18 @@
   "type": "VerticalLayout",
   "elements": [
     {
-      "type": "Group",
-      "elements": [
-        {
-          "type": "Label",
-          "text": "t(label.1.text)"
-        },
-        {
-          "type": "Control",
-          "scope": "#/properties/grantSubmission"
-        }
-      ]
+      "type": "Label",
+      "text": "label.1.text"
     },
     {
-      "type": "Group",
+      "type": "Control",
+      "scope": "#/properties/grantSubmission"
+    },
+    {
+      "type": "HorizontalLayout",
+      "options": {
+        "class": "row q-col-gutter-md"
+      },
       "rules": {
         "visible": "!!grantSubmission"
       },
@@ -23,217 +21,214 @@
         {
           "type": "VerticalLayout",
           "options": {
-            "class": "row q-col-gutter-md"
+            "class": "col-6"
           },
           "elements": [
             {
-              "type": "VerticalLayout",
+              "type": "Control",
+              "scope": "#/properties/grantingAgency",
               "options": {
-                "class": "col-6"
-              },
-              "elements": [
-                {
-                  "type": "Control",
-                  "scope": "#/properties/grantingAgency"
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/grantDate",
-                  "options": {
-                    "validationMessage": "t(data-access-request.default.date-error)",
-                    "dateOptions": {
-                      "dateFormat": "yyyy-MM-dd"
-                    }
-                  }
-                }
-              ]
+                "outlined": true,
+                "dense": true
+              }
             },
             {
-              "type": "VerticalLayout",
+              "type": "Control",
+              "scope": "#/properties/grantDate",
               "options": {
-                "class": "col-6"
-              },
-              "elements": [
-                {
-                  "type": "Control",
-                  "scope": "#/properties/grantCompetition"
+                "outlined": true,
+                "dense": true,
+                "validationMessage": "data-access-request.default.date-error",
+                "dateOptions": {
+                  "dateFormat": "yyyy-MM-dd"
                 }
-              ]
+              }
+            }
+          ]
+        },
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "col-6"
+          },
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/grantCompetition",
+              "options": {
+                "outlined": true,
+                "dense": true
+              }
             }
           ]
         }
       ]
     },
     {
-      "type": "Group",
-      "elements": [
-        {
-          "type": "Label",
-          "text": "t(label.2.text)"
-        }
-      ]
+      "type": "Label",
+      "text": "label.2.text"
     },
     {
-      "type": "Group",
+      "type": "HorizontalLayout",
+      "options": {
+        "class": "row q-col-gutter-md"
+      },
       "elements": [
         {
           "type": "VerticalLayout",
           "options": {
-            "class": "row q-col-gutter-md"
+            "class": "col-6"
           },
           "elements": [
             {
-              "type": "VerticalLayout",
+              "type": "Control",
+              "scope": "#/properties/pi",
               "options": {
-                "class": "col-6"
-              },
-              "elements": [
-                {
-                  "type": "Control",
-                  "scope": "#/properties/pi"
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/career",
-                  "options": {
-                    "format": "radio"
-                  }
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/careerOther",
-                  "rules": {
-                    "visible": "career === \"other\""
-                  }
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/currentPosition"
-                }
-              ]
+                "outlined": true,
+                "dense": true
+              }
             },
             {
-              "type": "VerticalLayout",
+              "type": "Control",
+              "scope": "#/properties/career",
               "options": {
-                "class": "col-6"
-              },
-              "elements": [
-                {
-                  "type": "Control",
-                  "scope": "#/properties/piEmail"
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/piPhone"
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/piAddress",
-                  "options": {
-                    "rows": 3
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "Group",
-      "elements": [
-        {
-          "type": "Label",
-          "text": "t(label.3.text)"
-        }
-      ]
-    },
-    {
-      "type": "Group",
-      "elements": [
-        {
-          "type": "VerticalLayout",
-          "elements": [
+                "format": "radio"
+              }
+            },
             {
-              "type": "VerticalLayout",
-              "elements": [
-                {
-                  "type": "Control",
-                  "scope": "#/properties/projectTitle"
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/projectObjectives",
-                  "options": {
-                    "rows": 3
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "Group",
-      "elements": [
-        {
-          "type": "Label",
-          "text": "t(label.4.text)"
-        }
-      ]
-    },
-    {
-      "type": "Group",
-      "elements": [
-        {
-          "type": "VerticalLayout",
-          "elements": [
+              "type": "Control",
+              "scope": "#/properties/careerOther",
+              "rules": {
+                "visible": "career === \"other\""
+              }
+            },
             {
-              "type": "VerticalLayout",
-              "elements": [
-                {
-                  "type": "Control",
-                  "scope": "#/properties/datasets",
-                  "options": {
-                    "rows": 3
-                  }
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/selectionCriteria",
-                  "options": {
-                    "rows": 3
-                  }
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/studyDesign",
-                  "options": {
-                    "rows": 3
-                  }
-                }
-              ]
+              "type": "Control",
+              "scope": "#/properties/currentPosition",
+              "options": {
+                "outlined": true,
+                "dense": true
+              }
             }
           ]
-        }
-      ]
-    },
-    {
-      "type": "Group",
-      "elements": [
-        {
-          "type": "Label",
-          "text": "t(label.5.text)"
         },
         {
-          "type": "Control",
-          "scope": "#/properties/includeBiospecimens"
+          "type": "VerticalLayout",
+          "options": {
+            "class": "col-6"
+          },
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/piEmail",
+              "options": {
+                "outlined": true,
+                "dense": true
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/piPhone",
+              "options": {
+                "outlined": true,
+                "dense": true
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/piAddress",
+              "options": {
+                "rows": 3,
+                "outlined": true,
+                "dense": true
+              }
+            }
+          ]
         }
       ]
     },
     {
-      "type": "Group",
+      "type": "Label",
+      "text": "label.3.text"
+    },
+    {
+      "type": "HorizontalLayout",
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/projectTitle",
+              "options": {
+                "outlined": true,
+                "dense": true
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/projectObjectives",
+              "options": {
+                "rows": 3,
+                "outlined": true,
+                "dense": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Label",
+      "text": "label.4.text"
+    },
+    {
+      "type": "HorizontalLayout",
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/datasets",
+              "options": {
+                "rows": 3,
+                "outlined": true,
+                "dense": true
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/selectionCriteria",
+              "options": {
+                "rows": 3,
+                "outlined": true,
+                "dense": true
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/studyDesign",
+              "options": {
+                "rows": 3,
+                "outlined": true,
+                "dense": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Label",
+      "text": "label.5.text"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/includeBiospecimens"
+    },
+    {
+      "type": "VerticalLayout",
       "rules": {
         "visible": "!!includeBiospecimens"
       },
@@ -242,68 +237,63 @@
           "type": "VerticalLayout",
           "elements": [
             {
-              "type": "VerticalLayout",
-              "elements": [
-                {
-                  "type": "Control",
-                  "scope": "#/properties/biospecimensType",
-                  "options": {
-                    "rows": 3
-                  }
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/biospecimensSelectionCriteria",
-                  "options": {
-                    "rows": 3
-                  }
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/biospecimensPreAnalyticalCharacteristics",
-                  "options": {
-                    "rows": 3
-                  }
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/biospecimensAnalyzeMethods",
-                  "options": {
-                    "rows": 3
-                  }
-                }
-              ]
+              "type": "Control",
+              "scope": "#/properties/biospecimensType",
+              "options": {
+                "rows": 3,
+                "outlined": true,
+                "dense": true
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/biospecimensSelectionCriteria",
+              "options": {
+                "rows": 3,
+                "outlined": true,
+                "dense": true
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/biospecimensPreAnalyticalCharacteristics",
+              "options": {
+                "rows": 3,
+                "outlined": true,
+                "dense": true
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/biospecimensAnalyzeMethods",
+              "options": {
+                "rows": 3,
+                "outlined": true,
+                "dense": true
+              }
             }
           ]
         }
       ]
     },
     {
-      "type": "Group",
-      "elements": [
-        {
-          "type": "Label",
-          "text": "t(label.6.text)"
-        }
-      ]
+      "type": "Label",
+      "text": "label.6.text"
     },
     {
-      "type": "Group",
+      "type": "VerticalLayout",
       "elements": [
         {
           "type": "VerticalLayout",
           "elements": [
             {
-              "type": "VerticalLayout",
-              "elements": [
-                {
-                  "type": "Control",
-                  "scope": "#/properties/linkage",
-                  "options": {
-                    "rows": 3
-                  }
-                }
-              ]
+              "type": "Control",
+              "scope": "#/properties/linkage",
+              "options": {
+                "rows": 3,
+                "outlined": true,
+                "dense": true
+              }
             }
           ]
         }
