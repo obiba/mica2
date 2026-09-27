@@ -3,7 +3,7 @@
   "elements": [
     {
       "type": "Label",
-      "text": "label.1.text",
+      "text": "t(label.1.text)",
       "options": {
         "class": "text-h4"
       }

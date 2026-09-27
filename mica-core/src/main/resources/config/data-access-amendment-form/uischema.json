@@ -3,7 +3,7 @@
   "elements": [
     {
       "type": "Label",
-      "text": "label.1.text",
+      "text": "t(label.1.text)",
       "options": {
         "class": "text-h3"
       }
@@ -13,7 +13,7 @@
       "elements": [
         {
           "type": "Label",
-          "text": "label.2.text",
+          "text": "t(label.2.text)",
           "options": {
             "class": "text-h4"
           }
@@ -36,7 +36,7 @@
       "elements": [
         {
           "type": "Label",
-          "text": "label.3.text",
+          "text": "t(label.3.text)",
           "options": {
             "class": "text-h4"
           }
@@ -140,7 +140,7 @@
       "elements": [
         {
           "type": "Label",
-          "text": "label.4.text",
+          "text": "t(label.4.text)",
           "options": {
             "class": "text-h4"
           }
@@ -236,7 +236,7 @@
       "elements": [
         {
           "type": "Label",
-          "text": "label.5.text",
+          "text": "t(label.5.text)",
           "options": {
             "class": "text-h4"
           }
@@ -266,7 +266,7 @@
                 {
                   "type": "Control",
                   "scope": "#/properties/projectWebsite",
-                  "hint": "data-access-amendment.default.I.C.website-help",
+                  "hint": "t(data-access-amendment.default.I.C.website-help)",
                   "options": {
                     "outlined": true,
                     "dense": true
@@ -286,7 +286,7 @@
       "elements": [
         {
           "type": "Label",
-          "text": "label.6.text",
+          "text": "t(label.6.text)",
           "options": {
             "class": "text-h4"
           }
@@ -369,7 +369,7 @@
       "elements": [
         {
           "type": "Label",
-          "text": "label.7.text",
+          "text": "t(label.7.text)",
           "options": {
             "class": "text-h4"
           }
@@ -452,7 +452,7 @@
       "elements": [
         {
           "type": "Label",
-          "text": "label.8.text",
+          "text": "t(label.8.text)",
           "options": {
             "class": "text-h4"
           }
@@ -481,7 +481,7 @@
       "elements": [
         {
           "type": "Label",
-          "text": "label.9.text",
+          "text": "t(label.9.text)",
           "options": {
             "class": "text-h4"
           }
@@ -510,7 +510,7 @@
       "elements": [
         {
           "type": "Label",
-          "text": "label.10.text",
+          "text": "t(label.10.text)",
           "options": {
             "class": "text-h4"
           }
@@ -522,7 +522,7 @@
           "options": {
             "outlined": true,
             "dense": true,
-            "validationMessage": "data-access-amendment.default.date-error",
+            "validationMessage": "t(data-access-amendment.default.date-error)",
             "dateOptions": {
               "dateFormat": "yyyy-MM-dd"
             }
@@ -532,7 +532,7 @@
     },
     {
       "type": "Label",
-      "text": "label.11.text",
+      "text": "t(label.11.text)",
       "rules": {
         "visible": "contains(modificationNature, \"IIrdRebResearchProtocol\") || contains(modificationNature, \"IIrdRebDecisionLetter\") || contains(modificationNature, \"IIrdCV\") || contains(modificationNature, \"IIrdPeerReview\")"
       },
@@ -547,10 +547,10 @@
           "type": "Control",
           "scope": "#/properties/rdRebResearchProtocol",
           "options": {
-            "emptyMessage": "data-access-request.no-documents",
+            "emptyMessage": "t(data-access-request.no-documents)",
             "validationMessage": {
-              "missingFiles": "missing-files",
-              "minItems": "min-items"
+              "missingFiles": "t(missing-files)",
+              "minItems": "t(min-items)"
             }
           },
           "rules": {
@@ -561,10 +561,10 @@
           "type": "Control",
           "scope": "#/properties/rdRebDecisionLetter",
           "options": {
-            "emptyMessage": "data-access-request.no-documents",
+            "emptyMessage": "t(data-access-request.no-documents)",
             "validationMessage": {
-              "missingFiles": "missing-files",
-              "minItems": "min-items"
+              "missingFiles": "t(missing-files)",
+              "minItems": "t(min-items)"
             }
           },
           "rules": {
@@ -575,10 +575,10 @@
           "type": "Control",
           "scope": "#/properties/rdCV",
           "options": {
-            "emptyMessage": "data-access-request.no-documents",
+            "emptyMessage": "t(data-access-request.no-documents)",
             "validationMessage": {
-              "missingFiles": "missing-files",
-              "minItems": "min-items"
+              "missingFiles": "t(missing-files)",
+              "minItems": "t(min-items)"
             }
           },
           "rules": {
@@ -589,10 +589,10 @@
           "type": "Control",
           "scope": "#/properties/rdPeerReview",
           "options": {
-            "emptyMessage": "data-access-request.no-documents",
+            "emptyMessage": "t(data-access-request.no-documents)",
             "validationMessage": {
-              "missingFiles": "missing-files",
-              "minItems": "min-items"
+              "missingFiles": "t(missing-files)",
+              "minItems": "t(min-items)"
             }
           },
           "rules": {
@@ -627,7 +627,7 @@
       "elements": [
         {
           "type": "Label",
-          "text": "label.12.text",
+          "text": "t(label.12.text)",
           "options": {
             "class": "text-h4"
           }
