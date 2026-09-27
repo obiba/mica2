@@ -11,6 +11,7 @@
               "type": "Control",
               "scope": "#/properties/_id",
               "options": {
+                "dense": true,
                 "validationMessage": {
                   "uniqueId": "t(global.messages.error.unique-id)"
                 }
@@ -18,7 +19,10 @@
             },
             {
               "type": "Control",
-              "scope": "#/properties/_name"
+              "scope": "#/properties/_name",
+              "options": {
+                "dense": true
+              }
             }
           ],
           "options": {
@@ -33,7 +37,8 @@
               "scope": "#/properties/_description",
               "options": {
                 "marked": true,
-                "rows": 5
+                "rows": 5,
+                "dense": true
               }
             }
           ],

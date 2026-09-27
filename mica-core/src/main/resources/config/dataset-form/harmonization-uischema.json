@@ -19,7 +19,10 @@
                 {
                   "type": "Control",
                   "scope": "#/properties/version",
-                  "hint": "t(harmonization-protocol.version-help)"
+                  "hint": "t(harmonization-protocol.version-help)",
+                  "options": {
+                    "dense": true
+                  }
                 }
               ]
             },
@@ -31,7 +34,10 @@
               "elements": [
                 {
                   "type": "Control",
-                  "scope": "#/properties/participants"
+                  "scope": "#/properties/participants",
+                  "options": {
+                    "dense": true
+                  }
                 }
               ]
             }
@@ -92,29 +98,42 @@
           "scope": "#/properties/informationContent",
           "hint": "t(harmonization-protocol.information-content-help)",
           "options": {
-            "marked": true
+            "marked": true,
+            "rows": 3,
+            "dense": true
           }
         },
         {
           "type": "Control",
           "scope": "#/properties/procedures",
-          "hint": "t(harmonization-protocol.procedures-help)"
+          "hint": "t(harmonization-protocol.procedures-help)",
+          "options": {
+            "dense": true
+          }
         },
         {
           "type": "Control",
           "scope": "#/properties/participantsInclusion",
-          "hint": "t(harmonization-protocol.participants-inclusion-help)"
+          "hint": "t(harmonization-protocol.participants-inclusion-help)",
+          "options": {
+            "dense": true
+          }
         },
         {
           "type": "Control",
           "scope": "#/properties/infrastructure",
-          "hint": "t(harmonization-protocol.infrastructure-help)"
+          "hint": "t(harmonization-protocol.infrastructure-help)",
+          "options": {
+            "dense": true
+          }
         },
         {
           "type": "Control",
           "scope": "#/properties/additionalInformation",
           "options": {
-            "marked": true
+            "marked": true,
+            "rows": 3,
+            "dense": true
           }
         }
       ]
