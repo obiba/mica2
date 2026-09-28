@@ -10,6 +10,7 @@
 
 package org.obiba.mica.dataset.search;
 
+import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.service.DraftHarmonizationDatasetService;
@@ -65,5 +66,13 @@ class EsDraftHarmonizedDatasetService extends AbstractIdentifiedDocumentService<
           .collect(Collectors.toList());
       }
     };
+  }
+
+  @Override
+  protected List<HarmonizationDataset> findFromDatabase(Collection<String> ids, @Nullable String studyId) {
+    return harmonizedDatasetService.findAllDatasets(ids).stream()
+      .filter(dataset -> studyId == null
+        || (dataset.hasHarmonizationTable() && studyId.equals(dataset.getHarmonizationTable().getStudyId())))
+      .collect(Collectors.toList());
   }
 }

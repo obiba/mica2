@@ -11,6 +11,8 @@
 package org.obiba.mica.search;
 
 
+import org.obiba.mica.spi.search.Searcher;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -105,5 +107,29 @@ public abstract class AbstractIdentifiedDocumentService<T extends Identified> ex
     return results;
   }
 
+  @Override
+  @Nullable
+  protected Documents<T> findFallback(int from, int limit, @Nullable String order, @Nullable String studyId,
+                                      @Nullable Searcher.IdFilter idFilter) {
+    if (idFilter == null) return null;
+    List<T> found = findFromDatabase(idFilter.getValues(), studyId);
+    if (found == null) return null;
+
+    Comparator<T> byId = Comparator.comparing(Identified::getId);
+    found.sort("desc".equalsIgnoreCase(order) ? byId.reversed() : byId);
+    Documents<T> documents = new Documents<>(found.size(), from, limit);
+    found.stream().skip(from).limit(limit).forEach(documents::add);
+    return documents;
+  }
+
+  /**
+   * Get the documents with the given ids from the database, optionally the ones related to a study.
+   *
+   * @return null if not supported
+   */
+  @Nullable
+  protected List<T> findFromDatabase(Collection<String> ids, @Nullable String studyId) {
+    return null;
+  }
 
 }

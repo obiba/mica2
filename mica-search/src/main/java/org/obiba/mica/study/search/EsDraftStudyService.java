@@ -91,4 +91,11 @@ public class EsDraftStudyService extends AbstractIdentifiedDocumentService<BaseS
   private Class getClass(String className) {
     return Study.class.getSimpleName().equals(className) ? Study.class : HarmonizationStudy.class;
   }
+
+  @Override
+  protected List<BaseStudy> findFromDatabase(Collection<String> ids, @Nullable String studyId) {
+    List<BaseStudy> studies = Lists.newArrayList(individualStudyService.findAllDraftStudies(ids));
+    studies.addAll(harmonizationStudyService.findAllDraftStudies(ids));
+    return studies;
+  }
 }

@@ -72,25 +72,46 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   public Documents<T> find(int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String studyId,
                            @Nullable String queryString, @Nullable List<String> fields, @Nullable List<String> excludedFields,
                            Searcher.IdFilter idFilter) {
-    if (!indexExists()) return new Documents<>(0, from, limit);
-
-    Searcher.TermFilter studyIdFilter = getStudyIdFilter(studyId);
-
     if (idFilter == null) {
       idFilter = getAccessibleIdFilter();
     }
 
-    Searcher.DocumentResults results = searcher.getDocuments(getIndexName(), getType(), from, limit, sort, order, queryString, studyIdFilter, idFilter, fields, excludedFields);
+    if (!indexExists()) {
+      Documents<T> fallback = findFallback(from, limit, order, studyId, idFilter);
+      return fallback == null ? new Documents<>(0, from, limit) : fallback;
+    }
 
-    Documents<T> documents = new Documents<>(Long.valueOf(results.getTotal()).intValue(), from, limit);
-    results.getDocuments().forEach(res -> {
-      try {
-        documents.add(processHit(res));
-      } catch (IOException e) {
-        log.error("Failed processing found hits.", e);
-      }
-    });
-    return documents;
+    Searcher.TermFilter studyIdFilter = getStudyIdFilter(studyId);
+
+    try {
+      Searcher.DocumentResults results = searcher.getDocuments(getIndexName(), getType(), from, limit, sort, order, queryString, studyIdFilter, idFilter, fields, excludedFields);
+
+      Documents<T> documents = new Documents<>(Long.valueOf(results.getTotal()).intValue(), from, limit);
+      results.getDocuments().forEach(res -> {
+        try {
+          documents.add(processHit(res));
+        } catch (IOException e) {
+          log.error("Failed processing found hits.", e);
+        }
+      });
+      return documents;
+    } catch (RuntimeException e) {
+      Documents<T> fallback = findFallback(from, limit, order, studyId, idFilter);
+      if (fallback == null) throw e;
+      log.warn("Search in index {} failed, documents listed from the database: {}", getIndexName(), e.getMessage());
+      return fallback;
+    }
+  }
+
+  /**
+   * Get the documents from the database, when the search engine cannot answer. Query and sort are not applied.
+   *
+   * @return null if not supported
+   */
+  @Nullable
+  protected Documents<T> findFallback(int from, int limit, @Nullable String order, @Nullable String studyId,
+                                      @Nullable Searcher.IdFilter idFilter) {
+    return null;
   }
 
   @Override

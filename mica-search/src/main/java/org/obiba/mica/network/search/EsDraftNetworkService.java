@@ -10,6 +10,7 @@
 
 package org.obiba.mica.network.search;
 
+import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.DraftNetworkService;
@@ -65,5 +66,12 @@ public class EsDraftNetworkService extends AbstractIdentifiedDocumentService<Net
           .collect(Collectors.toList());
       }
     };
+  }
+
+  @Override
+  protected List<Network> findFromDatabase(Collection<String> ids, @Nullable String studyId) {
+    return networkService.findAllNetworks(ids).stream()
+      .filter(network -> studyId == null || network.getStudyIds().contains(studyId))
+      .collect(Collectors.toList());
   }
 }
