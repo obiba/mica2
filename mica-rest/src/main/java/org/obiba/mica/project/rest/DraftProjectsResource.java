@@ -128,8 +128,6 @@ public class DraftProjectsResource {
 
     if (SecurityUtils.getSubject().hasRole(Roles.MICA_EXTERNAL_EDITOR)) {
       subjectAclService.addPermission("/draft/project", "VIEW,EDIT,ADD", project.getId());
-      subjectAclService.addPermission("/draft/project/" + project.getId(), "EDIT", "_status");
-      subjectAclService.addPermission("/draft/project/" + project.getId() + "/_attachments", "EDIT");
     }
 
     return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "project", project.getId()).build()).build();

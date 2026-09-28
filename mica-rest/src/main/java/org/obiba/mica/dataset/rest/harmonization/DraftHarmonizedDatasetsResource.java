@@ -131,8 +131,6 @@ public class DraftHarmonizedDatasetsResource {
 
     if (SecurityUtils.getSubject().hasRole(Roles.MICA_EXTERNAL_EDITOR)) {
       subjectAclService.addPermission("/draft/harmonized-dataset", "VIEW,EDIT,ADD", dataset.getId());
-      subjectAclService.addPermission("/draft/harmonized-dataset/" + dataset.getId(), "EDIT", "_status");
-      subjectAclService.addPermission("/draft/harmonized-dataset/" + dataset.getId() + "/_attachments", "EDIT");
     }
 
     return Response
