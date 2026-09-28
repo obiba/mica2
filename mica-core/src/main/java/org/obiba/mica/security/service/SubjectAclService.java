@@ -433,9 +433,9 @@ public class SubjectAclService {
   private void removeResourcePermissions(String resource, String instance) {
     // delete specific acls
     subjectAclRepository.deleteAll(subjectAclRepository.findByResourceAndInstance(resource, encode(instance)));
-    // delete children acls, i.e. acls which resource name starts with regex "<resource>/<instance>/.+"
-
-    String resourcePattern = resource + (Strings.isNullOrEmpty(instance) ? "" : "/" + encode(instance) + "/.+");
+    // delete children acls, i.e. acls which resource name starts with "<resource>/<instance>/"
+    // (findByResourceStartingWith performs a literal prefix match, so no wildcard suffix is needed)
+    String resourcePattern = resource + (Strings.isNullOrEmpty(instance) ? "" : "/" + encode(instance) + "/");
     subjectAclRepository.deleteAll(subjectAclRepository.findByResourceStartingWith(resourcePattern));
   }
 
