@@ -10,6 +10,7 @@
 
 package org.obiba.mica.dataset.search;
 
+import java.util.List;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -66,5 +67,12 @@ class EsDraftCollectedDatasetService extends AbstractEsDatasetService<StudyDatas
             .collect(Collectors.toList());
       }
     };
+  }
+
+  @Override
+  protected List<StudyDataset> findFromDatabase(Collection<String> ids, @Nullable String studyId) {
+    return collectedDatasetService.findAllDatasets(ids).stream()
+      .filter(dataset -> studyId == null || (dataset.hasStudyTable() && studyId.equals(dataset.getStudyTable().getStudyId())))
+      .collect(Collectors.toList());
   }
 }

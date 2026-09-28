@@ -10,6 +10,7 @@
 
 package org.obiba.mica.project.search;
 
+import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.service.DraftProjectService;
@@ -65,5 +66,10 @@ public class EsDraftProjectService extends AbstractIdentifiedDocumentService<Pro
           .collect(Collectors.toList());
       }
     };
+  }
+
+  @Override
+  protected List<Project> findFromDatabase(Collection<String> ids, @Nullable String studyId) {
+    return projectService.findAllProjects(ids);
   }
 }
