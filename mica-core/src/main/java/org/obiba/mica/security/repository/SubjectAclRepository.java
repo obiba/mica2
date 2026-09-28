@@ -26,12 +26,16 @@ public interface SubjectAclRepository extends MongoRepository<SubjectAcl, String
 
   List<SubjectAcl> findByResourceAndInstance(String resource, String instance);
 
-  List<SubjectAcl> findByResource(String resource);
-
   List<SubjectAcl> findByResourceAndInstance(String resource, String instance, Sort sort);
 
   List<SubjectAcl> findByResourceStartingWith(String regex);
 
   List<SubjectAcl> findByPrincipalAndTypeAndResourceAndInstance(String principal, SubjectAcl.Type type, String resource, String instance);
+
+  // Query-based deletes: no @Version check, so ACLs already removed by a concurrent listener are simply skipped
+
+  void deleteByResourceAndInstance(String resource, String instance);
+
+  void deleteByResourceStartingWith(String prefix);
 
 }

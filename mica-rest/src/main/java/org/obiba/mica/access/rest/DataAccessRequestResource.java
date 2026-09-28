@@ -466,8 +466,8 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     subjectAclService.checkPermission("/data-access-request", "DELETE", id);
     try {
       dataAccessRequestService.delete(id);
-      // remove associated comments
-      commentsService.delete(DataAccessRequest.class.getSimpleName(), id);
+      // remove associated comments (stored with the "/data-access-request" resource id, see createComment)
+      commentsService.delete("/data-access-request", id);
     } catch (NoSuchDataAccessRequestException e) {
       log.error("Could not delete data-access-request {}", e);
     }

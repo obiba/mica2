@@ -11,6 +11,7 @@
 package org.obiba.mica.security.service;
 
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -431,12 +432,19 @@ public class SubjectAclService {
   //
 
   private void removeResourcePermissions(String resource, String instance) {
+    // never delete by resource alone: without an instance the children prefix would be "<resource>" and
+    // remove the acls of every instance of that resource
+    Preconditions.checkArgument(!Strings.isNullOrEmpty(instance), "An instance is required to remove %s permissions", resource);
+
+    // delete by query rather than by entity: the async listeners of a data access request and of its
+    // feasibilities/amendments remove overlapping acls concurrently, and a versioned entity delete throws
+    // OptimisticLockingFailureException when the acl is already gone, aborting the remaining deletes.
+
     // delete specific acls
-    subjectAclRepository.deleteAll(subjectAclRepository.findByResourceAndInstance(resource, encode(instance)));
+    subjectAclRepository.deleteByResourceAndInstance(resource, encode(instance));
     // delete children acls, i.e. acls which resource name starts with "<resource>/<instance>/"
-    // (findByResourceStartingWith performs a literal prefix match, so no wildcard suffix is needed)
-    String resourcePattern = resource + (Strings.isNullOrEmpty(instance) ? "" : "/" + encode(instance) + "/");
-    subjectAclRepository.deleteAll(subjectAclRepository.findByResourceStartingWith(resourcePattern));
+    // (StartingWith performs a literal prefix match, so no wildcard suffix is needed)
+    subjectAclRepository.deleteByResourceStartingWith(resource + "/" + encode(instance) + "/");
   }
 
   /**
@@ -455,11 +463,10 @@ public class SubjectAclService {
     DataAccessRequest request = event.getPersistable();
     String resource = "/data-access-request";
     String id = request.getId();
+    // the request and all its children (feasibility, amendment, agreement, _attachments, comment...)
     removeResourcePermissions(resource, id);
+    // the request status, stored on "/data-access-request/<id>" so not under the children prefix
     removeResourcePermissions(resource + "/" + id, "_status");
-    removeResourcePermissions(resource + "/" + id + "/amendment", null);
-    removeResourcePermissions(resource + "/" + id + "/_attachments", null);
-    removeResourcePermissions(resource + "/" + id + "/comment", null);
   }
 
   @Async
