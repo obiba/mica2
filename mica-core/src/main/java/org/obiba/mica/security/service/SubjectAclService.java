@@ -31,6 +31,7 @@ import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.event.FileDeletedEvent;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.event.NetworkDeletedEvent;
+import org.obiba.mica.project.event.ProjectDeletedEvent;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.domain.SubjectAcl;
 import org.obiba.mica.security.event.ResourceDeletedEvent;
@@ -504,6 +505,12 @@ public class SubjectAclService {
 
   @Async
   @Subscribe
+  public void projectDeleted(ProjectDeletedEvent event) {
+    removeInstance("/project", event.getPersistable().getId());
+  }
+
+  @Async
+  @Subscribe
   public void datasetDeleted(DatasetDeletedEvent event) {
     removeInstance(event.isStudyDataset() ? "/collected-dataset" : "/harmonized-dataset",
       event.getPersistable().getId());
@@ -548,7 +555,14 @@ public class SubjectAclService {
   private void removeInstance(String resource, String instance) {
     // entity, published and draft
     subjectAclRepository.deleteAll(subjectAclRepository.findByResourceAndInstance(resource, encode(instance)));
-    subjectAclRepository.deleteAll(subjectAclRepository.findByResourceAndInstance("/draft" + resource, encode(instance)));
+    String draftResource = "/draft" + resource;
+    subjectAclRepository.deleteAll(subjectAclRepository.findByResourceAndInstance(draftResource, encode(instance)));
+
+    // child acls on the draft entity itself (e.g. _status, _attachments, comment), regardless of instance;
+    // matched as exact resource or "resource/" prefix so id "abc" doesn't also catch sibling id "abcd"
+    String draftEntityResource = draftResource + "/" + encode(instance);
+    subjectAclRepository.deleteAll(subjectAclRepository.findByResource(draftEntityResource));
+    subjectAclRepository.deleteAll(subjectAclRepository.findByResourceStartingWith(draftEntityResource + "/"));
 
     // file and descendants, published and draft
     subjectAclRepository
