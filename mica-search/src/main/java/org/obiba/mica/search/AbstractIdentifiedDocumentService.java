@@ -118,6 +118,7 @@ public abstract class AbstractIdentifiedDocumentService<T extends Identified> ex
     Comparator<T> byId = Comparator.comparing(Identified::getId);
     found.sort("desc".equalsIgnoreCase(order) ? byId.reversed() : byId);
     Documents<T> documents = new Documents<>(found.size(), from, limit);
+    documents.setDegraded(true);
     found.stream().skip(from).limit(limit).forEach(documents::add);
     return documents;
   }

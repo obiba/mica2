@@ -119,6 +119,7 @@ public class StudyStatesResource {
 
     totalCount = studyDocuments.getTotal();
     response.addHeader("X-Total-Count", Long.toString(totalCount));
+    if (studyDocuments.isDegraded()) response.addHeader("X-Search-Degraded", "true");
 
     return studyDocuments.getList()
       .stream()

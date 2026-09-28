@@ -110,6 +110,7 @@ public class DraftHarmonizedDatasetsResource {
       order, studyId, query, null, null, accessibleIdFilter);
     totalCount = datasets.getTotal();
     response.addHeader("X-Total-Count", Long.toString(totalCount));
+    if (datasets.isDegraded()) response.addHeader("X-Search-Degraded", "true");
 
     return datasets.getList()
       .stream()
