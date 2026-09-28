@@ -28,6 +28,17 @@ describe('documents store', () => {
     expect(store.listOf('network')).toEqual([]);
   });
 
+  it('tells when the list comes from the database, the search engine having failed', async () => {
+    mocked.get.mockResolvedValueOnce({ data: [{ id: 'a' }], headers: { 'x-search-degraded': 'true' } });
+    mocked.get.mockResolvedValueOnce({ data: [{ id: 'a' }], headers: {} });
+    const store = useDocumentsStore();
+    await store.fetchDocuments(documentTarget('network', ''));
+    expect(store.isDegraded('network')).toBe(true);
+    expect(store.isDegraded('project')).toBe(false);
+    await store.fetchDocuments(documentTarget('network', ''));
+    expect(store.isDegraded('network')).toBe(false);
+  });
+
   it('unwraps the projects list', async () => {
     const request = { id: 'dar1', status: 'APPROVED', viewable: true };
     mocked.get.mockResolvedValueOnce({ data: { from: 0, limit: 1000, total: 1, projects: [{ id: 'p1', request }] } });

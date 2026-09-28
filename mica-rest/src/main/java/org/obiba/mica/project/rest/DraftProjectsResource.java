@@ -99,6 +99,7 @@ public class DraftProjectsResource {
     DocumentService.Documents<Project> projectDocuments = draftProjectService.find(from, limit, sort, order,
       null, query, null, null, accessibleIdFilter);
     long totalCount = projectDocuments.getTotal();
+    if (projectDocuments.isDegraded()) response.addHeader("X-Search-Degraded", "true");
 
     List<Mica.ProjectDto> result = projectDocuments.getList()
       .stream()

@@ -121,6 +121,7 @@ public class DraftCollectedDatasetsResource {
 
     totalCount = datasets.getTotal();
     response.addHeader("X-Total-Count", Long.toString(totalCount));
+    if (datasets.isDegraded()) response.addHeader("X-Search-Degraded", "true");
 
     return datasets.getList()
       .stream()
