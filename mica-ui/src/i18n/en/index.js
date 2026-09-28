@@ -476,6 +476,7 @@ export default {
   documents: {
     search_all: 'All fields',
     search_title: 'Title',
+    search_degraded: 'The search index is not available: all the documents are listed, sorted by ID, without applying the search.',
     filter: {
       ALL: 'All',
       PUBLISHED: 'Published',

@@ -116,6 +116,7 @@ public class DraftNetworksResource {
     DocumentService.Documents<Network> networkDocuments = draftNetworkService.find(from, limit, sort, order, studyId, query, null, null, accessibleIdFilter);
     totalCount = networkDocuments.getTotal();
     response.addHeader("X-Total-Count", Long.toString(totalCount));
+    if (networkDocuments.isDegraded()) response.addHeader("X-Search-Degraded", "true");
 
     return networkDocuments.getList()
       .stream()

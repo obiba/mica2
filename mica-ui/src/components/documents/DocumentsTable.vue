@@ -44,6 +44,10 @@
         </template>
       </q-input>
     </div>
+    <q-banner v-if="documentsStore.isDegraded(target.type)" dense rounded class="bg-warning text-dark q-mb-sm">
+      <template #avatar><q-icon name="warning" /></template>
+      {{ t('documents.search_degraded') }}
+    </q-banner>
     <q-table
       flat
       :rows="rows"
