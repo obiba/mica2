@@ -66,6 +66,7 @@ public class DocumentServiceFallbackTest {
 
     DocumentService.Documents<Identified> documents = service.find(1, 5, "id", "desc", null, null, null, null, idFilter);
 
+    assertThat(documents.isDegraded()).isTrue();
     assertThat(documents.getTotal()).isEqualTo(3);
     assertThat(documents.getList().stream().map(Identified::getId)).containsExactly("b", "a");
   }
