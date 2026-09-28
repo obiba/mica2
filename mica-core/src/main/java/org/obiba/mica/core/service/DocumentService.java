@@ -69,6 +69,8 @@ public interface DocumentService<T> {
 
     private final List<T> list = Lists.newArrayList();
 
+    private boolean degraded;
+
     public Documents(int total, int from, int limit) {
       this.total = total;
       this.from = from;
@@ -93,6 +95,17 @@ public interface DocumentService<T> {
 
     public int getLimit() {
       return limit;
+    }
+
+    /**
+     * Whether the documents were not found by the search engine, but listed from the database without query nor sort.
+     */
+    public boolean isDegraded() {
+      return degraded;
+    }
+
+    public void setDegraded(boolean degraded) {
+      this.degraded = degraded;
     }
   }
 

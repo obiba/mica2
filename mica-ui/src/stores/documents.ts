@@ -35,9 +35,15 @@ export interface LoadedDocument {
 export const useDocumentsStore = defineStore('documents', () => {
   /** the last list fetched of each document type */
   const lists = ref<Partial<Record<DocumentType, DocumentSummary[]>>>({});
+  /** the types whose last list came from the database, the search engine having failed (no query nor sort applied) */
+  const degraded = ref<Partial<Record<DocumentType, boolean>>>({});
 
   function listOf(type: DocumentType): DocumentSummary[] {
     return lists.value[type] ?? [];
+  }
+
+  function isDegraded(type: DocumentType): boolean {
+    return degraded.value[type] ?? false;
   }
 
   async function fetchDocuments(
@@ -57,6 +63,7 @@ export const useDocumentsStore = defineStore('documents', () => {
       ? data
       : ((data[target.listKey ?? ''] as DocumentSummary[] | undefined) ?? []);
     lists.value[target.type] = list;
+    degraded.value[target.type] = response.headers?.['x-search-degraded'] === 'true';
     return list;
   }
 
@@ -135,6 +142,7 @@ export const useDocumentsStore = defineStore('documents', () => {
   return {
     lists,
     listOf,
+    isDegraded,
     fetchDocuments,
     fetchDocument,
     fetchState,
