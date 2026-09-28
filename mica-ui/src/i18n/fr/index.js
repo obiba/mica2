@@ -476,6 +476,7 @@ export default {
   documents: {
     search_all: 'Tous les champs',
     search_title: 'Titre',
+    search_degraded: "L'index de recherche n'est pas disponible : tous les documents sont listés, triés par ID, sans appliquer la recherche.",
     filter: {
       ALL: 'Tous',
       PUBLISHED: 'Publiés',
