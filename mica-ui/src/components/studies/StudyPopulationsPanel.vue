@@ -11,191 +11,207 @@
       </q-card-section>
     </q-card>
 
-    <div class="row q-col-gutter-md">
-      <div class="col-12 col-md-3">
-        <q-btn
-          v-if="canEdit"
-          color="primary"
-          icon="add"
-          size="sm"
-          :label="t('study.add_population')"
-          @click="openEditor({})"
-          :disable="busy"
-          class="q-mb-sm"
-        />
-        <q-list bordered separator>
-          <q-item
-            v-for="item in populations"
-            :key="item.id ?? ''"
-            clickable
-            :active="item.id === population?.id"
-            @click="emit('select', item.id ?? '')"
-          >
-            <q-item-section>
-              <q-item-label>{{ localized(item.name, locale) || item.id }}</q-item-label>
-              <q-item-label caption>
-                {{ item.id }} · {{ t('study.dce_count', item.dataCollectionEvents?.length ?? 0) }}
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item v-if="populations.length === 0">
-            <q-item-section class="text-hint">{{ t('study.no_populations') }}</q-item-section>
-          </q-item>
-        </q-list>
+    <div class="row items-center">
+      <q-tabs
+        v-if="populations.length > 0"
+        :model-value="population?.id"
+        @update:model-value="(id: string) => emit('select', id)"
+        dense
+        no-caps
+        align="left"
+        active-color="primary"
+        indicator-color="primary"
+        class="col"
+      >
+        <q-tab
+          v-for="item in populations"
+          :key="item.id ?? ''"
+          :name="item.id ?? ''"
+        >
+          <div class="text-left q-py-xs">
+            <div class="text-body2">{{ localized(item.name, locale) || item.id }}</div>
+            <div class="text-caption text-hint">
+              {{ item.id }} · {{ t('study.dce_count', item.dataCollectionEvents?.length ?? 0) }}
+            </div>
+          </div>
+        </q-tab>
+      </q-tabs>
+      <q-btn
+        v-if="canEdit"
+        color="primary"
+        icon="add"
+        size="sm"
+        :label="t('study.add_population')"
+        @click="openEditor({})"
+        :disable="busy"
+      />
+    </div>
+    <q-separator v-if="populations.length > 0"/>
+
+    <div v-if="populations.length === 0" class="text-hint q-py-md">{{ t('study.no_populations') }}</div>
+
+    <div v-if="population" class="q-pt-md">
+      <div class="row items-center q-mb-sm">
+        <div class="text-h6 col">
+          {{ localized(population.name, locale) || population.id }}
+          <q-badge color="grey-6" :label="population.id" class="q-ml-sm" />
+        </div>
+        <div v-if="canEdit" class="text-no-wrap">
+          <q-btn
+            flat
+            dense
+            size="sm"
+            icon="arrow_upward"
+            :title="t('members.move_up')"
+            :disable="busy || populationIndex === 0"
+            @click="movePopulation(-1)"
+          />
+          <q-btn
+            flat
+            dense
+            size="sm"
+            icon="arrow_downward"
+            :title="t('members.move_down')"
+            :disable="busy || populationIndex === populations.length - 1"
+            @click="movePopulation(1)"
+          />
+          <q-btn
+            flat
+            dense
+            size="sm"
+            icon="edit"
+            color="primary"
+            :title="t('edit')"
+            :disable="busy"
+            @click="openEditor({ populationId: population.id })"
+          />
+          <q-btn
+            flat
+            dense
+            size="sm"
+            icon="delete"
+            color="negative"
+            :title="t('delete')"
+            :disable="busy"
+            @click="toRemove = { population }"
+          />
+        </div>
       </div>
 
-      <div v-if="population" class="col-12 col-md-9">
-        <div class="row items-center q-mb-sm">
-          <div class="text-h6 col">
-            {{ localized(population.name, locale) || population.id }}
-            <q-badge color="grey-6" :label="population.id" class="q-ml-sm" />
+      <div class="row q-col-gutter-md">
+        <div class="col-12 col-md-6">
+          <div class="text-subtitle1 q-mb-sm">
+            {{ t('study.definition') }}
           </div>
-          <div v-if="canEdit" class="text-no-wrap">
-            <q-btn
-              flat
-              dense
-              size="sm"
-              icon="arrow_upward"
-              :title="t('members.move_up')"
-              :disable="busy || populationIndex === 0"
-              @click="movePopulation(-1)"
-            />
-            <q-btn
-              flat
-              dense
-              size="sm"
-              icon="arrow_downward"
-              :title="t('members.move_down')"
-              :disable="busy || populationIndex === populations.length - 1"
-              @click="movePopulation(1)"
-            />
-            <q-btn
-              flat
-              dense
-              size="sm"
-              icon="edit"
-              color="primary"
-              :title="t('edit')"
-              :disable="busy"
-              @click="openEditor({ populationId: population.id })"
-            />
-            <q-btn
-              flat
-              dense
-              size="sm"
-              icon="delete"
-              color="negative"
-              :title="t('delete')"
-              :disable="busy"
-              @click="toRemove = { population }"
-            />
-          </div>
-        </div>
-
-        <div class="row items-center q-mb-sm">
-          <div class="text-subtitle1 col">
-            {{ t('study.dces') }}
-          </div>
-          <q-btn
-            v-if="canEdit"
-            color="primary"
-            icon="add"
-            size="sm"
-            :label="t('study.add_dce')"
-            @click="openEditor({ populationId: population.id, isDce: true })"
-            :disable="busy"
-          />
-        </div>
-        <q-list bordered separator>
-          <q-expansion-item
-            v-for="(dce, index) in events"
-            :key="dce.id ?? index"
-            :model-value="expanded === dce.id"
-            @update:model-value="(open) => emit('select', population?.id ?? '', open ? dce.id : undefined)"
-          >
-            <template #header>
-              <q-item-section avatar>
-                <q-badge color="grey-6" :label="dce.id" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>{{ localized(dce.name, locale) || dce.id }}</q-item-label>
-                <q-item-label caption>{{ dcePeriod(dce, t('study.ongoing')) }}</q-item-label>
-              </q-item-section>
-              <q-item-section side class="text-no-wrap" @click.stop>
-                <div>
-                  <template v-if="canEdit">
-                    <q-btn
-                      flat
-                      dense
-                      size="sm"
-                      icon="arrow_upward"
-                      :title="t('members.move_up')"
-                      :disable="busy || index === 0"
-                      @click="moveEvent(index, -1)"
-                    />
-                    <q-btn
-                      flat
-                      dense
-                      size="sm"
-                      icon="arrow_downward"
-                      :title="t('members.move_down')"
-                      :disable="busy || index === events.length - 1"
-                      @click="moveEvent(index, 1)"
-                    />
-                    <q-btn
-                      flat
-                      dense
-                      size="sm"
-                      icon="edit"
-                      color="primary"
-                      :title="t('edit')"
-                      :disable="busy"
-                      @click="openEditor({ populationId: population?.id, dceId: dce.id, isDce: true })"
-                    />
-                    <q-btn
-                      flat
-                      dense
-                      size="sm"
-                      icon="content_copy"
-                      :title="t('study.clone_dce')"
-                      :disable="busy"
-                      @click="onClone(dce)"
-                    />
-                  </template>
-                  <q-btn flat dense size="sm" icon="folder" :title="t('files.title')" :to="filesRoute(dce)" />
-                  <q-btn
-                    v-if="canEdit"
-                    flat
-                    dense
-                    size="sm"
-                    icon="delete"
-                    color="negative"
-                    :title="t('delete')"
-                    :disable="busy"
-                    @click="toRemove = { population, dce }"
-                  />
-                </div>
-              </q-item-section>
-            </template>
-            <div class="q-pa-md">
+          <q-card flat bordered>
+            <q-card-section>
               <entity-json-form
-                :model-value="toModel(dce, DCE_FIELDS)"
-                form-path="/config/data-collection-event/form"
+                :model-value="toModel(population, POPULATION_FIELDS)"
+                form-path="/config/population/form"
                 readonly
               />
+            </q-card-section>
+          </q-card>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="row items-center q-mb-sm">
+            <div class="text-subtitle1 col">
+              {{ t('study.dces') }}
             </div>
-          </q-expansion-item>
-          <q-item v-if="events.length === 0">
-            <q-item-section class="text-hint">{{ t('study.no_dces') }}</q-item-section>
-          </q-item>
-        </q-list>
-        <q-expansion-item dense :label="t('study.definition')" header-class="text-subtitle1 q-px-none" class="q-mt-md">
-          <entity-json-form
-            :model-value="toModel(population, POPULATION_FIELDS)"
-            form-path="/config/population/form"
-            readonly
-          />
-        </q-expansion-item>
+            <q-btn
+              v-if="canEdit"
+              color="primary"
+              icon="add"
+              size="sm"
+              :label="t('study.add_dce')"
+              @click="openEditor({ populationId: population.id, isDce: true })"
+              :disable="busy"
+            />
+          </div>
+          <q-list bordered separator>
+            <q-expansion-item
+              v-for="(dce, index) in events"
+              :key="dce.id ?? index"
+              :model-value="expanded === dce.id"
+              @update:model-value="(open) => emit('select', population?.id ?? '', open ? dce.id : undefined)"
+            >
+              <template #header>
+                <q-item-section avatar>
+                  <q-badge color="grey-6" :label="dce.id" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>{{ localized(dce.name, locale) || dce.id }}</q-item-label>
+                  <q-item-label caption>{{ dcePeriod(dce, t('study.ongoing')) }}</q-item-label>
+                </q-item-section>
+                <q-item-section side class="text-no-wrap" @click.stop>
+                  <div>
+                    <template v-if="canEdit">
+                      <q-btn
+                        flat
+                        dense
+                        size="sm"
+                        icon="arrow_upward"
+                        :title="t('members.move_up')"
+                        :disable="busy || index === 0"
+                        @click="moveEvent(index, -1)"
+                      />
+                      <q-btn
+                        flat
+                        dense
+                        size="sm"
+                        icon="arrow_downward"
+                        :title="t('members.move_down')"
+                        :disable="busy || index === events.length - 1"
+                        @click="moveEvent(index, 1)"
+                      />
+                      <q-btn
+                        flat
+                        dense
+                        size="sm"
+                        icon="edit"
+                        color="primary"
+                        :title="t('edit')"
+                        :disable="busy"
+                        @click="openEditor({ populationId: population?.id, dceId: dce.id, isDce: true })"
+                      />
+                      <q-btn
+                        flat
+                        dense
+                        size="sm"
+                        icon="content_copy"
+                        :title="t('study.clone_dce')"
+                        :disable="busy"
+                        @click="onClone(dce)"
+                      />
+                    </template>
+                    <q-btn flat dense size="sm" icon="folder" :title="t('files.title')" :to="filesRoute(dce)" />
+                    <q-btn
+                      v-if="canEdit"
+                      flat
+                      dense
+                      size="sm"
+                      icon="delete"
+                      color="negative"
+                      :title="t('delete')"
+                      :disable="busy"
+                      @click="toRemove = { population, dce }"
+                    />
+                  </div>
+                </q-item-section>
+              </template>
+              <div class="q-pa-md">
+                <entity-json-form
+                  :model-value="toModel(dce, DCE_FIELDS)"
+                  form-path="/config/data-collection-event/form"
+                  readonly
+                />
+              </div>
+            </q-expansion-item>
+            <q-item v-if="events.length === 0">
+              <q-item-section class="text-hint">{{ t('study.no_dces') }}</q-item-section>
+            </q-item>
+          </q-list>
+        </div>
       </div>
     </div>
 
