@@ -133,10 +133,10 @@ public class DataAccessCollaboratorService {
         throw new IllegalArgumentException("invitation-expired");
       }
 
-      String author = jsonKey.getString(AUTHOR_KEY);
-      // check and register the collaborator
-      Optional<DataAccessCollaborator> collaboratorOpt = dataAccessCollaboratorRepository.findByRequestIdAndEmail(darId, email);
-      DataAccessCollaborator collaborator = collaboratorOpt.orElseGet(() -> DataAccessCollaborator.newBuilder(dar.getId()).email(email).author(author).build());
+      // check and register the collaborator: the invitation must still exist, i.e. it was not removed, nor was
+      // its request deleted (an incremental id can be reused by a new request)
+      DataAccessCollaborator collaborator = dataAccessCollaboratorRepository.findByRequestIdAndEmail(darId, email)
+        .orElseThrow(() -> new IllegalArgumentException("invitation-expired"));
       collaborator.setInvitationPending(false);
       collaborator.setPrincipal(principal);
       save(collaborator);
@@ -238,7 +238,13 @@ public class DataAccessCollaboratorService {
     return micaConfigService.encrypt(jsonKey.toString());
   }
 
+  /**
+   * Delete all the collaborators of a request, when the request is deleted. Their permissions are removed with the
+   * request's ones, and their agreements are deleted with the request.
+   *
+   * @param requestId
+   */
   public void deleteAll(String requestId) {
-    dataAccessCollaboratorRepository.deleteById(requestId);
+    dataAccessCollaboratorRepository.deleteAll(dataAccessCollaboratorRepository.findByRequestId(requestId));
   }
 }

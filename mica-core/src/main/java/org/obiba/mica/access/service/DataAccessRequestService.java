@@ -48,7 +48,6 @@ import jakarta.validation.constraints.NotNull;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -76,6 +75,9 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
 
   @Inject
   private DataAccessPreliminaryService dataAccessPreliminaryService;
+
+  @Inject
+  private DataAccessAgreementService dataAccessAgreementService;
 
   @Inject
   private DataAccessCollaboratorService dataAccessCollaboratorService;
@@ -161,17 +163,15 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
   @Override
   public void delete(@NotNull String id) throws NoSuchDataAccessRequestException {
     DataAccessRequest dataAccessRequest = findById(id);
-    List<Attachment> attachments = dataAccessRequest.getAttachments();
 
+    // also deletes the attachments (documents and stored files), all saved under /data-access-request/<id>
     dataAccessRequestRepository.deleteWithReferences(dataAccessRequest);
     schemaFormContentFileService.deleteFiles(dataAccessRequest);
     dataAccessAmendmentService.findByParentId(id).forEach(dataAccessAmendmentService::delete);
     dataAccessFeasibilityService.findByParentId(id).forEach(dataAccessFeasibilityService::delete);
     dataAccessPreliminaryService.findByParentId(id).forEach(dataAccessPreliminaryService::delete);
+    dataAccessAgreementService.findByParentId(id).forEach(agreement -> dataAccessAgreementService.delete(agreement.getId()));
     dataAccessCollaboratorService.deleteAll(id);
-
-    attachments.forEach(a -> fileStoreService.delete(a.getFileReference()));
-    attachmentRepository.deleteAll(attachments);
     eventBus.post(new DataAccessRequestDeletedEvent(dataAccessRequest));
   }
 
@@ -217,7 +217,7 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
   @Async
   @Subscribe
   public void dataAccessFeasibilityDeleted(DataAccessFeasibilityDeletedEvent event) {
-    touch(findById(event.getPersistable().getParentId()));
+    touchIfExists(event.getPersistable().getParentId());
   }
 
   @Async
@@ -229,7 +229,7 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
   @Async
   @Subscribe
   public void dataAccessAmendmentDeleted(DataAccessAmendmentDeletedEvent event) {
-    touch(findById(event.getPersistable().getParentId()));
+    touchIfExists(event.getPersistable().getParentId());
   }
 
   @Async
@@ -246,7 +246,7 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
   public void commentDeleted(CommentDeletedEvent event) {
     Comment comment = event.getComment();
     if (comment.getResourceId().equals("/data-access-request") && !comment.getAdmin()) {
-      touch(findById(comment.getInstanceId()));
+      touchIfExists(comment.getInstanceId());
     }
   }
 
@@ -264,6 +264,13 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
   private void touch(@NotNull DataAccessRequest request) {
     request.setLastModifiedDate(LocalDateTime.now());
     dataAccessRequestRepository.saveWithReferences(request);
+  }
+
+  /**
+   * Touch the request unless it was deleted: children and comments are also deleted when their request is, after it.
+   */
+  private void touchIfExists(@NotNull String id) {
+    dataAccessRequestRepository.findById(id).ifPresent(this::touch);
   }
 
   private DataAccessRequest save(@NotNull DataAccessRequest request, LocalDateTime lastModifiedDate) {
