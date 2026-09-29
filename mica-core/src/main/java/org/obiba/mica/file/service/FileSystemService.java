@@ -12,6 +12,7 @@ package org.obiba.mica.file.service;
 
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -37,6 +38,7 @@ import org.obiba.mica.file.event.FileDeletedEvent;
 import org.obiba.mica.file.event.FilePublishedEvent;
 import org.obiba.mica.file.event.FileUnPublishedEvent;
 import org.obiba.mica.file.event.FileUpdatedEvent;
+import org.obiba.mica.file.event.FolderDeletedEvent;
 import org.obiba.mica.file.notification.FilePublicationFlowMailNotification;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.event.NetworkPublishedEvent;
@@ -196,6 +198,10 @@ public class FileSystemService {
    * @param state
    */
   public void delete(AttachmentState state) {
+    delete(state, false);
+  }
+
+  private void delete(AttachmentState state, boolean inFolderDelete) {
     if(state.isPublished()) publish(state, false);
     List<Attachment> attachments = attachmentRepository.findByPathAndNameOrderByCreatedDateDesc(state.getPath(), state.getName());
     attachments.forEach(a -> {
@@ -203,7 +209,7 @@ public class FileSystemService {
       fileStoreService.deleteWithMetadata(a.getFileReference(), new HashMap<String, String>(){{put("attachment", a.getId());}});
     });
     attachmentStateRepository.delete(state);
-    eventBus.post(new FileDeletedEvent(state));
+    eventBus.post(new FileDeletedEvent(state, inFolderDelete));
   }
 
   /**
@@ -212,9 +218,20 @@ public class FileSystemService {
    * @param path
    */
   public void delete(String path) {
-    List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
-    states.addAll(findAttachmentStates(String.format("^%s/", path), false));
-    states.forEach(this::delete);
+    // the path is quoted, not normalized: it may contain regex characters ('.' in an entity id, '+', ...) and must
+    // not match the files of another path
+    String quoted = Pattern.quote(path);
+    List<AttachmentState> states = Lists.newArrayList(attachmentStateRepository.findByPath(String.format("^%s$", quoted)));
+    states.addAll(attachmentStateRepository.findByPath(String.format("^%s/", quoted)));
+    if (states.isEmpty()) return;
+
+    // the folder event lets listeners handle the folder at once rather than file by file; posted even if a file
+    // delete fails: like the folder's own file event did, it then removes the file acls of the whole folder
+    try {
+      states.forEach(state -> delete(state, true));
+    } finally {
+      eventBus.post(new FolderDeletedEvent(path));
+    }
   }
 
   /**

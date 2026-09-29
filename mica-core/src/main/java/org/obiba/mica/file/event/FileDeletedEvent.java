@@ -15,7 +15,22 @@ import org.obiba.mica.file.AttachmentState;
 
 public class FileDeletedEvent extends PersistableDeletedEvent<AttachmentState> {
 
+  private final boolean inFolderDelete;
+
   public FileDeletedEvent(AttachmentState state) {
+    this(state, false);
+  }
+
+  /**
+   * @param state
+   * @param inFolderDelete the file is deleted with its folder, which posts a {@link FolderDeletedEvent} when done
+   */
+  public FileDeletedEvent(AttachmentState state, boolean inFolderDelete) {
     super(state);
+    this.inFolderDelete = inFolderDelete;
+  }
+
+  public boolean isInFolderDelete() {
+    return inFolderDelete;
   }
 }

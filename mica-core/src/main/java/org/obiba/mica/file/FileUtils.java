@@ -14,7 +14,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.file.service.FileSystemService;
+import org.obiba.mica.study.domain.BaseStudy;
 import org.springframework.data.domain.Persistable;
 
 import com.google.common.base.CaseFormat;
@@ -44,11 +47,25 @@ public class FileUtils {
     return idx == 0 ? "/" : path.substring(0, idx);
   }
 
+  /**
+   * Get the folder of the entity's files, e.g. "/individual-study/<id>".
+   *
+   * @param persistable
+   * @return
+   */
   public static String getEntityPath(Persistable persistable) {
-    return String.format("/%s/%s",
-      CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, persistable.getClass().getSimpleName()),
-      persistable.getId()
-    );
+    return String.format("/%s/%s", getEntityFolder(persistable), persistable.getId());
+  }
+
+  /**
+   * The folder is named after the entity's resource, which differs from its class name for individual studies
+   * and datasets.
+   */
+  private static String getEntityFolder(Persistable persistable) {
+    if (persistable instanceof BaseStudy) return ((BaseStudy) persistable).getResourcePath();
+    if (persistable instanceof StudyDataset) return "collected-dataset";
+    if (persistable instanceof HarmonizationDataset) return "harmonized-dataset";
+    return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, persistable.getClass().getSimpleName());
   }
 
   public static String normalizeRegex(String path) {

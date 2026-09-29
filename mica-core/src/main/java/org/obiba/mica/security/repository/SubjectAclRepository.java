@@ -38,6 +38,11 @@ public interface SubjectAclRepository extends MongoRepository<SubjectAcl, String
 
   void deleteByResourceAndInstance(String resource, String instance);
 
+  void deleteByResource(String resource);
+
   void deleteByResourceStartingWith(String prefix);
+
+  @Query(value = "{'resource': ?0, 'instance': {$regex: ?1}}", delete = true)
+  void deleteByResourceAndInstanceRegex(String resource, String instanceRegex);
 
 }

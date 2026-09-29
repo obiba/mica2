@@ -115,6 +115,29 @@ public class DataAccessRequestRepositoryImplTest {
     verify(fileStoreService, never()).delete("file-b1");
   }
 
+  /**
+   * The request path is a literal prefix ending at a path boundary: the attachments of a request whose id starts
+   * with the deleted one, or matches it once '.' is read as a regex wildcard, are kept.
+   */
+  @Test
+  public void test_deleteWithReferences_keeps_attachments_of_sibling_ids() {
+    DataAccessRequest request = request("DAR.1", attachment("a1", null), attachment("a2", "/data-access-request/DAR.1/sub"));
+    DataAccessRequest prefixed = request("DAR.10", attachment("b1", null));
+    DataAccessRequest wildcard = request("DARX1", attachment("c1", null));
+    for (DataAccessRequest r : Lists.newArrayList(request, prefixed, wildcard)) {
+      r.getAttachments().forEach(attachmentRepository::insert);
+      dataAccessRequestRepository.insertWithReferences(r);
+    }
+
+    dataAccessRequestRepository.deleteWithReferences(request);
+
+    assertThat(attachmentRepository.findAll()).extracting(Attachment::getId).containsExactlyInAnyOrder("b1", "c1");
+    verify(fileStoreService).delete("file-a1");
+    verify(fileStoreService).delete("file-a2");
+    verify(fileStoreService, never()).delete("file-b1");
+    verify(fileStoreService, never()).delete("file-c1");
+  }
+
   private static DataAccessRequest request(String id, Attachment... attachments) {
     DataAccessRequest request = (DataAccessRequest) DataAccessRequest.newBuilder().applicant("applicant").build();
     request.setId(id);
