@@ -39,6 +39,9 @@ import org.obiba.mica.config.MongoDbConfiguration;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.event.DatasetDeletedEvent;
+import org.obiba.mica.file.AttachmentState;
+import org.obiba.mica.file.event.FileDeletedEvent;
+import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.event.NetworkDeletedEvent;
@@ -65,6 +68,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.obiba.mica.assertj.Assertions.assertThat;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.obiba.mica.file.FileUtils.encode;
 
 @ExtendWith(SpringExtension.class)
 @TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
@@ -137,12 +141,14 @@ public class SubjectAclServiceTest {
 
   /**
    * Populates the whole set of ACLs an entity can accumulate: published + draft entity ACL, draft child
-   * ACL (comment), and file + draft-file ACLs for the entity and a sub-path.
+   * ACLs (legacy _status, comment), and file + draft-file ACLs for the entity and a sub-path.
+   * Like the application, child resources are built from the raw id; instances are encoded on save.
    */
   private void createAcls(String resource, String id) {
     String draftResource = "/draft" + resource;
     subjectAclService.addUserPermission("editor", resource, "VIEW", id);
     subjectAclService.addUserPermission("editor", draftResource, "VIEW,EDIT,ADD", id);
+    subjectAclService.addUserPermission("editor", draftResource + "/" + id, "EDIT", "_status");
     subjectAclService.addUserPermission("editor", draftResource + "/" + id + "/comment", "VIEW,EDIT", "c1");
     subjectAclService.addUserPermission("editor", "/file", "VIEW", resource + "/" + id);
     subjectAclService.addUserPermission("editor", "/file", "VIEW", resource + "/" + id + "/sub-file");
@@ -152,26 +158,26 @@ public class SubjectAclServiceTest {
 
   private void assertNoAclsLeftFor(String resource, String id) {
     String draftResource = "/draft" + resource;
-    assertThat(subjectAclRepository.findByResourceAndInstance(resource, id)).isEmpty();
-    assertThat(subjectAclRepository.findByResourceAndInstance(draftResource, id)).isEmpty();
+    assertThat(subjectAclRepository.findByResourceAndInstance(resource, encode(id))).isEmpty();
+    assertThat(subjectAclRepository.findByResourceAndInstance(draftResource, encode(id))).isEmpty();
     assertThat(subjectAclRepository.findByResource(draftResource + "/" + id)).isEmpty();
     assertThat(subjectAclRepository.findByResourceStartingWith(draftResource + "/" + id + "/")).isEmpty();
-    assertThat(subjectAclRepository.findByResourceAndInstance("/file", resource + "/" + id)).isEmpty();
-    assertThat(subjectAclRepository.findByResourceAndInstance("/file", resource + "/" + id + "/sub-file")).isEmpty();
-    assertThat(subjectAclRepository.findByResourceAndInstance("/draft/file", resource + "/" + id)).isEmpty();
-    assertThat(subjectAclRepository.findByResourceAndInstance("/draft/file", resource + "/" + id + "/sub-file")).isEmpty();
+    assertThat(subjectAclRepository.findByResourceAndInstance("/file", encode(resource + "/" + id))).isEmpty();
+    assertThat(subjectAclRepository.findByResourceAndInstance("/file", encode(resource + "/" + id + "/sub-file"))).isEmpty();
+    assertThat(subjectAclRepository.findByResourceAndInstance("/draft/file", encode(resource + "/" + id))).isEmpty();
+    assertThat(subjectAclRepository.findByResourceAndInstance("/draft/file", encode(resource + "/" + id + "/sub-file"))).isEmpty();
   }
 
   private int countAclsFor(String resource, String id) {
     String draftResource = "/draft" + resource;
-    int count = subjectAclRepository.findByResourceAndInstance(resource, id).size();
-    count += subjectAclRepository.findByResourceAndInstance(draftResource, id).size();
+    int count = subjectAclRepository.findByResourceAndInstance(resource, encode(id)).size();
+    count += subjectAclRepository.findByResourceAndInstance(draftResource, encode(id)).size();
     count += subjectAclRepository.findByResource(draftResource + "/" + id).size();
     count += subjectAclRepository.findByResourceStartingWith(draftResource + "/" + id + "/").size();
-    count += subjectAclRepository.findByResourceAndInstance("/file", resource + "/" + id).size();
-    count += subjectAclRepository.findByResourceAndInstance("/file", resource + "/" + id + "/sub-file").size();
-    count += subjectAclRepository.findByResourceAndInstance("/draft/file", resource + "/" + id).size();
-    count += subjectAclRepository.findByResourceAndInstance("/draft/file", resource + "/" + id + "/sub-file").size();
+    count += subjectAclRepository.findByResourceAndInstance("/file", encode(resource + "/" + id)).size();
+    count += subjectAclRepository.findByResourceAndInstance("/file", encode(resource + "/" + id + "/sub-file")).size();
+    count += subjectAclRepository.findByResourceAndInstance("/draft/file", encode(resource + "/" + id)).size();
+    count += subjectAclRepository.findByResourceAndInstance("/draft/file", encode(resource + "/" + id + "/sub-file")).size();
     return count;
   }
 
@@ -373,7 +379,43 @@ public class SubjectAclServiceTest {
     subjectAclService.projectDeleted(new ProjectDeletedEvent(project));
 
     assertNoAclsLeftFor("/project", "abc");
-    assertThat(countAclsFor("/project", "abcd")).isEqualTo(7);
+    assertThat(countAclsFor("/project", "abcd")).isEqualTo(8);
+  }
+
+  @Test
+  public void test_deleting_entity_with_id_changed_by_encoding_removes_all_acls() {
+    // "my net" is saved as instance "my+net" but child resources keep "my net"; "+" is also a regex quantifier
+    createAcls("/network", "my net");
+    createAcls("/network", "my net2");
+
+    Network network = new Network();
+    network.setId("my net");
+    subjectAclService.networkDeleted(new NetworkDeletedEvent(network));
+
+    assertNoAclsLeftFor("/network", "my net");
+    assertThat(countAclsFor("/network", "my net2")).isEqualTo(8);
+  }
+
+  @Test
+  public void test_fileDeleted_removes_folder_with_special_characters_and_its_descendants() {
+    String folder = "/network/abc/my folder (1).v2";
+    String sibling = "/network/abc/my folder (1)xv2";
+    for (String fileResource : new String[] { "/file", "/draft/file" }) {
+      subjectAclService.addUserPermission("editor", fileResource, "VIEW", folder);
+      subjectAclService.addUserPermission("editor", fileResource, "VIEW", folder + "/doc.pdf");
+      subjectAclService.addUserPermission("editor", fileResource, "VIEW", sibling + "/doc.pdf");
+    }
+    AttachmentState state = new AttachmentState();
+    state.setName(FileSystemService.DIR_NAME);
+    state.setPath(folder);
+
+    subjectAclService.fileDeleted(new FileDeletedEvent(state));
+
+    for (String fileResource : new String[] { "/file", "/draft/file" }) {
+      assertThat(subjectAclRepository.findByResourceAndInstance(fileResource, encode(folder))).isEmpty();
+      assertThat(subjectAclRepository.findByResourceAndInstance(fileResource, encode(folder + "/doc.pdf"))).isEmpty();
+      assertThat(subjectAclRepository.findByResourceAndInstance(fileResource, encode(sibling + "/doc.pdf"))).hasSize(1);
+    }
   }
 
   @Test

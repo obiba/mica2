@@ -15,6 +15,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shiro.SecurityUtils;
@@ -58,6 +59,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
@@ -519,15 +521,7 @@ public class SubjectAclService {
   @Async
   @Subscribe
   public void fileDeleted(FileDeletedEvent event) {
-    subjectAclRepository
-      .deleteAll(subjectAclRepository.findByResourceAndInstance("/file", encode(event.getPersistable().getFullPath())));
-    subjectAclRepository.deleteAll(
-      subjectAclRepository.findByResourceAndInstanceRegex("/file", "^" + encode(event.getPersistable().getFullPath()) +
-        "/"));
-    subjectAclRepository.deleteAll(
-      subjectAclRepository.findByResourceAndInstance("/draft/file", encode(event.getPersistable().getFullPath())));
-    subjectAclRepository.deleteAll(subjectAclRepository
-      .findByResourceAndInstanceRegex("/draft/file", "^" + encode(event.getPersistable().getFullPath()) + "/"));
+    removeFileAndDescendants(encode(event.getPersistable().getFullPath()));
   }
 
   //
@@ -559,25 +553,35 @@ public class SubjectAclService {
     subjectAclRepository.deleteAll(subjectAclRepository.findByResourceAndInstance(draftResource, encode(instance)));
 
     // child acls on the draft entity itself (e.g. _status, _attachments, comment), regardless of instance;
-    // matched as exact resource or "resource/" prefix so id "abc" doesn't also catch sibling id "abcd"
-    String draftEntityResource = draftResource + "/" + encode(instance);
-    subjectAclRepository.deleteAll(subjectAclRepository.findByResource(draftEntityResource));
-    subjectAclRepository.deleteAll(subjectAclRepository.findByResourceStartingWith(draftEntityResource + "/"));
+    // matched as exact resource or "resource/" prefix so id "abc" doesn't also catch sibling id "abcd";
+    // resources are saved unencoded, so both the raw and the encoded id are checked
+    for (String id : Sets.newHashSet(instance, encode(instance))) {
+      String draftEntityResource = draftResource + "/" + id;
+      subjectAclRepository.deleteAll(subjectAclRepository.findByResource(draftEntityResource));
+      subjectAclRepository.deleteAll(subjectAclRepository.findByResourceStartingWith(draftEntityResource + "/"));
+    }
 
     // file and descendants, published and draft
-    subjectAclRepository
-      .deleteAll(subjectAclRepository.findByResourceAndInstance("/file", resource + "/" + encode(instance)));
-    subjectAclRepository.deleteAll(
-      subjectAclRepository.findByResourceAndInstanceRegex("/file", "^" + resource + "/" + encode(instance) + "/"));
-    subjectAclRepository
-      .deleteAll(subjectAclRepository.findByResourceAndInstance("/draft/file", resource + "/" + encode(instance)));
-    subjectAclRepository.deleteAll(subjectAclRepository
-      .findByResourceAndInstanceRegex("/draft/file", "^" + resource + "/" + encode(instance) + "/"));
+    removeFileAndDescendants(resource + "/" + encode(instance));
 
     // inform acls update (for caching), any subject may have lost permissions
     permissionCache.invalidateAll();
     permissionCache.cleanUp();
     eventBus.post(new SubjectAclUpdatedEvent());
+  }
+
+  /**
+   * Remove the file access controls, published and draft, of the path and of its descendants.
+   *
+   * @param path encoded file path
+   */
+  private void removeFileAndDescendants(String path) {
+    // the path is quoted: encoded paths contain regex characters ('+' for a space, '.', ...)
+    String descendants = "^" + Pattern.quote(path + "/");
+    for (String fileResource : new String[] { "/file", "/draft/file" }) {
+      subjectAclRepository.deleteAll(subjectAclRepository.findByResourceAndInstance(fileResource, path));
+      subjectAclRepository.deleteAll(subjectAclRepository.findByResourceAndInstanceRegex(fileResource, descendants));
+    }
   }
 
   public void removeSubjectPermission(@NotNull SubjectAcl.Type type, @NotNull String principal,
