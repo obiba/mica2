@@ -573,6 +573,11 @@ public class SubjectAclService {
       .deleteAll(subjectAclRepository.findByResourceAndInstance("/draft/file", resource + "/" + encode(instance)));
     subjectAclRepository.deleteAll(subjectAclRepository
       .findByResourceAndInstanceRegex("/draft/file", "^" + resource + "/" + encode(instance) + "/"));
+
+    // inform acls update (for caching), any subject may have lost permissions
+    permissionCache.invalidateAll();
+    permissionCache.cleanUp();
+    eventBus.post(new SubjectAclUpdatedEvent());
   }
 
   public void removeSubjectPermission(@NotNull SubjectAcl.Type type, @NotNull String principal,

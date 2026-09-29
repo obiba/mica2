@@ -44,7 +44,6 @@ import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.event.NetworkDeletedEvent;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.event.ProjectDeletedEvent;
-import org.obiba.mica.security.domain.SubjectAcl;
 import org.obiba.mica.security.event.ResourceDeletedEvent;
 import org.obiba.mica.security.repository.SubjectAclRepository;
 import org.obiba.mica.study.domain.HarmonizationStudy;
@@ -55,8 +54,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -132,14 +129,10 @@ public class SubjectAclServiceTest {
     subjectAclService.addGroupPermission("mica-data-access-officer", "/data-access-request/private-comment", "VIEW", null);
   }
 
-  private List<SubjectAcl> findByResource(String resource) {
-    return mongoTemplate.find(Query.query(Criteria.where("resource").is(resource)), SubjectAcl.class);
-  }
-
   private int countDataAccessRequestAcls(String id) {
     return subjectAclRepository.findByResourceAndInstance("/data-access-request", id).size()
       + subjectAclRepository.findByResourceStartingWith("/data-access-request/" + id + "/").size()
-      + findByResource("/data-access-request/" + id).size();
+      + subjectAclRepository.findByResource("/data-access-request/" + id).size();
   }
 
   /**
@@ -219,7 +212,7 @@ public class SubjectAclServiceTest {
     subjectAclService.dataAccessFeasibilityDeleted(new DataAccessFeasibilityDeletedEvent(feasibility));
 
     assertThat(subjectAclRepository.findByResourceAndInstance("/data-access-request/dar1/feasibility", "f1")).isEmpty();
-    assertThat(findByResource("/data-access-request/dar1/feasibility/f1")).isEmpty();
+    assertThat(subjectAclRepository.findByResource("/data-access-request/dar1/feasibility/f1")).isEmpty();
     assertThat(subjectAclRepository.count()).isEqualTo(total - 2);
 
     DataAccessAmendment amendment = (DataAccessAmendment) DataAccessAmendment.newBuilder().build();
@@ -228,15 +221,15 @@ public class SubjectAclServiceTest {
     subjectAclService.dataAccessAmendmentDeleted(new DataAccessAmendmentDeletedEvent(amendment));
 
     assertThat(subjectAclRepository.findByResourceAndInstance("/data-access-request/dar1/amendment", "a1")).isEmpty();
-    assertThat(findByResource("/data-access-request/dar1/amendment/a1")).isEmpty();
+    assertThat(subjectAclRepository.findByResource("/data-access-request/dar1/amendment/a1")).isEmpty();
     assertThat(subjectAclRepository.count()).isEqualTo(total - 4);
 
     // the request itself, the sibling children and the other request are untouched
     assertThat(countDataAccessRequestAcls("dar1")).isEqualTo(10 + 4 - 4);
     assertThat(subjectAclRepository.findByResourceAndInstance("/data-access-request/dar1/feasibility", "f10")).hasSize(1);
-    assertThat(findByResource("/data-access-request/dar1/feasibility/f10")).hasSize(1);
+    assertThat(subjectAclRepository.findByResource("/data-access-request/dar1/feasibility/f10")).hasSize(1);
     assertThat(subjectAclRepository.findByResourceAndInstance("/data-access-request/dar1/amendment", "a10")).hasSize(1);
-    assertThat(findByResource("/data-access-request/dar1/amendment/a10")).hasSize(1);
+    assertThat(subjectAclRepository.findByResource("/data-access-request/dar1/amendment/a10")).hasSize(1);
     assertThat(countDataAccessRequestAcls("dar10")).isEqualTo(10);
   }
 
