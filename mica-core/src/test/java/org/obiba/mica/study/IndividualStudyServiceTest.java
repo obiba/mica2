@@ -25,13 +25,16 @@ import org.obiba.git.command.GitCommandHandler;
 import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.config.MongoDbConfiguration;
 import org.obiba.mica.core.ModelAwareTranslator;
+import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.notification.EntityPublicationFlowMailNotification;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
+import org.obiba.mica.core.repository.CommentsRepository;
 import org.obiba.mica.core.service.AgateServerConfigService;
+import org.obiba.mica.core.service.CommentsService;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.core.service.StudyIdGeneratorService;
@@ -105,6 +108,9 @@ public class IndividualStudyServiceTest {
 
   @Inject
   private NetworkRepository networkRepository;
+
+  @Inject
+  private CommentsRepository commentsRepository;
 
   @Inject
   private EventBus eventBus;
@@ -331,6 +337,48 @@ public class IndividualStudyServiceTest {
     assertThrows(ConstraintException.class, () -> individualStudyService.delete(study.getId()));
   }
 
+  @Test
+  public void test_delete_study_deletes_its_comments_only() {
+    Study study = new Study();
+    study.setName(en("name en").forFr("name fr"));
+    individualStudyService.save(study);
+    Study other = new Study();
+    other.setName(en("other en").forFr("other fr"));
+    individualStudyService.save(other);
+    // stored as CommentsResource.createComment does
+    commentsRepository.save(comment("/draft/individual-study", study.getId()));
+    commentsRepository.save(comment("/draft/individual-study", study.getId()));
+    Comment otherStudyComment = commentsRepository.save(comment("/draft/individual-study", other.getId()));
+    Comment otherTypeComment = commentsRepository.save(comment("/draft/network", study.getId()));
+
+    individualStudyService.delete(study.getId());
+
+    assertThat(commentsRepository.findByResourceIdAndInstanceId("/draft/individual-study", study.getId())).isEmpty();
+    assertThat(commentsRepository.findAll()).extracting(Comment::getId)
+      .containsExactlyInAnyOrder(otherStudyComment.getId(), otherTypeComment.getId());
+  }
+
+  @Test
+  public void test_delete_study_conflict_keeps_its_comments() {
+    Study study = new Study();
+    study.setName(en("name en").forFr("name fr"));
+    individualStudyService.save(study);
+    Network network = new Network();
+    network.setId("test");
+    network.setStudyIds(new ArrayList() {{ add(study.getId()); }});
+    networkRepository.save(network);
+    commentsRepository.save(comment("/draft/individual-study", study.getId()));
+
+    assertThrows(ConstraintException.class, () -> individualStudyService.delete(study.getId()));
+
+    assertThat(commentsRepository.findByResourceIdAndInstanceId("/draft/individual-study", study.getId())).hasSize(1);
+  }
+
+  private static Comment comment(String resourceId, String instanceId) {
+    return Comment.newBuilder().createdBy("user").message("message").resourceId(resourceId).instanceId(instanceId)
+      .build();
+  }
+
   @AfterEach
   public void cleanup() throws IOException {
     FileUtil.delete(Config.BASE_REPO);
@@ -362,6 +410,11 @@ public class IndividualStudyServiceTest {
     @Bean
     public IndividualStudyService studyService() {
       return new IndividualStudyService();
+    }
+
+    @Bean
+    public CommentsService commentsService() {
+      return new CommentsService();
     }
 
     @Bean

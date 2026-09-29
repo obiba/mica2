@@ -476,6 +476,7 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
     studyDatasetRepository.deleteById(id);
     studyDatasetStateRepository.deleteById(id);
     gitService.deleteGitRepository(dataset);
+    deleteComments(id);
     eventBus.post(new DatasetDeletedEvent(dataset));
   }
 

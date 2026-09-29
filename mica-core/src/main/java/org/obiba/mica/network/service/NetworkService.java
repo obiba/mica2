@@ -322,6 +322,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
     fileSystemService.delete(FileUtils.getEntityPath(network));
     networkStateRepository.deleteById(id);
     gitService.deleteGitRepository(network);
+    deleteComments(id);
     eventBus.post(new NetworkDeletedEvent(network));
   }
 
