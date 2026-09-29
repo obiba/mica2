@@ -172,6 +172,7 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
     projectStateRepository.deleteById(id);
     projectRepository.deleteById(id);
     gitService.deleteGitRepository(project);
+    deleteComments(id);
     eventBus.post(new ProjectDeletedEvent(project));
   }
 

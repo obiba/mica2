@@ -175,6 +175,7 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
     getEntityStateRepository().deleteById(id);
     getRepository().delete(study.get());
     gitService.deleteGitRepository(study.get());
+    deleteComments(id);
     eventBus.post(new StudyDeletedEvent(study.get()));
   }
 

@@ -383,6 +383,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
     harmonizationDatasetStateRepository.deleteById(id);
     harmonizationDatasetRepository.deleteById(id);
     gitService.deleteGitRepository(dataset);
+    deleteComments(id);
     eventBus.post(new DatasetDeletedEvent(dataset));
   }
 

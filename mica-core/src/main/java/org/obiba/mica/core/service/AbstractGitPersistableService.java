@@ -70,6 +70,9 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
   @Inject
   protected GitService gitService;
 
+  @Inject
+  protected CommentsService commentsService;
+
   private Cache<String, List<String>> idsCache = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(1, TimeUnit.MINUTES).build();
 
   protected abstract EntityStateRepository<T> getEntityStateRepository();
@@ -82,6 +85,16 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
    * @return
    */
   public abstract String getTypeName();
+
+  /**
+   * Delete the comments of a deleted entity, stored with the "/draft/<type>" resource id (see CommentsResource), so
+   * that they are not shown on a new entity with the same id.
+   *
+   * @param id
+   */
+  protected void deleteComments(@NotNull String id) {
+    commentsService.delete(String.format("/draft/%s", getTypeName()), id);
+  }
 
   @NotNull
   public abstract T1 findDraft(@NotNull String id) throws NoSuchEntityException;
