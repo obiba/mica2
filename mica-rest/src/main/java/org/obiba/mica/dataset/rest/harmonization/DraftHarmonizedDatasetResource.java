@@ -98,7 +98,6 @@ public class DraftHarmonizedDatasetResource extends
   @DELETE
   public void delete() {
     checkPermission("/draft/harmonized-dataset", "DELETE");
-    removeExternalEditorPermissionsIfApplicable("/draft/harmonized-dataset");
     datasetService.delete(id);
   }
 

@@ -140,7 +140,6 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
     checkPermission("/draft/network", "DELETE");
     try {
       networkService.delete(id);
-      removeExternalEditorPermissionsIfApplicable("/draft/network");
     } catch (NoSuchNetworkException e) {
       // ignore
     }

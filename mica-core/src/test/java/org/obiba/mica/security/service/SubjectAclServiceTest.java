@@ -36,17 +36,27 @@ import org.obiba.mica.access.event.DataAccessFeasibilityDeletedEvent;
 import org.obiba.mica.access.event.DataAccessRequestDeletedEvent;
 import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.config.MongoDbConfiguration;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.dataset.event.DatasetDeletedEvent;
+import org.obiba.mica.file.AttachmentState;
+import org.obiba.mica.file.event.FileDeletedEvent;
+import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
-import org.obiba.mica.security.domain.SubjectAcl;
+import org.obiba.mica.network.domain.Network;
+import org.obiba.mica.network.event.NetworkDeletedEvent;
+import org.obiba.mica.project.domain.Project;
+import org.obiba.mica.project.event.ProjectDeletedEvent;
 import org.obiba.mica.security.event.ResourceDeletedEvent;
 import org.obiba.mica.security.repository.SubjectAclRepository;
+import org.obiba.mica.study.domain.HarmonizationStudy;
+import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -58,6 +68,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.obiba.mica.assertj.Assertions.assertThat;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.obiba.mica.file.FileUtils.encode;
 
 @ExtendWith(SpringExtension.class)
 @TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
@@ -122,14 +133,52 @@ public class SubjectAclServiceTest {
     subjectAclService.addGroupPermission("mica-data-access-officer", "/data-access-request/private-comment", "VIEW", null);
   }
 
-  private List<SubjectAcl> findByResource(String resource) {
-    return mongoTemplate.find(Query.query(Criteria.where("resource").is(resource)), SubjectAcl.class);
-  }
-
   private int countDataAccessRequestAcls(String id) {
     return subjectAclRepository.findByResourceAndInstance("/data-access-request", id).size()
       + subjectAclRepository.findByResourceStartingWith("/data-access-request/" + id + "/").size()
-      + findByResource("/data-access-request/" + id).size();
+      + subjectAclRepository.findByResource("/data-access-request/" + id).size();
+  }
+
+  /**
+   * Populates the whole set of ACLs an entity can accumulate: published + draft entity ACL, draft child
+   * ACLs (legacy _status, comment), and file + draft-file ACLs for the entity and a sub-path.
+   * Like the application, child resources are built from the raw id; instances are encoded on save.
+   */
+  private void createAcls(String resource, String id) {
+    String draftResource = "/draft" + resource;
+    subjectAclService.addUserPermission("editor", resource, "VIEW", id);
+    subjectAclService.addUserPermission("editor", draftResource, "VIEW,EDIT,ADD", id);
+    subjectAclService.addUserPermission("editor", draftResource + "/" + id, "EDIT", "_status");
+    subjectAclService.addUserPermission("editor", draftResource + "/" + id + "/comment", "VIEW,EDIT", "c1");
+    subjectAclService.addUserPermission("editor", "/file", "VIEW", resource + "/" + id);
+    subjectAclService.addUserPermission("editor", "/file", "VIEW", resource + "/" + id + "/sub-file");
+    subjectAclService.addUserPermission("editor", "/draft/file", "VIEW", resource + "/" + id);
+    subjectAclService.addUserPermission("editor", "/draft/file", "VIEW", resource + "/" + id + "/sub-file");
+  }
+
+  private void assertNoAclsLeftFor(String resource, String id) {
+    String draftResource = "/draft" + resource;
+    assertThat(subjectAclRepository.findByResourceAndInstance(resource, encode(id))).isEmpty();
+    assertThat(subjectAclRepository.findByResourceAndInstance(draftResource, encode(id))).isEmpty();
+    assertThat(subjectAclRepository.findByResource(draftResource + "/" + id)).isEmpty();
+    assertThat(subjectAclRepository.findByResourceStartingWith(draftResource + "/" + id + "/")).isEmpty();
+    assertThat(subjectAclRepository.findByResourceAndInstance("/file", encode(resource + "/" + id))).isEmpty();
+    assertThat(subjectAclRepository.findByResourceAndInstance("/file", encode(resource + "/" + id + "/sub-file"))).isEmpty();
+    assertThat(subjectAclRepository.findByResourceAndInstance("/draft/file", encode(resource + "/" + id))).isEmpty();
+    assertThat(subjectAclRepository.findByResourceAndInstance("/draft/file", encode(resource + "/" + id + "/sub-file"))).isEmpty();
+  }
+
+  private int countAclsFor(String resource, String id) {
+    String draftResource = "/draft" + resource;
+    int count = subjectAclRepository.findByResourceAndInstance(resource, encode(id)).size();
+    count += subjectAclRepository.findByResourceAndInstance(draftResource, encode(id)).size();
+    count += subjectAclRepository.findByResource(draftResource + "/" + id).size();
+    count += subjectAclRepository.findByResourceStartingWith(draftResource + "/" + id + "/").size();
+    count += subjectAclRepository.findByResourceAndInstance("/file", encode(resource + "/" + id)).size();
+    count += subjectAclRepository.findByResourceAndInstance("/file", encode(resource + "/" + id + "/sub-file")).size();
+    count += subjectAclRepository.findByResourceAndInstance("/draft/file", encode(resource + "/" + id)).size();
+    count += subjectAclRepository.findByResourceAndInstance("/draft/file", encode(resource + "/" + id + "/sub-file")).size();
+    return count;
   }
 
   @Test
@@ -169,7 +218,7 @@ public class SubjectAclServiceTest {
     subjectAclService.dataAccessFeasibilityDeleted(new DataAccessFeasibilityDeletedEvent(feasibility));
 
     assertThat(subjectAclRepository.findByResourceAndInstance("/data-access-request/dar1/feasibility", "f1")).isEmpty();
-    assertThat(findByResource("/data-access-request/dar1/feasibility/f1")).isEmpty();
+    assertThat(subjectAclRepository.findByResource("/data-access-request/dar1/feasibility/f1")).isEmpty();
     assertThat(subjectAclRepository.count()).isEqualTo(total - 2);
 
     DataAccessAmendment amendment = (DataAccessAmendment) DataAccessAmendment.newBuilder().build();
@@ -178,15 +227,15 @@ public class SubjectAclServiceTest {
     subjectAclService.dataAccessAmendmentDeleted(new DataAccessAmendmentDeletedEvent(amendment));
 
     assertThat(subjectAclRepository.findByResourceAndInstance("/data-access-request/dar1/amendment", "a1")).isEmpty();
-    assertThat(findByResource("/data-access-request/dar1/amendment/a1")).isEmpty();
+    assertThat(subjectAclRepository.findByResource("/data-access-request/dar1/amendment/a1")).isEmpty();
     assertThat(subjectAclRepository.count()).isEqualTo(total - 4);
 
     // the request itself, the sibling children and the other request are untouched
     assertThat(countDataAccessRequestAcls("dar1")).isEqualTo(10 + 4 - 4);
     assertThat(subjectAclRepository.findByResourceAndInstance("/data-access-request/dar1/feasibility", "f10")).hasSize(1);
-    assertThat(findByResource("/data-access-request/dar1/feasibility/f10")).hasSize(1);
+    assertThat(subjectAclRepository.findByResource("/data-access-request/dar1/feasibility/f10")).hasSize(1);
     assertThat(subjectAclRepository.findByResourceAndInstance("/data-access-request/dar1/amendment", "a10")).hasSize(1);
-    assertThat(findByResource("/data-access-request/dar1/amendment/a10")).hasSize(1);
+    assertThat(subjectAclRepository.findByResource("/data-access-request/dar1/amendment/a10")).hasSize(1);
     assertThat(countDataAccessRequestAcls("dar10")).isEqualTo(10);
   }
 
@@ -266,6 +315,116 @@ public class SubjectAclServiceTest {
     assertThat(subjectAclRepository.count()).isEqualTo(total);
     assertThat(countDataAccessRequestAcls("dar1")).isEqualTo(10);
     assertThat(countDataAccessRequestAcls("dar10")).isEqualTo(10);
+  }
+
+  @Test
+  public void test_projectDeleted_removes_all_acls() {
+    createAcls("/project", "abc");
+    Project project = new Project();
+    project.setId("abc");
+
+    subjectAclService.projectDeleted(new ProjectDeletedEvent(project));
+
+    assertNoAclsLeftFor("/project", "abc");
+  }
+
+  @Test
+  public void test_networkDeleted_removes_all_acls_including_draft_children() {
+    createAcls("/network", "abc");
+    Network network = new Network();
+    network.setId("abc");
+
+    subjectAclService.networkDeleted(new NetworkDeletedEvent(network));
+
+    assertNoAclsLeftFor("/network", "abc");
+  }
+
+  @Test
+  public void test_studyDeleted_removes_all_acls_for_both_study_kinds() {
+    createAcls("/individual-study", "abc");
+    Study study = new Study();
+    study.setId("abc");
+    subjectAclService.studyDeleted(new StudyDeletedEvent(study));
+    assertNoAclsLeftFor("/individual-study", "abc");
+
+    createAcls("/harmonization-study", "abc");
+    HarmonizationStudy harmonizationStudy = new HarmonizationStudy();
+    harmonizationStudy.setId("abc");
+    subjectAclService.studyDeleted(new StudyDeletedEvent(harmonizationStudy));
+    assertNoAclsLeftFor("/harmonization-study", "abc");
+  }
+
+  @Test
+  public void test_datasetDeleted_removes_all_acls_for_both_dataset_kinds() {
+    createAcls("/collected-dataset", "abc");
+    StudyDataset studyDataset = new StudyDataset();
+    studyDataset.setId("abc");
+    subjectAclService.datasetDeleted(new DatasetDeletedEvent(studyDataset));
+    assertNoAclsLeftFor("/collected-dataset", "abc");
+
+    createAcls("/harmonized-dataset", "abc");
+    HarmonizationDataset harmonizationDataset = new HarmonizationDataset();
+    harmonizationDataset.setId("abc");
+    subjectAclService.datasetDeleted(new DatasetDeletedEvent(harmonizationDataset));
+    assertNoAclsLeftFor("/harmonized-dataset", "abc");
+  }
+
+  @Test
+  public void test_deleting_entity_leaves_sibling_id_with_shared_prefix_intact() {
+    createAcls("/project", "abc");
+    createAcls("/project", "abcd");
+
+    Project project = new Project();
+    project.setId("abc");
+    subjectAclService.projectDeleted(new ProjectDeletedEvent(project));
+
+    assertNoAclsLeftFor("/project", "abc");
+    assertThat(countAclsFor("/project", "abcd")).isEqualTo(8);
+  }
+
+  @Test
+  public void test_deleting_entity_with_id_changed_by_encoding_removes_all_acls() {
+    // "my net" is saved as instance "my+net" but child resources keep "my net"; "+" is also a regex quantifier
+    createAcls("/network", "my net");
+    createAcls("/network", "my net2");
+
+    Network network = new Network();
+    network.setId("my net");
+    subjectAclService.networkDeleted(new NetworkDeletedEvent(network));
+
+    assertNoAclsLeftFor("/network", "my net");
+    assertThat(countAclsFor("/network", "my net2")).isEqualTo(8);
+  }
+
+  @Test
+  public void test_fileDeleted_removes_folder_with_special_characters_and_its_descendants() {
+    String folder = "/network/abc/my folder (1).v2";
+    String sibling = "/network/abc/my folder (1)xv2";
+    for (String fileResource : new String[] { "/file", "/draft/file" }) {
+      subjectAclService.addUserPermission("editor", fileResource, "VIEW", folder);
+      subjectAclService.addUserPermission("editor", fileResource, "VIEW", folder + "/doc.pdf");
+      subjectAclService.addUserPermission("editor", fileResource, "VIEW", sibling + "/doc.pdf");
+    }
+    AttachmentState state = new AttachmentState();
+    state.setName(FileSystemService.DIR_NAME);
+    state.setPath(folder);
+
+    subjectAclService.fileDeleted(new FileDeletedEvent(state));
+
+    for (String fileResource : new String[] { "/file", "/draft/file" }) {
+      assertThat(subjectAclRepository.findByResourceAndInstance(fileResource, encode(folder))).isEmpty();
+      assertThat(subjectAclRepository.findByResourceAndInstance(fileResource, encode(folder + "/doc.pdf"))).isEmpty();
+      assertThat(subjectAclRepository.findByResourceAndInstance(fileResource, encode(sibling + "/doc.pdf"))).hasSize(1);
+    }
+  }
+
+  @Test
+  public void test_legacy_view_edit_acl_is_fully_removed() {
+    subjectAclService.addUserPermission("external-editor", "/draft/individual-study", "VIEW,EDIT", "abc");
+
+    subjectAclService.removeUserPermission("external-editor", "/draft/individual-study", "VIEW,EDIT,ADD", "abc");
+
+    assertThat(subjectAclRepository.findByResourceAndInstance("/draft/individual-study", "abc")).isEmpty();
   }
 
   private static void awaitThen(CountDownLatch start, Runnable deletion) {
