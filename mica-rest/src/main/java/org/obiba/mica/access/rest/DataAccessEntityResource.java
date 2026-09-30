@@ -1,7 +1,6 @@
 package org.obiba.mica.access.rest;
 
 import com.google.common.collect.Lists;
-import com.google.common.eventbus.Subscribe;
 import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.access.domain.DataAccessEntity;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
@@ -11,7 +10,6 @@ import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.service.SchemaFormContentFileService;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.file.FileStoreService;
-import org.obiba.mica.micaConfig.event.DataAccessConfigUpdatedEvent;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.SchemaFormConfigService;
 import org.obiba.mica.security.Roles;
@@ -22,11 +20,8 @@ import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
 
@@ -67,21 +62,6 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
     this.dataAccessRequestUtilService = dataAccessRequestUtilService;
     this.schemaFormConfigService = schemaFormConfigService;
     this.schemaFormContentFileService = schemaFormContentFileService;
-  }
-
-  @Subscribe
-  public void onDataAccessFormUpdate(DataAccessConfigUpdatedEvent event) {
-    List<String> statuses = Stream.of(
-      DataAccessEntityStatus.SUBMITTED,
-      DataAccessEntityStatus.REVIEWED,
-      DataAccessEntityStatus.APPROVED,
-      DataAccessEntityStatus.REJECTED).map(DataAccessEntityStatus::name).collect(Collectors.toList());
-
-    if (event.getConfig().isDaoCanEdit()) {
-      getService().findByStatus(statuses).forEach(darEntity -> subjectAclService.addGroupPermission(Roles.MICA_DAO, getResourcePath(), "EDIT", darEntity.getId()));
-    } else {
-      getService().findByStatus(statuses).forEach(darEntity -> subjectAclService.removeGroupPermission(Roles.MICA_DAO, getResourcePath(), "EDIT", darEntity.getId()));
-    }
   }
 
   //
