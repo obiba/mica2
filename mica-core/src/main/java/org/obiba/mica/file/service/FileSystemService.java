@@ -557,7 +557,7 @@ public class FileSystemService {
   }
 
   public List<Attachment> findAttachments(String pathRegEx, boolean publishedFS) {
-    return publishedFS ? findDraftAttachments(pathRegEx) : findPublishedAttachments(pathRegEx);
+    return publishedFS ? findPublishedAttachments(pathRegEx) : findDraftAttachments(pathRegEx);
   }
 
   /**

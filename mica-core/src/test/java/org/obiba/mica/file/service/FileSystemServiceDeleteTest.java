@@ -207,6 +207,29 @@ public class FileSystemServiceDeleteTest {
       .allMatch(s -> s.getPath().startsWith(folder) == (s.getRevisionStatus() == RevisionStatus.DELETED));
   }
 
+  /**
+   * The published file system gets the published revision of a file, the draft one gets its latest revision.
+   */
+  @Test
+  public void test_find_attachments_by_file_system() {
+    AttachmentState state = createFile("/project/p1", "doc.pdf");
+    Attachment published = state.getAttachment();
+    state.setPublishedAttachment(published);
+    Attachment draft = new Attachment();
+    draft.setId(new ObjectId().toString());
+    draft.setPath("/project/p1");
+    draft.setName("doc.pdf");
+    attachmentRepository.insert(draft);
+    state.setAttachment(draft);
+    attachmentStateRepository.save(state);
+    createFile("/project/p1", "unpublished.pdf");
+
+    assertThat(fileSystemService.findAttachments("^/project/p1$", true)).extracting(Attachment::getId)
+      .containsExactly(published.getId());
+    assertThat(fileSystemService.findAttachments("^/project/p1$", false)).extracting(Attachment::getId)
+      .hasSize(2).contains(draft.getId()).doesNotContain(published.getId());
+  }
+
   @Test
   public void test_delete_path_without_files_posts_nothing() {
     fileSystemService.delete("/network/n1");
@@ -214,7 +237,7 @@ public class FileSystemServiceDeleteTest {
     verifyNoInteractions(eventBus);
   }
 
-  private void createFile(String path, String name) {
+  private AttachmentState createFile(String path, String name) {
     Attachment attachment = new Attachment();
     attachment.setId(new ObjectId().toString());
     attachment.setPath(path);
@@ -225,7 +248,7 @@ public class FileSystemServiceDeleteTest {
     state.setPath(path);
     state.setName(name);
     state.setAttachment(attachment);
-    attachmentStateRepository.insert(state);
+    return attachmentStateRepository.insert(state);
   }
 
   @Configuration
