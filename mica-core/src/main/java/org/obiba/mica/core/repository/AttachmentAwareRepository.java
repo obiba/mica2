@@ -10,6 +10,8 @@
 
 package org.obiba.mica.core.repository;
 
+import java.util.regex.Pattern;
+
 import org.obiba.mica.core.domain.AttachmentAware;
 import org.obiba.mica.file.FileStoreService;
 import org.springframework.dao.DuplicateKeyException;
@@ -36,7 +38,9 @@ public interface AttachmentAwareRepository<T extends AttachmentAware> {
   }
 
   default void deleteAttachments(T obj) {
-    getAttachmentRepository().findByPath(String.format("^%s", getAttachmentPath(obj))).forEach(a -> {
+    // the path is quoted and ends at a path boundary: "/x/1" must not match the attachments of "/x/10" or "/xy1"
+    String pathRegex = String.format("^%s(/|$)", Pattern.quote(getAttachmentPath(obj)));
+    getAttachmentRepository().findByPath(pathRegex).forEach(a -> {
       getAttachmentRepository().delete(a);
       getFileStoreService().delete(a.getFileReference());
     });

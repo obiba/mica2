@@ -23,13 +23,16 @@ import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.subject.Subject;
 import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessFeasibility;
+import org.obiba.mica.access.domain.DataAccessPreliminary;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.event.DataAccessAmendmentDeletedEvent;
 import org.obiba.mica.access.event.DataAccessFeasibilityDeletedEvent;
+import org.obiba.mica.access.event.DataAccessPreliminaryDeletedEvent;
 import org.obiba.mica.access.event.DataAccessRequestDeletedEvent;
 import org.obiba.mica.dataset.event.DatasetDeletedEvent;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.event.FileDeletedEvent;
+import org.obiba.mica.file.event.FolderDeletedEvent;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.event.NetworkDeletedEvent;
 import org.obiba.mica.project.event.ProjectDeletedEvent;
@@ -446,8 +449,30 @@ public class SubjectAclService {
     // delete specific acls
     subjectAclRepository.deleteByResourceAndInstance(resource, encode(instance));
     // delete children acls, i.e. acls which resource name starts with "<resource>/<instance>/"
-    // (StartingWith performs a literal prefix match, so no wildcard suffix is needed)
-    subjectAclRepository.deleteByResourceStartingWith(resource + "/" + encode(instance) + "/");
+    // (StartingWith performs a literal prefix match, so no wildcard suffix is needed);
+    // resources are saved unencoded, so both the raw and the encoded instance are checked
+    for (String id : Sets.newHashSet(instance, encode(instance))) {
+      subjectAclRepository.deleteByResourceStartingWith(resource + "/" + id + "/");
+    }
+  }
+
+  /**
+   * Remove the permissions of a data access entity (request, feasibility, amendment or preliminary) and of its
+   * status, then inform acls update once for both.
+   *
+   * @param resource
+   * @param id
+   */
+  private void removeDataAccessEntityPermissions(String resource, String id) {
+    try {
+      // the entity and all its children (e.g. for a request: feasibility, amendment, agreement, _attachments, comment...)
+      removeResourcePermissions(resource, id);
+      // the entity status, stored on "<resource>/<id>" so not under the children prefix
+      removeResourcePermissions(resource + "/" + id, "_status");
+    } finally {
+      // also when a delete failed, for the acls removed so far
+      broadcastAclsRemovedEvent();
+    }
   }
 
   /**
@@ -458,38 +483,38 @@ public class SubjectAclService {
   @Subscribe
   public void onResourceDeleted(ResourceDeletedEvent event) {
     removeResourcePermissions(event.getResource(), event.getInstance());
+    broadcastAclsRemovedEvent();
   }
 
   @Async
   @Subscribe
   public void dataAccessRequestDeleted(DataAccessRequestDeletedEvent event) {
     DataAccessRequest request = event.getPersistable();
-    String resource = "/data-access-request";
-    String id = request.getId();
-    // the request and all its children (feasibility, amendment, agreement, _attachments, comment...)
-    removeResourcePermissions(resource, id);
-    // the request status, stored on "/data-access-request/<id>" so not under the children prefix
-    removeResourcePermissions(resource + "/" + id, "_status");
+    removeDataAccessEntityPermissions("/data-access-request", request.getId());
   }
 
   @Async
   @Subscribe
   public void dataAccessFeasibilityDeleted(DataAccessFeasibilityDeletedEvent event) {
     DataAccessFeasibility feasibility = event.getPersistable();
-    String resource = String.format("/data-access-request/%s/feasibility", feasibility.getParentId());
-    String id = feasibility.getId();
-    removeResourcePermissions(resource, id);
-    removeResourcePermissions(resource + "/" + id, "_status");
+    removeDataAccessEntityPermissions(
+      String.format("/data-access-request/%s/feasibility", feasibility.getParentId()), feasibility.getId());
   }
 
   @Async
   @Subscribe
   public void dataAccessAmendmentDeleted(DataAccessAmendmentDeletedEvent event) {
     DataAccessAmendment amendment = event.getPersistable();
-    String resource = String.format("/data-access-request/%s/amendment", amendment.getParentId());
-    String id = amendment.getId();
-    removeResourcePermissions(resource, id);
-    removeResourcePermissions(resource + "/" + id, "_status");
+    removeDataAccessEntityPermissions(
+      String.format("/data-access-request/%s/amendment", amendment.getParentId()), amendment.getId());
+  }
+
+  @Async
+  @Subscribe
+  public void dataAccessPreliminaryDeleted(DataAccessPreliminaryDeletedEvent event) {
+    DataAccessPreliminary preliminary = event.getPersistable();
+    removeDataAccessEntityPermissions(
+      String.format("/data-access-request/%s/preliminary", preliminary.getParentId()), preliminary.getId());
   }
 
   @Async
@@ -521,7 +546,23 @@ public class SubjectAclService {
   @Async
   @Subscribe
   public void fileDeleted(FileDeletedEvent event) {
+    // removed with the folder, see folderDeleted
+    if (event.isInFolderDelete()) return;
     removeFileAndDescendants(encode(event.getPersistable().getFullPath()));
+    broadcastAclsRemovedEvent();
+  }
+
+  /**
+   * Remove the file acls of the folder and of its descendants at once, instead of one delete and one cache
+   * invalidation per file.
+   *
+   * @param event
+   */
+  @Async
+  @Subscribe
+  public void folderDeleted(FolderDeletedEvent event) {
+    removeFileAndDescendants(encode(event.getPath()));
+    broadcastAclsRemovedEvent();
   }
 
   //
@@ -547,24 +588,34 @@ public class SubjectAclService {
    * @param instance
    */
   private void removeInstance(String resource, String instance) {
+    // deleted by query rather than by entity, as in removeResourcePermissions: the file listeners of the entity's
+    // folder remove the same file acls concurrently
+
     // entity, published and draft
-    subjectAclRepository.deleteAll(subjectAclRepository.findByResourceAndInstance(resource, encode(instance)));
+    subjectAclRepository.deleteByResourceAndInstance(resource, encode(instance));
     String draftResource = "/draft" + resource;
-    subjectAclRepository.deleteAll(subjectAclRepository.findByResourceAndInstance(draftResource, encode(instance)));
+    subjectAclRepository.deleteByResourceAndInstance(draftResource, encode(instance));
 
     // child acls on the draft entity itself (e.g. _status, _attachments, comment), regardless of instance;
     // matched as exact resource or "resource/" prefix so id "abc" doesn't also catch sibling id "abcd";
     // resources are saved unencoded, so both the raw and the encoded id are checked
     for (String id : Sets.newHashSet(instance, encode(instance))) {
       String draftEntityResource = draftResource + "/" + id;
-      subjectAclRepository.deleteAll(subjectAclRepository.findByResource(draftEntityResource));
-      subjectAclRepository.deleteAll(subjectAclRepository.findByResourceStartingWith(draftEntityResource + "/"));
+      subjectAclRepository.deleteByResource(draftEntityResource);
+      subjectAclRepository.deleteByResourceStartingWith(draftEntityResource + "/");
     }
 
     // file and descendants, published and draft
     removeFileAndDescendants(resource + "/" + encode(instance));
 
-    // inform acls update (for caching), any subject may have lost permissions
+    broadcastAclsRemovedEvent();
+  }
+
+  /**
+   * Inform acls update (for caching) after acls of any subject were removed, so that a reused id or path cannot
+   * inherit cached permissions.
+   */
+  private void broadcastAclsRemovedEvent() {
     permissionCache.invalidateAll();
     permissionCache.cleanUp();
     eventBus.post(new SubjectAclUpdatedEvent());
@@ -578,9 +629,10 @@ public class SubjectAclService {
   private void removeFileAndDescendants(String path) {
     // the path is quoted: encoded paths contain regex characters ('+' for a space, '.', ...)
     String descendants = "^" + Pattern.quote(path + "/");
+    // deleted by query: a folder delete posts one event per file, whose listeners remove overlapping acls concurrently
     for (String fileResource : new String[] { "/file", "/draft/file" }) {
-      subjectAclRepository.deleteAll(subjectAclRepository.findByResourceAndInstance(fileResource, path));
-      subjectAclRepository.deleteAll(subjectAclRepository.findByResourceAndInstanceRegex(fileResource, descendants));
+      subjectAclRepository.deleteByResourceAndInstance(fileResource, path);
+      subjectAclRepository.deleteByResourceAndInstanceRegex(fileResource, descendants);
     }
   }
 

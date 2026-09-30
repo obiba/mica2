@@ -30,9 +30,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessFeasibility;
+import org.obiba.mica.access.domain.DataAccessPreliminary;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.event.DataAccessAmendmentDeletedEvent;
 import org.obiba.mica.access.event.DataAccessFeasibilityDeletedEvent;
+import org.obiba.mica.access.event.DataAccessPreliminaryDeletedEvent;
 import org.obiba.mica.access.event.DataAccessRequestDeletedEvent;
 import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.config.MongoDbConfiguration;
@@ -41,6 +43,7 @@ import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.event.DatasetDeletedEvent;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.event.FileDeletedEvent;
+import org.obiba.mica.file.event.FolderDeletedEvent;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.domain.Network;
@@ -48,6 +51,7 @@ import org.obiba.mica.network.event.NetworkDeletedEvent;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.event.ProjectDeletedEvent;
 import org.obiba.mica.security.event.ResourceDeletedEvent;
+import org.obiba.mica.security.event.SubjectAclUpdatedEvent;
 import org.obiba.mica.security.repository.SubjectAclRepository;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
@@ -65,7 +69,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.obiba.mica.assertj.Assertions.assertThat;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.obiba.mica.file.FileUtils.encode;
@@ -84,6 +92,9 @@ public class SubjectAclServiceTest {
 
   @Inject
   private MongoTemplate mongoTemplate;
+
+  @Inject
+  private EventBus eventBus;
 
   @BeforeAll
   public static void init() {
@@ -419,12 +430,186 @@ public class SubjectAclServiceTest {
   }
 
   @Test
+  public void test_deleting_entity_leaves_sibling_id_matching_as_regex_intact() {
+    // '.' is a regex wildcard: deleting "cohort.v1" must not delete the acls of "cohortXv1"
+    createAcls("/individual-study", "cohort.v1");
+    createAcls("/individual-study", "cohortXv1");
+
+    Study study = new Study();
+    study.setId("cohort.v1");
+    subjectAclService.studyDeleted(new StudyDeletedEvent(study));
+
+    assertNoAclsLeftFor("/individual-study", "cohort.v1");
+    assertThat(countAclsFor("/individual-study", "cohortXv1")).isEqualTo(8);
+  }
+
+  /**
+   * Deleting an entity deletes its folder: its FolderDeletedEvent is handled concurrently with the entity's deleted
+   * event, and so are the FileDeletedEvents of a file browser delete. They remove overlapping file acls; none of
+   * them may fail on an acl another one already removed.
+   */
+  @Test
+  public void test_entityDeleted_concurrently_with_its_files_deleted_removes_all_acls() throws Exception {
+    String folder = "/individual-study/abc";
+    ExecutorService executor = Executors.newFixedThreadPool(5);
+    try {
+      for (int i = 0; i < 20; i++) {
+        createAcls("/individual-study", "abc");
+        createAcls("/individual-study", "abcd");
+        for (String fileResource : new String[] { "/file", "/draft/file" }) {
+          subjectAclService.addUserPermission("editor", fileResource, "VIEW", folder + "/population");
+          subjectAclService.addUserPermission("editor", fileResource, "VIEW", folder + "/population/doc.pdf");
+        }
+        Study study = new Study();
+        study.setId("abc");
+
+        CountDownLatch start = new CountDownLatch(1);
+        List<Future<?>> deletions = Lists.newArrayList(
+          executor.submit(() -> awaitThen(start, () -> subjectAclService.studyDeleted(new StudyDeletedEvent(study)))),
+          executor.submit(() -> awaitThen(start, () -> subjectAclService.fileDeleted(fileDeletedEvent(folder, FileSystemService.DIR_NAME)))),
+          executor.submit(() -> awaitThen(start, () -> subjectAclService.fileDeleted(fileDeletedEvent(folder + "/population", FileSystemService.DIR_NAME)))),
+          executor.submit(() -> awaitThen(start, () -> subjectAclService.fileDeleted(fileDeletedEvent(folder + "/population", "doc.pdf")))),
+          executor.submit(() -> awaitThen(start, () -> subjectAclService.folderDeleted(new FolderDeletedEvent(folder)))));
+        start.countDown();
+        for (Future<?> deletion : deletions) deletion.get(10, TimeUnit.SECONDS); // rethrows any listener failure
+
+        assertNoAclsLeftFor("/individual-study", "abc");
+        assertThat(subjectAclRepository.findByResourceAndInstanceRegex("/file", "^" + folder + "/")).isEmpty();
+        assertThat(subjectAclRepository.findByResourceAndInstanceRegex("/draft/file", "^" + folder + "/")).isEmpty();
+        assertThat(countAclsFor("/individual-study", "abcd")).isEqualTo(8);
+        mongoTemplate.getDb().drop();
+      }
+    } finally {
+      executor.shutdownNow();
+    }
+  }
+
+  /**
+   * Child resources hold the raw request id while the request instance is encoded: an id changed by encoding
+   * (e.g. a configured prefix with a space) must still have its children removed.
+   */
+  @Test
+  public void test_dataAccessRequestDeleted_with_id_changed_by_encoding_removes_all_child_acls() {
+    createDataAccessRequestAcls("DAR 1");
+    createDataAccessRequestAcls("DAR 10");
+    DataAccessRequest request = (DataAccessRequest) DataAccessRequest.newBuilder().build();
+    request.setId("DAR 1");
+
+    subjectAclService.dataAccessRequestDeleted(new DataAccessRequestDeletedEvent(request));
+
+    assertThat(subjectAclRepository.findByResourceAndInstance("/data-access-request", encode("DAR 1"))).isEmpty();
+    assertThat(subjectAclRepository.findByResource("/data-access-request/DAR 1")).isEmpty();
+    assertThat(subjectAclRepository.findByResourceStartingWith("/data-access-request/DAR 1/")).isEmpty();
+    assertThat(subjectAclRepository.count()).isEqualTo(10);
+  }
+
+  /**
+   * A preliminary deleted on its own (the request is kept) removes its own acls only.
+   */
+  @Test
+  public void test_preliminaryDeleted_removes_only_its_own_acls() {
+    createDataAccessRequestAcls("dar1");
+    createDataAccessRequestAcls("dar10");
+    // as granted by DataAccessPreliminaryService.getOrCreate: the preliminary id is the request id
+    for (String id : new String[] { "dar1", "dar10" }) {
+      String resource = "/data-access-request/" + id + "/preliminary";
+      subjectAclService.addUserPermission("applicant", resource, "VIEW,EDIT,DELETE", id);
+      subjectAclService.addUserPermission("applicant", resource + "/" + id, "EDIT", "_status");
+    }
+    long total = subjectAclRepository.count();
+
+    DataAccessPreliminary preliminary = (DataAccessPreliminary) DataAccessPreliminary.newBuilder().build();
+    preliminary.setId("dar1");
+    preliminary.setParentId("dar1");
+    clearInvocations(eventBus);
+    subjectAclService.dataAccessPreliminaryDeleted(new DataAccessPreliminaryDeletedEvent(preliminary));
+
+    verify(eventBus, times(1)).post(any(SubjectAclUpdatedEvent.class));
+
+    assertThat(subjectAclRepository.findByResourceAndInstance("/data-access-request/dar1/preliminary", "dar1")).isEmpty();
+    assertThat(subjectAclRepository.findByResource("/data-access-request/dar1/preliminary/dar1")).isEmpty();
+    assertThat(subjectAclRepository.count()).isEqualTo(total - 2);
+    assertThat(countDataAccessRequestAcls("dar1")).isEqualTo(10);
+    assertThat(countDataAccessRequestAcls("dar10")).isEqualTo(10 + 2);
+  }
+
+  /**
+   * A file deleted with its folder leaves its acls to the folder's event, which removes the folder's and its
+   * descendants' acls at once, and not those of a sibling folder.
+   */
+  @Test
+  public void test_folderDeleted_removes_folder_and_descendant_acls_only() {
+    for (String fileResource : new String[] { "/file", "/draft/file" }) {
+      subjectAclService.addUserPermission("editor", fileResource, "VIEW", "/network/n1");
+      subjectAclService.addUserPermission("editor", fileResource, "VIEW", "/network/n1/doc.pdf");
+      subjectAclService.addUserPermission("editor", fileResource, "VIEW", "/network/n10/doc.pdf");
+    }
+
+    AttachmentState state = new AttachmentState();
+    state.setPath("/network/n1");
+    state.setName("doc.pdf");
+    subjectAclService.fileDeleted(new FileDeletedEvent(state, true));
+    assertThat(subjectAclRepository.count()).isEqualTo(6);
+
+    subjectAclService.folderDeleted(new FolderDeletedEvent("/network/n1"));
+
+    assertThat(subjectAclRepository.findAll()).extracting(acl -> acl.getResource() + ":" + acl.getInstance())
+      .containsExactlyInAnyOrder("/file:/network/n10/doc.pdf", "/draft/file:/network/n10/doc.pdf");
+  }
+
+  /**
+   * The acls of a request and of its status are removed before the permission caches are invalidated, once.
+   */
+  @Test
+  public void test_dataAccessRequestDeleted_invalidates_permission_caches_once() {
+    createDataAccessRequestAcls("dar1");
+    DataAccessRequest request = (DataAccessRequest) DataAccessRequest.newBuilder().build();
+    request.setId("dar1");
+    clearInvocations(eventBus);
+
+    subjectAclService.dataAccessRequestDeleted(new DataAccessRequestDeletedEvent(request));
+
+    assertThat(countDataAccessRequestAcls("dar1")).isZero();
+    verify(eventBus, times(1)).post(any(SubjectAclUpdatedEvent.class));
+  }
+
+  @Test
+  public void test_resourceDeleted_invalidates_permission_caches_once() {
+    subjectAclService.addUserPermission("applicant", "/data-access-request/dar1/comment", "VIEW,EDIT,DELETE", "c1");
+    clearInvocations(eventBus);
+
+    subjectAclService.onResourceDeleted(new ResourceDeletedEvent("/data-access-request/dar1/comment", "c1"));
+
+    assertThat(subjectAclRepository.count()).isZero();
+    verify(eventBus, times(1)).post(any(SubjectAclUpdatedEvent.class));
+  }
+
+  @Test
+  public void test_folderDeleted_invalidates_permission_caches_once() {
+    subjectAclService.addUserPermission("editor", "/draft/file", "VIEW", "/network/n1/doc.pdf");
+    subjectAclService.addUserPermission("editor", "/draft/file", "VIEW", "/network/n1/sop.pdf");
+    clearInvocations(eventBus);
+
+    subjectAclService.folderDeleted(new FolderDeletedEvent("/network/n1"));
+
+    assertThat(subjectAclRepository.count()).isZero();
+    verify(eventBus, times(1)).post(any(SubjectAclUpdatedEvent.class));
+  }
+
+  @Test
   public void test_legacy_view_edit_acl_is_fully_removed() {
     subjectAclService.addUserPermission("external-editor", "/draft/individual-study", "VIEW,EDIT", "abc");
 
     subjectAclService.removeUserPermission("external-editor", "/draft/individual-study", "VIEW,EDIT,ADD", "abc");
 
     assertThat(subjectAclRepository.findByResourceAndInstance("/draft/individual-study", "abc")).isEmpty();
+  }
+
+  private static FileDeletedEvent fileDeletedEvent(String path, String name) {
+    AttachmentState state = new AttachmentState();
+    state.setPath(path);
+    state.setName(name);
+    return new FileDeletedEvent(state);
   }
 
   private static void awaitThen(CountDownLatch start, Runnable deletion) {

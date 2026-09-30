@@ -11,6 +11,13 @@
 package org.obiba.mica.file;
 
 import org.junit.jupiter.api.Test;
+import org.obiba.mica.core.domain.AbstractGitPersistable;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.network.domain.Network;
+import org.obiba.mica.project.domain.Project;
+import org.obiba.mica.study.domain.HarmonizationStudy;
+import org.obiba.mica.study.domain.Study;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,6 +34,21 @@ public class FileUtilsTest {
     assertThat(FileUtils.normalizeRegex("/toto/tutu/Case Report (CRF)")).isEqualTo
         ("/toto/tutu/Case Report \\(CRF\\)");
     assertThat(FileUtils.decode(null)).isNull();
+  }
+
+  @Test
+  public void testGetEntityPath() {
+    assertThat(FileUtils.getEntityPath(withId(new Study(), "s1"))).isEqualTo("/individual-study/s1");
+    assertThat(FileUtils.getEntityPath(withId(new HarmonizationStudy(), "s1"))).isEqualTo("/harmonization-study/s1");
+    assertThat(FileUtils.getEntityPath(withId(new StudyDataset(), "d1"))).isEqualTo("/collected-dataset/d1");
+    assertThat(FileUtils.getEntityPath(withId(new HarmonizationDataset(), "d1"))).isEqualTo("/harmonized-dataset/d1");
+    assertThat(FileUtils.getEntityPath(withId(new Network(), "n1"))).isEqualTo("/network/n1");
+    assertThat(FileUtils.getEntityPath(withId(new Project(), "p1"))).isEqualTo("/project/p1");
+  }
+
+  private static <T extends AbstractGitPersistable> T withId(T persistable, String id) {
+    persistable.setId(id);
+    return persistable;
   }
 
   @Test
