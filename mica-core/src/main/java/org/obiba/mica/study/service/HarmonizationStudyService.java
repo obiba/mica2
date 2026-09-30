@@ -29,7 +29,6 @@ import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.study.ConstraintException;
@@ -72,9 +71,6 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
 
   @Inject
   private NetworkRepository networkRepository;
-
-  @Inject
-  private FileStoreService fileStoreService;
 
   @Inject
   private MicaConfigService micaConfigService;

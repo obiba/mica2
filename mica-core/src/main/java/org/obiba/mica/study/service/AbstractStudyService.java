@@ -35,6 +35,7 @@ import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.core.service.DocumentDifferenceService;
 import org.obiba.mica.core.service.StudyIdGeneratorService;
+import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.study.domain.BaseStudy;
@@ -72,6 +73,9 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
 
   @Inject
   protected FileSystemService fileSystemService;
+
+  @Inject
+  protected FileStoreService fileStoreService;
 
   @Inject
   protected StudyIdGeneratorService studyIdGeneratorService;
@@ -174,6 +178,7 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
     fileSystemService.delete(FileUtils.getEntityPath(study.get()));
     getEntityStateRepository().deleteById(id);
     getRepository().delete(study.get());
+    if (study.get().hasLogo()) fileStoreService.delete(study.get().getLogo().getId());
     gitService.deleteGitRepository(study.get());
     deleteComments(id);
     eventBus.post(new StudyDeletedEvent(study.get()));

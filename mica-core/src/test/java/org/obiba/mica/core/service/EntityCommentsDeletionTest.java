@@ -33,6 +33,8 @@ import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.dataset.service.HarmonizedDatasetService;
+import org.obiba.mica.file.Attachment;
+import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.NetworkStateRepository;
@@ -58,6 +60,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -99,6 +102,9 @@ public class EntityCommentsDeletionTest {
 
   @Mock
   private FileSystemService fileSystemService;
+
+  @Mock
+  private FileStoreService fileStoreService;
 
   @Mock
   private StudyRepository studyRepository;
@@ -227,6 +233,31 @@ public class EntityCommentsDeletionTest {
     order.verify(eventBus).post(any());
   }
 
+  @Test
+  public void test_delete_studies_deletes_their_logo_files() {
+    Study study = withId(new Study());
+    study.setLogo(logo("individual-logo"));
+    when(studyRepository.findById(ID)).thenReturn(Optional.of(study));
+    HarmonizationStudy harmonizationStudy = withId(new HarmonizationStudy());
+    harmonizationStudy.setLogo(logo("harmonization-logo"));
+    when(harmonizationStudyRepository.findById(ID)).thenReturn(Optional.of(harmonizationStudy));
+
+    individualStudyService.delete(ID);
+    harmonizationStudyService.delete(ID);
+
+    verify(fileStoreService).delete("individual-logo");
+    verify(fileStoreService).delete("harmonization-logo");
+  }
+
+  @Test
+  public void test_delete_study_without_logo_deletes_no_file() {
+    when(studyRepository.findById(ID)).thenReturn(Optional.of(withId(new Study())));
+
+    individualStudyService.delete(ID);
+
+    verifyNoInteractions(fileStoreService);
+  }
+
   //
   // Entity not deleted: its comments are kept
   //
@@ -263,6 +294,12 @@ public class EntityCommentsDeletionTest {
     assertThrows(NoSuchDatasetException.class, () -> harmonizedDatasetService.delete(ID));
 
     verifyNoInteractions(commentsService);
+  }
+
+  private static Attachment logo(String id) {
+    Attachment attachment = new Attachment();
+    attachment.setId(id);
+    return attachment;
   }
 
   private static <T extends AbstractGitPersistable> T withId(T entity) {
