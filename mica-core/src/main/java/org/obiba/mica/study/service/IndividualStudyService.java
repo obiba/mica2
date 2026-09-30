@@ -27,7 +27,6 @@ import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetStateRepository;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
-import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.study.ConstraintException;
@@ -70,9 +69,6 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
 
   @Inject
   private StudyRepository studyRepository;
-
-  @Inject
-  private FileStoreService fileStoreService;
 
   @Inject
   private NetworkRepository networkRepository;
