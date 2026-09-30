@@ -12,6 +12,7 @@ package org.obiba.mica.core.repository;
 
 import org.obiba.mica.core.domain.DocumentSet;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 import java.util.List;
 
@@ -34,5 +35,15 @@ public interface DocumentSetRepository extends MongoRepository<DocumentSet, Stri
    * @return
    */
   List<DocumentSet> findByTypeAndUsername(String type, String username);
+
+  /**
+   * Find document sets of a given type having at least one identifier matching the regular expression.
+   *
+   * @param type
+   * @param idsRegex
+   * @return
+   */
+  @Query("{'type': ?0, 'identifiers': {$regex: ?1}}")
+  List<DocumentSet> findByTypeAndIdentifiersRegex(String type, String idsRegex);
 
 }
