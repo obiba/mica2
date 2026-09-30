@@ -37,12 +37,13 @@ public interface DocumentSetRepository extends MongoRepository<DocumentSet, Stri
   List<DocumentSet> findByTypeAndUsername(String type, String username);
 
   /**
-   * Find document sets which identifiers contains at least one identifier matching the regular expression.
+   * Find document sets of a given type having at least one identifier matching the regular expression.
    *
+   * @param type
    * @param idsRegex
    * @return
    */
-  @Query("{'identifiers': { $elemMatch: {$regex:?0}}}")
-  List<DocumentSet> findByIdentifiers(String idsRegex);
+  @Query("{'type': ?0, 'identifiers': {$regex: ?1}}")
+  List<DocumentSet> findByTypeAndIdentifiersRegex(String type, String idsRegex);
 
 }

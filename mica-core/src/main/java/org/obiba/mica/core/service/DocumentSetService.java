@@ -23,7 +23,6 @@ import org.obiba.mica.core.domain.InvalidDocumentSetTypeException;
 import org.obiba.mica.core.event.DocumentSetDeletedEvent;
 import org.obiba.mica.core.event.DocumentSetUpdatedEvent;
 import org.obiba.mica.core.repository.DocumentSetRepository;
-import org.obiba.mica.dataset.event.DatasetDeletedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
@@ -264,15 +263,6 @@ public abstract class DocumentSetService {
   }
 
   @Async
-  @Subscribe
-  public void datasetDeleted(DatasetDeletedEvent event) {
-    // TODO find sets containing documents
-    String datasetId = event.getPersistable().getId();
-    List<DocumentSet> sets = documentSetRepository.findByIdentifiers("^" + datasetId + ":");
-    // query fails: bug in spring data?
-  }
-
-  @Async
   @Scheduled(cron = "${sets.cleanup.cron:0 0 * * * *}")
   public void cleanupOldSets() {
     MicaConfig config = micaConfigService.getConfig();
@@ -309,6 +299,16 @@ public abstract class DocumentSetService {
       .filter(id -> !Strings.isNullOrEmpty(id))
       .filter(predicate)
       .collect(Collectors.toList());
+  }
+
+  /**
+   * Find the sets of this type having at least one identifier matching the regular expression.
+   *
+   * @param idsRegex
+   * @return
+   */
+  protected List<DocumentSet> findByIdentifiersRegex(String idsRegex) {
+    return documentSetRepository.findByTypeAndIdentifiersRegex(getType(), idsRegex);
   }
 
   protected void ensureType(@NotNull DocumentSet documentSet) throws InvalidDocumentSetTypeException {

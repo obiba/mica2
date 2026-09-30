@@ -24,10 +24,13 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.obiba.mica.AbstractGitPersistableResource;
 import org.obiba.mica.JSONUtils;
+import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
+import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.rest.FileResource;
+import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.domain.ProjectState;
 import org.obiba.mica.project.service.NoSuchProjectException;
@@ -44,7 +47,10 @@ import jakarta.inject.Inject;
 import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Component
 @Scope("request")
@@ -58,6 +64,9 @@ public class DraftProjectResource extends AbstractGitPersistableResource<Project
 
   @Inject
   private ApplicationContext applicationContext;
+
+  @Inject
+  private FileSystemService fileSystemService;
 
   private String id;
 
@@ -147,6 +156,11 @@ public class DraftProjectResource extends AbstractGitPersistableResource<Project
     checkPermission("/draft/project", "VIEW", key);
     FileResource fileResource = applicationContext.getBean(FileResource.class);
     projectService.findById(id);
+    List<Attachment> attachments = fileSystemService
+      .findAttachments(String.format("^%s(/|$)", Pattern.quote("/project/" + id)), false).stream()
+      .filter(a -> a.getId().equals(fileId)).collect(Collectors.toList());
+    if (attachments.isEmpty()) throw NoSuchEntityException.withId(Attachment.class, fileId);
+    fileResource.setAttachment(attachments.get(0));
     return fileResource;
   }
 

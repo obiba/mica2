@@ -12,14 +12,17 @@ package org.obiba.mica.dataset.service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.eventbus.Subscribe;
 import com.googlecode.protobuf.format.JsonFormat;
 import org.obiba.mica.core.domain.*;
 import org.obiba.mica.core.service.DocumentSetService;
 import org.obiba.mica.core.source.OpalTableSource;
 import org.obiba.mica.dataset.domain.*;
+import org.obiba.mica.dataset.event.DatasetDeletedEvent;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.opal.web.model.Magma;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -28,6 +31,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -51,6 +55,23 @@ public class VariableSetService extends DocumentSetService {
   @Override
   public String getType() {
     return DatasetVariable.MAPPING_NAME;
+  }
+
+  /**
+   * Remove the variables of the deleted dataset from the sets, except the locked ones: these are the variables of a
+   * data access request and keep what was requested.
+   *
+   * @param event
+   */
+  @Async
+  @Subscribe
+  public void datasetDeleted(DatasetDeletedEvent event) {
+    // a variable ID starts with its dataset ID, quoted as it may contain regex characters ('.', ...)
+    String prefix = event.getPersistable().getId() + ":";
+    findByIdentifiersRegex("^" + Pattern.quote(prefix)).stream()
+      .filter(set -> !set.isLocked())
+      .forEach(set -> removeIdentifiers(set.getId(),
+        set.getIdentifiers().stream().filter(id -> id.startsWith(prefix)).collect(Collectors.toList())));
   }
 
   @Override
