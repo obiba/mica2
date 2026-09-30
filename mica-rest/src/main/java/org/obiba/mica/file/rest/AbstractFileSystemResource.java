@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.regex.Pattern;
 
 import static org.obiba.mica.file.FileUtils.isRoot;
 import static org.obiba.mica.file.FileUtils.normalizePath;
@@ -315,7 +316,7 @@ public abstract class AbstractFileSystemResource {
 
   private Iterable<Mica.FileDto> getChildrenFolders(String basePath, boolean recursively) {
     List<Mica.FileDto> folders = Lists.newArrayList();
-    String pathRegEx = isRoot(basePath) ? "^/[^/]+$" : String.format("^%s/[^/]+$", basePath);
+    String pathRegEx = isRoot(basePath) ? "^/[^/]+$" : String.format("^%s/[^/]+$", Pattern.quote(basePath));
     fileSystemService.findAttachmentStates(pathRegEx, isPublishedFileSystem()).stream()
       .filter(FileUtils::isDirectory)
       .filter(s -> !isPublishedFileSystem() || subjectAclService.isAccessible("/file", s.getFullPath()))
@@ -333,7 +334,7 @@ public abstract class AbstractFileSystemResource {
 
   private List<Mica.FileDto> getChildrenFiles(String basePath) {
     List<AttachmentState> states = fileSystemService
-      .findAttachmentStates(String.format("^%s$", basePath), isPublishedFileSystem()).stream()
+      .findAttachmentStates(String.format("^%s$", Pattern.quote(basePath)), isPublishedFileSystem()).stream()
       .filter(s -> !FileUtils.isDirectory(s))
       .filter(s -> !isPublishedFileSystem() || subjectAclService.isAccessible("/file", s.getFullPath()))
       .collect(Collectors.toList());

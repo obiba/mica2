@@ -68,11 +68,6 @@ public class FileUtils {
     return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, persistable.getClass().getSimpleName());
   }
 
-  public static String normalizeRegex(String path) {
-    if(path == null) return null;
-    return path.replaceAll("\\(","\\\\(").replaceAll("\\)","\\\\)");
-  }
-
   /**
    * Encode file path to be Shiro-safe.
    *

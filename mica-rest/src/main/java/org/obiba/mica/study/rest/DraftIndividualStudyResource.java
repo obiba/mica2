@@ -55,6 +55,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.regex.Pattern;
 
 /**
  * REST controller for managing draft Study.
@@ -209,7 +210,7 @@ public class DraftIndividualStudyResource extends AbstractGitPersistableResource
       fileResource.setAttachment(study.getLogo());
     } else {
       List<Attachment> attachments = fileSystemService
-        .findAttachments(String.format("^/individual-study/%s", study.getId()), false).stream()
+        .findAttachments(String.format("^%s(/|$)", Pattern.quote("/individual-study/" + study.getId())), false).stream()
         .filter(a -> a.getId().equals(fileId)).collect(Collectors.toList());
       if (attachments.isEmpty()) throw NoSuchEntityException.withId(Attachment.class, fileId);
       fileResource.setAttachment(attachments.get(0));

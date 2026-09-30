@@ -553,12 +553,11 @@ public class FileSystemService {
   //
 
   public List<AttachmentState> findAttachmentStates(String pathRegEx, boolean publishedFS) {
-    return findAttachmentStatesByRegex(normalizeRegex(pathRegEx), publishedFS);
+    return findAttachmentStatesByRegex(pathRegEx, publishedFS);
   }
 
   public List<Attachment> findAttachments(String pathRegEx, boolean publishedFS) {
-    String regex = normalizeRegex(pathRegEx);
-    return publishedFS ? findDraftAttachments(regex) : findPublishedAttachments(regex);
+    return publishedFS ? findDraftAttachments(pathRegEx) : findPublishedAttachments(pathRegEx);
   }
 
   /**
@@ -1013,10 +1012,6 @@ public class FileSystemService {
     if(matcher.find()) {
       throw new InvalidFileNameException(name);
     }
-  }
-
-  private String normalizeRegex(String path) {
-    return FileUtils.normalizeRegex(path);
   }
 
   /**

@@ -30,13 +30,6 @@ public class FileUtilsTest {
   }
 
   @Test
-  public void testNormalizeRegex() {
-    assertThat(FileUtils.normalizeRegex("/toto/tutu/Case Report (CRF)")).isEqualTo
-        ("/toto/tutu/Case Report \\(CRF\\)");
-    assertThat(FileUtils.decode(null)).isNull();
-  }
-
-  @Test
   public void testGetEntityPath() {
     assertThat(FileUtils.getEntityPath(withId(new Study(), "s1"))).isEqualTo("/individual-study/s1");
     assertThat(FileUtils.getEntityPath(withId(new HarmonizationStudy(), "s1"))).isEqualTo("/harmonization-study/s1");

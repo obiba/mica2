@@ -12,6 +12,7 @@ package org.obiba.mica.study.rest;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.regex.Pattern;
 
 import jakarta.inject.Inject;
 
@@ -65,7 +66,7 @@ public abstract class AbstractPublishedStudyResource {
       fileResource.setAttachment(study.getLogo());
     } else {
       List<Attachment> attachments = fileSystemService
-        .findAttachments(String.format("^/%s/%s", getStudyPath(id), id), true).stream()
+        .findAttachments(String.format("^%s(/|$)", Pattern.quote("/" + getStudyPath(id) + "/" + id)), true).stream()
         .filter(a -> a.getId().equals(fileId)).collect(Collectors.toList());
       if(attachments.isEmpty()) throw NoSuchEntityException.withId(Attachment.class, fileId);
       fileResource.setAttachment(attachments.get(0));
