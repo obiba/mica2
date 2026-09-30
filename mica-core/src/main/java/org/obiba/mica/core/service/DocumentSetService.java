@@ -267,9 +267,6 @@ public abstract class DocumentSetService {
   @Subscribe
   public void datasetDeleted(DatasetDeletedEvent event) {
     // TODO find sets containing documents
-    String datasetId = event.getPersistable().getId();
-    List<DocumentSet> sets = documentSetRepository.findByIdentifiers("^" + datasetId + ":");
-    // query fails: bug in spring data?
   }
 
   @Async
