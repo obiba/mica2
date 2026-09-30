@@ -13,6 +13,7 @@ package org.obiba.mica.project.rest;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.regex.Pattern;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -86,7 +87,7 @@ public class PublishedProjectResource {
     checkAccess();
     FileResource fileResource = applicationContext.getBean(FileResource.class);
     List<Attachment> attachments = fileSystemService
-      .findAttachments(String.format("^/project/%s", id), true).stream()
+      .findAttachments(String.format("^%s(/|$)", Pattern.quote("/project/" + id)), true).stream()
       .filter(a -> a.getId().equals(fileId)).collect(Collectors.toList());
     if (attachments.isEmpty()) throw NoSuchEntityException.withId(Attachment.class, fileId);
     fileResource.setAttachment(attachments.get(0));

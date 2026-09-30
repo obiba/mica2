@@ -27,6 +27,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.obiba.mica.config.MongoDbConfiguration;
 import org.obiba.mica.core.repository.AttachmentRepository;
+import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
@@ -34,6 +35,7 @@ import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.event.FileDeletedEvent;
 import org.obiba.mica.file.event.FolderDeletedEvent;
+import org.obiba.mica.file.notification.FilePublicationFlowMailNotification;
 import org.obiba.mica.study.domain.Study;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -182,6 +184,52 @@ public class FileSystemServiceDeleteTest {
     verify(eventBus).post(any(FolderDeletedEvent.class));
   }
 
+  /**
+   * Folder operations other than delete match the path literally too.
+   */
+  @Test
+  public void test_folder_operations_match_the_path_literally() {
+    ReflectionTestUtils.setField(fileSystemService, "filePublicationFlowNotification",
+      mock(FilePublicationFlowMailNotification.class));
+    String folder = "/network/n.1 (a)";
+    createFile(folder, FileSystemService.DIR_NAME);
+    createFile(folder, "doc.pdf");
+    createFile(folder + "/sub", FileSystemService.DIR_NAME);
+    createFile("/network/nX1 (a)", FileSystemService.DIR_NAME);
+    createFile("/network/nX1 (a)", "doc.pdf");
+
+    assertThat(fileSystemService.countAttachmentStates(folder, false)).isEqualTo(2);
+    assertThat(fileSystemService.hasAttachmentState(folder, "doc.pdf", false)).isTrue();
+
+    fileSystemService.updateStatus(folder, RevisionStatus.DELETED);
+
+    assertThat(attachmentStateRepository.findAll())
+      .allMatch(s -> s.getPath().startsWith(folder) == (s.getRevisionStatus() == RevisionStatus.DELETED));
+  }
+
+  /**
+   * The published file system gets the published revision of a file, the draft one gets its latest revision.
+   */
+  @Test
+  public void test_find_attachments_by_file_system() {
+    AttachmentState state = createFile("/project/p1", "doc.pdf");
+    Attachment published = state.getAttachment();
+    state.setPublishedAttachment(published);
+    Attachment draft = new Attachment();
+    draft.setId(new ObjectId().toString());
+    draft.setPath("/project/p1");
+    draft.setName("doc.pdf");
+    attachmentRepository.insert(draft);
+    state.setAttachment(draft);
+    attachmentStateRepository.save(state);
+    createFile("/project/p1", "unpublished.pdf");
+
+    assertThat(fileSystemService.findAttachments("^/project/p1$", true)).extracting(Attachment::getId)
+      .containsExactly(published.getId());
+    assertThat(fileSystemService.findAttachments("^/project/p1$", false)).extracting(Attachment::getId)
+      .hasSize(2).contains(draft.getId()).doesNotContain(published.getId());
+  }
+
   @Test
   public void test_delete_path_without_files_posts_nothing() {
     fileSystemService.delete("/network/n1");
@@ -189,7 +237,7 @@ public class FileSystemServiceDeleteTest {
     verifyNoInteractions(eventBus);
   }
 
-  private void createFile(String path, String name) {
+  private AttachmentState createFile(String path, String name) {
     Attachment attachment = new Attachment();
     attachment.setId(new ObjectId().toString());
     attachment.setPath(path);
@@ -200,7 +248,7 @@ public class FileSystemServiceDeleteTest {
     state.setPath(path);
     state.setName(name);
     state.setAttachment(attachment);
-    attachmentStateRepository.insert(state);
+    return attachmentStateRepository.insert(state);
   }
 
   @Configuration
