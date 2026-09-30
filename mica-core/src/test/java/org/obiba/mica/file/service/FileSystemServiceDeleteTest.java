@@ -27,6 +27,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.obiba.mica.config.MongoDbConfiguration;
 import org.obiba.mica.core.repository.AttachmentRepository;
+import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
@@ -34,6 +35,7 @@ import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.event.FileDeletedEvent;
 import org.obiba.mica.file.event.FolderDeletedEvent;
+import org.obiba.mica.file.notification.FilePublicationFlowMailNotification;
 import org.obiba.mica.study.domain.Study;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -180,6 +182,29 @@ public class FileSystemServiceDeleteTest {
     assertThatThrownBy(() -> fileSystemService.delete("/network/n1")).hasMessage("store failure");
 
     verify(eventBus).post(any(FolderDeletedEvent.class));
+  }
+
+  /**
+   * Folder operations other than delete match the path literally too.
+   */
+  @Test
+  public void test_folder_operations_match_the_path_literally() {
+    ReflectionTestUtils.setField(fileSystemService, "filePublicationFlowNotification",
+      mock(FilePublicationFlowMailNotification.class));
+    String folder = "/network/n.1 (a)";
+    createFile(folder, FileSystemService.DIR_NAME);
+    createFile(folder, "doc.pdf");
+    createFile(folder + "/sub", FileSystemService.DIR_NAME);
+    createFile("/network/nX1 (a)", FileSystemService.DIR_NAME);
+    createFile("/network/nX1 (a)", "doc.pdf");
+
+    assertThat(fileSystemService.countAttachmentStates(folder, false)).isEqualTo(2);
+    assertThat(fileSystemService.hasAttachmentState(folder, "doc.pdf", false)).isTrue();
+
+    fileSystemService.updateStatus(folder, RevisionStatus.DELETED);
+
+    assertThat(attachmentStateRepository.findAll())
+      .allMatch(s -> s.getPath().startsWith(folder) == (s.getRevisionStatus() == RevisionStatus.DELETED));
   }
 
   @Test

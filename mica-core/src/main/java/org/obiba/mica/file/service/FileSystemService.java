@@ -12,7 +12,6 @@ package org.obiba.mica.file.service;
 
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -218,11 +217,7 @@ public class FileSystemService {
    * @param path
    */
   public void delete(String path) {
-    // the path is quoted, not normalized: it may contain regex characters ('.' in an entity id, '+', ...) and must
-    // not match the files of another path
-    String quoted = Pattern.quote(path);
-    List<AttachmentState> states = Lists.newArrayList(attachmentStateRepository.findByPath(String.format("^%s$", quoted)));
-    states.addAll(attachmentStateRepository.findByPath(String.format("^%s/", quoted)));
+    List<AttachmentState> states = findFolderAttachmentStates(path, false);
     if (states.isEmpty()) return;
 
     // the folder event lets listeners handle the folder at once rather than file by file; posted even if a file
@@ -252,7 +247,7 @@ public class FileSystemService {
   public synchronized void mkdirs(String path) {
     if(Strings.isNullOrEmpty(path)) return;
 
-    if(attachmentStateRepository.countByPathAndName(String.format("^%s$", normalizeRegex(path)), DIR_NAME) == 0) {
+    if(attachmentStateRepository.countByPathAndName(String.format("^%s$", Pattern.quote(path)), DIR_NAME) == 0) {
       // make sure parent exists
       if(path.lastIndexOf('/') > 0) mkdirs(path.substring(0, path.lastIndexOf('/')));
       else if(path.lastIndexOf('/') == 0 && !"/".equals(path)) mkdirs("/");
@@ -328,8 +323,7 @@ public class FileSystemService {
   public void publish(String path, boolean publish, String publisher) {
     fsLock.lock();
     try {
-      List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
-      states.addAll(findAttachmentStates(String.format("^%s/", path), false));
+      List<AttachmentState> states = findFolderAttachmentStates(path, false);
       Map<String, AttachmentState> statesToProcess = Maps.newHashMap();
       states.forEach(s -> publish(s, publish, statesToProcess));
       batchPublish(statesToProcess.values(), publisher, publish);
@@ -361,8 +355,7 @@ public class FileSystemService {
       if(PublishCascadingScope.ALL == cascadingScope) {
         publish(path, publish, publisher);
       } else if(PublishCascadingScope.UNDER_REVIEW == cascadingScope) {
-        List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
-        states.addAll(findAttachmentStates(String.format("^%s/", path), false));
+        List<AttachmentState> states = findFolderAttachmentStates(path, false);
         Map<String, AttachmentState> statesToProcess = Maps.newHashMap();
         states.stream().filter(s -> !publish || s.getRevisionStatus() == RevisionStatus.UNDER_REVIEW)
             .forEach(s -> publish(s, publish, statesToProcess));
@@ -400,13 +393,12 @@ public class FileSystemService {
    * @param newPath
    */
   public void rename(String path, String newPath) {
-    List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
-    states.addAll(findAttachmentStates(String.format("^%s/", path), false));
+    List<AttachmentState> states = findFolderAttachmentStates(path, false);
     // create the directories first (as they could be empty)
-    states.stream().filter(FileUtils::isDirectory).forEach(s -> mkdirs(s.getPath().replaceFirst(path, newPath)));
+    states.stream().filter(FileUtils::isDirectory).forEach(s -> mkdirs(newPath + s.getPath().substring(path.length())));
     // then copy the files
     states.stream().filter(s -> !FileUtils.isDirectory(s))
-        .forEach(s -> copy(s, s.getPath().replaceFirst(path, newPath), s.getName(), true));
+        .forEach(s -> copy(s, newPath + s.getPath().substring(path.length()), s.getName(), true));
     // mark source as being deleted
     states.stream().filter(FileUtils::isDirectory).forEach(s -> updateStatus(s, RevisionStatus.DELETED));
   }
@@ -454,11 +446,10 @@ public class FileSystemService {
    * @param newPath
    */
   public void copy(String path, String newPath) {
-    List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
-    states.addAll(findAttachmentStates(String.format("^%s/", path), false));
-    states.stream().filter(FileUtils::isDirectory).forEach(s -> mkdirs(s.getPath().replaceFirst(path, newPath)));
+    List<AttachmentState> states = findFolderAttachmentStates(path, false);
+    states.stream().filter(FileUtils::isDirectory).forEach(s -> mkdirs(newPath + s.getPath().substring(path.length())));
     states.stream().filter(s -> !FileUtils.isDirectory(s))
-        .forEach(s -> copy(s, s.getPath().replaceFirst(path, newPath), s.getName(), false));
+        .forEach(s -> copy(s, newPath + s.getPath().substring(path.length()), s.getName(), false));
   }
 
   /**
@@ -523,11 +514,10 @@ public class FileSystemService {
    * @param status
    */
   public void updateStatus(String path, RevisionStatus status) {
-    List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
-    AttachmentState state = states.stream().filter(s -> DIR_NAME.equals(s.getName())).findFirst()
-        .orElseThrow(() -> NoSuchEntityException.withPath(AttachmentState.class, path));
+    List<AttachmentState> states = findFolderAttachmentStates(path, false);
+    AttachmentState state = states.stream().filter(s -> path.equals(s.getPath()) && DIR_NAME.equals(s.getName()))
+        .findFirst().orElseThrow(() -> NoSuchEntityException.withPath(AttachmentState.class, path));
     RevisionStatus currentStatus = state.getRevisionStatus();
-    states.addAll(findAttachmentStates(String.format("^%s/", path), false));
     states.forEach(s -> updateStatus(s, status));
     filePublicationFlowNotification.send(path, currentStatus, status);
   }
@@ -563,11 +553,12 @@ public class FileSystemService {
   //
 
   public List<AttachmentState> findAttachmentStates(String pathRegEx, boolean publishedFS) {
-    return publishedFS ? findPublishedAttachmentStates(pathRegEx) : findDraftAttachmentStates(pathRegEx);
+    return findAttachmentStatesByRegex(normalizeRegex(pathRegEx), publishedFS);
   }
 
   public List<Attachment> findAttachments(String pathRegEx, boolean publishedFS) {
-    return publishedFS ? findDraftAttachments(pathRegEx) : findPublishedAttachments(pathRegEx);
+    String regex = normalizeRegex(pathRegEx);
+    return publishedFS ? findDraftAttachments(regex) : findPublishedAttachments(regex);
   }
 
   /**
@@ -580,7 +571,7 @@ public class FileSystemService {
    */
   public long countAttachmentStates(String path, boolean publishedFS) {
     // count the regular files in the folder
-    String pathRegEx = String.format("^%s$", normalizeRegex(path));
+    String pathRegEx = String.format("^%s$", Pattern.quote(path));
     long count = publishedFS
         ? (subjectAclService.isOpenAccess() ? attachmentStateRepository
         .countByPathAndPublishedAttachmentNotNull(pathRegEx) : countAccessiblePublishedAttachmentStates(pathRegEx))
@@ -588,7 +579,7 @@ public class FileSystemService {
     count = count == 0 ? 0 : count - 1;
 
     // count the sub-folders in the folder
-    pathRegEx = String.format("^%s/[^/]+$", normalizeRegex(path));
+    pathRegEx = String.format("^%s/[^/]+$", Pattern.quote(path));
     long dirs = publishedFS
         ? (subjectAclService.isOpenAccess()
         ? attachmentStateRepository.countByPathAndNameAndPublishedAttachmentNotNull(pathRegEx, DIR_NAME)
@@ -616,7 +607,7 @@ public class FileSystemService {
   }
 
   public boolean hasAttachmentState(String path, String name, boolean publishedFS) {
-    String pathRegEx = String.format("^%s$", path);
+    String pathRegEx = String.format("^%s$", Pattern.quote(path));
     return publishedFS
         ? attachmentStateRepository.countByPathAndNameAndPublishedAttachmentNotNull(pathRegEx, name) > 0
         : attachmentStateRepository.countByPathAndName(pathRegEx, name) > 0;
@@ -906,13 +897,32 @@ public class FileSystemService {
   }
 
   /**
+   * Find the {@link AttachmentState}s of the folder at path and of its descendants. The path is quoted, not normalized:
+   * it may contain regex characters ('.' in an entity id, '+', ...) and must not match the files of another path.
+   *
+   * @param path
+   * @param publishedFS
+   * @return
+   */
+  private List<AttachmentState> findFolderAttachmentStates(String path, boolean publishedFS) {
+    String quoted = Pattern.quote(path);
+    List<AttachmentState> states = findAttachmentStatesByRegex(String.format("^%s$", quoted), publishedFS);
+    states.addAll(findAttachmentStatesByRegex(String.format("^%s/", quoted), publishedFS));
+    return states;
+  }
+
+  private List<AttachmentState> findAttachmentStatesByRegex(String pathRegEx, boolean publishedFS) {
+    return publishedFS ? findPublishedAttachmentStates(pathRegEx) : findDraftAttachmentStates(pathRegEx);
+  }
+
+  /**
    * Find all the draft attachment states matching the path regular expression.
    *
    * @param pathRegEx
    * @return
    */
   private List<AttachmentState> findDraftAttachmentStates(String pathRegEx) {
-    return attachmentStateRepository.findByPath(normalizeRegex(pathRegEx)).stream().collect(toList());
+    return attachmentStateRepository.findByPath(pathRegEx).stream().collect(toList());
   }
 
   /**
@@ -922,7 +932,7 @@ public class FileSystemService {
    * @return
    */
   private List<AttachmentState> findPublishedAttachmentStates(String pathRegEx) {
-    return attachmentStateRepository.findByPathAndPublishedAttachmentNotNull(normalizeRegex(pathRegEx)).stream()
+    return attachmentStateRepository.findByPathAndPublishedAttachmentNotNull(pathRegEx).stream()
         .collect(toList());
   }
 
@@ -1017,8 +1027,7 @@ public class FileSystemService {
    * @return
    */
   private List<AttachmentState> listDirectoryAttachmentStates(String path, boolean publishedFS) {
-    List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), publishedFS);
-    states.addAll(findAttachmentStates(String.format("^%s/", path), publishedFS));
+    List<AttachmentState> states = findFolderAttachmentStates(path, publishedFS);
 
     if (publishedFS && !subjectAclService.isOpenAccess()) {
       return states.stream().filter(s -> subjectAclService.isAccessible("/file", s.getFullPath())).collect(toList());
