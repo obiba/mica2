@@ -35,7 +35,7 @@ export const useAuthStore = defineStore('auth', () => {
       if (response.status === 201) {
         const sessionUrl = response.headers['location'];
         sid.value = sessionUrl.split('/').pop();
-        version.value = response.headers['x-agate-version'];
+        version.value = response.headers['x-mica-version'];
       }
       return response;
     });
@@ -51,7 +51,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function userProfile() {
     return api.get('/auth/session/_current').then((response) => {
       if (response.status === 200) {
-        version.value = response.headers['x-agate-version'];
+        version.value = response.headers['x-mica-version'];
         session.value = response.data;
       }
       return response;
