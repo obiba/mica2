@@ -26,7 +26,7 @@
     "jquery.redirect": "^1.1.4",
     "js-cookie": "^3.0.7",
     "marked": "^15.0.6",
-    "moment": "^2.30.1",
+    "moment": "^2.31.0",
     "moment-timezone": "^0.5.47",
     "plotly.js-dist-min": "^2.5.1",
     "rql": "github:epigeny/rql#1.1.0",
