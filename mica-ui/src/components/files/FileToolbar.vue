@@ -68,7 +68,6 @@
         <q-badge v-if="clipboard.hasItems" color="primary" floating>{{ clipboard.items.length }}</q-badge>
       </q-btn>
     </q-btn-group>
-    <q-space />
     <file-status-buttons
       :document="document"
       :selection="selection"
