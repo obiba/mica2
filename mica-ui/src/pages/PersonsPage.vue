@@ -7,6 +7,10 @@
       </q-breadcrumbs>
     </q-toolbar>
     <q-page padding>
+      <q-banner v-if="degraded" dense rounded class="bg-warning text-dark q-mb-sm">
+        <template #avatar><q-icon name="warning" /></template>
+        {{ t('persons.search_degraded') }}
+      </q-banner>
       <q-table
         v-model:pagination="pagination"
         flat
@@ -44,7 +48,15 @@
           </div>
         </template>
         <template v-slot:top-right>
-          <q-select v-model="field" :options="searchFields" dense options-dense emit-value map-options class="q-mr-sm" />
+          <q-select
+            v-model="field"
+            :options="searchFields"
+            dense
+            options-dense
+            emit-value
+            map-options
+            class="q-mr-sm"
+          />
           <q-input
             v-model="filter"
             dense
@@ -82,7 +94,14 @@ import type { PersonDto, TimestampsDto } from 'src/models/Mica';
 import PersonDialog from 'src/components/persons/PersonDialog.vue';
 import { getDateLabel } from 'src/utils/dates';
 import { notifyError, notifySuccess } from 'src/utils/notify';
-import { fullName, groupMemberships, MEMBERSHIP_INFO, MEMBERSHIP_KINDS, fieldQuery, searchQuery } from 'src/utils/persons';
+import {
+  fullName,
+  groupMemberships,
+  MEMBERSHIP_INFO,
+  MEMBERSHIP_KINDS,
+  fieldQuery,
+  searchQuery,
+} from 'src/utils/persons';
 import { usePersonsStore } from 'src/stores/persons';
 import { useRoleLabels } from 'src/composables/useRoleLabels';
 
@@ -120,6 +139,7 @@ const loading = ref(false);
 const showNew = ref(false);
 const removing = ref(false);
 const rows = ref<PersonDto[]>([]);
+const degraded = ref(false);
 
 // the search, the sort and the page are kept in the route query
 const query = route.query;
@@ -178,6 +198,7 @@ async function onRequest(props: { pagination: Pagination; filter?: unknown }) {
     });
     exclude = undefined;
     rows.value = result.persons;
+    degraded.value = result.degraded;
     pagination.value = { ...props.pagination, rowsNumber: result.total };
     router.replace({
       query: {
