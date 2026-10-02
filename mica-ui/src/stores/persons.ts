@@ -21,9 +21,14 @@ export interface PersonsSearch {
 }
 
 export const usePersonsStore = defineStore('persons', () => {
-  async function search(params: PersonsSearch): Promise<PersonsDto> {
+  /** the persons found, `degraded` when the search engine failed and all of them are listed without the query */
+  async function search(params: PersonsSearch): Promise<PersonsDto & { degraded: boolean }> {
     const response = await api.get<PersonsDto>('/draft/persons/_search', { params });
-    return { ...response.data, persons: response.data.persons ?? [] };
+    return {
+      ...response.data,
+      persons: response.data.persons ?? [],
+      degraded: response.headers?.['x-search-degraded'] === 'true',
+    };
   }
 
   /** the CSV of the persons matching the query */
@@ -80,7 +85,8 @@ export const usePersonsStore = defineStore('persons', () => {
     const query = duplicateQuery(person);
     if (query === '') return {};
     const found = await search({ query, from: 0, limit: 100, sort: 'lastName', order: 'asc' });
-    return checkDuplicates(person, found);
+    // without the query, all the persons would be taken for duplicates
+    return found.degraded ? {} : checkDuplicates(person, found);
   }
 
   return {

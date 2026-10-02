@@ -133,6 +133,10 @@ export default {
     duplicates_removed: '{count} duplicate(s) removed',
     identification: 'Identification',
     institution: 'Institution',
+    search_study: 'Study / Initiative',
+    search_network: 'Network',
+    search_id: 'ID (not acronym)',
+    search_degraded: 'The search index is not available: all the persons are listed, sorted by last name, without applying the search.',
     field: {
       title: 'Title',
       first_name: 'First Name',
