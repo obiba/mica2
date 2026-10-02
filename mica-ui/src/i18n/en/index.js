@@ -133,6 +133,9 @@ export default {
     duplicates_removed: '{count} duplicate(s) removed',
     identification: 'Identification',
     institution: 'Institution',
+    search_study: 'Study / Initiative',
+    search_network: 'Network',
+    search_id: 'ID (not acronym)',
     field: {
       title: 'Title',
       first_name: 'First Name',

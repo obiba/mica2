@@ -14,7 +14,7 @@
         :columns="columns"
         row-key="id"
         :loading="loading"
-        :filter="filter"
+        :filter="search"
         :rows-per-page-options="[10, 25, 50, 100]"
         :no-data-label="t('persons.none')"
         :no-results-label="t('persons.none')"
@@ -30,7 +30,7 @@
               icon="download"
               :label="t('persons.download')"
               size="sm"
-              :href="personsStore.downloadUrl(searchQuery(filter), pagination.rowsNumber ?? 0)"
+              :href="personsStore.downloadUrl(personsQuery(search), pagination.rowsNumber ?? 0)"
             />
             <q-btn
               outline
@@ -44,7 +44,14 @@
           </div>
         </template>
         <template v-slot:top-right>
-          <q-input v-model="filter" dense clearable debounce="300" :placeholder="t('search')">
+          <q-select v-model="field" :options="searchFields" dense options-dense emit-value map-options class="q-mr-sm" />
+          <q-input
+            v-model="filter"
+            dense
+            clearable
+            debounce="300"
+            :placeholder="field === 'all' ? t('search') : t('persons.search_id')"
+          >
             <template v-slot:append>
               <q-icon name="search" />
             </template>
@@ -75,7 +82,7 @@ import type { PersonDto, TimestampsDto } from 'src/models/Mica';
 import PersonDialog from 'src/components/persons/PersonDialog.vue';
 import { getDateLabel } from 'src/utils/dates';
 import { notifyError, notifySuccess } from 'src/utils/notify';
-import { fullName, groupMemberships, MEMBERSHIP_INFO, MEMBERSHIP_KINDS, searchQuery } from 'src/utils/persons';
+import { fullName, groupMemberships, MEMBERSHIP_INFO, MEMBERSHIP_KINDS, fieldQuery, searchQuery } from 'src/utils/persons';
 import { usePersonsStore } from 'src/stores/persons';
 import { useRoleLabels } from 'src/composables/useRoleLabels';
 
@@ -83,6 +90,24 @@ type Pagination = NonNullable<QTableProps['pagination']>;
 
 /** the search sort field of a column */
 const SORT_FIELDS: Record<string, string> = { name: 'lastName', lastUpdate: 'lastModifiedDate' };
+
+/** the search fields of the membership selector (individual studies and initiatives share the study memberships) */
+const SEARCH_FIELDS: Record<string, string> = {
+  all: 'all',
+  study: 'studyMemberships.parentId',
+  network: 'networkMemberships.parentId',
+};
+
+interface PersonsSearch {
+  text: string;
+  field: string;
+}
+
+/** the search query of the text, restricted to the membership field if any */
+function personsQuery({ text, field }: PersonsSearch): string | undefined {
+  const query = searchQuery(text);
+  return query && fieldQuery(query, SEARCH_FIELDS[field] ?? 'all', false, '');
+}
 
 const personsStore = usePersonsStore();
 const { roleLabel } = useRoleLabels();
@@ -99,6 +124,14 @@ const rows = ref<PersonDto[]>([]);
 // the search, the sort and the page are kept in the route query
 const query = route.query;
 const filter = ref(typeof query.q === 'string' ? query.q : '');
+/** the membership field the search is restricted to, `all` for none */
+const field = ref(typeof query.field === 'string' && query.field in SEARCH_FIELDS ? query.field : 'all');
+const search = computed<PersonsSearch>(() => ({ text: filter.value ?? '', field: field.value }));
+const searchFields = computed(() => [
+  { value: 'all', label: t('documents.search_all') },
+  { value: 'study', label: t('persons.search_study') },
+  { value: 'network', label: t('persons.search_network') },
+]);
 const pagination = ref<Pagination>({
   sortBy: typeof query.sort === 'string' && query.sort in SORT_FIELDS ? query.sort : 'name',
   descending: query.order === 'desc',
@@ -132,11 +165,11 @@ const columns = computed<QTableColumn[]>(() => [
 
 async function onRequest(props: { pagination: Pagination; filter?: unknown }) {
   const { page = 1, rowsPerPage = 10, sortBy, descending } = props.pagination;
-  const text = typeof props.filter === 'string' ? props.filter : '';
+  const { text, field } = props.filter as PersonsSearch;
   loading.value = true;
   try {
     const result = await personsStore.search({
-      query: searchQuery(text),
+      query: personsQuery({ text, field }),
       from: (page - 1) * rowsPerPage,
       limit: rowsPerPage,
       sort: SORT_FIELDS[sortBy ?? 'name'] ?? 'lastName',
@@ -149,6 +182,7 @@ async function onRequest(props: { pagination: Pagination; filter?: unknown }) {
     router.replace({
       query: {
         ...(text ? { q: text } : {}),
+        ...(field !== 'all' ? { field } : {}),
         sort: sortBy ?? 'name',
         order: descending ? 'desc' : 'asc',
         page: String(page),
@@ -173,7 +207,7 @@ function onRemoveDuplicates() {
     try {
       const count = await personsStore.removeRedundants();
       notifySuccess(t('persons.duplicates_removed', { count }));
-      await onRequest({ pagination: pagination.value, filter: filter.value });
+      await onRequest({ pagination: pagination.value, filter: search.value });
     } catch (error) {
       notifyError(error);
     } finally {
@@ -182,5 +216,5 @@ function onRemoveDuplicates() {
   });
 }
 
-onMounted(() => onRequest({ pagination: pagination.value, filter: filter.value }));
+onMounted(() => onRequest({ pagination: pagination.value, filter: search.value }));
 </script>
