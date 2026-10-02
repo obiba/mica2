@@ -78,9 +78,14 @@ const localeOptions = computed(() => {
 });
 const appName = computed(() => systemStore.configurationPublic?.name || 'Agate');
 
+// pages reserved to administrators
+function isAdminPath(path: string) {
+  return /^\/(settings|persons)(\/|$)/.test(path);
+}
+
 onMounted(() => {
   router.beforeEach((to, from, next) => {
-    if (to.path.startsWith('/admin') && !authStore.isAdministrator) {
+    if (authStore.isAuthenticated && !authStore.isAdministrator && isAdminPath(to.path)) {
       next('/');
     } else {
       next();
@@ -89,8 +94,8 @@ onMounted(() => {
   authStore
     .userProfile()
     .then(() => {
-      if (!authStore.isAdministrator) {
-        router.push('/');
+      if (!authStore.isAdministrator && isAdminPath(router.currentRoute.value.path)) {
+        router.replace('/');
       }
       systemStore.init();
     })
