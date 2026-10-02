@@ -119,7 +119,7 @@ watch(
             principal: props.acl.principal,
             type: props.acl.type as AclType,
             role: props.acl.role ?? roleOptions.value[0]?.value,
-            file: props.acl.file !== false,
+            file: props.acl.file === true,
             otherResources: [...(props.acl.otherResources ?? [])],
           }
         : empty();
