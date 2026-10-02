@@ -14,6 +14,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
+import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.study.domain.Study;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -154,7 +155,7 @@ public class StudySeedService implements InitializingBean {
     List<Study> studies = objectMapper.readValue(inputStream, new TypeReference<List<Study>>() {});
     for(Study study : studies) {
       individualStudyService.save(study);
-      individualStudyService.publish(study.getId(), true);
+      individualStudyService.publish(study.getId(), true, PublishCascadingScope.NONE, false);
     }
   }
 
@@ -168,7 +169,7 @@ public class StudySeedService implements InitializingBean {
     InputStream inputStream = new FileInputStream(json);
     Study study = objectMapper.readValue(inputStream, Study.class);
     individualStudyService.save(study);
-    individualStudyService.publish(study.getId(), true);
+    individualStudyService.publish(study.getId(), true, PublishCascadingScope.NONE, false);
   }
 
 }

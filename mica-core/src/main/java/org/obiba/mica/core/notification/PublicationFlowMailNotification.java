@@ -62,6 +62,20 @@ public abstract class PublicationFlowMailNotification {
   protected void sendNotification(RevisionStatus status, Map<String, String> ctx, String subject,
     String template, List<SubjectAcl> acls) {
 
+    Map<RevisionStatus, String> requiredActions = new HashMap<RevisionStatus, String>() {
+      {
+        put(RevisionStatus.DRAFT, "EDIT");
+        put(RevisionStatus.UNDER_REVIEW, "PUBLISH");
+        put(RevisionStatus.DELETED, "DELETE");
+      }
+    };
+
+    sendNotification(requiredActions.get(status), ctx, subject, template, acls);
+  }
+
+  protected void sendNotification(String requiredAction, Map<String, String> ctx, String subject,
+    String template, List<SubjectAcl> acls) {
+
     // groups granting the built-in roles
     List<SubjectAcl> allAcls = Lists.newArrayList();
     groupsToRolesMapper.toGroups(Roles.MICA_REVIEWER).forEach(group -> allAcls.add(
@@ -71,16 +85,8 @@ public abstract class PublicationFlowMailNotification {
 
     allAcls.addAll(acls);
 
-    Map<RevisionStatus, String> requiredActions = new HashMap<RevisionStatus, String>() {
-      {
-        put(RevisionStatus.DRAFT, "EDIT");
-        put(RevisionStatus.UNDER_REVIEW, "PUBLISH");
-        put(RevisionStatus.DELETED, "DELETE");
-      }
-    };
-
     Map<SubjectAcl.Type, List<String>> recipients = allAcls.stream()
-      .filter(a -> a.getActions().contains(requiredActions.get(status)))
+      .filter(a -> a.getActions().contains(requiredAction))
       .map(a -> Pair.create(a.getPrincipal(), a.getType()))
       .collect(groupingBy(Pair::getSecond, mapping(Pair::getFirst, toList())));
 

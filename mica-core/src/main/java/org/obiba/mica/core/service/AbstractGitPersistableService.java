@@ -45,6 +45,7 @@ import org.obiba.mica.core.domain.EntityStateFilter;
 import org.obiba.mica.core.domain.GitPersistable;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.notification.EntityPublicationFlowMailNotification;
+import org.obiba.mica.core.notification.EntityPublishedMailNotification;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +67,9 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
 
   @Inject
   protected EntityPublicationFlowMailNotification entityPublicationFlowNotification;
+
+  @Inject
+  protected EntityPublishedMailNotification entityPublishedNotification;
 
   @Inject
   protected GitService gitService;
@@ -247,9 +251,17 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
   }
 
   public T publishState(@NotNull String id) throws NoSuchEntityException {
+    return publishState(id, true);
+  }
+
+  /**
+   * @param notify whether the publication is notified by email (not when done by a system task)
+   */
+  public T publishState(@NotNull String id, boolean notify) throws NoSuchEntityException {
     T entityState = publishStateInternal(id);
     if(entityState != null) {
       getEntityStateRepository().save(entityState);
+      if(notify) notifyPublished(id, true);
     }
     idsCache.invalidate(PUBLISHED_CACHE_KEY);
     return entityState;
@@ -269,9 +281,17 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
   }
 
   public T unPublishState(@NotNull String id) {
+    return unPublishState(id, true);
+  }
+
+  /**
+   * @param notify whether the unpublication is notified by email (not when done by a system task)
+   */
+  public T unPublishState(@NotNull String id, boolean notify) {
     T entityState = unPublishStateInternal(id);
     if(entityState != null) {
       getEntityStateRepository().save(entityState);
+      if(notify) notifyPublished(id, false);
     }
     idsCache.invalidate(PUBLISHED_CACHE_KEY);
     return entityState;
@@ -295,6 +315,17 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
   //
   // Private methods
   //
+
+  /**
+   * A notification failure must not interrupt the publication (cache invalidation, indexing and files cascading).
+   */
+  private void notifyPublished(String id, boolean published) {
+    try {
+      entityPublishedNotification.send(id, getTypeName(), published);
+    } catch (Exception e) {
+      log.warn("Failed to notify the {} of {} {}", published ? "publication" : "unpublication", getTypeName(), id, e);
+    }
+  }
 
   private List<String> findPublishedIdsFromRepository() {
     return getEntityStateRepository().findAllPublishedIds().stream().map(DefaultEntityBase::getId).collect(Collectors.toList());

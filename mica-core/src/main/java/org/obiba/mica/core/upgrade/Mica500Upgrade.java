@@ -7,6 +7,7 @@ import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.HarmonizationStudyState;
@@ -290,7 +291,7 @@ public class Mica500Upgrade implements UpgradeStep {
       harmonizationStudyService.save(study);
 
       if (canPublish) {
-        harmonizationStudyService.publish(study.getId(), true);
+        harmonizationStudyService.publish(study.getId(), true, PublishCascadingScope.NONE, false);
       }
     }
   }

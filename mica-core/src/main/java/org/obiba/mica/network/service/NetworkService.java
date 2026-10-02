@@ -54,7 +54,6 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -271,15 +270,24 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
    */
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'network'") })
   public void publish(@NotNull String id, boolean publish, PublishCascadingScope cascadingScope) throws NoSuchEntityException {
+    publish(id, publish, cascadingScope, true);
+  }
+
+  /**
+   * @param notify whether the (un)publication is notified by email (not when done by a system task)
+   */
+  @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'network'") })
+  public void publish(@NotNull String id, boolean publish, PublishCascadingScope cascadingScope, boolean notify)
+    throws NoSuchEntityException {
     Optional<Network> found = networkRepository.findById(id);
     if (!found.isPresent()) return;
     Network network = found.get();
     if (publish) {
       processNetworkForPublishedNumberOfStudies(network);
-      publishState(id);
+      publishState(id, notify);
       eventBus.post(new NetworkPublishedEvent(network, getCurrentUsername(), cascadingScope));
     } else {
-      unPublishState(id);
+      unPublishState(id, notify);
       eventBus.post(new NetworkUnpublishedEvent(network));
     }
   }
@@ -389,16 +397,5 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
   @Override
   public Network findDraft(@NotNull String id) throws NoSuchEntityException {
     return findById(id);
-  }
-
-  private void removeRoles(@NotNull Network network, Iterable<String> roles) {
-    saveInternal(network, String.format("Removed roles: %s", Joiner.on(", ").join(roles)), false);
-    NetworkState state = findStateById(network.getId());
-
-    if(state.isPublished()) {
-      processNetworkForPublishedNumberOfStudies(network);
-      publishState(network.getId());
-      eventBus.post(new NetworkPublishedEvent(network, getCurrentUsername(), PublishCascadingScope.NONE));
-    }
   }
 }
