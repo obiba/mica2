@@ -9,19 +9,24 @@ const response = (init: { ok?: boolean; status?: number; headers?: Record<string
 });
 
 describe('file upload hooks', () => {
-  afterEach(() => vi.unstubAllGlobals());
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    document.cookie = 'XSRF-TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+  });
 
   it('uploads to the temp store and reads the file metadata from the Location', async () => {
     const fetch = vi.fn()
       .mockResolvedValueOnce(response({ status: 201, headers: { Location: 'http://mica/ws/files/temp/tmp-1' } }))
       .mockResolvedValueOnce(response({ body: { id: 'tmp-1', fileName: 'doc.pdf', size: 12, md5: 'x' } }));
     vi.stubGlobal('fetch', fetch);
+    document.cookie = 'XSRF-TOKEN=tok%3D1';
     const file = new File(['%PDF'], 'doc.pdf', { type: 'application/pdf' });
     const item = await createFileUploadHooks('/mica').upload!(file, {} as any);
     expect(item).toEqual({ id: 'tmp-1', fileName: 'doc.pdf', size: 12, md5: 'x', justUploaded: true });
     expect(fetch.mock.calls[0][0]).toBe('/mica/ws/files/temp');
     expect(fetch.mock.calls[0][1].method).toBe('POST');
     expect(fetch.mock.calls[0][1].body).toBeInstanceOf(FormData);
+    expect(fetch.mock.calls[0][1].headers).toEqual({ 'X-XSRF-TOKEN': 'tok=1' });
     expect(fetch.mock.calls[1][0]).toBe('/mica/ws/files/temp/tmp-1');
   });
 
@@ -41,7 +46,7 @@ describe('file upload hooks', () => {
     await hooks.remove!({ id: 'stored', fileName: 'a.pdf', path: '/data-access-request/1' }, {} as any);
     expect(fetch).not.toHaveBeenCalled();
     await hooks.remove!({ id: 'tmp-1', fileName: 'a.pdf', justUploaded: true }, {} as any);
-    expect(fetch).toHaveBeenCalledWith('/ws/files/temp/tmp-1', { method: 'DELETE' });
+    expect(fetch).toHaveBeenCalledWith('/ws/files/temp/tmp-1', { method: 'DELETE', headers: {} });
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(response({ ok: false, status: 404 })));
     await expect(hooks.remove!({ id: 'tmp-2', justUploaded: true }, {} as any)).rejects.toThrow('404');
   });

@@ -5,6 +5,12 @@ import type { FileItem, FileUploadHooks } from '@obiba/quasar-ui-json-form';
  * metadata, delete just-uploaded files on removal; stored files (with a `path`, set by the server
  * on save) are downloaded from the entity's form attachments endpoint.
  */
+// raw fetch does not send the XSRF header like axios does: unsafe methods are rejected in production
+function xsrfHeaders(): Record<string, string> {
+  const token = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]*)/)?.[1];
+  return token ? { 'X-XSRF-TOKEN': decodeURIComponent(token) } : {};
+}
+
 export function createFileUploadHooks(contextPath: string): FileUploadHooks {
   const ws = (path: string) => `${contextPath}/ws${path}`;
 
@@ -12,7 +18,7 @@ export function createFileUploadHooks(contextPath: string): FileUploadHooks {
     async upload(file: File): Promise<FileItem> {
       const body = new FormData();
       body.append('file', file, file.name);
-      const upload = await fetch(ws('/files/temp'), { method: 'POST', body });
+      const upload = await fetch(ws('/files/temp'), { method: 'POST', body, headers: xsrfHeaders() });
       if (!upload.ok) {
         throw new Error(`Upload failed with status ${upload.status}`);
       }
@@ -32,7 +38,7 @@ export function createFileUploadHooks(contextPath: string): FileUploadHooks {
     async remove(item: FileItem): Promise<void> {
       // stored files are deleted by the server on save
       if (item.justUploaded && item.id) {
-        const response = await fetch(ws(`/files/temp/${item.id}`), { method: 'DELETE' });
+        const response = await fetch(ws(`/files/temp/${item.id}`), { method: 'DELETE', headers: xsrfHeaders() });
         if (!response.ok) {
           // the item is already out of the form data; the temp store expires the file anyway
           throw new Error(`Temporary file deletion failed with status ${response.status}`);
