@@ -311,8 +311,7 @@ public class FileSystemService {
    * @param publish
    */
   public void publish(String path, boolean publish) {
-    publish(path, publish, getCurrentUsername());
-    notifyPublished(path, null, publish);
+    if(publish(path, publish, getCurrentUsername())) notifyPublished(path, null, publish);
   }
 
   /**
@@ -321,14 +320,17 @@ public class FileSystemService {
    * @param path
    * @param publish
    * @param publisher
+   * @return whether there were files to publish, or published files to unpublish
    */
-  public void publish(String path, boolean publish, String publisher) {
+  public boolean publish(String path, boolean publish, String publisher) {
     fsLock.lock();
     try {
       List<AttachmentState> states = findFolderAttachmentStates(path, false);
+      boolean changed = publish ? !states.isEmpty() : states.stream().anyMatch(AttachmentState::isPublished);
       Map<String, AttachmentState> statesToProcess = Maps.newHashMap();
       states.forEach(s -> publish(s, publish, statesToProcess));
       batchPublish(statesToProcess.values(), publisher, publish);
+      return changed;
     } finally {
       fsLock.unlock();
     }
@@ -376,13 +378,16 @@ public class FileSystemService {
    * @param publish
    */
   public void publish(String path, String name, boolean publish) {
+    boolean changed;
     fsLock.lock();
     try {
-      publish(getAttachmentState(path, name, false), publish);
+      AttachmentState state = getAttachmentState(path, name, false);
+      changed = publish || state.isPublished();
+      publish(state, publish);
     } finally {
       fsLock.unlock();
     }
-    notifyPublished(path, name, publish);
+    if(changed) notifyPublished(path, name, publish);
   }
 
   /**

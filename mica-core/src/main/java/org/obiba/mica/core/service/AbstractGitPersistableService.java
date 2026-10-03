@@ -288,10 +288,12 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
    * @param notify whether the unpublication is notified by email (not when done by a system task)
    */
   public T unPublishState(@NotNull String id, boolean notify) {
+    T currentState = findStateById(id);
+    boolean wasPublished = currentState != null && currentState.isPublished();
     T entityState = unPublishStateInternal(id);
     if(entityState != null) {
       getEntityStateRepository().save(entityState);
-      if(notify) notifyPublished(id, false);
+      if(notify && wasPublished) notifyPublished(id, false);
     }
     idsCache.invalidate(PUBLISHED_CACHE_KEY);
     return entityState;
