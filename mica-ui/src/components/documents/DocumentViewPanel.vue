@@ -1,9 +1,9 @@
 <template>
-  <div class="row q-col-gutter-md">
-    <div v-if="logo" class="col-12 col-md-3">
+  <div>
+    <div v-if="logo" class="q-mb-lg">
       <q-img :src="downloadUrl(logo, target.path)" style="max-width: 200px" fit="contain" />
     </div>
-    <div class="col">
+    <div>
       <entity-json-form :model-value="model" :form-path="target.formPath" readonly />
     </div>
   </div>
