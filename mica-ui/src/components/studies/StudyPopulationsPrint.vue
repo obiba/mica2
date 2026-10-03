@@ -1,5 +1,4 @@
 <template>
-  <!-- ponytail: the forms are rendered even when not printing, fine for a few populations and events -->
   <div class="print-only">
     <div v-for="population in populations" :key="population.id ?? ''" style="break-before: page">
       <div class="text-h5 q-mb-sm">
@@ -29,13 +28,36 @@ import EntityJsonForm from 'src/components/forms/EntityJsonForm.vue';
 import { DCE_FIELDS, POPULATION_FIELDS, toModel } from 'src/composables/useDocumentModel';
 import { localized } from 'src/utils/persons';
 import { byWeight, dcePeriod } from 'src/utils/studies';
+import { useFormsStore } from 'src/stores/forms';
 
 interface Props {
   study: StudyDto;
 }
 
 const props = defineProps<Props>();
+const emit = defineEmits<{
+  /** every form is rendered, the page can be printed */
+  ready: [];
+  /** a form cannot be read (already notified) */
+  error: [];
+}>();
 const { t, locale } = useI18n();
+const formsStore = useFormsStore();
 
 const populations = computed(() => byWeight(props.study.populations));
+
+// the forms are requested by the children first (shared requests): they are converted by the time
+// these resolve, rendered on the next tick
+onMounted(async () => {
+  try {
+    await Promise.all([
+      formsStore.getForm('/config/population/form', locale.value),
+      formsStore.getForm('/config/data-collection-event/form', locale.value),
+    ]);
+    await nextTick();
+    emit('ready');
+  } catch {
+    emit('error');
+  }
+});
 </script>
