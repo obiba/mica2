@@ -85,7 +85,12 @@
                 @select="(event) => onPopulationSelect(event.populationId, event.dceId)"
               />
             </div>
-            <study-populations-print v-if="study" :study="study" />
+            <study-populations-print
+              v-if="study && printing"
+              :study="study"
+              @ready="onPrintReady"
+              @error="onPrintError"
+            />
           </q-tab-panel>
           <q-tab-panel v-if="study" name="populations" class="q-pa-none">
             <div class="text-h5 q-mb-sm">{{ t('study.populations') }}</div>
@@ -334,9 +339,55 @@ const loading = ref(true);
 const showShare = ref(false);
 const showEdit = ref(false);
 
+/** the print view of the study populations is mounted (it renders every form) */
+const printing = ref(false);
+/** the Print button was clicked, the page is printed once the print view is ready */
+let printRequested = false;
+
 function print() {
+  // waiting for the print view to be ready
+  if (printRequested) return;
+  // no print view (it lives in the view tab), or already mounted (no ready event to wait for)
+  if (!study.value || tab.value !== 'view' || printing.value) {
+    window.print();
+    return;
+  }
+  printRequested = true;
+  printing.value = true;
+}
+
+function onPrintReady() {
+  if (!printRequested) return;
+  printRequested = false;
   window.print();
 }
+
+function onPrintError() {
+  printRequested = false;
+  printing.value = false;
+}
+
+// leaving the view tab unmounts the print view: drop the pending print
+watch(tab, onPrintError);
+
+// browser printing (Ctrl+P) is best effort: the forms may not be rendered in time
+function onBeforePrint() {
+  printing.value = true;
+}
+
+function onAfterPrint() {
+  printing.value = false;
+}
+
+onMounted(() => {
+  window.addEventListener('beforeprint', onBeforePrint);
+  window.addEventListener('afterprint', onAfterPrint);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('beforeprint', onBeforePrint);
+  window.removeEventListener('afterprint', onAfterPrint);
+});
 
 /** the folder opened in the files tab, kept in the route */
 const filePath = computed(() => (typeof route.query.path === 'string' ? route.query.path : undefined));

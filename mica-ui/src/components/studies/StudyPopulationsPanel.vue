@@ -199,7 +199,7 @@
                   </div>
                 </q-item-section>
               </template>
-              <div class="q-pa-md">
+              <div v-if="expanded === dce.id" class="q-pa-md">
                 <entity-json-form
                   :model-value="toModel(dce, DCE_FIELDS)"
                   form-path="/config/data-collection-event/form"
