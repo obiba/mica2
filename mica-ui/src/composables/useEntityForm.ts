@@ -25,10 +25,15 @@ export function useEntityForm(formPath: MaybeRefOrGetter<string>, options: Entit
   const diagnostics = ref<AsfDiagnostic[]>([]);
   const ready = computed(() => schema.value !== undefined && uischema.value !== undefined);
 
+  /** the latest load, a response to an older one (previous locale...) is ignored */
+  let current = 0;
+
   async function load() {
+    const call = ++current;
     loading.value = true;
     try {
       const form = await formsStore.getForm(toValue(formPath), locale.value);
+      if (call !== current) return;
       const result = toJsonForms(form.schema, form.definition, {
         readonly: toValue(options.readonly) === true,
         logger: (diagnostic: AsfDiagnostic) => {
@@ -40,11 +45,12 @@ export function useEntityForm(formPath: MaybeRefOrGetter<string>, options: Entit
       uischema.value = result.uischema;
       diagnostics.value = result.diagnostics;
     } catch (error) {
+      if (call !== current) return;
       schema.value = undefined;
       uischema.value = undefined;
       notifyError(error);
     } finally {
-      loading.value = false;
+      if (call === current) loading.value = false;
     }
   }
 
