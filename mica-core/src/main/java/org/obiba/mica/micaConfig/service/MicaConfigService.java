@@ -110,6 +110,20 @@ public class MicaConfigService {
     }
 
     config = micaConfigRepository.findAll().get(0);
+    boolean modified = false;
+    // seed public URL from mica.public-url (e.g. MICA_PUBLIC_URL env var) when not set
+    String publicUrl = env.getProperty("mica.public-url");
+    if (!config.hasPublicUrl() && !Strings.isNullOrEmpty(publicUrl)) {
+      config.setPublicUrl(publicUrl);
+      modified = true;
+    }
+    // seed portal URL from mica.portal-url (e.g. MICA_PORTAL_URL env var) when not set
+    String portalUrl = env.getProperty("mica.portal-url");
+    if (Strings.isNullOrEmpty(config.getPortalUrl()) && !Strings.isNullOrEmpty(portalUrl)) {
+      config.setPortalUrl(portalUrl);
+      modified = true;
+    }
+    if (modified) micaConfigRepository.save(config);
     config.setContextPath(getContextPath());
     return config;
   }
