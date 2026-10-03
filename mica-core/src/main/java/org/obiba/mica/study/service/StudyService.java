@@ -65,11 +65,19 @@ public class StudyService {
 
   public void publish(@NotNull String id, boolean publish, PublishCascadingScope cascadingScope)
     throws NoSuchEntityException {
+    publish(id, publish, cascadingScope, true);
+  }
+
+  /**
+   * @param notify whether the (un)publication is notified by email (not when done by a system task)
+   */
+  public void publish(@NotNull String id, boolean publish, PublishCascadingScope cascadingScope, boolean notify)
+    throws NoSuchEntityException {
 
     if (isCollectionStudy(id)) {
-      individualStudyService.publish(id, publish, cascadingScope);
+      individualStudyService.publish(id, publish, cascadingScope, notify);
     } else {
-      harmonizationStudyService.publish(id, publish, cascadingScope);
+      harmonizationStudyService.publish(id, publish, cascadingScope, notify);
     }
   }
 

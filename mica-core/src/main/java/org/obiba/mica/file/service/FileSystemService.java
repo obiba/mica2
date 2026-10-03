@@ -304,13 +304,14 @@ public class FileSystemService {
   }
 
   /**
-   * Change the publication status recursively.
+   * Change the publication status recursively and notify it. The publication cascaded from the
+   * documents (studies, networks etc.) is not notified, as the document publication is.
    *
    * @param path
    * @param publish
    */
   public void publish(String path, boolean publish) {
-    publish(path, publish, getCurrentUsername());
+    if(publish(path, publish, getCurrentUsername())) notifyPublished(path, null, publish);
   }
 
   /**
@@ -319,14 +320,17 @@ public class FileSystemService {
    * @param path
    * @param publish
    * @param publisher
+   * @return whether there were files to publish, or published files to unpublish
    */
-  public void publish(String path, boolean publish, String publisher) {
+  public boolean publish(String path, boolean publish, String publisher) {
     fsLock.lock();
     try {
       List<AttachmentState> states = findFolderAttachmentStates(path, false);
+      boolean changed = publish ? !states.isEmpty() : states.stream().anyMatch(AttachmentState::isPublished);
       Map<String, AttachmentState> statesToProcess = Maps.newHashMap();
       states.forEach(s -> publish(s, publish, statesToProcess));
       batchPublish(statesToProcess.values(), publisher, publish);
+      return changed;
     } finally {
       fsLock.unlock();
     }
@@ -374,11 +378,32 @@ public class FileSystemService {
    * @param publish
    */
   public void publish(String path, String name, boolean publish) {
+    boolean changed;
     fsLock.lock();
     try {
-      publish(getAttachmentState(path, name, false), publish);
+      AttachmentState state = getAttachmentState(path, name, false);
+      changed = publish || state.isPublished();
+      publish(state, publish);
     } finally {
       fsLock.unlock();
+    }
+    if(changed) notifyPublished(path, name, publish);
+  }
+
+  /**
+   * A notification failure must not fail the publication, which is already saved.
+   *
+   * @param path
+   * @param name file name, null for a folder
+   * @param publish
+   */
+  private void notifyPublished(String path, @Nullable String name, boolean publish) {
+    try {
+      if(name == null) filePublicationFlowNotification.sendPublished(path, publish);
+      else filePublicationFlowNotification.sendPublished(path, name, publish);
+    } catch (Exception e) {
+      log.warn("Failed to notify the {} of {}", publish ? "publication" : "unpublication",
+        name == null ? path : path + "/" + name, e);
     }
   }
 
@@ -533,7 +558,7 @@ public class FileSystemService {
     AttachmentState state = getAttachmentState(path, name, false);
     RevisionStatus currentStatus = state.getRevisionStatus();
     updateStatus(state, status);
-    filePublicationFlowNotification.send(path, currentStatus, status);
+    filePublicationFlowNotification.send(path, name, currentStatus, status);
   }
 
   /**
@@ -739,7 +764,8 @@ public class FileSystemService {
   public void studyUnpublished(StudyUnpublishedEvent event) {
     log.debug("Study {} was unpublished", event.getPersistable());
     publish(
-      String.format("/%s/%s", event.getPersistable().getResourcePath(), event.getPersistable().getId()), false
+      String.format("/%s/%s", event.getPersistable().getResourcePath(), event.getPersistable().getId()), false,
+      getCurrentUsername()
     );
   }
 
@@ -794,7 +820,7 @@ public class FileSystemService {
   @Subscribe
   public void networkUnpublished(NetworkUnpublishedEvent event) {
     log.debug("Network {} was unpublished", event.getPersistable());
-    publish(String.format("/network/%s", event.getPersistable().getId()), false);
+    publish(String.format("/network/%s", event.getPersistable().getId()), false, getCurrentUsername());
   }
 
   @Async
@@ -828,7 +854,7 @@ public class FileSystemService {
   public void datasetUnpublished(DatasetUnpublishedEvent event) {
     log.debug("{} {} was unpublished", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
     publish(String.format("/%s/%s", getDatasetTypeFolder(event.getPersistable()), event.getPersistable().getId()),
-        false);
+        false, getCurrentUsername());
   }
 
   @Async
@@ -861,7 +887,7 @@ public class FileSystemService {
   @Subscribe
   public void projectUnpublished(ProjectUnpublishedEvent event) {
     log.debug("Project {} was unpublished", event.getPersistable());
-    publish(String.format("/project/%s", event.getPersistable().getId()), false);
+    publish(String.format("/project/%s", event.getPersistable().getId()), false, getCurrentUsername());
   }
 
   private String getDatasetTypeFolder(Dataset dataset) {

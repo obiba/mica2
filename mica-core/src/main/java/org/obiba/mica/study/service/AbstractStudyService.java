@@ -53,7 +53,6 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
@@ -224,6 +223,16 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
       @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id") })
   public void publish(@NotNull String id, boolean publish, PublishCascadingScope cascadingScope)
       throws NoSuchEntityException {
+    publish(id, publish, cascadingScope, true);
+  }
+
+  /**
+   * @param notify whether the (un)publication is notified by email (not when done by a system task)
+   */
+  @Caching(evict = { @CacheEvict(value = "aggregations-metadata", allEntries = true),
+      @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id") })
+  public void publish(@NotNull String id, boolean publish, PublishCascadingScope cascadingScope, boolean notify)
+      throws NoSuchEntityException {
     log.info("Publish study: {}", id);
     Optional<T> study = getRepository().findById(id);
 
@@ -232,10 +241,10 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
     }
 
     if (publish) {
-      publishState(id);
+      publishState(id, notify);
       eventBus.post(new StudyPublishedEvent(study.get(), getCurrentUsername(), cascadingScope));
     } else {
-      unPublishState(id);
+      unPublishState(id, notify);
       eventBus.post(new StudyUnpublishedEvent(study.get()));
     }
   }
@@ -254,14 +263,4 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
   }
 
   protected abstract void checkStudyConstraints(T study);
-
-  protected void removeRoles(@NotNull T study, Iterable<String> roles) {
-    saveInternal(study, String.format("Removed roles: %s", Joiner.on(", ").join(roles)), false);
-    S state = findStateById(study.getId());
-
-    if (state.isPublished()) {
-      publishState(study.getId());
-      eventBus.post(new StudyPublishedEvent(study, getCurrentUsername(), PublishCascadingScope.NONE));
-    }
-  }
 }

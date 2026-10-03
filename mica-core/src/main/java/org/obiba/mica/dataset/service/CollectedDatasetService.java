@@ -221,18 +221,26 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
    */
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'dataset'") })
   public void publish(@NotNull String id, boolean published, PublishCascadingScope cascadingScope) {
+    publish(id, published, cascadingScope, true);
+  }
+
+  /**
+   * @param notify whether the (un)publication is notified by email (not when done by a system task)
+   */
+  @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'dataset'") })
+  public void publish(@NotNull String id, boolean published, PublishCascadingScope cascadingScope, boolean notify) {
     StudyDataset dataset = findById(id);
     helper.evictCache(dataset);
 
     if(published) {
       checkIsPublishable(dataset);
       Iterable<DatasetVariable> variables = wrappedGetDatasetVariables(dataset);
-      publishState(id);
+      publishState(id, notify);
       prepareForIndex(dataset);
       eventBus.post(new DatasetPublishedEvent(dataset, variables, getCurrentUsername(), cascadingScope));
       //helper.asyncBuildDatasetVariablesCache(dataset, variables);
     } else {
-      unPublishState(id);
+      unPublishState(id, notify);
       eventBus.post(new DatasetUnpublishedEvent(dataset));
     }
   }

@@ -29,7 +29,9 @@ import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
+import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.notification.EntityPublicationFlowMailNotification;
+import org.obiba.mica.core.notification.EntityPublishedMailNotification;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
 import org.obiba.mica.core.repository.CommentsRepository;
@@ -118,6 +120,9 @@ public class IndividualStudyServiceTest {
   @Inject
   private MongoTemplate mongoTemplate;
 
+  @Inject
+  private EntityPublishedMailNotification entityPublishedNotification;
+
   @BeforeAll
   public static void init() {
     assumeTrue(isMongoAvailable(), "MongoDB is not available on localhost:27017");
@@ -136,7 +141,7 @@ public class IndividualStudyServiceTest {
   @BeforeEach
   public void clearDatabase() {
     mongoTemplate.getDb().drop();
-    reset(eventBus);
+    reset(eventBus, entityPublishedNotification);
   }
 
   @Test
@@ -228,12 +233,41 @@ public class IndividualStudyServiceTest {
     StudyState publishedState = publishedStates.get(0);
     assertThat(publishedState.getId()).isEqualTo(study.getId());
     assertThat(publishedState.getPublishedTag()).isEqualTo("1");
+    verify(entityPublishedNotification).send(study.getId(), "individual-study", true);
 
     Study draft = individualStudyService.findDraft(study.getId());
     draft.setName(en("new name en").forFr("new name fr"));
     individualStudyService.save(draft);
 
     assertThat(individualStudyService.findDraft(study.getId())).areFieldsEqualToEachOther(draft);
+  }
+
+  @Test
+  public void test_unpublish_sends_notification() throws Exception {
+    Study study = new Study();
+    study.setName(en("name en").forFr("name fr"));
+    individualStudyService.save(study);
+    individualStudyService.publish(study.getId(), true);
+
+    individualStudyService.publish(study.getId(), false);
+
+    assertThat(individualStudyService.findPublishedStates()).isEmpty();
+    verify(entityPublishedNotification).send(study.getId(), "individual-study", false);
+  }
+
+  @Test
+  public void test_publish_without_notification() throws Exception {
+    Study study = new Study();
+    study.setName(en("name en").forFr("name fr"));
+    individualStudyService.save(study);
+
+    individualStudyService.publish(study.getId(), true, PublishCascadingScope.NONE, false);
+    assertThat(individualStudyService.findPublishedStates()).hasSize(1);
+
+    individualStudyService.publish(study.getId(), false, PublishCascadingScope.NONE, false);
+    assertThat(individualStudyService.findPublishedStates()).isEmpty();
+
+    verifyNoInteractions(entityPublishedNotification);
   }
 
   @Test
@@ -505,6 +539,11 @@ public class IndividualStudyServiceTest {
     @Bean
     public EntityPublicationFlowMailNotification entityPublicationFlowNotification() {
       return mock(EntityPublicationFlowMailNotification.class);
+    }
+
+    @Bean
+    public EntityPublishedMailNotification entityPublishedNotification() {
+      return mock(EntityPublishedMailNotification.class);
     }
 
     @Bean

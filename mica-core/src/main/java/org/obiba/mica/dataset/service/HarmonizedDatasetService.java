@@ -323,12 +323,20 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
      */
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'dataset'") })
   public void publish(@NotNull String id, boolean published, PublishCascadingScope cascadingScope) {
+    publish(id, published, cascadingScope, true);
+  }
+
+  /**
+   * @param notify whether the (un)publication is notified by email (not when done by a system task)
+   */
+  @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'dataset'") })
+  public void publish(@NotNull String id, boolean published, PublishCascadingScope cascadingScope, boolean notify) {
     HarmonizationDataset dataset = findById(id);
     helper.evictCache(dataset);
 
     if(published) {
       checkIsPublishable(dataset);
-      publishState(id);
+      publishState(id, notify);
 
       dataset.generateTableUniqueId();
 
@@ -336,7 +344,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
         getCurrentUsername(), cascadingScope));
       indexHarmonizedVariables(dataset);
     } else {
-      unPublishState(id);
+      unPublishState(id, notify);
       eventBus.post(new DatasetUnpublishedEvent(dataset));
     }
   }

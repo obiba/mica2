@@ -164,7 +164,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     });
 
     if(publish) {
-      studyService.publish(id, true, PublishCascadingScope.ALL);
+      studyService.publish(id, true, PublishCascadingScope.ALL, false);
     }
   }
 
@@ -198,7 +198,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
 
     if (!exists) updated.setId(id);
 
-    if(publish) networkService.publish(id, true, PublishCascadingScope.ALL);
+    if(publish) networkService.publish(id, true, PublishCascadingScope.ALL, false);
   }
 
   private void saveTempFile(Attachment attachment, ByteSource content) throws IOException {
@@ -231,7 +231,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       collectedDatasetService.save(dataset);
       dataset.setId(id);
     }
-    if(publish) collectedDatasetService.publish(id, publish, PublishCascadingScope.ALL);
+    if(publish) collectedDatasetService.publish(id, publish, PublishCascadingScope.ALL, false);
   }
 
   private void importDataset(HarmonizationDataset dataset, boolean publish) {
@@ -246,7 +246,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       harmonizedDatasetService.save(dataset);
       dataset.setId(id);
     }
-    if(publish) harmonizedDatasetService.publish(id, publish, PublishCascadingScope.ALL);
+    if(publish) harmonizedDatasetService.publish(id, publish, PublishCascadingScope.ALL, false);
   }
 
   private final class StudyPackage {
