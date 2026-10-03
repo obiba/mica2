@@ -11,73 +11,84 @@
       />
     </div>
     <q-spinner-dots v-if="loading" color="primary" size="2em" />
-    <div v-else class="row q-col-gutter-md">
-      <div v-for="item in members" :key="item.role" class="col-12 col-md-6">
-        <q-card flat bordered>
-          <q-card-section class="row items-center q-py-sm">
-            <div class="text-subtitle1 col">{{ roleLabel(item.role) }}</div>
-            <q-btn
-              v-if="canEdit"
-              flat
-              dense
-              size="sm"
-              icon="add"
-              color="primary"
-              :label="t('add')"
-              :disable="working"
-              @click="onShowAdd(item)"
-            />
-          </q-card-section>
-          <q-separator />
-          <q-list dense separator>
-            <q-item v-for="(person, index) in item.persons" :key="person.id ?? index">
-              <q-item-section>
-                <q-item-label>
-                  <router-link :to="`/persons/${person.id}`" class="text-primary">{{ fullName(person) }}</router-link>
-                </q-item-label>
-                <q-item-label v-if="person.institution" caption>
-                  {{ localized(person.institution.name, locale) }}
-                </q-item-label>
-              </q-item-section>
-              <q-item-section v-if="canEdit" side class="row no-wrap">
-                <div class="text-no-wrap">
-                  <q-btn
-                    flat
-                    dense
-                    size="sm"
-                    icon="arrow_upward"
-                    :title="t('members.move_up')"
-                    :disable="working || index === 0"
-                    @click="onMove(item, person, -1)"
-                  />
-                  <q-btn
-                    flat
-                    dense
-                    size="sm"
-                    icon="arrow_downward"
-                    :title="t('members.move_down')"
-                    :disable="working || index === item.persons.length - 1"
-                    @click="onMove(item, person, 1)"
-                  />
-                  <q-btn
-                    flat
-                    dense
-                    size="sm"
-                    icon="delete"
-                    color="negative"
-                    :title="t('delete')"
-                    :disable="working"
-                    @click="toRemove = { role: item.role, person }"
-                  />
-                </div>
-              </q-item-section>
-            </q-item>
-            <q-item v-if="item.persons.length === 0">
-              <q-item-section class="text-hint">{{ t('members.none') }}</q-item-section>
-            </q-item>
-          </q-list>
-        </q-card>
-      </div>
+    <div v-else class="members-grid">
+      <q-card v-for="item in members" :key="item.role" flat bordered>
+        <q-card-section class="row items-center q-py-sm">
+          <div class="text-subtitle1 col">{{ roleLabel(item.role) }}</div>
+          <q-btn
+            v-if="canEdit"
+            flat
+            dense
+            size="sm"
+            icon="add"
+            color="primary"
+            :label="t('add')"
+            :disable="working"
+            @click="onShowAdd(item)"
+          />
+        </q-card-section>
+        <q-separator />
+        <q-list dense separator>
+          <q-item
+            v-for="(person, index) in item.persons"
+            :key="person.id ?? index"
+            :draggable="canEdit && !working"
+            :class="{ 'bg-blue-1': dragOver === `${item.role}:${index}` }"
+            @dragstart="onDragStart($event, item, index)"
+            @dragover="onDragOver($event, item, index)"
+            @dragleave="dragOver = undefined"
+            @drop="onDrop(item, index)"
+            @dragend="dragged = dragOver = undefined"
+          >
+            <q-item-section v-if="canEdit" avatar class="cursor-move" style="min-width: 0">
+              <q-icon name="drag_indicator" color="grey" :title="t('members.drag')" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>
+                <router-link :to="`/persons/${person.id}`" class="text-primary">{{ fullName(person) }}</router-link>
+              </q-item-label>
+              <q-item-label v-if="person.institution" caption>
+                {{ localized(person.institution.name, locale) }}
+              </q-item-label>
+            </q-item-section>
+            <q-item-section v-if="canEdit" side class="row no-wrap">
+              <div class="text-no-wrap">
+                <q-btn
+                  flat
+                  dense
+                  size="sm"
+                  icon="arrow_upward"
+                  :title="t('members.move_up')"
+                  :disable="working || index === 0"
+                  @click="onMove(item, person, -1)"
+                />
+                <q-btn
+                  flat
+                  dense
+                  size="sm"
+                  icon="arrow_downward"
+                  :title="t('members.move_down')"
+                  :disable="working || index === item.persons.length - 1"
+                  @click="onMove(item, person, 1)"
+                />
+                <q-btn
+                  flat
+                  dense
+                  size="sm"
+                  icon="delete"
+                  color="negative"
+                  :title="t('delete')"
+                  :disable="working"
+                  @click="toRemove = { role: item.role, person }"
+                />
+              </div>
+            </q-item-section>
+          </q-item>
+          <q-item v-if="item.persons.length === 0">
+            <q-item-section class="text-hint">{{ t('members.none') }}</q-item-section>
+          </q-item>
+        </q-list>
+      </q-card>
     </div>
 
     <add-member-dialog
@@ -91,9 +102,7 @@
     <confirm-dialog
       :model-value="toRemove !== undefined"
       :title="t('members.remove_title')"
-      :text="
-        t('members.remove_text', { name: fullName(toRemove?.person), role: roleLabel(toRemove?.role ?? '') })
-      "
+      :text="t('members.remove_text', { name: fullName(toRemove?.person), role: roleLabel(toRemove?.role ?? '') })"
       @update:model-value="toRemove = undefined"
       @confirm="onRemove"
     />
@@ -109,7 +118,14 @@ import NetworkPeopleDialog from 'src/components/networks/NetworkPeopleDialog.vue
 import { usePersonsStore } from 'src/stores/persons';
 import { notifyError } from 'src/utils/notify';
 import { associatedPeopleQuery } from 'src/utils/networks';
-import { fullName, localized, membersByRole, moveMember, type MembersParent, type RoleMembers } from 'src/utils/persons';
+import {
+  fullName,
+  localized,
+  membersByRole,
+  moveMember,
+  type MembersParent,
+  type RoleMembers,
+} from 'src/utils/persons';
 
 type Document = NetworkDto | StudyDto;
 
@@ -195,6 +211,29 @@ async function onRemove() {
   if (removed && id) await changeRole(() => personsStore.removeRole(id, props.parent, parentId.value, removed.role));
 }
 
+/** the member being dragged, to be moved within its role */
+const dragged = ref<{ role: string; index: number }>();
+const dragOver = ref<string>();
+
+function onDragStart(event: DragEvent, item: RoleMembers, index: number) {
+  dragged.value = { role: item.role, index };
+  // required by Firefox to start the drag
+  event.dataTransfer?.setData('text/plain', item.persons[index]?.id ?? '');
+}
+
+function onDragOver(event: DragEvent, item: RoleMembers, index: number) {
+  if (dragged.value?.role !== item.role) return;
+  event.preventDefault();
+  dragOver.value = `${item.role}:${index}`;
+}
+
+function onDrop(item: RoleMembers, index: number) {
+  const from = dragged.value;
+  dragged.value = dragOver.value = undefined;
+  const person = from && item.persons[from.index];
+  if (person && from.role === item.role && from.index !== index) onMove(item, person, index - from.index);
+}
+
 function onMove(item: RoleMembers, person: PersonDto, delta: number) {
   emit('change', {
     ...props.document,
@@ -204,3 +243,22 @@ function onMove(item: RoleMembers, person: PersonDto, delta: number) {
 
 watch(parentId, load, { immediate: true });
 </script>
+
+<style scoped>
+/* masonry: the cards pile up in their column, ordered top to bottom then left to right */
+.members-grid {
+  columns: 1;
+  column-gap: 16px;
+}
+
+.members-grid > .q-card {
+  break-inside: avoid;
+  margin-bottom: 16px;
+}
+
+@media (min-width: 1024px) {
+  .members-grid {
+    columns: 2;
+  }
+}
+</style>
