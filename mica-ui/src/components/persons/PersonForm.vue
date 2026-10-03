@@ -1,8 +1,8 @@
 <template>
   <q-json-form
     :model-value="modelValue"
-    :schema="converted.schema"
-    :uischema="converted.uischema"
+    :schema="schema"
+    :uischema="uischema"
     :readonly="readonly"
     :languages="systemStore.languages"
     :validation-mode="validationMode"
@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import type { ErrorObject } from 'ajv';
 import type { ValidationMode } from '@jsonforms/core';
-import { QJsonForm, toJsonForms } from '@obiba/quasar-ui-json-form';
+import { QJsonForm } from '@obiba/quasar-ui-json-form';
 import type { FormModel } from 'src/composables/useDocumentModel';
 
 interface Props {
@@ -22,85 +22,67 @@ interface Props {
   readonly?: boolean;
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 const emit = defineEmits<{ 'update:modelValue': [model: FormModel] }>();
 const { t } = useI18n();
 const systemStore = useSystemStore();
 
-// the contact form of the legacy admin app (`app/contact/contact-schemaform.js`)
-const LOCALIZED = { type: 'object', format: 'localizedString' };
-const SCHEMA = {
+const field = (key: string) => t(`persons.field.${key}`);
+const text = (key: string) => ({ title: field(key), type: 'string' });
+const localized = (key: string) => ({ title: field(key), type: 'object', format: 'localizedString' });
+const control = (path: string) => ({ type: 'Control', scope: `#/properties/${path.split('.').join('/properties/')}`, options: { dense: true } });
+const column = (title: string, paths: string[]) => ({
+  type: 'VerticalLayout',
+  options: { class: 'col-12 col-md-6' },
+  elements: [{ type: 'Label', text: `<h6>${t(`persons.${title}`)}</h6>` }, ...paths.map(control)],
+});
+
+const schema = computed(() => ({
   type: 'object',
   properties: {
-    title: { title: 't(title)', type: 'string' },
-    firstName: { title: 't(first_name)', type: 'string' },
-    lastName: { title: 't(last_name)', type: 'string' },
-    academicLevel: { title: 't(academic_level)', type: 'string' },
-    email: { title: 't(email)', type: 'string', pattern: '^\\S+@\\S+$' },
-    phone: { title: 't(phone)', type: 'string' },
+    title: text('title'),
+    firstName: text('first_name'),
+    lastName: text('last_name'),
+    academicLevel: text('academic_level'),
+    email: { ...text('email'), pattern: '^\\S+@\\S+$' },
+    phone: text('phone'),
     institution: {
       type: 'object',
       properties: {
-        name: { title: 't(institution_name)', ...LOCALIZED },
-        department: { title: 't(department)', ...LOCALIZED },
+        name: localized('institution_name'),
+        department: localized('department'),
         address: {
           type: 'object',
           properties: {
-            street: { title: 't(street)', ...LOCALIZED },
-            city: { title: 't(city)', ...LOCALIZED },
-            zip: { title: 't(zip)', type: 'string' },
-            state: { title: 't(state)', type: 'string' },
-            country: { title: 't(country)', type: 'string', format: 'obibaCountriesUiSelect' },
+            street: localized('street'),
+            city: localized('city'),
+            zip: text('zip'),
+            state: text('state'),
+            country: { ...text('country'), format: 'obibaCountriesUiSelect' },
           },
         },
       },
     },
   },
   required: ['lastName'],
-};
-const DEFINITION = [
-  {
-    type: 'section',
-    htmlClass: 'row',
-    items: [
-      {
-        type: 'section',
-        htmlClass: 'col-xs-12 col-md-6',
-        items: [
-          { type: 'help', helpvalue: '<h6>t(identification)</h6>' },
-          'title',
-          'firstName',
-          'lastName',
-          'academicLevel',
-          'email',
-          'phone',
-        ],
-      },
-      {
-        type: 'section',
-        htmlClass: 'col-xs-12 col-md-6',
-        items: [
-          { type: 'help', helpvalue: '<h6>t(institution)</h6>' },
-          { key: 'institution.name', type: 'localizedstring' },
-          { key: 'institution.department', type: 'localizedstring' },
-          { key: 'institution.address.street', type: 'localizedstring' },
-          { key: 'institution.address.city', type: 'localizedstring' },
-          'institution.address.zip',
-          'institution.address.state',
-          { key: 'institution.address.country', type: 'obibaCountriesUiSelect' },
-        ],
-      },
-    ],
-  },
-];
+}));
 
-const converted = computed(() =>
-  toJsonForms(SCHEMA, DEFINITION, {
-    readonly: props.readonly === true,
-    translate: (key: string) =>
-      ['identification', 'institution'].includes(key) ? t(`persons.${key}`) : t(`persons.field.${key}`),
-  }),
-);
+const uischema = computed(() => ({
+  type: 'VerticalLayout',
+  options: { class: 'row q-col-gutter-md' },
+  elements: [
+    column('identification', ['title', 'firstName', 'lastName', 'academicLevel', 'email', 'phone']),
+    column('institution', [
+      'institution.name',
+      'institution.department',
+      'institution.address.street',
+      'institution.address.city',
+      'institution.address.zip',
+      'institution.address.state',
+      'institution.address.country',
+    ]),
+  ],
+}));
 
 // errors are shown after the first explicit validation only, as in the documents forms
 const validationMode = ref<ValidationMode>('ValidateAndHide');
