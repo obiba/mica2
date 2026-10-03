@@ -22,36 +22,60 @@ export const useFormsStore = defineStore('forms', () => {
     return `${formPath}?locale=${locale}`;
   }
 
-  async function getForm(formPath: string, locale: string): Promise<AsfForm> {
-    const cached = forms.value[key(formPath, locale)];
-    if (cached) return cached;
-    const response = await api.get<EntityFormDto>(formPath, { params: { locale } });
-    const form: AsfForm = {
-      schema: JSON.parse(response.data.schema),
-      definition: JSON.parse(response.data.definition),
-    };
-    forms.value[key(formPath, locale)] = form;
-    return form;
+  /** the requests in flight, shared by concurrent callers; removed once settled, so a failure is retried */
+  const pendingForms = new Map<string, Promise<AsfForm>>();
+  const pendingBundles = new Map<string, Promise<Messages>>();
+
+  function getForm(formPath: string, locale: string): Promise<AsfForm> {
+    const k = key(formPath, locale);
+    const cached = forms.value[k];
+    if (cached) return Promise.resolve(cached);
+    let request = pendingForms.get(k);
+    if (!request) {
+      request = api
+        .get<EntityFormDto>(formPath, { params: { locale } })
+        .then((response) => {
+          const form: AsfForm = {
+            schema: JSON.parse(response.data.schema),
+            definition: JSON.parse(response.data.definition),
+          };
+          forms.value[k] = form;
+          return form;
+        })
+        .finally(() => pendingForms.delete(k));
+      pendingForms.set(k, request);
+    }
+    return request;
   }
 
-  /** the Mica messages of a language, by dotted key, cached; empty when the bundle cannot be read */
-  async function getBundle(language: string): Promise<Messages> {
+  /** the Mica messages of a language, by dotted key, cached; empty (and not cached) when the bundle cannot be read */
+  function getBundle(language: string): Promise<Messages> {
     const cached = bundles.value[language];
-    if (cached) return cached;
-    let messages: Messages = {};
-    try {
-      const response = await api.get<unknown>(`/config/i18n/${language}.json`);
-      messages = flattenMessages(response.data);
-    } catch (error) {
-      console.warn(`[forms] cannot read the ${language} translations`, error);
+    if (cached) return Promise.resolve(cached);
+    let request = pendingBundles.get(language);
+    if (!request) {
+      request = api
+        .get<unknown>(`/config/i18n/${language}.json`)
+        .then((response) => {
+          const messages = flattenMessages(response.data);
+          bundles.value[language] = messages;
+          return messages;
+        })
+        .catch((error) => {
+          console.warn(`[forms] cannot read the ${language} translations`, error);
+          return {};
+        })
+        .finally(() => pendingBundles.delete(language));
+      pendingBundles.set(language, request);
     }
-    bundles.value[language] = messages;
-    return messages;
+    return request;
   }
 
   function clear() {
     forms.value = {};
     bundles.value = {};
+    pendingForms.clear();
+    pendingBundles.clear();
   }
 
   return { forms, bundles, getForm, getBundle, clear };
