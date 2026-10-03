@@ -345,8 +345,10 @@ const printing = ref(false);
 let printRequested = false;
 
 function print() {
-  // no print view, or already mounted (no ready event to wait for)
-  if (!study.value || printing.value) {
+  // waiting for the print view to be ready
+  if (printRequested) return;
+  // no print view (it lives in the view tab), or already mounted (no ready event to wait for)
+  if (!study.value || tab.value !== 'view' || printing.value) {
     window.print();
     return;
   }
@@ -364,6 +366,9 @@ function onPrintError() {
   printRequested = false;
   printing.value = false;
 }
+
+// leaving the view tab unmounts the print view: drop the pending print
+watch(tab, onPrintError);
 
 // browser printing (Ctrl+P) is best effort: the forms may not be rendered in time
 function onBeforePrint() {
