@@ -29,6 +29,26 @@
             dense
             round
             size="sm"
+            icon="arrow_upward"
+            :title="t('config.move_up')"
+            :disable="saving || roles.indexOf(props.row.id) === 0"
+            @click="onMove(props.row.id, -1)"
+          />
+          <q-btn
+            flat
+            dense
+            round
+            size="sm"
+            icon="arrow_downward"
+            :title="t('config.move_down')"
+            :disable="saving || roles.indexOf(props.row.id) === roles.length - 1"
+            @click="onMove(props.row.id, 1)"
+          />
+          <q-btn
+            flat
+            dense
+            round
+            size="sm"
             icon="delete"
             color="negative"
             :title="t('delete')"
@@ -67,7 +87,7 @@ const roles = computed(() => systemStore.configuration.roles || []);
 const rows = computed(() => roles.value.map((id) => ({ id })));
 
 const columns = computed<QTableColumn[]>(() => [
-  { name: 'id', label: t('config.role_id'), field: 'id', align: 'left', sortable: true },
+  { name: 'id', label: t('config.role_id'), field: 'id', align: 'left' },
   ...(authStore.isAdministrator
     ? [{ name: 'actions', label: t('history.actions'), field: 'id', align: 'left' } as QTableColumn]
     : []),
@@ -92,6 +112,14 @@ async function saveRoles(list: string[]): Promise<boolean> {
 
 async function onAdd(role: string) {
   if (await saveRoles([...roles.value, role])) showAdd.value = false;
+}
+
+/** the roles order is the members roles display order */
+async function onMove(role: string, delta: number) {
+  const list = [...roles.value];
+  const from = list.indexOf(role);
+  list.splice(from + delta, 0, ...list.splice(from, 1));
+  await saveRoles(list);
 }
 
 function onDeleteRequest(role: string) {
