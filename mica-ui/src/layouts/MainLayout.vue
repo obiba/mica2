@@ -61,6 +61,9 @@ import { locales } from 'boot/i18n';
 import { toPortalUrl } from 'src/boot/api';
 import ReSigninDialog from 'src/components/ReSigninDialog.vue';
 import MainDrawer from 'src/components/MainDrawer.vue';
+import type { DocumentType } from 'src/composables/useDocumentTarget';
+import { entityConfig } from 'src/utils/entityConfigs';
+import type { RouteLocationNormalized } from 'vue-router';
 
 const { t } = useI18n();
 const router = useRouter();
@@ -83,9 +86,18 @@ function isAdminPath(path: string) {
   return /^\/(settings|persons)(\/|$)/.test(path);
 }
 
+// pages of a section disabled in the Mica configuration, decided once the configuration is loaded
+function isDisabledSection(route: RouteLocationNormalized) {
+  const type = route.meta.documentType as DocumentType | undefined;
+  const config = systemStore.configuration;
+  if (Object.keys(config).length === 0) return false;
+  if (route.path === '/settings/data-access') return !config.isDataAccessEnabled;
+  return !!type && !entityConfig(type).isEnabled(config);
+}
+
 onMounted(() => {
   router.beforeEach((to, from, next) => {
-    if (authStore.isAuthenticated && !authStore.isAdministrator && isAdminPath(to.path)) {
+    if ((authStore.isAuthenticated && !authStore.isAdministrator && isAdminPath(to.path)) || isDisabledSection(to)) {
       next('/');
     } else {
       next();
@@ -97,7 +109,11 @@ onMounted(() => {
       if (!authStore.isAdministrator && isAdminPath(router.currentRoute.value.path)) {
         router.replace('/');
       }
-      systemStore.init();
+      systemStore.init().then(() => {
+        if (isDisabledSection(router.currentRoute.value)) {
+          router.replace('/');
+        }
+      });
     })
     .catch(() => {
       window.location.href = toPortalUrl('/signin');
