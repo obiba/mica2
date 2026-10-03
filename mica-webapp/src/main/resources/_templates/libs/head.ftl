@@ -82,6 +82,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="x-ua-compatible" content="ie=edge">
 
+<!-- No dark mode: stop AdminLTE from following the OS color scheme -->
+<script>document.documentElement.setAttribute("data-lte-color-mode", "off");</script>
+
 <!-- Favicon -->
 <link rel="shortcut icon" href="${faviconPath}" />
 
