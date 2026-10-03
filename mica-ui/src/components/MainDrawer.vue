@@ -29,7 +29,7 @@
           <q-item-label>{{ t('dashboard.title') }}</q-item-label>
         </q-item-section>
       </q-item>
-      <q-item to="/networks">
+      <q-item v-if="isEnabled('network')" to="/networks">
         <q-item-section avatar>
           <q-icon name="hub" />
         </q-item-section>
@@ -50,7 +50,7 @@
           <q-item-label>{{ t('individual.studies.title') }}</q-item-label>
         </q-item-section>
       </q-item>
-      <q-item :to="`/collected-datasets`">
+      <q-item v-if="isEnabled('collected-dataset')" :to="`/collected-datasets`">
         <q-item-section avatar class="q-ml-md">
           <q-icon name="splitscreen" />
         </q-item-section>
@@ -71,7 +71,7 @@
           <q-item-label>{{ t('harmonization.studies.title') }}</q-item-label>
         </q-item-section>
       </q-item>
-      <q-item :to="`/harmonized-datasets`">
+      <q-item v-if="isEnabled('harmonized-dataset')" :to="`/harmonized-datasets`">
         <q-item-section avatar class="q-ml-md">
           <q-icon name="splitscreen" />
         </q-item-section>
@@ -79,7 +79,7 @@
           <q-item-label>{{ t('harmonization.datasets.title') }}</q-item-label>
         </q-item-section>
       </q-item>
-      <q-item :to="`/projects`">
+      <q-item v-if="isEnabled('project')" :to="`/projects`">
         <q-item-section avatar>
           <q-icon name="science" />
         </q-item-section>
@@ -127,9 +127,17 @@
 <script setup lang="ts">
 import EssentialLink from 'components/EssentialLink.vue';
 import type { EssentialLinkProps } from 'components/EssentialLink.vue';
+import type { DocumentType } from 'src/composables/useDocumentTarget';
+import { entityConfig } from 'src/utils/entityConfigs';
 
 const { t } = useI18n();
 const authStore = useAuthStore();
+const systemStore = useSystemStore();
+
+/** a menu is shown only when its section is enabled in the Mica configuration */
+function isEnabled(type: DocumentType) {
+  return entityConfig(type).isEnabled(systemStore.configuration);
+}
 
 const username = computed(() => authStore.session?.username || '?');
 
