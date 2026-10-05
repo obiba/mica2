@@ -27,12 +27,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class DataAccessRequestCommentMailNotificationTest {
 
   private MailService mailService;
+
+  private SubjectAclService subjectAclService;
 
   private DataAccessRequestCommentMailNotification notification;
 
@@ -56,7 +59,7 @@ public class DataAccessRequestCommentMailNotificationTest {
     DataAccessRequestUtilService dataAccessRequestUtilService = mock(DataAccessRequestUtilService.class);
     when(dataAccessRequestUtilService.getRequestTitle(request)).thenReturn("My Project");
 
-    SubjectAclService subjectAclService = mock(SubjectAclService.class);
+    subjectAclService = mock(SubjectAclService.class);
     when(subjectAclService.findByResourceInstance("/data-access-request/private-comment", "*")).thenReturn(List.of(
       SubjectAcl.newBuilder("dac", SubjectAcl.Type.GROUP).resource("/data-access-request/private-comment").instance("*").build()));
 
@@ -90,6 +93,20 @@ public class DataAccessRequestCommentMailNotificationTest {
     assertEquals(List.of("dac"), List.copyOf(groups.getValue()));
     assertEquals(Collections.emptyList(), users.getValue());
 
+    verify(mailService).sendEmailToGroups(eq("[Mica A] My Project"), eq("dataAccessRequestCommentAdded"), any(Map.class),
+      eq("dao-a"));
+  }
+
+  @Test
+  public void testPrivateCommentWithoutPrivateCommentReadersNotifiesDaoOnly() {
+    when(subjectAclService.findByResourceInstance("/data-access-request/private-comment", "*")).thenReturn(List.of());
+    Comment comment = Comment.newBuilder().createdBy("dao").message("hello")
+      .resourceId("/data-access-request").instanceId("dar-1").admin(true).build();
+
+    notification.send(comment);
+
+    // no recipient would make Agate notify all the users of the application
+    verify(mailService, never()).sendEmailToGroupsAndUsers(anyString(), anyString(), any(Map.class), any(), any());
     verify(mailService).sendEmailToGroups(eq("[Mica A] My Project"), eq("dataAccessRequestCommentAdded"), any(Map.class),
       eq("dao-a"));
   }
