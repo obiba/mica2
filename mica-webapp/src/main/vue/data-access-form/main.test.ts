@@ -16,6 +16,10 @@ vi.stubGlobal('MicaService', MicaService);
 vi.stubGlobal('DataAccessService', DataAccessService);
 vi.stubGlobal('axios', axios);
 vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, json: async () => ({}) })));
+// jsdom has no screen.orientation, which the Quasar Screen plugin reads (quasar >= 2.34)
+Object.defineProperty(window.screen, 'orientation', {
+  value: { type: 'landscape-primary', angle: 0, addEventListener: vi.fn(), removeEventListener: vi.fn() },
+});
 
 const messages = { validationSuccess: 'valid', validationError: 'invalid', validationErrorOnSubmit: 'cannot submit', errorOnSave: 'save failed' };
 
