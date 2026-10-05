@@ -21,7 +21,7 @@
     "datatables.net-fixedheader-bs5": "^3.4.0",
     "datatables.net-select": "^1.7.0",
     "datatables.net-select-bs5": "^1.7.0",
-    "dompurify": "^3.4.15",
+    "dompurify": "^3.4.16",
     "jquery": "^3.7.1",
     "jquery.redirect": "^1.1.4",
     "js-cookie": "^3.0.7",
