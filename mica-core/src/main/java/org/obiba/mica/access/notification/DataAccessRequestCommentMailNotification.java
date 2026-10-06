@@ -91,13 +91,18 @@ public class DataAccessRequestCommentMailNotification implements MailNotificatio
 
     if (comment.getAdmin()) {
       List<SubjectAcl> privateCommentsAcls = getPrivateCommentsAcls();
+      List<String> readerGroups = getAclForType(privateCommentsAcls, Type.GROUP);
+      List<String> readerUsers = getAclForType(privateCommentsAcls, Type.USER);
 
-      mailService.sendEmailToGroupsAndUsers(
-        mailService.getSubject(dataAccessConfig.getCommentedSubject(), ctx, DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT),
-        "dataAccessRequestCommentAdded",
-        ctx,
-        getAclForType(privateCommentsAcls, Type.GROUP),
-        getAclForType(privateCommentsAcls, Type.USER));
+      // no private comment readers: without any recipient, Agate would notify all the users of the application
+      if (!readerGroups.isEmpty() || !readerUsers.isEmpty()) {
+        mailService.sendEmailToGroupsAndUsers(
+          mailService.getSubject(dataAccessConfig.getCommentedSubject(), ctx, DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT),
+          "dataAccessRequestCommentAdded",
+          ctx,
+          readerGroups,
+          readerUsers);
+      }
 
     } else {
       mailService.sendEmailToUsers(mailService.getSubject(dataAccessConfig.getCommentedSubject(), ctx, DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT),

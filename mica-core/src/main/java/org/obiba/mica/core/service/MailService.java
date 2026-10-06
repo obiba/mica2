@@ -119,6 +119,7 @@ public class MailService extends AgateRestService {
 
   private synchronized void sendEmail(String subject, String templateName, Map<String, String> context,
     String recipient) {
+    if (!hasRecipient(recipient, subject)) return;
     try {
       RestTemplate template = newRestTemplate();
       HttpHeaders headers = new HttpHeaders();
@@ -150,6 +151,7 @@ public class MailService extends AgateRestService {
   }
 
   private synchronized void sendEmail(String subject, String text, String recipient) {
+    if (!hasRecipient(recipient, subject)) return;
     try {
       RestTemplate template = newRestTemplate();
       HttpHeaders headers = new HttpHeaders();
@@ -169,6 +171,15 @@ public class MailService extends AgateRestService {
     } catch(Exception e) {
       log.error("Agate connection failure: {}", e.getMessage());
     }
+  }
+
+  /**
+   * Without any user or group, Agate notifies all the users of the application: never what is meant here.
+   */
+  private boolean hasRecipient(String recipient, String subject) {
+    if (!Strings.isNullOrEmpty(recipient)) return true;
+    log.warn("Email not sent, no recipient: {}", subject);
+    return false;
   }
 
   private String getNotificationsUrl() {
