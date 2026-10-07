@@ -73,6 +73,7 @@ public class DataAccessesController extends BaseController {
       addDataAccessConfiguration(params);
       List<DataAccessRequestBundle> dars = getDataAccessRequests(status);
       params.put("dars", dars);
+      params.put("canAddDar", subjectAclService.isPermitted("/data-access-request", "ADD"));
       if (subjectAclService.isPermitted("/user", "VIEW"))
         params.put("users", groupsToRolesMapper.toGroups(Roles.MICA_USER).stream()
           .flatMap(group -> userProfileService.getProfilesByGroup(group).stream())

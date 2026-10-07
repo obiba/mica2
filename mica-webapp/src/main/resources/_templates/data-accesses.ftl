@@ -60,11 +60,13 @@
           <div class="card-body">
 
             <#macro darList>
-              <div class="mb-3">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-add">
-                  <i class="fa-solid fa-plus"></i> <@message "new-data-access-request"/>
-                </button>
-              </div>
+              <#if canAddDar>
+                <div class="mb-3">
+                  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-add">
+                    <i class="fa-solid fa-plus"></i> <@message "new-data-access-request"/>
+                  </button>
+                </div>
+              </#if>
               <#if dars?? && dars?size gt 0>
                 <div class="table-responsive">
                   <table id="dars" class="table table-bordered table-striped">
