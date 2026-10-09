@@ -14,6 +14,11 @@
 //   mongosh --quiet mica entity-orphan-cleanup.js
 // Apply:
 //   mongosh --quiet mica --eval 'var APPLY = true' --file entity-orphan-cleanup.js
+// With Docker Compose (Mongo service "mongo"), after docker compose cp entity-orphan-cleanup.js mongo:/tmp/:
+//   docker compose exec -T mongo mongosh --quiet mica --file /tmp/entity-orphan-cleanup.js                              (dry run)
+//   docker compose exec -T mongo mongosh --quiet mica --eval 'var APPLY = true' --file /tmp/entity-orphan-cleanup.js    (apply)
+// APPLY is a shell variable set with --eval, not an environment variable: APPLY=true or docker compose exec -e APPLY=true
+// is ignored and the script runs a dry run. The last line of the output says which mode ran.
 //
 // Before applying: back up the database (mongodump --db mica) and stop Mica.
 // After applying: start Mica (permissions are cached).

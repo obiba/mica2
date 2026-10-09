@@ -12,6 +12,11 @@
 // Apply:
 //   mongosh --quiet mica --eval 'var APPLY = true' --file dar-orphan-cleanup.js
 //   docker exec -i <container> mongosh --quiet mica --eval "var APPLY = true; $(cat dar-orphan-cleanup.js)"
+// With Docker Compose (Mongo service "mongo"), after docker compose cp dar-orphan-cleanup.js mongo:/tmp/:
+//   docker compose exec -T mongo mongosh --quiet mica --file /tmp/dar-orphan-cleanup.js                              (dry run)
+//   docker compose exec -T mongo mongosh --quiet mica --eval 'var APPLY = true' --file /tmp/dar-orphan-cleanup.js    (apply)
+// APPLY is a shell variable set with --eval, not an environment variable: APPLY=true or docker compose exec -e APPLY=true
+// is ignored and the script runs a dry run. The last line of the output says which mode ran.
 //
 // Before applying: back up the database (mongodump --db mica) and stop Mica, or at least make sure no data access
 // request is being created meanwhile (its documents could be written before the request itself).
@@ -27,14 +32,22 @@ const apply = typeof APPLY !== 'undefined' && APPLY === true;
 // resources under /data-access-request/ that are not request ids
 const NOT_REQUEST_IDS = new Set(['private-comment', 'action-logs', 'new']);
 
-// existing requests; ids are stored raw or URL-encoded depending on the code path: keep both forms, an extra form can
-// only make the script delete less
+// same as org.obiba.mica.file.FileUtils#encode: java.net.URLEncoder (UTF-8) with '/' kept as is
+function javaUrlEncode(s) {
+  return encodeURIComponent(s)
+    .replace(/[!'()~]/g, c => '%' + c.charCodeAt(0).toString(16).toUpperCase())
+    .replace(/%20/g, '+')
+    .replace(/%2F/g, '/');
+}
+
+// existing requests; ids are stored raw or URL-encoded (FileUtils#encode) depending on the code path: keep both forms,
+// an extra form can only make the script delete less
 const liveIds = new Set();
 const liveCreated = new Map(); // id -> created date
 db.dataAccessRequest.find({}, { _id: 1, createdDate: 1 }).forEach(r => {
   const id = String(r._id);
   liveIds.add(id);
-  liveIds.add(encodeURIComponent(id));
+  liveIds.add(javaUrlEncode(id));
   liveCreated.set(id, r.createdDate);
 });
 const liveIdList = [...liveIds];
