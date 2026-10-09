@@ -145,7 +145,21 @@
                           <location>${dist.location}/tools</location>
                           <excludes>
                             <exclude>*.bat</exclude>
+                            <exclude>*.js</exclude>
                           </excludes>
+                        </source>
+                      </sources>
+                    </mapping>
+                    <mapping>
+                      <directory>${mica.dir}/tools</directory>
+                      <filemode>644</filemode>
+                      <directoryIncluded>false</directoryIncluded>
+                      <sources>
+                        <source>
+                          <location>${dist.location}/tools</location>
+                          <includes>
+                            <include>*.js</include>
+                          </includes>
                         </source>
                       </sources>
                     </mapping>
