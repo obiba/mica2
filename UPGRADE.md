@@ -7,14 +7,20 @@ one installed and the one being deployed.
 
 Security release: 2FA sign-in feedback, open redirect closed, credentials kept out of
 logs, XSS hardening (response headers, custom pages, Markdown, inline files) and
-authorization added on two administration endpoints.
+authorization added on two administration endpoints. Also: publication notifications,
+Agate groups resolved through the roles mapping, and data access request deletion fixed.
 
 ### Before upgrading
 
-1. **Agate first.** The sign-in page now reports a failure on the 2FA step as an invalid
-   code, which is only correct once Agate verifies the password before asking for the
-   code. Upgrade Agate to 5.0.0 or later before Mica; against an older Agate, a wrong
-   password entered on the 2FA step is reported as a wrong code.
+1. **Agate first.** Upgrade Agate to 5.1.0 or later before Mica:
+   - The sign-in page now reports a failure on the 2FA step as an invalid code, which is
+     only correct once Agate verifies the password before asking for the code (Agate
+     5.0.0). Against an older Agate, a wrong password entered on the 2FA step is reported
+     as a wrong code.
+   - Mica now emails editors and reviewers when a study, network, dataset, project or file
+     is published or unpublished. The email templates (`<type>Published`, `filePublished`)
+     are provided by Agate 5.1.0. Against an older Agate these emails are not sent;
+     publication itself is not affected.
 2. **Check for overridden templates.** The bundled templates below changed:
 
    ```sh
@@ -22,11 +28,14 @@ authorization added on two administration endpoints.
    ls signin.ftl libs/signin-scripts.ftl libs/scripts.ftl compare.ftl dataset.ftl variable.ftl \
       project.ftl libs/project.ftl libs/settings.ftl \
       data-access-form.ftl data-access-preliminary-form.ftl data-access-feasibility-form.ftl \
-      data-access-amendment-form.ftl data-access-agreement-form.ftl libs/data-access-form.ftl
+      data-access-amendment-form.ftl data-access-agreement-form.ftl libs/data-access-form.ftl \
+      data-accesses.ftl libs/contact-scripts.ftl libs/head.ftl libs/aside-navbar.ftl \
+      libs/navbar-menus-left.ftl
    ```
 
-   If any exists, keep a copy of the current bundled version
-   (`$MICA_DIST/WEB-INF/classes/_templates`) to compare against.
+   If any exists, keep a copy of the current bundled version to compare against:
+   `/usr/share/mica2/webapp/WEB-INF/classes/_templates` (Debian/RPM package and Docker image),
+   or `webapp/WEB-INF/classes/_templates` in the install folder of a ZIP install.
 3. **Check custom page names.** Custom pages (`$MICA_HOME/conf/templates/<name>.ftl` served
    at `/page/<name>`) are now only reachable when `<name>` is made of letters, digits, `_`
    and `-`, starts with a letter or digit, and is not the name of a bundled template.
@@ -53,6 +62,19 @@ authorization added on two administration endpoints.
      can now export it; this used to be refused (403) to anyone without an administrator or DAO
      role. The portal only offers this export to administrators and
      DAOs.
+6. **Check the roles mapping.** Skip this step if the `roles` section of
+   `$MICA_HOME/conf/application.yml` is not customised. Each `roles.<role>` entry lists the
+   Agate groups that grant a Mica role. Until now it was only applied at sign-in: whenever
+   Mica asked Agate for the members of a role, it used the role name as the group name. Mica
+   now asks for the mapped groups instead. This applies to the data access officer,
+   reviewer and editor emails, the list of users on the data access page, and the default
+   contact and sign-up groups.
+
+   For example, with `mica-data-access-officer: dao-mica-a`, the data access officer emails
+   used to be sent to the Agate group `mica-data-access-officer` and are now sent to
+   `dao-mica-a`. Only the groups that grant the role on their own receive them: with
+   `a,b|c`, only the members of `c` do. Check that the mapped groups are the ones that should
+   receive these emails. `mica-external-editor` can now be mapped too.
 
 ### Upgrade
 
@@ -70,6 +92,10 @@ Install the new version and restart as usual. No database migration runs at star
    - `signin.ftl` and `libs/signin-scripts.ftl`: without the change, a wrong 2FA code
      sends the user back to the credentials form with the generic authentication
      failure instead of "Invalid or expired code".
+   - `libs/contact-scripts.ftl`: after the contact form is sent, the user is now taken to
+     `${contextPath}/contact-success`. A copy that still goes to `/page/contact-success`
+     lands on a "not found" page, because `contact-success` is a bundled template and can
+     no longer be opened as a custom page (see "Check custom page names").
    - `compare.ftl`, `variable.ftl` and `dataset.ftl`: escaping fixes, re-apply them in
      your copy.
    - `test.ftl` was removed from the bundle. Delete any copy of it.
@@ -89,6 +115,15 @@ Install the new version and restart as usual. No database migration runs at star
      left out of the ZIP and listed in a `MISSING.txt` entry. If your copies of the templates are
      not updated, the ZIP download is not offered in the UI (the underlying `/files/_download`
      endpoints still work regardless).
+   - `data-accesses.ftl`: the **New data access request** button is now only shown to users
+     allowed to create one (new `canAddDar` page variable). An old copy shows it to everyone;
+     users without the permission get an error when they use it.
+   - `libs/head.ftl`: AdminLTE 4.10 follows the operating system's dark mode. The bundled
+     template turns that off (`data-lte-color-mode="off"`). Without it, visitors using dark
+     mode see the pages in AdminLTE's dark theme, which custom styles may not be designed for.
+   - `libs/aside-navbar.ftl` and `libs/navbar-menus-left.ftl`: small-screen fixes for
+     AdminLTE 4 (header class renamed to `app-header`, the Data Access button text no longer
+     wraps).
 2. **Custom translations**: the messages `sign-in-otp-failed` and `files` were added, bundled
    in English and French. Add them to any other language you provide.
 3. **Response headers.** Mica now sends `X-Content-Type-Options: nosniff`,
@@ -103,13 +138,110 @@ Install the new version and restart as usual. No database migration runs at star
    HTML and any other type are always downloaded as attachments. Custom pages or
    descriptions that embed an uploaded SVG or HTML file inline must switch to a raster
    image or serve the file from the `assets` directory.
-5. **Check** with a user for whom 2FA is enforced or activated: a wrong password is refused
+5. **New emails.** Editors and reviewers now receive an email when an entity or a file is
+   published or unpublished, and the users allowed to read private comments on data access
+   requests (e.g. a data access committee) now receive the private-comment emails. They use
+   the existing per-type switches of the notification settings: turn them off there if
+   these emails are not wanted.
+6. **Check** with a user for whom 2FA is enforced or activated: a wrong password is refused
    right away from the credentials form; a wrong code keeps the 2FA step open and shows
    "Invalid or expired code". Also open a study page with a Markdown description and
    check it is rendered as formatted HTML.
+7. **Recommended: clean up the data left by deleted entities.** Before 7.0, deleting a data
+   access request, study, network, dataset or project left some of its data in the database:
+
+   - data access requests: permissions, agreements and their form files, comments and
+     collaborators;
+   - studies, networks, datasets and projects: permissions, comments and, for individual
+     studies and datasets, their files.
+
+   A new entity that reuses the id of a deleted one inherits that data: permissions, comments,
+   files and, for a data access request, collaborators. A pending invitation to a deleted
+   request can then be accepted on the new one. 7.0 deletes all of it with the entity, but
+   does not clean up what was deleted earlier.
+
+   Two scripts remove it: `dar-orphan-cleanup.js` and `entity-orphan-cleanup.js`. They are in
+   the `tools` folder of the distribution (`/usr/share/mica2/tools` for the Debian/RPM
+   package and the Docker image, `tools` in the install folder of a ZIP install) and in the
+   [repository](https://github.com/obiba/mica2/tree/7.0.0/mica-dist/src/main/tools). They only
+   delete the data of ids that no longer exist, never touch existing entities, and change
+   nothing unless `APPLY` is set. They can be run more than once. Logo files of deleted
+   studies are not removed (they only take up storage).
+
+   **Server install.** Add your connection options (e.g. `--uri`) if MongoDB requires them.
+   For a ZIP install, replace `/usr/share/mica2` with the install folder.
+
+   1. Back up the database:
+
+      ```sh
+      mongodump --db mica --out mica-backup
+      ```
+
+   2. Do a dry run of each script. It lists what would be deleted for each id and changes
+      nothing:
+
+      ```sh
+      mongosh --quiet mica /usr/share/mica2/tools/dar-orphan-cleanup.js
+      mongosh --quiet mica /usr/share/mica2/tools/entity-orphan-cleanup.js
+      ```
+
+   3. Stop Mica, then apply:
+
+      ```sh
+      mongosh --quiet mica --eval 'var APPLY = true' --file /usr/share/mica2/tools/dar-orphan-cleanup.js
+      mongosh --quiet mica --eval 'var APPLY = true' --file /usr/share/mica2/tools/entity-orphan-cleanup.js
+      ```
+
+   4. Start Mica. Permissions are cached, so a restart is required. A new dry run should
+      report nothing to delete.
+
+   **Docker Compose.** Run from the folder of your `docker-compose.yml`, once the `mica`
+   service runs the 7.0 image. The services are assumed to be named `mica` and `mongo`. The
+   MongoDB image must provide `mongosh` (official `mongo` images 6.0 and later do). If MongoDB
+   requires authentication, add the connection options (e.g. `--username`, `--password`,
+   `--authenticationDatabase admin`) to the `mongodump`, `mongosh` and `mongorestore` commands.
+
+   1. Copy the scripts from the Mica container into the MongoDB container:
+
+      ```sh
+      docker compose cp mica:/usr/share/mica2/tools/dar-orphan-cleanup.js .
+      docker compose cp mica:/usr/share/mica2/tools/entity-orphan-cleanup.js .
+      docker compose cp dar-orphan-cleanup.js mongo:/tmp/
+      docker compose cp entity-orphan-cleanup.js mongo:/tmp/
+      ```
+
+   2. Back up the database:
+
+      ```sh
+      docker compose exec -T mongo mongodump --db mica --archive > mica-backup.archive
+      ```
+
+   3. Do a dry run of each script:
+
+      ```sh
+      docker compose exec mongo mongosh --quiet mica /tmp/dar-orphan-cleanup.js
+      docker compose exec mongo mongosh --quiet mica /tmp/entity-orphan-cleanup.js
+      ```
+
+   4. Stop Mica, then apply:
+
+      ```sh
+      docker compose stop mica
+      docker compose exec mongo mongosh --quiet mica --eval 'var APPLY = true' --file /tmp/dar-orphan-cleanup.js
+      docker compose exec mongo mongosh --quiet mica --eval 'var APPLY = true' --file /tmp/entity-orphan-cleanup.js
+      ```
+
+   5. Start Mica. A new dry run should report nothing to delete.
+
+      ```sh
+      docker compose start mica
+      ```
 
 ### Rolling back
 
-Reinstall 6.3.x and restart. No data changed. Restore the previous overridden templates
-and revert API clients to query-parameter credentials for the study import.
-
+Reinstall 6.3.x and restart. Mica itself changed no data. If you ran the cleanup scripts,
+restore the backup taken before them: `mongorestore --drop mica-backup`, or with Docker
+Compose `docker compose exec -T mongo mongorestore --drop --archive < mica-backup.archive`.
+This also discards everything written to the database after the backup.
+Restore the previous overridden templates and revert API clients to query-parameter
+credentials for the study import.
