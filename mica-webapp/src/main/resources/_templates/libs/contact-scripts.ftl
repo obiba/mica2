@@ -29,6 +29,8 @@
       } else if (messageItems.title && errorMessages[messageItems.title]) {
         msg = errorMessages[messageItems.title];
         $('#contact-' + messageItems.name).addClass('is-invalid');
+      } else {
+        msg = errorMessages[messageItems] || errorMessages["server.error.bad-request"];
       }
       $(alertId).html('<small>' + msg + '</small>').removeClass("d-none");
       setTimeout(function() {
