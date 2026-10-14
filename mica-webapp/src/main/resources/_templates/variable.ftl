@@ -16,7 +16,7 @@
 <html lang="${.lang}">
 <head>
   <#include "libs/head.ftl">
-  <title>${config.name!""} | ${variable.name}</title>
+  <title>${config.name!""} | ${variable.name?html}</title>
 </head>
 <body id="${type?lower_case}-variable-page" class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="app-wrapper d-flex flex-column min-vh-100">
@@ -30,7 +30,7 @@
     <!-- Content Header (Page header) -->
     <#assign title = variable.name/>
     <#if opalTable?? && opalTable.name??>
-      <#assign title = (variable.name + " [" + localize(opalTable.name) + "]")/>
+      <#assign title = (variable.name + " [" + localizeRaw(opalTable.name) + "]")/>
     </#if>
     <@header titlePrefix=(type?lower_case + "-variable") title=title subtitle=""/>
     <!-- /.content-header -->
@@ -40,12 +40,12 @@
       <div class="container">
         <div class="callout callout-info">
           <#if variable.attributes?? && variable.attributes.label??>
-            <p class="marked">${localize(variable.attributes.label)}</p>
+            <p class="marked"><template>${localizeRaw(variable.attributes.label)}</template></p>
           <#else>
             <p class="text-muted"><@message "no-label"/></p>
           </#if>
           <#if variable.attributes?? && variable.attributes.description??>
-            <p class="marked text-muted"><i class="fa-solid fa-info-circle"></i> ${localize(variable.attributes.description)}</p>
+            <p class="marked text-muted"><template><i class="fa-solid fa-info-circle"></i> ${localizeRaw(variable.attributes.description)}</template></p>
           </#if>
         </div>
 
@@ -62,24 +62,24 @@
                   <dt class="col-sm-4"><@message "nature"/></dt>
                   <dd class="col-sm-8"><@message variable.nature?lower_case + "-nature"/></dd>
                   <dt class="col-sm-4"><@message "entity-type"/></dt>
-                  <dd class="col-sm-8">${variable.entityType}</dd>
+                  <dd class="col-sm-8">${esc(variable.entityType)}</dd>
                   <#if variable.referencedEntityType?? && variable.referencedEntityType?length gt 0>
                     <dt class="col-sm-4"><@message "referenced-entity-type"/></dt>
-                    <dd class="col-sm-8">${variable.referencedEntityType}</dd>
+                    <dd class="col-sm-8">${esc(variable.referencedEntityType)}</dd>
                   </#if>
                   <#if variable.unit?? && variable.unit?length gt 0>
                     <dt class="col-sm-4"><@message "unit"/></dt>
-                    <dd class="col-sm-8">${variable.unit}</dd>
+                    <dd class="col-sm-8">${esc(variable.unit)}</dd>
                   </#if>
                   <#if variable.mimeType?? && variable.mimeType?length gt 0>
                     <dt class="col-sm-4"><@message "mime-type"/></dt>
-                    <dd class="col-sm-8">${variable.mimeType}</dd>
+                    <dd class="col-sm-8">${esc(variable.mimeType)}</dd>
                   </#if>
                   <#if variable.repeatable?? && variable.repeatable>
                     <dt class="col-sm-4"><@message "repeatable"/></dt>
                     <dd class="col-sm-8"><i class="fa-solid fa-check"></i></dd>
                     <dt class="col-sm-4"><@message "occurrence-group"/></dt>
-                    <dd class="col-sm-8">${variable.occurrenceGroup}</dd>
+                    <dd class="col-sm-8">${esc(variable.occurrenceGroup)}</dd>
                   </#if>
                 </dl>
 
@@ -98,7 +98,7 @@
                         <tbody>
                         <#list variable.categories as category>
                           <tr>
-                            <td>${category.name}</td>
+                            <td>${category.name?html}</td>
                             <td>
                               <#if category.attributes??>
                                 ${localize(category.attributes.label)}
@@ -190,7 +190,7 @@
                   </#if>
                   <#if type == "Harmonized">
                     <dt class="col-sm-4"><@message "dataschema-variable"/></dt>
-                    <dd class="col-sm-8"><a href="${contextPath}/variable/${variable.datasetId}:${variable.name}:Dataschema" class="btn btn-primary"><i class="${dataschemaIcon}"></i> ${variable.name}</a></dd>
+                    <dd class="col-sm-8"><a href="${contextPath}/variable/${variable.datasetId}:${variable.name?url}:Dataschema" class="btn btn-primary"><i class="${dataschemaIcon}"></i> ${variable.name?html}</a></dd>
                   </#if>
                   <#if opalTable?? && (opalTable.name?? || opalTable.description??)>
                     <dt class="col-sm-4"><@message "datasource-info"/></dt>
@@ -224,7 +224,7 @@
                         ${localize(annotation.vocabularyTitle)}
                       </dt>
                       <dd class="col-sm-8" title="<#if annotation.termDescription??>${localize(annotation.termDescription)}</#if>">
-                        <span class="marked">${localize(annotation.termTitle)}</span>
+                        <span class="marked"><template>${localizeRaw(annotation.termTitle)}</template></span>
                       </dd>
                     </#list>
                   </dl>
@@ -268,7 +268,7 @@
                             ${localize(harmoAnnotations.algorithmTitle, "Algorithm")}
                         </dt>
                         <dd>
-                          <span class="marked mt-3">${localize(harmoAnnotations.algorithmValue!"")}</span>
+                          <span class="marked mt-3"><template>${localizeRaw(harmoAnnotations.algorithmValue!"")}</template></span>
                         </dd>
                       </#if>
 
@@ -278,7 +278,7 @@
                           ${localize(harmoAnnotations.commentTitle, "Comment")}
                         </dt>
                         <dd>
-                          <span class="marked">${localize(harmoAnnotations.commentValue!"")}</span>
+                          <span class="marked"><template>${localizeRaw(harmoAnnotations.commentValue!"")}</template></span>
                         </dd>
                       </#if>
                     </dl>
@@ -297,11 +297,11 @@
                   <h3 class="card-title"><@message "summary-statistics"/></h3>
                   <#if showDatasetContingencyLink>
                     <#if variable.nature == "CATEGORICAL">
-                      <a class="btn btn-primary float-end" href="${contextPath}/dataset-crosstab/${variable.datasetId}?var1=${variable.name}">
+                      <a class="btn btn-primary float-end" href="${contextPath}/dataset-crosstab/${variable.datasetId}?var1=${variable.name?url}">
                         <i class="fa-solid fa-cog"></i> <@message "dataset.crosstab.title"/>
                       </a>
                     <#elseif variable.nature == "CONTINUOUS">
-                      <a class="btn btn-primary float-end" href="${contextPath}/dataset-crosstab/${variable.datasetId}?var2=${variable.name}">
+                      <a class="btn btn-primary float-end" href="${contextPath}/dataset-crosstab/${variable.datasetId}?var2=${variable.name?url}">
                         <i class="fa-solid fa-cog"></i> <@message "dataset.crosstab.title"/>
                       </a>
                     </#if>

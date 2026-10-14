@@ -106,7 +106,7 @@
                             <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${dar.applicant?replace("\\W", "-", "r")}">${applicants[dar.applicant].fullName}</a>
                           </td>
                         </#if>
-                        <td>${dar.title!""}</td>
+                        <td>${(dar.title!"")?html}</td>
                         <td data-sort="${dar.lastUpdate.toString()}" class="moment-datetime">${dar.lastUpdate.toString()}</td>
                         <td data-sort="<#if dar.submitDate??>${dar.submitDate.toString()}</#if>" class="moment-datetime"><#if dar.submitDate??>${dar.submitDate.toString()}</#if></td>
                         <#if accessConfig.feasibilityEnabled>
@@ -161,7 +161,7 @@
                             </td>
                             <td>
                               <#list profile.groups as group>
-                                <span class="badge bg-info">${group}</span>
+                                <span class="badge bg-info">${group?html}</span>
                               </#list>
                             </td>
                             <td data-sort="${profile.attributes["createdDate"].toString()}" class="moment-datetime">${profile.attributes["createdDate"].toString()}</td>

@@ -41,7 +41,7 @@
             <h3 class="card-title p-3"><@message "overview"/></h3>
           </div><!-- /.card-header -->
           <div class="card-body">
-            <p class="text-muted marked"><template>${localize(project.summary)}</template></p>
+            <p class="text-muted marked"><template>${localizeRaw(project.summary)}</template></p>
           </div>
         </div>
 

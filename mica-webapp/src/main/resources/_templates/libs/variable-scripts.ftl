@@ -55,7 +55,7 @@
   // categories
   <#if variable.categories??>
   <#list variable.categories as cat>
-  Mica.categories['${cat.name}'] = escapeQuotes("${localize(cat.attributes.label)}");
+  Mica.categories['${cat.name?js_string}'] = "${localizeRaw(cat.attributes.label)?js_string}";
   </#list>
   </#if>
 

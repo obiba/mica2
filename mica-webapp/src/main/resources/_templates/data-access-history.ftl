@@ -131,8 +131,8 @@
                     <tbody>
                     <#list dar.actionLogHistory as act>
                       <tr>
-                        <td>${act.action}</td>
-                        <td>${act.author}</td>
+                        <td>${act.action?html}</td>
+                        <td>${act.author?html}</td>
                         <td data-sort="${act.changedOn.toString()}" class="moment-date">${act.changedOn.toString()}</td>
                       </tr>
                     </#list>

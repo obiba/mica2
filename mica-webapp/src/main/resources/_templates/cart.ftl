@@ -214,8 +214,8 @@
                             <#list sets.variablesLists as variableList>
                               <#if !variableList.locked>
                                 <button type="button" class="dropdown-item"
-                                        onclick="onClickAddToSet('${variableList.id}', '${variableList.name}')">
-                                    ${listName(variableList)} <#if variableList.name?starts_with("dar:")>[<@message "data-access-request"/>]</#if> <span class="badge text-bg-light float-end">${variableList.identifiers?size}</span>
+                                        onclick="onClickAddToSet('${variableList.id}', '${variableList.name?js_string?html}')">
+                                    ${listName(variableList)?html} <#if variableList.name?starts_with("dar:")>[<@message "data-access-request"/>]</#if> <span class="badge text-bg-light float-end">${variableList.identifiers?size}</span>
                                 </button>
                               </#if>
                             </#list>

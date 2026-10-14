@@ -19,7 +19,7 @@
     <#list studies as study>
       <td>
         <small class="marked truncate truncate-300">
-          <template>${localize(study.objectives)}</template></small>
+          <template>${localizeRaw(study.objectives)}</template></small>
       </td>
     </#list>
   </tr>
@@ -66,7 +66,7 @@
     <#list studies as study>
       <td>
         <#if study.model.website??>
-          <a href="${study.model.website}" target="_blank">${study.model.website}</a>
+          <a href="${safeUrl(study.model.website)}" target="_blank">${esc(study.model.website)}</a>
         </#if>
       </td>
     </#list>
@@ -109,7 +109,7 @@
     <#list studies as study>
       <td>
         <#if study.model.markerPaper??>
-          <small>${study.model.markerPaper}</small>
+          <small>${esc(study.model.markerPaper)}</small>
           <#if study.model.pubmedId??>
             <div>
               <a href="http://www.ncbi.nlm.nih.gov/pubmed/${study.model.pubmedId}" target="_blank">PUBMED ${study.model.pubmedId}</a>
@@ -500,7 +500,7 @@
       <#list studies as study>
         <td>
           <small class="marked truncate truncate-300">
-            <template>${localize(study.objectives)}</template></small>
+            <template>${localizeRaw(study.objectives)}</template></small>
         </td>
       </#list>
   </tr>
@@ -539,7 +539,7 @@
     <#list networks as network>
       <td>
         <small class="marked truncate truncate-300">
-          <template>${localize(network.description)}</template></small>
+          <template>${localizeRaw(network.description)}</template></small>
       </td>
     </#list>
   </tr>
@@ -551,7 +551,7 @@
     <#list networks as network>
       <td>
         <#if network.model.website??>
-          <a class="d-print-none" href="${network.model.website}" target="_blank">${network.model.website}</a>
+          <a class="d-print-none" href="${safeUrl(network.model.website)}" target="_blank">${esc(network.model.website)}</a>
         </#if>
       </td>
     </#list>

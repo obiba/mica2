@@ -37,28 +37,28 @@
           <span class="input-group-text">
             <i class="fa-solid fa-user"></i>
           </span>
-          <input name="username" type="text" class="form-control" placeholder="<@message "username"/>" value="${uAuth.username?default("")}" readonly>
+          <input name="username" type="text" class="form-control" placeholder="<@message "username"/>" value="${uAuth.username?default("")?html}" readonly>
         </div>
         <div class="input-group mb-3">
           <span class="input-group-text">
             <i class="fa-solid fa-envelope"></i>
           </span>
-          <input name="email" type="email" class="form-control" placeholder="<@message "email"/>" value="${uAuth.email?default("")}" readonly>
+          <input name="email" type="email" class="form-control" placeholder="<@message "email"/>" value="${uAuth.email?default("")?html}" readonly>
         </div>
-        <input type="hidden" name="realm" value="${uAuth.realm?default("")}"/>
+        <input type="hidden" name="realm" value="${uAuth.realm?default("")?html}"/>
 
         <div class="text-center">
           <p>- <@message "personal-information"/> -</p>
         </div>
 
         <div class="input-group mb-3">
-          <input name="firstname" type="text" class="form-control" placeholder="<@message "firstname"/>" value="${uAuth.firstname?default("")}">
+          <input name="firstname" type="text" class="form-control" placeholder="<@message "firstname"/>" value="${uAuth.firstname?default("")?html}">
           <span class="input-group-text">
             <i class="fa-solid fa-user"></i>
           </span>
         </div>
         <div class="input-group mb-3">
-          <input name="lastname" type="text" class="form-control" placeholder="<@message "lastname"/>"  value="${uAuth.lastname?default("")}">
+          <input name="lastname" type="text" class="form-control" placeholder="<@message "lastname"/>"  value="${uAuth.lastname?default("")?html}">
           <span class="input-group-text">
             <i class="fa-solid fa-user"></i>
           </span>

@@ -444,7 +444,7 @@ const initVariableSelectors = function() {
       return data.text;
     }
 
-    let element = $('<div><span>' + data.name + '</span><div><small>' + LocalizedValues.extractLabel(data.attributes, Mica.locale) + '</small></div></div>');
+    let element = $('<div><span>' + escapeHtml(data.name) + '</span><div><small>' + escapeHtml(LocalizedValues.extractLabel(data.attributes, Mica.locale)) + '</small></div></div>');
 
     return element;
   }
@@ -509,8 +509,8 @@ const renderDatasetCrosstab = function(contingency) {
   const var2CatsCount = crosstab.getVariable2Categories().length;
   // for continuous variable, we do not have the frequencies of the "missing" categories (if any)
   const var2Colspan = (crosstab.isVariable2Statistical() ? 4 : var2CatsCount);
-  let head = '<th rowspan="2"><a href="' + contingency.info.var1.href + '" target="_blank">' + Mica.var1.name + '</a><div><small>' + contingency.info.var1.label + '</small></div></th>' +
-    '<th colspan="' + var2Colspan + '"><a href="' + contingency.info.var2.href + '" target="_blank">' + Mica.var2.name + '</a><div><small>' + contingency.info.var2.label + '</small></div></th>' +
+  let head = '<th rowspan="2"><a href="' + escapeHtml(contingency.info.var1.href) + '" target="_blank">' + escapeHtml(Mica.var1.name) + '</a><div><small>' + escapeHtml(contingency.info.var1.label) + '</small></div></th>' +
+    '<th colspan="' + var2Colspan + '"><a href="' + escapeHtml(contingency.info.var2.href) + '" target="_blank">' + escapeHtml(Mica.var2.name) + '</a><div><small>' + escapeHtml(contingency.info.var2.label) + '</small></div></th>' +
     '<th rowspan="2">N</th>';
   const thead = $('#crosstab > thead');
   thead.append('<tr>' + head + '</tr>');
@@ -518,7 +518,7 @@ const renderDatasetCrosstab = function(contingency) {
   head = '';
   if (!crosstab.isVariable2Statistical() && var2CatsCount > 0) {
     crosstab.getVariable2Categories().forEach(cat => {
-      head = head + '<th>' + cat.name + '<div><small>' + contingency.info.var2.categories[cat.name] + '</small></div></th>';
+      head = head + '<th>' + escapeHtml(cat.name) + '<div><small>' + escapeHtml(contingency.info.var2.categories[cat.name]) + '</small></div></th>';
     });
   }
   if (crosstab.isVariable2Statistical()) {
@@ -544,7 +544,7 @@ const renderDatasetCrosstab = function(contingency) {
   // for each category
   if (contingency.aggregations) {
     contingency.aggregations.forEach(aggregation => {
-      let row = '<td>' + aggregation.term + '<div><small>' + contingency.info.var1.categories[aggregation.term] + '</small></div></td>';
+      let row = '<td>' + escapeHtml(aggregation.term) + '<div><small>' + escapeHtml(contingency.info.var1.categories[aggregation.term]) + '</small></div></td>';
       if (!crosstab.isVariable2Statistical() && aggregation.frequencies) {
         aggregation.frequencies.forEach(freq => {
           row = row + '<td>' + freq.count + (freq.percent ? ' <small>(' + freq.percent.toFixed(2) + '%)</small>' : '') + '</td>';

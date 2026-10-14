@@ -22,6 +22,33 @@ const renderMarkdown = function (text) {
   return DOMPurify.sanitize(html);
 };
 
+/**
+ * Escape text so that it can be inserted in HTML content or in a quoted attribute value.
+ *
+ * @param text plain text
+ * @returns {string} escaped text
+ */
+const escapeHtml = function (text) {
+  if (text === undefined || text === null) return '';
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+};
+
+/**
+ * Sanitize an HTML fragment built from document values before it is inserted in the page.
+ *
+ * @param html HTML fragment
+ * @returns {string} safe HTML
+ */
+const sanitizeHtml = function (html) {
+  if (typeof html !== 'string') return html;
+  return typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(html) : escapeHtml(html);
+};
+
 class LocalizedValues {
   static for(values, lang, keyLang, keyValue) {
     if (Array.isArray(values)) {

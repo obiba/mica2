@@ -48,7 +48,7 @@
               </div>
               <!-- /.card-header -->
               <div id="additional-card" class="card-body marked collapse show">
-                  <template>${localize(study.model.additionalInformation)}</template>
+                  <template>${localizeRaw(study.model.additionalInformation)}</template>
               </div>
             </div>
           </div>
@@ -100,7 +100,7 @@
 
     <#if study.model.website??>
       <blockquote>
-        <@message "visit"/> <a href="${study.model.website}" target="_blank">${localize(study.acronym)}</a>
+        <@message "visit"/> <a href="${safeUrl(study.model.website)}" target="_blank">${localize(study.acronym)}</a>
       </blockquote>
     </#if>
   </#if>
@@ -170,7 +170,7 @@
     <!-- /.card-header -->
     <div id="publication-card" class="card-body collapse show">
       <p>
-          ${study.model.markerPaper}
+          ${esc(study.model.markerPaper)}
       </p>
         <#if study.model.pubmedId??>
           <blockquote>
@@ -570,7 +570,7 @@
       <p>
           <@message "study.access.external_researchers_obtaining_study_data_bio_info.access_info_location.study_website"/>
           <#if study.model.website??>
-            : <a href="${study.model.website}" target="_blank">${study.model.website?truncate(50, "...")}</a>
+            : <a href="${safeUrl(study.model.website)}" target="_blank">${study.model.website?truncate(50, "...")?html}</a>
           </#if>
       </p>
     </#if>
@@ -594,13 +594,13 @@
             <div class="modal-body">
               <dl class="row">
                 <dt class="col-4"><@message "contact.name"/></dt>
-                <dd class="col-8">${study.model.access_info_representative.title!""} ${study.model.access_info_representative.name!""}</dd>
+                <dd class="col-8">${esc(study.model.access_info_representative.title!"")} ${esc(study.model.access_info_representative.name!"")}</dd>
                 <dt class="col-4"><@message "contact.institution"/></dt>
-                <dd class="col-8">${study.model.access_info_representative.institution!""}</dd>
+                <dd class="col-8">${esc(study.model.access_info_representative.institution!"")}</dd>
                 <dt class="col-4"><@message "contact.email"/></dt>
-                <dd class="col-8">${study.model.access_info_representative.email!""}</dd>
+                <dd class="col-8">${esc(study.model.access_info_representative.email!"")}</dd>
                 <dt class="col-4"><@message "contact.phone"/></dt>
-                <dd class="col-8">${study.model.access_info_representative.telephone!""}</dd>
+                <dd class="col-8">${esc(study.model.access_info_representative.telephone!"")}</dd>
               </dl>
             </div>
             <div class="modal-footer">

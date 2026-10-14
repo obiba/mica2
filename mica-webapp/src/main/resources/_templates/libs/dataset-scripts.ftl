@@ -105,7 +105,7 @@
                 let row = [];
                 const variableHarmonization = response.variableHarmonizations[i];
                 const name = variableHarmonization.dataschemaVariableRef.name;
-                row.push('<a href="${contextPath}/variable/${dataset.id}:' + name + ':Dataschema">' + name + '</a>');
+                row.push('<a href="${contextPath}/variable/${dataset.id}:' + encodeURIComponent(name) + ':Dataschema">' + escapeHtml(name) + '</a>');
                 for (const j in variableHarmonization.harmonizedVariables) {
                   const harmonizedVariable = variableHarmonization.harmonizedVariables[j];
                   let iconClass = VariableService.getHarmoStatusClass(harmonizedVariable.status);

@@ -45,7 +45,7 @@
             <@message "harmonization-protocol.version"/>
         </dt>
         <dd class="col-sm-9">
-            ${dataset.model.version}
+            ${esc(dataset.model.version)}
         </dd>
       </#if>
 
@@ -54,7 +54,7 @@
             <@message "harmonization-protocol.participants"/>
         </dt>
         <dd class="col-sm-9">
-            ${dataset.model.participants}
+            ${esc(dataset.model.participants)}
         </dd>
       </#if>
 

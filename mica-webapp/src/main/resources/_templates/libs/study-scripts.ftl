@@ -61,11 +61,11 @@
         <#if population.dataCollectionEvents?? && population.dataCollectionEvents?size != 0>
           <#list population.dataCollectionEventsSorted as dce>
             Mica.options['${study.id}:${population.id}:${dce.id}'] =
-                    escapeQuotes(<#if study.populations?size == 1>"${localize(dce.name)}"<#else>"${localize(population.name)} / ${localize(dce.name)}"</#if>);
+                    <#if study.populations?size == 1>"${localizeRaw(dce.name)?js_string}"<#else>"${localizeRaw(population.name)?js_string} / ${localizeRaw(dce.name)?js_string}"</#if>;
           </#list>
         </#if>
       <#else>
-        Mica.options['${study.id}:${population.id}:.'] = escapeQuotes("${localize(population.name)}");
+        Mica.options['${study.id}:${population.id}:.'] = "${localizeRaw(population.name)?js_string}";
       </#if>
     </#list>
   </#if>
@@ -144,7 +144,8 @@
     });
 
     <#if timelineData??>
-      let timelineData = ${timelineData};
+      <#-- JSON in a script: escape < so that a value cannot close the script element -->
+      let timelineData = ${timelineData?replace("<", "\\u003c")};
       new $.MicaTimeline(new $.StudyDtoParser('${.lang}')).create('#timeline', timelineData).addLegend();
     </#if>
 

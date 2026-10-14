@@ -575,10 +575,10 @@ const TypeaheadComponent = {
       }
     },
     highlight(item) {
-      let output = item;
+      let output = escapeHtml(item);
       const index = item.toLowerCase().indexOf(this.text.toLowerCase());
       if (index >= 0) {
-        output = `${output.substring(0, index)}<strong>${output.substring(index, index + this.text.length)}</strong>${output.substring(index + this.text.length)}`;
+        output = `${escapeHtml(item.substring(0, index))}<strong>${escapeHtml(item.substring(index, index + this.text.length))}</strong>${escapeHtml(item.substring(index + this.text.length))}`;
       }
 
       return output;

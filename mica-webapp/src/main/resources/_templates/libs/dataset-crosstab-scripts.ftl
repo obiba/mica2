@@ -6,8 +6,9 @@
     contextPath: "${contextPath}",
     type: "${type}".toLowerCase(),
     dataset: "${dataset.id}",
-    var1: ${variable1!"undefined"},
-    var2: ${variable2!"undefined"},
+    <#-- JSON in a script: escape < so that a value cannot close the script element -->
+    var1: ${(variable1!"undefined")?replace("<", "\\u003c")},
+    var2: ${(variable2!"undefined")?replace("<", "\\u003c")},
     locale: "${.lang}",
     tr: {
       "chi-squared-test": "<@message "chi-squared-test"/>",

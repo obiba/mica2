@@ -15,7 +15,7 @@
     });
     var suggestions = {
       <#list suggestedCollaborators as suggestion>
-      '${suggestion}': '${suggestion}',
+      '${suggestion?js_string}': '${suggestion?js_string}',
       </#list>
     };
     $('#collaborator-email').autocomplete({
