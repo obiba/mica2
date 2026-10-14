@@ -1,7 +1,9 @@
 <!-- Spring utils for translations -->
 <#import "/spring.ftl" as spring/>
+<!-- Translation of a code; when there is none, the code itself is shown, HTML-escaped as it can be a document value -->
 <#macro message code>
-  <@spring.messageText code code/>
+  <#local text = springMacroRequestContext.getMessage(code, code)/>
+  <#if text == code>${esc(code)}<#else>${text}</#if><#t>
 </#macro>
 <#macro messageArgs code args>
   <@spring.messageArgsText code args code/>
@@ -10,8 +12,35 @@
 <!-- Context path setting -->
 <#assign contextPath = "${config.contextPath}"/>
 
-<!-- From a localized text get the value in the current language or in the default one or in the undefined one -->
+<!-- From a localized text get the value in the current language or in the default one or in the undefined one, HTML-escaped -->
 <#function localize txt={} default="">
+  <#return localizeRaw(txt, default)?html/>
+</#function>
+
+<!-- HTML-escape a value of unknown type (model fields can be strings or numbers) -->
+<#function esc value="">
+  <#if value?is_string>
+    <#return value?html/>
+  </#if>
+  <#return value/>
+</#function>
+
+<!-- HTML-escape a link and neutralize script schemes (javascript:, data:...), other values are kept as before -->
+<#function safeUrl url="">
+  <#if !url?is_string>
+    <#return url/>
+  </#if>
+  <!-- browsers ignore whitespace and control characters in the scheme -->
+  <#local compact = url?replace("[\\s\\x00-\\x1f]", "", "r")/>
+  <#if compact?matches("^[a-zA-Z][a-zA-Z0-9+.-]*:.*", "s") && !compact?matches("^(https?|mailto|ftp):.*", "is")>
+    <#return "#"/>
+  </#if>
+  <#return url?html/>
+</#function>
+
+<!-- Same as localize but not escaped: only for Markdown in a <template> (sanitized when rendered), for scripts
+     with ?js_string, or with ?html after another built-in (e.g. ?truncate_w) -->
+<#function localizeRaw txt={} default="">
   <#if txt?? && txt?keys??>
     <#if txt[.lang]??>
       <!-- page language -->

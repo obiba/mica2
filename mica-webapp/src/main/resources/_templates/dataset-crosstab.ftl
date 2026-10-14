@@ -17,7 +17,7 @@
   <!-- Content Wrapper. Contains page content -->
  <div class="app-main flex-fill">
     <!-- Content Header (Page header) -->
-    <@header titlePrefix=(type?lower_case + "-dataset-crosstab") title=(localize(dataset.acronym)) subtitle=localize(dataset.name) breadcrumb=[["/", "home"], ["/datasets", "datasets"], [localize(dataset.acronym)]]/>
+    <@header titlePrefix=(type?lower_case + "-dataset-crosstab") title=localizeRaw(dataset.acronym) subtitle=localizeRaw(dataset.name) breadcrumb=[["/", "home"], ["/datasets", "datasets"], [localizeRaw(dataset.acronym)]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->

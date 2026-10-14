@@ -220,6 +220,7 @@ public class UserProfileService extends AgateRestService {
           }
         }
         else
+          // templates print profile values as is, they must stay HTML-encoded here
           attributes.put(key, ESAPI.encoder().encodeForHTML(attr.get("value")));
       });
       fullName = attributes.getOrDefault("firstName", "") + (attributes.containsKey("firstName") ? " " : "") + attributes.getOrDefault("lastName", profile.getUsername());

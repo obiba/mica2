@@ -83,7 +83,7 @@
 
   <#if studyAcronyms??>
     <#list studyAcronyms as key, value>
-    Mica.options['${key}'] = '${localize(value)}';
+    Mica.options['${key?js_string}'] = '${localizeRaw(value)?js_string}';
     </#list>
   </#if>
 

@@ -38,7 +38,7 @@
   <!-- Content Wrapper. Contains page content -->
  <div class="app-main flex-fill">
     <!-- Content Header (Page header) -->
-    <@header titlePrefix=(type?lower_case + "-study") title=localize(study.acronym) subtitle=localize(study.name) breadcrumb=[["..", "home"], ["${contextPath}/${title}", "${title}"], [localize(study.acronym)]]/>
+    <@header titlePrefix=(type?lower_case + "-study") title=localizeRaw(study.acronym) subtitle=localizeRaw(study.name) breadcrumb=[["..", "home"], ["${contextPath}/${title}", "${title}"], [localizeRaw(study.acronym)]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->
@@ -125,7 +125,7 @@
                 </div>
 
                 <div class="card-text marked mt-3">
-                  <template>${localize(study.objectives)}</template>
+                  <template>${localizeRaw(study.objectives)}</template>
                 </div>
 
                 <!-- Study definition model -->
@@ -247,7 +247,7 @@
                       <#list study.populationsSorted as pop>
                         <div class="tab-pane <#if pop?index == 0>active</#if>" id="population-${pop.id}">
                           <div class="mb-3 marked">
-                            <template>${localize(pop.description)}</template>
+                            <template>${localizeRaw(pop.description)}</template>
                           </div>
                           <@populationModel population=pop/>
                           <@dceList population=pop/>

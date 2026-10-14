@@ -103,8 +103,8 @@ const makeSummary = function(summaryStatisticsAccessPolicy, showHarmonizedVariab
         }
         frequencyRows = frequencyRows +
           '<tr>' +
-          '<td data-sort="' + padStringWithZeros(value) + '">' + value +
-          '<p class="text-muted">' + valueTxt + '</p>' + '</td>' +
+          '<td data-sort="' + escapeHtml(padStringWithZeros(value)) + '">' + escapeHtml(value) +
+          '<p class="text-muted">' + escapeHtml(valueTxt) + '</p>' + '</td>' +
           '<td data-sort="' + frequency.count + '">' + numberFormatter.format(frequency.count) + '</td>' +
           '<td data-sort="' + pctValues + '">' + pctValues + '</td>' +
           '<td data-sort="' + pctMissings + '">' + pctMissings + '</td>' +
@@ -184,7 +184,7 @@ const makeHarmonizedVariablesTable = function() {
     if (data.datasetVariableSummaries) {
 
       const getTableInformation = (study, studyTableName) => {
-        const title = localizedString(study.studySummary.acronym) + ' ' + studyTableName;
+        const title = escapeHtml(localizedString(study.studySummary.acronym)) + ' ' + studyTableName;
         let colName = title;
 
         if (study.description) {
@@ -211,21 +211,21 @@ const makeHarmonizedVariablesTable = function() {
         const population = StudyService.findPopulation(baseStudyTable.studySummary, baseStudyTable.populationId);
         const dce = population ? StudyService.findPopulationDCE(population, baseStudyTable.dataCollectionEventId) : undefined;
         const studyAnchor = (summary) => summary.published
-          ? '<a href="' + Mica.contextPath + '/study/' + baseStudyTable.studyId + '">' + localizedString(baseStudyTable.studySummary.acronym) + '</a></td>'
-          : localizedString(baseStudyTable.studySummary.acronym);
-        let dceName = population ? localizedString(population.name) : "";
-        const studyTableName =  baseStudyTable.name ? ' (' + localizedString(baseStudyTable.name) + ')' : '';
+          ? '<a href="' + Mica.contextPath + '/study/' + baseStudyTable.studyId + '">' + escapeHtml(localizedString(baseStudyTable.studySummary.acronym)) + '</a></td>'
+          : escapeHtml(localizedString(baseStudyTable.studySummary.acronym));
+        let dceName = population ? escapeHtml(localizedString(population.name)) : "";
+        const studyTableName =  baseStudyTable.name ? ' (' + escapeHtml(localizedString(baseStudyTable.name)) + ')' : '';
         if (dce) {
-          dceName = dceName + ' -- ' + localizedString(dce.name);
+          dceName = dceName + ' -- ' + escapeHtml(localizedString(dce.name));
         }
         harmonizedVariablesTableBody.append('<tr>' +
-          '<td title=""><a href="' + Mica.contextPath + '/variable/' + harmonizedVariable.resolver.id.replaceAll('/', '%2F') + '">' + harmonizedVariable.resolver.name + '</a></td>' +
+          '<td title=""><a href="' + Mica.contextPath + '/variable/' + harmonizedVariable.resolver.id.replaceAll('/', '%2F') + '">' + escapeHtml(harmonizedVariable.resolver.name) + '</a></td>' +
           '<td>' + studyAnchor(baseStudyTable.studySummary) + '</td>' +
           '<td>' + getTableInformation(baseStudyTable, studyTableName) + '</td>' +
           '<td>' + dceName + '</td>' +
           '<td><i class=" ' + VariableService.getHarmoStatusClass(status) + '"></i></td>' +
-          '<td>' + localizedString(statusDetail) + '</td>' +
-          '<td>' + localizedString(comment) + '</td>' +
+          '<td>' + sanitizeHtml(localizedString(statusDetail)) + '</td>' +
+          '<td>' + sanitizeHtml(localizedString(comment)) + '</td>' +
           '</tr>')
       }
       $('#harmonizedVariables').show();

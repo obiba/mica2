@@ -128,12 +128,12 @@
                 <tr>
                   <td>
                     <#if v[0]??>
-                      <div><strong>${v[0]}</strong></div>
+                      <div><strong>${v[0]?html}</strong></div>
                     </#if>
-                    <smalll><code>${k}</code></smalll>
+                    <smalll><code>${k?html}</code></smalll>
                   </td>
-                  <td class="marked">${v[1]}</td>
-                  <td class="marked">${v[2]}</td>
+                  <td class="marked"><template>${v[1]}</template></td>
+                  <td class="marked"><template>${v[2]}</template></td>
                 </tr>
               </#list>
               </tbody>

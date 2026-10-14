@@ -146,14 +146,15 @@
 
   $(function () {
     /**
-     * Uses browser to normalize input html (closing/removing tags)
+     * Uses browser to normalize input html (closing/removing tags).
+     * Parsed in an inert template so that no resource is loaded and no inline handler runs before sanitization.
      * @param html
      * @returns {*}
      */
     function tidy(html) {
-      var d = document.createElement('div');
-      d.innerHTML = html;
-      return d.innerHTML;
+      const t = document.createElement('template');
+      t.innerHTML = html;
+      return t.innerHTML;
     }
 
     // bs tooltip and popover initialization (Bootstrap 5 vanilla JS)

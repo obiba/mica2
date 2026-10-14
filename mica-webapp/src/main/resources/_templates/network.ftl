@@ -21,7 +21,7 @@
   <!-- Content Wrapper. Contains page content -->
  <div class="app-main flex-fill">
     <!-- Content Header (Page header) -->
-      <@header titlePrefix="network" title=localize(network.acronym) subtitle=localize(network.name) breadcrumb=[["${contextPath}/", "home"], ["${contextPath}/networks", "networks"], [localize(network.acronym)]]/>
+      <@header titlePrefix="network" title=localizeRaw(network.acronym) subtitle=localizeRaw(network.name) breadcrumb=[["${contextPath}/", "home"], ["${contextPath}/networks", "networks"], [localizeRaw(network.acronym)]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->
@@ -156,11 +156,11 @@
                 </div>
 
                 <div class="card-text marked mt-3">
-                  <template>${localize(network.description)}</template>
+                  <template>${localizeRaw(network.description)}</template>
                 </div>
                   <#if network.model.website??>
                     <blockquote>
-                        <@message "visit"/> <a href="${network.model.website}" target="_blank" class="card-link">${localize(network.acronym)}</a>
+                        <@message "visit"/> <a href="${safeUrl(network.model.website)}" target="_blank" class="card-link">${localize(network.acronym)}</a>
                     </blockquote>
                   </#if>
               </div>

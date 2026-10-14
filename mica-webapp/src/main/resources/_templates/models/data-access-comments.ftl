@@ -39,7 +39,7 @@
               <h3 class="timeline-header bg-light">${authors[item.author].fullName}</h3>
 
               <div class="timeline-body marked">
-                  ${comment.message}
+                  <template>${comment.message}</template>
               </div>
             </div>
           <#elseif item.isEventItem()>

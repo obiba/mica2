@@ -98,6 +98,10 @@ const EntityResult = {
 
       this.studyTypeSelection = payload.studyTypeSelection || this.studyTypeSelection;
       this.parsed = this.parser.parse(payload.response, this.getMicaConfig(), this.localize, displayOptions, this.studyTypeSelection);
+      // cells are rendered with v-html and are built from document values
+      if (this.parsed && Array.isArray(this.parsed.data)) {
+        this.parsed.data = this.parsed.data.map(row => row.map(cell => sanitizeHtml(cell)));
+      }
       this.showResult = this.parsed.totalHits > 0;
       if (!this.showResult) this.parsed = [];
     },

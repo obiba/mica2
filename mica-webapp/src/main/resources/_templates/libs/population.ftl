@@ -231,7 +231,7 @@
                       <@message "suppl-info"/>
                   </dt>
                   <dd class="col-sm-6">
-                    <div class="marked">${localize(population.model.recruitment.info)}</div>
+                    <div class="marked"><template>${localizeRaw(population.model.recruitment.info)}</template></div>
                   </dd>
                 </#if>
 
@@ -365,7 +365,7 @@
           </button>
         </div>
         <div class="modal-body">
-          <div class="mb-3 marked"><template>${localize(population.description)}</template></div>
+          <div class="mb-3 marked"><template>${localizeRaw(population.description)}</template></div>
           <@populationModel population=population id=id/>
         </div>
         <div class="modal-footer">

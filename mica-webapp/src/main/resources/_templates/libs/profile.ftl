@@ -13,13 +13,13 @@
     <dd class="col-sm-8">${profile.fullName}</dd>
     <#if profile.username == user.username || isAdministrator || isDAO>
       <dt class="col-sm-4"><@message "username"/></dt>
-      <dd class="col-sm-8">${profile.username}</dd>
+      <dd class="col-sm-8">${profile.username?html}</dd>
     </#if>
     <#if showProfileGroups && profile.groups??>
       <dt class="col-sm-4"><@message "groups"/></dt>
       <dd class="col-sm-8">
         <#list profile.groups as group>
-          <span class="badge text-bg-info">${group}</span>
+          <span class="badge text-bg-info">${group?html}</span>
         </#list>
       </dd>
     </#if>
