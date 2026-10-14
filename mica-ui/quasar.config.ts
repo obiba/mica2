@@ -15,7 +15,11 @@ export default defineConfig((ctx) => {
     boot: ['i18n', 'api', 'json-form'],
 
     // https://quasar.dev/quasar-cli-vite/quasar-config-file#css
-    css: ['app.scss'],
+    css: [
+      '~@fontsource-variable/sora/index.css',
+      '~@fontsource-variable/instrument-sans/index.css',
+      'app.scss',
+    ],
 
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
@@ -27,7 +31,6 @@ export default defineConfig((ctx) => {
       // 'line-awesome',
       // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
 
-      'roboto-font', // optional, you are not bound to it
       'material-icons', // optional, you are not bound to it
     ],
 

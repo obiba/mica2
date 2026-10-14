@@ -1,9 +1,10 @@
 <template>
   <q-layout v-show="authStore.isAuthenticated" view="lHh Lpr lFf">
-    <q-header elevated class="bg-dark text-white">
+    <q-header class="bg-dark text-white">
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
-        <q-btn flat type="a" :href="toPortalUrl('/')" no-caps size="lg">
+        <q-btn flat type="a" :href="toPortalUrl('/')" no-caps size="lg" class="brand-title">
+          <img :src="micaMark" alt="" class="brand-mark q-mr-sm" />
           {{ appName }}
         </q-btn>
         <q-space />
@@ -61,6 +62,7 @@ import { locales } from 'boot/i18n';
 import { toPortalUrl } from 'src/boot/api';
 import ReSigninDialog from 'src/components/ReSigninDialog.vue';
 import MainDrawer from 'src/components/MainDrawer.vue';
+import micaMark from 'src/assets/mica-mark-negative.svg';
 import type { DocumentType } from 'src/composables/useDocumentTarget';
 import { entityConfig } from 'src/utils/entityConfigs';
 import type { RouteLocationNormalized } from 'vue-router';
