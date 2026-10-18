@@ -16,6 +16,10 @@
   width: 28px;
 }
 
+body {
+  font-weight: 450;
+}
+
 a {
   color: $primary;
   text-decoration: none;
@@ -32,7 +36,8 @@ p:last-of-type {
 
 .q-table {
   th {
-    background-color: #f2f7f6;
+    background-color: $grey-3;
+    font-weight: bold;
   }
   tr:nth-child(even) {
     background-color: #f2f7f6;
@@ -98,7 +103,7 @@ code {
 
 .text-hint {
   color: $secondary;
-  font-size: 0.8em;
+  font-size: 0.9em;
 }
 
 .table-values {
@@ -177,6 +182,39 @@ code {
     font-weight: 500;
     line-height: 1.2;
     font-size: 1rem;
+  }
+}
+
+// align q-markdown typography with the rest of the app (body: outranks qmarkdown css, loaded later)
+body .q-markdown {
+  [class*='q-markdown--heading-h'] {
+    font-family: 'Sora Variable', system-ui, sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+  .q-markdown--note {
+    font-weight: inherit;
+    letter-spacing: inherit;
+  }
+  .q-markdown--link {
+    font-weight: inherit;
+  }
+  code {
+    font-size: 0.9em;
+  }
+  .q-markdown--line-numbers-wrapper {
+    background: none;
+    font-size: inherit;
+  }
+  pre {
+    font-size: 0.9em;
+    background: none;
+    padding: 0;
+    code {
+      font-size: inherit;
+      display: block;
+      padding: 0.5em;
+    }
   }
 }
 
