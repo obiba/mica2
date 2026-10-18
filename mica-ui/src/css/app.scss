@@ -34,6 +34,45 @@ p:last-of-type {
   margin: 0;
 }
 
+.alert {
+  padding: 0.5em;
+  margin-bottom: 1em;
+  border-radius: 4px;
+}
+
+.alert-info {
+  background-color: $info;
+  color: white;
+  a {
+    color: white;
+    text-decoration: underline;
+  }
+}
+.alert-warning {
+  background-color: $warning;
+  color: $dark;
+  a {
+    color: $dark;
+    text-decoration: underline;
+  }
+}
+.alert-negative, .alert-error {
+  background-color: $negative;
+  color: white;
+  a {
+    color: white;
+    text-decoration: underline;
+  }
+}
+.alert-positive, .alert-success {
+  background-color: $positive;
+  color: white;
+  a {
+    color: white;
+    text-decoration: underline;
+  }
+}
+
 .q-table {
   th {
     background-color: $grey-3;
