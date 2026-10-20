@@ -10,15 +10,27 @@
 // gone, and older study versions may still refer to it. Variables of deleted datasets kept in variable sets (carts)
 // are not handled either: editing the sets directly would leave the search index out of date.
 //
-// Dry run (default, changes nothing):
-//   mongosh --quiet mica entity-orphan-cleanup.js
-// Apply:
-//   mongosh --quiet mica --eval 'var APPLY = true' --file entity-orphan-cleanup.js
-// With Docker Compose (Mongo service "mongo"), after docker compose cp entity-orphan-cleanup.js mongo:/tmp/:
-//   docker compose exec -T mongo mongosh --quiet mica --file /tmp/entity-orphan-cleanup.js                              (dry run)
-//   docker compose exec -T mongo mongosh --quiet mica --eval 'var APPLY = true' --file /tmp/entity-orphan-cleanup.js    (apply)
-// APPLY is a shell variable set with --eval, not an environment variable: APPLY=true or docker compose exec -e APPLY=true
-// is ignored and the script runs a dry run. The last line of the output says which mode ran.
+// How to run: the script ships in Mica's tools/ folder (/usr/share/mica2/tools with the Debian/RPM packages and the
+// Docker image) but runs in the MongoDB shell (mongosh), against the Mica database ("mica").
+// It is a dry run by default (nothing changed). To delete, set the mongosh variable APPLY with --eval 'var APPLY = true';
+// an environment variable (APPLY=true mongosh ..., docker compose exec -e APPLY=true ...) is ignored.
+// The last line of the output says which mode ran.
+// If MongoDB requires authentication, add to mongosh: -u <user> -p <password> --authenticationDatabase admin
+//
+// mongosh on the same host, from the tools/ folder:
+//   dry run: mongosh --quiet mica entity-orphan-cleanup.js
+//   apply:   mongosh --quiet mica --eval 'var APPLY = true' --file entity-orphan-cleanup.js
+//
+// Docker Compose, from the folder of docker-compose.yml, with services "mica" and "mongo": the script is in the Mica
+// container but mongosh is in the Mongo one, so read it from the first and pass it to the second with --eval
+// (--file would look for the script inside the Mongo container):
+//   dry run:
+//     docker compose exec -T mongo mongosh --quiet mica \
+//       --eval "$(docker compose exec -T mica cat /usr/share/mica2/tools/entity-orphan-cleanup.js)"
+//   apply:
+//     docker compose exec -T mongo mongosh --quiet mica \
+//       --eval "var APPLY = true; $(docker compose exec -T mica cat /usr/share/mica2/tools/entity-orphan-cleanup.js)"
+// Plain Docker: same commands with docker exec -i <mongo container> and docker exec <mica container>.
 //
 // Before applying: back up the database (mongodump --db mica) and stop Mica.
 // After applying: start Mica (permissions are cached).
