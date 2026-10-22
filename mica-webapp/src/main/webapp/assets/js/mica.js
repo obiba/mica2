@@ -862,7 +862,12 @@ class MicaService {
 
   static redirect(path) {
     // resolve against current location, so that 'javascript:', '//host' etc. cannot sneak through
-    const url = path ? new URL(path, window.location.href) : undefined;
+    let url;
+    try {
+      url = path ? new URL(path, window.location.href) : undefined;
+    } catch (e) {
+      url = undefined;
+    }
     if (url && url.origin === window.location.origin) {
       window.location.assign(url.href);
     } else if (url && (url.protocol === 'http:' || url.protocol === 'https:')) {

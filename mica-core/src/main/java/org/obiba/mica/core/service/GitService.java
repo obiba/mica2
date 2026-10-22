@@ -235,7 +235,7 @@ public class GitService implements InitializingBean {
   }
 
   private void validateId(String id) {
-    if (id == null || id.contains("..") || id.contains("/") || id.contains("\\")) throw new IllegalArgumentException("Invalid identifier: " + id);
+    if (id == null || id.equals(".") || id.equals("..") || id.contains("/") || id.contains("\\")) throw new IllegalArgumentException("Invalid identifier: " + id);
   }
 
   private String getJsonFileName(String filename) {

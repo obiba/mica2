@@ -169,7 +169,7 @@ public class StudiesImportResource {
   @GET
   @Path("/studies/import/_differences")
   @RequiresPermissions({"/draft/individual-study:ADD", "/draft/harmonization-study:ADD"})
-  @Produces({"application/xml", "application/json", "text/plain", "text/html"})
+  @Produces({"application/xml", "application/json", "text/plain"})
   @SuppressWarnings({"unchecked", "rawtypes"})
   public Response listDifferences(@QueryParam("url") String url,
                                   @HeaderParam(USERNAME_HEADER) String username,
@@ -240,7 +240,7 @@ public class StudiesImportResource {
   @GET
   @Path("/studies/import/_summary")
   @RequiresPermissions({"/draft/individual-study:ADD", "/draft/harmonization-study:ADD"})
-  @Produces({"application/xml", "application/json", "text/plain", "text/html"})
+  @Produces({"application/xml", "application/json", "text/plain"})
   public Response checkIfAlreadyExistsLocally(@QueryParam(IDS) List<String> ids, @QueryParam(TYPE) String type) {
 
     if (!micaConfigService.getConfig().isImportStudiesFeatureEnabled())

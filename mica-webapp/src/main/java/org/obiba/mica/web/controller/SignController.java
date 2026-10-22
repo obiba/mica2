@@ -30,7 +30,6 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Controller
@@ -195,7 +194,7 @@ public class SignController extends BaseController {
 
     String requestUrl = getRequestUrl(request);
     String requestUri = request.getRequestURI();
-    String baseUrl = requestUrl.replaceFirst(Pattern.quote(requestUri), "");
+    String baseUrl = requestUrl.substring(0, requestUrl.length() - requestUri.length());
 
     String contextPath = micaConfigService.getContextPath();
 
@@ -222,7 +221,7 @@ public class SignController extends BaseController {
 
     String requestUrl = getRequestUrl(request);
     String requestUri = request.getRequestURI();
-    String baseUrl = requestUrl.replaceFirst(Pattern.quote(requestUri), "") + micaConfigService.getContextPath();
+    String baseUrl = requestUrl.substring(0, requestUrl.length() - requestUri.length()) + micaConfigService.getContextPath();
 
     String redirectUrl = baseUrl + "/signup-with";
     if (!Strings.isNullOrEmpty(redirect))
@@ -258,9 +257,21 @@ public class SignController extends BaseController {
    */
   private String verifyRedirect(String redirect) {
     if (Strings.isNullOrEmpty(redirect)) return redirect;
-    String agateUrl = agateServerConfigService.getAgateUrl();
-    if (!Strings.isNullOrEmpty(agateUrl) && redirect.startsWith(agateUrl)) return redirect;
+    if (isAgateUrl(redirect)) return redirect;
     return isLocalPath(redirect) ? redirect : "";
+  }
+
+  private boolean isAgateUrl(String redirect) {
+    try {
+      URI agate = agateServerConfigService.getAgateUri();
+      URI uri = new URI(redirect);
+      // compare origins, a prefix check would accept https://agate.example.org.evil.com
+      return uri.getScheme() != null && uri.getScheme().equalsIgnoreCase(agate.getScheme())
+        && uri.getHost() != null && uri.getHost().equalsIgnoreCase(agate.getHost())
+        && uri.getPort() == agate.getPort();
+    } catch (Exception e) {
+      return false;
+    }
   }
 
   static boolean isLocalPath(String redirect) {
