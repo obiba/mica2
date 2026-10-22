@@ -1,5 +1,5 @@
 skipTests = false
-version=7.0-SNAPSHOT
+version=8.0-SNAPSHOT
 mvn_exec = mvn -Dmaven.test.skip=${skipTests}
 current_dir = $(shell pwd)
 search_plugin_version=
