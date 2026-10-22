@@ -24,7 +24,7 @@
     "pinia": "^3.0.1",
     "quasar": "^2.27.0",
     "ts-proto": "^1.174.0",
-    "vue": "^3.5.13",
+    "vue": "^3.5.44",
     "vue-i18n": "^11.3.2",
     "vue-router": "^5.3.0"
   },
@@ -53,7 +53,12 @@
     "vue-tsc": "^3.3.11"
   },
   "overrides": {
-    "serialize-javascript": "^7.0.5"
+    "serialize-javascript": "^7.0.5",
+    "front-matter": {
+      "js-yaml": {
+        "argparse": "^2.0.1"
+      }
+    }
   },
   "engines": {
     "node": "^26 || ^24 || ^22.22.0",
