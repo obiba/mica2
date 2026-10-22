@@ -298,7 +298,7 @@ public class UserProfileService extends AgateRestService {
     return UriComponentsBuilder
       .fromUri(agateServerConfigService.getAgateUri())
       .path(DEFAULT_REST_PREFIX)
-      .path(String.format("/tickets/subject/%s", username))
+      .pathSegment("tickets", "subject", username)
       .build().toUriString();
   }
 
@@ -309,7 +309,7 @@ public class UserProfileService extends AgateRestService {
     if (Strings.isNullOrEmpty(username)) {
       urlBuilder.path(String.format("/application/%s/users", getApplicationName()));
     } else {
-      urlBuilder.path(String.format("/application/%s/user/%s", getApplicationName(), username));
+      urlBuilder.pathSegment("application", getApplicationName(), "user", username);
     }
 
     if (!Strings.isNullOrEmpty(group)) {

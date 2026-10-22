@@ -213,7 +213,7 @@ public class StudiesImportResource {
   @GET
   @Path("/studies/import/_preview")
   @RequiresPermissions({"/draft/individual-study:ADD", "/draft/harmonization-study:ADD"})
-  @Produces({"application/xml", "application/json", "text/plain", "text/html"})
+  @Produces({"application/xml", "application/json", "text/plain"})
   public Response listRemoteStudies(@QueryParam("url") String url,
                                     @HeaderParam(USERNAME_HEADER) String username,
                                     @HeaderParam(PWORD_HEADER) String password,

@@ -30,6 +30,7 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Controller
@@ -194,7 +195,7 @@ public class SignController extends BaseController {
 
     String requestUrl = getRequestUrl(request);
     String requestUri = request.getRequestURI();
-    String baseUrl = requestUrl.replaceFirst(requestUri, "");
+    String baseUrl = requestUrl.replaceFirst(Pattern.quote(requestUri), "");
 
     String contextPath = micaConfigService.getContextPath();
 
@@ -221,7 +222,7 @@ public class SignController extends BaseController {
 
     String requestUrl = getRequestUrl(request);
     String requestUri = request.getRequestURI();
-    String baseUrl = requestUrl.replaceFirst(requestUri, "") + micaConfigService.getContextPath();
+    String baseUrl = requestUrl.replaceFirst(Pattern.quote(requestUri), "") + micaConfigService.getContextPath();
 
     String redirectUrl = baseUrl + "/signup-with";
     if (!Strings.isNullOrEmpty(redirect))

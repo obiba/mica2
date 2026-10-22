@@ -138,6 +138,7 @@ public class TempFileService implements InitializingBean {
   }
 
   private File getFile(@NotNull String id) {
+    if (id.contains("..") || id.contains("/") || id.contains("\\")) throw new IllegalArgumentException("Invalid temp file id: " + id);
     return new File(tmpRoot, id);
   }
 
