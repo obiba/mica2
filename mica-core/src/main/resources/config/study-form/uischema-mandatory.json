@@ -1,0 +1,70 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "Label",
+      "text": "t(study.general-info)",
+      "options": {
+        "class": "text-h5"
+      }
+    },
+    {
+      "type": "VerticalLayout",
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/_name",
+              "hint": "t(study.name-help)",
+              "options": {
+                "dense": true
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/_acronym",
+              "hint": "t(study.acronym-help)",
+              "options": {
+                "dense": true
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/_opal",
+              "hint": "t(study.opal-help)",
+              "options": {
+                "dense": true
+              }
+            }
+          ],
+          "options": {
+            "class": "col-6"
+          }
+        },
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/_objectives",
+              "hint": "t(study.objectives-help)",
+              "options": {
+                "dense": true,
+                "marked": true,
+                "rows": 3
+              }
+            }
+          ],
+          "options": {
+            "class": "col-6"
+          }
+        }
+      ],
+      "options": {
+        "class": "row q-col-gutter-md"
+      }
+    }
+  ]
+}

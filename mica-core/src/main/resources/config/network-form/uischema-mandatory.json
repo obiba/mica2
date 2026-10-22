@@ -1,0 +1,32 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "Label",
+      "text": "t(network.general-info)"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/_name",
+      "options": {
+        "dense": true
+      }
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/_acronym",
+      "options": {
+        "dense": true
+      }
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/_description",
+      "options": {
+        "marked": true,
+        "rows": 5,
+        "dense": true
+      }
+    }
+  ]
+}

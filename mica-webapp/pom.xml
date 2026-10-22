@@ -24,6 +24,8 @@
 
   <properties>
     <maven.deploy.skip>true</maven.deploy.skip>
+    <!-- -DskipTests also skips the data access form bundle tests -->
+    <skipTests>false</skipTests>
   </properties>
 
   <dependencies>
@@ -122,16 +124,150 @@
         <configuration>
           <filesets>
             <fileset>
-              <directory>src/main/webapp/dist</directory>
-            </fileset>
-            <fileset>
-              <directory>src/main/webapp/bower_components</directory>
-            </fileset>
-            <fileset>
               <directory>node_modules</directory>
+            </fileset>
+            <fileset>
+              <directory>src/main/webapp/assets/libs/node_modules</directory>
+            </fileset>
+            <fileset>
+              <directory>src/main/webapp/assets/css</directory>
+              <includes>
+                <include>*.min.css</include>
+                <include>*.map</include>
+              </includes>
+            </fileset>
+            <fileset>
+              <directory>src/main/webapp/assets/js/data-access-form</directory>
             </fileset>
           </filesets>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <version>${frontend-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>install node and npm</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>install-node-and-npm</goal>
+            </goals>
+            <configuration>
+              <nodeVersion>v24.11.0</nodeVersion>
+            </configuration>
+          </execution>
+          <execution>
+            <id>npm install</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <arguments>install --include=dev</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <!-- data access form bundle (Vue + Quasar json-form), see src/main/vue/data-access-form -->
+            <id>npm build forms</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <arguments>run build:forms</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <!-- unit tests of the data access form bundle, skipped with -DskipTests -->
+            <id>npm test forms</id>
+            <phase>test</phase>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <arguments>run test:forms</arguments>
+              <skipTests>${skipTests}</skipTests>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <!-- the libraries of the public portal pages -->
+            <id>copy js deps</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>src/main/webapp/assets/libs/node_modules</outputDirectory>
+              <overwrite>true</overwrite>
+              <resources>
+                <resource>
+                  <directory>node_modules</directory>
+                  <includes>
+                    <include>admin-lte/dist/**</include>
+                    <include>bootstrap/dist/**</include>
+                    <include>@popperjs/core/dist/**</include>
+                    <include>@fortawesome/fontawesome-free/**</include>
+                    <include>jquery/dist/**</include>
+                    <include>moment/min/**</include>
+                    <include>moment-timezone/builds/**</include>
+                    <include>chart.js/dist/**</include>
+                    <include>datatables.net/js/**</include>
+                    <include>datatables.net-bs5/js/**</include>
+                    <include>datatables.net-bs5/css/**</include>
+                    <include>datatables.net-buttons/js/**</include>
+                    <include>datatables.net-buttons-bs5/js/**</include>
+                    <include>datatables.net-buttons-bs5/css/**</include>
+                    <include>datatables.net-select/js/**</include>
+                    <include>datatables.net-select-bs5/js/**</include>
+                    <include>datatables.net-select-bs5/css/**</include>
+                    <include>datatables.net-fixedheader/js/**</include>
+                    <include>datatables.net-fixedheader-bs5/js/**</include>
+                    <include>datatables.net-fixedheader-bs5/css/**</include>
+                    <include>select2/dist/**</include>
+                    <include>select2-bootstrap-5-theme/dist/**</include>
+                    <include>toastr/build/**</include>
+                    <include>simplemde/dist/**</include>
+                    <include>vue/dist/**</include>
+                    <include>rql/dist/**</include>
+                    <include>plotly.js-dist-min/**</include>
+                    <include>axios/dist/**</include>
+                    <include>dompurify/dist/**</include>
+                    <include>marked/**</include>
+                    <include>jquery.redirect/**</include>
+                    <include>js-cookie/**</include>
+                    <include>bootstrap-datepicker/dist/**</include>
+                    <include>bootstrap-4-autocomplete/dist/**</include>
+                    <include>chartjs-chart-geo/build/**</include>
+                    <include>d3/d3.min.js</include>
+                    <include>mica-study-timeline/dist/**</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy ui content</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>target/classes/static/admin</outputDirectory>
+              <overwrite>true</overwrite>
+              <resources>
+                <resource>
+                  <directory>../mica-ui/dist/spa</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
@@ -173,29 +309,6 @@
                     <argument>run</argument>
                     <argument>build:css</argument>
                   </arguments>
-                </configuration>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>exec-bower-install</id>
-                <phase>generate-sources</phase>
-                <configuration>
-                  <executable>bower</executable>
-                  <arguments>
-                    <argument>install</argument>
-                  </arguments>
-                </configuration>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>exec-grunt</id>
-                <phase>generate-sources</phase>
-                <configuration>
-                  <executable>grunt</executable>
                 </configuration>
                 <goals>
                   <goal>exec</goal>
@@ -322,34 +435,21 @@
             </executions>
           </plugin>
           <plugin>
-            <groupId>com.github.trecloux</groupId>
-            <artifactId>yeoman-maven-plugin</artifactId>
-            <version>0.2</version>
-            <configuration>
-              <yeomanProjectDirectory>${project.basedir}</yeomanProjectDirectory>
-            </configuration>
-            <executions>
-              <execution>
-                <id>run-grunt</id>
-                <phase>generate-resources</phase>
-                <goals>
-                  <goal>build</goal>
-                </goals>
-                <configuration>
-                  <gruntBuildArgs>--force</gruntBuildArgs>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
             <artifactId>maven-clean-plugin</artifactId>
             <configuration>
               <filesets>
                 <fileset>
-                  <directory>.tmp</directory>
+                  <directory>node_modules</directory>
                 </fileset>
                 <fileset>
-                  <directory>node_modules</directory>
+                  <directory>src/main/webapp/assets/libs/node_modules</directory>
+                </fileset>
+                <fileset>
+                  <directory>src/main/webapp/assets/css</directory>
+                  <includes>
+                    <include>*.min.css</include>
+                    <include>*.map</include>
+                  </includes>
                 </fileset>
               </filesets>
             </configuration>

@@ -15,10 +15,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.obiba.mica.micaConfig.domain.EntityConfig;
+import org.obiba.mica.micaConfig.service.helper.FormValidation;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -32,6 +32,8 @@ import java.util.Optional;
 import java.util.Scanner;
 
 public abstract class EntityConfigService<T extends EntityConfig> {
+
+  private static final String EMPTY_UISCHEMA = "{\"type\":\"VerticalLayout\",\"elements\":[]}";
 
   protected abstract MongoRepository<T, String> getRepository();
 
@@ -59,9 +61,11 @@ public abstract class EntityConfigService<T extends EntityConfig> {
     networkForm.ifPresent(d -> getRepository().save(d));
   }
 
+  /** The definition is either an angular-schema-form array or a JSON Forms UI schema object. */
   private void validateForm(T configuration) {
-    validateSchema(configuration.getSchema());
-    validateDefinition(configuration.getDefinition());
+    FormValidation.validateSchema(configuration.getSchema());
+    FormValidation.validateDefinition(configuration.getDefinition());
+    FormValidation.validateTranslations(configuration.getTranslations());
   }
 
   private T findOrCreateDefaultForm() {
@@ -76,26 +80,11 @@ public abstract class EntityConfigService<T extends EntityConfig> {
     return form.get();
   }
 
-  private void validateSchema(String json) {
-    try {
-      new JSONObject(json);
-    } catch(JSONException e) {
-      throw new InvalidFormSchemaException(e);
-    }
-  }
-
-  private void validateDefinition(String json) {
-    try {
-      new JSONArray(json);
-    } catch(JSONException e) {
-      throw new InvalidFormDefinitionException();
-    }
-  }
-
-  private T createDefaultForm() {
+  T createDefaultForm() {
     T form = createEmptyForm();
-    form.setDefinition(getResourceAsString(getDefaultDefinitionResourcePath(), "[]"));
+    form.setDefinition(getResourceAsString(getDefaultDefinitionResourcePath(), EMPTY_UISCHEMA));
     form.setSchema(getResourceAsString(getDefaultSchemaResourcePath(), "{}"));
+    form.setTranslations(getResourceAsString(getDefaultTranslationsResourcePath(), null));
     return form;
   }
 
@@ -120,8 +109,14 @@ public abstract class EntityConfigService<T extends EntityConfig> {
     repositoryConfiguration.setSchema(mergedSchema);
 
     String repositoryDefinition = repositoryConfiguration.getDefinition();
-    String mandatoryDefinition = getResourceAsString(getMandatoryDefinitionResourcePath(), "[]");
-    String mergedDefinition = mergeDefinition(repositoryDefinition, mandatoryDefinition);
+    String mergedDefinition;
+    if (FormValidation.isObject(repositoryDefinition)) {
+      String mandatoryUischema = getResourceAsString(getMandatoryUischemaResourcePath(), EMPTY_UISCHEMA);
+      mergedDefinition = mergeUischema(repositoryDefinition, mandatoryUischema);
+    } else {
+      String mandatoryDefinition = getResourceAsString(getMandatoryDefinitionResourcePath(), "[]");
+      mergedDefinition = mergeDefinition(repositoryDefinition, mandatoryDefinition);
+    }
     repositoryConfiguration.setDefinition(mergedDefinition);
 
     return repositoryConfiguration;
@@ -163,19 +158,61 @@ public abstract class EntityConfigService<T extends EntityConfig> {
     return mandatoryDefinition;
   }
 
+  /**
+   * A JSON Forms custom UI schema is appended to the elements of the mandatory one: the mandatory
+   * layout comes first, then the custom layout as a whole.
+   */
+  String mergeUischema(String customNode, String mandatoryNode) {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      return mergeUischema(mapper.readTree(customNode), mapper.readTree(mandatoryNode)).toString();
+    } catch (IOException e) {
+      e.printStackTrace();
+      throw new UncheckedIOException(e);
+    }
+  }
+
+  private JsonNode mergeUischema(JsonNode customUischema, JsonNode mandatoryUischema) {
+    ObjectNode merged = mandatoryUischema.isObject() ? (ObjectNode) mandatoryUischema : new ObjectMapper().createObjectNode();
+    if (!merged.has("type")) merged.put("type", "VerticalLayout");
+    JsonNode elements = merged.get("elements");
+    if (elements == null || !elements.isArray()) {
+      elements = merged.putArray("elements");
+    }
+    if (customUischema.isObject() && !customUischema.isEmpty()) {
+      ((ArrayNode) elements).add(customUischema);
+    }
+    return merged;
+  }
+
   private void mergeRequiredFields(JsonNode baseNode, JsonNode overrideNode) {
-    ArrayList<JsonNode> baseRequiredItems = Lists.newArrayList(baseNode.get("required"));
-    for (JsonNode overrideRequiredItem : overrideNode.get("required")) {
+    JsonNode overrideRequired = overrideNode.get("required");
+    if (overrideRequired == null || !overrideRequired.isArray()) return;
+    // a schema without required fields may omit the array (the form builder does)
+    ArrayNode baseRequired = arrayIn(baseNode, "required");
+    ArrayList<JsonNode> baseRequiredItems = Lists.newArrayList(baseRequired);
+    for (JsonNode overrideRequiredItem : overrideRequired) {
       if (!baseRequiredItems.contains(overrideRequiredItem)) {
-        ((ArrayNode) baseNode.get("required")).add(overrideRequiredItem);
+        baseRequired.add(overrideRequiredItem);
       }
     }
+  }
+
+  private ArrayNode arrayIn(JsonNode node, String name) {
+    JsonNode array = node.get(name);
+    return array != null && array.isArray() ? (ArrayNode) array : ((ObjectNode) node).putArray(name);
+  }
+
+  private ObjectNode objectIn(JsonNode node, String name) {
+    JsonNode object = node.get(name);
+    return object != null && object.isObject() ? (ObjectNode) object : ((ObjectNode) node).putObject(name);
   }
 
   private void mergeProperties(JsonNode baseNode, JsonNode overrideNode) {
 
     JsonNode overrideProperties = overrideNode.get("properties");
-    JsonNode baseProperties = baseNode.get("properties");
+    if (overrideProperties == null || !overrideProperties.isObject()) return;
+    JsonNode baseProperties = objectIn(baseNode, "properties");
     Iterator<String> overridePropertiesNames = overrideProperties.fieldNames();
 
     while (overridePropertiesNames.hasNext()) {
@@ -202,4 +239,22 @@ public abstract class EntityConfigService<T extends EntityConfig> {
   protected abstract String getDefaultDefinitionResourcePath();
 
   protected abstract String getMandatoryDefinitionResourcePath();
+
+  /**
+   * The texts of the default form by locale: by default the `translations.json` beside the default UI schema
+   * (`collection-translations.json` beside `collection-uischema.json`).
+   */
+  protected String getDefaultTranslationsResourcePath() {
+    String path = getDefaultDefinitionResourcePath();
+    return StringUtils.isEmpty(path) ? path : path.replace("uischema.json", "translations.json");
+  }
+
+  /**
+   * The JSON Forms counterpart of the mandatory definition, merged into a custom definition of that
+   * dialect: by default the `uischema-mandatory.json` beside the `definition-mandatory.json`.
+   */
+  protected String getMandatoryUischemaResourcePath() {
+    String path = getMandatoryDefinitionResourcePath();
+    return StringUtils.isEmpty(path) ? path : path.replace("definition-mandatory.json", "uischema-mandatory.json");
+  }
 }

@@ -41,7 +41,7 @@ public class DataAccessAgreementFormService extends AbstractDataAccessEntityForm
   public DataAccessAgreementForm findDraft() {
     Optional<DataAccessAgreementForm> form = dataAccessAgreementFormRepository.findById(DataAccessAgreementForm.DEFAULT_ID);
     if (!form.isPresent()) {
-      createOrUpdate(createDefaultDataAccessAgreementForm());
+      createOrUpdate(createDefaultForm());
       form = dataAccessAgreementFormRepository.findById(DataAccessAgreementForm.DEFAULT_ID);
     }
     return form.get();
@@ -86,9 +86,11 @@ public class DataAccessAgreementFormService extends AbstractDataAccessEntityForm
       .findFirst();
   }
 
-  private DataAccessAgreementForm createDefaultDataAccessAgreementForm() {
+  @Override
+  DataAccessAgreementForm createDefaultForm() {
     DataAccessAgreementForm form = new DataAccessAgreementForm();
-    form.setDefinition(getDefaultDataAccessFormResourceAsString("definition.json"));
+    form.setDefinition(getDefaultDataAccessFormResourceAsString("uischema.json"));
+    form.setTranslations(getDefaultDataAccessFormResourceAsString("translations.json"));
     form.setSchema(getDefaultDataAccessFormResourceAsString("schema.json"));
     form.setRevision(0);
     return form;

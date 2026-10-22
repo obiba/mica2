@@ -13,7 +13,10 @@ public class UpgradeLegacyEntities {
     List<JsonNode> memberships = jsonNode.findValues("memberships");
     memberships.forEach(membership -> {
       membership.findValues("studyMemberships").forEach(studyMembership -> studyMembership.forEach(study -> {
-        JsonNode metaType = study.get("obiba.mica.PersonDto.StudyMembershipDto.meta").get("type");
+        JsonNode meta = study.get("obiba.mica.PersonDto.StudyMembershipDto.meta");
+        // current format: the membership already has its type
+        if (meta == null) return;
+        JsonNode metaType = meta.path("type");
         if (metaType.asText().equals("harmonization-study")) {
           ((ObjectNode) study).put("type", "INITIATIVE");
         } else if (metaType.asText().equals("individual-study")) {

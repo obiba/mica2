@@ -16,11 +16,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 
 import org.obiba.mica.core.domain.Person;
@@ -41,6 +43,9 @@ public abstract class AbstractPersonsSearchResource {
 
   @Inject
   private Dtos dtos;
+
+  @Context
+  private HttpServletResponse response;
 
   protected abstract boolean isDraft();
 
@@ -65,6 +70,8 @@ public abstract class AbstractPersonsSearchResource {
     Mica.PersonsDto.Builder builder = Mica.PersonsDto.newBuilder().setFrom(from).setLimit(limit)
       .setTotal(contacts.getTotal());
     builder.addAllPersons(persons);
+    // the persons are listed from the database, without applying the query
+    if (contacts.isDegraded() && response != null) response.addHeader("X-Search-Degraded", "true");
 
     return builder.build();
   }

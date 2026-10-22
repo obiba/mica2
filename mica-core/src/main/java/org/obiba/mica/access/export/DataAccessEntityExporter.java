@@ -23,6 +23,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
 import org.obiba.mica.access.domain.DataAccessEntity;
 import org.obiba.mica.micaConfig.domain.AbstractDataAccessEntityForm;
 import org.obiba.mica.micaConfig.service.helper.SchemaFormConfig;
@@ -35,7 +37,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -46,8 +47,6 @@ public class DataAccessEntityExporter {
   private static final Logger log = getLogger(DataAccessEntityExporter.class);
 
   private static final SimpleDateFormat ISO_8601 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-  private static final String[] skipTypes = {"fieldset","section"};
 
   private JsonNode schema;
 
@@ -74,7 +73,8 @@ public class DataAccessEntityExporter {
       titleRun.setText(String.format("%s [%s] - %s", titleStr, status, id));
       applyFontConfig(titleRun, getItemConfig("documentTitle"));
 
-      traverseDefinitionTree(document, definition, model);
+      // a JSON Forms UI schema (object) is walked as the definition tree of the angular-schema-form dialect (array)
+      traverseDefinitionTree(document, definition.isObject() ? UischemaDefinition.toDefinition(definition, schema) : definition, model);
 
       // footer
       XWPFFooter footer = document.createFooter(HeaderFooterType.DEFAULT);
@@ -122,7 +122,9 @@ public class DataAccessEntityExporter {
     if (node.has("key")) {
       String key = node.get("key").asText();
       JsonNode keySchema = getKeySchema(key);
-      if ("array".equals(keySchema.get("type").asText())) {
+      if (keySchema == null) {
+        log.warn("Unknown data access form key: {}", key);
+      } else if (keySchema.has("type") && "array".equals(keySchema.get("type").asText())) {
         appendModelValue(document, key, node, modelObject);
       } else if (node.has("items")) {
         traverseDefinitionTree(document, node.get("items"), modelObject);
@@ -229,8 +231,17 @@ public class DataAccessEntityExporter {
   }
 
   private void parseAndRenderHTML(String html, XWPFDocument document, String itemKey) {
-    for (Element element : Jsoup.parse(html).body().children()) {
-      processElement(element, document, itemKey);
+    for (Node node : Jsoup.parse(html).body().childNodes()) {
+      if (node instanceof Element) {
+        processElement((Element) node, document, itemKey);
+      } else if (node instanceof TextNode && !((TextNode) node).isBlank()) {
+        // a plain text (a group label, a help text without markup)
+        XWPFParagraph paragraph = document.createParagraph();
+        XWPFRun run = paragraph.createRun();
+        run.setText(((TextNode) node).text().trim());
+        applyFontConfig(run, getItemConfig(itemKey));
+        paragraph.setSpacingAfter(100);
+      }
     }
   }
 
@@ -328,10 +339,10 @@ public class DataAccessEntityExporter {
           addLineBreak(document);
         }
         JsonNode items = keySchema.get("items");
-        if (items.has("enum")) {
-          addEnumValues(document, keyDescription, value);
+        if (items.has("enum") || items.has("oneOf")) {
+          addEnumValues(document, keyDescription, items, value);
           addLineBreak(document);
-        } else if ("string".equals(items.get("type").asText())) {
+        } else if (items.has("type") && "string".equals(items.get("type").asText())) {
           for (JsonNode itemValue : value) {
             addBulletedListItem(document, itemValue.asText());
           }
@@ -377,24 +388,26 @@ public class DataAccessEntityExporter {
           }
         }
       } else if (row == null) {
-        appendModelValueAsText(document, keyDescription, value);
+        appendModelValueAsText(document, keyDescription, keySchema, value);
       } else {
-        appendModelValueAsText(row, keyDescription, value);
+        appendModelValueAsText(row, keyDescription, keySchema, value);
       }
     } else {
       appendKeyTitle(document, key);
-      appendModelValueAsText(document, keyDescription, value);
+      appendModelValueAsText(document, keyDescription, keySchema, value);
     }
   }
 
   /**
-   * Add enum values from an array as bulleted list items, using titleMap definition if any.
+   * Add enum values from an array as bulleted list items, using the titleMap definition (angular-schema-form)
+   * or the oneOf titles of the items schema (JSON Forms) if any.
    *
    * @param document The document to append to
    * @param keyDescription The key description containing titleMap
+   * @param itemsSchema The schema of the array items, containing oneOf
    * @param value The array of enum values to process
    */
-  private void addEnumValues(XWPFDocument document, JsonNode keyDescription, JsonNode value) {
+  private void addEnumValues(XWPFDocument document, JsonNode keyDescription, JsonNode itemsSchema, JsonNode value) {
     for (JsonNode itemValue : value) {
       String txtValue;
       if (itemValue.isContainerNode()) {
@@ -403,22 +416,38 @@ public class DataAccessEntityExporter {
       } else {
         txtValue = itemValue.asText();
       }
+      addBulletedListItem(document, labelOf(keyDescription, itemsSchema, itemValue, txtValue));
+    }
+  }
 
-      JsonNode titleMap = keyDescription.get("titleMap");
-      if (titleMap != null && titleMap.isArray()) {
-        for (JsonNode map : titleMap) {
-          if (map.has("value") && map.has("name")) {
-            JsonNode mapValue = map.get("value");
-            if (mapValue != null && (mapValue.equals(itemValue) || mapValue.toString().equals(itemValue.toString()))) {
-              txtValue = map.get("name").asText();
-              break;
-            }
+  /**
+   * The label of a value: from the titleMap of the key description (angular-schema-form), else from the
+   * oneOf of the schema (JSON Forms, {@code { const, title }}), else the value itself.
+   */
+  private String labelOf(JsonNode keyDescription, JsonNode keySchema, JsonNode value, String txtValue) {
+    JsonNode titleMap = keyDescription == null ? null : keyDescription.get("titleMap");
+    if (titleMap != null && titleMap.isArray()) {
+      for (JsonNode map : titleMap) {
+        if (map.has("value") && map.has("name")) {
+          JsonNode mapValue = map.get("value");
+          if (mapValue != null && (mapValue.equals(value) || mapValue.toString().equals(value.toString()) || mapValue.asText().equals(txtValue))) {
+            return map.get("name").asText();
           }
         }
       }
-
-      addBulletedListItem(document, txtValue);
     }
+    JsonNode oneOf = keySchema == null ? null : keySchema.get("oneOf");
+    if (oneOf != null && oneOf.isArray()) {
+      for (JsonNode option : oneOf) {
+        if (option.has("const") && option.has("title")) {
+          JsonNode constValue = option.get("const");
+          if (constValue.equals(value) || constValue.asText().equals(txtValue)) {
+            return option.get("title").asText();
+          }
+        }
+      }
+    }
+    return txtValue;
   }
 
 
@@ -432,11 +461,13 @@ public class DataAccessEntityExporter {
     List<JsonNode> items = Lists.newArrayList();
     if (node.has("items")) {
       for (JsonNode item : node.get("items")) {
-        if (item.has("type") && Arrays.asList(skipTypes).contains(item.get("type").asText())) {
-          items.addAll(getItems(item));
-        } else {
+        if (item.isTextual() || item.has("key")) {
           items.add(item);
+        } else if (item.has("items")) {
+          // a section or a titled group of the item definition
+          items.addAll(getItems(item));
         }
+        // a help block has no value
       }
     }
     return items;
@@ -558,34 +589,27 @@ public class DataAccessEntityExporter {
     applyFontConfig(keyRun, getItemConfig("field"));
   }
 
-  private void appendModelValueAsText(XWPFTableRow row, JsonNode keyDescription, JsonNode value) {
+  private void appendModelValueAsText(XWPFTableRow row, JsonNode keyDescription, JsonNode keySchema, JsonNode value) {
     XWPFParagraph valueParagraph = row.addNewTableCell().getParagraphs().get(0);
-    appendModelValueAsText(valueParagraph, keyDescription, value, false);
+    appendModelValueAsText(valueParagraph, keyDescription, keySchema, value, false);
   }
 
-  private void appendModelValueAsText(XWPFDocument document, JsonNode keyDescription, JsonNode value) {
+  private void appendModelValueAsText(XWPFDocument document, JsonNode keyDescription, JsonNode keySchema, JsonNode value) {
     XWPFParagraph valueParagraph = createParagraph(document);
-    appendModelValueAsText(valueParagraph, keyDescription, value, true);
+    appendModelValueAsText(valueParagraph, keyDescription, keySchema, value, true);
   }
 
   /**
-   * Append model value, use titleMap definition if any.
+   * Append model value, use titleMap definition or oneOf schema titles if any.
    *
    * @param valueParagraph
    * @param keyDescription
+   * @param keySchema
    * @param value
    */
-  private void appendModelValueAsText(XWPFParagraph valueParagraph, JsonNode keyDescription, JsonNode value, boolean lineBreak) {
+  private void appendModelValueAsText(XWPFParagraph valueParagraph, JsonNode keyDescription, JsonNode keySchema, JsonNode value, boolean lineBreak) {
     valueParagraph.setAlignment(ParagraphAlignment.LEFT);
-    String txtValue = value.asText();
-    if (keyDescription.has("titleMap")) {
-      for (JsonNode map : keyDescription.get("titleMap")) {
-        if (map.has("value") && map.has("name") && map.get("value").asText().equals(txtValue)) {
-          txtValue = map.get("name").asText();
-          break;
-        }
-      }
-    }
+    String txtValue = labelOf(keyDescription, keySchema, value, value.asText());
     addTextWithLineBreak(valueParagraph, txtValue, getItemConfig("value"), lineBreak);
   }
 
@@ -742,6 +766,11 @@ public class DataAccessEntityExporter {
       schema(config.getSchema());
       definition(config.getDefinition());
       model(config.getModel());
+      return wordConfig(wordConfig);
+    }
+
+    /** the fonts and layout of the document, see the {@code export-word.json} of the form */
+    public Builder wordConfig(JSONObject wordConfig) {
       this.exporter.wordConfig = wordConfig;
       return this;
     }

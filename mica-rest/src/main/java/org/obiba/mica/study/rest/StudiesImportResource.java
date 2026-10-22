@@ -578,6 +578,7 @@ public class StudiesImportResource {
     URIBuilder builder = new URIBuilder();
     builder.setScheme(preparedURI.getScheme())
       .setHost(preparedURI.getHost())
+      .setPort(preparedURI.getPort())
       .setPath(preparedURI.getPath() + endpoint);
 
     if (param != null) {

@@ -1,0 +1,95 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "Label",
+          "text": "t(label.1.text)",
+          "options": {
+            "class": "text-h5"
+          }
+        },
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "row q-col-gutter-md"
+          },
+          "elements": [
+            {
+              "type": "VerticalLayout",
+              "options": {
+                "class": "col-6"
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/startDate",
+                  "hint": "t(research-project.default.status.start-help)",
+                  "options": {
+                    "dense": true,
+                    "validationMessage": "t(research-project.default.status.date-error)",
+                    "dateOptions": {
+                      "dateFormat": "yyyy-MM-dd"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "VerticalLayout",
+              "options": {
+                "class": "col-6"
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/endDate",
+                  "hint": "t(research-project.default.status.end-help)",
+                  "options": {
+                    "dense": true,
+                    "validationMessage": "t(research-project.default.status.date-error)",
+                    "dateOptions": {
+                      "dateFormat": "yyyy-MM-dd"
+                    }
+                  },
+                  "rules": {
+                    "min": "startDate"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "Label",
+          "text": "t(label.2.text)",
+          "options": {
+            "class": "text-h5"
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/name",
+          "options": {
+            "dense": true
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/institution",
+          "options": {
+            "dense": true,
+            "rows": 3
+          }
+        }
+      ]
+    }
+  ]
+}

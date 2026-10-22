@@ -104,7 +104,7 @@ public class DataAccessMainFormController extends BaseDataAccessController {
 
   private void addDataAccessFormConfiguration(Map<String, Object> params, DataAccessRequest request, boolean readOnly, String locale) {
     DataAccessForm form = getDataAccessForm(request);
-    params.put("formConfig", new SchemaFormConfig(micaConfigService, form.getSchema(), form.getDefinition(), request.getContent(), locale, readOnly));
+    params.put("formConfig", new SchemaFormConfig(micaConfigService, form, request.getContent(), locale, readOnly));
     params.put("accessConfig", new DataAccessConfigBundle(getConfig(), form));
     addHasFiles(params, request);
   }

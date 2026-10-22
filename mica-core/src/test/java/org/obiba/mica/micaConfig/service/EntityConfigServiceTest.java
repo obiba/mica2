@@ -10,11 +10,27 @@
 
 package org.obiba.mica.micaConfig.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Test;
+import org.obiba.mica.micaConfig.domain.EntityConfig;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -93,5 +109,146 @@ public class EntityConfigServiceTest {
     DocumentContext parse = JsonPath.parse(mergeSchema);
     assertThat(parse.read("$[0].items[0]"), is("mandatoryItem1"));
     assertThat(parse.read("$[1].items[0]"), is("customItem1"));
+  }
+
+  @Test
+  public void can_merge_two_uischemas() throws Exception {
+
+    // Given
+    String customUischema = "{" +
+      "    \"type\": \"VerticalLayout\"," +
+      "    \"elements\": [ { \"type\": \"Control\", \"scope\": \"#/properties/customItem1\" } ]" +
+      "}";
+
+    String mandatoryUischema = "{" +
+      "    \"type\": \"VerticalLayout\"," +
+      "    \"elements\": [ { \"type\": \"Control\", \"scope\": \"#/properties/mandatoryItem1\" } ]" +
+      "}";
+
+    // Execute
+    String merged = new IndividualStudyConfigService().mergeUischema(customUischema, mandatoryUischema);
+
+    // Verify
+    DocumentContext parse = JsonPath.parse(merged);
+    assertThat(parse.read("type"), is("VerticalLayout"));
+    assertThat(parse.read("elements[0].scope"), is("#/properties/mandatoryItem1"));
+    assertThat(parse.read("elements[1].type"), is("VerticalLayout"));
+    assertThat(parse.read("elements[1].elements[0].scope"), is("#/properties/customItem1"));
+  }
+
+  @Test
+  public void can_merge_uischema_without_mandatory_one() throws Exception {
+
+    // Given
+    String customUischema = "{ \"type\": \"VerticalLayout\", \"elements\": [] }";
+
+    // Execute
+    String merged = new IndividualStudyConfigService().mergeUischema(customUischema, "{\"type\":\"VerticalLayout\",\"elements\":[]}");
+
+    // Verify
+    DocumentContext parse = JsonPath.parse(merged);
+    assertThat(parse.read("elements[0].type"), is("VerticalLayout"));
+  }
+
+  @Test
+  public void can_merge_schema_without_required_and_properties() throws Exception {
+
+    // Given: a custom schema as the form builder writes it, without an empty required array
+    String customSchema = "{ \"type\": \"object\" }";
+
+    String mandatorySchema = "{" +
+      "    \"type\": \"object\"," +
+      "    \"properties\": { \"neededInfo\": { \"type\": \"string\" } }," +
+      "    \"required\": [ \"neededInfo\" ]" +
+      "}";
+
+    // Execute
+    String mergeSchema = new IndividualStudyConfigService().mergeSchema(customSchema, mandatorySchema);
+
+    // Verify
+    DocumentContext parse = JsonPath.parse(mergeSchema);
+    assertThat(parse.read("properties.neededInfo.type"), is("string"));
+    assertThat(parse.read("required"), containsInAnyOrder("neededInfo"));
+  }
+
+  @Test
+  public void every_document_type_has_a_mandatory_uischema() throws Exception {
+
+    // Given: the form configuration services of the document types edited with the form builder
+    List<EntityConfigService<?>> services = List.of(
+      new NetworkConfigService(),
+      new IndividualStudyConfigService(),
+      new HarmonizationStudyConfigService(),
+      new PopulationConfigService(),
+      new DataCollectionEventConfigService(),
+      new StudyDatasetConfigService(),
+      new HarmonizationDatasetConfigService(),
+      new ProjectConfigService());
+
+    for (EntityConfigService<?> service : services) {
+      // Execute
+      String path = service.getMandatoryUischemaResourcePath();
+      String merged = service.mergeUischema("{}", readResource(path));
+
+      // Verify: a layout with the mandatory controls, merged with an empty custom form
+      DocumentContext parse = JsonPath.parse(merged);
+      assertThat(path, parse.read("type"), is("VerticalLayout"));
+      assertThat(path, parse.read("elements"), is(not(empty())));
+
+      // Verify: every property of the mandatory schema has its control
+      JsonNode schema = new ObjectMapper().readTree(readResource(service.getMandatorySchemaResourcePath()));
+      List<String> scopes = controlScopes(new ObjectMapper().readTree(merged), new ArrayList<>());
+      schema.get("properties").fieldNames()
+        .forEachRemaining(property -> assertThat(path, scopes, hasItem("#/properties/" + property)));
+    }
+  }
+
+  @Test
+  public void every_default_form_is_a_json_forms_pair_with_its_texts() throws Exception {
+    List<EntityConfigService<?>> services = List.of(
+      new NetworkConfigService(),
+      new IndividualStudyConfigService(),
+      new HarmonizationStudyConfigService(),
+      new PopulationConfigService(),
+      new DataCollectionEventConfigService(),
+      new StudyDatasetConfigService(),
+      new HarmonizationDatasetConfigService(),
+      new ProjectConfigService());
+
+    for (EntityConfigService<?> service : services) {
+      EntityConfig form = service.createDefaultForm();
+      String path = service.getDefaultDefinitionResourcePath();
+      JsonNode uischema = new ObjectMapper().readTree(form.getDefinition());
+      assertThat(path, uischema.get("type").asText(), is("VerticalLayout"));
+      assertThat(path, new ObjectMapper().readTree(form.getSchema()).isObject(), is(true));
+      assertTranslated(path, form);
+    }
+  }
+
+  /** every t(key) token of the form is translated by the texts of the form, in english and in french */
+  static void assertTranslated(String name, EntityConfig form) throws IOException {
+    Matcher tokens = Pattern.compile("t\\(([^()]+)\\)").matcher(form.getSchema() + form.getDefinition());
+    if (!tokens.find()) return;
+    JsonNode translations = new ObjectMapper().readTree(form.getTranslations());
+    do {
+      for (String locale : List.of("en", "fr")) {
+        assertThat(name + " " + locale, translations.path(locale).has(tokens.group(1)), is(true));
+      }
+    } while (tokens.find());
+  }
+
+  private String readResource(String path) throws IOException {
+    Resource resource = new DefaultResourceLoader().getResource(path);
+    assertThat(path, resource.exists(), is(true));
+    try (InputStream in = resource.getInputStream()) {
+      return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+    }
+  }
+
+  /** the scopes of the controls of a UI schema, layouts included */
+  private List<String> controlScopes(JsonNode uischema, List<String> scopes) {
+    if (uischema.hasNonNull("scope")) scopes.add(uischema.get("scope").asText());
+    if (uischema.has("elements")) uischema.get("elements").forEach(element -> controlScopes(element, scopes));
+    return scopes;
   }
 }

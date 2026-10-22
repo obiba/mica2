@@ -63,7 +63,7 @@ public class MicaConfig extends AbstractAuditableDocument implements Serializabl
 
   private String opal;
 
-  private List<String> roles = Lists.newArrayList(Membership.CONTACT, Membership.INVESTIGATOR);
+  private List<String> roles = Lists.newArrayList(Membership.INVESTIGATOR, Membership.CONTACT);
 
   private String publicUrl;
 

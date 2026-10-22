@@ -495,6 +495,7 @@ class MicaConfigDtos {
     }
 
     builder.setPdfDownloadType(Mica.DataAccessFormDto.PdfDownloadType.valueOf(dataAccessForm.getPdfDownloadType().name()));
+    if(dataAccessForm.hasTranslations()) builder.setTranslations(dataAccessForm.getTranslations());
 
     return builder.build();
   }
@@ -523,6 +524,7 @@ class MicaConfigDtos {
       dataAccessForm.setEndDateFieldPath(dto.getEndDateFieldPath());
     }
     dataAccessForm.setPdfDownloadType(PdfDownloadType.valueOf(dto.getPdfDownloadType().name()));
+    if(dto.hasTranslations()) dataAccessForm.setTranslations(dto.getTranslations());
 
     return dataAccessForm;
   }
@@ -533,6 +535,7 @@ class MicaConfigDtos {
       .setLastUpdateDate(form.getLastUpdateDate().toString())
       .setDefinition(form.getDefinition())
       .setSchema(form.getSchema());
+    if(form.hasTranslations()) builder.setTranslations(form.getTranslations());
     return builder.build();
   }
 
@@ -541,6 +544,7 @@ class MicaConfigDtos {
 
     form.setSchema(dto.getSchema());
     form.setDefinition(dto.getDefinition());
+    if(dto.hasTranslations()) form.setTranslations(dto.getTranslations());
 
     return form;
   }
@@ -551,6 +555,7 @@ class MicaConfigDtos {
       .setLastUpdateDate(form.getLastUpdateDate().toString())
       .setDefinition(form.getDefinition())
       .setSchema(form.getSchema());
+    if(form.hasTranslations()) builder.setTranslations(form.getTranslations());
     return builder.build();
   }
 
@@ -559,6 +564,7 @@ class MicaConfigDtos {
 
     form.setSchema(dto.getSchema());
     form.setDefinition(dto.getDefinition());
+    if(dto.hasTranslations()) form.setTranslations(dto.getTranslations());
 
     return form;
   }
@@ -569,6 +575,7 @@ class MicaConfigDtos {
       .setLastUpdateDate(form.getLastUpdateDate().toString())
       .setDefinition(form.getDefinition())
       .setSchema(form.getSchema());
+    if(form.hasTranslations()) builder.setTranslations(form.getTranslations());
     return builder.build();
   }
 
@@ -577,6 +584,7 @@ class MicaConfigDtos {
 
     form.setSchema(dto.getSchema());
     form.setDefinition(dto.getDefinition());
+    if(dto.hasTranslations()) form.setTranslations(dto.getTranslations());
 
     return form;
   }
@@ -604,6 +612,7 @@ class MicaConfigDtos {
 
     builder.setWithReview(dataAccessConfig.isWithReview());
     builder.setApprovedFinal(dataAccessConfig.isApprovedFinal());
+    if(form.hasTranslations()) builder.setTranslations(form.getTranslations());
 
     return builder.build();
   }
@@ -628,6 +637,7 @@ class MicaConfigDtos {
     if(dto.hasEndDateFieldPath()) {
       form.setEndDateFieldPath(dto.getEndDateFieldPath());
     }
+    if(dto.hasTranslations()) form.setTranslations(dto.getTranslations());
 
     return form;
   }
@@ -638,6 +648,7 @@ class MicaConfigDtos {
       .setDefinition(projectConfig.getDefinition())
       .setSchema(projectConfig.getSchema())
       .addAllProperties(asDtoList(projectConfig.getProperties()));
+    if (projectConfig.hasTranslations()) builder.setTranslations(projectConfig.getTranslations());
 
     return builder.build();
   }
@@ -673,6 +684,7 @@ class MicaConfigDtos {
 
     config.setSchema(dto.getSchema());
     config.setDefinition(dto.getDefinition());
+    if (dto.hasTranslations()) config.setTranslations(dto.getTranslations());
     return (T)config;
   }
 
@@ -712,6 +724,7 @@ class MicaConfigDtos {
       .setType(type)
       .setSchema(config.getSchema())
       .setDefinition(config.getDefinition());
+    if (config.hasTranslations()) builder.setTranslations(config.getTranslations());
 
     return builder.build();
   }
@@ -721,6 +734,7 @@ class MicaConfigDtos {
     ProjectConfig projectConfig = new ProjectConfig();
     projectConfig.setSchema(dto.getSchema());
     projectConfig.setDefinition(dto.getDefinition());
+    if (dto.hasTranslations()) projectConfig.setTranslations(dto.getTranslations());
 
     return projectConfig;
   }

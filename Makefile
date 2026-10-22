@@ -1,5 +1,5 @@
 skipTests = false
-version=7.0-SNAPSHOT
+version=8.0-SNAPSHOT
 mvn_exec = mvn -Dmaven.test.skip=${skipTests}
 current_dir = $(shell pwd)
 search_plugin_version=
@@ -26,7 +26,6 @@ help:
 	@echo
 	@echo "  run         : Run webapp module"
 	@echo "  debug       : Debug webapp module on port 8002"
-	@echo "  grunt       : Start grunt on port 9000"
 	@echo "  npm-install : Download all NodeJS dependencies"
 	@echo
 	@echo "  clear-log   : Delete logs from ${mica_log}"
@@ -107,10 +106,6 @@ run-python:
 	chmod +x ./scripts/mica && \
 	export PYTHONPATH=${current_dir}/../mica-python-client/target/mica-python/bin && \
 	./scripts/mica ${args}
-
-grunt:
-	cd mica-webapp && \
-	grunt server
 
 npm-install:
 	cd mica-webapp && \

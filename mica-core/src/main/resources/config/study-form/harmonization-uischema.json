@@ -1,0 +1,56 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "Group",
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "options": {
+            "class": "row q-col-gutter-md"
+          },
+          "elements": [
+            {
+              "type": "VerticalLayout",
+              "options": {
+                "class": "col-12 col-md-6"
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/startYear",
+                  "options": {
+                    "dense": true
+                  }
+                }
+              ]
+            },
+            {
+              "type": "VerticalLayout",
+              "options": {
+                "class": "col-12 col-md-6"
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/endYear",
+                  "options": {
+                    "dense": true
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/additionalInformation",
+      "options": {
+        "dense": true,
+        "marked": true
+      }
+    }
+  ]
+}

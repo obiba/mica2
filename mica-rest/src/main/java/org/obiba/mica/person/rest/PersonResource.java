@@ -118,13 +118,13 @@ public class PersonResource {
   @DELETE
   @Path("/{id}/study/{studyId}/role/{role}")
   public PersonDto removePersonRoleFromStudy(@PathParam("id") String id, @PathParam("studyId") String studyId, @PathParam("role") String role) {
-    Person person = personService.findById(id);
-
     if (studyService.isCollectionStudy(studyId)) {
       subjectAclService.checkPermission("/draft/individual-study", "EDIT", studyId);
     } else {
       subjectAclService.checkPermission("/draft/harmonization-study", "EDIT", studyId);
     }
+
+    Person person = findPerson(id);
 
     person.getStudyMemberships().removeIf(m -> m.getParentId().equals(studyId) && m.getRole().equals(role));
     return dtos.asDto(personService.save(person), true);
@@ -132,22 +132,18 @@ public class PersonResource {
 
   @PUT
   @Path("/{id}/study/{studyId}/role/{role}")
-  public PersonDto updatePersonRoleForStudy(@PathParam("id") String id, @PathParam("studyId") String studyId, PersonDto personDto, @PathParam("role") String role) {
-    if (personDto == null) {
-      return dtos.asDto(personService.findById(id), true);
-    }
-
-    Person person = dtos.fromDto(personDto);
-    if (!micaConfigService.getRoles().contains(role)) {
-      throw new IllegalArgumentException(String.format("'%s' is not a valid role", role));
-    }
-
+  public PersonDto updatePersonRoleForStudy(@PathParam("id") String id, @PathParam("studyId") String studyId, @PathParam("role") String role) {
     if (studyService.isCollectionStudy(studyId)) {
       subjectAclService.checkPermission("/draft/individual-study", "EDIT", studyId);
     } else {
       subjectAclService.checkPermission("/draft/harmonization-study", "EDIT", studyId);
     }
+    if (!micaConfigService.getRoles().contains(role)) {
+      throw new IllegalArgumentException(String.format("'%s' is not a valid role", role));
+    }
 
+    // the stored person, the one of the client may miss the memberships it cannot see
+    Person person = findPerson(id);
     person.addStudy(studyService.findStudy(studyId), role);
 
     return dtos.asDto(personService.save(person), true);
@@ -169,25 +165,22 @@ public class PersonResource {
   @DELETE
   @Path("/{id}/network/{networkId}/role/{role}")
   public PersonDto removePersonRoleFromNetwork(@PathParam("id") String id, @PathParam("networkId") String networkId, @PathParam("role") String role) {
-    Person person = personService.findById(id);
     subjectAclService.checkPermission("/draft/network", "EDIT", networkId);
+    Person person = findPerson(id);
     person.getNetworkMemberships().removeIf(m -> m.getParentId().equals(networkId) && m.getRole().equals(role));
     return dtos.asDto(personService.save(person), true);
   }
 
   @PUT
   @Path("/{id}/network/{networkId}/role/{role}")
-  public PersonDto updatePersonRoleForNetwork(@PathParam("id") String id, @PathParam("networkId") String networkId, PersonDto personDto, @PathParam("role") String role) {
-    if (personDto == null) {
-      return dtos.asDto(personService.findById(id), true);
-    }
-
-    Person person = dtos.fromDto(personDto);
+  public PersonDto updatePersonRoleForNetwork(@PathParam("id") String id, @PathParam("networkId") String networkId, @PathParam("role") String role) {
+    subjectAclService.checkPermission("/draft/network", "EDIT", networkId);
     if (!micaConfigService.getRoles().contains(role)) {
       throw new IllegalArgumentException(String.format("'%s' is not a valid role", role));
     }
 
-    subjectAclService.checkPermission("/draft/network", "EDIT", networkId);
+    // the stored person, the one of the client may miss the memberships it cannot see
+    Person person = findPerson(id);
     person.addNetwork(networkService.findById(networkId), role);
     return dtos.asDto(personService.save(person), true);
   }
@@ -266,5 +259,13 @@ public class PersonResource {
     }
 
     return Response.ok(data, MediaType.APPLICATION_JSON_TYPE).build();
+  }
+
+  private Person findPerson(String id) {
+    Person person = personService.findById(id);
+    if (person == null) {
+      throw new NotFoundException("Person with id \"" + id + "\" not found.");
+    }
+    return person;
   }
 }

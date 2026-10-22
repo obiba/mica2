@@ -1,0 +1,70 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "Label",
+      "text": "t(study.general-info)",
+      "options": {
+        "class": "text-h5"
+      }
+    },
+    {
+      "type": "VerticalLayout",
+      "elements": [
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/_name",
+              "hint": "t(harmonization-initiative.name-help)",
+              "options": {
+                "dense": true
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/_acronym",
+              "hint": "t(harmonization-initiative.acronym-help)",
+              "options": {
+                "dense": true
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/_opal",
+              "hint": "t(harmonization-initiative.opal-help)",
+              "options": {
+                "dense": true
+              }
+            }
+          ],
+          "options": {
+            "class": "col-6"
+          }
+        },
+        {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/_objectives",
+              "hint": "t(harmonization-initiative.objectives-help)",
+              "options": {
+                "marked": true,
+                "rows": 3,
+                "dense": true
+              }
+            }
+          ],
+          "options": {
+            "class": "col-6"
+          }
+        }
+      ],
+      "options": {
+        "class": "row q-col-gutter-md"
+      }
+    }
+  ]
+}

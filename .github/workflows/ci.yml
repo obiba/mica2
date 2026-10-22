@@ -31,13 +31,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y rpm devscripts fakeroot debhelper build-essential nodejs
 
-      - name: Setup Node.js (LTS = Node 24)
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 24
-
-      - name: Install global npm tools
-        run: npm install -g grunt-cli bower
 
       - name: Cache Maven and general cache
         uses: actions/cache@v4

@@ -1,0 +1,25 @@
+// Quasar SCSS (& Sass) Variables, OBiBa design system (Mica: blue)
+// --------------------------------------------------
+
+$primary: #2f5da8; // mica
+$secondary: #4f6663; // muted ink
+$accent: #00615c; // obiba teal
+
+$dark: #062f2d; // deep teal
+$dark-page: #04201f;
+
+$positive: #00615c;
+$negative: #b42318;
+$info: #46525c; // graphite
+$warning: #f5b700; // saffron
+
+$typography-font-family: 'Instrument Sans Variable', system-ui, sans-serif;
+$button-border-radius: 6px;
+$generic-border-radius: 6px;
+$separator-color: #dbe6e4;
+
+// slightly larger text (Instrument Sans runs small and thin at Quasar defaults)
+$body-font-size: 15px;
+$table-th-font-size: 13px;
+$table-tbody-td-font-size: 14px;
+$table-bottom-font-size: 13px;

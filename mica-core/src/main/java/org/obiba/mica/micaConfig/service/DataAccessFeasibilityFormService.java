@@ -32,7 +32,7 @@ public class DataAccessFeasibilityFormService extends AbstractDataAccessEntityFo
   public DataAccessFeasibilityForm findDraft() {
     Optional<DataAccessFeasibilityForm> form = dataAccessFeasibilityFormRepository.findById(DataAccessFeasibilityForm.DEFAULT_ID);
     if (!form.isPresent()) {
-      createOrUpdate(createDefaultDataAccessFeasibilityForm());
+      createOrUpdate(createDefaultForm());
       form = dataAccessFeasibilityFormRepository.findById(DataAccessFeasibilityForm.DEFAULT_ID);
     }
     return form.get();
@@ -77,9 +77,11 @@ public class DataAccessFeasibilityFormService extends AbstractDataAccessEntityFo
       .findFirst();
   }
 
-  private DataAccessFeasibilityForm createDefaultDataAccessFeasibilityForm() {
+  @Override
+  DataAccessFeasibilityForm createDefaultForm() {
     DataAccessFeasibilityForm form = new DataAccessFeasibilityForm();
-    form.setDefinition(getDefaultDataAccessFormResourceAsString("definition.json"));
+    form.setDefinition(getDefaultDataAccessFormResourceAsString("uischema.json"));
+    form.setTranslations(getDefaultDataAccessFormResourceAsString("translations.json"));
     form.setSchema(getDefaultDataAccessFormResourceAsString("schema.json"));
     form.setTitleFieldPath("projectTitle");
     form.setSummaryFieldPath("summary");

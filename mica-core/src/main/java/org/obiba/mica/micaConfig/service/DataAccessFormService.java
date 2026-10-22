@@ -59,7 +59,7 @@ public class DataAccessFormService extends AbstractDataAccessEntityFormService<D
   public DataAccessForm findDraft() {
     Optional<DataAccessForm> form = dataAccessFormRepository.findById(DataAccessForm.DEFAULT_ID);
     if (!form.isPresent()) {
-      createOrUpdate(createDefaultDataAccessForm());
+      createOrUpdate(createDefaultForm());
       form = dataAccessFormRepository.findById(DataAccessForm.DEFAULT_ID);
     }
     return form.get();
@@ -99,9 +99,11 @@ public class DataAccessFormService extends AbstractDataAccessEntityFormService<D
       .findFirst();
   }
 
-  private DataAccessForm createDefaultDataAccessForm() {
+  @Override
+  DataAccessForm createDefaultForm() {
     DataAccessForm form = new DataAccessForm();
-    form.setDefinition(getDefaultDataAccessFormResourceAsString("definition.json"));
+    form.setDefinition(getDefaultDataAccessFormResourceAsString("uischema.json"));
+    form.setTranslations(getDefaultDataAccessFormResourceAsString("translations.json"));
     form.setSchema(getDefaultDataAccessFormResourceAsString("schema.json"));
     form.setTitleFieldPath("projectTitle");
     form.setSummaryFieldPath("summary");
