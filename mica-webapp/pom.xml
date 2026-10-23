@@ -232,7 +232,7 @@
                     <include>select2/dist/**</include>
                     <include>select2-bootstrap-5-theme/dist/**</include>
                     <include>toastr/build/**</include>
-                    <include>simplemde/dist/**</include>
+                    <include>easymde/dist/**</include>
                     <include>vue/dist/**</include>
                     <include>rql/dist/**</include>
                     <include>plotly.js-dist-min/**</include>

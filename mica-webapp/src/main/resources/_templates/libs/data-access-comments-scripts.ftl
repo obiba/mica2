@@ -1,9 +1,9 @@
 <#macro commentScripts isPrivate="false">
-  <!-- SimpleMDE -->
-  <script src="${assetsPath}/libs/node_modules/simplemde/dist/simplemde.min.js"></script>
+  <!-- EasyMDE -->
+  <script src="${assetsPath}/libs/node_modules/easymde/dist/easymde.min.js"></script>
 
   <script>
-      var simpleMDEDefaults = {
+      var easyMDEDefaults = {
           autoDownloadFontAwesome: false,
           renderingConfig: {
               singleLineBreaks: false,
@@ -13,22 +13,22 @@
               {
                   name: "heading",
                   className: "fa fa-heading",
-                  action: SimpleMDE.toggleHeadingSmaller,
+                  action: EasyMDE.toggleHeadingSmaller,
                   title: "Heading"
               },
               "code", "quote", "unordered-list", "ordered-list", "link",
               {
                   name: "image",
                   className: "fa fa-image",
-                  action: SimpleMDE.drawImage,
+                  action: EasyMDE.drawImage,
                   title: "Insert Image"
 
               }, "table", "|", "preview"],
           status: false
       };
       $(function () {
-          let newCommentMDE = new SimpleMDE(
-              Object.assign(simpleMDEDefaults,
+          let newCommentMDE = new EasyMDE(
+              Object.assign(easyMDEDefaults,
                   {element: $("#comment-add-write-text")[0]})
           );
           $("#send-comment").click(function() {

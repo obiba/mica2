@@ -1,5 +1,5 @@
-<!-- SimpleMDE style -->
-<link rel="stylesheet" href="${assetsPath}/libs/node_modules/simplemde/dist/simplemde.min.css">
+<!-- EasyMDE style -->
+<link rel="stylesheet" href="${assetsPath}/libs/node_modules/easymde/dist/easymde.min.css">
 
 <style>
   .CodeMirror, .CodeMirror-scroll {
