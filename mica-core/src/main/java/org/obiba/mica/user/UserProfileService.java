@@ -42,6 +42,7 @@ import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
 import jakarta.validation.constraints.NotNull;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
@@ -107,7 +108,7 @@ public class UserProfileService extends AgateRestService {
   public synchronized List<Subject> getProfilesByGroup(@Nullable String group) {
     List<Subject> subjects;
     try {
-      String profileServiceUrl = getProfileServiceUrlByGroup(null, group);
+      URI profileServiceUrl = getProfileServiceUrlByGroup(null, group);
       subjects = Arrays.asList(executeQuery(profileServiceUrl, Subject[].class));
       subjects.forEach(s -> subjectCache.put(s.getUsername(), s));
     } catch (RestClientException e) {
@@ -120,11 +121,11 @@ public class UserProfileService extends AgateRestService {
 
   public String getUserProfileTranslations(String locale) {
 
-    String serviceUrl = UriComponentsBuilder
+    URI serviceUrl = UriComponentsBuilder
       .fromUri(agateServerConfigService.getAgateUri())
       .path(DEFAULT_REST_PREFIX)
       .path("/users/i18n/" + locale + ".json")
-      .build().toUriString();
+      .build().encode().toUri();
 
     return executeQuery(serviceUrl, String.class);
   }
@@ -259,7 +260,7 @@ public class UserProfileService extends AgateRestService {
   // Private methods
   //
 
-  private synchronized Subject getProfileInternal(String serviceUrl) {
+  private synchronized Subject getProfileInternal(URI serviceUrl) {
     try {
       return executeQuery(serviceUrl, Subject.class);
     } catch (RestClientException e) {
@@ -269,7 +270,7 @@ public class UserProfileService extends AgateRestService {
     return null;
   }
 
-  private <T> T executeQuery(String serviceUrl, Class<T> returnType) {
+  private <T> T executeQuery(URI serviceUrl, Class<T> returnType) {
 
     RestTemplate template = newRestTemplate();
     HttpHeaders headers = new HttpHeaders();
@@ -296,28 +297,29 @@ public class UserProfileService extends AgateRestService {
       .build().toUriString();
   }
 
-  private String getProfileServiceUrl(String username) {
+  private URI getProfileServiceUrl(String username) {
+    // encode the segments and pass a URI, so that RestTemplate does not re-parse the username as a template
     return UriComponentsBuilder
       .fromUri(agateServerConfigService.getAgateUri())
       .path(DEFAULT_REST_PREFIX)
-      .path(String.format("/tickets/subject/%s", username))
-      .build().toUriString();
+      .pathSegment("tickets", "subject", username)
+      .build().encode().toUri();
   }
 
-  private String getProfileServiceUrlByGroup(String username, String group) {
+  private URI getProfileServiceUrlByGroup(String username, String group) {
     UriComponentsBuilder urlBuilder =
       UriComponentsBuilder.fromUri(agateServerConfigService.getAgateUri()).path(DEFAULT_REST_PREFIX);
 
     if (Strings.isNullOrEmpty(username)) {
       urlBuilder.path(String.format("/application/%s/users", getApplicationName()));
     } else {
-      urlBuilder.path(String.format("/application/%s/user/%s", getApplicationName(), username));
+      urlBuilder.pathSegment("application", getApplicationName(), "user", username);
     }
 
     if (!Strings.isNullOrEmpty(group)) {
       urlBuilder.queryParam("group", group);
     }
 
-    return urlBuilder.build().toUriString();
+    return urlBuilder.build().encode().toUri();
   }
 }

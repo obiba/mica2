@@ -21,6 +21,7 @@ import org.obiba.mica.study.domain.BaseStudy;
 import org.springframework.data.domain.Persistable;
 
 import com.google.common.base.CaseFormat;
+import com.google.common.base.CharMatcher;
 
 public class FileUtils {
 
@@ -33,7 +34,7 @@ public class FileUtils {
   public static String normalizePath(String path) {
     String nPath = path.startsWith("/") ? path : String.format("/%s", path);
 
-    if (!isRoot(nPath) && nPath.endsWith("/")) nPath = nPath.replaceAll("[/]+$", "");
+    if (!isRoot(nPath)) nPath = CharMatcher.is('/').trimTrailingFrom(nPath);
 
     return nPath;
   }
