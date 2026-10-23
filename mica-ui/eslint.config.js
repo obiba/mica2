@@ -2,7 +2,8 @@ import js from '@eslint/js';
 import globals from 'globals';
 import pluginVue from 'eslint-plugin-vue';
 import pluginQuasar from '@quasar/app-vite/eslint';
-import vueTsEslintConfig from '@vue/eslint-config-typescript';
+import tseslint from 'typescript-eslint';
+import vueParser from 'vue-eslint-parser';
 import prettierSkipFormatting from '@vue/eslint-config-prettier/skip-formatting';
 
 export default [
@@ -44,21 +45,24 @@ export default [
    */
   ...pluginVue.configs['flat/essential'],
 
-  // https://github.com/vuejs/eslint-config-typescript
-  ...vueTsEslintConfig({
-    // Optional: extend additional configurations from typescript-eslint'.
-    // Supports all the configurations in
-    // https://typescript-eslint.io/users/configs#recommended-configurations
-    extends: [
-      // By default, only the recommended rules are enabled.
-      'recommended',
-      // You can also manually enable the stylistic rules.
-      // "stylistic",
-
-      // Other utility configurations, such as 'eslintRecommended', (note that it's in camelCase)
-      // are also extendable here. But we don't recommend using them directly.
-    ],
-  }),
+  // typescript-eslint recommended rules, with TS parsing of <script lang="ts"> in SFCs
+  // (what @vue/eslint-config-typescript did, minus its fast-glob dependency)
+  ...tseslint.configs.recommended,
+  { ...tseslint.configs.eslintRecommended, files: ['**/*.vue'] },
+  {
+    files: ['**/*.vue'],
+    languageOptions: {
+      parser: vueParser,
+      parserOptions: {
+        parser: { js: 'espree', jsx: 'espree', ts: tseslint.parser, tsx: tseslint.parser },
+        ecmaVersion: 2024,
+        extraFileExtensions: ['.vue'],
+      },
+    },
+    rules: {
+      'vue/block-lang': ['error', { script: { lang: ['ts'], allowNoLang: false } }],
+    },
+  },
 
   {
     languageOptions: {
