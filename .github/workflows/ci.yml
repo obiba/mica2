@@ -8,9 +8,15 @@ on:
       - '*'
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      # Deploy Release creates the GitHub release and uploads its assets
+      contents: write
 
     strategy:
       matrix:
