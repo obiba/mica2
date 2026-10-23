@@ -25,6 +25,7 @@ const routes: RouteRecordRaw[] = [
       { path: 'settings/data-access', component: () => import('pages/SettingsDataAccessPage.vue') },
       { path: 'settings/caching', component: () => import('pages/SettingsCachingPage.vue') },
       { path: 'settings/logs', component: () => import('pages/SettingsLogsPage.vue') },
+      { path: 'settings/plugins', component: () => import('pages/SettingsPluginsPage.vue') },
       { path: 'settings/translations', component: () => import('pages/SettingsTranslationsPage.vue') },
       { path: 'settings/indexing', component: () => import('pages/SettingsIndexingPage.vue') },
       { path: 'settings/statistics', component: () => import('pages/SettingsStatisticsPage.vue') },
