@@ -54,7 +54,7 @@
     "vue-tsc": "^3.3.11"
   },
   "overrides": {
-    "serialize-javascript": "^7.0.5",
+    "serialize-javascript": "^7.1.4",
     "front-matter": {
       "js-yaml": {
         "argparse": "^2.0.1"
