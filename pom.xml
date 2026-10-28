@@ -53,7 +53,7 @@
     <embed-mongo.version>1.50.0</embed-mongo.version>
     <esapi.version>2.6.0.0</esapi.version>
     <freemarker.version>2.3.35</freemarker.version>
-    <guava.version>33.6.0-jre</guava.version>
+    <guava.version>33.7.1-jre</guava.version>
 <!--    <geronimo-javamail_1.4_mail.version>1.8.3</geronimo-javamail_1.4_mail.version>-->
     <itextpdf.version>5.5.13.4</itextpdf.version>
     <javax.inject.version>1</javax.inject.version>
