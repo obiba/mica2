@@ -68,7 +68,7 @@ public class UserProfileService extends AgateRestService {
   private MicaGroupsToRolesMapper groupsToRolesMapper;
 
   private Cache<String, Subject> subjectCache = CacheBuilder.newBuilder()
-    .maximumSize(100)
+    .maximumSize(1000)
     .expireAfterWrite(1, TimeUnit.MINUTES)
     .build();
 

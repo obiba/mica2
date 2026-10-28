@@ -115,7 +115,17 @@ public class DataAccessRequestUtilService {
   }
 
   public String getRequestTitle(DataAccessEntity request) {
-    AbstractDataAccessEntityForm dataAccessForm = getDataAccessForm(request);
+    return getRequestTitle(request, getDataAccessForm(request));
+  }
+
+  /**
+   * Get the request title using the provided form, to avoid looking up the form again when it is already known.
+   *
+   * @param request the data access entity
+   * @param dataAccessForm the form of the request, see {@link #getDataAccessForm(DataAccessEntity)}
+   * @return the value of the form's title field in the request content
+   */
+  public String getRequestTitle(DataAccessEntity request, AbstractDataAccessEntityForm dataAccessForm) {
     return getRequestField(request, dataAccessForm.getTitleFieldPath());
   }
 

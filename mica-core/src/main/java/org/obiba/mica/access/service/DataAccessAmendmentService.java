@@ -30,7 +30,9 @@ import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -147,6 +149,10 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
 
   public int countPendingByParentId(@NotNull String parentId) {
     return dataAmendmentRequestRepository.countPendingByParentId(parentId);
+  }
+
+  public Map<String, DataAccessEntityCounts> countByParentIds(@NotNull Collection<String> parentIds) {
+    return DataAccessEntityCounts.byParentId(dataAmendmentRequestRepository.findStatusByParentIdIn(parentIds));
   }
 
   /**

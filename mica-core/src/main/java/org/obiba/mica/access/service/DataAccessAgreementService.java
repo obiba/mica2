@@ -180,6 +180,10 @@ public class DataAccessAgreementService extends DataAccessEntityService<DataAcce
     return dataAccessAgreementRepository.countPendingByParentId(parentId);
   }
 
+  public Map<String, DataAccessEntityCounts> countByParentIds(@NotNull Collection<String> parentIds) {
+    return DataAccessEntityCounts.byParentId(dataAccessAgreementRepository.findStatusByParentIdIn(parentIds));
+  }
+
   /**
    * Delete the {@link DataAccessAgreement} matching the identifier.
    *

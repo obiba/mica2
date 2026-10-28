@@ -3,8 +3,11 @@ package org.obiba.mica.web.controller;
 import com.google.common.base.Strings;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
+import org.obiba.mica.access.domain.DataAccessEntity;
 import org.obiba.mica.access.domain.DataAccessPreliminary;
+import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.service.*;
+import org.obiba.mica.micaConfig.domain.AbstractDataAccessEntityForm;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
@@ -21,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.inject.Inject;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,21 +95,43 @@ public class DataAccessesController extends BaseController {
 
   private List<DataAccessRequestBundle> getDataAccessRequests(List<String> status) {
     boolean preliminaryEnabled = dataAccessConfigService.getOrCreateConfig().isPreliminaryEnabled();
-    return dataAccessRequestService.findByStatus(status).stream() //
+    List<DataAccessRequest> requests = dataAccessRequestService.findByStatus(status).stream() //
       .filter(req -> isPermitted("/data-access-request", "VIEW", req.getId()))
+      .collect(Collectors.toList());
+    if (requests.isEmpty()) return new ArrayList<>();
+    // fetch child entities counts and forms once for all requests, instead of querying them for each request
+    List<String> ids = requests.stream().map(DataAccessRequest::getId).collect(Collectors.toList());
+    Map<String, DataAccessEntityCounts> amendmentCounts = dataAccessAmendmentService.countByParentIds(ids);
+    Map<String, DataAccessEntityCounts> feasibilityCounts = dataAccessFeasibilityService.countByParentIds(ids);
+    Map<String, DataAccessEntityCounts> agreementCounts = dataAccessAgreementService.countByParentIds(ids);
+    Map<String, DataAccessPreliminary> preliminaries = preliminaryEnabled ? dataAccessPreliminaryService.getOrCreate(ids) : Map.of();
+    Map<String, AbstractDataAccessEntityForm> forms = new HashMap<>();
+    return requests.stream()
       .map(req -> {
-        DataAccessPreliminary preliminary = preliminaryEnabled ? dataAccessPreliminaryService.getOrCreate(req.getId()) : null;
-        String title = dataAccessRequestUtilService.getRequestTitle(req);
+        DataAccessPreliminary preliminary = preliminaries.get(req.getId());
+        String title = getRequestTitle(req, forms);
         if (Strings.isNullOrEmpty(title) && preliminary != null) {
-          title = dataAccessRequestUtilService.getRequestTitle(preliminary);
+          title = getRequestTitle(preliminary, forms);
         }
+        DataAccessEntityCounts amendments = amendmentCounts.getOrDefault(req.getId(), DataAccessEntityCounts.NONE);
+        DataAccessEntityCounts feasibilities = feasibilityCounts.getOrDefault(req.getId(), DataAccessEntityCounts.NONE);
+        DataAccessEntityCounts agreements = agreementCounts.getOrDefault(req.getId(), DataAccessEntityCounts.NONE);
         return new DataAccessRequestBundle(req, preliminary,
           ESAPI.encoder().encodeForHTML(title),
-          dataAccessAmendmentService.countByParentId(req.getId()), dataAccessAmendmentService.countPendingByParentId(req.getId()),
-          dataAccessFeasibilityService.countByParentId(req.getId()), dataAccessFeasibilityService.countPendingByParentId(req.getId()),
-          dataAccessAgreementService.countByParentId(req.getId()),dataAccessAgreementService.countPendingByParentId(req.getId()));
+          amendments.total(), amendments.pending(),
+          feasibilities.total(), feasibilities.pending(),
+          agreements.total(), agreements.pending());
       })
       .collect(Collectors.toList());
+  }
+
+  /**
+   * Get the request title, looking up its form only once per entity type and form revision.
+   */
+  private String getRequestTitle(DataAccessEntity entity, Map<String, AbstractDataAccessEntityForm> forms) {
+    String key = entity.getClass().getSimpleName() + ":" + (entity.hasFormRevision() ? entity.getFormRevision() : "latest");
+    AbstractDataAccessEntityForm form = forms.computeIfAbsent(key, k -> dataAccessRequestUtilService.getDataAccessForm(entity));
+    return dataAccessRequestUtilService.getRequestTitle(entity, form);
   }
 
   private void addDataAccessConfiguration(Map<String, Object> params) {

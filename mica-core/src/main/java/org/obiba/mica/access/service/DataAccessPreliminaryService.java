@@ -31,7 +31,10 @@ import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -175,6 +178,19 @@ public class DataAccessPreliminaryService extends DataAccessEntityService<DataAc
       } else
         throw NoSuchDataAccessRequestException.withId(id);
     }
+  }
+
+  /**
+   * Get the preliminaries of the data access requests in one query, the missing ones are created.
+   *
+   * @param ids the data access request identifiers (same as the preliminary identifiers)
+   * @return the preliminaries by data access request identifier
+   */
+  public Map<String, DataAccessPreliminary> getOrCreate(@NotNull Collection<String> ids) {
+    Map<String, DataAccessPreliminary> preliminaries = new HashMap<>();
+    getRepository().findAllById(ids).forEach(preliminary -> preliminaries.put(preliminary.getId(), preliminary));
+    ids.stream().filter(id -> !preliminaries.containsKey(id)).forEach(id -> preliminaries.put(id, getOrCreate(id)));
+    return preliminaries;
   }
 
   @Override
