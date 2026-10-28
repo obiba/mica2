@@ -68,7 +68,7 @@
     <jsr305.version>3.0.2</jsr305.version>
     <logback.version>1.6.0</logback.version>
     <logstash-logback.version>7.4</logstash-logback.version>
-    <magma.version>6.1.0</magma.version>
+    <magma.version>6.1.1</magma.version>
     <metrics-spring.version>3.0.0</metrics-spring.version>
     <mongodb.version>5.13.0</mongodb.version>
     <nosqlunit.version>0.7.9</nosqlunit.version>
