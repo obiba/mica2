@@ -60,13 +60,17 @@
           <div class="card-body">
 
             <#macro darList>
-              <#if canAddDar>
-                <div class="mb-3">
+              <#-- translations captured to be escaped for the attribute and the script -->
+              <#assign archivedYes><@message "yes"/></#assign>
+              <#assign archivedNo><@message "no"/></#assign>
+              <#-- the download button is added by the table script -->
+              <div id="dars-actions" class="d-flex gap-2<#if canAddDar || (dars?? && dars?size gt 0)> mb-3</#if>">
+                <#if canAddDar>
                   <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-add">
                     <i class="fa-solid fa-plus"></i> <@message "new-data-access-request"/>
                   </button>
-                </div>
-              </#if>
+                </#if>
+              </div>
               <#if dars?? && dars?size gt 0>
                 <div class="table-responsive">
                   <table id="dars" class="table table-bordered table-striped">
@@ -79,14 +83,22 @@
                       <th><@message "title"/></th>
                       <th><@message "last-update"/></th>
                       <th><@message "submission-date"/></th>
+                      <th><@message "approval-date"/></th>
+                      <#-- pending/total columns are shown, the separate pending and total columns are exported -->
                       <#if accessConfig.feasibilityEnabled>
-                        <th><@message "feasibilities-pending-total"/></th>
+                        <th class="no-export"><@message "feasibilities-pending-total"/></th>
+                        <th class="export-only"><@message "feasibilities-pending"/></th>
+                        <th class="export-only"><@message "feasibilities-total"/></th>
                       </#if>
                       <#if accessConfig.amendmentsEnabled>
-                        <th><@message "amendments-pending-total"/></th>
+                        <th class="no-export"><@message "amendments-pending-total"/></th>
+                        <th class="export-only"><@message "amendments-pending"/></th>
+                        <th class="export-only"><@message "amendments-total"/></th>
                       </#if>
                       <#if accessConfig.agreementEnabled>
-                        <th><@message "agreements-pending-total"/></th>
+                        <th class="no-export"><@message "agreements-pending-total"/></th>
+                        <th class="export-only"><@message "agreements-pending"/></th>
+                        <th class="export-only"><@message "agreements-total"/></th>
                       </#if>
                       <#if accessConfig.preliminaryEnabled>
                         <th><@message "preliminary-status"/></th>
@@ -109,21 +121,28 @@
                         <td>${(dar.title!"")?html}</td>
                         <td data-sort="${dar.lastUpdate.toString()}" class="moment-datetime">${dar.lastUpdate.toString()}</td>
                         <td data-sort="<#if dar.submitDate??>${dar.submitDate.toString()}</#if>" class="moment-datetime"><#if dar.submitDate??>${dar.submitDate.toString()}</#if></td>
+                        <td data-sort="<#if dar.approvalDate??>${dar.approvalDate.toString()}</#if>" class="moment-datetime"><#if dar.approvalDate??>${dar.approvalDate.toString()}</#if></td>
                         <#if accessConfig.feasibilityEnabled>
                           <td>${dar.pendingFeasibilities}/${dar.totalFeasibilities}</td>
+                          <td>${dar.pendingFeasibilities}</td>
+                          <td>${dar.totalFeasibilities}</td>
                         </#if>
                         <#if accessConfig.amendmentsEnabled>
                           <td>${dar.pendingAmendments}/${dar.totalAmendments}</td>
+                          <td>${dar.pendingAmendments}</td>
+                          <td>${dar.totalAmendments}</td>
                         </#if>
                         <#if accessConfig.agreementEnabled>
                           <td>${dar.pendingAgreements}/${dar.totalAgreements}</td>
+                          <td>${dar.pendingAgreements}</td>
+                          <td>${dar.totalAgreements}</td>
                         </#if>
                         <#if accessConfig.preliminaryEnabled>
                           <td><i class="fa-solid fa-circle text-${statusColor(dar.preliminary.status.toString())}"></i> <@message dar.preliminary.status.toString()/></td>
                         </#if>
                         <td><i class="fa-solid fa-circle text-${statusColor(dar.status.toString())}"></i> <@message dar.status.toString()/></td>
                         <#if dataAccessArchiveEnabled>
-                          <td><#if dar.archived><i class="fa-solid fa-check"></i></#if></td>
+                          <td data-export="<#if dar.archived>${archivedYes?html}<#else>${archivedNo?html}</#if>"><#if dar.archived><i class="fa-solid fa-check"></i></#if></td>
                         </#if>
                       </tr>
                     </#list>
@@ -225,17 +244,46 @@
 <#include "libs/scripts.ftl">
 <#include "libs/data-access-scripts.ftl">
 <!-- page script -->
+<#assign downloadLabel><@message "download"/></#assign>
 <script>
+    // CSV download of the listed (filtered and sorted) data access requests, placed beside the add button
+    const addCsvExport = function (table) {
+      new $.fn.dataTable.Buttons(table, {
+        buttons: [{
+          extend: 'csv',
+          text: '<i class="fa-solid fa-download"></i> ${downloadLabel?js_string}',
+          filename: 'data-access-requests-' + new Date().toISOString().substring(0, 10),
+          // UTF-8 byte order mark, for Excel to read the accented characters
+          bom: true,
+          exportOptions: {
+            columns: ':not(.no-export)',
+            format: {
+              // the displayed text (localized dates, status labels), unless an export value is provided
+              body: function (data, row, column, node) {
+                const attr = $(node).attr('data-export');
+                const value = attr === undefined ? $(node).text().trim() : attr;
+                // values read as formulas by spreadsheets (e.g. a title starting with '=') are prefixed to stay text
+                return /^[=+\-@\t\r]/.test(value) ? "'" + value : value;
+              }
+            }
+          }
+        }]
+      });
+      table.buttons().container().appendTo('#dars-actions');
+    };
+
     $(function () {
       let options = dataTablesDefaultOpts;
       <#if users??>
         options.order = [[3, 'desc']];
-        $("#dars").DataTable(options);
       <#else>
         options = dataTablesSortSearchOpts;
         options.order = [[2, 'desc']];
-        $("#dars").DataTable(options);
       </#if>
+      if ($("#dars").length) {
+        // the export only columns are hidden
+        addCsvExport($("#dars").DataTable({ ...options, columnDefs: [{ targets: 'export-only', visible: false }] }));
+      }
       $("#users").DataTable(dataTablesDefaultOpts);
     });
 </script>

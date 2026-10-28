@@ -21,6 +21,7 @@ public class DataAccessRequestBundle {
   private final int totalAgreements;
   private final int pendingAgreements;
   private StatusChange submission;
+  private StatusChange approval;
 
   public DataAccessRequestBundle(DataAccessRequest request, DataAccessPreliminary preliminary,
                                  String title,
@@ -32,6 +33,11 @@ public class DataAccessRequestBundle {
     this.preliminary = preliminary;
     this.title = title;
     this.submission = request.getLastSubmission();
+    // last approval, if any
+    request.getStatusChangeHistory().stream()
+      .filter(change -> DataAccessEntityStatus.APPROVED.equals(change.getTo()))
+      .reduce((first, second) -> second)
+      .ifPresent(change -> this.approval = change);
     this.totalAmendments = totalAmendments;
     this.pendingAmendments = pendingAmendments;
     this.totalFeasibilities = totalFeasibilities;
@@ -66,6 +72,10 @@ public class DataAccessRequestBundle {
 
   public LocalDateTime getSubmitDate() {
     return submission == null ? null : submission.getChangedOn();
+  }
+
+  public LocalDateTime getApprovalDate() {
+    return approval == null ? null : approval.getChangedOn();
   }
 
   public DataAccessEntityStatus getStatus() {
