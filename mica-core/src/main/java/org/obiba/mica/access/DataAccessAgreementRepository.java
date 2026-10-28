@@ -13,6 +13,7 @@ package org.obiba.mica.access;
 import org.obiba.mica.access.domain.DataAccessAgreement;
 import org.springframework.data.mongodb.repository.Query;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -27,5 +28,8 @@ public interface DataAccessAgreementRepository extends DataAccessEntityRepositor
 
   @Query(value = "{ parentId: ?0, status: { $nin: [\"APPROVED\", \"REJECTED\"] } }", count = true)
   int countPendingByParentId(String parentId);
+
+  @Query(value = "{ parentId: { $in: ?0 } }", fields = "{ parentId: 1, status: 1 }")
+  List<DataAccessAgreement> findStatusByParentIdIn(Collection<String> parentIds);
 
 }
