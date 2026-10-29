@@ -324,7 +324,7 @@ class VariablesResultParser {
           case 'study': {
             if (!micaConfig.isSingleStudyEnabled) {
               path = this.normalizePath(`/study/${summary.studyId}`);
-              row.push(`<a href="${path}" title="${localize(summary.studyName)}">${localize(summary.studyAcronym)}</a>`);
+              row.push(`<a href="${path}" title="${escapeHtml(localize(summary.studyName))}">${escapeHtml(localize(summary.studyAcronym))}</a>`);
             }
             break;
           }
@@ -332,7 +332,7 @@ class VariablesResultParser {
           case 'initiative': {
             if (!micaConfig.isSingleStudyEnabled) {
               path = this.normalizePath(`/study/${summary.studyId}`);
-              row.push(`<a href="${path}" title="${localize(summary.studyName)}">${localize(summary.studyAcronym)}</a>`);
+              row.push(`<a href="${path}" title="${escapeHtml(localize(summary.studyName))}">${escapeHtml(localize(summary.studyAcronym))}</a>`);
             }
             break;
           }
@@ -340,7 +340,7 @@ class VariablesResultParser {
           case 'population': {
             path = this.normalizePath(`/study/${summary.studyId}`);
             if (summary.populationName) {
-              row.push(`<a href="${path}#population/${summary.populationId}">${localize(summary.populationName)}</a>`);
+              row.push(`<a href="${path}#population/${summary.populationId}">${escapeHtml(localize(summary.populationName))}</a>`);
             } else {
               row.push('-');
             }
@@ -350,7 +350,7 @@ class VariablesResultParser {
           case 'data-collection-event': {
             path = this.normalizePath(`/study/${summary.studyId}`);
             if (summary.dceName) {
-              row.push(`<a href="${path}#population/${summary.populationId}/data-collection-event/${summary.dceId}">${localize(summary.dceName)}</a>`);
+              row.push(`<a href="${path}#population/${summary.populationId}/data-collection-event/${summary.dceId}">${escapeHtml(localize(summary.dceName))}</a>`);
             } else {
               row.push('-');
             }
@@ -358,12 +358,12 @@ class VariablesResultParser {
           }
           case 'dataset': {
             path = this.normalizePath(`/dataset/${summary.datasetId}`);
-            row.push(`<a title="${localize(summary.datasetName)}" href="${path}">${localize(summary.datasetAcronym)}</a>`);
+            row.push(`<a title="${escapeHtml(localize(summary.datasetName))}" href="${path}">${escapeHtml(localize(summary.datasetAcronym))}</a>`);
             break;
           }
           case 'protocol': {
             path = this.normalizePath(`/dataset/${summary.datasetId}`);
-            row.push(`<a title="${localize(summary.datasetName)}" href="${path}">${localize(summary.datasetAcronym)}</a>`);
+            row.push(`<a title="${escapeHtml(localize(summary.datasetName))}" href="${path}">${escapeHtml(localize(summary.datasetAcronym))}</a>`);
             break;
           }
           default:
@@ -452,12 +452,12 @@ class StudiesResultParser {
         row.push(`<i data-item-id="${summary.id}" class="far fa-square"></i>`);
       }
 
-      row.push(`<a href="${path}">${localize(summary.acronym)}</a>`);
+      row.push(`<a href="${path}">${escapeHtml(localize(summary.acronym))}</a>`);
 
       (displayOptions[columnKey] || displayOptions.studyColumns).forEach(column => {
         switch (column) {
           case 'name': {
-            row.push(localize(summary.name));
+            row.push(escapeHtml(localize(summary.name)));
             break;
           }
           case 'type': {
@@ -593,7 +593,7 @@ class DatasetsResultParser {
     datasets.forEach(dataset => {
 
       let path = this.normalizePath(`/dataset/${dataset.id}`);
-      let row = [`<a href="${path}">${localize(dataset.acronym)}</a>`];
+      let row = [`<a href="${path}">${escapeHtml(localize(dataset.acronym))}</a>`];
       const type = dataset.variableType === 'Dataschema'
         ? taxonomyFilter.apply(null, ['Mica_dataset.className.HarmonizationDataset'])
         : taxonomyFilter.apply(null, ['Mica_dataset.className.StudyDataset']);
@@ -608,7 +608,7 @@ class DatasetsResultParser {
       (displayOptions[columnKey] || displayOptions.datasetColumns).forEach(column => {
         switch (column) {
           case 'name': {
-            row.push(localize(dataset.name));
+            row.push(escapeHtml(localize(dataset.name)));
             break;
           }
           case 'type': {
@@ -638,14 +638,14 @@ class DatasetsResultParser {
           case 'study': {
             if (!micaConfig.isSingleStudyEnabled) {
               let opalTablePath = path = this.normalizePath(`/study/${opalTable.studySummary.id}`);
-              row.push(stats.studies ? `<a title="${localize(opalTable.studySummary.name)}" href="${opalTablePath}">${localize(opalTable.studySummary.acronym)}</a>` : '-');
+              row.push(stats.studies ? `<a title="${escapeHtml(localize(opalTable.studySummary.name))}" href="${opalTablePath}">${escapeHtml(localize(opalTable.studySummary.acronym))}</a>` : '-');
             }
             break;
           }
           case 'initiative': {
             if (!micaConfig.isSingleStudyEnabled) {
               let opalTablePath = path = this.normalizePath(`/study/${opalTable.studySummary.id}`);
-              row.push(stats.studies ? `<a title="${localize(opalTable.studySummary.name)}" href="${opalTablePath}">${localize(opalTable.studySummary.acronym)}</a>` : '-');
+              row.push(stats.studies ? `<a title="${escapeHtml(localize(opalTable.studySummary.name))}" href="${opalTablePath}">${escapeHtml(localize(opalTable.studySummary.acronym))}</a>` : '-');
             }
             break;
           }
@@ -715,12 +715,12 @@ class NetworksResultParser {
         row.push(`<i data-item-id="${network.id}" class="far fa-square"></i>`);
       }
 
-      row.push(`<a href="${path}">${localize(network.acronym)}</a>`);
+      row.push(`<a href="${path}">${escapeHtml(localize(network.acronym))}</a>`);
 
       (displayOptions[columnKey] || displayOptions.networkColumns).forEach(column => {
         switch (column) {
           case 'name': {
-            row.push(localize(network.name));
+            row.push(escapeHtml(localize(network.name)));
             break;
           }
           case 'studies': {
