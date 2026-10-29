@@ -1640,7 +1640,7 @@ class SetService {
    */
   static getOrCreateSet(type, setId, name, onsuccess, onfailure) {
     if (!setId) {
-      let url = '/ws/' + type + '/sets?name=' + name;
+      let url = '/ws/' + type + '/sets?name=' + encodeURIComponent(name);
       axios({
         method: 'POST',
         url: MicaService.normalizeUrl(url),
