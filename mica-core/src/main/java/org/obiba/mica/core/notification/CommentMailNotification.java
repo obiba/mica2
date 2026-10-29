@@ -25,6 +25,7 @@ import org.obiba.mica.security.domain.SubjectAcl;
 import org.obiba.mica.security.service.MicaGroupsToRolesMapper;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.HtmlUtils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -75,7 +76,8 @@ public class CommentMailNotification implements MailNotification<Comment> {
     ctx.put("documentType", comment.getResourceId().replaceFirst("/draft/", ""));
     ctx.put("documentId", comment.getInstanceId());
     ctx.put("createdBy", comment.getCreatedBy().get());
-    ctx.put("message", comment.getMessage());
+    // the message is stored HTML-encoded, the email template escapes it
+    ctx.put("message", HtmlUtils.htmlUnescape(comment.getMessage()));
     ctx.put("status", comment.isNew() ? "CREATED" : "UPDATED");
 
     String commentNotificationSubject = micaConfigService.getConfig().getCommentNotificationsSubject();

@@ -28,7 +28,7 @@ public class Comment extends AbstractAuditableDocument {
   public String getMessage() {
     // clean messages that were saved as json string instead of plain text
     if (message.startsWith("&quot;") && message.endsWith("&quot;"))
-      return message.substring(6, message.length() - 6).replaceAll("\\\\n", "\\n");
+      return message.substring(6, message.length() - 6).replace("\\n", "\n");
     return message;
   }
 
@@ -94,8 +94,15 @@ public class Comment extends AbstractAuditableDocument {
       return this;
     }
 
+    /**
+     * The message is stored HTML-encoded. An edited message is the stored one sent back, decoding it first makes sure
+     * it is encoded only once.
+     *
+     * @param message
+     * @return
+     */
     public Builder message(String message) {
-      comment.setMessage(HtmlUtils.htmlEscape(message));
+      comment.setMessage(HtmlUtils.htmlEscape(HtmlUtils.htmlUnescape(message)));
       return this;
     }
 

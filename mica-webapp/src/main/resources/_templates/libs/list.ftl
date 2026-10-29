@@ -1,6 +1,6 @@
 <!-- List page macros and utils -->
 
-<!-- Function to normalize list name -->
+<!-- Function to normalize list name; the name can be stored HTML-encoded, display it with htmlDecode(listName(set))?html -->
 <#function listName set>
   <#if set.name?starts_with("dar:")>
     <#local name = set.name?replace("dar:", "")/>

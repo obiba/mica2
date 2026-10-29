@@ -39,6 +39,21 @@ const escapeHtml = function (text) {
 };
 
 /**
+ * Decode the HTML entities of a text that may be stored HTML-encoded (list names), plain text is returned unchanged.
+ * The result is plain text: display it with Vue {{ }} or escapeHtml().
+ *
+ * @param text plain or HTML-encoded text
+ * @returns {string} decoded text
+ */
+const decodeHtml = function (text) {
+  if (text === undefined || text === null) return '';
+  // a textarea content is never parsed as markup, no element is created and no script can run
+  const textarea = document.createElement('textarea');
+  textarea.innerHTML = String(text);
+  return textarea.value;
+};
+
+/**
  * Sanitize an HTML fragment built from document values before it is inserted in the page.
  *
  * @param html HTML fragment
