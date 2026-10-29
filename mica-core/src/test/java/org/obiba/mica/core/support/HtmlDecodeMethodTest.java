@@ -38,7 +38,6 @@ public class HtmlDecodeMethodTest {
   private static final List<String> STORED_RAW = List.of(
     "Tom & Jerry",
     "R&D variables",
-    "R&copy2",
     "a < b > c",
     "50% & more",
     "x@y =1+1",
@@ -73,7 +72,7 @@ public class HtmlDecodeMethodTest {
         <#else>
           <#local name = set.name/>
         </#if>
-        <#return name/>
+        <#return htmlDecode(name)/>
       </#function>""");
   }
 
@@ -96,6 +95,14 @@ public class HtmlDecodeMethodTest {
   @Test
   public void test_decode_raw_names_unchanged() {
     STORED_RAW.forEach(name -> assertThat(HtmlDecodeMethod.decode(name)).as(name).isEqualTo(name));
+  }
+
+  @Test
+  public void test_decode_legacy_entities_as_browser() {
+    // a legacy entity without semicolon is decoded, as by the browser textarea in decodeHtml (mica.js)
+    assertThat(HtmlDecodeMethod.decode("R&copy2")).isEqualTo("R©2");
+    assertThat(HtmlDecodeMethod.decode("&copy-x")).isEqualTo("©-x");
+    assertThat(HtmlDecodeMethod.decode("a &amp b")).isEqualTo("a & b");
   }
 
   @Test
@@ -154,7 +161,7 @@ public class HtmlDecodeMethodTest {
 
   @Test
   public void test_render_list_name() throws Exception {
-    String template = "<#include \"list.ftl\">${htmlDecode(listName(set))?html}";
+    String template = "<#include \"list.ftl\">${listName(set)?html}";
     assertThat(render(template, Map.of("set", Map.of("name", STORED_ENCODED)))).isEqualTo(escapeOnce(TYPED));
     assertThat(render(template, Map.of("set", Map.of("name", "Tom & Jerry")))).isEqualTo("Tom &amp; Jerry");
     assertThat(render(template, Map.of("set", Map.of("name", "dar:1234-A1")))).isEqualTo("1234-A1");
@@ -164,15 +171,16 @@ public class HtmlDecodeMethodTest {
   public void test_render_list_name_truncated() throws Exception {
     // decoding first, an entity is never cut
     // as in list.ftl
-    String template = "<#include \"list.ftl\">${htmlDecode(listName(set))?truncate_c(20, \"...\")?html}";
+    String template = "<#include \"list.ftl\">${listName(set)?truncate_c(20, \"...\")?html}";
     String rendered = render(template, Map.of("set", Map.of("name", "Tom &amp; Jerry &amp; Friends &amp; Co")));
     assertThat(rendered).startsWith("Tom &amp; Jerry &amp; ").endsWith("...").doesNotContain("&amp;amp;");
   }
 
   @Test
-  public void test_render_js_string_in_attribute() throws Exception {
-    // as in cart.ftl onclick="onClickAddToSet('id', '...')"
-    assertThat(render("'${htmlDecode(name)?js_string?html}'", "Tom &amp; Jerry&#x27;s")).isEqualTo("'Tom &amp; Jerry\\&#39;s'");
+  public void test_render_list_name_decoded_once() throws Exception {
+    // a template that still decodes the result of listName gets the same text for a name with no entity left after the first decode
+    String template = "<#include \"list.ftl\">${htmlDecode(listName(set))?html}";
+    assertThat(render(template, Map.of("set", Map.of("name", "Tom &amp; Jerry")))).isEqualTo("Tom &amp; Jerry");
   }
 
   @Test

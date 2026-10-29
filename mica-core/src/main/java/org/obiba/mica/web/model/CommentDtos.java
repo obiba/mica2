@@ -60,7 +60,7 @@ public class CommentDtos {
   Comment fromDto(@NotNull Mica.CommentDtoOrBuilder dto) {
     Comment.Builder commentBuilder = Comment.newBuilder() //
         .id(dto.getId()) //
-        .message(dto.getMessage()) //
+        .editedMessage(dto.getMessage()) // the dto message is the stored one, HTML-encoded
         .resourceId(dto.getResourceId()) //
         .instanceId(dto.getInstanceId());
 

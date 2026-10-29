@@ -10,6 +10,7 @@
 
 package org.obiba.mica.core.domain;
 
+import org.springframework.util.Assert;
 import org.springframework.web.util.HtmlUtils;
 
 public class Comment extends AbstractAuditableDocument {
@@ -95,13 +96,26 @@ public class Comment extends AbstractAuditableDocument {
     }
 
     /**
-     * The message is stored HTML-encoded. An edited message is the stored one sent back, decoding it first makes sure
-     * it is encoded only once.
+     * The message of a new comment, as typed: it is stored HTML-encoded.
      *
      * @param message
      * @return
      */
     public Builder message(String message) {
+      comment.setMessage(HtmlUtils.htmlEscape(message));
+      return this;
+    }
+
+    /**
+     * The message of an edited comment. Some editors send the stored HTML-encoded message back, decoding it first makes
+     * sure it is encoded only once. A literal entity typed in the message (e.g. "&amp;") is decoded.
+     *
+     * @param message
+     * @return
+     */
+    public Builder editedMessage(String message) {
+      // same error as HtmlUtils.htmlEscape, htmlUnescape would throw a NullPointerException
+      Assert.notNull(message, "Input is required");
       comment.setMessage(HtmlUtils.htmlEscape(HtmlUtils.htmlUnescape(message)));
       return this;
     }

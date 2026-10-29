@@ -45,13 +45,16 @@ const escapeHtml = function (text) {
  * @param text plain or HTML-encoded text
  * @returns {string} decoded text
  */
-const decodeHtml = function (text) {
-  if (text === undefined || text === null) return '';
-  // a textarea content is never parsed as markup, no element is created and no script can run
+const decodeHtml = (function () {
+  // a textarea content is never parsed as markup, no element is created and no script can run;
+  // one detached textarea is reused for all the calls
   const textarea = document.createElement('textarea');
-  textarea.innerHTML = String(text);
-  return textarea.value;
-};
+  return function (text) {
+    if (text === undefined || text === null) return '';
+    textarea.innerHTML = String(text);
+    return textarea.value;
+  };
+})();
 
 /**
  * Sanitize an HTML fragment built from document values before it is inserted in the page.

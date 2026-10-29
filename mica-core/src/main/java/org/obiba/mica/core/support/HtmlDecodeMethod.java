@@ -42,14 +42,15 @@ public class HtmlDecodeMethod implements TemplateMethodModelEx {
   }
 
   /**
-   * Decode the HTML entities (HTML5 named and numeric) of a text, plain text is returned unchanged. Decoding as in an
-   * attribute value, a legacy entity without semicolon followed by a letter or a digit is kept as typed (e.g. "R&copy2").
+   * Decode the HTML entities (HTML5 named and numeric) of a text, plain text is returned unchanged. Decoding as in a
+   * text content, the same as the browser does (decodeHtml in mica.js): a legacy entity without semicolon is decoded
+   * (e.g. "R&copy2" gives "R©2").
    *
    * @param text
    * @return the decoded text, null if the text is null
    */
   public static String decode(String text) {
     if (text == null) return null;
-    return Parser.unescapeEntities(text, true);
+    return Parser.unescapeEntities(text, false);
   }
 }

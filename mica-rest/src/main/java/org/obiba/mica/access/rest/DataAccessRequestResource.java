@@ -538,7 +538,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     if (request.isArchived()) throw new BadRequestException("Data access request is archived");
 
     commentsService.save(Comment.newBuilder(getCommentIfNotRepliedTo(id, commentId)) //
-      .message(message) //
+      .editedMessage(message) //
       .modifiedBy(SecurityUtils.getSubject().getPrincipal().toString()) //
       .build(), commentMailNotification); //
 
