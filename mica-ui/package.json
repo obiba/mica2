@@ -25,12 +25,12 @@
     "quasar": "^2.27.0",
     "ts-proto": "^1.174.0",
     "vue": "^3.5.44",
-    "vue-i18n": "^11.3.2",
+    "vue-i18n": "^11.4.16",
     "vue-router": "^5.3.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",
-    "@intlify/unplugin-vue-i18n": "^11.2.5",
+    "@intlify/unplugin-vue-i18n": "^11.2.8",
     "@obiba/quasar-app-extension-json-form": "^0.12.2",
     "@quasar/app-vite": "^3.8.1",
     "@quasar/quasar-app-extension-qmarkdown": "^4.2.1",
