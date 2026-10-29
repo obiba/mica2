@@ -36,11 +36,9 @@
 
           <div class="error-content">
             <h3><i class="fa-solid fa-exclamation-triangle text-warning"></i>
-              <#if msg??>
-                  <@message msg/>
-              <#else >
-                  <@message "http-" + status/>
-              </#if>
+              <#-- msg and status are HTML-encoded in the controllers: the translation or the text is printed as is -->
+              <#assign code = msg!("http-" + status)/>
+              ${springMacroRequestContext.getMessage(code, code)}
             </h3>
             <p>
               <@messageArgs code="error-help" args=[contextPath + "/"]/>

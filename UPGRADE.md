@@ -3,6 +3,41 @@
 Actions to perform when upgrading a Mica server. Go through every version between the
 one installed and the one being deployed.
 
+## 7.0.1
+
+Fix of values HTML-escaped twice since 7.0.0 (list names, data access request titles,
+error messages, comments): `&` was shown as `&amp;`, `'` as `&#39;`.
+
+### Before upgrading
+
+**Check for overridden templates.** The bundled templates below changed, or print a value
+that changed (`list.ftl` prints `listName()`):
+
+```sh
+cd $MICA_HOME/conf/templates
+ls list.ftl cart.ftl libs/list.ftl data-accesses.ftl error.ftl libs/document-cart-scripts.ftl
+```
+
+### After upgrading
+
+1. **Overridden templates** (skip if none of the files above exists). Start from the new
+   version of each file and re-apply your customisations. In particular:
+   - `listName()` (`libs/list.ftl`) now returns the decoded list name: always print it with
+     `?html` (`${listName(set)?html}`). Printed as is, a list name can inject HTML.
+   - The data access request title and the user profile values are already HTML-encoded:
+     do not add `?html` to them, otherwise `&` shows as `&amp;`.
+2. **Custom email templates** (Agate): `commentAdded` now receives the comment message as
+   plain text, not HTML-encoded.
+3. **Custom scripts**: `mica.js` now declares a global `decodeHtml`. A custom script
+   declaring a variable with the same name fails: rename it.
+
+### Known limitation
+
+Comments on studies, networks and other documents, in the administration UI: when a
+comment is edited, the edit box shows the special characters HTML-encoded (`&amp;`,
+`&lt;`, `&#39;`), as in 7.0.0. Saving keeps the message encoded only once, and the
+comment is displayed as typed.
+
 ## 7.0.0
 
 Security release: 2FA sign-in feedback, open redirect closed, credentials kept out of
