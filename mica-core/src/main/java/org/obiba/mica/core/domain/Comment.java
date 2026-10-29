@@ -10,12 +10,20 @@
 
 package org.obiba.mica.core.domain;
 
+import java.util.regex.Pattern;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.util.Assert;
 import org.springframework.web.util.HtmlUtils;
 
 public class Comment extends AbstractAuditableDocument {
 
   private static final long serialVersionUID = -1490617732167157048L;
+
+  private static final Pattern JSON_STRING = Pattern.compile("\"(?:[^\"\\\\\\x00-\\x1F]|\\\\(?:[\"\\\\/bfnrt]|u[0-9a-fA-F]{4}))*+\"");
+
+  private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
 
   private String message;
 
@@ -28,13 +36,32 @@ public class Comment extends AbstractAuditableDocument {
 
   public String getMessage() {
     // clean messages that were saved as json string instead of plain text
-    if (message.startsWith("&quot;") && message.endsWith("&quot;"))
-      return message.substring(6, message.length() - 6).replace("\\n", "\n");
+    if (message.startsWith("&quot;") && message.endsWith("&quot;")) {
+      String decoded = HtmlUtils.htmlUnescape(message);
+      if (isLegacyJsonString(decoded)) {
+        try {
+          return HtmlUtils.htmlEscape(JSON_MAPPER.readValue(decoded, String.class));
+        } catch (JsonProcessingException e) {
+          // not a json string after all
+        }
+      }
+    }
     return message;
   }
 
   public void setMessage(String message) {
     this.message = message;
+  }
+
+  /**
+   * A message saved as a json string by older versions is a valid json string literal. A message typed between double
+   * quotes (e.g. "hello") is one too, an escape sequence is required to tell them apart.
+   *
+   * @param message HTML-decoded message
+   * @return
+   */
+  private static boolean isLegacyJsonString(String message) {
+    return JSON_STRING.matcher(message).matches() && message.indexOf('\\') > 0;
   }
 
   public static Builder newBuilder(Comment comment) {
