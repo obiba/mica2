@@ -45,14 +45,14 @@
     <q-card-section>
       <comment-editor
         v-if="editing"
-        :model-value="comment.message"
+        :model-value="message"
         :label="t('save')"
         cancellable
         :saving="disable"
         @submit="emit('update', comment, $event)"
         @cancel="editing = false"
       />
-      <markdown-text v-else :text="comment.message" />
+      <markdown-text v-else :text="message" />
     </q-card-section>
   </q-card>
 </template>
@@ -63,6 +63,7 @@ import CommentEditor from 'src/components/comments/CommentEditor.vue';
 import MarkdownText from 'src/components/comments/MarkdownText.vue';
 import { canAct } from 'src/composables/useComments';
 import { getDateDistanceLabel, getDateLabel } from 'src/utils/dates';
+import { decodeHtml } from 'src/utils/html';
 import { getUserDisplayName } from 'src/utils/users';
 
 interface Props {
@@ -79,6 +80,8 @@ const editing = ref(false);
 
 const author = computed(() => getUserDisplayName(props.comment.createdByProfile, props.comment.createdBy));
 const modifier = computed(() => getUserDisplayName(props.comment.modifiedByProfile, props.comment.modifiedBy));
+/** the message is stored HTML-encoded: edit and render the text as typed (the markdown renders no raw HTML) */
+const message = computed(() => decodeHtml(props.comment.message));
 /** the comment was edited after its creation */
 const modified = computed(() => {
   const { created, lastUpdate } = props.comment.timestamps ?? {};

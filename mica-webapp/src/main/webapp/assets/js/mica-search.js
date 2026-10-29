@@ -892,11 +892,12 @@ class TableFixedHeaderUtility {
       onCopyQuery() {
         navigator.clipboard.writeText(this.queryToCopy);
       },
+      // plain text, the stored name can be HTML-encoded
       normalizeSetName(set) {
         if (set.name.startsWith('dar:')) {
           return set.name.replace('dar:', '') + ' [' + Mica.tr['data-access-request'] + ']';
         }
-        return set.name;
+        return decodeHtml(set.name);
       },
       onCompare() {
         if (this.isStudiesToolsVisible) {
@@ -935,9 +936,9 @@ class TableFixedHeaderUtility {
       onAddToSet(setId) {
         const onsuccess = (set, oldSet) => {
           if (set.count === oldSet.count) {
-            MicaService.toastInfo(Mica.tr['no-variable-added-set'].replace('{{arg0}}', '"' + this.normalizeSetName(set) + '"'));
+            MicaService.toastInfo(Mica.tr['no-variable-added-set'].replace('{{arg0}}', '"' + escapeHtml(this.normalizeSetName(set)) + '"'));
           } else {
-            MicaService.toastSuccess(Mica.tr['variables-added-to-set'].replace('{0}', (set.count - oldSet.count).toLocaleString(Mica.locale)).replace('{1}', '"' + this.normalizeSetName(set) + '"'));
+            MicaService.toastSuccess(Mica.tr['variables-added-to-set'].replace('{0}', (set.count - oldSet.count).toLocaleString(Mica.locale)).replace('{1}', '"' + escapeHtml(this.normalizeSetName(set)) + '"'));
           }
 
           this.newVariableSetName = '';

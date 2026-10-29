@@ -24,7 +24,9 @@
                   title: "Insert Image"
 
               }, "table", "|", "preview"],
-          status: false
+          status: false,
+          // prefixed button classes ("mde-table"...), the plain names clash with Bootstrap classes (.table, .link...)
+          toolbarButtonClassPrefix: "mde"
       };
       $(function () {
           let newCommentMDE = new EasyMDE(

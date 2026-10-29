@@ -106,7 +106,8 @@
                             <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${dar.applicant?replace("\\W", "-", "r")}">${applicants[dar.applicant].fullName}</a>
                           </td>
                         </#if>
-                        <td>${(dar.title!"")?html}</td>
+                        <#-- the title is HTML-encoded in DataAccessesController -->
+                        <td>${dar.title!""}</td>
                         <td data-sort="${dar.lastUpdate.toString()}" class="moment-datetime">${dar.lastUpdate.toString()}</td>
                         <td data-sort="<#if dar.submitDate??>${dar.submitDate.toString()}</#if>" class="moment-datetime"><#if dar.submitDate??>${dar.submitDate.toString()}</#if></td>
                         <#if accessConfig.feasibilityEnabled>
