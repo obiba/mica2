@@ -73,14 +73,17 @@ public class DataAccessController extends BaseDataAccessController {
       List<String> collaboratorEmails = collaborators.stream().map(DataAccessCollaborator::getEmail).collect(Collectors.toList());
       Set<String> suggestedCollaborators = Sets.newTreeSet();
       if (getConfig().isCollaboratorsEnabled()) {
+        // form values containing "@" are not necessarily emails, suggest only what can be invited
         if (getDataAccessPreliminary(params) != null) {
           // suggest emails found in preliminary form
           suggestedCollaborators.addAll(dataAccessRequestUtilService.getEmails(getDataAccessPreliminary(params)).stream()
+            .filter(DataAccessCollaboratorService::isValidEmail)
             .filter(email -> !collaboratorEmails.contains(email))
             .collect(Collectors.toSet()));
         }
         // suggest emails found in main form
         suggestedCollaborators.addAll(dataAccessRequestUtilService.getEmails(getDataAccessRequest(params)).stream()
+          .filter(DataAccessCollaboratorService::isValidEmail)
           .filter(email -> !collaboratorEmails.contains(email))
           .collect(Collectors.toList()));
       }
