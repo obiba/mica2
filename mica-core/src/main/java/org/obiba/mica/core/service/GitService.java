@@ -225,11 +225,17 @@ public class GitService implements InitializingBean {
   }
 
   private File getRepositoryPath(GitIdentifier persistable) {
+    validateId(persistable.getId());
     return new File(repositoriesRoot, Paths.get(persistable.pathPrefix(), persistable.getId() + ".git").toString());
   }
 
   private File getCloneRepositoryPath(GitIdentifier persistable) {
+    validateId(persistable.getId());
     return new File(clonesRoot, Paths.get(persistable.pathPrefix(), persistable.getId()).toString());
+  }
+
+  private void validateId(String id) {
+    if (id == null || id.equals(".") || id.equals("..") || id.contains("/") || id.contains("\\")) throw new IllegalArgumentException("Invalid identifier: " + id);
   }
 
   private String getJsonFileName(String filename) {

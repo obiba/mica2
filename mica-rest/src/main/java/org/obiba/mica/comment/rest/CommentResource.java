@@ -65,7 +65,7 @@ public class CommentResource {
     subjectAclService.checkPermission(String.format("/draft/%s/%s/comment", service.getTypeName(), id), "EDIT", commentId);
     service.findDraft(id);
     commentsService.save(Comment.newBuilder(commentsService.findById(commentId)) //
-      .message(message) //
+      .editedMessage(message) //
       .modifiedBy(SecurityUtils.getSubject().getPrincipal().toString()) //
       .build(), commentMailNotification); //
 

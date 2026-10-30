@@ -75,7 +75,7 @@ public class UsersProfileResource {
       userProfileService.createUser(params);
       return Response.ok().build();
     } catch (IOException e) {
-      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+      return Response.status(Response.Status.BAD_REQUEST).build();
     }
   }
 

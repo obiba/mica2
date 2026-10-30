@@ -70,4 +70,30 @@ public class CommentMailNotificationTest {
     assertEquals(Set.of("mica-reviewer-a", "mica-editor-a", "mica-editor-b"), Set.copyOf(groups.getValue()));
     assertEquals(Collections.emptyList(), users.getValue());
   }
+
+  @Test
+  public void testMessageIsSentDecoded() {
+    // the message is stored HTML-encoded and Agate escapes the email values
+    Comment comment = Comment.newBuilder().createdBy("someone").message("<b>&\"'é’ x@y =1+1")
+      .resourceId("/draft/individual-study").instanceId("study-1").build();
+
+    assertEquals("<b>&\"'é’ x@y =1+1", sendAndCaptureContext(comment).get("message"));
+  }
+
+  @Test
+  public void testMessageStoredByOlderVersionsIsSentDecoded() {
+    Comment comment = Comment.newBuilder().createdBy("someone")
+      .resourceId("/draft/individual-study").instanceId("study-1").build();
+    comment.setMessage("A &amp; B &lt;b&gt;");
+
+    assertEquals("A & B <b>", sendAndCaptureContext(comment).get("message"));
+  }
+
+  @SuppressWarnings("unchecked")
+  private Map<String, String> sendAndCaptureContext(Comment comment) {
+    notification.send(comment);
+    ArgumentCaptor<Map<String, String>> ctx = ArgumentCaptor.forClass(Map.class);
+    verify(mailService).sendEmailToGroupsAndUsers(anyString(), anyString(), ctx.capture(), any(Collection.class), any(Collection.class));
+    return ctx.getValue();
+  }
 }

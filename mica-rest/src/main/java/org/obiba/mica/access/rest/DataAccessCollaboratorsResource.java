@@ -1,7 +1,6 @@
 package org.obiba.mica.access.rest;
 
 
-import com.google.common.base.Strings;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PUT;
@@ -62,7 +61,10 @@ public class DataAccessCollaboratorsResource {
   public List<String> suggestCollaborators() {
     subjectAclService.checkPermission("/data-access-request", "VIEW", parentId);
     DataAccessRequest dar = dataAccessRequestService.findById(parentId);
-    return dataAccessRequestUtilService.getEmails(dar);
+    // form values containing "@" are not necessarily emails, suggest only what can be invited
+    return dataAccessRequestUtilService.getEmails(dar).stream()
+      .filter(DataAccessCollaboratorService::isValidEmail)
+      .collect(Collectors.toList());
   }
 
   @PUT
@@ -73,7 +75,7 @@ public class DataAccessCollaboratorsResource {
     DataAccessRequest request = dataAccessRequestService.findById(parentId);
     if (!subjectAclService.isCurrentUser(request.getApplicant()))
       subjectAclService.checkPermission("/data-access-request", "EDIT", parentId);
-    if (Strings.isNullOrEmpty(email) || !email.contains("@")) throw new BadRequestException("Not a valid email");
+    if (!DataAccessCollaboratorService.isValidEmail(email)) throw new BadRequestException("Not a valid email");
 
     dataAccessCollaboratorService.inviteCollaborator(request, email);
     return Response.ok().build();

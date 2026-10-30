@@ -3,6 +3,8 @@ package org.obiba.mica.access.service;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
 import jakarta.ws.rs.ForbiddenException;
 import org.apache.shiro.SecurityUtils;
 import org.json.JSONException;
@@ -86,6 +88,24 @@ public class DataAccessCollaboratorService {
   }
 
   /**
+   * Same checks as Agate's EmailValidator, plus the value must be the bare address: InternetAddress also parses
+   * "Name &lt;address&gt;", and no markup is stored as an email.
+   */
+  public static boolean isValidEmail(String email) {
+    if (Strings.isNullOrEmpty(email) || email.trim().isEmpty() || email.length() > 254) return false;
+    if (email.split("@", -1)[0].length() > 64) return false;
+    if (email.contains("..") || email.startsWith(".") || email.endsWith(".")) return false;
+    if (email.contains("<") || email.contains(">")) return false;
+    try {
+      InternetAddress address = new InternetAddress(email);
+      address.validate();
+      return email.equals(address.getAddress());
+    } catch (AddressException e) {
+      return false;
+    }
+  }
+
+  /**
    * Send an invitation and returns an invitation key.
    *
    * @param dar
@@ -93,6 +113,7 @@ public class DataAccessCollaboratorService {
    */
   public void inviteCollaborator(@NotNull DataAccessRequest dar, String email) {
     if (!dataAccessRequestUtilService.getDataAccessConfig().isCollaboratorsEnabled()) throw new ForbiddenException("Inviting collaborators is not enabled");
+    if (!isValidEmail(email)) throw new IllegalArgumentException("Not a valid email");
     Optional<DataAccessCollaborator> collaboratorOpt = dataAccessCollaboratorRepository.findByRequestIdAndEmail(dar.getId(), email);
     save(collaboratorOpt.orElseGet(() -> DataAccessCollaborator.newBuilder(dar.getId()).email(email).invited().author(SecurityUtils.getSubject().getPrincipal().toString()).build()));
     sendCollaboratorInvitation(dar, email, makeInvitationKey(dar, email));

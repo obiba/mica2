@@ -264,6 +264,7 @@ public class MicaConfigService {
   }
 
   private Resource getTranslationsResource(String locale) {
+    if (locale == null || !locale.matches("[A-Za-z_-]+")) locale = "en";
     return applicationContext.getResource(String.format("classpath:/i18n/%s.json", locale));
   }
 

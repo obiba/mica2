@@ -39,6 +39,24 @@ const escapeHtml = function (text) {
 };
 
 /**
+ * Decode the HTML entities of a text that may be stored HTML-encoded (list names), plain text is returned unchanged.
+ * The result is plain text: display it with Vue {{ }} or escapeHtml().
+ *
+ * @param text plain or HTML-encoded text
+ * @returns {string} decoded text
+ */
+const decodeHtml = (function () {
+  // a textarea content is never parsed as markup, no element is created and no script can run;
+  // one detached textarea is reused for all the calls
+  const textarea = document.createElement('textarea');
+  return function (text) {
+    if (text === undefined || text === null) return '';
+    textarea.innerHTML = String(text);
+    return textarea.value;
+  };
+})();
+
+/**
  * Sanitize an HTML fragment built from document values before it is inserted in the page.
  *
  * @param html HTML fragment
@@ -861,10 +879,17 @@ class MicaService {
   }
 
   static redirect(path) {
-    if (path && path.startsWith('http')) {
-      window.location.assign(this.normalizeUrl('/check?redirect=') + path);
-    } else if (path) {
-      window.location.assign(path);
+    // resolve against current location, so that 'javascript:', '//host' etc. cannot sneak through
+    let url;
+    try {
+      url = path ? new URL(path, window.location.href) : undefined;
+    } catch (e) {
+      url = undefined;
+    }
+    if (url && url.origin === window.location.origin) {
+      window.location.assign(url.href);
+    } else if (url && (url.protocol === 'http:' || url.protocol === 'https:')) {
+      window.location.assign(this.normalizeUrl('/check?redirect=') + encodeURIComponent(url.href));
     } else {
       $.redirect(this.normalizeUrl('/'), {}, 'GET');
     }
@@ -1615,7 +1640,7 @@ class SetService {
    */
   static getOrCreateSet(type, setId, name, onsuccess, onfailure) {
     if (!setId) {
-      let url = '/ws/' + type + '/sets?name=' + name;
+      let url = '/ws/' + type + '/sets?name=' + encodeURIComponent(name);
       axios({
         method: 'POST',
         url: MicaService.normalizeUrl(url),

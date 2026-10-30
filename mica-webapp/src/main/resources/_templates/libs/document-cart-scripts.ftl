@@ -47,28 +47,30 @@
     }
   }
 
+  // plain text, the stored name can be HTML-encoded
   function normalizeSetName(set) {
     if (set.name.startsWith('dar:')) {
       return set.name.replace('dar:', '') + ' [' + Mica.tr['data-access-request'] + ']';
     }
-    return set.name;
+    return decodeHtml(set.name);
   }
 
   function addToSet(setId, setName) {
     const onsuccess = (set, oldSet) => {
       if (set.count === oldSet.count) {
-        MicaService.toastInfo(Mica.tr['no-variable-added-set'].replace('{{arg0}}', '"' + normalizeSetName(set) + '"'));
+        MicaService.toastInfo(Mica.tr['no-variable-added-set'].replace('{{arg0}}', '"' + escapeHtml(normalizeSetName(set)) + '"'));
       } else {
-        MicaService.toastSuccess(Mica.tr['variables-added-to-set'].replace('{0}', (set.count - oldSet.count).toLocaleString(Mica.locale)).replace('{1}', '"' + normalizeSetName(set) + '"'));
+        MicaService.toastSuccess(Mica.tr['variables-added-to-set'].replace('{0}', (set.count - oldSet.count).toLocaleString(Mica.locale)).replace('{1}', '"' + escapeHtml(normalizeSetName(set)) + '"'));
       }
       VariablesSetService.showSetsCount($('#list-count'), sets => {
         $('#add-set-divider').show();
         const choicesElem = $('#add-set-choices');
         choicesElem.empty();
         sets.filter(set => !set.locked).forEach(set => {
+          // the name is not passed to onClickAddToSet: the set is found by its id
           const btn = "<button type=\"button\" class=\"dropdown-item\"" +
-                  "            onclick=\"onClickAddToSet('" + set.id + "', '" + normalizeSetName(set) + "')\">" +
-                  "          " + normalizeSetName(set) + " <span class=\"badge text-bg-light float-end\">" + set.count + "</span>" +
+                  "            onclick=\"onClickAddToSet('" + set.id + "')\">" +
+                  "          " + escapeHtml(normalizeSetName(set)) + " <span class=\"badge text-bg-light float-end\">" + set.count + "</span>" +
                   "</button>";
           choicesElem.append(btn);
         });

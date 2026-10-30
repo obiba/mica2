@@ -19,7 +19,7 @@ class Criterion {
 
   static __quote(text) {
     if ((text || "").trim().length > 0) {
-      return `"${text.trim().replace(/^"|"$/g, "").replace(/"/, '\\"')}"`;
+      return `"${text.trim().replace(/^"|"$/g, "").replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
     }
 
     return text;
