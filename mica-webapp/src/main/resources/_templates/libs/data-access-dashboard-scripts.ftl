@@ -13,9 +13,10 @@
     $('#start-date-submit').click(function() {
       DataAccessService.setStartDate('${dar.id}', $('#start-date').val());
     });
+    // the autocomplete plugin inserts the suggestions as HTML, picking one reads back its text
     var suggestions = {
       <#list suggestedCollaborators as suggestion>
-      '${suggestion?js_string}': '${suggestion?js_string}',
+      '${suggestion?html?js_string}': '${suggestion?html?js_string}',
       </#list>
     };
     $('#collaborator-email').autocomplete({

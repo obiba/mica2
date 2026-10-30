@@ -1,7 +1,6 @@
 package org.obiba.mica.access.rest;
 
 
-import com.google.common.base.Strings;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PUT;
@@ -73,7 +72,7 @@ public class DataAccessCollaboratorsResource {
     DataAccessRequest request = dataAccessRequestService.findById(parentId);
     if (!subjectAclService.isCurrentUser(request.getApplicant()))
       subjectAclService.checkPermission("/data-access-request", "EDIT", parentId);
-    if (Strings.isNullOrEmpty(email) || !email.contains("@")) throw new BadRequestException("Not a valid email");
+    if (!DataAccessCollaboratorService.isValidEmail(email)) throw new BadRequestException("Not a valid email");
 
     dataAccessCollaboratorService.inviteCollaborator(request, email);
     return Response.ok().build();

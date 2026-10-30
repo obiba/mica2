@@ -206,7 +206,9 @@ public class UserProfileService extends AgateRestService {
 
   public Map<String, Object> asMap(@NotNull Subject profile) {
     Map<String, Object> params = Maps.newHashMap();
-    String fullName = profile.getUsername();
+    // username can be an email typed by a user (invited collaborator without account), encode it like the attributes
+    String encodedUsername = ESAPI.encoder().encodeForHTML(profile.getUsername());
+    String fullName = encodedUsername;
     Map<String, Object> attributes = Maps.newHashMap();
     if (profile.getAttributes() != null) {
       profile.getAttributes().forEach(attr -> {
@@ -223,7 +225,7 @@ public class UserProfileService extends AgateRestService {
           // templates print profile values as is, they must stay HTML-encoded here
           attributes.put(key, ESAPI.encoder().encodeForHTML(attr.get("value")));
       });
-      fullName = attributes.getOrDefault("firstName", "") + (attributes.containsKey("firstName") ? " " : "") + attributes.getOrDefault("lastName", profile.getUsername());
+      fullName = attributes.getOrDefault("firstName", "") + (attributes.containsKey("firstName") ? " " : "") + attributes.getOrDefault("lastName", encodedUsername);
     }
     params.put("username", profile.getUsername());
     params.put("fullName", fullName);
