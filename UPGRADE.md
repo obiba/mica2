@@ -6,7 +6,9 @@ one installed and the one being deployed.
 ## 7.0.1
 
 Fix of values HTML-escaped twice since 7.0.0 (list names, data access request titles,
-error messages, comments): `&` was shown as `&amp;`, `'` as `&#39;`.
+error messages, comments): `&` was shown as `&amp;`, `'` as `&#39;`. Also fixes special
+characters in list names, search results, comments and collaborator emails, and several
+security issues.
 
 ### Before upgrading
 
@@ -15,7 +17,8 @@ that changed (`list.ftl` prints `listName()`):
 
 ```sh
 cd $MICA_HOME/conf/templates
-ls list.ftl cart.ftl libs/list.ftl data-accesses.ftl error.ftl libs/document-cart-scripts.ftl
+ls list.ftl cart.ftl libs/list.ftl data-accesses.ftl error.ftl libs/document-cart-scripts.ftl \
+  libs/data-access-dashboard-scripts.ftl
 ```
 
 ### After upgrading
@@ -25,11 +28,19 @@ ls list.ftl cart.ftl libs/list.ftl data-accesses.ftl error.ftl libs/document-car
    - `listName()` (`libs/list.ftl`) now returns the decoded list name: always print it with
      `?html` (`${listName(set)?html}`). Printed as is, a list name can inject HTML.
    - The data access request title and the user profile values are already HTML-encoded:
-     do not add `?html` to them, otherwise `&` shows as `&amp;`.
+     do not add `?html` to them, otherwise `&` shows as `&amp;`. This includes the user
+     full name (`fullName`), and the email shown in its place for an invited collaborator
+     without an account.
+   - `libs/data-access-dashboard-scripts.ftl` prints the suggested collaborators with
+     `?html?js_string`: keep it.
 2. **Custom email templates** (Agate): `commentAdded` now receives the comment message as
    plain text, not HTML-encoded.
 3. **Custom scripts**: `mica.js` now declares a global `decodeHtml`. A custom script
    declaring a variable with the same name fails: rename it.
+4. **Collaborators**: invalid collaborator emails are now refused (400). Emails already
+   stored are kept, shown as text, and can be removed. A browser with the 7.0.0
+   `mica-data-access.js` in its cache gets "Invitation failed." for an email containing
+   `+` until the page is reloaded.
 
 ### Known limitation
 
