@@ -13,6 +13,7 @@ package org.obiba.mica.core.domain;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.web.util.HtmlUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -107,6 +108,35 @@ public class CommentTest {
   public void test_comment_saved_as_json_string() {
     // older versions saved some messages as a json string
     assertThat(storedComment("&quot;line 1\\nline 2&quot;").getMessage()).isEqualTo("line 1\nline 2");
+    assertThat(storedComment("&quot;He said \\&quot;hi\\&quot;\\nbye&quot;").getMessage()).isEqualTo("He said &quot;hi&quot;\nbye");
+    assertThat(storedComment("&quot;C:\\\\temp\\tA &amp; B&quot;").getMessage()).isEqualTo("C:\\temp\tA &amp; B");
+    assertThat(storedComment("&quot;caf\\u00e9\\r\\n&quot;").getMessage()).isEqualTo("caf&eacute;\r\n");
+    assertThat(storedComment("&quot;a\\/b&lt;c&gt;&quot;").getMessage()).isEqualTo("a/b&lt;c&gt;");
+  }
+
+  @Test
+  public void test_comment_saved_as_json_string_without_escape_unchanged() {
+    // cannot be told apart from a message typed between double quotes
+    assertThat(storedComment("&quot;hello world&quot;").getMessage()).isEqualTo("&quot;hello world&quot;");
+  }
+
+  @Test
+  public void test_quoted_comment_unchanged() {
+    List.of("\"hello\"", "\"a\" and \"b\"", "\"\"", "\"", "\"a \\q\"", "\"a \\u00zz\"", "\"a\\\"", "\"a\nb\"",
+      "\"x\" \\n \"y\"", "\"open \\n only", "close \\n only\"").forEach(typed -> {
+      Comment comment = newComment(typed);
+      assertThat(comment.getMessage()).as(typed).isEqualTo(HtmlUtils.htmlEscape(typed));
+    });
+  }
+
+  @Test
+  public void test_edit_comment_saved_as_json_string() {
+    // the editor sends the cleaned message back, it is saved as plain text
+    Comment comment = storedComment("&quot;He said \\&quot;hi\\&quot;\\nbye&quot;");
+    Comment.newBuilder(comment).editedMessage(comment.getMessage());
+    assertThat(comment.getMessage()).isEqualTo("He said &quot;hi&quot;\nbye");
+    Comment.newBuilder(comment).editedMessage(comment.getMessage());
+    assertThat(comment.getMessage()).isEqualTo("He said &quot;hi&quot;\nbye");
   }
 
   //
