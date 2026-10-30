@@ -158,7 +158,7 @@ public class DataAccessCollaboratorServiceTest {
 
   @Test
   public void test_isValidEmail_rejects_malformed_addresses() {
-    assertThat(Arrays.asList(null, "", "   ", "bob", "@example.org", "bob@", "bob@@example.org",
+    assertThat(Arrays.asList(null, "", "   ", "bob", "@", "@@", "@example.org", "bob@", "bob@@example.org",
       "bob smith@example.org", " bob@example.org", "bob@example.org ", "bob@example.org\n", "bob@example.org'",
       "bob..smith@example.org", ".bob@example.org", "bob@example.org.",
       "a".repeat(65) + "@example.org", LONGEST_EMAIL.replace("@b", "@bb")))
