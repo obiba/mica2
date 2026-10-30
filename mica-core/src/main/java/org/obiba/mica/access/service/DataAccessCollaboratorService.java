@@ -93,7 +93,7 @@ public class DataAccessCollaboratorService {
    */
   public static boolean isValidEmail(String email) {
     if (Strings.isNullOrEmpty(email) || email.trim().isEmpty() || email.length() > 254) return false;
-    if (email.split("@")[0].length() > 64) return false;
+    if (email.split("@", -1)[0].length() > 64) return false;
     if (email.contains("..") || email.startsWith(".") || email.endsWith(".")) return false;
     if (email.contains("<") || email.contains(">")) return false;
     try {

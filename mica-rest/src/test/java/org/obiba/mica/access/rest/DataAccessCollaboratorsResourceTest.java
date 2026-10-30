@@ -10,6 +10,8 @@
 
 package org.obiba.mica.access.rest;
 
+import java.util.Arrays;
+
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +30,7 @@ import org.obiba.mica.security.service.SubjectAclService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -61,7 +64,8 @@ public class DataAccessCollaboratorsResourceTest {
     request = (DataAccessRequest) DataAccessRequest.newBuilder().applicant("applicant").build();
     request.setId("dar1");
     config.setCollaboratorsEnabled(true);
-    when(dataAccessRequestUtilService.getDataAccessConfig()).thenReturn(config);
+    // not read by _suggest
+    lenient().when(dataAccessRequestUtilService.getDataAccessConfig()).thenReturn(config);
   }
 
   @Test
@@ -96,6 +100,18 @@ public class DataAccessCollaboratorsResourceTest {
 
     assertThat(response.getStatus()).isEqualTo(403);
     verifyNoInteractions(dataAccessRequestService, dataAccessCollaboratorService);
+  }
+
+  /**
+   * Same suggestions as the data access page: form values containing "@" are not necessarily emails (#4744).
+   */
+  @Test
+  public void test_suggest_only_valid_emails() {
+    when(dataAccessRequestService.findById("dar1")).thenReturn(request);
+    when(dataAccessRequestUtilService.getEmails(request))
+      .thenReturn(Arrays.asList("bob@example.org", "@", "@@", "Bob <bob@x.org>"));
+
+    assertThat(resource.suggestCollaborators()).containsExactly("bob@example.org");
   }
 
   private void mockApplicant() {
