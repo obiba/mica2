@@ -61,7 +61,10 @@ public class DataAccessCollaboratorsResource {
   public List<String> suggestCollaborators() {
     subjectAclService.checkPermission("/data-access-request", "VIEW", parentId);
     DataAccessRequest dar = dataAccessRequestService.findById(parentId);
-    return dataAccessRequestUtilService.getEmails(dar);
+    // form values containing "@" are not necessarily emails, suggest only what can be invited
+    return dataAccessRequestUtilService.getEmails(dar).stream()
+      .filter(DataAccessCollaboratorService::isValidEmail)
+      .collect(Collectors.toList());
   }
 
   @PUT
