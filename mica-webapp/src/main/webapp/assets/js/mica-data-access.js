@@ -72,7 +72,7 @@ class DataAccessService {
   }
 
   static inviteCollaborator(id, email) {
-    let url = '/ws/data-access-request/' + id + '/collaborators/_invite?email=' + email;
+    let url = '/ws/data-access-request/' + id + '/collaborators/_invite?email=' + encodeURIComponent(email);
     let redirect = '/data-access/' + id;
     axios.put(MicaService.normalizeUrl(url))
       .then(() => {
@@ -86,7 +86,7 @@ class DataAccessService {
   }
 
   static reinviteCollaborator(id, email, msg) {
-    let url = '/ws/data-access-request/' + id + '/collaborators/_invite?email=' + email;
+    let url = '/ws/data-access-request/' + id + '/collaborators/_invite?email=' + encodeURIComponent(email);
     axios.put(MicaService.normalizeUrl(url))
       .then(() => {
         MicaService.toastSuccess(msg);
@@ -98,7 +98,7 @@ class DataAccessService {
   }
 
   static deleteCollaborator(id, email) {
-    let url = '/ws/data-access-request/' + id + '/collaborator/' + email;
+    let url = '/ws/data-access-request/' + id + '/collaborator/' + encodeURIComponent(email);
     let redirect = '/data-access/' + id;
     axios.delete(MicaService.normalizeUrl(url))
       .then(() => {
