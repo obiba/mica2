@@ -21,6 +21,15 @@ portal keeps rendering its current published revision, and a request submitted w
 an older revision keeps being displayed and exported with that revision. No data
 changes: the request contents have the same schema in both dialects.
 
+**Study import.** Importing studies from another Mica server (`/ws/draft/studies/import/*`)
+now requires the `mica-administrator`, `mica-reviewer` or `mica-editor` role, the
+same users the previous administration application showed the import button to.
+`mica-external-editor` users, and users granted study permissions inside Mica, get
+403. Contacts and investigators are no longer imported: importing used to delete the
+local persons linked to the study and re-create the remote ones. Add the members to
+the imported studies afterwards. Local members of a replaced study are kept, but
+their display order is reset.
+
 ## 7.0.0
 
 Security release: 2FA sign-in feedback, open redirect closed, credentials kept out of

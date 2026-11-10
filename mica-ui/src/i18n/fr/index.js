@@ -438,6 +438,7 @@ export default {
     },
     connection: 'Connexion',
     connection_hint: "Importer des études à partir d'un serveur Mica distant.",
+    members_hint: 'Les contacts et les investigateurs ne sont pas importés. Ajoutez-les ensuite aux études importées.',
     url: 'URL de Mica',
     url_hint: "L'URL de Mica commence par http:// ou https://",
     password: 'Mot de passe',
