@@ -336,6 +336,8 @@ export default {
     clone_dce_text: 'Number of copies of {name} to add:',
     ongoing: 'ongoing',
     timeline: 'Timeline',
+    show_labels: 'Show the names',
+    hide_labels: 'Hide the names',
     invalid_id: 'The identifier cannot contain spaces nor special characters such as . : / ? # &',
     unique_id: 'This identifier is already used.',
     population_conflict: 'The removed populations or data collection events are used by: {references}',

@@ -1,5 +1,17 @@
 <template>
-  <div v-if="timeline" class="study-timeline">
+  <div v-if="timeline" :class="['study-timeline', { 'no-labels': !labels }]">
+    <div class="row justify-end">
+      <q-btn
+        flat
+        dense
+        round
+        size="sm"
+        :icon="labels ? 'subtitles' : 'subtitles_off'"
+        :color="labels ? 'primary' : 'grey-6'"
+        :title="t(labels ? 'study.hide_labels' : 'study.show_labels')"
+        @click="toggleLabels"
+      />
+    </div>
     <div v-for="(population, index) in timeline.populations" :key="population.id" class="row no-wrap q-mb-xs">
       <div class="timeline-label text-caption ellipsis q-pr-sm" :title="population.label">
         {{ population.label || population.id }}
@@ -26,7 +38,7 @@
             :style="{ left: `${position(event.start)}%`, width: `${position(event.end) - position(event.start)}%` }"
             @click="emit('select', event)"
           >
-            <span class="ellipsis">{{ event.label || event.dceId }}</span>
+            <span v-if="labels" class="ellipsis">{{ event.label || event.dceId }}</span>
             <q-tooltip>
               <div class="text-weight-bold">{{ event.label || event.dceId }}</div>
               <div>{{ population.label }}</div>
@@ -60,6 +72,8 @@ interface Props {
   populations: PopulationDto[];
   /** the event to highlight */
   selected?: { populationId: string; dceId: string } | undefined;
+  /** the color index of the first population, to keep its color of the study timeline */
+  colorOffset?: number;
 }
 
 const props = defineProps<Props>();
@@ -70,6 +84,27 @@ const COLORS = ['primary', 'teal', 'orange-8', 'purple', 'brown', 'indigo', 'pin
 /** the most year labels on the axis */
 const MAX_LABELS = 15;
 
+/** the choice to show the event names in the bars, kept for all the timelines */
+const LABELS_KEY = 'mica.study-timeline.labels';
+const labels = ref(readLabels());
+
+function readLabels() {
+  try {
+    return localStorage.getItem(LABELS_KEY) !== 'false';
+  } catch {
+    return true;
+  }
+}
+
+function toggleLabels() {
+  labels.value = !labels.value;
+  try {
+    localStorage.setItem(LABELS_KEY, String(labels.value));
+  } catch {
+    // the choice is not kept, e.g. in a private window
+  }
+}
+
 const timeline = computed(() => studyTimeline(props.populations, locale.value));
 const years = computed(() => {
   if (!timeline.value) return [];
@@ -79,7 +114,7 @@ const years = computed(() => {
 const step = computed(() => Math.max(1, Math.ceil(years.value.length / MAX_LABELS)));
 
 function color(index: number) {
-  return COLORS[index % COLORS.length];
+  return COLORS[(index + (props.colorOffset ?? 0)) % COLORS.length];
 }
 
 /** the position of a date on the track, in percent */
@@ -139,6 +174,14 @@ function period(event: TimelineEvent) {
 .timeline-bar.selected {
   outline: 2px solid black;
   outline-offset: 1px;
+}
+/* without the names, thinner bars */
+.no-labels .timeline-lane,
+.no-labels .timeline-bar {
+  height: 12px;
+}
+.no-labels .timeline-label {
+  line-height: 12px;
 }
 .timeline-axis {
   /* the border and the year labels (caption line height), else they overflow the tab panel, which scrolls */

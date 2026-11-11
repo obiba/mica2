@@ -336,6 +336,8 @@ export default {
     clone_dce_text: 'Nombre de copies de {name} à ajouter :',
     ongoing: 'en cours',
     timeline: 'Chronologie',
+    show_labels: 'Afficher les noms',
+    hide_labels: 'Masquer les noms',
     invalid_id: "L'identifiant ne peut contenir ni espaces ni caractères spéciaux tels que . : / ? # &",
     unique_id: 'Cet identifiant est déjà utilisé.',
     population_conflict: 'Les populations ou événements de collecte retirés sont utilisés par : {references}',
