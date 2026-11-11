@@ -28,7 +28,10 @@
           </template>
           <template v-slot:body-cell-name="props">
             <q-td :props="props">
-              <router-link :to="`/persons/${props.row.id}`" class="text-primary">{{ props.value }}</router-link>
+              <router-link
+                :to="{ path: `/persons/${props.row.id}`, query: { from: route.fullPath } }"
+                class="text-primary"
+              >{{ props.value }}</router-link>
             </q-td>
           </template>
           <template v-for="kind in MEMBERSHIP_KINDS" :key="kind" v-slot:[`body-cell-${kind}`]="props">
@@ -79,6 +82,7 @@ const props = defineProps<Props>();
 const show = defineModel<boolean>({ required: true });
 const { t, locale } = useI18n();
 const personsStore = usePersonsStore();
+const route = useRoute();
 const { roleLabel } = useRoleLabels();
 
 const columns = computed<QTableColumn[]>(() => [

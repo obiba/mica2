@@ -45,7 +45,10 @@
             </q-item-section>
             <q-item-section>
               <q-item-label>
-                <router-link :to="`/persons/${person.id}`" class="text-primary">{{ fullName(person) }}</router-link>
+                <router-link
+                  :to="{ path: `/persons/${person.id}`, query: { from: route.fullPath } }"
+                  class="text-primary"
+                >{{ fullName(person) }}</router-link>
               </q-item-label>
               <q-item-label v-if="person.institution" caption>
                 {{ localized(person.institution.name, locale) }}
@@ -143,6 +146,7 @@ const props = defineProps<Props>();
 const emit = defineEmits<{ change: [document: Document] }>();
 const { t, locale } = useI18n();
 const personsStore = usePersonsStore();
+const route = useRoute();
 const systemStore = useSystemStore();
 const { roleLabel } = useRoleLabels();
 

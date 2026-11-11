@@ -4,9 +4,15 @@
       <q-toolbar class="bg-grey-3">
         <q-breadcrumbs>
           <q-breadcrumbs-el icon="home" to="/" />
-          <q-breadcrumbs-el :label="t('persons.title')" to="/persons" />
+          <template v-if="origin && originTarget">
+            <q-breadcrumbs-el :label="t(originTarget.labels.title)" :to="originTarget.listRoute" />
+            <q-breadcrumbs-el :label="origin.id" :to="origin.path" />
+          </template>
+          <q-breadcrumbs-el v-else :label="t('persons.title')" to="/persons" />
           <q-breadcrumbs-el :label="person ? fullName(person) : id" />
         </q-breadcrumbs>
+        <q-space />
+        <q-btn v-if="origin" flat dense no-caps icon="arrow_back" :label="t('back')" :to="origin.path" />
       </q-toolbar>
 
       <q-spinner-dots v-if="loading" color="primary" size="2em" class="q-ma-md" />
@@ -91,9 +97,10 @@ import PersonDialog from 'src/components/persons/PersonDialog.vue';
 import PersonForm from 'src/components/persons/PersonForm.vue';
 import PersonHistoryPanel from 'src/components/persons/PersonHistoryPanel.vue';
 import PersonMembershipsPanel from 'src/components/persons/PersonMembershipsPanel.vue';
+import { documentTarget } from 'src/composables/useDocumentTarget';
 import { getDateLabel } from 'src/utils/dates';
 import { notifyError } from 'src/utils/notify';
-import { fullName, MEMBERSHIP_KINDS, toPersonModel } from 'src/utils/persons';
+import { fullName, MEMBERSHIP_KINDS, personOrigin, toPersonModel } from 'src/utils/persons';
 import { usePersonsStore } from 'src/stores/persons';
 
 const MENU = [
@@ -122,8 +129,13 @@ const hasMemberships = computed(
   () => (person.value?.studyMemberships?.length ?? 0) + (person.value?.networkMemberships?.length ?? 0) > 0,
 );
 
+/** the entity page the person page was opened from (members of a study or network), to go back to it */
+const origin = computed(() => personOrigin(route.query.from));
+const originTarget = computed(() => (origin.value ? documentTarget(origin.value.type, origin.value.id) : undefined));
+
 function tabRoute(name: string) {
-  return name === 'view' ? `/persons/${id.value}` : `/persons/${id.value}/${name}`;
+  const path = name === 'view' ? `/persons/${id.value}` : `/persons/${id.value}/${name}`;
+  return { path, query: origin.value ? { from: origin.value.path } : {} };
 }
 
 async function initialize() {
@@ -154,8 +166,13 @@ async function onDelete() {
   busy.value = true;
   try {
     await personsStore.remove(id.value);
-    // the search index may still have the person for a moment
-    await router.replace({ path: '/persons', query: { exclude: id.value } });
+    if (origin.value) {
+      // the entity members are read from the database, the deleted person is gone
+      await router.replace(origin.value.path);
+    } else {
+      // the search index may still have the person for a moment
+      await router.replace({ path: '/persons', query: { exclude: id.value } });
+    }
   } catch (error) {
     notifyError(error);
   } finally {
