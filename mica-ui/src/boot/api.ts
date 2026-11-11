@@ -73,8 +73,8 @@ api.interceptors.response.use(
           }
         })
         .catch(() => {
-          // reload to redirect to sign in page (and reset app state)
-          window.location.replace(contextPath);
+          // reload to redirect to sign in page (and reset app state), keeping the route to come back to it
+          window.location.reload();
         });
     }
     return Promise.reject(error);
