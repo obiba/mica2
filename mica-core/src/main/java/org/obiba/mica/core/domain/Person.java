@@ -54,6 +54,26 @@ public class Person extends AbstractGitPersistable {
 
   private List<Membership> networkMemberships = Lists.newArrayList();
 
+  /**
+   * Incremented by each detail update, which must match it. Not a Spring Data {@code @Version}: the writes are
+   * targeted updates. Missing in the documents created before, read as 0.
+   */
+  private Long version;
+
+  public Long getVersion() {
+    return version;
+  }
+
+  public void setVersion(Long version) {
+    this.version = version;
+  }
+
+  /** the stored version, 0 when the document has none */
+  @JsonIgnore
+  public long getVersionValue() {
+    return version == null ? 0L : version;
+  }
+
   public String getTitle() {
     return title;
   }

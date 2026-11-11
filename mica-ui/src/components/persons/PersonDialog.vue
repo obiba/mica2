@@ -25,7 +25,7 @@ import PersonForm from 'src/components/persons/PersonForm.vue';
 import type { FormModel } from 'src/composables/useDocumentModel';
 import { usePersonsStore } from 'src/stores/persons';
 import { notifyError } from 'src/utils/notify';
-import { fromPersonModel, fullName, toPersonModel } from 'src/utils/persons';
+import { fromPersonModel, fullName, isVersionConflict, toPersonModel } from 'src/utils/persons';
 
 interface Props {
   /** the person to edit, a new one when undefined */
@@ -101,7 +101,14 @@ async function onSave() {
     show.value = false;
     emit('saved', result);
   } catch (error) {
-    notifyError(error);
+    if (props.person?.id && isVersionConflict(error)) {
+      // modified meanwhile: the stored person is shown, to edit again; other errors (e.g. email used) keep the edits
+      notifyError('persons.save_conflict');
+      show.value = false;
+      await personsStore.get(props.person.id).then((stored) => emit('saved', stored), notifyError);
+    } else {
+      notifyError(error);
+    }
   } finally {
     saving.value = false;
   }

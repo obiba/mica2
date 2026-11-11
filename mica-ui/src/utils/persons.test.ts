@@ -6,10 +6,11 @@ import {
   fieldQuery,
   fromPersonModel,
   groupMemberships,
+  isVersionConflict,
   membersByRole,
+  membershipChanges,
   moveMember,
   personOrigin,
-  redundantPersons,
   searchQuery,
   toPersonModel,
   withMemberships,
@@ -126,21 +127,16 @@ describe('persons', () => {
     });
   });
 
-  it('finds the redundant persons', () => {
-    const copy = (id: string, created: string, changes: Partial<PersonDto> = {}): PersonDto => ({
-      ...person,
-      id,
-      timestamps: { created, lastUpdate: created },
-      ...changes,
+  it('lists the memberships added and removed', () => {
+    const before = member('p1', 'contact');
+    const after = { ...member('p1', 'investigator'), networkMemberships: before.networkMemberships };
+    expect(membershipChanges(before, after)).toEqual({
+      added: [{ parent: 'study', parentId: 's1', role: 'investigator' }],
+      removed: [{ parent: 'study', parentId: 's1', role: 'contact' }],
     });
-    const persons = [
-      copy('p3', '2026-03-01', { studyMemberships: [...person.studyMemberships].reverse() }),
-      copy('p1', '2026-01-01'),
-      copy('p2', '2026-02-01'),
-      copy('p4', '2026-01-15', { email: 'other@example.org' }),
-    ];
-    expect(redundantPersons(persons).map((found) => found.id)).toEqual(['p2', 'p3']);
-    expect(redundantPersons([person])).toEqual([]);
+    expect(membershipChanges(before, { ...before, studyMemberships: [...before.studyMemberships].reverse() })).toEqual(
+      { added: [], removed: [] },
+    );
   });
 
   it('builds the search query of a free text', () => {
@@ -208,5 +204,20 @@ describe('personOrigin', () => {
     expect(personOrigin('/network/n1/members/extra')).toBeUndefined();
     expect(personOrigin('/network/n1#x')).toBeUndefined();
     expect(personOrigin('/network/%E0%A4%A')).toBeUndefined();
+  });
+});
+
+describe('isVersionConflict', () => {
+  const failure = (status: number, messageTemplate?: string) => ({
+    response: { status, data: { code: status, messageTemplate } },
+  });
+
+  it('is the stale version 409 only', () => {
+    expect(isVersionConflict(failure(409, 'server.error.person.version-conflict'))).toBe(true);
+    expect(isVersionConflict(failure(409, 'server.error.person.email-used'))).toBe(false);
+    expect(isVersionConflict(failure(400, 'server.error.person.version-conflict'))).toBe(false);
+    expect(isVersionConflict(failure(409))).toBe(false);
+    expect(isVersionConflict(new Error('network'))).toBe(false);
+    expect(isVersionConflict(undefined)).toBe(false);
   });
 });

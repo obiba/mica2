@@ -4,7 +4,6 @@ import type { PersonDto, PersonsDto } from 'src/models/Mica';
 import {
   checkDuplicates,
   duplicateQuery,
-  redundantPersons,
   type DuplicateCheck,
   type MembersParent,
 } from 'src/utils/persons';
@@ -70,14 +69,9 @@ export const usePersonsStore = defineStore('persons', () => {
     await api.delete(`/draft/person/${id}`);
   }
 
-  /** removes the persons that are exact copies of another one, returns how many were removed */
+  /** removes the persons that are exact copies of another one (stored data, admin only), returns how many */
   async function removeRedundants(): Promise<number> {
-    const { total } = await search({ from: 0, limit: 1, sort: 'lastName', order: 'asc' });
-    // ponytail: all persons in one search, capped by the search index result window (10000)
-    const { persons } = await search({ from: 0, limit: Math.max(total, 1), sort: 'lastName', order: 'asc' });
-    const redundants = redundantPersons(persons);
-    for (const person of redundants) await remove(person.id as string);
-    return redundants.length;
+    return (await api.delete<{ count: number }>('/draft/persons/_redundants')).data.count;
   }
 
   /** the other persons with the same name, and the same email among them */

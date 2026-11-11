@@ -100,7 +100,7 @@ import PersonMembershipsPanel from 'src/components/persons/PersonMembershipsPane
 import { documentTarget } from 'src/composables/useDocumentTarget';
 import { getDateLabel } from 'src/utils/dates';
 import { notifyError } from 'src/utils/notify';
-import { fullName, MEMBERSHIP_KINDS, personOrigin, toPersonModel } from 'src/utils/persons';
+import { fullName, MEMBERSHIP_KINDS, membershipChanges, personOrigin, toPersonModel } from 'src/utils/persons';
 import { usePersonsStore } from 'src/stores/persons';
 
 const MENU = [
@@ -150,14 +150,24 @@ async function initialize() {
   }
 }
 
-/** the memberships changed: the whole person is saved */
+/** the memberships changed: each one is saved on its own, the other memberships of the person are not touched */
 async function onChange(changed: PersonDto) {
+  if (!person.value) return;
+  const { added, removed } = membershipChanges(person.value, changed);
   busy.value = true;
   try {
-    person.value = await personsStore.update(changed);
+    // added first: a failed add leaves the old role in place, not a person without the link
+    for (const m of added) await personsStore.addRole(id.value, m.parent, m.parentId, m.role);
+    for (const m of removed) await personsStore.removeRole(id.value, m.parent, m.parentId, m.role);
   } catch (error) {
     notifyError(error);
   } finally {
+    // what was saved, also when a change failed
+    try {
+      person.value = await personsStore.get(id.value);
+    } catch (error) {
+      notifyError(error);
+    }
     busy.value = false;
   }
 }
