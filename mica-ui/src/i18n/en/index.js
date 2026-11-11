@@ -338,6 +338,7 @@ export default {
     timeline: 'Timeline',
     show_labels: 'Show the names',
     hide_labels: 'Hide the names',
+    show_in_list: 'Show in the list',
     invalid_id: 'The identifier cannot contain spaces nor special characters such as . : / ? # &',
     unique_id: 'This identifier is already used.',
     population_conflict: 'The removed populations or data collection events are used by: {references}',

@@ -338,6 +338,7 @@ export default {
     timeline: 'Chronologie',
     show_labels: 'Afficher les noms',
     hide_labels: 'Masquer les noms',
+    show_in_list: 'Afficher dans la liste',
     invalid_id: "L'identifiant ne peut contenir ni espaces ni caractères spéciaux tels que . : / ? # &",
     unique_id: 'Cet identifiant est déjà utilisé.',
     population_conflict: 'Les populations ou événements de collecte retirés sont utilisés par : {references}',

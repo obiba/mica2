@@ -72,7 +72,7 @@ export interface TimelineEvent {
 export interface TimelinePopulation {
   id: string;
   label: string;
-  /** the events in order: the next one in the last lane unless it overlaps it, else in a new lane */
+  /** the events in order: the next one in the last lane when it starts after the lane's last event ends, else in a new lane */
   lanes: TimelineEvent[][];
 }
 
@@ -105,9 +105,11 @@ export function studyTimeline(populations: PopulationDto[], lang: string, today 
           end: parseDay(dce.endDay) ?? new Date(endYear, dce.endMonth ?? 12, 0),
           ongoing: !dce.endYear,
         };
-        // the events keep their order: an event joins the last lane, never an earlier one with room
+        // the events keep their order: an event joins the last lane after its last event, never an
+        // earlier lane with room, and never before the last event (an earlier date opens a new lane)
         const lane = lanes.at(-1);
-        if (lane?.every((other) => other.end < event.start || event.end < other.start)) lane.push(event);
+        const last = lane?.at(-1);
+        if (lane && last && last.end < event.start) lane.push(event);
         else lanes.push([event]);
       });
     return { id: population.id ?? '', label: localized(population.name, lang), lanes };
