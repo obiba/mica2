@@ -50,8 +50,10 @@
     </q-banner>
     <q-table
       flat
+      v-model:pagination="pagination"
       :rows="rows"
       :columns="columns"
+      :sort-method="sortRows"
       :rows-per-page-options="ROWS_PER_PAGE"
       row-key="id"
       :loading="loading"
@@ -84,7 +86,7 @@
 </template>
 
 <script setup lang="ts">
-import type { TimestampsDto } from 'src/models/Mica';
+import type { QTableProps } from 'quasar';
 import DocumentStatusBadge from 'src/components/documents/DocumentStatusBadge.vue';
 import DataAccessRequestLink from 'src/components/projects/DataAccessRequestLink.vue';
 import { isStateFilter, matchesStateFilter, STATE_FILTERS, type StateFilter } from 'src/composables/useDocumentState';
@@ -93,7 +95,7 @@ import type { DocumentSummary } from 'src/stores/documents';
 import { ROWS_PER_PAGE } from 'src/utils/constants';
 import { getDateLabel } from 'src/utils/dates';
 import { notifyError } from 'src/utils/notify';
-import { fieldQuery, searchQuery } from 'src/utils/persons';
+import { fieldQuery, localized, searchQuery } from 'src/utils/persons';
 
 interface Props {
   /** the target of the type, the id is not used */
@@ -194,12 +196,39 @@ const columns = computed(() => [
   {
     name: 'lastUpdated',
     label: t('last_modified'),
-    field: 'timestamps',
-    format: (ts: TimestampsDto | undefined) => getDateLabel(ts?.lastUpdate),
+    field: (row: DocumentSummary) => row.timestamps?.lastUpdate,
+    format: (lastUpdate: string | undefined) => getDateLabel(lastUpdate),
     sortable: true,
     align: 'left' as const,
   },
 ]);
+
+type Pagination = NonNullable<QTableProps['pagination']>;
+
+/** the order the server lists the documents in */
+function defaultPagination(): Pagination {
+  return { sortBy: 'id', descending: false, page: 1, rowsPerPage: ROWS_PER_PAGE[0]! };
+}
+
+const pagination = ref<Pagination>(defaultPagination());
+
+/** the sort value of a row: the name in the UI language, the ISO date of the last update (sorts as a string) */
+function sortValue(row: DocumentSummary, sortBy: string): string {
+  if (sortBy === 'name') return localized(row.name ?? row.title, locale.value);
+  if (sortBy === 'lastUpdated') return row.timestamps?.lastUpdate ?? '';
+  return row.id ?? '';
+}
+
+/** the rows come sorted by id from the server, unless the search is degraded: the other sorts are done here */
+function sortRows(data: readonly DocumentSummary[], sortBy: string, descending: boolean): readonly DocumentSummary[] {
+  if (sortBy === 'id' && !descending && !documentsStore.isDegraded(props.target.type)) return data;
+  const sign = descending ? -1 : 1;
+  return [...data].sort(
+    (a, b) =>
+      sign * sortValue(a, sortBy).localeCompare(sortValue(b, sortBy), locale.value, { sensitivity: 'base' }) ||
+      (a.id ?? '').localeCompare(b.id ?? ''),
+  );
+}
 
 async function load() {
   loading.value = true;
@@ -213,6 +242,12 @@ async function load() {
 }
 
 watch([() => props.target.type, searchText, () => searchField.value.value], load, { immediate: true });
+
+// the table is reused by the lists of all the document types, each one opens in the server order
+watch(
+  () => props.target.type,
+  () => (pagination.value = defaultPagination()),
+);
 
 defineExpose({ load });
 </script>
