@@ -27,8 +27,8 @@ same users the previous administration application showed the import button to.
 `mica-external-editor` users, and users granted study permissions inside Mica, get
 403. Contacts and investigators are no longer imported: importing used to delete the
 local persons linked to the study and re-create the remote ones. Add the members to
-the imported studies afterwards. Local members of a replaced study are kept, but
-their display order is reset.
+the imported studies afterwards. Local members of a replaced study are kept, with
+their display order.
 
 ## 7.0.0
 

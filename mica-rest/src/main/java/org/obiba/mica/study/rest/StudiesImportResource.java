@@ -18,7 +18,6 @@ import com.google.common.collect.Sets;
 import com.google.protobuf.ExtensionRegistry;
 import com.googlecode.protobuf.format.JsonFormat;
 import com.googlecode.protobuf.format.JsonFormat.ParseException;
-import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -33,8 +32,6 @@ import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.apache.hc.core5.net.URIBuilder;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.service.TempFileService;
@@ -55,6 +52,7 @@ import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
+import org.obiba.mica.web.rest.security.RequiresAnyRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -86,6 +84,8 @@ import java.util.Map;
 @Scope("request")
 @Path("/draft")
 @RequiresAuthentication
+// same users as the import button of the previous administration application
+@RequiresAnyRole({Roles.MICA_ADMIN, Roles.MICA_REVIEWER, Roles.MICA_EDITOR})
 public class StudiesImportResource {
 
   private static final String SAVE_STUDIES = "saveStudies";
@@ -125,8 +125,6 @@ public class StudiesImportResource {
   private static final String HARMONIZATION_STUDY_FORM_SECTION = HARMONIZATION_STUDY;
   private static final String HARMONIZATION_POPULATION_FORM_SECTION = "harmonization-study-population";
   private static final String NONE = "none";
-
-  private static final List<String> IMPORT_ROLES = List.of(Roles.MICA_ADMIN, Roles.MICA_REVIEWER, Roles.MICA_EDITOR);
 
   private static final Logger log = LoggerFactory.getLogger(StudiesImportResource.class);
 
@@ -172,8 +170,6 @@ public class StudiesImportResource {
                                   @HeaderParam(PWORD_HEADER) String password,
                                   @QueryParam(TYPE) String type) {
 
-    checkImportRole();
-
     try {
 
       if (!micaConfigService.getConfig().isImportStudiesFeatureEnabled())
@@ -216,8 +212,6 @@ public class StudiesImportResource {
                                     @HeaderParam(PWORD_HEADER) String password,
                                     @QueryParam(TYPE) String type) {
 
-    checkImportRole();
-
     try {
 
       if (!micaConfigService.getConfig().isImportStudiesFeatureEnabled())
@@ -240,8 +234,6 @@ public class StudiesImportResource {
   @Path("/studies/import/_summary")
   @Produces({"application/xml", "application/json", "text/plain"})
   public Response checkIfAlreadyExistsLocally(@QueryParam(IDS) List<String> ids, @QueryParam(TYPE) String type) {
-
-    checkImportRole();
 
     if (!micaConfigService.getConfig().isImportStudiesFeatureEnabled())
       return Response.status(HttpStatus.SC_UNAUTHORIZED).build();
@@ -283,8 +275,6 @@ public class StudiesImportResource {
                               @QueryParam(TYPE) String type,
                               @QueryParam(IDS) List<String> ids,
                               @QueryParam(LIST_DIFFS_FORM) List<String> listDiffsForm) {
-
-    checkImportRole();
 
     if (!micaConfigService.getConfig().isImportStudiesFeatureEnabled())
       return Response.status(HttpStatus.SC_UNAUTHORIZED).build();
@@ -363,6 +353,7 @@ public class StudiesImportResource {
 
     remoteStudy.setId(id); //to make sure the same ID from the remote host
     // persons are never imported: the remote sort order refers to remote person ids
+    // (a replaced study keeps its local order, see prepareReplaceOperation)
     remoteStudy.setMembershipSortOrder(new HashMap<>());
 
     if (!listDiffsForm.contains(INDIVIDUAL_STUDY_FORM_SECTION)) {
@@ -424,6 +415,7 @@ public class StudiesImportResource {
     HarmonizationStudy remoteStudy = (HarmonizationStudy) dtos.fromDto(builder);
     remoteStudy.setId(id); //to make sure the same ID from the remote host
     // persons are never imported: the remote sort order refers to remote person ids
+    // (a replaced study keeps its local order, see below)
     remoteStudy.setMembershipSortOrder(new HashMap<>());
 
     if (!listDiffsForm.contains(HARMONIZATION_STUDY_FORM_SECTION)) {
@@ -437,6 +429,8 @@ public class StudiesImportResource {
 
       } else {
         HarmonizationStudy localStudy = harmonizationStudyService.findStudy(id);
+        // the local members are kept, and so is their display order
+        remoteStudy.setMembershipSortOrder(localStudy.getMembershipSortOrder());
         if (listDiffsForm.contains(HARMONIZATION_POPULATION_FORM_SECTION)) {
           remoteStudy.setPopulations(localStudy.getPopulations());
         }
@@ -453,6 +447,8 @@ public class StudiesImportResource {
   private void prepareReplaceOperation(String id, List<String> listDiffsForm, Study remoteStudy) {
 
     Study localStudy = individualStudyService.findStudy(id);
+    // the local members are kept, and so is their display order
+    remoteStudy.setMembershipSortOrder(localStudy.getMembershipSortOrder());
 
     if (listDiffsForm.contains(POPULATION_FORM_SECTION)) {
       remoteStudy.setPopulations(localStudy.getPopulations());
@@ -482,15 +478,6 @@ public class StudiesImportResource {
         population.setDataCollectionEvents(Sets.newTreeSet());
       }
     }
-  }
-
-  /**
-   * Same users as the import button of the previous administration application. Not a
-   * {@code @RequiresRoles(logical = OR)}: the obiba-jersey-shiro filter requires all the listed roles.
-   */
-  private static void checkImportRole() {
-    Subject subject = SecurityUtils.getSubject();
-    if (IMPORT_ROLES.stream().noneMatch(subject::hasRole)) throw new ForbiddenException();
   }
 
   private int handleException(Exception e) {

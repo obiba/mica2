@@ -39,14 +39,11 @@ const systemStore = useSystemStore();
 const authStore = useAuthStore();
 const table = ref<InstanceType<typeof DocumentsTable>>();
 const showImport = ref(false);
-/** roles allowed to import studies (same check as the server) */
-const IMPORT_ROLES = ['mica-administrator', 'mica-reviewer', 'mica-editor'];
-const hasImportRole = computed(() => (authStore.session?.roles ?? []).some((role) => IMPORT_ROLES.includes(role)));
 /** the studies can be imported from a remote Mica, when the feature is enabled */
 const importType = computed(() =>
   (type.value === 'individual-study' || type.value === 'harmonization-study') &&
   systemStore.configuration.isImportStudiesFeatureEnabled &&
-  hasImportRole.value
+  authStore.canImportStudies
     ? type.value
     : undefined,
 );
