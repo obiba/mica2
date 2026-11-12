@@ -10,6 +10,7 @@
         <q-stepper v-model="step" flat animated active-color="primary" done-color="positive">
           <q-step name="connection" :title="t('studies_import.connection')" icon="link" :done="stepIndex > 0">
             <div class="text-hint q-mb-md">{{ t('studies_import.connection_hint') }}</div>
+            <q-banner dense rounded class="bg-info text-white q-mb-md">{{ t('studies_import.members_hint') }}</q-banner>
             <q-form ref="connectionForm" class="q-gutter-sm">
               <q-input
                 v-model="connection.url"

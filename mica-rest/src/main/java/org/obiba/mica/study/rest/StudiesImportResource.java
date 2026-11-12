@@ -32,10 +32,7 @@ import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.apache.hc.core5.net.URIBuilder;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.NoSuchEntityException;
-import org.obiba.mica.core.domain.Person;
-import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.service.TempFileService;
 import org.obiba.mica.micaConfig.domain.EntityConfig;
@@ -45,6 +42,7 @@ import org.obiba.mica.micaConfig.service.HarmonizationStudyConfigService;
 import org.obiba.mica.micaConfig.service.IndividualStudyConfigService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.PopulationConfigService;
+import org.obiba.mica.security.Roles;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Population;
@@ -54,8 +52,7 @@ import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
-import org.obiba.mica.web.model.Mica.MembershipsDto;
-import org.obiba.mica.web.model.Mica.PersonDto;
+import org.obiba.mica.web.rest.security.RequiresAnyRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -79,7 +76,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,6 +84,8 @@ import java.util.Map;
 @Scope("request")
 @Path("/draft")
 @RequiresAuthentication
+// same users as the import button of the previous administration application
+@RequiresAnyRole({Roles.MICA_ADMIN, Roles.MICA_REVIEWER, Roles.MICA_EDITOR})
 public class StudiesImportResource {
 
   private static final String SAVE_STUDIES = "saveStudies";
@@ -158,9 +156,6 @@ public class StudiesImportResource {
   private MicaConfigService micaConfigService;
 
   @Inject
-  private PersonService personService;
-
-  @Inject
   private Dtos dtos;
 
   @Inject
@@ -168,7 +163,6 @@ public class StudiesImportResource {
 
   @GET
   @Path("/studies/import/_differences")
-  @RequiresPermissions({"/draft/individual-study:ADD", "/draft/harmonization-study:ADD"})
   @Produces({"application/xml", "application/json", "text/plain"})
   @SuppressWarnings({"unchecked", "rawtypes"})
   public Response listDifferences(@QueryParam("url") String url,
@@ -212,7 +206,6 @@ public class StudiesImportResource {
 
   @GET
   @Path("/studies/import/_preview")
-  @RequiresPermissions({"/draft/individual-study:ADD", "/draft/harmonization-study:ADD"})
   @Produces({"application/xml", "application/json", "text/plain"})
   public Response listRemoteStudies(@QueryParam("url") String url,
                                     @HeaderParam(USERNAME_HEADER) String username,
@@ -239,7 +232,6 @@ public class StudiesImportResource {
 
   @GET
   @Path("/studies/import/_summary")
-  @RequiresPermissions({"/draft/individual-study:ADD", "/draft/harmonization-study:ADD"})
   @Produces({"application/xml", "application/json", "text/plain"})
   public Response checkIfAlreadyExistsLocally(@QueryParam(IDS) List<String> ids, @QueryParam(TYPE) String type) {
 
@@ -277,7 +269,6 @@ public class StudiesImportResource {
 
   @PUT
   @Path("/studies/import/_save")
-  @RequiresPermissions({"/draft/individual-study:ADD", "/draft/harmonization-study:ADD"})
   public Response saveStudies(@QueryParam("url") String url,
                               @HeaderParam(USERNAME_HEADER) String username,
                               @HeaderParam(PWORD_HEADER) String password,
@@ -358,11 +349,12 @@ public class StudiesImportResource {
 
     JsonFormat.merge(UpgradeLegacyEntities.upgradeStudy(remoteContent), extensionRegistry, builder);
 
-    Mica.StudyDtoOrBuilder dtoBuilder = (Mica.StudyDtoOrBuilder) builder;
-
     Study remoteStudy = (Study) dtos.fromDto(builder);
 
     remoteStudy.setId(id); //to make sure the same ID from the remote host
+    // persons are never imported: the remote sort order refers to remote person ids
+    // (a replaced study keeps its local order, see prepareReplaceOperation)
+    remoteStudy.setMembershipSortOrder(new HashMap<>());
 
     if (!listDiffsForm.contains(INDIVIDUAL_STUDY_FORM_SECTION)) {
 
@@ -372,26 +364,7 @@ public class StudiesImportResource {
         this.prepareReplaceOperation(id, listDiffsForm, remoteStudy);
       }
 
-      personService.getStudyMemberships(id).forEach(person -> {
-        personService.delete(person.getId());
-      });
-
       individualStudyService.save(remoteStudy);
-
-      for (MembershipsDto membershipsDto : dtoBuilder.getMembershipsList()) {
-        for (PersonDto personDto : membershipsDto.getMembersList()) {
-          Person person = dtos.fromDto(personDto);
-
-          for (Iterator<Person.Membership> iterator = person.getStudyMemberships().iterator(); iterator.hasNext(); ) {
-            Person.Membership membership = iterator.next();
-            if (!this.studyIdExistLocally(membership.getParentId())) {
-              iterator.remove();
-            }
-          }
-
-          personService.save(person);
-        }
-      }
     }
 
     remoteStudy = individualStudyService.findStudy(remoteStudy.getId());
@@ -439,10 +412,11 @@ public class StudiesImportResource {
     builder.setInitiative(Mica.HarmonizationStudyDto.newBuilder());
     JsonFormat.merge(UpgradeLegacyEntities.upgradeStudy(remoteContent), extensionRegistry, builder);
 
-    Mica.StudyDtoOrBuilder dtoBuilder = (Mica.StudyDtoOrBuilder) builder;
-
     HarmonizationStudy remoteStudy = (HarmonizationStudy) dtos.fromDto(builder);
     remoteStudy.setId(id); //to make sure the same ID from the remote host
+    // persons are never imported: the remote sort order refers to remote person ids
+    // (a replaced study keeps its local order, see below)
+    remoteStudy.setMembershipSortOrder(new HashMap<>());
 
     if (!listDiffsForm.contains(HARMONIZATION_STUDY_FORM_SECTION)) {
 
@@ -455,31 +429,14 @@ public class StudiesImportResource {
 
       } else {
         HarmonizationStudy localStudy = harmonizationStudyService.findStudy(id);
+        // the local members are kept, and so is their display order
+        remoteStudy.setMembershipSortOrder(localStudy.getMembershipSortOrder());
         if (listDiffsForm.contains(HARMONIZATION_POPULATION_FORM_SECTION)) {
           remoteStudy.setPopulations(localStudy.getPopulations());
         }
       }
 
-      personService.getStudyMemberships(id).forEach(person -> {
-        personService.delete(person.getId());
-      });
-
       harmonizationStudyService.save(remoteStudy);
-
-      for (MembershipsDto membershipsDto : dtoBuilder.getMembershipsList()) {
-        for (PersonDto personDto : membershipsDto.getMembersList()) {
-          Person person = dtos.fromDto(personDto);
-
-          for (Iterator<Person.Membership> iterator = person.getStudyMemberships().iterator(); iterator.hasNext(); ) {
-            Person.Membership membership = iterator.next();
-            if (!this.studyIdExistLocally(membership.getParentId())) {
-              iterator.remove();
-            }
-          }
-
-          personService.save(person);
-        }
-      }
     }
 
     remoteStudy = harmonizationStudyService.findStudy(remoteStudy.getId());
@@ -490,6 +447,8 @@ public class StudiesImportResource {
   private void prepareReplaceOperation(String id, List<String> listDiffsForm, Study remoteStudy) {
 
     Study localStudy = individualStudyService.findStudy(id);
+    // the local members are kept, and so is their display order
+    remoteStudy.setMembershipSortOrder(localStudy.getMembershipSortOrder());
 
     if (listDiffsForm.contains(POPULATION_FORM_SECTION)) {
       remoteStudy.setPopulations(localStudy.getPopulations());

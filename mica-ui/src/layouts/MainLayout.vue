@@ -118,7 +118,9 @@ onMounted(() => {
       });
     })
     .catch(() => {
-      window.location.href = toPortalUrl('/signin');
+      // come back to the requested page once signed in
+      const redirect = window.location.pathname + window.location.search + window.location.hash;
+      window.location.href = toPortalUrl(`/signin?redirect=${encodeURIComponent(redirect)}`);
     });
   systemStore.initPub();
 });

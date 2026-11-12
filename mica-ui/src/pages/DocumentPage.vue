@@ -298,8 +298,11 @@ const annotated = computed(() =>
 const dataset = computed(() =>
   DATASET_TYPES.includes(type.value) ? (document.value as DatasetDto | undefined) : undefined,
 );
+/** an event is on the timeline (it has a start year) */
 const hasEvents = computed(() =>
-  (study.value?.populations ?? []).some((population) => (population.dataCollectionEvents ?? []).length > 0),
+  (study.value?.populations ?? []).some((population) =>
+    (population.dataCollectionEvents ?? []).some((dce) => dce.startYear),
+  ),
 );
 const { canEdit, canChangeStatus, canManagePermissions } = useDocumentState(state);
 /** the drawer entries, one per tab */

@@ -8,6 +8,7 @@ import {
   groupMemberships,
   membersByRole,
   moveMember,
+  personOrigin,
   redundantPersons,
   searchQuery,
   toPersonModel,
@@ -182,5 +183,30 @@ describe('persons', () => {
     ]);
     expect(membersByRole(persons, 'study', 'n1', [], undefined)).toEqual([]);
     expect(moveMember(members, 'contact', 'a', 1)[1]).toEqual({ role: 'contact', personIds: ['b', 'a'] });
+  });
+});
+
+describe('personOrigin', () => {
+  it('reads the entity page the person page was opened from', () => {
+    expect(personOrigin('/network/n1/members')).toEqual({ type: 'network', id: 'n1', path: '/network/n1/members' });
+    expect(personOrigin('/individual-study/s%201')).toEqual({
+      type: 'individual-study',
+      id: 's 1',
+      path: '/individual-study/s%201',
+    });
+    expect(personOrigin('/harmonization-study/h1/members?x=1')?.id).toBe('h1');
+  });
+
+  it('ignores what is not a document page route', () => {
+    expect(personOrigin(undefined)).toBeUndefined();
+    expect(personOrigin(['/network/n1'])).toBeUndefined();
+    expect(personOrigin('')).toBeUndefined();
+    expect(personOrigin('/persons/p1')).toBeUndefined();
+    expect(personOrigin('/networks')).toBeUndefined();
+    expect(personOrigin('//evil.org/network/n1')).toBeUndefined();
+    expect(personOrigin('https://evil.org/network/n1')).toBeUndefined();
+    expect(personOrigin('/network/n1/members/extra')).toBeUndefined();
+    expect(personOrigin('/network/n1#x')).toBeUndefined();
+    expect(personOrigin('/network/%E0%A4%A')).toBeUndefined();
   });
 });

@@ -75,13 +75,53 @@ describe('studies', () => {
     expect(timeline?.max).toEqual(new Date(2011, 0, 1));
     expect(timeline?.populations.map((item) => item.id)).toEqual(['1', '2']);
     const lanes = timeline?.populations[0]?.lanes.map((lane) => lane.map((event) => event.dceId));
-    expect(lanes).toEqual([['1', '3'], ['2']]);
-    const [first, second] = timeline?.populations[0]?.lanes[0] ?? [];
+    expect(lanes).toEqual([['1'], ['2'], ['3']]);
+    const [first, second, third] = (timeline?.populations[0]?.lanes ?? []).map((lane) => lane[0]);
     expect([first?.start, first?.end, first?.ongoing]).toEqual([new Date(2000, 0, 1), new Date(2003, 11, 31), false]);
-    expect([second?.start, second?.end, second?.ongoing]).toEqual([new Date(2004, 5, 1), new Date(2010, 11, 31), true]);
-    expect(timeline?.populations[0]?.lanes[1]?.[0]?.start).toEqual(new Date(2002, 5, 15));
+    expect(second?.start).toEqual(new Date(2002, 5, 15));
+    expect([third?.start, third?.end, third?.ongoing]).toEqual([new Date(2004, 5, 1), new Date(2010, 11, 31), true]);
     expect(timeline?.populations[1]?.lanes[0]?.[0]?.end).toEqual(new Date(2006, 1, 28));
     expect(studyTimeline([population('1', 0, [])], 'en')).toBeUndefined();
+  });
+
+  it('stacks the events in their order', () => {
+    const timeline = studyTimeline(
+      [
+        population('1', 0, [
+          dce('1', 0, { startYear: 2000, endYear: 2001 }),
+          dce('2', 1, { startYear: 2001, endYear: 2003 }),
+          dce('3', 2, { startYear: 2004, endYear: 2004 }),
+          dce('4', 3, { startYear: 2002, endYear: 2002 }),
+        ]),
+      ],
+      'en',
+    );
+    // DCE 3 follows DCE 2 in its lane; DCE 4 does not go back to the room left in the first lane
+    const lanes = timeline?.populations[0]?.lanes.map((lane) => lane.map((event) => event.dceId));
+    expect(lanes).toEqual([['1'], ['2', '3'], ['4']]);
+  });
+
+  it('never stacks an event before the last one of its lane', () => {
+    const lanesOf = (events: DceDto[]) =>
+      studyTimeline([population('1', 0, events)], 'en')?.populations[0]?.lanes.map((lane) =>
+        lane.map((event) => event.dceId),
+      );
+    // an earlier date opens a new lane, though it overlaps nothing
+    expect(
+      lanesOf([dce('A', 0, { startYear: 2010, endYear: 2012 }), dce('B', 1, { startYear: 1995, endYear: 1996 })]),
+    ).toEqual([['A'], ['B']]);
+    // D follows C in the last lane, it does not go back to B's lane
+    expect(
+      lanesOf([
+        dce('A', 0, { startYear: 2000, endYear: 2005 }),
+        dce('B', 1, { startYear: 2006, endYear: 2008 }),
+        dce('C', 2, { startYear: 2001, endYear: 2003 }),
+        dce('D', 3, { startYear: 2009, endYear: 2010 }),
+      ]),
+    ).toEqual([
+      ['A', 'B'],
+      ['C', 'D'],
+    ]);
   });
 });
 

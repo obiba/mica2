@@ -36,12 +36,14 @@ const { target } = useDocumentTarget(type, '');
 const router = useRouter();
 const showNew = ref(false);
 const systemStore = useSystemStore();
+const authStore = useAuthStore();
 const table = ref<InstanceType<typeof DocumentsTable>>();
 const showImport = ref(false);
 /** the studies can be imported from a remote Mica, when the feature is enabled */
 const importType = computed(() =>
   (type.value === 'individual-study' || type.value === 'harmonization-study') &&
-  systemStore.configuration.isImportStudiesFeatureEnabled
+  systemStore.configuration.isImportStudiesFeatureEnabled &&
+  authStore.canImportStudies
     ? type.value
     : undefined,
 );

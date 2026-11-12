@@ -1,16 +1,5 @@
 <template>
   <div>
-    <q-card v-if="hasEvents" flat bordered class="q-mb-md">
-      <q-card-section class="q-pb-none text-subtitle1">{{ t('study.timeline') }}</q-card-section>
-      <q-card-section>
-        <study-timeline
-          :populations="study.populations"
-          :selected="population && expanded ? { populationId: population.id ?? '', dceId: expanded } : undefined"
-          @select="(event) => emit('select', event.populationId, event.dceId)"
-        />
-      </q-card-section>
-    </q-card>
-
     <div class="row items-center">
       <q-tabs
         v-if="populations.length > 0"
@@ -98,6 +87,43 @@
         </div>
       </div>
 
+      <q-card v-if="hasEvents" flat bordered class="q-mb-md">
+        <q-card-section class="q-pb-none text-subtitle1">{{ t('study.timeline') }}</q-card-section>
+        <q-card-section>
+          <study-timeline
+            :populations="populations"
+            :population-id="population.id ?? ''"
+            :selected="expanded ? { populationId: population.id ?? '', dceId: expanded } : undefined"
+            @select="(event) => emit('select', event.populationId, event.dceId)"
+          >
+            <template #actions="{ event }">
+              <q-btn
+                v-if="canEdit"
+                flat
+                dense
+                round
+                size="sm"
+                icon="edit"
+                :title="t('edit')"
+                :disable="busy"
+                v-close-popup
+                @click="openEditor({ populationId: population?.id, dceId: event.dceId, isDce: true })"
+              />
+              <q-btn
+                flat
+                dense
+                round
+                size="sm"
+                icon="visibility"
+                :title="t('study.show_in_list')"
+                v-close-popup
+                @click="scrollToEvent(event.dceId)"
+              />
+            </template>
+          </study-timeline>
+        </q-card-section>
+      </q-card>
+
       <div class="row q-col-gutter-md">
         <div class="col-12 col-md-6">
           <div class="text-subtitle1 q-mb-sm">
@@ -128,10 +154,12 @@
               :disable="busy"
             />
           </div>
-          <q-list bordered separator>
+          <q-list ref="eventList" bordered separator>
             <q-expansion-item
               v-for="(dce, index) in events"
               :key="dce.id ?? index"
+              :data-dce="dce.id"
+              class="event-item"
               :model-value="expanded === dce.id"
               @update:model-value="(open) => emit('select', population?.id ?? '', open ? dce.id : undefined)"
             >
@@ -235,6 +263,7 @@
 
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
+import type { ComponentPublicInstance } from 'vue';
 import type { PopulationDto, PopulationDto_DataCollectionEventDto as DceDto, StudyDto } from 'src/models/Mica';
 import ConfirmDialog from 'src/components/ConfirmDialog.vue';
 import EntityJsonForm from 'src/components/forms/EntityJsonForm.vue';
@@ -275,7 +304,8 @@ const population = computed(
 const populationIndex = computed(() => populations.value.findIndex((item) => item.id === population.value?.id));
 const events = computed(() => byWeight(population.value?.dataCollectionEvents));
 const expanded = computed(() => props.dceId);
-const hasEvents = computed(() => populations.value.some((item) => (item.dataCollectionEvents ?? []).length > 0));
+/** an event of the population shown is on the timeline (it has a start year) */
+const hasEvents = computed(() => events.value.some((dce) => dce.startYear));
 
 /** the population or event edited in the dialog, a new one when its id is undefined */
 const editor = ref<{ populationId?: string | undefined; dceId?: string | undefined; isDce?: boolean }>({});
@@ -284,6 +314,14 @@ const showEditor = ref(false);
 function openEditor(value: typeof editor.value) {
   editor.value = value;
   showEditor.value = true;
+}
+
+const eventList = useTemplateRef<ComponentPublicInstance>('eventList');
+
+/** brings the event of the list into view, from the menu of its timeline bar */
+function scrollToEvent(dceId: string) {
+  const list = eventList.value?.$el as HTMLElement | undefined;
+  list?.querySelector(`[data-dce="${CSS.escape(dceId)}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function onSaved(populationId: string, dceId?: string) {
@@ -348,3 +386,10 @@ function onRemove() {
   }
 }
 </script>
+
+<style scoped>
+/* brought into view below the fixed header */
+.event-item {
+  scroll-margin-top: 64px;
+}
+</style>
