@@ -30,6 +30,16 @@ local persons linked to the study and re-create the remote ones. Add the members
 the imported studies afterwards. Local members of a replaced study are kept, with
 their display order.
 
+**Published persons search.** The public persons search (`/ws/persons/_search`, its CSV
+export and `/_download`) now only returns the persons with a membership, in one of the
+configured roles, of a published study or network the user can access. Persons only
+linked to unpublished studies, and persons without any membership, are no longer
+listed; the total and the paging only count the returned persons. The portal study
+and network member lists are unchanged. Scripts that listed all the persons through
+this endpoint must use `/ws/draft/persons/_search`, with draft view permissions.
+When open access is disabled, the individual study memberships of a person are now
+shown to the users allowed to view the published study; they were always hidden.
+
 ## 7.0.0
 
 Security release: 2FA sign-in feedback, open redirect closed, credentials kept out of
