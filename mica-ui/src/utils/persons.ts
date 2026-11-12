@@ -1,5 +1,5 @@
 import { localizedToArray, localizedToObject, type FormModel } from 'src/composables/useDocumentModel';
-import type { DocumentType } from 'src/composables/useDocumentTarget';
+import { isDocumentType, type DocumentType } from 'src/composables/useDocumentTarget';
 import {
   PersonDto_Type,
   type LocalizedStringDto,
@@ -121,6 +121,29 @@ export function fromPersonModel(person: PersonDto, model: FormModel): PersonDto 
     delete updated.institution;
   }
   return updated;
+}
+
+/** the entity page a person page was opened from, to go back to it */
+export interface PersonOrigin {
+  type: DocumentType;
+  id: string;
+  /** route of the entity page, with its tab and query: `/network/n1/members` */
+  path: string;
+}
+
+/**
+ * The entity page given by the `from` query parameter of a person page, undefined when it is not the
+ * route of a document page (`/{type}/{id}` or `/{type}/{id}/{tab}`, with an optional query).
+ */
+export function personOrigin(from: unknown): PersonOrigin | undefined {
+  if (typeof from !== 'string') return undefined;
+  const match = /^\/([^/?#]+)\/([^/?#]+)(?:\/[^/?#]+)?(?:\?[^#]*)?$/.exec(from);
+  if (!match || !isDocumentType(match[1])) return undefined;
+  try {
+    return { type: match[1], id: decodeURIComponent(match[2] as string), path: from };
+  } catch {
+    return undefined;
+  }
 }
 
 /** an entity a person is member of, with the person's roles in it */

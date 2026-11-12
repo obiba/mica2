@@ -214,6 +214,7 @@ export default {
   apply: 'Appliquer',
   authorizations: 'Autorisations',
   attributes: 'Attributs',
+  back: 'Retour',
   close: 'Fermer',
   cancel: 'Annuler',
   content_management: 'Gestion de contenu',

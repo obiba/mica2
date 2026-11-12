@@ -214,6 +214,7 @@ export default {
   apply: 'Apply',
   authorizations: 'Authorizations',
   attributes: 'Attributes',
+  back: 'Back',
   close: 'Close',
   cancel: 'Cancel',
   confirm: 'Confirm',
