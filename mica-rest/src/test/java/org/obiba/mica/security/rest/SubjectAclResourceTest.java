@@ -10,8 +10,8 @@
 
 package org.obiba.mica.security.rest;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.core.Response;
@@ -54,9 +54,13 @@ public class SubjectAclResourceTest {
 
   private static final String FILE_INSTANCE = "/individual-study/s1";
 
-  private static final String EDITOR = PermissionsUtils.asActions("EDITOR");
+  private static final String READER = PermissionsUtils.getReaderActions();
 
-  private static final String REVIEWER = PermissionsUtils.asActions("REVIEWER");
+  private static final String EDITOR = PermissionsUtils.getEditorActions();
+
+  private static final String REVIEWER = PermissionsUtils.getReviewerActions();
+
+  private static final SubjectAcl.Type USER = SubjectAcl.Type.USER;
 
   @InjectMocks
   private SubjectAclResource resource;
@@ -71,13 +75,13 @@ public class SubjectAclResourceTest {
   public void setUp() {
     resource.setResourceInstance(RESOURCE, INSTANCE);
     resource.setFileResourceInstance(FILE_RESOURCE, FILE_INSTANCE);
-    lenient().when(subjectAclService.findByResourceInstance(anyString(), anyString())).thenReturn(Collections.emptyList());
+    lenient().when(subjectAclService.findSubjectAcl(any(), anyString(), anyString(), anyString())).thenReturn(Optional.empty());
     lenient().when(userProfileService.userHas(anyString(), eq(Roles.MICA_EXTERNAL_EDITOR))).thenReturn(true);
   }
 
   @Test
   public void test_transfer_to_non_external_editor_is_bad_request() {
-    when(subjectAclService.findByResourceInstance(RESOURCE, INSTANCE)).thenReturn(List.of(acl("alice", RESOURCE, EDITOR)));
+    given("alice", RESOURCE, INSTANCE, EDITOR);
     when(userProfileService.userHas("bob", Roles.MICA_EXTERNAL_EDITOR)).thenReturn(false);
 
     assertThatThrownBy(() -> resource.transfer("alice", "bob", "USER", null)).isInstanceOf(BadRequestException.class);
@@ -99,31 +103,159 @@ public class SubjectAclResourceTest {
   }
 
   @Test
-  public void test_transfer_moves_instance_and_file_acls_keeping_role() {
-    when(subjectAclService.findByResourceInstance(RESOURCE, INSTANCE)).thenReturn(List.of(acl("alice", RESOURCE, EDITOR)));
-    when(subjectAclService.findByResourceInstance(FILE_RESOURCE, FILE_INSTANCE)).thenReturn(List.of(acl("alice", FILE_RESOURCE, EDITOR)));
+  public void test_transfer_moves_instance_and_file_acls_keeping_actions() {
+    given("alice", RESOURCE, INSTANCE, EDITOR);
+    given("alice", FILE_RESOURCE, FILE_INSTANCE, EDITOR);
 
     Response response = resource.transfer("alice", "bob", "USER", null);
 
     assertThat(response.getStatus()).isEqualTo(204);
     InOrder order = inOrder(subjectAclService);
     order.verify(subjectAclService).checkPermission(RESOURCE, "EDIT", INSTANCE);
-    order.verify(subjectAclService).addSubjectPermission(SubjectAcl.Type.USER, "bob", RESOURCE, EDITOR, INSTANCE);
-    order.verify(subjectAclService).addSubjectPermission(SubjectAcl.Type.USER, "bob", FILE_RESOURCE, EDITOR, FILE_INSTANCE);
-    order.verify(subjectAclService).removeSubjectPermissions(SubjectAcl.Type.USER, "alice", RESOURCE, INSTANCE);
-    order.verify(subjectAclService).removeSubjectPermissions(SubjectAcl.Type.USER, "alice", FILE_RESOURCE, FILE_INSTANCE);
+    order.verify(subjectAclService).addSubjectPermission(USER, "bob", RESOURCE, EDITOR, INSTANCE);
+    order.verify(subjectAclService).addSubjectPermission(USER, "bob", FILE_RESOURCE, EDITOR, FILE_INSTANCE);
+    order.verify(subjectAclService).removeSubjectPermissions(USER, "alice", RESOURCE, INSTANCE);
+    order.verify(subjectAclService).removeSubjectPermissions(USER, "alice", FILE_RESOURCE, FILE_INSTANCE);
+  }
+
+  /**
+   * Without a role, the actions are copied as they are, per resource: not mapped to a role and back (which would
+   * drop DELETE here), nor the document actions applied to the files (which would raise the file access).
+   */
+  @Test
+  public void test_transfer_copies_the_actions_of_each_resource() {
+    given("alice", RESOURCE, INSTANCE, "ADD,VIEW,EDIT,DELETE");
+    given("alice", FILE_RESOURCE, FILE_INSTANCE, READER);
+
+    resource.transfer("alice", "bob", "USER", null);
+
+    verify(subjectAclService).addSubjectPermission(USER, "bob", RESOURCE, "ADD,VIEW,EDIT,DELETE", INSTANCE);
+    verify(subjectAclService).addSubjectPermission(USER, "bob", FILE_RESOURCE, READER, FILE_INSTANCE);
   }
 
   @Test
   public void test_transfer_with_role_and_no_file_acl() {
-    when(subjectAclService.findByResourceInstance(RESOURCE, INSTANCE)).thenReturn(List.of(acl("alice", RESOURCE, EDITOR)));
+    given("alice", RESOURCE, INSTANCE, EDITOR);
 
     resource.transfer("alice", "bob", "USER", "reviewer");
 
-    verify(subjectAclService).addSubjectPermission(SubjectAcl.Type.USER, "bob", RESOURCE, REVIEWER, INSTANCE);
+    verify(subjectAclService).addSubjectPermission(USER, "bob", RESOURCE, REVIEWER, INSTANCE);
     verify(subjectAclService, never()).addSubjectPermission(any(), anyString(), eq(FILE_RESOURCE), anyString(), anyString());
-    verify(subjectAclService).removeSubjectPermissions(SubjectAcl.Type.USER, "alice", RESOURCE, INSTANCE);
-    verify(subjectAclService, never()).removeSubjectPermissions(SubjectAcl.Type.USER, "alice", FILE_RESOURCE, FILE_INSTANCE);
+    verify(subjectAclService).removeSubjectPermissions(USER, "alice", RESOURCE, INSTANCE);
+    verify(subjectAclService, never()).removeSubjectPermissions(USER, "alice", FILE_RESOURCE, FILE_INSTANCE);
+  }
+
+  @Test
+  public void test_transfer_with_role_applies_to_files() {
+    given("alice", RESOURCE, INSTANCE, EDITOR);
+    given("alice", FILE_RESOURCE, FILE_INSTANCE, READER);
+
+    resource.transfer("alice", "bob", "USER", "reader");
+
+    verify(subjectAclService).addSubjectPermission(USER, "bob", RESOURCE, READER, INSTANCE);
+    verify(subjectAclService).addSubjectPermission(USER, "bob", FILE_RESOURCE, READER, FILE_INSTANCE);
+  }
+
+  /**
+   * ADMINISTRATOR has no actions, which grants all of them, and ANALYST is not a document role.
+   */
+  @Test
+  public void test_transfer_with_non_document_role_is_bad_request() {
+    lenient().when(subjectAclService.findSubjectAcl(USER, "alice", RESOURCE, INSTANCE)).thenReturn(Optional.of(acl("alice", RESOURCE, EDITOR)));
+
+    for (String role : new String[] { "administrator", "ADMINISTRATOR", "analyst", "owner", "" }) {
+      assertThatThrownBy(() -> resource.transfer("alice", "bob", "USER", role)).as(role).isInstanceOf(BadRequestException.class);
+    }
+    verifyNoWrites();
+  }
+
+  /**
+   * A permission without actions grants all of them: it is not handed over unless a role is given.
+   */
+  @Test
+  public void test_transfer_permission_without_actions_requires_a_role() {
+    SubjectAcl all = SubjectAcl.newBuilder("alice", USER).resource(RESOURCE).instance(INSTANCE).build();
+    when(subjectAclService.findSubjectAcl(USER, "alice", RESOURCE, INSTANCE)).thenReturn(Optional.of(all));
+
+    assertThatThrownBy(() -> resource.transfer("alice", "bob", "USER", null)).isInstanceOf(BadRequestException.class);
+    verifyNoWrites();
+
+    resource.transfer("alice", "bob", "USER", "editor");
+    verify(subjectAclService).addSubjectPermission(USER, "bob", RESOURCE, EDITOR, INSTANCE);
+  }
+
+  @Test
+  public void test_transfer_file_permission_without_actions_requires_a_role() {
+    given("alice", RESOURCE, INSTANCE, EDITOR);
+    SubjectAcl all = SubjectAcl.newBuilder("alice", USER).resource(FILE_RESOURCE).instance(FILE_INSTANCE).build();
+    when(subjectAclService.findSubjectAcl(USER, "alice", FILE_RESOURCE, FILE_INSTANCE)).thenReturn(Optional.of(all));
+
+    assertThatThrownBy(() -> resource.transfer("alice", "bob", "USER", null)).isInstanceOf(BadRequestException.class);
+    verifyNoWrites();
+  }
+
+  /**
+   * A reader of the document who becomes its owner is raised to the transferred role, on the document and its files.
+   */
+  @Test
+  public void test_transfer_raises_the_permissions_of_to() {
+    given("alice", RESOURCE, INSTANCE, EDITOR);
+    given("alice", FILE_RESOURCE, FILE_INSTANCE, EDITOR);
+    given("bob", RESOURCE, INSTANCE, READER);
+    given("bob", FILE_RESOURCE, FILE_INSTANCE, READER);
+
+    resource.transfer("alice", "bob", "USER", "editor");
+
+    verify(subjectAclService).addSubjectPermission(USER, "bob", RESOURCE, "VIEW,ADD,EDIT", INSTANCE);
+    verify(subjectAclService).addSubjectPermission(USER, "bob", FILE_RESOURCE, "VIEW,ADD,EDIT", FILE_INSTANCE);
+    assertThat(PermissionsUtils.asRole(List.of("VIEW", "ADD", "EDIT"))).isEqualTo("EDITOR");
+    verify(subjectAclService).removeSubjectPermissions(USER, "alice", RESOURCE, INSTANCE);
+    verify(subjectAclService).removeSubjectPermissions(USER, "alice", FILE_RESOURCE, FILE_INSTANCE);
+  }
+
+  /**
+   * The transfer never lowers a permission of {@code to}.
+   */
+  @Test
+  public void test_transfer_keeps_the_higher_permission_of_to() {
+    given("alice", RESOURCE, INSTANCE, READER);
+    given("bob", RESOURCE, INSTANCE, REVIEWER);
+
+    resource.transfer("alice", "bob", "USER", null);
+
+    verify(subjectAclService).addSubjectPermission(USER, "bob", RESOURCE, REVIEWER, INSTANCE);
+    verify(subjectAclService).removeSubjectPermissions(USER, "alice", RESOURCE, INSTANCE);
+  }
+
+  /**
+   * A permission of {@code to} granting all actions is not touched, the one of {@code from} is still removed.
+   */
+  @Test
+  public void test_transfer_keeps_a_permission_of_to_without_actions() {
+    given("alice", RESOURCE, INSTANCE, EDITOR);
+    SubjectAcl all = SubjectAcl.newBuilder("bob", USER).resource(RESOURCE).instance(INSTANCE).build();
+    when(subjectAclService.findSubjectAcl(USER, "bob", RESOURCE, INSTANCE)).thenReturn(Optional.of(all));
+
+    resource.transfer("alice", "bob", "USER", null);
+
+    verify(subjectAclService, never()).addSubjectPermission(any(), anyString(), anyString(), anyString(), anyString());
+    verify(subjectAclService).removeSubjectPermissions(USER, "alice", RESOURCE, INSTANCE);
+  }
+
+  /**
+   * Where {@code from} has no permission, nothing is transferred: the file permission of {@code to} is left as is.
+   */
+  @Test
+  public void test_transfer_leaves_the_other_permissions_of_to() {
+    given("alice", RESOURCE, INSTANCE, EDITOR);
+    lenient().when(subjectAclService.findSubjectAcl(USER, "bob", FILE_RESOURCE, FILE_INSTANCE))
+      .thenReturn(Optional.of(acl("bob", FILE_RESOURCE, READER)));
+
+    resource.transfer("alice", "bob", "USER", null);
+
+    verify(subjectAclService).addSubjectPermission(USER, "bob", RESOURCE, EDITOR, INSTANCE);
+    verify(subjectAclService, never()).addSubjectPermission(any(), anyString(), eq(FILE_RESOURCE), anyString(), anyString());
+    verify(subjectAclService, never()).removeSubjectPermissions(any(), anyString(), eq(FILE_RESOURCE), anyString());
   }
 
   @Test
@@ -139,21 +271,30 @@ public class SubjectAclResourceTest {
     verifyNoInteractions(subjectAclService);
   }
 
+  /**
+   * The lookup is by type: a group with the same name does not count.
+   */
   @Test
   public void test_transfer_from_without_acl_is_bad_request() {
-    // a group with the same name does not count
-    when(subjectAclService.findByResourceInstance(RESOURCE, INSTANCE))
-      .thenReturn(List.of(SubjectAcl.newBuilder("alice", SubjectAcl.Type.GROUP).resource(RESOURCE).action(EDITOR).instance(INSTANCE).build()));
+    assertThatThrownBy(() -> resource.transfer("alice", "bob", "USER", null)).isInstanceOf(BadRequestException.class);
+    verify(subjectAclService).findSubjectAcl(USER, "alice", RESOURCE, INSTANCE);
+    verifyNoWrites();
+  }
+
+  /**
+   * Rejected on the document lookup, before the file lookup (lenient stub).
+   */
+  @Test
+  public void test_transfer_from_with_file_acl_only_is_bad_request() {
+    lenient().when(subjectAclService.findSubjectAcl(USER, "alice", FILE_RESOURCE, FILE_INSTANCE))
+      .thenReturn(Optional.of(acl("alice", FILE_RESOURCE, EDITOR)));
 
     assertThatThrownBy(() -> resource.transfer("alice", "bob", "USER", null)).isInstanceOf(BadRequestException.class);
     verifyNoWrites();
   }
 
   @Test
-  public void test_transfer_invalid_role_or_type_is_bad_request() {
-    lenient().when(subjectAclService.findByResourceInstance(RESOURCE, INSTANCE)).thenReturn(List.of(acl("alice", RESOURCE, EDITOR)));
-
-    assertThatThrownBy(() -> resource.transfer("alice", "bob", "USER", "owner")).isInstanceOf(BadRequestException.class);
+  public void test_transfer_invalid_type_is_bad_request() {
     assertThatThrownBy(() -> resource.transfer("alice", "bob", "robot", null)).isInstanceOf(BadRequestException.class);
     verifyNoWrites();
   }
@@ -189,7 +330,11 @@ public class SubjectAclResourceTest {
     verify(subjectAclService, never()).removeSubjectPermissions(any(), anyString(), anyString(), anyString());
   }
 
+  private void given(String principal, String res, String inst, String actions) {
+    when(subjectAclService.findSubjectAcl(USER, principal, res, inst)).thenReturn(Optional.of(acl(principal, res, actions)));
+  }
+
   private static SubjectAcl acl(String principal, String res, String actions) {
-    return SubjectAcl.newBuilder(principal, SubjectAcl.Type.USER).resource(res).action(actions).instance(INSTANCE).build();
+    return SubjectAcl.newBuilder(principal, USER).resource(res).action(actions).instance(INSTANCE).build();
   }
 }

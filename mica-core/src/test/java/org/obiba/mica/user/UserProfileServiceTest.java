@@ -84,13 +84,26 @@ public class UserProfileServiceTest {
   }
 
   /**
-   * The username becomes a path segment of the Agate request: values that could alter it are rejected
-   * before any request (Agate is not configured here, a request would fail).
+   * The username becomes a path segment of the Agate request: the values that the encoding does not neutralize are
+   * rejected before any request (Agate is not configured here, a request would fail).
    */
   @Test
   public void test_userHas_rejects_unsafe_usernames() {
-    for (String username : List.of("", ".", "..", "../admin", "a/b", "a\\b", "a?b", "a#b", "a%2Fb", "a\nb")) {
+    for (String username : List.of("", " ", ".", "..", "a;b")) {
       assertThat(userProfileService.userHas(username, "mica-external-editor")).as(username).isFalse();
+    }
+  }
+
+  /**
+   * "/", "?", "#", "%", "\" and control characters are escaped by the path segment encoding.
+   */
+  @Test
+  public void test_isSafePathSegment() {
+    for (String username : List.of("bob", "bob@example.org", "../admin", "a/b", "a\\b", "a?b", "a#b", "a%2Fb", "a b")) {
+      assertThat(UserProfileService.isSafePathSegment(username)).as(username).isTrue();
+    }
+    for (String username : new String[] { null, "", " ", ".", "..", "a;b" }) {
+      assertThat(UserProfileService.isSafePathSegment(username)).as(String.valueOf(username)).isFalse();
     }
   }
 

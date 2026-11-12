@@ -60,6 +60,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -132,6 +133,21 @@ public class SubjectAclService {
    */
   public List<SubjectAcl> findByResourceInstance(String resource, String instance) {
     return subjectAclRepository.findByResourceAndInstance(resource, encode(instance), Sort.by(Sort.Order.desc("type"), Sort.Order.asc("principal")));
+  }
+
+  /**
+   * Get the permission of the subject on the given resource and instance.
+   *
+   * @param type
+   * @param principal
+   * @param resource
+   * @param instance
+   * @return
+   */
+  public Optional<SubjectAcl> findSubjectAcl(@NotNull SubjectAcl.Type type, @NotNull String principal,
+                                             @NotNull String resource, @Nullable String instance) {
+    return subjectAclRepository.findByPrincipalAndTypeAndResourceAndInstance(principal, type, resource, encode(instance))
+      .stream().findFirst();
   }
 
   public boolean hasMicaRole() {
@@ -452,7 +468,7 @@ public class SubjectAclService {
    * @param id
    */
   public void addCreatorPermissions(@NotNull String principal, @NotNull String type, @NotNull String id) {
-    String actions = PermissionsUtils.asActions("EDITOR");
+    String actions = PermissionsUtils.getEditorActions();
     addUserPermission(principal, "/draft/" + type, actions, id);
     addUserPermission(principal, "/draft/file", actions, "/" + type + "/" + id);
   }

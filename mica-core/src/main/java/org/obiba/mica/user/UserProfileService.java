@@ -48,7 +48,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 @Service
 public class UserProfileService extends AgateRestService {
@@ -58,8 +57,6 @@ public class UserProfileService extends AgateRestService {
   private static final DateTimeFormatter ISO_8601 = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
   private static final String DEFAULT_CONTACT_NOTIFICATION_SUBJECT = "[${organization}] Contact";
-
-  private static final Pattern SAFE_USERNAME = Pattern.compile("[^/\\\\?#%\\p{Cntrl}]+");
 
   @Inject
   private MicaConfigService micaConfigService;
@@ -156,9 +153,7 @@ public class UserProfileService extends AgateRestService {
    * @return
    */
   public boolean userHas(@NotNull String username, @NotNull String role) {
-    // the username becomes a path segment of the Agate request: reject values that could alter it
-    if (username == null || !SAFE_USERNAME.matcher(username).matches()
-      || ".".equals(username) || "..".equals(username)) return false;
+    if (username == null) return false;
     ObibaRealm.Subject profile = getProfile(username);
     return profile != null && profile.getGroups() != null
       && groupsToRolesMapper.toRoles(Sets.newHashSet(profile.getGroups())).contains(role);
@@ -278,6 +273,7 @@ public class UserProfileService extends AgateRestService {
   //
 
   private synchronized Subject getProfileInternal(URI serviceUrl) {
+    if (serviceUrl == null) return null;
     try {
       return executeQuery(serviceUrl, Subject.class);
     } catch (RestClientException e) {
@@ -314,7 +310,21 @@ public class UserProfileService extends AgateRestService {
       .build().toUriString();
   }
 
+  /**
+   * Whether the username can be a path segment of an Agate request: the encoding escapes "/", "?", "#", "%", etc. but
+   * not the "." and ".." segments, nor ";" (Agate reads what follows as a matrix parameter), and a blank segment is
+   * dropped from the path.
+   */
+  static boolean isSafePathSegment(String username) {
+    return username != null && !username.isBlank() && !".".equals(username) && !"..".equals(username)
+      && !username.contains(";");
+  }
+
+  /**
+   * @return null when the username is not a safe path segment, which getProfileInternal treats as an unknown user
+   */
   private URI getProfileServiceUrl(String username) {
+    if (!isSafePathSegment(username)) return null;
     // encode the segments and pass a URI, so that RestTemplate does not re-parse the username as a template
     return UriComponentsBuilder
       .fromUri(agateServerConfigService.getAgateUri())
@@ -323,7 +333,11 @@ public class UserProfileService extends AgateRestService {
       .build().encode().toUri();
   }
 
+  /**
+   * @param username null for the users of the group, otherwise the user, null returned when not a safe path segment
+   */
   private URI getProfileServiceUrlByGroup(String username, String group) {
+    if (username != null && !isSafePathSegment(username)) return null;
     UriComponentsBuilder urlBuilder =
       UriComponentsBuilder.fromUri(agateServerConfigService.getAgateUri()).path(DEFAULT_REST_PREFIX);
 
