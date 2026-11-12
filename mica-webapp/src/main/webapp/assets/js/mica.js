@@ -1010,12 +1010,7 @@ class UserService {
     axios.get(MicaService.normalizeUrl(url))
       .then(() => {
         //console.dir(response);
-        let redirect = MicaService.normalizeUrl('/');
-        const q = new URLSearchParams(window.location.search);
-        if (q.get('redirect')) {
-          redirect = q.get('redirect');
-        }
-        MicaService.redirect(redirect);
+        MicaService.redirect(UserService.signinRedirect());
       })
   }
 
@@ -1047,12 +1042,23 @@ class UserService {
   }
 
   static defaultSigninOnSuccess() {
-    let redirect = MicaService.normalizeUrl('/');
+    MicaService.redirect(UserService.signinRedirect());
+  }
+
+  /**
+   * The page to go to once signed in: the 'redirect' query parameter, with the fragment of the current
+   * location appended (a server redirect to the signin page keeps the fragment, e.g. the admin app route
+   * '/admin#/studies/xyz', but the server cannot put it in the 'redirect' parameter).
+   *
+   * @returns {string}
+   */
+  static signinRedirect() {
     const q = new URLSearchParams(window.location.search);
-    if (q.get('redirect')) {
-      redirect = q.get('redirect');
+    const redirect = q.get('redirect');
+    if (!redirect) {
+      return MicaService.normalizeUrl('/');
     }
-    MicaService.redirect(redirect);
+    return redirect.includes('#') ? redirect : redirect + window.location.hash;
   }
 
   /**
