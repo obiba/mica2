@@ -400,7 +400,7 @@
       let acronym = memberships[key].acronym;
       let roles = '<span class="ms-1">(' + (memberships[key].roles || []).join(", ") + ')</span>';
 
-      return '<a href="' + url + '">' + acronym + '</a>' + roles;
+      return '<a href="' + escapeHtml(url) + '">' + escapeHtml(acronym) + '</a>' + roles;
     });
   };
 
@@ -428,11 +428,11 @@
         if (data && data.total > 0) {
           const dataset = data.persons.map(person => {
             const item = [];
-            item.push(person.firstName + ' ' + person.lastName);
-            item.push(person.email || '');
+            item.push(escapeHtml(person.firstName + ' ' + person.lastName));
+            item.push(escapeHtml(person.email || ''));
 
             const studyMemberships = toMembershipsAnchors('/study/', person.studyMemberships);
-            const networkMemberships = toMembershipsAnchors('/network', person.networkMemberships);
+            const networkMemberships = toMembershipsAnchors('/network/', person.networkMemberships);
 
             item.push(studyMemberships.length > 0 ? studyMemberships.join(', ') : '');
             item.push(networkMemberships.length > 0 ? networkMemberships.join(', ') : '');

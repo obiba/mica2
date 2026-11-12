@@ -3,9 +3,9 @@
 <!-- Project model template for the list -->
 <#macro projectModelSummary project>
   <#if project.model??>
-    <span class="badge text-bg-info moment-date">${project.model.startDate}</span>
+    <span class="badge text-bg-info moment-date">${esc(project.model.startDate)}</span>
     <small><i class="fa-solid fa-arrow-right"></i></small>
-    <span class="badge text-bg-info moment-date">${project.model.endDate}</span>
+    <span class="badge text-bg-info moment-date">${esc(project.model.endDate)}</span>
     - <small>
     <#if project.model.institution??>${esc(project.model.institution)} - </#if>
     ${esc(project.model.name)}
@@ -28,9 +28,9 @@
           <div class="card-body">
             <dl class="row">
               <dt class="col-sm-4"><@message "start-date"/></dt>
-              <dd class="col-sm-8 moment-date">${project.model.startDate}</dd>
+              <dd class="col-sm-8 moment-date">${esc(project.model.startDate)}</dd>
               <dt class="col-sm-4"><@message "end-date"/></dt>
-              <dd class="col-sm-8 moment-date">${project.model.endDate}</dd>
+              <dd class="col-sm-8 moment-date">${esc(project.model.endDate)}</dd>
             </dl>
           </div>
         </div>

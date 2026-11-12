@@ -174,7 +174,7 @@
       </p>
         <#if study.model.pubmedId??>
           <blockquote>
-            <a href="http://www.ncbi.nlm.nih.gov/pubmed/${study.model.pubmedId}" target="_blank">PUBMED ${study.model.pubmedId}</a>
+            <a href="http://www.ncbi.nlm.nih.gov/pubmed/${esc(study.model.pubmedId)}" target="_blank">PUBMED ${esc(study.model.pubmedId)}</a>
           </blockquote>
         </#if>
     </div>
@@ -235,7 +235,7 @@
                 <@message "numberOfParticipants.participants"/>
             </dt>
             <dd class="col-sm-6">
-                ${study.model.numberOfParticipants.participant.number}
+                ${esc(study.model.numberOfParticipants.participant.number)}
                 <#if study.model.numberOfParticipants.participant.noLimit == true>
                   (<@message "numberOfParticipants.no-limit"/>)
                 </#if>
@@ -258,7 +258,7 @@
                 <@message "numberOfParticipants.sample"/>
             </dt>
             <dd class="col-sm-6">
-                ${study.model.numberOfParticipants.sample.number}
+                ${esc(study.model.numberOfParticipants.sample.number)}
                 <#if study.model.numberOfParticipants.sample.noLimit == true>
                   (<@message "numberOfParticipants.no-limit"/>)
                 </#if>
