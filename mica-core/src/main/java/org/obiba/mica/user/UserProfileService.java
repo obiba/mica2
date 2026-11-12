@@ -142,6 +142,17 @@ public class UserProfileService extends AgateRestService {
       return true;
     }
 
+    return userHas(username, role);
+  }
+
+  /**
+   * Whether the user's groups in Agate map to the role. False when the user is unknown or Agate cannot be reached.
+   *
+   * @param username
+   * @param role
+   * @return
+   */
+  public boolean userHas(@NotNull String username, @NotNull String role) {
     ObibaRealm.Subject profile = getProfile(username);
     return profile != null && profile.getGroups() != null
       && groupsToRolesMapper.toRoles(Sets.newHashSet(profile.getGroups())).contains(role);

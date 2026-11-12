@@ -21,6 +21,12 @@ portal keeps rendering its current published revision, and a request submitted w
 an older revision keeps being displayed and exported with that revision. No data
 changes: the request contents have the same schema in both dialects.
 
+**External editors' files.** An external editor who creates a study, network, dataset
+or project now also gets the editor role on its files. Documents created before this
+version only give their creator access to the document itself, not to its files. To
+give the creator access to the files, open the document's permissions, edit the
+creator's entry and check the files option.
+
 ## 7.0.0
 
 Security release: 2FA sign-in feedback, open redirect closed, credentials kept out of

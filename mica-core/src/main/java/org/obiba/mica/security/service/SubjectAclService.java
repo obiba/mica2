@@ -36,6 +36,7 @@ import org.obiba.mica.file.event.FolderDeletedEvent;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.event.NetworkDeletedEvent;
 import org.obiba.mica.project.event.ProjectDeletedEvent;
+import org.obiba.mica.security.PermissionsUtils;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.domain.SubjectAcl;
 import org.obiba.mica.security.event.ResourceDeletedEvent;
@@ -431,6 +432,29 @@ public class SubjectAclService {
       .forEach(subjectAclRepository::delete);
     // inform acls update (for caching)
     broadcastSubjectAclUpdateEvent(type, principal);
+  }
+
+  /**
+   * Grant the current user, as the creator of a draft document, the editor role on the document and on its files.
+   *
+   * @param type document type name, e.g. "individual-study"
+   * @param id
+   */
+  public void addCreatorPermissions(@NotNull String type, @NotNull String id) {
+    addCreatorPermissions(SecurityUtils.getSubject().getPrincipal().toString(), type, id);
+  }
+
+  /**
+   * Grant the user, as the creator of a draft document, the editor role on the document and on its files.
+   *
+   * @param principal
+   * @param type document type name, e.g. "individual-study"
+   * @param id
+   */
+  public void addCreatorPermissions(@NotNull String principal, @NotNull String type, @NotNull String id) {
+    String actions = PermissionsUtils.asActions("EDITOR");
+    addUserPermission(principal, "/draft/" + type, actions, id);
+    addUserPermission(principal, "/draft/file", actions, "/" + type + "/" + id);
   }
 
   //

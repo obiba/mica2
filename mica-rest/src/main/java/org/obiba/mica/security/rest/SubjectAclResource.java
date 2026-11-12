@@ -13,22 +13,30 @@ package org.obiba.mica.security.rest;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import jakarta.inject.Inject;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.security.PermissionsUtils;
+import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.domain.SubjectAcl;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.model.MicaSecurity.AclDto;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -42,6 +50,9 @@ public class SubjectAclResource {
 
   @Inject
   private SubjectAclService subjectAclService;
+
+  @Inject
+  private UserProfileService userProfileService;
 
   private String resource;
 
@@ -129,6 +140,72 @@ public class SubjectAclResource {
     return Response.noContent().build();
   }
 
+  /**
+   * Hand the permissions of one user over to another: grant {@code to} first, then revoke {@code from}, so the
+   * document is never left without the transferred permission. {@code to} gets the file and other resource
+   * permissions that {@code from} had, with {@code role} or, when omitted, the role {@code from} had. A permission
+   * {@code to} already had is replaced. Comments keep their author: {@code from} can edit or delete them only while it
+   * still has access to the document (see CommentResource).
+   * Administrators only: handing a document over to another owner is not an editor decision. Users only, and
+   * {@code to} must be an external editor: the only users whose access to a document comes from its ACLs.
+   */
+  @PUT
+  @Path("/_transfer")
+  @RequiresRoles(Roles.MICA_ADMIN)
+  public Response transfer(@QueryParam("from") String from, @QueryParam("to") String to,
+    @QueryParam("type") @DefaultValue("USER") String typeStr, @QueryParam("role") String role) {
+    if (!isDraftDocument()) throw new BadRequestException("Permissions can only be transferred on a draft document");
+    if (Strings.isNullOrEmpty(from) || Strings.isNullOrEmpty(to)) throw new BadRequestException("Both from and to principals are required");
+    if (from.equals(to)) throw new BadRequestException("Cannot transfer permissions to the same principal");
+    checkPermission();
+
+    SubjectAcl.Type type = parseType(typeStr);
+    if (type != SubjectAcl.Type.USER) throw new BadRequestException("Permissions can only be transferred between users");
+    SubjectAcl fromAcl = findSubjectAcl(type, from, resource, instance)
+      .orElseThrow(() -> new BadRequestException("No permission to transfer from " + from));
+    String actions = parseActions(role == null ? PermissionsUtils.asRole(fromAcl.getActions()) : role);
+    if (!userProfileService.userHas(to, Roles.MICA_EXTERNAL_EDITOR))
+      throw new BadRequestException("Permissions can only be transferred to an external editor: " + to);
+
+    // grant
+    subjectAclService.addSubjectPermission(type, to, resource, actions, instance);
+    boolean file = fileResource != null && fileInstance != null && findSubjectAcl(type, from, fileResource, fileInstance).isPresent();
+    if (file) subjectAclService.addSubjectPermission(type, to, fileResource, actions, fileInstance);
+    List<String> others = otherResources.stream()
+      .filter(other -> findSubjectAcl(type, from, mergeWithResourceName(other), instance).isPresent())
+      .toList();
+    others.forEach(other -> subjectAclService.addSubjectPermission(type, to, mergeWithResourceName(other), actions, instance));
+
+    // revoke
+    subjectAclService.removeSubjectPermissions(type, from, resource, instance);
+    if (file) subjectAclService.removeSubjectPermissions(type, from, fileResource, fileInstance);
+    others.forEach(other -> subjectAclService.removeSubjectPermissions(type, from, mergeWithResourceName(other), instance));
+
+    return Response.noContent().build();
+  }
+
+  private Optional<SubjectAcl> findSubjectAcl(SubjectAcl.Type type, String principal, String res, String inst) {
+    return subjectAclService.findByResourceInstance(res, inst).stream()
+      .filter(acl -> acl.getType() == type && principal.equals(acl.getPrincipal()))
+      .findFirst();
+  }
+
+  private static SubjectAcl.Type parseType(String typeStr) {
+    try {
+      return SubjectAcl.Type.valueOf(typeStr.toUpperCase());
+    } catch (IllegalArgumentException e) {
+      throw new BadRequestException("Invalid principal type: " + typeStr);
+    }
+  }
+
+  private static String parseActions(String role) {
+    try {
+      return PermissionsUtils.asActions(role.toUpperCase());
+    } catch (NoSuchElementException e) {
+      throw new BadRequestException("Invalid role: " + role);
+    }
+  }
+
   private String mergeWithResourceName(String otherResourceName) {
     return resource + "/" + otherResourceName;
   }
@@ -140,5 +217,12 @@ public class SubjectAclResource {
 
   private boolean isDraft() {
     return resource.startsWith("/draft");
+  }
+
+  /**
+   * A draft document, not the permissions on all the documents of a type (instance "*").
+   */
+  private boolean isDraftDocument() {
+    return isDraft() && !Strings.isNullOrEmpty(instance) && !"*".equals(instance);
   }
 }
