@@ -86,7 +86,7 @@ class PersonDtos {
       } else {
         return state != null &&
           state.isPublished() &&
-          subjectAclService.isAccessible(state instanceof StudyState ? "/study" : "/harmonization-study", m.getParentId());
+          subjectAclService.isAccessible(state instanceof StudyState ? "/individual-study" : "/harmonization-study", m.getParentId());
       }
     }).map(m -> asStudyMembershipDto(m, asDraft)).collect(toList()));
     builder.addAllNetworkMemberships(person.getNetworkMemberships().stream().filter(m -> {

@@ -131,6 +131,18 @@ version only give their creator access to the document itself, not to its files.
 give the creator access to the files, open the document's permissions, edit the
 creator's entry and check the files option.
 
+**Published persons search.** The public persons search (`/ws/persons/_search`, its CSV
+export and `/_download`) now only returns the persons with a membership, in one of the
+configured roles, of a published study or network the user can access. Persons only
+linked to unpublished studies, and persons without any membership, are no longer
+listed; the total and the paging only count the returned persons. The portal study
+and network member lists are unchanged. Scripts that listed all the persons through
+this endpoint must use `/ws/draft/persons/_search`, with draft view permissions.
+When open access is disabled, the individual study memberships of a person are now
+shown to the users allowed to view the published study, on the study and network pages
+and in the persons search; only administrators saw them before. In the draft preview
+of a study that is not published, the members download button is hidden.
+
 ### Rolling back
 
 Stop Mica, reinstall 7.x and restore the configuration folder, with `MICA_HOME` set as

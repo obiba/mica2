@@ -63,14 +63,16 @@ public abstract class AbstractPersonsSearchResource {
       else query += String.format(" AND NOT(%s)", ids);
     }
 
-    PublishedDocumentService.Documents<Person> contacts = esPersonService.find(from, limit, sort, order, null, query);
+    PublishedDocumentService.Documents<Person> contacts = isDraft()
+      ? esPersonService.find(from, limit, sort, order, null, query)
+      : esPersonService.findPublished(from, limit, sort, order, query);
 
     List<Mica.PersonDto> persons = contacts.getList().stream().map(p -> dtos.asDto(p, isDraft())).collect(Collectors.toList());
 
     Mica.PersonsDto.Builder builder = Mica.PersonsDto.newBuilder().setFrom(from).setLimit(limit)
       .setTotal(contacts.getTotal());
     builder.addAllPersons(persons);
-    // the persons are listed from the database, without applying the query
+    // the persons are listed from the database, without applying the query (published ones only on the published endpoint)
     if (contacts.isDegraded() && response != null) response.addHeader("X-Search-Degraded", "true");
 
     return builder.build();
