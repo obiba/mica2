@@ -83,4 +83,15 @@ public class UserProfileServiceTest {
     assertThat(userProfileService.asMap(profile).get("fullName")).isEqualTo("bob.smith-1_a");
   }
 
+  /**
+   * The username becomes a path segment of the Agate request: values that could alter it are rejected
+   * before any request (Agate is not configured here, a request would fail).
+   */
+  @Test
+  public void test_userHas_rejects_unsafe_usernames() {
+    for (String username : List.of("", ".", "..", "../admin", "a/b", "a\\b", "a?b", "a#b", "a%2Fb", "a\nb")) {
+      assertThat(userProfileService.userHas(username, "mica-external-editor")).as(username).isFalse();
+    }
+  }
+
 }

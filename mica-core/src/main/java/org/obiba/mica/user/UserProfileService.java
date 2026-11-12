@@ -48,6 +48,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 @Service
 public class UserProfileService extends AgateRestService {
@@ -57,6 +58,8 @@ public class UserProfileService extends AgateRestService {
   private static final DateTimeFormatter ISO_8601 = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
   private static final String DEFAULT_CONTACT_NOTIFICATION_SUBJECT = "[${organization}] Contact";
+
+  private static final Pattern SAFE_USERNAME = Pattern.compile("[^/\\\\?#%\\p{Cntrl}]+");
 
   @Inject
   private MicaConfigService micaConfigService;
@@ -153,6 +156,9 @@ public class UserProfileService extends AgateRestService {
    * @return
    */
   public boolean userHas(@NotNull String username, @NotNull String role) {
+    // the username becomes a path segment of the Agate request: reject values that could alter it
+    if (username == null || !SAFE_USERNAME.matcher(username).matches()
+      || ".".equals(username) || "..".equals(username)) return false;
     ObibaRealm.Subject profile = getProfile(username);
     return profile != null && profile.getGroups() != null
       && groupsToRolesMapper.toRoles(Sets.newHashSet(profile.getGroups())).contains(role);
