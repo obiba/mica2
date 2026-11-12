@@ -11,6 +11,12 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isAdministrator = computed(() => session.value?.roles.includes('mica-administrator'));
 
+  /** roles allowed to import studies from a remote Mica (same as the server's @RequiresAnyRole) */
+  const IMPORT_STUDIES_ROLES = ['mica-administrator', 'mica-reviewer', 'mica-editor'];
+  const canImportStudies = computed(() =>
+    (session.value?.roles ?? []).some((role) => IMPORT_STUDIES_ROLES.includes(role)),
+  );
+
   const isAuthenticated = computed(() => {
     return session.value !== null;
   });
@@ -64,6 +70,7 @@ export const useAuthStore = defineStore('auth', () => {
     session,
     isAuthenticated,
     isAdministrator,
+    canImportStudies,
     reAuthRequired,
     signin,
     signout,
