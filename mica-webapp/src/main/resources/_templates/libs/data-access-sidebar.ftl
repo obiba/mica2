@@ -1,4 +1,3 @@
-<#ftl output_format="HTML">
 <!-- Macros and functions -->
 <#include "data-access.ftl"/>
 

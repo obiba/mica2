@@ -1,4 +1,3 @@
-<#ftl output_format="HTML">
 <!-- Data access (amendment) form page macros -->
 
 <!-- Help section, can be adapted to data access request status -->

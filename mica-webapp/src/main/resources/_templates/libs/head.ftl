@@ -1,4 +1,3 @@
-<#ftl output_format="HTML">
 <!-- Spring utils for translations -->
 <#import "/spring.ftl" as spring/>
 <!-- Translation of a code, printed as is (translations can hold HTML); when there is none, the code itself is shown,
@@ -14,21 +13,18 @@
 <!-- Context path setting -->
 <#assign contextPath = "${config.contextPath}"/>
 
-<!-- From a localized text get the value in the current language or in the default one or in the undefined one,
-     HTML-escaped (escaped markup: printed once, whether the calling template is auto-escaped or not) -->
+<!-- From a localized text get the value in the current language or in the default one or in the undefined one;
+     escaped when printed (templates are auto-escaped) -->
 <#function localize txt={} default="">
-  <#return localizeRaw(txt, default)?esc/>
+  <#return localizeRaw(txt, default)/>
 </#function>
 
-<!-- HTML-escape a value of unknown type (model fields can be strings or numbers), as escaped markup -->
+<!-- Deprecated, the value is returned as is: templates are auto-escaped. Kept for custom templates still calling it -->
 <#function esc value="">
-  <#if value?is_string>
-    <#return value?esc/>
-  </#if>
   <#return value/>
 </#function>
 
-<!-- HTML-escape a link and neutralize script schemes (javascript:, data:...), other values are kept as before -->
+<!-- Neutralize script schemes of a link (javascript:, data:...), other values are kept as before; escaped when printed -->
 <#function safeUrl url="">
   <#if !url?is_string>
     <#return url/>
@@ -38,12 +34,11 @@
   <#if compact?matches("^[a-zA-Z][a-zA-Z0-9+.-]*:.*", "s") && !compact?matches("^(https?|mailto|ftp):.*", "is")>
     <#return "#"/>
   </#if>
-  <#return url?esc/>
+  <#return url/>
 </#function>
 
-<!-- Same as localize but not escaped: only for Markdown in a <template> (sanitized when rendered) and inside templateSafe(),
-     a method provided by Mica that keeps the value from closing the block; for scripts with ?js_string; or with ?html
-     after another built-in (e.g. ?truncate_w) -->
+<!-- Same as localize, the name says the value is used raw on purpose: Markdown in a <template> inside templateSafe(), a
+     method provided by Mica that keeps the value from closing the block; scripts with ?js_string -->
 <#function localizeRaw txt={} default="">
   <#if txt?? && txt?keys??>
     <#if txt[.lang]??>

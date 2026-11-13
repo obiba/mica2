@@ -1,4 +1,3 @@
-<#ftl output_format="HTML">
 <!-- Language -->
 <#assign defaultLang = "en"/>
 

@@ -1,4 +1,3 @@
-<#ftl output_format="HTML">
 <!-- Network page macros -->
 
 <!-- Network model template -->

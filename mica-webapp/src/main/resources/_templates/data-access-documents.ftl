@@ -1,4 +1,3 @@
-<#ftl output_format="HTML">
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
