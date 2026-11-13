@@ -1,4 +1,3 @@
-<#ftl output_format="HTML">
 <!-- Compare page macros -->
 
 <!-- Individual studies compare model template -->

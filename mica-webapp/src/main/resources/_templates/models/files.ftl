@@ -1,4 +1,3 @@
-<#ftl output_format="HTML">
 <!-- File browser, vuejs template -->
 <#macro filesBrowser>
   <div class="files-browser" v-cloak>

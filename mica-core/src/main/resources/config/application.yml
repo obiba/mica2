@@ -16,6 +16,8 @@ spring:
       request-context-attribute: rc
       settings:
         template_exception_handler: ignore
+        # templates are HTML-escaped when printed; raw output on purpose: ?no_esc, templateSafe(), outputformat blocks
+        output_format: HTMLOutputFormat
       charset: UTF-8
       suffix: .ftl
       content-type: text/html;charset=UTF-8

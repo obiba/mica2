@@ -1,4 +1,3 @@
-<#ftl output_format="HTML">
 <#macro harmonizationLegend>
   <dl id="harmonization-legend" class="row">
     <dt class="col-sm-1"><i class="fa-solid fa-check text-success"></i></dt>

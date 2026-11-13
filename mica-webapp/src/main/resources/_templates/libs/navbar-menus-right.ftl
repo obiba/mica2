@@ -1,4 +1,3 @@
-<#ftl output_format="HTML">
 <#macro rightmenus>
   <#include "../models/navbar-menus-right.ftl"/>
   <#if cartEnabled>

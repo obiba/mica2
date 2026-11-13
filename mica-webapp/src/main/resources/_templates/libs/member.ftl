@@ -1,4 +1,3 @@
-<#ftl output_format="HTML">
 <!-- Member macros -->
 
 <!-- Member model -->
