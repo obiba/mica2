@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
@@ -95,7 +96,7 @@
                         </#if>
                       </td>
                       <td><i class="fa-solid fa-circle text-${statusColor(event.status.toString())}"></i> <@message event.status.toString()/></td>
-                      <td>${event.profile.fullName}</td>
+                      <td>${htmlDecode(event.profile.fullName)}</td>
                       <td data-sort="${event.date.toString()}" class="moment-datetime">${event.date.toString()}</td>
                     </tr>
                   </#list>
@@ -131,8 +132,8 @@
                     <tbody>
                     <#list dar.actionLogHistory as act>
                       <tr>
-                        <td>${act.action?html}</td>
-                        <td>${act.author?html}</td>
+                        <td>${act.action}</td>
+                        <td>${act.author}</td>
                         <td data-sort="${act.changedOn.toString()}" class="moment-date">${act.changedOn.toString()}</td>
                       </tr>
                     </#list>
@@ -201,7 +202,7 @@
 <#include "libs/data-access-scripts.ftl">
 <!-- Datepicker -->
 <script src="${assetsPath}/libs/node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
-<script>
+<#outputformat "plainText"><script>
     $(function () {
         $('#history-menu').addClass('active').attr('href', '#')
         $("#status").DataTable(dataTablesNoSortSearchOpts);
@@ -218,6 +219,6 @@
           DataAccessService.addAction('${dar.id}', action);
         });
     });
-</script>
+</script></#outputformat>
 </body>
 </html>
