@@ -1,3 +1,6 @@
+<#ftl output_format="HTML">
+<#-- scripts: values are escaped by hand (js_string), not for HTML -->
+<#outputformat "plainText">
 <!-- Files -->
 <script src="${assetsPath}/libs/node_modules/vue/dist/vue.global.js"></script>
 <script src="${assetsPath}/js/mica-files.js"></script>
@@ -26,3 +29,4 @@
     </#if>
   });
 </script>
+</#outputformat>

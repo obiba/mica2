@@ -1,3 +1,6 @@
+<#ftl output_format="HTML">
+<#-- scripts: values are escaped by hand (js_string), not for HTML -->
+<#outputformat "plainText">
 <!-- ChartJS -->
 <script src="${assetsPath}/libs/node_modules/chart.js/dist/chart.umd.js"></script>
 <script src="${assetsPath}/js/mica-charts.js"></script>
@@ -122,3 +125,4 @@
     makeSummary('${config.summaryStatisticsAccessPolicy}', ${showHarmonizedVariableSummarySelector?c});
   });
 </script>
+</#outputformat>

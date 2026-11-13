@@ -1,3 +1,6 @@
+<#ftl output_format="HTML">
+<#-- scripts: values are escaped by hand (js_string), not for HTML -->
+<#outputformat "plainText">
 <!-- Script for the cart and the documents list pages -->
 <script src="${assetsPath}/js/mica-tables.js"></script>
 
@@ -565,3 +568,4 @@
 </script>
 
 <#include "special-char-codec.ftl">
+</#outputformat>

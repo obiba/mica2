@@ -1,3 +1,6 @@
+<#ftl output_format="HTML">
+<#-- scripts: values are escaped by hand (js_string), not for HTML -->
+<#outputformat "plainText">
 <#assign set = sets.variablesCart.set/>
 <#assign studiesSet = sets.studiesCart.set/>
 <#assign networksSet = sets.networksCart.set/>
@@ -98,3 +101,4 @@
     }
   });
 </script>
+</#outputformat>

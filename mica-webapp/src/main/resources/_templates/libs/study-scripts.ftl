@@ -1,3 +1,6 @@
+<#ftl output_format="HTML">
+<#-- scripts: values are escaped by hand (js_string), not for HTML -->
+<#outputformat "plainText">
 <!-- Timeline -->
 <script src="${assetsPath}/libs/node_modules/d3/d3.min.js"></script>
 <script src="${assetsPath}/libs/node_modules/mica-study-timeline/dist/mica-study-timeline.min.js"></script>
@@ -265,3 +268,4 @@
     ensurePopulationDceSelection();
   });
 </script>
+</#outputformat>
