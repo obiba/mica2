@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!-- Main Footer -->
 <footer class="app-footer d-print-none">
   <!-- To the right -->

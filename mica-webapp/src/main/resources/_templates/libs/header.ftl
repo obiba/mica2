@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <#macro header title titlePrefix="" subtitle="" breadcrumb=[]>
   <div class="content-header bg-info mb-4">
     <div class="container">
@@ -11,7 +12,7 @@
               <@message title/>
             </#if>
           </h1>
-          <small>${subtitle?html}</small>
+          <small>${subtitle}</small>
         </div><!-- /.col -->
         <#if breadcrumb?? && breadcrumb?size != 0>
           <div class="col-sm-6">
