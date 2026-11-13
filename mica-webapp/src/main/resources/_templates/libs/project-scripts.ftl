@@ -9,7 +9,7 @@
     <#if showProjectFiles>
       makeFilesVue('#project-files-app', {
         type: 'project',
-        id: '${project.id}',
+        id: '${project.id?js_string}',
         basePath: '',
         path: '/',
         folder: {},

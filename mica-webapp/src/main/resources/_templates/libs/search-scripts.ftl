@@ -124,7 +124,7 @@
     return template;
   };
 
-  Mica.maxNumberOfSets = ${maxNumberOfSets};
+  Mica.maxNumberOfSets = ${maxNumberOfSets?c};
 
   <#if rc.requestUri?starts_with("harmonization")>
     Mica.defaultSearchMode = "HarmonizationStudy"

@@ -244,7 +244,7 @@
 <#include "libs/data-access-scripts.ftl">
 <#outputformat "plainText"><script>
     $('#agreement-form-menu').addClass('active').attr('href', '#');
-    $('#agreement-form-menu-${agreement.id}').addClass('active');
+    $('#agreement-form-menu-${agreement.id?js_string}').addClass('active');
 </script></#outputformat>
 <#include "libs/data-access-form-scripts.ftl">
 

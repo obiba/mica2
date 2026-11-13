@@ -215,7 +215,7 @@
             text: $('#action-text').val(),
             date: $('#action-date').val()
           };
-          DataAccessService.addAction('${dar.id}', action);
+          DataAccessService.addAction('${dar.id?js_string}', action);
         });
     });
 </script></#outputformat>

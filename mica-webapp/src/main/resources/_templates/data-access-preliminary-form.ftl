@@ -357,7 +357,7 @@
 <#include "libs/data-access-scripts.ftl">
 <#outputformat "plainText"><script>
     $('#preliminary-form-menu').addClass('active').attr('href', '#');
-    $('#preliminary-form-menu-${preliminary.id}').addClass('active');
+    $('#preliminary-form-menu-${preliminary.id?js_string}').addClass('active');
 </script></#outputformat>
 <#include "libs/data-access-form-scripts.ftl">
 
