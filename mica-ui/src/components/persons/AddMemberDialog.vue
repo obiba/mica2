@@ -33,7 +33,7 @@
         <q-btn :label="t('add')" color="primary" :disable="!person" v-close-popup @click="onAdd" />
       </q-card-actions>
     </q-card>
-    <person-dialog v-model="showNew" @saved="onCreated" />
+    <person-dialog v-model="showNew" :membership="membership" @saved="onCreated" />
   </q-dialog>
 </template>
 
@@ -42,17 +42,20 @@ import type { PersonDto } from 'src/models/Mica';
 import PersonDialog from 'src/components/persons/PersonDialog.vue';
 import { usePersonsStore } from 'src/stores/persons';
 import { notifyError } from 'src/utils/notify';
-import { fullName, localized, searchQuery } from 'src/utils/persons';
+import { fullName, localized, searchQuery, type NewMembership } from 'src/utils/persons';
 
 interface Props {
   role: string;
   /** the ids of the persons already members with the role */
   exclude: string[];
+  /** the membership a new person is created with */
+  membership: NewMembership | undefined;
 }
 
 const props = defineProps<Props>();
 const show = defineModel<boolean>({ required: true });
-const emit = defineEmits<{ add: [person: PersonDto] }>();
+/** add: an existing person to add as a member; created: a new person, created with the membership */
+const emit = defineEmits<{ add: [person: PersonDto]; created: [person: PersonDto] }>();
 const { t, locale } = useI18n();
 const personsStore = usePersonsStore();
 
@@ -90,6 +93,6 @@ function onAdd() {
 
 function onCreated(created: PersonDto) {
   show.value = false;
-  emit('add', created);
+  emit('created', created);
 }
 </script>

@@ -11,7 +11,6 @@
 package org.obiba.mica.person.rest;
 
 import java.lang.reflect.Method;
-import java.util.NoSuchElementException;
 
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -39,8 +38,6 @@ import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
-import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica.PersonDto;
 import org.obiba.web.model.ErrorDtos.ClientErrorDto;
@@ -76,9 +73,6 @@ public class PersonResourceTest {
   private SubjectAclService subjectAclService;
 
   @Mock
-  private StudyService studyService;
-
-  @Mock
   private NetworkService networkService;
 
   @Mock
@@ -93,7 +87,7 @@ public class PersonResourceTest {
   public void setUp() {
     Validator validator = Validation.byDefaultProvider().configure()
       .messageInterpolator(new ParameterMessageInterpolator()).buildValidatorFactory().getValidator();
-    resource = new PersonResource(dtos, personService, subjectAclService, studyService, networkService,
+    resource = new PersonResource(dtos, personService, subjectAclService, networkService,
       entityConfigKeyTranslationService, micaConfigService, validator);
 
     stored = person("Doe", "doe@x.org");
@@ -106,6 +100,25 @@ public class PersonResourceTest {
     });
     when(dtos.asDto(any(Person.class), eq(true))).thenReturn(PersonDto.newBuilder().setLastName("Doe").build());
     when(micaConfigService.getRoles()).thenReturn(Lists.newArrayList("contact", "investigator"));
+    when(personService.canManagePersons()).thenReturn(true);
+  }
+
+  @Test
+  public void memberships_are_refused_to_document_permissions_only() {
+    when(personService.canManagePersons()).thenReturn(false);
+    when(personService.studyResource("s1")).thenReturn("/draft/individual-study");
+    assertThatThrownBy(() -> resource.updatePersonRoleForStudy(ID, "s1", "contact"))
+      .isInstanceOf(ForbiddenException.class);
+    assertThatThrownBy(() -> resource.removePersonRoleFromStudy(ID, "s1", "contact"))
+      .isInstanceOf(ForbiddenException.class);
+    assertThatThrownBy(() -> resource.updatePersonRoleForNetwork(ID, "n1", "contact"))
+      .isInstanceOf(ForbiddenException.class);
+    assertThatThrownBy(() -> resource.removePersonRoleFromNetwork(ID, "n1", "contact"))
+      .isInstanceOf(ForbiddenException.class);
+    verify(personService, never()).addStudyMembership(anyString(), anyString(), anyString());
+    verify(personService, never()).removeStudyMembership(anyString(), anyString(), anyString());
+    verify(personService, never()).addNetworkMembership(anyString(), anyString(), anyString());
+    verify(personService, never()).removeNetworkMembership(anyString(), anyString(), anyString());
   }
 
   @Test
@@ -175,24 +188,31 @@ public class PersonResourceTest {
 
   @Test
   public void link_to_an_unknown_study_is_not_found() {
-    when(studyService.findStudy("unknown")).thenThrow(NoSuchEntityException.withId(Study.class, "unknown"));
+    // studyResource is null for an unknown study (mock default)
     assertThatThrownBy(() -> resource.updatePersonRoleForStudy(ID, "unknown", "contact"))
-      .isInstanceOf(NoSuchElementException.class);
+      .isInstanceOf(NoSuchEntityException.class);
+    verify(personService, never()).addStudyMembership(anyString(), anyString(), anyString());
   }
 
   @Test
   public void link_with_an_unknown_role_is_a_bad_request() {
-    Study study = new Study();
-    study.setId("s1");
-    when(studyService.findStudy("s1")).thenReturn(study);
+    when(personService.studyResource("s1")).thenReturn("/draft/individual-study");
     assertError(() -> resource.updatePersonRoleForStudy(ID, "s1", "unknown"), 400, PersonErrors.INVALID_ROLE);
   }
 
   @Test
+  public void link_to_a_harmonization_study_checks_its_resource() {
+    when(personService.studyResource("h1")).thenReturn("/draft/harmonization-study");
+    when(personService.addStudyMembership(ID, "h1", "contact")).thenReturn(stored);
+
+    resource.updatePersonRoleForStudy(ID, "h1", "contact");
+
+    verify(subjectAclService).checkPermission("/draft/harmonization-study", "EDIT", "h1");
+  }
+
+  @Test
   public void link_checks_the_study_and_adds_one_membership() {
-    Study study = new Study();
-    study.setId("s1");
-    when(studyService.findStudy("s1")).thenReturn(study);
+    when(personService.studyResource("s1")).thenReturn("/draft/individual-study");
     when(personService.addStudyMembership(ID, "s1", "contact")).thenReturn(stored);
 
     resource.updatePersonRoleForStudy(ID, "s1", "contact");

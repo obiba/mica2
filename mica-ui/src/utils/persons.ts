@@ -278,6 +278,13 @@ export function fieldQuery(query: string, field: string, localized: boolean, loc
 /** the entities with members: the network ones, the study ones (individual studies and initiatives) */
 export type MembersParent = 'network' | 'study';
 
+/** a membership given to a person created from the members of a network or study */
+export interface NewMembership {
+  parent: MembersParent;
+  parentId: string;
+  role: string;
+}
+
 /** the members of a network or study with a role */
 export interface RoleMembers {
   role: string;

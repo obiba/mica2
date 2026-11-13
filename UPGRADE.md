@@ -44,11 +44,15 @@ clients (e.g. scripts, the external editor app) must follow these rules:
   /ws/draft/person/{id}/study|network/{parentId}/role/{role}`). The person's `version`
   is required: get the person and send its `version` (400 if missing, 409 if the
   person changed meanwhile). Allowed to the administrator, reviewer and editor roles,
-  and to users who can edit every study and network the person is a member of.
+  and to external editors who can edit every study and network the person is a member
+  of.
+- Memberships (role endpoints) and `/ws/draft/persons/strict`: the administrator, reviewer
+  and editor roles, and external editors on the studies and networks they can edit. A
+  user with document permissions only gets 403.
 - `POST /ws/draft/persons` and `/ws/draft/persons/strict`: a person `id` in the body
   is rejected (400), and so is an email already used by another person (409, ignoring
-  case). `/strict` requires at least one membership from users without global edit
-  rights, and checks the roles and the studies/networks (400).
+  case). Both check the memberships' roles and studies/networks (400). `/strict`
+  requires at least one membership from users without global edit rights.
 - Deleting a person and restoring a person commit are for administrators only.
 - New: `DELETE /ws/draft/persons/_redundants` (administrators) removes the persons
   that are exact copies of another one, the oldest being kept; `version` and `canEdit`

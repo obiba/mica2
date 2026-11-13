@@ -50,6 +50,11 @@ export const usePersonsStore = defineStore('persons', () => {
     return (await api.post<PersonDto>('/draft/persons', person)).data;
   }
 
+  /** creates the person with its memberships, each one checked (role, study or network, edit permission) */
+  async function createStrict(person: PersonDto): Promise<PersonDto> {
+    return (await api.post<PersonDto>('/draft/persons/strict', person)).data;
+  }
+
   async function update(person: PersonDto): Promise<PersonDto> {
     return (await api.put<PersonDto>(`/draft/person/${person.id}`, person)).data;
   }
@@ -89,6 +94,7 @@ export const usePersonsStore = defineStore('persons', () => {
     fetchMembers,
     get,
     create,
+    createStrict,
     update,
     addRole,
     removeRole,

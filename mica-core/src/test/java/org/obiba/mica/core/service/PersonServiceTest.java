@@ -86,7 +86,8 @@ public class PersonServiceTest {
     when(studyRepository.existsById(OWN_STUDY)).thenReturn(true);
     when(studyRepository.existsById(OTHER_STUDY)).thenReturn(true);
     when(networkRepository.existsById(OWN_NETWORK)).thenReturn(true);
-    // scoped user: EDIT on its own study and network only
+    // scoped user: an external editor with EDIT on its own study and network only
+    when(subjectAclService.isExternalEditor()).thenReturn(true);
     when(subjectAclService.isPermitted("/draft/individual-study", "EDIT", OWN_STUDY)).thenReturn(true);
     when(subjectAclService.isPermitted("/draft/network", "EDIT", OWN_NETWORK)).thenReturn(true);
     when(micaConfigService.getRoles()).thenReturn(Lists.newArrayList("contact", "investigator"));
@@ -111,6 +112,21 @@ public class PersonServiceTest {
     Person person = person(OWN_STUDY);
     person.getNetworkMemberships().add(new Person.Membership(OWN_NETWORK, "contact"));
     assertThat(personService.canEditDetails(person)).isTrue();
+  }
+
+  @Test
+  public void document_permissions_only_cannot_manage_nor_edit_persons() {
+    when(subjectAclService.isExternalEditor()).thenReturn(false);
+    assertThat(personService.canManagePersons()).isFalse();
+    assertThat(personService.canEditDetails(person(OWN_STUDY))).isFalse();
+  }
+
+  @Test
+  public void global_editor_and_external_editor_can_manage_persons() {
+    assertThat(personService.canManagePersons()).isTrue();
+    when(subjectAclService.isExternalEditor()).thenReturn(false);
+    globalEdit();
+    assertThat(personService.canManagePersons()).isTrue();
   }
 
   @Test

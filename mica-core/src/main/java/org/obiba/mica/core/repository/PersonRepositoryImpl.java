@@ -117,9 +117,10 @@ public class PersonRepositoryImpl implements PersonRepositoryCustom {
   public List<Person> findByEmailIgnoreCase(String email) {
     String trimmed = Strings.nullToEmpty(email).trim();
     if (trimmed.isEmpty()) return List.of();
-    // exact match, the email is quoted: regex characters (e.g. "+") match only themselves
+    // exact match, the email is quoted: regex characters (e.g. "+") match only themselves; the stored email may have
+    // surrounding spaces (stored as sent), ignored like in PersonService.sameEmail
     return mongoTemplate.find(
-      Query.query(where("email").regex("^" + Pattern.quote(trimmed) + "$", "i")), Person.class);
+      Query.query(where("email").regex("^\\s*" + Pattern.quote(trimmed) + "\\s*$", "i")), Person.class);
   }
 
   private boolean addMembership(String id, String field, String parentId, String role) {

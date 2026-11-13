@@ -69,7 +69,7 @@ public class PersonService {
 
   public static final String NETWORK_RESOURCE = "/draft/network";
 
-  private static final String EDIT = "EDIT";
+  public static final String EDIT = "EDIT";
 
   /** a stored membership whose study or network exists, with the ACL resource of that study or network */
   public record Link(String resource, String parentId, String role) {}
@@ -148,9 +148,18 @@ public class PersonService {
     return links;
   }
 
-  /** global edit, or EDIT on every study and network the stored person is a member of (at least one) */
+  /**
+   * May create persons and change memberships: global edit, or an external editor (PI Form app), each change then
+   * being checked against its studies and networks. A user with document permissions only may not.
+   */
+  public boolean canManagePersons() {
+    return hasGlobalEdit() || subjectAclService.isExternalEditor();
+  }
+
+  /** global edit, or an external editor with EDIT on every study and network of the person (at least one) */
   public boolean canEditDetails(@NotNull Person stored) {
     if (hasGlobalEdit()) return true;
+    if (!subjectAclService.isExternalEditor()) return false;
     List<Link> links = existingLinks(stored);
     return !links.isEmpty() && links.stream()
       .allMatch(link -> subjectAclService.isPermitted(link.resource(), EDIT, link.parentId()));

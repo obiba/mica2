@@ -27,6 +27,7 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.git.CommitInfo;
+import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.service.DocumentDifferenceService;
 import org.obiba.mica.core.service.PersonService;
@@ -36,9 +37,7 @@ import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
-import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica.GitCommitInfoDto;
 import org.obiba.mica.web.model.Mica.PersonDto;
@@ -57,15 +56,13 @@ import com.google.common.collect.MapDifference;
 @Path("/draft/person")
 public class PersonResource {
 
-  private static final String EDIT = "EDIT";
+  private static final String EDIT = PersonService.EDIT;
 
   private final Dtos dtos;
 
   private final PersonService personService;
 
   private final SubjectAclService subjectAclService;
-
-  private final StudyService studyService;
 
   private final NetworkService networkService;
 
@@ -77,13 +74,12 @@ public class PersonResource {
 
   @Inject
   public PersonResource(Dtos dtos, PersonService personService, SubjectAclService subjectAclService,
-                        StudyService studyService, NetworkService networkService,
+                        NetworkService networkService,
                         EntityConfigKeyTranslationService entityConfigKeyTranslationService,
                         MicaConfigService micaConfigService, Validator validator) {
     this.dtos = dtos;
     this.personService = personService;
     this.subjectAclService = subjectAclService;
-    this.studyService = studyService;
     this.networkService = networkService;
     this.entityConfigKeyTranslationService = entityConfigKeyTranslationService;
     this.micaConfigService = micaConfigService;
@@ -140,6 +136,7 @@ public class PersonResource {
   @DELETE
   @Path("/{id}/study/{studyId}/role/{role}")
   public PersonDto removePersonRoleFromStudy(@PathParam("id") String id, @PathParam("studyId") String studyId, @PathParam("role") String role) {
+    checkCanManagePersons();
     subjectAclService.checkPermission(studyResourceForCheck(studyId), EDIT, studyId);
     return dtos.asDto(found(id, personService.removeStudyMembership(id, studyId, role)), true);
   }
@@ -147,11 +144,12 @@ public class PersonResource {
   @PUT
   @Path("/{id}/study/{studyId}/role/{role}")
   public PersonDto updatePersonRoleForStudy(@PathParam("id") String id, @PathParam("studyId") String studyId, @PathParam("role") String role) {
-    BaseStudy study = studyService.findStudy(studyId); // 404 when missing
-    subjectAclService.checkPermission(study instanceof Study ? PersonService.INDIVIDUAL_STUDY_RESOURCE
-      : PersonService.HARMONIZATION_STUDY_RESOURCE, EDIT, study.getId());
-    checkRole(role);
-    return dtos.asDto(found(id, personService.addStudyMembership(id, study.getId(), role)), true);
+    checkCanManagePersons();
+    String resource = personService.studyResource(studyId);
+    if (resource == null) throw NoSuchEntityException.withId(Study.class, studyId); // 404
+    subjectAclService.checkPermission(resource, EDIT, studyId);
+    PersonErrors.checkRole(micaConfigService, role);
+    return dtos.asDto(found(id, personService.addStudyMembership(id, studyId, role)), true);
   }
 
   @GET
@@ -165,6 +163,7 @@ public class PersonResource {
   @DELETE
   @Path("/{id}/network/{networkId}/role/{role}")
   public PersonDto removePersonRoleFromNetwork(@PathParam("id") String id, @PathParam("networkId") String networkId, @PathParam("role") String role) {
+    checkCanManagePersons();
     subjectAclService.checkPermission(PersonService.NETWORK_RESOURCE, EDIT, networkId);
     return dtos.asDto(found(id, personService.removeNetworkMembership(id, networkId, role)), true);
   }
@@ -172,9 +171,10 @@ public class PersonResource {
   @PUT
   @Path("/{id}/network/{networkId}/role/{role}")
   public PersonDto updatePersonRoleForNetwork(@PathParam("id") String id, @PathParam("networkId") String networkId, @PathParam("role") String role) {
+    checkCanManagePersons();
     String loadedId = networkService.findById(networkId).getId(); // 404 when missing
     subjectAclService.checkPermission(PersonService.NETWORK_RESOURCE, EDIT, loadedId);
-    checkRole(role);
+    PersonErrors.checkRole(micaConfigService, role);
     return dtos.asDto(found(id, personService.addNetworkMembership(id, loadedId, role)), true);
   }
 
@@ -244,6 +244,7 @@ public class PersonResource {
 
     Person leftCommit = personService.getFromCommit(personService.findById(id), left);
     Person rightCommit = personService.getFromCommit(personService.findById(id), right);
+    if (leftCommit == null || rightCommit == null) return Response.noContent().build();
     // the version is a write guard, not a person field to compare
     leftCommit.setVersion(null);
     rightCommit.setVersion(null);
@@ -262,6 +263,11 @@ public class PersonResource {
     return Response.ok(data, MediaType.APPLICATION_JSON_TYPE).build();
   }
 
+  /** global edit or external editor, see {@link PersonService#canManagePersons()} */
+  private void checkCanManagePersons() {
+    if (!personService.canManagePersons()) throw new ForbiddenException();
+  }
+
   private PersonDto asDtoWithCanEdit(Person person) {
     return dtos.asDto(person, true).toBuilder().setCanEdit(personService.canEditDetails(person)).build();
   }
@@ -270,10 +276,6 @@ public class PersonResource {
   private String studyResourceForCheck(String studyId) {
     String resource = personService.studyResource(studyId);
     return resource == null ? PersonService.HARMONIZATION_STUDY_RESOURCE : resource;
-  }
-
-  private void checkRole(String role) {
-    if (!micaConfigService.getRoles().contains(role)) throw PersonErrors.invalidRole(role);
   }
 
   private Person findPerson(String id) {

@@ -28,10 +28,13 @@
           </template>
           <template v-slot:body-cell-name="props">
             <q-td :props="props">
+              <!-- the person page is reserved to administrators -->
               <router-link
+                v-if="authStore.isAdministrator"
                 :to="{ path: `/persons/${props.row.id}`, query: { from: route.fullPath } }"
                 class="text-primary"
               >{{ props.value }}</router-link>
+              <template v-else>{{ props.value }}</template>
             </q-td>
           </template>
           <template v-for="kind in MEMBERSHIP_KINDS" :key="kind" v-slot:[`body-cell-${kind}`]="props">
@@ -83,6 +86,7 @@ const show = defineModel<boolean>({ required: true });
 const { t, locale } = useI18n();
 const personsStore = usePersonsStore();
 const route = useRoute();
+const authStore = useAuthStore();
 const { roleLabel } = useRoleLabels();
 
 const columns = computed<QTableColumn[]>(() => [

@@ -18,15 +18,11 @@ import java.util.Objects;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotBlank;
-import org.obiba.mica.network.domain.Network;
-import org.obiba.mica.study.domain.BaseStudy;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-
-import static java.util.stream.Collectors.toList;
 
 @Document
 public class Person extends AbstractGitPersistable {
@@ -172,11 +168,6 @@ public class Person extends AbstractGitPersistable {
     }
   }
 
-  public void removeAllMemberships(String role) {
-    networkMemberships = networkMemberships.stream().filter(m -> !role.equals(m.getRole())).collect(toList());
-    studyMemberships = studyMemberships.stream().filter(m -> !role.equals(m.getRole())).collect(toList());
-  }
-
   public Institution getInstitution() {
     return institution;
   }
@@ -199,44 +190,12 @@ public class Person extends AbstractGitPersistable {
     this.studyMemberships = studyMemberships;
   }
 
-  public void addStudy(@NotNull BaseStudy study, @NotNull String role) {
-    Membership membership = Membership.withIdAndRole(study.getId(), role);
-
-    if(!studyMemberships.contains(membership)) this.studyMemberships.add(membership);
-  }
-
-  public void removeStudy(@NotNull BaseStudy study) {
-    studyMemberships = studyMemberships.stream().filter(m -> !m.getParentId().equals(study.getId())).collect(toList());
-  }
-
-  public void removeStudy(@NotNull BaseStudy study, @NotNull String role) {
-    Membership membership = Membership.withIdAndRole(study.getId(), role);
-
-    if(studyMemberships.contains(membership)) this.studyMemberships.remove(membership);
-  }
-
   public List<Membership> getNetworkMemberships() {
     return networkMemberships;
   }
 
   public void setNetworkMemberships(List<Membership> networkMemberships) {
     this.networkMemberships = networkMemberships;
-  }
-
-  public void addNetwork(@NotNull Network network, @NotNull String role) {
-    Membership membership = Membership.withIdAndRole(network.getId(), role);
-
-    if(!networkMemberships.contains(membership)) this.networkMemberships.add(membership);
-  }
-
-  public void removeNetwork(@NotNull Network network) {
-    networkMemberships = networkMemberships.stream().filter(m -> !m.getParentId().equals(network.getId())).collect(toList());
-  }
-
-  public void removeNetwork(@NotNull Network network, @NotNull String role) {
-    Membership membership = Membership.withIdAndRole(network.getId(), role);
-
-    if(networkMemberships.contains(membership)) this.networkMemberships.remove(membership);
   }
 
   @Override

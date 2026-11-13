@@ -10,6 +10,7 @@
 
 package org.obiba.mica.person.rest;
 
+import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.WebApplicationException;
 
 import com.google.common.collect.Lists;
@@ -36,6 +37,7 @@ import org.obiba.web.model.ErrorDtos.ClientErrorDto;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
@@ -73,6 +75,7 @@ public class PersonsResourceTest {
   public void setUp() {
     resource = new PersonsResource(dtos, personService, subjectAclService, studyService, micaConfigService, eventBus);
     when(micaConfigService.getRoles()).thenReturn(Lists.newArrayList("contact", "investigator"));
+    when(personService.canManagePersons()).thenReturn(true);
     when(personService.studyResource("s1")).thenReturn(PersonService.INDIVIDUAL_STUDY_RESOURCE);
     when(personService.networkExists("n1")).thenReturn(true);
     when(dtos.fromDto(any(PersonDto.class))).thenReturn(new Person());
@@ -117,6 +120,22 @@ public class PersonsResourceTest {
   }
 
   @Test
+  public void create_validates_roles_and_parents_without_acl() {
+    assertError(() -> resource.createPerson(dto().addStudyMemberships(study("s1", "unknown")).build()),
+      400, PersonErrors.INVALID_ROLE);
+    assertError(() -> resource.createPerson(dto().addStudyMemberships(study("missing", "contact")).build()),
+      400, PersonErrors.NO_SUCH_STUDY);
+    assertError(() -> resource.createPerson(dto().addNetworkMemberships(study("missing", "contact")).build()),
+      400, PersonErrors.NO_SUCH_NETWORK);
+    verify(personService, never()).create(any());
+
+    resource.createPerson(dto().addStudyMemberships(study("s1", "contact"))
+      .addNetworkMemberships(study("n1", "investigator")).build());
+    verify(personService).create(any(Person.class));
+    verify(subjectAclService, never()).checkPermission(anyString(), anyString(), anyString());
+  }
+
+  @Test
   public void strict_create_needs_edit_on_each_parent() {
     doThrow(new AuthorizationException()).when(subjectAclService).checkPermission("/draft/network", "EDIT", "n1");
     assertThatThrownBy(() -> resource.createPersonStrict(dto()
@@ -124,6 +143,14 @@ public class PersonsResourceTest {
       .addNetworkMemberships(study("n1", "contact")).build()))
       .isInstanceOf(AuthorizationException.class);
     verify(subjectAclService).checkPermission("/draft/individual-study", "EDIT", "s1");
+    verify(personService, never()).create(any());
+  }
+
+  @Test
+  public void strict_create_is_refused_to_document_permissions_only() {
+    when(personService.canManagePersons()).thenReturn(false);
+    assertThatThrownBy(() -> resource.createPersonStrict(dto().addStudyMemberships(study("s1", "contact")).build()))
+      .isInstanceOf(ForbiddenException.class);
     verify(personService, never()).create(any());
   }
 

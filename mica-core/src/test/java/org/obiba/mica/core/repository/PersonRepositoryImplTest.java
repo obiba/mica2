@@ -166,8 +166,12 @@ public class PersonRepositoryImplTest {
     Person aab = person("p2", 0L);
     aab.setEmail("aab@x.org");
     mongoTemplate.insert(aab);
+    Person jane = person("p3", 0L);
+    jane.setEmail(" Jane@x.org\t");
+    mongoTemplate.insert(jane);
 
     assertThat(personRepository.findByEmailIgnoreCase(" John@X.org ")).extracting(Person::getId).containsExactly("p1");
+    assertThat(personRepository.findByEmailIgnoreCase("jane@X.org")).extracting(Person::getId).containsExactly("p3");
     assertThat(personRepository.findByEmailIgnoreCase("john@x.or")).isEmpty();
     assertThat(personRepository.findByEmailIgnoreCase("a+b@x.org")).isEmpty();
     assertThat(personRepository.findByEmailIgnoreCase("")).isEmpty();

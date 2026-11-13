@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
@@ -93,7 +94,8 @@ public class PersonsResource {
   }
 
   /**
-   * Creates a new person, with the memberships as sent.
+   * Creates a new person, with its memberships: each one must have a configured role and an existing study or network
+   * (the caller can edit them all).
    */
   @POST
   @RequiresPermissions({"/draft/individual-study:EDIT", "/draft/harmonization-study:EDIT", "/draft/network:EDIT"})
@@ -102,6 +104,7 @@ public class PersonsResource {
       return null;
     }
     checkNew(personDto);
+    checkMemberships(personDto, false);
     if (personService.isEmailUsed(personDto.getEmail(), null)) {
       throw PersonErrors.emailUsed();
     }
@@ -121,6 +124,7 @@ public class PersonsResource {
     if (personDto == null) {
       return null;
     }
+    if (!personService.canManagePersons()) throw new ForbiddenException();
     checkNew(personDto);
 
     if (personDto.getStudyMembershipsCount() == 0 && personDto.getNetworkMembershipsCount() == 0
@@ -128,20 +132,7 @@ public class PersonsResource {
       throw PersonErrors.membershipRequired();
     }
 
-    personDto.getStudyMembershipsList().forEach(membership -> {
-      checkRole(membership.getRole());
-      String resource = personService.studyResource(membership.getParentId());
-      if (resource == null) throw PersonErrors.noSuchStudy(membership.getParentId());
-      subjectAclService.checkPermission(resource, "EDIT", membership.getParentId());
-    });
-
-    personDto.getNetworkMembershipsList().forEach(membership -> {
-      checkRole(membership.getRole());
-      if (!personService.networkExists(membership.getParentId())) {
-        throw PersonErrors.noSuchNetwork(membership.getParentId());
-      }
-      subjectAclService.checkPermission(PersonService.NETWORK_RESOURCE, "EDIT", membership.getParentId());
-    });
+    checkMemberships(personDto, true);
 
     if (personService.isEmailUsed(personDto.getEmail(), null)) {
       throw PersonErrors.emailUsedLinkExisting();
@@ -151,12 +142,28 @@ public class PersonsResource {
     return dtos.asDto(personService.create(person), true);
   }
 
+  /** each membership has a configured role and an existing study or network, and with acl, EDIT on it */
+  private void checkMemberships(PersonDto personDto, boolean acl) {
+    personDto.getStudyMembershipsList().forEach(membership -> {
+      PersonErrors.checkRole(micaConfigService, membership.getRole());
+      String resource = personService.studyResource(membership.getParentId());
+      if (resource == null) throw PersonErrors.noSuchStudy(membership.getParentId());
+      if (acl) subjectAclService.checkPermission(resource, PersonService.EDIT, membership.getParentId());
+    });
+
+    personDto.getNetworkMembershipsList().forEach(membership -> {
+      PersonErrors.checkRole(micaConfigService, membership.getRole());
+      if (!personService.networkExists(membership.getParentId())) {
+        throw PersonErrors.noSuchNetwork(membership.getParentId());
+      }
+      if (acl) {
+        subjectAclService.checkPermission(PersonService.NETWORK_RESOURCE, PersonService.EDIT, membership.getParentId());
+      }
+    });
+  }
+
   /** a new person has no id, not even an empty one */
   private static void checkNew(PersonDto personDto) {
     if (personDto.hasId()) throw PersonErrors.idNotAllowed();
-  }
-
-  private void checkRole(String role) {
-    if (!micaConfigService.getRoles().contains(role)) throw PersonErrors.invalidRole(role);
   }
 }

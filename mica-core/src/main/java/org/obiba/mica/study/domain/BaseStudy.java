@@ -43,6 +43,9 @@ import static java.util.stream.Collectors.toList;
  */
 public abstract class BaseStudy extends AbstractModelAware implements PersonAware, Indexable, IStudy {
 
+  // the former computed value, for the studies in the persistent caches
+  private static final long serialVersionUID = 2106623018205399184L;
+
   private Attachment logo;
 
   public final static String MAPPING_NAME = "Study";
@@ -182,21 +185,6 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
     return getMemberships().values().stream().flatMap(List::stream).collect(toList());
   }
 
-  @Override
-  public void addToPerson(Membership membership) {
-    membership.getPerson().addStudy(this, membership.getRole());
-  }
-
-  @Override
-  public void removeFromPerson(Membership membership) {
-    membership.getPerson().removeStudy(this, membership.getRole());
-  }
-
-  @Override
-  public void removeFromPerson(Person person) {
-    person.removeStudy(this);
-  }
-
   public void setMemberships(Map<String, List<Membership>> memberships) {
     if (memberships == null) {
       this.memberships.clear();
@@ -205,13 +193,8 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
     }
   }
 
-  public List<Person> removeRole(String role) {
-    List<Membership> members = this.memberships.getOrDefault(role, Lists.newArrayList());
+  public void removeRole(String role) {
     this.memberships.remove(role);
-    return members.stream().map(m -> {
-      m.getPerson().removeStudy(this, role);
-      return m.getPerson();
-    }).collect(toList());
   }
 
   public SortedSet<Population> getPopulations() {

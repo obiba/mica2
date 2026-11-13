@@ -17,6 +17,7 @@ import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.web.model.ErrorDtos.ClientErrorDto;
 
 /**
@@ -66,6 +67,11 @@ final class PersonErrors {
 
   static BadRequestException noSuchNetwork(String id) {
     return badRequest(NO_SUCH_NETWORK, "No such network: " + id, id);
+  }
+
+  /** throws {@link #invalidRole(String)} when the role is not one of the configured roles */
+  static void checkRole(MicaConfigService micaConfigService, String role) {
+    if (!micaConfigService.getRoles().contains(role)) throw invalidRole(role);
   }
 
   static BadRequestException invalidRole(String role) {
