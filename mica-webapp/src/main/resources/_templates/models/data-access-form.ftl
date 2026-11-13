@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!-- Default model macros -->
 <#include "../libs/data-access-form.ftl">
 
