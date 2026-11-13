@@ -1,3 +1,6 @@
+<#ftl output_format="HTML">
+<#-- scripts: values are escaped by hand (js_string), not for HTML -->
+<#outputformat "plainText">
 <!-- Data access form: schema, definition (a JSON Forms UI schema, or the angular-schema-form definition of an older
      form revision, converted on the fly) and model (t() tokens resolved by the server) -->
 <script>
@@ -26,3 +29,4 @@
         messages: formMessages
     });
 </script>
+</#outputformat>

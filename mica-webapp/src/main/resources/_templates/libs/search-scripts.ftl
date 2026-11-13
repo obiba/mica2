@@ -1,3 +1,6 @@
+<#ftl output_format="HTML">
+<#-- scripts: values are escaped by hand (js_string), not for HTML -->
+<#outputformat "plainText">
 <!-- Repository -->
 <script src="${assetsPath}/js/mica-repo.js"></script>
 
@@ -209,3 +212,4 @@
 <script src="${assetsPath}/js/mica-search.js"></script>
 
 <#include "special-char-codec.ftl">
+</#outputformat>
