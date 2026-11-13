@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!-- Data access (private) comments page macros -->
 
 <#macro commentsTimeline isPrivate="false">
@@ -36,7 +37,7 @@
               </#if>
               <span class="time"><i class="fa-solid fa-clock"></i> <span
                         class="moment-datetime">${item.date.toString()}</span></span>
-              <h3 class="timeline-header bg-light">${authors[item.author].fullName}</h3>
+              <h3 class="timeline-header bg-light">${htmlDecode(authors[item.author].fullName)}</h3>
 
               <div class="timeline-body marked">
                   <template>${templateSafe(comment.message)}</template>
@@ -51,7 +52,7 @@
             <div class="timeline-item timeline-event-item">
               <span class="time"><i class="fa-solid fa-clock"></i> <span
                   class="moment-datetime">${item.date.toString()}</span></span>
-              <h3 class="timeline-header bg-light">${authors[item.author].fullName}</h3>
+              <h3 class="timeline-header bg-light">${htmlDecode(authors[item.author].fullName)}</h3>
 
               <div class="timeline-body">
                 <#if event.amendment>

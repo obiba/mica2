@@ -248,7 +248,9 @@ public class TemplatesRenderTest {
     Matcher matcher = block.matcher(output);
     while (matcher.find()) {
       if (javascriptOnly && !isJavascript(matcher.group(1))) continue;
-      ranges.add(new int[]{matcher.start(), matcher.end()});
+      // the block content: an attribute of the opening tag (e.g. script src) is in HTML context
+      int content = matcher.groupCount();
+      ranges.add(new int[]{matcher.start(content), matcher.end(content)});
     }
     return ranges;
   }
