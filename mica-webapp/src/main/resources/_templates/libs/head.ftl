@@ -1,9 +1,11 @@
+<#ftl output_format="HTML">
 <!-- Spring utils for translations -->
 <#import "/spring.ftl" as spring/>
-<!-- Translation of a code; when there is none, the code itself is shown, HTML-escaped as it can be a document value -->
+<!-- Translation of a code, printed as is (translations can hold HTML); when there is none, the code itself is shown,
+     HTML-escaped as it can be a document value -->
 <#macro message code>
   <#local text = springMacroRequestContext.getMessage(code, code)/>
-  <#if text == code>${esc(code)}<#else>${text}</#if><#t>
+  <#if text == code>${code}<#else>${text?no_esc}</#if><#t>
 </#macro>
 <#macro messageArgs code args>
   <@spring.messageArgsText code args code/>
@@ -12,15 +14,16 @@
 <!-- Context path setting -->
 <#assign contextPath = "${config.contextPath}"/>
 
-<!-- From a localized text get the value in the current language or in the default one or in the undefined one, HTML-escaped -->
+<!-- From a localized text get the value in the current language or in the default one or in the undefined one,
+     HTML-escaped (escaped markup: printed once, whether the calling template is auto-escaped or not) -->
 <#function localize txt={} default="">
-  <#return localizeRaw(txt, default)?html/>
+  <#return localizeRaw(txt, default)?esc/>
 </#function>
 
-<!-- HTML-escape a value of unknown type (model fields can be strings or numbers) -->
+<!-- HTML-escape a value of unknown type (model fields can be strings or numbers), as escaped markup -->
 <#function esc value="">
   <#if value?is_string>
-    <#return value?html/>
+    <#return value?esc/>
   </#if>
   <#return value/>
 </#function>
@@ -35,7 +38,7 @@
   <#if compact?matches("^[a-zA-Z][a-zA-Z0-9+.-]*:.*", "s") && !compact?matches("^(https?|mailto|ftp):.*", "is")>
     <#return "#"/>
   </#if>
-  <#return url?html/>
+  <#return url?esc/>
 </#function>
 
 <!-- Same as localize but not escaped: only for Markdown in a <template> (sanitized when rendered) and inside templateSafe(),
