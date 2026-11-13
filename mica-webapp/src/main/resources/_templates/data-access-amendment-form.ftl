@@ -414,7 +414,7 @@
 <#outputformat "plainText"><script>
     $(function () {
         $('#amendment-form-menu').addClass('active');
-        $('#amendment-form-menu-${amendment.id}').addClass('active');
+        $('#amendment-form-menu-${amendment.id?js_string}').addClass('active');
     });
 </script></#outputformat>
 <#include "libs/data-access-form-scripts.ftl">

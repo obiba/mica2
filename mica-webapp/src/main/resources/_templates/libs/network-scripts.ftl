@@ -26,7 +26,7 @@
   // cart
   <#if cartEnabled && networksCartEnabled>
   const onNetworksCartGet = function(cart) {
-    NetworksSetService.contains(cart, '${network.id}', function() {
+    NetworksSetService.contains(cart, '${network.id?js_string}', function() {
       $('#cart-remove').show();
     }, function () {
       $('#cart-add').show();
@@ -212,7 +212,7 @@
 
   EventBus.register('query-type-updates-selection', (payload) => {
     let query = new RQL.Query('and');
-    let networkQuery = new RQL.Query('network', [new RQL.Query('in', ['Mica_network.id', '${network.id}'])]);
+    let networkQuery = new RQL.Query('network', [new RQL.Query('in', ['Mica_network.id', '${network.id?js_string}'])]);
     let studyQuery = new RQL.Query('study');
 
     query.push(networkQuery);
@@ -244,7 +244,7 @@
 
     const tree = new RQL.QueryTree();
 
-    let networkQuery = new RQL.Query('network', [new RQL.Query('in', ['Mica_network.id', '${network.id}'])]);
+    let networkQuery = new RQL.Query('network', [new RQL.Query('in', ['Mica_network.id', '${network.id?js_string}'])]);
     tree.addQuery(null, networkQuery);
 
     let studyQuery = new RQL.Query('study', [new RQL.Query('in', ['Mica_study.className', 'Study'])]);
@@ -416,12 +416,12 @@
     $("#individual-studies").DataTable(dataTablesDefaultOpts);
     $("#harmonization-studies").DataTable(dataTablesDefaultOpts);
 
-    QueryService.getCounts('networks', { query: "study(in(Mica_study.className,Study)),network(in(Mica_network.id,${network.id}))" }, function(stats) {
+    QueryService.getCounts('networks', { query: "study(in(Mica_study.className,Study)),network(in(Mica_network.id,${network.id?js_string}))" }, function(stats) {
       $('#study-hits').text(numberFormatter.format(stats.studyResultDto.totalHits));
       $('#dataset-hits').text(numberFormatter.format(stats.datasetResultDto.totalHits));
       $('#variable-hits').text(numberFormatter.format(stats.variableResultDto.totalHits));
     });
-    QueryService.getCounts('networks', { query: "study(in(Mica_study.className,HarmonizationStudy)),network(in(Mica_network.id,${network.id}))" }, function(stats) {
+    QueryService.getCounts('networks', { query: "study(in(Mica_study.className,HarmonizationStudy)),network(in(Mica_network.id,${network.id?js_string}))" }, function(stats) {
       $('#initiative-hits').text(numberFormatter.format(stats.studyResultDto.totalHits));
       $('#protocol-hits').text(numberFormatter.format(stats.datasetResultDto.totalHits));
       $('#dataschema-hits').text(numberFormatter.format(stats.variableResultDto.totalHits));
@@ -463,7 +463,7 @@
     <#if showNetworkFiles>
       makeFilesVue('#files-app', {
         type: 'network',
-        id: '${network.id}',
+        id: '${network.id?js_string}',
         basePath: '',
         path: '/',
         folder: {},
@@ -484,7 +484,7 @@
     <#if networkVariablesClassificationsTaxonomies?? && networkVariablesClassificationsTaxonomies?size gt 0 && studyAcronyms?? && studyAcronyms?size gt 0>
       const taxonomies = ['${networkVariablesClassificationsTaxonomies?join("', '")}'];
       $('#classificationsContainer').hide();
-      NetworkService.getVariablesCoverage('${network.id}', taxonomies, '${.lang}', function(data, vocabulariesColorsMapFunc) {
+      NetworkService.getVariablesCoverage('${network.id?js_string}', taxonomies, '${.lang}', function(data, vocabulariesColorsMapFunc) {
         if (data && data.charts) {
           Mica.variablesCoverage = data.charts.map(chart => prepareVariablesClassificationsData(chart, vocabulariesColorsMapFunc(['${colors?join("', '")}'])));
         }

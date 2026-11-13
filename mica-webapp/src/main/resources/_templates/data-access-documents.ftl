@@ -179,7 +179,7 @@
     $('#upload-document-submit').click(function() {
       var fileId = $('#file-id').val();
       if (fileId) {
-        DataAccessService.attachFile('${dar.id}', fileId);
+        DataAccessService.attachFile('${dar.id?js_string}', fileId);
       }
     }).prop('disabled', true);
   });

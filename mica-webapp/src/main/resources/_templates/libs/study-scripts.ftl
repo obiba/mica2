@@ -23,7 +23,7 @@
   // cart
   <#if cartEnabled && studiesCartEnabled>
   const onStudiesCartGet = function(cart) {
-    StudiesSetService.contains(cart, '${study.id}', function() {
+    StudiesSetService.contains(cart, '${study.id?js_string}', function() {
       $('#cart-remove').show();
     }, function () {
       $('#cart-add').show();
@@ -62,12 +62,12 @@
       <#if type == "Individual">
         <#if population.dataCollectionEvents?? && population.dataCollectionEvents?size != 0>
           <#list population.dataCollectionEventsSorted as dce>
-            Mica.options['${study.id}:${population.id}:${dce.id}'] =
+            Mica.options['${study.id?js_string}:${population.id?js_string}:${dce.id?js_string}'] =
                     <#if study.populations?size == 1>"${localizeRaw(dce.name)?js_string}"<#else>"${localizeRaw(population.name)?js_string} / ${localizeRaw(dce.name)?js_string}"</#if>;
           </#list>
         </#if>
       <#else>
-        Mica.options['${study.id}:${population.id}:.'] = "${localizeRaw(population.name)?js_string}";
+        Mica.options['${study.id?js_string}:${population.id?js_string}:.'] = "${localizeRaw(population.name)?js_string}";
       </#if>
     </#list>
   </#if>
@@ -136,10 +136,10 @@
       ]
     });
     <#list study.populations as pop>
-      $("#population-${pop.id}-dces").DataTable(options);
+      $("#population-${pop.id?js_string}-dces").DataTable(options);
     </#list>
 
-    QueryService.getCounts('studies', { query: "study(in(Mica_study.id,${study.id}))" }, function(stats) {
+    QueryService.getCounts('studies', { query: "study(in(Mica_study.id,${study.id?js_string}))" }, function(stats) {
       $('#network-hits').text(numberFormatter.format(stats.networkResultDto.totalHits));
       $('#dataset-hits').text(numberFormatter.format(stats.datasetResultDto.totalHits));
       $('#variable-hits').text(numberFormatter.format(stats.variableResultDto.totalHits));
@@ -163,8 +163,8 @@
     };
     <#if showStudyFiles>
       makeFilesVue('#study-files-app', {
-        type: '${type?lower_case}-study',
-        id: '${study.id}',
+        type: '${type?lower_case?js_string}-study',
+        id: '${study.id?js_string}',
         basePath: '',
         path: '/',
         folder: {},
@@ -179,10 +179,10 @@
     <#if study.populations?? && study.populations?size != 0>
       <#list study.populations as population>
         <#if showStudyPopulationFiles>
-          makeFilesVue('#study-${population.id}-files-app', {
-            type: '${type?lower_case}-study',
-            id: '${study.id}',
-            basePath: '/population/${population.id}',
+          makeFilesVue('#study-${population.id?js_string}-files-app', {
+            type: '${type?lower_case?js_string}-study',
+            id: '${study.id?js_string}',
+            basePath: '/population/${population.id?js_string}',
             path: '/',
             folder: {},
             tr: filesTr,
@@ -195,10 +195,10 @@
         <#if type == "Individual" && showStudyDCEFiles>
           <#if population.dataCollectionEvents?? && population.dataCollectionEvents?size != 0>
             <#list population.dataCollectionEventsSorted as dce>
-              makeFilesVue('#study-${population.id}-${dce.id}-files-app', {
-                type: '${type?lower_case}-study',
-                id: '${study.id}',
-                basePath: '/population/${population.id}/data-collection-event/${dce.id}',
+              makeFilesVue('#study-${population.id?js_string}-${dce.id?js_string}-files-app', {
+                type: '${type?lower_case?js_string}-study',
+                id: '${study.id?js_string}',
+                basePath: '/population/${population.id?js_string}/data-collection-event/${dce.id?js_string}',
                 path: '/',
                 folder: {},
                 tr: filesTr,
@@ -215,7 +215,7 @@
     <#if studyVariablesClassificationsTaxonomies?? && studyVariablesClassificationsTaxonomies?size gt 0>
       const taxonomies = ['${studyVariablesClassificationsTaxonomies?join("', '")}'];
       $('#classificationsContainer').hide();
-      StudyService.getVariablesCoverage('${study.id}', taxonomies, '${.lang}', function(data, vocabulariesColorsMapFunc) {
+      StudyService.getVariablesCoverage('${study.id?js_string}', taxonomies, '${.lang}', function(data, vocabulariesColorsMapFunc) {
         if (data && data.charts) {
           Mica.variablesCoverage = data.charts.map(chart => prepareVariablesClassificationsData(chart, vocabulariesColorsMapFunc(['${colors?join("', '")}'])));
         }

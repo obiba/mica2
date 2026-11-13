@@ -37,7 +37,7 @@
           );
           $("#send-comment").click(function() {
               console.log(newCommentMDE.value());
-              DataAccessService.sendComment('${dar.id}', newCommentMDE.value(), ${isPrivate})
+              DataAccessService.sendComment('${dar.id?js_string}', newCommentMDE.value(), ${isPrivate})
           });
       });
   </script>

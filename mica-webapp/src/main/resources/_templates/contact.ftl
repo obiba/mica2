@@ -7,7 +7,7 @@
   <#outputformat "plainText"><script type="text/javascript">
     var onloadCallback = function() {
       grecaptcha.render('html_element', {
-        'sitekey' : '${reCaptchaKey}'
+        'sitekey' : '${reCaptchaKey?js_string}'
       });
     };
   </script></#outputformat>
