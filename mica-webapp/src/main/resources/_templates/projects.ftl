@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!-- Macros -->
 <#include "models/project.ftl">
 

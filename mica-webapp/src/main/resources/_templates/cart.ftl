@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!-- Macros -->
 <#include "models/list.ftl">
 
@@ -215,7 +216,7 @@
                               <#if !variableList.locked>
                                 <button type="button" class="dropdown-item"
                                         onclick="onClickAddToSet('${variableList.id}')">
-                                    ${listName(variableList)?html} <#if variableList.name?starts_with("dar:")>[<@message "data-access-request"/>]</#if> <span class="badge text-bg-light float-end">${variableList.identifiers?size}</span>
+                                    ${listName(variableList)} <#if variableList.name?starts_with("dar:")>[<@message "data-access-request"/>]</#if> <span class="badge text-bg-light float-end">${variableList.identifiers?size}</span>
                                 </button>
                               </#if>
                             </#list>
