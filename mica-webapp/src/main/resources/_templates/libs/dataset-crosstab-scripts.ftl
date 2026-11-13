@@ -6,8 +6,8 @@
 <script>
   const Mica = {
     contextPath: "${contextPath}",
-    type: "${type}".toLowerCase(),
-    dataset: "${dataset.id}",
+    type: "${type?js_string}".toLowerCase(),
+    dataset: "${dataset.id?js_string}",
     <#-- JSON in a script: escape < so that a value cannot close the script element -->
     var1: ${(variable1!"undefined")?replace("<", "\\u003c")},
     var2: ${(variable2!"undefined")?replace("<", "\\u003c")},

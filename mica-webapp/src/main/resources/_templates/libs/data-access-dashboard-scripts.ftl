@@ -13,7 +13,7 @@
       format: 'yyyy-mm-dd'
     });
     $('#start-date-submit').click(function() {
-      DataAccessService.setStartDate('${dar.id}', $('#start-date').val());
+      DataAccessService.setStartDate('${dar.id?js_string}', $('#start-date').val());
     });
     // the autocomplete plugin inserts the suggestions as HTML, picking one reads back its text
     var suggestions = {
