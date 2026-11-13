@@ -14,7 +14,11 @@ import org.junit.jupiter.api.Test;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
@@ -55,6 +59,37 @@ public class SchemaFormConfigTest {
     SchemaFormConfig fr = new SchemaFormConfig(micaConfigService(), form, "{}", "fr", false);
     assertTrue(fr.getSchema().contains("\"title\":\"Nom (formulaire)\""), fr.getSchema());
     assertTrue(fr.getDefinition().contains("Aide (bundle)"), fr.getDefinition());
+  }
+
+  @Test
+  public void values_cannot_end_the_script_block_of_the_page() throws Exception {
+    DataAccessForm form = new DataAccessForm();
+    form.setSchema(SCHEMA);
+    form.setDefinition(UISCHEMA);
+    form.setTranslations("{\"en\": {\"data-access-request.default.name\": \"</script><img src=x onerror=alert(1)>\"}}");
+
+    String model = "{\"name\": \"a</script><img src=x onerror=alert(2)><!-- b\"}";
+    SchemaFormConfig config = new SchemaFormConfig(micaConfigService(), form, model, "en", true);
+    for (String json : new String[] { config.getSchema(), config.getDefinition(), config.getModel() }) {
+      assertFalse(json.contains("<"), json);
+    }
+    // same JSON
+    assertEquals(new ObjectMapper().readTree(model), new ObjectMapper().readTree(config.getModel()));
+    assertTrue(config.getDefinition().contains("\\u003cp class='col-6'>"), config.getDefinition());
+  }
+
+  @Test
+  public void content_that_is_not_a_json_object_is_not_printed() throws Exception {
+    DataAccessForm form = new DataAccessForm();
+    form.setSchema(SCHEMA);
+    form.setDefinition(UISCHEMA);
+
+    for (String content : new String[] { "{}; alert(1); //", "alert(1)", "[1]", "\"text\"", "1", "{\"a\": 1} alert(1)", "{" }) {
+      assertEquals("{}", new SchemaFormConfig(micaConfigService(), form, content, "en", true).getModel(), content);
+    }
+    assertNull(new SchemaFormConfig(micaConfigService(), form, null, "en", true).getModel());
+    assertNull(new SchemaFormConfig(micaConfigService(), form, "", "en", true).getModel());
+    assertEquals("{\"a\": {\"b\": [1, \"c\"]}}", new SchemaFormConfig(micaConfigService(), form, "{\"a\": {\"b\": [1, \"c\"]}}", "en", true).getModel());
   }
 
   @Test

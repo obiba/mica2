@@ -132,8 +132,8 @@
                     </#if>
                     <smalll><code>${k?html}</code></smalll>
                   </td>
-                  <td class="marked"><template>${v[1]}</template></td>
-                  <td class="marked"><template>${v[2]}</template></td>
+                  <td class="marked"><template>${templateSafe(v[1])}</template></td>
+                  <td class="marked"><template>${templateSafe(v[2])}</template></td>
                 </tr>
               </#list>
               </tbody>

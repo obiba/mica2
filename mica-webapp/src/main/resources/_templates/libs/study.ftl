@@ -48,7 +48,7 @@
               </div>
               <!-- /.card-header -->
               <div id="additional-card" class="card-body marked collapse show">
-                  <template>${localizeRaw(study.model.additionalInformation)}</template>
+                  <template>${templateSafe(localizeRaw(study.model.additionalInformation))}</template>
               </div>
             </div>
           </div>

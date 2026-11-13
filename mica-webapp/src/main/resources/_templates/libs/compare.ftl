@@ -19,7 +19,7 @@
     <#list studies as study>
       <td>
         <small class="marked truncate truncate-300">
-          <template>${localizeRaw(study.objectives)}</template></small>
+          <template>${templateSafe(localizeRaw(study.objectives))}</template></small>
       </td>
     </#list>
   </tr>
@@ -500,7 +500,7 @@
       <#list studies as study>
         <td>
           <small class="marked truncate truncate-300">
-            <template>${localizeRaw(study.objectives)}</template></small>
+            <template>${templateSafe(localizeRaw(study.objectives))}</template></small>
         </td>
       </#list>
   </tr>
@@ -539,7 +539,7 @@
     <#list networks as network>
       <td>
         <small class="marked truncate truncate-300">
-          <template>${localizeRaw(network.description)}</template></small>
+          <template>${templateSafe(localizeRaw(network.description))}</template></small>
       </td>
     </#list>
   </tr>

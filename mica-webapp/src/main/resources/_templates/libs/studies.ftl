@@ -16,7 +16,7 @@
   <tr>
     <td><a href="${contextPath}/study/${study.id}">${localize(study.acronym)}</a></td>
     <td><small>${localize(study.name)}</small></td>
-    <td><small class="marked"><template>${localizeRaw(study.objectives)?trim?truncate_w(100, "...")}</template></small></td>
+    <td><small class="marked"><template>${templateSafe(localizeRaw(study.objectives)?trim?truncate_w(100, "..."))}</template></small></td>
     <#if showTypeColumn>
       <td>
         <#if study.class.simpleName == "HarmonizationStudy">
@@ -43,7 +43,7 @@
   <div class="col-lg-9 col-sm-12">
     <h2 class="lead"><b>${localize(study.acronym)}</b></h2>
     <p class="text-muted text-sm">${localize(study.name)}</p>
-    <div class="marked"><template>${localizeRaw(study.objectives)?trim?truncate_w(200, "...")}</template></div>
+    <div class="marked"><template>${templateSafe(localizeRaw(study.objectives)?trim?truncate_w(200, "..."))}</template></div>
     <div class="mt-2">
       <a href="${contextPath}/study/${study.id}" class="btn btn-sm btn-outline-info">
         <@message "global.read-more"/>
