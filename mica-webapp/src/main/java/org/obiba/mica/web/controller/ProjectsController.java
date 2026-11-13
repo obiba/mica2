@@ -51,7 +51,9 @@ public class ProjectsController extends BaseController {
       if (project == null) throw NoSuchProjectException.withId(id);
       checkAccess("/project", id);
     } else {
-      project = draftProjectService.findById(id);
+      // the draft as saved (Mongo), like the study and network previews: the draft search index lags behind a save
+      // and rejects some values (e.g. text in a date field), the page was then rendered without a project
+      project = draftProjectService.getProjectService().findById(id);
       checkPermission("/draft/project", "VIEW", id, shareKey);
     }
     return project;
