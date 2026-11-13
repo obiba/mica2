@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!-- Macros -->
 <#include "libs/header.ftl">
 <#include "models/variable.ftl">
@@ -16,7 +17,7 @@
 <html lang="${.lang}">
 <head>
   <#include "libs/head.ftl">
-  <title>${config.name!""} | ${variable.name?html}</title>
+  <title>${config.name!""} | ${variable.name}</title>
 </head>
 <body id="${type?lower_case}-variable-page" class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="app-wrapper d-flex flex-column min-vh-100">
@@ -62,24 +63,24 @@
                   <dt class="col-sm-4"><@message "nature"/></dt>
                   <dd class="col-sm-8"><@message variable.nature?lower_case + "-nature"/></dd>
                   <dt class="col-sm-4"><@message "entity-type"/></dt>
-                  <dd class="col-sm-8">${esc(variable.entityType)}</dd>
+                  <dd class="col-sm-8">${variable.entityType}</dd>
                   <#if variable.referencedEntityType?? && variable.referencedEntityType?length gt 0>
                     <dt class="col-sm-4"><@message "referenced-entity-type"/></dt>
-                    <dd class="col-sm-8">${esc(variable.referencedEntityType)}</dd>
+                    <dd class="col-sm-8">${variable.referencedEntityType}</dd>
                   </#if>
                   <#if variable.unit?? && variable.unit?length gt 0>
                     <dt class="col-sm-4"><@message "unit"/></dt>
-                    <dd class="col-sm-8">${esc(variable.unit)}</dd>
+                    <dd class="col-sm-8">${variable.unit}</dd>
                   </#if>
                   <#if variable.mimeType?? && variable.mimeType?length gt 0>
                     <dt class="col-sm-4"><@message "mime-type"/></dt>
-                    <dd class="col-sm-8">${esc(variable.mimeType)}</dd>
+                    <dd class="col-sm-8">${variable.mimeType}</dd>
                   </#if>
                   <#if variable.repeatable?? && variable.repeatable>
                     <dt class="col-sm-4"><@message "repeatable"/></dt>
                     <dd class="col-sm-8"><i class="fa-solid fa-check"></i></dd>
                     <dt class="col-sm-4"><@message "occurrence-group"/></dt>
-                    <dd class="col-sm-8">${esc(variable.occurrenceGroup)}</dd>
+                    <dd class="col-sm-8">${variable.occurrenceGroup}</dd>
                   </#if>
                 </dl>
 
@@ -98,7 +99,7 @@
                         <tbody>
                         <#list variable.categories as category>
                           <tr>
-                            <td>${category.name?html}</td>
+                            <td>${category.name}</td>
                             <td>
                               <#if category.attributes??>
                                 ${localize(category.attributes.label)}
@@ -190,7 +191,7 @@
                   </#if>
                   <#if type == "Harmonized">
                     <dt class="col-sm-4"><@message "dataschema-variable"/></dt>
-                    <dd class="col-sm-8"><a href="${contextPath}/variable/${variable.datasetId}:${variable.name?url}:Dataschema" class="btn btn-primary"><i class="${dataschemaIcon}"></i> ${variable.name?html}</a></dd>
+                    <dd class="col-sm-8"><a href="${contextPath}/variable/${variable.datasetId}:${variable.name?url}:Dataschema" class="btn btn-primary"><i class="${dataschemaIcon}"></i> ${variable.name}</a></dd>
                   </#if>
                   <#if opalTable?? && (opalTable.name?? || opalTable.description??)>
                     <dt class="col-sm-4"><@message "datasource-info"/></dt>
@@ -230,7 +231,7 @@
                   </dl>
                 </div>
                 <div class="card-footer">
-                  <a href="${contextPath}/<#if type != "Collected">harmonization-search<#else>individual-search</#if>#lists?type=variables&query=${query?html}">
+                  <a href="${contextPath}/<#if type != "Collected">harmonization-search<#else>individual-search</#if>#lists?type=variables&query=${query}">
                     <@message "find-similar-variables"/> <i class="fa-solid fa-search"></i>
                   </a>
                 </div>
