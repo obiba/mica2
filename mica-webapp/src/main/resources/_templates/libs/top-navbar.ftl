@@ -1,4 +1,3 @@
-<#ftl output_format="HTML">
 <#include "navbar-menus.ftl">
 <nav class="app-header navbar navbar-expand-md navbar-light navbar-white py-1">
   <div class="container">

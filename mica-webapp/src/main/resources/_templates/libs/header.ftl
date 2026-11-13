@@ -1,4 +1,3 @@
-<#ftl output_format="HTML">
 <#macro header title titlePrefix="" subtitle="" breadcrumb=[]>
   <div class="content-header bg-info mb-4">
     <div class="container">
