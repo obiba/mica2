@@ -1,3 +1,6 @@
+<#ftl output_format="HTML">
+<#-- scripts: values are escaped by hand (js_string), not for HTML -->
+<#outputformat "plainText">
 <!-- Repository -->
 <script src="${assetsPath}/js/mica-repo.js"></script>
 
@@ -26,3 +29,4 @@
 <script src="${assetsPath}/libs/node_modules/select2/dist/js/select2.full.js"></script>
 <script src="${assetsPath}/libs/node_modules/select2/dist/js/i18n/${.lang}.js"></script>
 <script src="${assetsPath}/js/mica-dataset-crosstab.js"></script>
+</#outputformat>

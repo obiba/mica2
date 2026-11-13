@@ -1,3 +1,6 @@
+<#ftl output_format="HTML">
+<#-- scripts: values are escaped by hand (js_string), not for HTML -->
+<#outputformat "plainText">
 <!-- Repository -->
 <script src="${assetsPath}/js/mica-repo.js"></script>
 
@@ -16,3 +19,4 @@
     </#if>
   });
 </script>
+</#outputformat>
