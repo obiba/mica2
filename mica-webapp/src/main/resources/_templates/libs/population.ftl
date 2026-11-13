@@ -1,4 +1,3 @@
-<#ftl output_format="HTML">
 <!-- Population macros -->
 
 <!-- Population model -->

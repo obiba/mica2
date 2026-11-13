@@ -1,4 +1,3 @@
-<#ftl output_format="HTML">
 <!-- Data access (private) comments page macros -->
 
 <#macro commentsTimeline isPrivate="false">

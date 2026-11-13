@@ -1,4 +1,3 @@
-<#ftl output_format="HTML">
 <!-- Additional columns for registered users -->
 <#macro userProfileTHs>
 

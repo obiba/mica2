@@ -1,4 +1,3 @@
-<#ftl output_format="HTML">
 <!-- Project page macros -->
 
 <!-- Project model template for the list -->

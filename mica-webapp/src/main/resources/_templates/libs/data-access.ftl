@@ -1,4 +1,3 @@
-<#ftl output_format="HTML">
 <!-- Function to get the color corresponding to a status -->
 <#function statusColor status>
   <#if status == "OPENED">

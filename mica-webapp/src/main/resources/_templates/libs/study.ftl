@@ -1,4 +1,3 @@
-<#ftl output_format="HTML">
 <!-- Study page macros -->
 
 <!-- Study model template -->
