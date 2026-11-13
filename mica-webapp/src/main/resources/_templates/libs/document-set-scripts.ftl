@@ -121,19 +121,19 @@
 
   const totalCounts = {
     <#if variablesCartEnabled>
-    variablesCount: parseInt("${sets.variablesCart.count}".replace(',', '')),
+    variablesCount: parseInt("${sets.variablesCart.count?c}".replace(',', '')),
     </#if>
 
     <#if studiesCartEnabled>
-    studiesCount: parseInt("${sets.studiesCart.count}".replace(',', '')),
+    studiesCount: parseInt("${sets.studiesCart.count?c}".replace(',', '')),
     </#if>
 
     <#if networksCartEnabled>
-    networksCount: parseInt("${sets.networksCart.count}".replace(',', '')),
+    networksCount: parseInt("${sets.networksCart.count?c}".replace(',', '')),
     </#if>
 
     <#if rc.requestUri?starts_with("/list/")>
-    currentSetIdentifiersCount: parseInt("${set.identifiers?size}".replace(',', '')),
+    currentSetIdentifiersCount: parseInt("${set.identifiers?size?c}".replace(',', '')),
     </#if>
   };
 
@@ -318,16 +318,16 @@
         verifyTotalCount() {
           let tab = this.currentWindowLocationSearch()['type'];
 
-          let setId = '${set.id}';
+          let setId = '${set.id?js_string}';
 
           <#if studiesSet??>
-          let studySetId = '${studiesSet.id}';
+          let studySetId = '${studiesSet.id?js_string}';
           <#else>
           let studySetId = '';
           </#if>
 
           <#if networksSet??>
-          let networkSetId = '${networksSet.id}';
+          let networkSetId = '${networksSet.id?js_string}';
           <#else>
           let networkSetId = '';
           </#if>
@@ -417,16 +417,16 @@
 
           this.hasResult = false;
 
-          let setId = '${set.id}';
+          let setId = '${set.id?js_string}';
 
           <#if studiesSet??>
-          let studySetId = '${studiesSet.id}';
+          let studySetId = '${studiesSet.id?js_string}';
           <#else>
           let studySetId = '';
           </#if>
 
           <#if networksSet??>
-          let networkSetId = '${networksSet.id}';
+          let networkSetId = '${networksSet.id?js_string}';
           <#else>
           let networkSetId = '';
           </#if>

@@ -338,7 +338,7 @@
 <#include "libs/data-access-scripts.ftl">
 <#outputformat "plainText"><script>
     $('#feasibility-form-menu').addClass('active').attr('href', '#');
-    $('#feasibility-form-menu-${feasibility.id}').addClass('active');
+    $('#feasibility-form-menu-${feasibility.id?js_string}').addClass('active');
 </script></#outputformat>
 <#include "libs/data-access-form-scripts.ftl">
 

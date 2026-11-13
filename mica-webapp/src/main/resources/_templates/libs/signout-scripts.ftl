@@ -4,7 +4,7 @@
   <#if !authenticated>
     MicaService.redirect('${contextPath}');
   <#elseif postLogoutRedirectUri??>
-    MicaService.redirect('${postLogoutRedirectUri}');
+    MicaService.redirect('${postLogoutRedirectUri?js_string}');
   <#else>
     UserService.signout('${postLogoutRedirectUri!"${contextPath}"}');
   </#if>

@@ -69,6 +69,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * <p>
  * The report and the rendered pages are written to target/template-render. Rendering errors are recorded and the
  * rendering goes on, as with the ignore exception handler of the application: an error means a blank part of a page.
+ * The test fails when a value is printed unescaped (injection, breakout, apostrophe), except the raw ones on purpose.
  */
 public class TemplatesRenderTest {
 
@@ -98,6 +99,20 @@ public class TemplatesRenderTest {
 
   // helper templates: a value read there is reported where its parent was read (e.g. localize(study.name))
   private static final List<String> HELPERS = List.of("libs/head.ftl");
+
+  private static final List<String> UNSAFE = List.of("injection", "breakout", "apostrophe");
+
+  // values printed raw on purpose ("template | path"): JSON built by the controllers, values HTML-encoded by the
+  // controllers
+  private static final List<String> RAW_ON_PURPOSE = List.of(
+    "libs/search-scripts.ftl | configJson |",
+    "libs/entities-list-scripts.ftl | configJson |",
+    "libs/document-set-scripts.ftl | configJson |",
+    "libs/data-access-form-scripts.ftl | formConfig.schema |",
+    "libs/data-access-form-scripts.ftl | formConfig.definition |",
+    "libs/data-access-form-scripts.ftl | formConfig.model |",
+    "error.ftl | msg |",
+    "error.ftl | status |");
 
   // stops recursive macros (trees): lists are empty from this path depth
   private static final int MAX_DEPTH = 6;
@@ -132,6 +147,17 @@ public class TemplatesRenderTest {
     assertThat(pages.size()).isGreaterThan(35);
     assertThat(results).allSatisfy(result -> assertThat(result.output()).as(result.page()).isNotBlank());
     assertThat(results.stream().mapToInt(PageResult::markers).sum()).isGreaterThan(100);
+
+    // no value reaches the output unescaped, except the raw ones on purpose
+    List<String> unsafe = results.stream()
+      .flatMap(result -> result.findings().stream())
+      .filter(finding -> UNSAFE.contains(severity(finding)))
+      .map(finding -> finding.template() + " | " + finding.path() + " | " + finding.context() + " | " + severity(finding))
+      .filter(finding -> RAW_ON_PURPOSE.stream().noneMatch(finding::startsWith))
+      .distinct()
+      .sorted()
+      .toList();
+    assertThat(unsafe).as("values printed unescaped, see target/template-render/report.md").isEmpty();
   }
 
   //

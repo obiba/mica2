@@ -82,7 +82,7 @@
 
     const selections = variablesCartStorage.getSelections();
     if (selections.length === 0) {
-      VariablesSetService.addQueryToSet(setId, setName, 'variable(in(Mica_variable.sets,${set.id}),limit(0,100000),fields(variableType))', onsuccess);
+      VariablesSetService.addQueryToSet(setId, setName, 'variable(in(Mica_variable.sets,${set.id?js_string}),limit(0,100000),fields(variableType))', onsuccess);
     } else {
       VariablesSetService.addToSet(setId, setName, selections, onsuccess);
     }

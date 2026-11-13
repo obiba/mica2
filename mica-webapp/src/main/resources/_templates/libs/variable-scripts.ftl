@@ -21,7 +21,7 @@
   const Mica = {
     contextPath: "${contextPath}",
     currentLanguage: '${.lang}',
-    variableId: '${variable.id}',
+    variableId: '${variable.id?js_string}',
     categories: {},
     backgroundColors: ['${colors?join("', '")}'],
     barChartBorderColor: '${barChartBorderColor}',
@@ -64,7 +64,7 @@
   // cart
   <#if cartEnabled && variablesCartEnabled>
     const onVariablesCartGet = function(cart) {
-      VariablesSetService.contains(cart, '${variableCartId}', function() {
+      VariablesSetService.contains(cart, '${variableCartId?js_string}', function() {
         $('#cart-remove').show();
       }, function () {
         $('#cart-add').show();
@@ -105,10 +105,10 @@
 
     <!-- Files -->
     <#if showStudyDCEFiles && study?? && population?? && dce??>
-      makeFilesVue('#study-${population.id}-${dce.id}-files-app', {
+      makeFilesVue('#study-${population.id?js_string}-${dce.id?js_string}-files-app', {
         type: 'individual-study',
-        id: '${study.id}',
-        basePath: '/population/${population.id}/data-collection-event/${dce.id}',
+        id: '${study.id?js_string}',
+        basePath: '/population/${population.id?js_string}/data-collection-event/${dce.id?js_string}',
         path: '/',
         folder: {},
         tr: {
@@ -121,7 +121,7 @@
       });
     </#if>
 
-    makeSummary('${config.summaryStatisticsAccessPolicy}', ${showHarmonizedVariableSummarySelector?c});
+    makeSummary('${config.summaryStatisticsAccessPolicy?js_string}', ${showHarmonizedVariableSummarySelector?c});
   });
 </script>
 </#outputformat>
