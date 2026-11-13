@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!-- Macros -->
 <#include "libs/header.ftl">
 <#include "models/data-access.ftl"/>
@@ -103,11 +104,11 @@
                         <td><a href="${contextPath}/data-access/${dar.id}">${dar.id}</a></td>
                         <#if isAdministrator || isDAO>
                           <td>
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${dar.applicant?replace("\\W", "-", "r")}">${applicants[dar.applicant].fullName}</a>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${dar.applicant?replace("\\W", "-", "r")}">${htmlDecode(applicants[dar.applicant].fullName)}</a>
                           </td>
                         </#if>
-                        <#-- the title is HTML-encoded in DataAccessesController -->
-                        <td>${dar.title!""}</td>
+                        <#-- the title is HTML-encoded in DataAccessesController: decoded, then escaped when printed -->
+                        <td>${htmlDecode(dar.title!"")}</td>
                         <td data-sort="${dar.lastUpdate.toString()}" class="moment-datetime">${dar.lastUpdate.toString()}</td>
                         <td data-sort="<#if dar.submitDate??>${dar.submitDate.toString()}</#if>" class="moment-datetime"><#if dar.submitDate??>${dar.submitDate.toString()}</#if></td>
                         <#if accessConfig.feasibilityEnabled>
@@ -158,11 +159,11 @@
                         <#list users as profile>
                           <tr>
                             <td>
-                              <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${profile.username?replace("\\W", "-", "r")}">${profile.fullName}</a>
+                              <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${profile.username?replace("\\W", "-", "r")}">${htmlDecode(profile.fullName)}</a>
                             </td>
                             <td>
                               <#list profile.groups as group>
-                                <span class="badge bg-info">${group?html}</span>
+                                <span class="badge bg-info">${group}</span>
                               </#list>
                             </td>
                             <td data-sort="${profile.attributes["createdDate"].toString()}" class="moment-datetime">${profile.attributes["createdDate"].toString()}</td>

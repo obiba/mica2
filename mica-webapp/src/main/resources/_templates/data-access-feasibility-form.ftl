@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!-- Macros -->
 <#include "models/data-access-form.ftl">
 
@@ -336,10 +337,10 @@
 
 <#include "libs/scripts.ftl">
 <#include "libs/data-access-scripts.ftl">
-<script>
+<#outputformat "plainText"><script>
     $('#feasibility-form-menu').addClass('active').attr('href', '#');
     $('#feasibility-form-menu-${feasibility.id}').addClass('active');
-</script>
+</script></#outputformat>
 <#include "libs/data-access-form-scripts.ftl">
 
 </body>
