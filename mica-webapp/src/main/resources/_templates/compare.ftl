@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!-- Macros -->
 <#include "models/compare.ftl">
 
@@ -164,7 +165,7 @@
               <#else>
                 <#if query??>
                   <div class="float-end">
-                    <a class="btn btn-sm btn-info ms-2" href="${contextPath}/search#lists?type=${type?html}&query=${query?html}">
+                    <a class="btn btn-sm btn-info ms-2" href="${contextPath}/search#lists?type=${type}&query=${query}">
                       <i class="fa-solid fa-search"></i>
                     </a>
                   </div>
