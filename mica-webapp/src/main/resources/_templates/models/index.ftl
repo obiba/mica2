@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!-- Home page macros -->
 <!-- Default model macros -->
 <#include "../libs/index.ftl">

@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
@@ -8,13 +9,13 @@
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <#if authConfig.reCaptchaKey?has_content>
-  <script type="text/javascript">
+  <#outputformat "plainText"><script type="text/javascript">
     var onloadCallback = function() {
       grecaptcha.render('html_element', {
         'sitekey' : '${authConfig.reCaptchaKey}'
       });
     };
-  </script>
+  </script></#outputformat>
   </#if>
 </head>
 <body id="signup-page" class="hold-transition login-page">
@@ -145,7 +146,7 @@
 <!-- /.login-box -->
 
 <#include "libs/scripts.ftl">
-<script>
+<#outputformat "plainText"><script>
   const requiredFields = [
     { name: "email", title: "<@message "email"/>" }
     <#if config.signupWithPassword>
@@ -165,7 +166,7 @@
     , { name: "g-recaptcha-response", title: "<@message "captcha"/>" }
     </#if>
   ];
-</script>
+</script></#outputformat>
 <#include "libs/signup-scripts.ftl">
 
 </body>

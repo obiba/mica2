@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!-- Data access process page macros -->
 
 <!-- Data access process model template -->

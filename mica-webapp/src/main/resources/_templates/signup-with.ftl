@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
@@ -8,13 +9,13 @@
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <#if authConfig.reCaptchaKey?has_content>
-  <script type="text/javascript">
+  <#outputformat "plainText"><script type="text/javascript">
     var onloadCallback = function() {
       grecaptcha.render('html_element', {
         'sitekey' : '${authConfig.reCaptchaKey}'
       });
     };
-  </script>
+  </script></#outputformat>
   </#if>
 </head>
 <body id="signup-with-page" class="hold-transition login-page">
@@ -37,28 +38,28 @@
           <span class="input-group-text">
             <i class="fa-solid fa-user"></i>
           </span>
-          <input name="username" type="text" class="form-control" placeholder="<@message "username"/>" value="${uAuth.username?default("")?html}" readonly>
+          <input name="username" type="text" class="form-control" placeholder="<@message "username"/>" value="${uAuth.username?default("")}" readonly>
         </div>
         <div class="input-group mb-3">
           <span class="input-group-text">
             <i class="fa-solid fa-envelope"></i>
           </span>
-          <input name="email" type="email" class="form-control" placeholder="<@message "email"/>" value="${uAuth.email?default("")?html}" readonly>
+          <input name="email" type="email" class="form-control" placeholder="<@message "email"/>" value="${uAuth.email?default("")}" readonly>
         </div>
-        <input type="hidden" name="realm" value="${uAuth.realm?default("")?html}"/>
+        <input type="hidden" name="realm" value="${uAuth.realm?default("")}"/>
 
         <div class="text-center">
           <p>- <@message "personal-information"/> -</p>
         </div>
 
         <div class="input-group mb-3">
-          <input name="firstname" type="text" class="form-control" placeholder="<@message "firstname"/>" value="${uAuth.firstname?default("")?html}">
+          <input name="firstname" type="text" class="form-control" placeholder="<@message "firstname"/>" value="${uAuth.firstname?default("")}">
           <span class="input-group-text">
             <i class="fa-solid fa-user"></i>
           </span>
         </div>
         <div class="input-group mb-3">
-          <input name="lastname" type="text" class="form-control" placeholder="<@message "lastname"/>"  value="${uAuth.lastname?default("")?html}">
+          <input name="lastname" type="text" class="form-control" placeholder="<@message "lastname"/>"  value="${uAuth.lastname?default("")}">
           <span class="input-group-text">
             <i class="fa-solid fa-user"></i>
           </span>
@@ -127,7 +128,7 @@
 <!-- /.login-box -->
 
 <#include "libs/scripts.ftl">
-<script>
+<#outputformat "plainText"><script>
   <#if !uAuth.realm??>
   UserService.refreshSignupWith()
   </#if>
@@ -147,7 +148,7 @@
     , { name: "g-recaptcha-response", title: "<@message "captcha"/>" }
     </#if>
   ];
-</script>
+</script></#outputformat>
 <#include "libs/signup-scripts.ftl">
 
 </body>

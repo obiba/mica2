@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
@@ -32,13 +33,13 @@
     <div class="content">
       <div class="container">
         <div class="error-page">
-          <h2 class="headline text-warning"> ${status!"404"}</h2>
+          <h2 class="headline text-warning"> ${(status!"404")?no_esc}</h2>
 
           <div class="error-content">
             <h3><i class="fa-solid fa-exclamation-triangle text-warning"></i>
-              <#-- msg and status are HTML-encoded in the controllers: the translation or the text is printed as is -->
+              <#-- msg and status are HTML-encoded in the controllers: the translation or the text is printed as is (no_esc) -->
               <#assign code = msg!("http-" + status)/>
-              ${springMacroRequestContext.getMessage(code, code)}
+              ${springMacroRequestContext.getMessage(code, code)?no_esc}
             </h3>
             <p>
               <@messageArgs code="error-help" args=[contextPath + "/"]/>
