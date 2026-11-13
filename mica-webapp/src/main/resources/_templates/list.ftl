@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!-- Macros -->
 <#include "models/list.ftl">
 
@@ -5,7 +6,7 @@
 <html lang="${.lang}" xmlns:v-bind="http://www.w3.org/1999/xhtml">
 <head>
   <#include "libs/head.ftl">
-  <title>${config.name!""} | ${listName(set)?html}</title>
+  <title>${config.name!""} | ${listName(set)}</title>
 </head>
 <body id="list-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed sidebar-expand-lg">
 <!-- Site wrapper -->
@@ -51,8 +52,8 @@
                 <a class="nav-link ${variableListActiveClass} d-flex align-items-center" href="${contextPath}/list/${variableList.id}">
                   <i class="fa-regular fa-circle nav-icon"></i>
                   <p class="mb-0">
-                    <span title="${listName(variableList)?html} <#if variableList.name?starts_with("dar:")>[<@message "data-access-request"/>]</#if>">
-                        ${listName(variableList)?truncate_c(20, "...")?html}
+                    <span title="${listName(variableList)} <#if variableList.name?starts_with("dar:")>[<@message "data-access-request"/>]</#if>">
+                        ${listName(variableList)?truncate_c(20, "...")}
                     </span>
                     <#if variableList.name?starts_with("dar:")>
                       <i class="fa-solid fa-link ms-2"></i>
@@ -94,7 +95,7 @@
           <div class="col-sm-12">
             <h1 class="m-0 float-start">
               <span class="text-white-50"><@message "search.list"/> /</span>
-                ${listName(set)?html}
+                ${listName(set)}
                 <#if set.name?starts_with("dar:")>
                   [<@message "data-access-request"/>]
                 </#if>
@@ -115,7 +116,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h4 class="modal-title"><@message "cart-confirm-deletion-title"/> (${listName(set)?html})</h4>
+            <h4 class="modal-title"><@message "cart-confirm-deletion-title"/> (${listName(set)})</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
 
             </button>
@@ -142,7 +143,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h4 class="modal-title"><@message "cart-confirm-deletion-title"/> (${listName(set)?html})</h4>
+            <h4 class="modal-title"><@message "cart-confirm-deletion-title"/> (${listName(set)})</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
 
             </button>
