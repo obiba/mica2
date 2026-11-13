@@ -36,34 +36,6 @@ version only give their creator access to the document itself, not to its files.
 give the creator access to the files, open the document's permissions, edit the
 creator's entry and check the files option.
 
-**Persons (contacts and investigators).** A person is shared by all the studies and
-networks it is a member of, and a change no longer rewrites the whole record. API
-clients (e.g. scripts, the external editor app) must follow these rules:
-- `PUT /ws/draft/person/{id}` updates the details only: memberships in the body are
-  ignored, use the role endpoints (`PUT`/`DELETE
-  /ws/draft/person/{id}/study|network/{parentId}/role/{role}`). The person's `version`
-  is required: get the person and send its `version` (400 if missing, 409 if the
-  person changed meanwhile). Allowed to the administrator, reviewer and editor roles,
-  and to external editors who can edit every study and network the person is a member
-  of.
-- Memberships (role endpoints) and `/ws/draft/persons/strict`: the administrator, reviewer
-  and editor roles, and external editors on the studies and networks they can edit. A
-  user with document permissions only gets 403.
-- `POST /ws/draft/persons` and `/ws/draft/persons/strict`: a person `id` in the body
-  is rejected (400), and so is an email already used by another person (409, ignoring
-  case). Both check the memberships' roles and studies/networks (400). `/strict`
-  requires at least one membership from users without global edit rights.
-- Deleting a person and restoring a person commit are for administrators only.
-- New: `DELETE /ws/draft/persons/_redundants` (administrators) removes the persons
-  that are exact copies of another one, the oldest being kept; `version` and `canEdit`
-  in the person DTO.
-- Person errors (400/409) are a JSON `ClientErrorDto`: tell them apart by
-  `messageTemplate` (e.g. `server.error.person.version-conflict` to reload the person,
-  `server.error.person.email-used`), `message` is the English text.
-
-No migration: existing persons have no `version` and are read as version 0. Persons
-already sharing an email are left as they are.
-
 ## 7.0.0
 
 Security release: 2FA sign-in feedback, open redirect closed, credentials kept out of
