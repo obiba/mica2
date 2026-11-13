@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <#macro rightmenus>
   <#include "../models/navbar-menus-right.ftl"/>
   <#if cartEnabled>
@@ -44,7 +45,7 @@
       </li>
     </#if>
     <li class="nav-item dropdown">
-      <a id="userMenu" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><i class="fa-solid fa-user"></i> ${user.fullName}</a>
+      <a id="userMenu" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><i class="fa-solid fa-user"></i> ${htmlDecode(user.fullName)}</a>
       <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
         <li><a href="${contextPath}/profile" class="dropdown-item"><@message "profile"/></a></li>
         <li><a href="${contextPath}/signout" class="dropdown-item"><@message "sign-out"/></a></li>

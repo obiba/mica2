@@ -1,14 +1,15 @@
+<#ftl output_format="HTML">
 <!-- Project page macros -->
 
 <!-- Project model template for the list -->
 <#macro projectModelSummary project>
   <#if project.model??>
-    <span class="badge text-bg-info moment-date">${esc(project.model.startDate)}</span>
+    <span class="badge text-bg-info moment-date">${project.model.startDate}</span>
     <small><i class="fa-solid fa-arrow-right"></i></small>
-    <span class="badge text-bg-info moment-date">${esc(project.model.endDate)}</span>
+    <span class="badge text-bg-info moment-date">${project.model.endDate}</span>
     - <small>
-    <#if project.model.institution??>${esc(project.model.institution)} - </#if>
-    ${esc(project.model.name)}
+    <#if project.model.institution??>${project.model.institution} - </#if>
+    ${project.model.name}
   </small>
   </#if>
 </#macro>
@@ -28,9 +29,9 @@
           <div class="card-body">
             <dl class="row">
               <dt class="col-sm-4"><@message "start-date"/></dt>
-              <dd class="col-sm-8 moment-date">${esc(project.model.startDate)}</dd>
+              <dd class="col-sm-8 moment-date">${project.model.startDate}</dd>
               <dt class="col-sm-4"><@message "end-date"/></dt>
-              <dd class="col-sm-8 moment-date">${esc(project.model.endDate)}</dd>
+              <dd class="col-sm-8 moment-date">${project.model.endDate}</dd>
             </dl>
           </div>
         </div>
@@ -46,11 +47,11 @@
           <div class="card-body">
             <dl class="row">
               <dt class="col-sm-4"><@message "research-project.default.contact.name"/></dt>
-              <dd class="col-sm-8">${esc(project.model.name)}</dd>
+              <dd class="col-sm-8">${project.model.name}</dd>
               <#if project.model.institution??>
                 <dt class="col-sm-4"><@message "research-project.default.contact.institution"/></dt>
                 <dd class="col-sm-8">
-                  <pre class="p-0">${esc(project.model.institution)}</pre>
+                  <pre class="p-0">${project.model.institution}</pre>
                 </dd>
               </#if>
             </dl>

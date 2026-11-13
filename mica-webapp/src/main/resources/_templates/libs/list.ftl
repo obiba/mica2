@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!-- List page macros and utils -->
 
 <!-- Function to normalize list name; the name can be stored HTML-encoded, the result is decoded: display it with listName(set)?html -->

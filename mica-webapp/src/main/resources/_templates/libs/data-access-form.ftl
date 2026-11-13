@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!-- Data access (amendment) form page macros -->
 
 <!-- Help section, can be adapted to data access request status -->
@@ -74,7 +75,7 @@
       </span>
     </div>
     <div class="float-end text-muted">
-      <span><@message type/> - ${form.id} - [<@message form.status.toString()/>] - ${applicant.fullName}</span>
+      <span><@message type/> - ${form.id} - [<@message form.status.toString()/>] - ${htmlDecode(applicant.fullName)}</span>
     </div>
   </div>
 </#macro>
@@ -128,9 +129,9 @@
                 <tr>
                   <td>
                     <#if v[0]??>
-                      <div><strong>${v[0]?html}</strong></div>
+                      <div><strong>${v[0]}</strong></div>
                     </#if>
-                    <smalll><code>${k?html}</code></smalll>
+                    <smalll><code>${k}</code></smalll>
                   </td>
                   <td class="marked"><template>${templateSafe(v[1])}</template></td>
                   <td class="marked"><template>${templateSafe(v[2])}</template></td>

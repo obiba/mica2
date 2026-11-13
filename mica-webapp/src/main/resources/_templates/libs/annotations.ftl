@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 
 <#macro entityAnnotations annotations={} showCount=false>
   <#assign taxonomyKeys = annotations?keys?filter(key -> !classificationTaxonomiesToExclude?seq_contains(key)) >
