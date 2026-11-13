@@ -142,6 +142,18 @@ public class UserProfileService extends AgateRestService {
       return true;
     }
 
+    return userHas(username, role);
+  }
+
+  /**
+   * Whether the user's groups in Agate map to the role. False when the user is unknown or Agate cannot be reached.
+   *
+   * @param username
+   * @param role
+   * @return
+   */
+  public boolean userHas(@NotNull String username, @NotNull String role) {
+    if (username == null) return false;
     ObibaRealm.Subject profile = getProfile(username);
     return profile != null && profile.getGroups() != null
       && groupsToRolesMapper.toRoles(Sets.newHashSet(profile.getGroups())).contains(role);
@@ -261,6 +273,7 @@ public class UserProfileService extends AgateRestService {
   //
 
   private synchronized Subject getProfileInternal(URI serviceUrl) {
+    if (serviceUrl == null) return null;
     try {
       return executeQuery(serviceUrl, Subject.class);
     } catch (RestClientException e) {
@@ -297,7 +310,21 @@ public class UserProfileService extends AgateRestService {
       .build().toUriString();
   }
 
+  /**
+   * Whether the username can be a path segment of an Agate request: the encoding escapes "/", "?", "#", "%", etc. but
+   * not the "." and ".." segments, nor ";" (Agate reads what follows as a matrix parameter), and a blank segment is
+   * dropped from the path.
+   */
+  static boolean isSafePathSegment(String username) {
+    return username != null && !username.isBlank() && !".".equals(username) && !"..".equals(username)
+      && !username.contains(";");
+  }
+
+  /**
+   * @return null when the username is not a safe path segment, which getProfileInternal treats as an unknown user
+   */
   private URI getProfileServiceUrl(String username) {
+    if (!isSafePathSegment(username)) return null;
     // encode the segments and pass a URI, so that RestTemplate does not re-parse the username as a template
     return UriComponentsBuilder
       .fromUri(agateServerConfigService.getAgateUri())
@@ -306,7 +333,11 @@ public class UserProfileService extends AgateRestService {
       .build().encode().toUri();
   }
 
+  /**
+   * @param username null for the users of the group, otherwise the user, null returned when not a safe path segment
+   */
   private URI getProfileServiceUrlByGroup(String username, String group) {
+    if (username != null && !isSafePathSegment(username)) return null;
     UriComponentsBuilder urlBuilder =
       UriComponentsBuilder.fromUri(agateServerConfigService.getAgateUri()).path(DEFAULT_REST_PREFIX);
 

@@ -135,7 +135,7 @@ public class DraftNetworksResource {
     networkService.save(network, comment);
 
     if (SecurityUtils.getSubject().hasRole(Roles.MICA_EXTERNAL_EDITOR)) {
-      subjectAclService.addPermission("/draft/network", "VIEW,EDIT,ADD", network.getId());
+      subjectAclService.addCreatorPermissions("network", network.getId());
     }
 
     return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "network", network.getId()).build()).build();

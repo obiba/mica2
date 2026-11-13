@@ -50,6 +50,8 @@ import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.event.NetworkDeletedEvent;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.event.ProjectDeletedEvent;
+import org.obiba.mica.security.PermissionsUtils;
+import org.obiba.mica.security.domain.SubjectAcl;
 import org.obiba.mica.security.event.ResourceDeletedEvent;
 import org.obiba.mica.security.event.SubjectAclUpdatedEvent;
 import org.obiba.mica.security.repository.SubjectAclRepository;
@@ -604,6 +606,24 @@ public class SubjectAclServiceTest {
 
     assertThat(subjectAclRepository.findByResourceAndInstance("/draft/individual-study", "abc")).isEmpty();
   }
+
+  @Test
+  public void test_addCreatorPermissions_grants_editor_on_document_and_files() {
+    for (String type : List.of("individual-study", "harmonization-study", "network", "collected-dataset",
+      "harmonized-dataset", "project")) {
+      subjectAclService.addCreatorPermissions("pi", type, "doc 1");
+
+      List<SubjectAcl> document = subjectAclRepository.findByPrincipalAndTypeAndResourceAndInstance("pi",
+        SubjectAcl.Type.USER, "/draft/" + type, encode("doc 1"));
+      assertThat(document).hasSize(1);
+      assertThat(PermissionsUtils.asRole(document.get(0).getActions())).isEqualTo("EDITOR");
+      List<SubjectAcl> files = subjectAclRepository.findByPrincipalAndTypeAndResourceAndInstance("pi",
+        SubjectAcl.Type.USER, "/draft/file", encode("/" + type + "/doc 1"));
+      assertThat(files).hasSize(1);
+      assertThat(PermissionsUtils.asRole(files.get(0).getActions())).isEqualTo("EDITOR");
+    }
+  }
+
 
   private static FileDeletedEvent fileDeletedEvent(String path, String name) {
     AttachmentState state = new AttachmentState();

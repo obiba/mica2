@@ -141,7 +141,7 @@ public class DraftCollectedDatasetsResource {
     datasetService.save((StudyDataset) dataset, comment);
 
     if (SecurityUtils.getSubject().hasRole(Roles.MICA_EXTERNAL_EDITOR)) {
-      subjectAclService.addPermission("/draft/collected-dataset", "VIEW,EDIT,ADD", dataset.getId());
+      subjectAclService.addCreatorPermissions("collected-dataset", dataset.getId());
     }
 
     return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "collected-dataset", dataset.getId()).build())

@@ -62,6 +62,7 @@ public class CommentResource {
 
   @PUT
   public Response updateComment(@PathParam("id") String id, @PathParam("commentId") String commentId, String message) {
+    checkDocumentAccess(id);
     subjectAclService.checkPermission(String.format("/draft/%s/%s/comment", service.getTypeName(), id), "EDIT", commentId);
     service.findDraft(id);
     commentsService.save(Comment.newBuilder(commentsService.findById(commentId)) //
@@ -74,6 +75,7 @@ public class CommentResource {
 
   @DELETE
   public Response deleteComment(@PathParam("id") String id, @PathParam("commentId") String commentId) {
+    checkDocumentAccess(id);
     subjectAclService.checkPermission(String.format("/draft/%s/%s/comment", service.getTypeName(), id), "DELETE", commentId);
     service.findDraft(id);
     commentsService.delete(commentId);
@@ -84,5 +86,14 @@ public class CommentResource {
 
   public void setService(AbstractGitPersistableService service) {
     this.service = service;
+  }
+
+  /**
+   * The author keeps the permissions on its comment when its access to the document is revoked (by removing it from
+   * the document permissions or by transferring them to another user), so the comment can only be edited or deleted
+   * while the current user can still access the document, through any of its permissions, groups or roles.
+   */
+  private void checkDocumentAccess(String id) {
+    subjectAclService.checkPermission(String.format("/draft/%s", service.getTypeName()), "VIEW", id);
   }
 }

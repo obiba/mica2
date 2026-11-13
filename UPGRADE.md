@@ -30,6 +30,12 @@ local persons linked to the study and re-create the remote ones. Add the members
 the imported studies afterwards. Local members of a replaced study are kept, with
 their display order.
 
+**External editors' files.** An external editor who creates a study, network, dataset
+or project now also gets the editor role on its files. Documents created before this
+version only give their creator access to the document itself, not to its files. To
+give the creator access to the files, open the document's permissions, edit the
+creator's entry and check the files option.
+
 ## 7.0.0
 
 Security release: 2FA sign-in feedback, open redirect closed, credentials kept out of

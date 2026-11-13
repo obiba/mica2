@@ -36,6 +36,7 @@ import org.obiba.mica.file.event.FolderDeletedEvent;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.event.NetworkDeletedEvent;
 import org.obiba.mica.project.event.ProjectDeletedEvent;
+import org.obiba.mica.security.PermissionsUtils;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.domain.SubjectAcl;
 import org.obiba.mica.security.event.ResourceDeletedEvent;
@@ -59,6 +60,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -131,6 +133,21 @@ public class SubjectAclService {
    */
   public List<SubjectAcl> findByResourceInstance(String resource, String instance) {
     return subjectAclRepository.findByResourceAndInstance(resource, encode(instance), Sort.by(Sort.Order.desc("type"), Sort.Order.asc("principal")));
+  }
+
+  /**
+   * Get the permission of the subject on the given resource and instance.
+   *
+   * @param type
+   * @param principal
+   * @param resource
+   * @param instance
+   * @return
+   */
+  public Optional<SubjectAcl> findSubjectAcl(@NotNull SubjectAcl.Type type, @NotNull String principal,
+                                             @NotNull String resource, @Nullable String instance) {
+    return subjectAclRepository.findByPrincipalAndTypeAndResourceAndInstance(principal, type, resource, encode(instance))
+      .stream().findFirst();
   }
 
   public boolean hasMicaRole() {
@@ -431,6 +448,29 @@ public class SubjectAclService {
       .forEach(subjectAclRepository::delete);
     // inform acls update (for caching)
     broadcastSubjectAclUpdateEvent(type, principal);
+  }
+
+  /**
+   * Grant the current user, as the creator of a draft document, the editor role on the document and on its files.
+   *
+   * @param type document type name, e.g. "individual-study"
+   * @param id
+   */
+  public void addCreatorPermissions(@NotNull String type, @NotNull String id) {
+    addCreatorPermissions(SecurityUtils.getSubject().getPrincipal().toString(), type, id);
+  }
+
+  /**
+   * Grant the user, as the creator of a draft document, the editor role on the document and on its files.
+   *
+   * @param principal
+   * @param type document type name, e.g. "individual-study"
+   * @param id
+   */
+  public void addCreatorPermissions(@NotNull String principal, @NotNull String type, @NotNull String id) {
+    String actions = PermissionsUtils.getEditorActions();
+    addUserPermission(principal, "/draft/" + type, actions, id);
+    addUserPermission(principal, "/draft/file", actions, "/" + type + "/" + id);
   }
 
   //
