@@ -102,6 +102,7 @@ class PersonDtos {
 
 
     builder.setTimestamps(TimestampsDtos.asDto(person));
+    builder.setVersion(Math.toIntExact(person.getVersionValue()));
 
     return builder.build();
   }

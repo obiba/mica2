@@ -20,10 +20,4 @@ public interface PersonAware {
 
   @JsonIgnore
   List<Membership> getAllMemberships();
-
-  void addToPerson(Membership membership);
-
-  void removeFromPerson(Membership membership);
-
-  void removeFromPerson(Person person);
 }

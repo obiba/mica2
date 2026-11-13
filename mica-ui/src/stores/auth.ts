@@ -11,11 +11,16 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isAdministrator = computed(() => session.value?.roles.includes('mica-administrator'));
 
-  /** roles allowed to import studies from a remote Mica (same as the server's @RequiresAnyRole) */
-  const IMPORT_STUDIES_ROLES = ['mica-administrator', 'mica-reviewer', 'mica-editor'];
-  const canImportStudies = computed(() =>
-    (session.value?.roles ?? []).some((role) => IMPORT_STUDIES_ROLES.includes(role)),
-  );
+  /** the roles with rights on all the documents */
+  const GLOBAL_ROLES = ['mica-administrator', 'mica-reviewer', 'mica-editor'];
+  const hasGlobalRole = computed(() => (session.value?.roles ?? []).some((role) => GLOBAL_ROLES.includes(role)));
+  /** import studies from a remote Mica (same as the server's @RequiresAnyRole) */
+  const canImportStudies = hasGlobalRole;
+  /**
+   * add and remove the members of a study or network: persons are shared, a user with document permissions only
+   * may not change them (external editors do it in the PI Form app)
+   */
+  const canEditMembers = hasGlobalRole;
 
   const isAuthenticated = computed(() => {
     return session.value !== null;
@@ -71,6 +76,7 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated,
     isAdministrator,
     canImportStudies,
+    canEditMembers,
     reAuthRequired,
     signin,
     signout,

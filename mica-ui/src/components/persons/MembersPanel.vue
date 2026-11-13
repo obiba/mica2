@@ -16,7 +16,7 @@
         <q-card-section class="row items-center q-py-sm">
           <div class="text-subtitle1 col">{{ roleLabel(item.role) }}</div>
           <q-btn
-            v-if="canEdit"
+            v-if="canEdit && authStore.canEditMembers"
             flat
             dense
             size="sm"
@@ -45,10 +45,13 @@
             </q-item-section>
             <q-item-section>
               <q-item-label>
+                <!-- the person page is reserved to administrators -->
                 <router-link
+                  v-if="authStore.isAdministrator"
                   :to="{ path: `/persons/${person.id}`, query: { from: route.fullPath } }"
                   class="text-primary"
                 >{{ fullName(person) }}</router-link>
+                <template v-else>{{ fullName(person) }}</template>
               </q-item-label>
               <q-item-label v-if="person.institution" caption>
                 {{ localized(person.institution.name, locale) }}
@@ -75,6 +78,7 @@
                   @click="onMove(item, person, 1)"
                 />
                 <q-btn
+                  v-if="authStore.canEditMembers"
                   flat
                   dense
                   size="sm"
@@ -98,7 +102,9 @@
       v-model="showAdd"
       :role="roleLabel(addRole?.role ?? '')"
       :exclude="(addRole?.persons ?? []).map((person) => person.id ?? '')"
+      :membership="addRole ? { parent, parentId, role: addRole.role } : undefined"
       @add="onAdd"
+      @created="load"
     />
     <network-people-dialog v-if="network" v-model="showPeople" :network="network" />
 
@@ -147,6 +153,7 @@ const emit = defineEmits<{ change: [document: Document] }>();
 const { t, locale } = useI18n();
 const personsStore = usePersonsStore();
 const route = useRoute();
+const authStore = useAuthStore();
 const systemStore = useSystemStore();
 const { roleLabel } = useRoleLabels();
 

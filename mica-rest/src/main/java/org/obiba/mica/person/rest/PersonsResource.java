@@ -2,10 +2,12 @@ package org.obiba.mica.person.rest;
 
 import com.google.common.eventbus.EventBus;
 
-import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
@@ -16,17 +18,16 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.contact.event.IndexContactsEvent;
-import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.service.PersonService;
-import org.obiba.mica.network.service.NetworkService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica.PersonDto;
 import org.springframework.stereotype.Component;
-import support.legacy.UpgradeLegacyEntities;
+
 
 @Component
 @RequiresAuthentication
@@ -41,18 +42,18 @@ public class PersonsResource {
 
   private final StudyService studyService;
 
-  private final NetworkService networkService;
+  private final MicaConfigService micaConfigService;
 
   private final EventBus eventBus;
 
   @Inject
   public PersonsResource(Dtos dtos, PersonService personService, SubjectAclService subjectAclService,
-                         StudyService service, NetworkService networkService, EventBus eventBus) {
+                         StudyService service, MicaConfigService micaConfigService, EventBus eventBus) {
     this.dtos = dtos;
     this.personService = personService;
     this.subjectAclService = subjectAclService;
     this.studyService = service;
-    this.networkService = networkService;
+    this.micaConfigService = micaConfigService;
     this.eventBus = eventBus;
   }
 
@@ -82,25 +83,37 @@ public class PersonsResource {
     return Response.noContent().build();
   }
 
+  /**
+   * Deletes the persons that are exact copies of another one (stored fields and memberships), keeping the oldest.
+   */
+  @DELETE
+  @Path("/_redundants")
+  @RequiresRoles(Roles.MICA_ADMIN)
+  public Map<String, Integer> deleteRedundants() {
+    return Map.of("count", personService.deleteRedundants());
+  }
+
+  /**
+   * Creates a new person, with its memberships: each one must have a configured role and an existing study or network
+   * (the caller can edit them all).
+   */
   @POST
   @RequiresPermissions({"/draft/individual-study:EDIT", "/draft/harmonization-study:EDIT", "/draft/network:EDIT"})
   public PersonDto createPerson(PersonDto personDto) {
     if (personDto == null) {
       return null;
     }
-
-    return dtos.asDto(personService.save(dtos.fromDto(personDto)), true);
+    checkNew(personDto);
+    checkMemberships(personDto, false);
+    if (personService.isEmailUsed(personDto.getEmail(), null)) {
+      throw PersonErrors.emailUsed();
+    }
+    return dtos.asDto(personService.create(dtos.fromDto(personDto)), true);
   }
 
   /**
-   * Creates a new person with strict permission checks.
-   * <p>
-   * Unlike {@link #createPerson(PersonDto)}, this method enforces "EDIT" permissions
-   * for all study and network memberships included in the provided {@code personDto}.
-   * Permission checks are performed for each associated study and network before the person is created.
-   * <p>
-   * Use this endpoint when you require stricter access control for creating persons
-   * with memberships, ensuring the caller has the necessary permissions for all referenced entities.
+   * Creates a new person with strict permission checks: each membership must have a configured role and an existing
+   * study or network the caller can EDIT. A caller without global edit must send at least one membership.
    *
    * @param personDto the person to create, including memberships
    * @return the created person, or {@code null} if input is {@code null}
@@ -111,20 +124,46 @@ public class PersonsResource {
     if (personDto == null) {
       return null;
     }
+    if (!personService.canManagePersons()) throw new ForbiddenException();
+    checkNew(personDto);
 
+    if (personDto.getStudyMembershipsCount() == 0 && personDto.getNetworkMembershipsCount() == 0
+      && !personService.hasGlobalEdit()) {
+      throw PersonErrors.membershipRequired();
+    }
+
+    checkMemberships(personDto, true);
+
+    if (personService.isEmailUsed(personDto.getEmail(), null)) {
+      throw PersonErrors.emailUsedLinkExisting();
+    }
+
+    Person person = dtos.fromDto(personDto);
+    return dtos.asDto(personService.create(person), true);
+  }
+
+  /** each membership has a configured role and an existing study or network, and with acl, EDIT on it */
+  private void checkMemberships(PersonDto personDto, boolean acl) {
     personDto.getStudyMembershipsList().forEach(membership -> {
-      if (studyService.isCollectionStudy(membership.getParentId())) {
-        subjectAclService.checkPermission("/draft/individual-study", "EDIT", membership.getParentId());
-      } else {
-        subjectAclService.checkPermission("/draft/harmonization-study", "EDIT", membership.getParentId());
-      }
+      PersonErrors.checkRole(micaConfigService, membership.getRole());
+      String resource = personService.studyResource(membership.getParentId());
+      if (resource == null) throw PersonErrors.noSuchStudy(membership.getParentId());
+      if (acl) subjectAclService.checkPermission(resource, PersonService.EDIT, membership.getParentId());
     });
 
     personDto.getNetworkMembershipsList().forEach(membership -> {
-      subjectAclService.checkPermission("/draft/network", "EDIT", membership.getParentId());
+      PersonErrors.checkRole(micaConfigService, membership.getRole());
+      if (!personService.networkExists(membership.getParentId())) {
+        throw PersonErrors.noSuchNetwork(membership.getParentId());
+      }
+      if (acl) {
+        subjectAclService.checkPermission(PersonService.NETWORK_RESOURCE, PersonService.EDIT, membership.getParentId());
+      }
     });
+  }
 
-    Person person = dtos.fromDto(personDto);
-    return dtos.asDto(personService.save(person), true);
+  /** a new person has no id, not even an empty one */
+  private static void checkNew(PersonDto personDto) {
+    if (personDto.hasId()) throw PersonErrors.idNotAllowed();
   }
 }

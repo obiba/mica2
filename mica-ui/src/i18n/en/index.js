@@ -131,6 +131,7 @@ export default {
     remove_duplicates_title: 'Remove duplicates',
     remove_duplicates_text: 'Remove the persons that are exact copies of another one (same fields and memberships)? The oldest copy is kept.',
     duplicates_removed: '{count} duplicate(s) removed',
+    save_conflict: 'Someone else modified this person in the meantime. Edit it again.',
     identification: 'Identification',
     institution: 'Institution',
     search_study: 'Study / Initiative',
@@ -198,6 +199,20 @@ export default {
       },
       application: {
         'not-orphan': 'Cannot delete an application having associated users or groups.',
+      },
+      person: {
+        missing: 'The person is missing.',
+        'id-not-allowed': 'A new person has no id.',
+        'id-mismatch': 'The person id does not match.',
+        'version-missing': 'The person version is missing.',
+        'membership-required': 'A new person must be a member of a study or a network.',
+        'no-such-study': 'No such study: {0}',
+        'no-such-network': 'No such network: {0}',
+        'invalid-role': "'{0}' is not a valid role.",
+        invalid: 'The person is not valid: {0}',
+        'email-used': 'The email is already used by another person.',
+        'email-used-link-existing': 'The email is already used by another person: add the existing person instead.',
+        'version-conflict': 'Someone else modified this person in the meantime. Edit it again.',
       },
       'data-access-form': {
         'invalid-schema': 'The form schema is not a valid JSON object.',

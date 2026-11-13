@@ -325,7 +325,15 @@ export interface PersonDto {
   id?: string | undefined;
   studyMemberships: PersonDto_MembershipDto[];
   networkMemberships: PersonDto_MembershipDto[];
-  timestamps?: TimestampsDto | undefined;
+  timestamps?:
+    | TimestampsDto
+    | undefined;
+  /** detail update guard: send the value read, 409 when the person changed meanwhile */
+  version?:
+    | number
+    | undefined;
+  /** whether the caller can update the details (single person reads only) */
+  canEdit?: boolean | undefined;
 }
 
 export enum PersonDto_Type {
