@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <#include "navbar-menus.ftl">
 <nav class="app-header navbar navbar-expand d-print-none" data-bs-theme="light">
   <!-- Left navbar links -->

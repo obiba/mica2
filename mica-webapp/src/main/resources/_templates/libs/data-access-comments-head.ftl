@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!-- EasyMDE style -->
 <link rel="stylesheet" href="${assetsPath}/libs/node_modules/easymde/dist/easymde.min.css">
 

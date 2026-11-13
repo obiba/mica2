@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!-- Function to get the color corresponding to a status -->
 <#function statusColor status>
   <#if status == "OPENED">
@@ -178,7 +179,7 @@
         <#list collaborators as collaborator>
           <tr>
             <td>
-              <a href="mailto:${collaborator.email?html}">${collaborator.fullName}</a>
+              <a href="mailto:${collaborator.email}">${htmlDecode(collaborator.fullName)}</a>
             </td>
             <td>
               <#if collaborator.invitationPending>
@@ -208,10 +209,10 @@
                   </button>
                   <ul class="dropdown-menu" style="">
                     <#if permissions?seq_contains("ADD_COLLABORATORS") && collaborator.invitationPending>
-                      <li><a class="dropdown-item" href="#" onclick="DataAccessService.reinviteCollaborator('${dar.id}', '${collaborator.email?js_string?html}', '<@message "invitation-resent"/>')"><i class="fa-solid fa-paper-plane me-2"></i> <@message "invite"/></a></li>
+                      <li><a class="dropdown-item" href="#" onclick="DataAccessService.reinviteCollaborator('${dar.id}', '${collaborator.email?js_string}', '<@message "invitation-resent"/>')"><i class="fa-solid fa-paper-plane me-2"></i> <@message "invite"/></a></li>
                     </#if>
                     <#if permissions?seq_contains("DELETE_COLLABORATORS")>
-                      <li><a class="dropdown-item" href="#" onclick="$('#collaborator-to-delete').text('${collaborator.email?js_string?html}')" data-bs-toggle="modal" data-bs-target="#modal-collaborator-delete"><i class="fa-solid fa-trash me-2"></i> <@message "remove"/></a></li>
+                      <li><a class="dropdown-item" href="#" onclick="$('#collaborator-to-delete').text('${collaborator.email?js_string}')" data-bs-toggle="modal" data-bs-target="#modal-collaborator-delete"><i class="fa-solid fa-trash me-2"></i> <@message "remove"/></a></li>
                     </#if>
                   </ul>
                 </div>

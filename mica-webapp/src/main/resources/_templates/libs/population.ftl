@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!-- Population macros -->
 
 <!-- Population model -->
@@ -33,7 +34,7 @@
                   <@message "population.ageMin"/>
                 </dt>
                 <dd class="col-sm-8">
-                  <div>${esc(population.model.selectionCriteria.ageMin)}</div>
+                  <div>${population.model.selectionCriteria.ageMin}</div>
                 </dd>
               </#if>
 
@@ -42,7 +43,7 @@
                   <@message "population.ageMax"/>
                 </dt>
                 <dd class="col-sm-8">
-                  <div>${esc(population.model.selectionCriteria.ageMax)}</div>
+                  <div>${population.model.selectionCriteria.ageMax}</div>
                 </dd>
               </#if>
 
@@ -269,7 +270,7 @@
                     <@message "numberOfParticipants.participants"/>
                   </dt>
                   <dd class="col-sm-6">
-                    ${esc(population.model.numberOfParticipants.participant.number)}
+                    ${population.model.numberOfParticipants.participant.number}
                     <#if population.model.numberOfParticipants.participant.noLimit == true>
                         (<@message "numberOfParticipants.no-limit"/>)
                     </#if>
@@ -292,7 +293,7 @@
                     <@message "numberOfParticipants.sample"/>
                   </dt>
                   <dd class="col-sm-6">
-                    ${esc(population.model.numberOfParticipants.sample.number)}
+                    ${population.model.numberOfParticipants.sample.number}
                     <#if population.model.numberOfParticipants.sample.noLimit == true>
                       (<@message "numberOfParticipants.no-limit"/>)
                     </#if>

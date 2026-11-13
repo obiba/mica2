@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!-- Study page macros -->
 
 <!-- Study model template -->
@@ -170,11 +171,11 @@
     <!-- /.card-header -->
     <div id="publication-card" class="card-body collapse show">
       <p>
-          ${esc(study.model.markerPaper)}
+          ${study.model.markerPaper}
       </p>
         <#if study.model.pubmedId??>
           <blockquote>
-            <a href="http://www.ncbi.nlm.nih.gov/pubmed/${esc(study.model.pubmedId)}" target="_blank">PUBMED ${esc(study.model.pubmedId)}</a>
+            <a href="http://www.ncbi.nlm.nih.gov/pubmed/${study.model.pubmedId}" target="_blank">PUBMED ${study.model.pubmedId}</a>
           </blockquote>
         </#if>
     </div>
@@ -235,7 +236,7 @@
                 <@message "numberOfParticipants.participants"/>
             </dt>
             <dd class="col-sm-6">
-                ${esc(study.model.numberOfParticipants.participant.number)}
+                ${study.model.numberOfParticipants.participant.number}
                 <#if study.model.numberOfParticipants.participant.noLimit == true>
                   (<@message "numberOfParticipants.no-limit"/>)
                 </#if>
@@ -258,7 +259,7 @@
                 <@message "numberOfParticipants.sample"/>
             </dt>
             <dd class="col-sm-6">
-                ${esc(study.model.numberOfParticipants.sample.number)}
+                ${study.model.numberOfParticipants.sample.number}
                 <#if study.model.numberOfParticipants.sample.noLimit == true>
                   (<@message "numberOfParticipants.no-limit"/>)
                 </#if>
@@ -570,7 +571,7 @@
       <p>
           <@message "study.access.external_researchers_obtaining_study_data_bio_info.access_info_location.study_website"/>
           <#if study.model.website??>
-            : <a href="${safeUrl(study.model.website)}" target="_blank">${study.model.website?truncate(50, "...")?html}</a>
+            : <a href="${safeUrl(study.model.website)}" target="_blank">${study.model.website?truncate(50, "...")}</a>
           </#if>
       </p>
     </#if>
@@ -594,13 +595,13 @@
             <div class="modal-body">
               <dl class="row">
                 <dt class="col-4"><@message "contact.name"/></dt>
-                <dd class="col-8">${esc(study.model.access_info_representative.title!"")} ${esc(study.model.access_info_representative.name!"")}</dd>
+                <dd class="col-8">${study.model.access_info_representative.title!""} ${study.model.access_info_representative.name!""}</dd>
                 <dt class="col-4"><@message "contact.institution"/></dt>
-                <dd class="col-8">${esc(study.model.access_info_representative.institution!"")}</dd>
+                <dd class="col-8">${study.model.access_info_representative.institution!""}</dd>
                 <dt class="col-4"><@message "contact.email"/></dt>
-                <dd class="col-8">${esc(study.model.access_info_representative.email!"")}</dd>
+                <dd class="col-8">${study.model.access_info_representative.email!""}</dd>
                 <dt class="col-4"><@message "contact.phone"/></dt>
-                <dd class="col-8">${esc(study.model.access_info_representative.telephone!"")}</dd>
+                <dd class="col-8">${study.model.access_info_representative.telephone!""}</dd>
               </dl>
             </div>
             <div class="modal-footer">

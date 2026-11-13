@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!-- Compare page macros -->
 
 <!-- Individual studies compare model template -->
@@ -66,7 +67,7 @@
     <#list studies as study>
       <td>
         <#if study.model.website??>
-          <a href="${safeUrl(study.model.website)}" target="_blank">${esc(study.model.website)}</a>
+          <a href="${safeUrl(study.model.website)}" target="_blank">${study.model.website}</a>
         </#if>
       </td>
     </#list>
@@ -109,10 +110,10 @@
     <#list studies as study>
       <td>
         <#if study.model.markerPaper??>
-          <small>${esc(study.model.markerPaper)}</small>
+          <small>${study.model.markerPaper}</small>
           <#if study.model.pubmedId??>
             <div>
-              <a href="http://www.ncbi.nlm.nih.gov/pubmed/${esc(study.model.pubmedId)}" target="_blank">PUBMED ${esc(study.model.pubmedId)}</a>
+              <a href="http://www.ncbi.nlm.nih.gov/pubmed/${study.model.pubmedId}" target="_blank">PUBMED ${study.model.pubmedId}</a>
             </div>
           </#if>
         </#if>
@@ -150,7 +151,7 @@
       <td>
         <#if study.model.numberOfParticipants??>
           <#if study.model.numberOfParticipants.participant.number??>
-            ${esc(study.model.numberOfParticipants.participant.number)}
+            ${study.model.numberOfParticipants.participant.number}
             <#if study.model.numberOfParticipants.participant.noLimit == true>
               (<@message "numberOfParticipants.no-limit"/>)
             </#if>
@@ -172,7 +173,7 @@
       <td>
         <#if study.model.numberOfParticipants??>
           <#if study.model.numberOfParticipants.sample.number??>
-            ${esc(study.model.numberOfParticipants.sample.number)}
+            ${study.model.numberOfParticipants.sample.number}
             <#if study.model.numberOfParticipants.sample.noLimit == true>
               (<@message "numberOfParticipants.no-limit"/>)
             </#if>
@@ -238,7 +239,7 @@
             <#list study.populations as population>
               <#if !first> | </#if>
               <#if population.model.selectionCriteria?? && population.model.selectionCriteria.ageMin??>
-                ${esc(population.model.selectionCriteria.ageMin)}
+                ${population.model.selectionCriteria.ageMin}
               <#elseif study.populations?size gt 1>
                 <@message "global.not-applicable"/>
               </#if>
@@ -260,7 +261,7 @@
           <#list study.populations as population>
             <#if !first> | </#if>
             <#if population.model.selectionCriteria?? && population.model.selectionCriteria.ageMax??>
-              ${esc(population.model.selectionCriteria.ageMax)}
+              ${population.model.selectionCriteria.ageMax}
             <#elseif study.populations?size gt 1>
               <@message "global.not-applicable"/>
             </#if>
@@ -551,7 +552,7 @@
     <#list networks as network>
       <td>
         <#if network.model.website??>
-          <a class="d-print-none" href="${safeUrl(network.model.website)}" target="_blank">${esc(network.model.website)}</a>
+          <a class="d-print-none" href="${safeUrl(network.model.website)}" target="_blank">${network.model.website}</a>
         </#if>
       </td>
     </#list>
