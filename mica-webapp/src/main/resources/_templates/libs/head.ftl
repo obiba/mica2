@@ -38,8 +38,9 @@
   <#return url?html/>
 </#function>
 
-<!-- Same as localize but not escaped: only for Markdown in a <template> (sanitized when rendered), for scripts
-     with ?js_string, or with ?html after another built-in (e.g. ?truncate_w) -->
+<!-- Same as localize but not escaped: only for Markdown in a <template> (sanitized when rendered) and inside templateSafe(),
+     a method provided by Mica that keeps the value from closing the block; for scripts with ?js_string; or with ?html
+     after another built-in (e.g. ?truncate_w) -->
 <#function localizeRaw txt={} default="">
   <#if txt?? && txt?keys??>
     <#if txt[.lang]??>

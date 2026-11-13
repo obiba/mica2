@@ -328,8 +328,8 @@
     chartsElem.children().remove();
     if (Mica.variablesCoverage) {
       Mica.variablesCoverage.forEach(chartData => {
-        chartsElem.append('<h5>' + chartData.title + '</h5>');
-        chartsElem.append('<p>' + chartData.subtitle + '</p>');
+        chartsElem.append('<h5>' + sanitizeHtml(chartData.title) + '</h5>');
+        chartsElem.append('<p>' + sanitizeHtml(chartData.subtitle) + '</p>');
         chartsElem.append('<div id="bar-graph-' + chartData.taxonomy + '" class="mb-4"></div>');
 
         const chartConfig = makeVariablesClassificationsChartSettings(chartData, {
@@ -379,7 +379,10 @@
   };
 
   const toMembershipsAnchors = function(urlPrefix, membershipsArray) {
-    const roleTr = {'contact': "<@message "contact.label.contact"/>", 'investigator': "<@message "contact.label.investigator"/>"};
+    const roleTr = {
+      'contact': "${springMacroRequestContext.getMessage("contact.label.contact", "contact")?js_string}",
+      'investigator': "${springMacroRequestContext.getMessage("contact.label.investigator", "investigator")?js_string}"
+    };
 
     const memberships = (membershipsArray || []).reduce((accumulator, membership) => {
       const item = accumulator[membership.parentId] || {};
@@ -389,7 +392,7 @@
         item.roles = [];
       }
 
-      item.roles.push(roleTr[membership.role]);
+      item.roles.push(roleTr[membership.role] || membership.role);
       item.acronym = LocalizedValues.forLang(membership.parentAcronym, '${.lang}');
 
       return accumulator;
@@ -398,9 +401,9 @@
     return (Object.keys(memberships) || []).map(key => {
       let url = MicaService.normalizeUrl(urlPrefix + key);
       let acronym = memberships[key].acronym;
-      let roles = '<span class="ms-1">(' + (memberships[key].roles || []).join(", ") + ')</span>';
+      let roles = '<span class="ms-1">(' + escapeHtml((memberships[key].roles || []).filter(Boolean).join(", ")) + ')</span>';
 
-      return '<a href="' + url + '">' + acronym + '</a>' + roles;
+      return '<a href="' + escapeHtml(url) + '">' + escapeHtml(acronym) + '</a>' + roles;
     });
   };
 
@@ -424,15 +427,15 @@
 
     <!-- Affiliated Members -->
     <#if affiliatedMembersQuery??>
-      NetworkService.getAffiliatedMembers('${affiliatedMembersQuery}', function(data) {
+      NetworkService.getAffiliatedMembers('${affiliatedMembersQuery?js_string}', function(data) {
         if (data && data.total > 0) {
           const dataset = data.persons.map(person => {
             const item = [];
-            item.push(person.firstName + ' ' + person.lastName);
-            item.push(person.email || '');
+            item.push(escapeHtml([person.firstName, person.lastName].filter(Boolean).join(' ')));
+            item.push(escapeHtml(person.email || ''));
 
             const studyMemberships = toMembershipsAnchors('/study/', person.studyMemberships);
-            const networkMemberships = toMembershipsAnchors('/network', person.networkMemberships);
+            const networkMemberships = toMembershipsAnchors('/network/', person.networkMemberships);
 
             item.push(studyMemberships.length > 0 ? studyMemberships.join(', ') : '');
             item.push(networkMemberships.length > 0 ? networkMemberships.join(', ') : '');

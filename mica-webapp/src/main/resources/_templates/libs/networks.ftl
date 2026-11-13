@@ -13,7 +13,7 @@
   <tr>
     <td><a href="${contextPath}/network/${network.id}">${localize(network.acronym)}</a></td>
     <td><small>${localize(network.name)}</small></td>
-    <td><small class="marked"><template>${localizeRaw(network.description)?trim?truncate_w(100, "...")}</template></small></td>
+    <td><small class="marked"><template>${templateSafe(localizeRaw(network.description)?trim?truncate_w(100, "..."))}</template></small></td>
   </tr>
 </#macro>
 
@@ -31,7 +31,7 @@
   <div class="col-lg-9 col-sm-12">
     <h2 class="lead"><b>${localize(network.acronym)}</b></h2>
     <p class="text-muted text-sm">${localize(network.name)}</p>
-    <div class="marked"><template>${localizeRaw(network.description)?trim?truncate_w(200, "...")}</template></div>
+    <div class="marked"><template>${templateSafe(localizeRaw(network.description)?trim?truncate_w(200, "..."))}</template></div>
     <div class="mt-2">
       <a href="${contextPath}/network/${network.id}" class="btn btn-sm btn-outline-info">
         <@message "global.read-more"/>

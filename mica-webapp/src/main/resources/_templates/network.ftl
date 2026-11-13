@@ -156,7 +156,7 @@
                 </div>
 
                 <div class="card-text marked mt-3">
-                  <template>${localizeRaw(network.description)}</template>
+                  <template>${templateSafe(localizeRaw(network.description))}</template>
                 </div>
                   <#if network.model.website??>
                     <blockquote>

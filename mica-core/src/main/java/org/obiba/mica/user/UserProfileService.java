@@ -240,6 +240,7 @@ public class UserProfileService extends AgateRestService {
       });
       fullName = attributes.getOrDefault("firstName", "") + (attributes.containsKey("firstName") ? " " : "") + attributes.getOrDefault("lastName", encodedUsername);
     }
+    // the username is the only value that is not encoded (it is a key): a template must escape it
     params.put("username", profile.getUsername());
     params.put("fullName", fullName);
     params.put("groups", profile.getGroups());

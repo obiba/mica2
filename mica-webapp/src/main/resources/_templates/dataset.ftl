@@ -104,7 +104,7 @@
                 </div>
 
                 <div class="card-text marked mt-3">
-                  <template>${localizeRaw(dataset.description)}</template>
+                  <template>${templateSafe(localizeRaw(dataset.description))}</template>
                 </div>
 
               <#if type == "Harmonized">
@@ -152,7 +152,7 @@
                         <h3 class="card-title"><@message "harmonization-protocol.information-content"/></h3>
                       </div>
                       <div class="card-body">
-                        <div class="marked"><template>${localizeRaw(dataset.model.informationContent)}</template></div>
+                        <div class="marked"><template>${templateSafe(localizeRaw(dataset.model.informationContent))}</template></div>
                       </div>
                     </div>
                   </div>
@@ -164,7 +164,7 @@
                         <h3 class="card-title"><@message "global.additional-information"/></h3>
                       </div>
                       <div class="card-body">
-                        <div class="marked"><template>${localizeRaw(dataset.model.additionalInformation)}</template></div>
+                        <div class="marked"><template>${templateSafe(localizeRaw(dataset.model.additionalInformation))}</template></div>
                       </div>
                     </div>
                   </div>
@@ -183,7 +183,7 @@
                 </div>
                 <div class="card-body">
                   <h5>${localize(population.name)}</h5>
-                  <div class="marked"><template>${localizeRaw(population.description)}</template></div>
+                  <div class="marked"><template>${templateSafe(localizeRaw(population.description))}</template></div>
                   <@populationDialog id=population.id population=population></@populationDialog>
                 </div>
                 <div class="card-footer">
@@ -200,7 +200,7 @@
                 </div>
                 <div class="card-body">
                   <h5>${localize(dce.name)}</h5>
-                  <div class="marked"><template>${localizeRaw(dce.description)}</template></div>
+                  <div class="marked"><template>${templateSafe(localizeRaw(dce.description))}</template></div>
                   <#assign dceId="${population.id}-${dce.id}">
                   <@dceDialog id=dceId dce=dce></@dceDialog>
                 </div>
@@ -337,7 +337,7 @@
                              data-bs-placement="top"
                              data-bs-content="${localize(table.description)}"
                              title="<@message "dataset.harmonized-table" />">
-                              <span class="d-inline-block marked"><template>${localizeRaw(allStudies[table.studyId].acronym)}</template></span>
+                              <span class="d-inline-block marked"><template>${templateSafe(localizeRaw(allStudies[table.studyId].acronym))}</template></span>
                           </a>
                           <#else>
                               ${localize(allStudies[table.studyId].acronym)}

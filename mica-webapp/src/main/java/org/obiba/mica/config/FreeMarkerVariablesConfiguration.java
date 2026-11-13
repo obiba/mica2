@@ -11,6 +11,7 @@
 package org.obiba.mica.config;
 
 import org.obiba.mica.core.support.HtmlDecodeMethod;
+import org.obiba.mica.core.support.TemplateSafeMethod;
 import org.springframework.boot.freemarker.autoconfigure.FreeMarkerVariablesCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,5 +26,10 @@ public class FreeMarkerVariablesConfiguration {
   @Bean
   public FreeMarkerVariablesCustomizer htmlDecodeVariable() {
     return variables -> variables.put(HtmlDecodeMethod.NAME, new HtmlDecodeMethod());
+  }
+
+  @Bean
+  public FreeMarkerVariablesCustomizer templateSafeVariable() {
+    return variables -> variables.put(TemplateSafeMethod.NAME, new TemplateSafeMethod());
   }
 }

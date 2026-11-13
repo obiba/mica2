@@ -20,7 +20,7 @@
   </td>
   <td>
     <#if study.model.numberOfParticipants.participant.number??>
-      ${study.model.numberOfParticipants.participant.number}
+      ${esc(study.model.numberOfParticipants.participant.number)}
     </#if>
   </td>
   <td>

@@ -33,7 +33,7 @@
                   <@message "population.ageMin"/>
                 </dt>
                 <dd class="col-sm-8">
-                  <div>${population.model.selectionCriteria.ageMin}</div>
+                  <div>${esc(population.model.selectionCriteria.ageMin)}</div>
                 </dd>
               </#if>
 
@@ -42,7 +42,7 @@
                   <@message "population.ageMax"/>
                 </dt>
                 <dd class="col-sm-8">
-                  <div>${population.model.selectionCriteria.ageMax}</div>
+                  <div>${esc(population.model.selectionCriteria.ageMax)}</div>
                 </dd>
               </#if>
 
@@ -231,7 +231,7 @@
                       <@message "suppl-info"/>
                   </dt>
                   <dd class="col-sm-6">
-                    <div class="marked"><template>${localizeRaw(population.model.recruitment.info)}</template></div>
+                    <div class="marked"><template>${templateSafe(localizeRaw(population.model.recruitment.info))}</template></div>
                   </dd>
                 </#if>
 
@@ -269,7 +269,7 @@
                     <@message "numberOfParticipants.participants"/>
                   </dt>
                   <dd class="col-sm-6">
-                    ${population.model.numberOfParticipants.participant.number}
+                    ${esc(population.model.numberOfParticipants.participant.number)}
                     <#if population.model.numberOfParticipants.participant.noLimit == true>
                         (<@message "numberOfParticipants.no-limit"/>)
                     </#if>
@@ -292,7 +292,7 @@
                     <@message "numberOfParticipants.sample"/>
                   </dt>
                   <dd class="col-sm-6">
-                    ${population.model.numberOfParticipants.sample.number}
+                    ${esc(population.model.numberOfParticipants.sample.number)}
                     <#if population.model.numberOfParticipants.sample.noLimit == true>
                       (<@message "numberOfParticipants.no-limit"/>)
                     </#if>
@@ -365,7 +365,7 @@
           </button>
         </div>
         <div class="modal-body">
-          <div class="mb-3 marked"><template>${localizeRaw(population.description)}</template></div>
+          <div class="mb-3 marked"><template>${templateSafe(localizeRaw(population.description))}</template></div>
           <@populationModel population=population id=id/>
         </div>
         <div class="modal-footer">

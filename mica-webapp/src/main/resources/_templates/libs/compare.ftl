@@ -19,7 +19,7 @@
     <#list studies as study>
       <td>
         <small class="marked truncate truncate-300">
-          <template>${localizeRaw(study.objectives)}</template></small>
+          <template>${templateSafe(localizeRaw(study.objectives))}</template></small>
       </td>
     </#list>
   </tr>
@@ -112,7 +112,7 @@
           <small>${esc(study.model.markerPaper)}</small>
           <#if study.model.pubmedId??>
             <div>
-              <a href="http://www.ncbi.nlm.nih.gov/pubmed/${study.model.pubmedId}" target="_blank">PUBMED ${study.model.pubmedId}</a>
+              <a href="http://www.ncbi.nlm.nih.gov/pubmed/${esc(study.model.pubmedId)}" target="_blank">PUBMED ${esc(study.model.pubmedId)}</a>
             </div>
           </#if>
         </#if>
@@ -150,7 +150,7 @@
       <td>
         <#if study.model.numberOfParticipants??>
           <#if study.model.numberOfParticipants.participant.number??>
-            ${study.model.numberOfParticipants.participant.number}
+            ${esc(study.model.numberOfParticipants.participant.number)}
             <#if study.model.numberOfParticipants.participant.noLimit == true>
               (<@message "numberOfParticipants.no-limit"/>)
             </#if>
@@ -172,7 +172,7 @@
       <td>
         <#if study.model.numberOfParticipants??>
           <#if study.model.numberOfParticipants.sample.number??>
-            ${study.model.numberOfParticipants.sample.number}
+            ${esc(study.model.numberOfParticipants.sample.number)}
             <#if study.model.numberOfParticipants.sample.noLimit == true>
               (<@message "numberOfParticipants.no-limit"/>)
             </#if>
@@ -238,7 +238,7 @@
             <#list study.populations as population>
               <#if !first> | </#if>
               <#if population.model.selectionCriteria?? && population.model.selectionCriteria.ageMin??>
-                ${population.model.selectionCriteria.ageMin}
+                ${esc(population.model.selectionCriteria.ageMin)}
               <#elseif study.populations?size gt 1>
                 <@message "global.not-applicable"/>
               </#if>
@@ -260,7 +260,7 @@
           <#list study.populations as population>
             <#if !first> | </#if>
             <#if population.model.selectionCriteria?? && population.model.selectionCriteria.ageMax??>
-              ${population.model.selectionCriteria.ageMax}
+              ${esc(population.model.selectionCriteria.ageMax)}
             <#elseif study.populations?size gt 1>
               <@message "global.not-applicable"/>
             </#if>
@@ -500,7 +500,7 @@
       <#list studies as study>
         <td>
           <small class="marked truncate truncate-300">
-            <template>${localizeRaw(study.objectives)}</template></small>
+            <template>${templateSafe(localizeRaw(study.objectives))}</template></small>
         </td>
       </#list>
   </tr>
@@ -539,7 +539,7 @@
     <#list networks as network>
       <td>
         <small class="marked truncate truncate-300">
-          <template>${localizeRaw(network.description)}</template></small>
+          <template>${templateSafe(localizeRaw(network.description))}</template></small>
       </td>
     </#list>
   </tr>

@@ -88,7 +88,7 @@
         </div>
         <div class="modal-body">
           <div class="mb-3 marked">
-            <template>${localizeRaw(dce.description)}</template>
+            <template>${templateSafe(localizeRaw(dce.description))}</template>
           </div>
           <dl class="row">
             <#if dce.start??>
@@ -134,7 +134,7 @@
       <#assign dceId="${population.id}-${dce.id}">
       <h5><@message "study.data-collection-event"/></h5>
       <div class="mb-3 marked">
-        <template>${localizeRaw(dce.description)}</template>
+        <template>${templateSafe(localizeRaw(dce.description))}</template>
       </div>
       <dl class="row">
         <#if dce.start??>
@@ -182,7 +182,7 @@
                 </a>
                 <@dceDialog id=dceId dce=dce></@dceDialog>
               </td>
-              <td class="marked"><template>${localizeRaw(dce.description)?trim?truncate(200, "...")}</template></td>
+              <td class="marked"><template>${templateSafe(localizeRaw(dce.description)?trim?truncate(200, "..."))}</template></td>
               <td><#if dce.start?? && dce.start.yearMonth??>${dce.start.yearMonth}</#if></td>
               <td><#if dce.end?? && dce.end.yearMonth??>${dce.end.yearMonth}</#if></td>
             </tr>
