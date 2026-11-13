@@ -1,16 +1,17 @@
+<#ftl output_format="HTML">
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
   <#include "libs/head.ftl">
   <title>${config.name!""} | <@message "contact-title"/></title>
   <#if reCaptchaKey?has_content>
-  <script type="text/javascript">
+  <#outputformat "plainText"><script type="text/javascript">
     var onloadCallback = function() {
       grecaptcha.render('html_element', {
         'sitekey' : '${reCaptchaKey}'
       });
     };
-  </script>
+  </script></#outputformat>
   </#if>
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed">
@@ -56,11 +57,11 @@
             <form id="form" method="post">
               <div class="form-group">
                 <label for="contact-name"><@message "contact-name"/></label>
-                <input name="name" type="text" class="form-control" id="contact-name" <#if user??>value="${user.fullName!""}"</#if>>
+                <input name="name" type="text" class="form-control" id="contact-name" <#if user??>value="${htmlDecode(user.fullName!"")}"</#if>>
               </div>
               <div class="form-group">
                 <label for="contact-email"><@message "contact-email"/></label>
-                <input name="email" type="email" class="form-control" id="contact-email" <#if user?? && user.attributes??>value="${user.attributes["email"]!""}"</#if>>
+                <input name="email" type="email" class="form-control" id="contact-email" <#if user?? && user.attributes??>value="${htmlDecode(user.attributes["email"]!"")}"</#if>>
               </div>
               <div class="form-group">
                 <label for="contact-subject"><@message "contact-subject"/></label>
