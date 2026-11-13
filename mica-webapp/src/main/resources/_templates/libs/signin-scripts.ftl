@@ -1,3 +1,6 @@
+<#ftl output_format="HTML">
+<#-- scripts: values are escaped by hand (js_string), not for HTML -->
+<#outputformat "plainText">
 <script>
   UserService.signin("form", "otp", function (response, banned) {
     if (response.status === 401 && response.headers["www-authenticate"] === "X-Obiba-TOTP") {
@@ -58,3 +61,4 @@
     }
   });
 </script>
+</#outputformat>
