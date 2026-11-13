@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <#macro leftmenus>
   <li id="homeMenu" class="nav-item">
     <a href="${contextPath}/" class="nav-link"><@message "home"/></a>

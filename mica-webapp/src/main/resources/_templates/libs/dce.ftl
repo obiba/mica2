@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!-- DCE macros -->
 
 <!-- DCE model -->

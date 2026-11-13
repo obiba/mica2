@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!-- Member macros -->
 
 <!-- Member model -->
@@ -5,19 +6,19 @@
   <dl class="row">
     <#if member.person.title??>
       <dt class="col-sm-4"><@message "contact.title"/></dt>
-      <dd class="col-sm-8">${member.person.title?html}</dd>
+      <dd class="col-sm-8">${member.person.title}</dd>
     </#if>
     <dt class="col-sm-4"><@message "contact.name"/></dt>
-    <dd class="col-sm-8">${(member.person.firstName!" ")?html} ${member.person.lastName?html}</dd>
+    <dd class="col-sm-8">${(member.person.firstName!" ")} ${member.person.lastName}</dd>
 
       <#if member.person.email??>
         <dt class="col-sm-4"><@message "contact.email"/></dt>
-        <dd class="col-sm-8">${member.person.email?html}</dd>
+        <dd class="col-sm-8">${member.person.email}</dd>
       </#if>
 
       <#if member.person.phone??>
         <dt class="col-sm-4"><@message "contact.phone"/></dt>
-        <dd class="col-sm-8">${member.person.phone?html}</dd>
+        <dd class="col-sm-8">${member.person.phone}</dd>
       </#if>
 
       <#if member.person.institution??>
@@ -53,7 +54,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title"><#if member.person.firstName??>${member.person.firstName?html} </#if>${member.person.lastName?html}</h4>
+          <h4 class="modal-title"><#if member.person.firstName??>${member.person.firstName} </#if>${member.person.lastName}</h4>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
             
           </button>
@@ -80,7 +81,7 @@
       <li>
         <#assign i++>
         <a href="#" data-bs-toggle="modal" data-bs-target="#modal-${role}-${i}">
-          ${(member.person.title!"")?html} ${(member.person.firstName!"")?html} ${member.person.lastName?html}
+          ${(member.person.title!"")} ${(member.person.firstName!"")} ${member.person.lastName}
         </a>
         <#if member.person.institution?? && member.person.institution.name??>
           <div><small>${localize(member.person.institution.name)}</small></div>

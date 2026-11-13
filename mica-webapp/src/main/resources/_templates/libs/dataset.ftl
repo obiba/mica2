@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!-- Dataset page macros -->
 
 <!-- Dataset model template -->
@@ -45,7 +46,7 @@
             <@message "harmonization-protocol.version"/>
         </dt>
         <dd class="col-sm-9">
-            ${esc(dataset.model.version)}
+            ${dataset.model.version}
         </dd>
       </#if>
 
@@ -54,7 +55,7 @@
             <@message "harmonization-protocol.participants"/>
         </dt>
         <dd class="col-sm-9">
-            ${esc(dataset.model.participants)}
+            ${dataset.model.participants}
         </dd>
       </#if>
 

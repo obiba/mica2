@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!-- Studies page macros -->
 
 <!-- Studies in table model templates -->

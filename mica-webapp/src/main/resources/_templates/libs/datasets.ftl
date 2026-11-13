@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!-- Datasets page macros -->
 
 <!-- Datasets in table model templates -->

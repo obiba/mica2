@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!-- Additional columns for registered users -->
 <#macro userProfileTHs>
 
@@ -10,16 +11,16 @@
 <#macro userProfile profile>
   <dl class="row">
     <dt class="col-sm-4"><@message "full-name"/></dt>
-    <dd class="col-sm-8">${profile.fullName}</dd>
+    <dd class="col-sm-8">${htmlDecode(profile.fullName)}</dd>
     <#if profile.username == user.username || isAdministrator || isDAO>
       <dt class="col-sm-4"><@message "username"/></dt>
-      <dd class="col-sm-8">${profile.username?html}</dd>
+      <dd class="col-sm-8">${profile.username}</dd>
     </#if>
     <#if showProfileGroups && profile.groups??>
       <dt class="col-sm-4"><@message "groups"/></dt>
       <dd class="col-sm-8">
         <#list profile.groups as group>
-          <span class="badge text-bg-info">${group?html}</span>
+          <span class="badge text-bg-info">${group}</span>
         </#list>
       </dd>
     </#if>
@@ -42,17 +43,17 @@
               <#if key == "createdDate" || key == "lastLogin">
                 <span class="moment-datetime">${profile.attributes[key].toString()}</span>
               <#elseif key == "email">
-                <a href="mailto:${profile.attributes[key]}">${profile.attributes[key]}</a>
+                <a href="mailto:${htmlDecode(profile.attributes[key])}">${htmlDecode(profile.attributes[key])}</a>
               <#elseif key == "locale">
-                <@message profile.attributes[key]/>
+                <@message htmlDecode(profile.attributes[key])/>
               <#elseif profile.attributes[key] == "true">
                 <i class="fa-solid fa-check"></i>
               <#elseif profile.attributes[key] == "false">
                 <i class="fa-solid fa-times"></i>
               <#elseif key == "realm">
-                <code>${profile.attributes[key]}</code>
+                <code>${htmlDecode(profile.attributes[key])}</code>
               <#else>
-                ${profile.attributes[key]}
+                ${htmlDecode(profile.attributes[key])}
               </#if>
             </dd>
           </#if>
@@ -66,7 +67,7 @@
               <@message key/>
             </dt>
             <dd class="col-sm-8">
-              <a href="mailto:${profile.attributes[key]}">${profile.attributes[key]}</a>
+              <a href="mailto:${htmlDecode(profile.attributes[key])}">${htmlDecode(profile.attributes[key])}</a>
             </dd>
           </#if>
         </#list>
@@ -81,7 +82,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">${profile.fullName}</h4>
+          <h4 class="modal-title">${htmlDecode(profile.fullName)}</h4>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
             
           </button>
