@@ -1,7 +1,7 @@
 <#ftl output_format="HTML">
 <!-- List page macros and utils -->
 
-<!-- Function to normalize list name; the name can be stored HTML-encoded, the result is decoded: display it with listName(set)?html -->
+<!-- Function to normalize list name; the name can be stored HTML-encoded, the result is decoded: print it with listName(set), escaped when printed -->
 <#function listName set>
   <#if set.name?starts_with("dar:")>
     <#local name = set.name?replace("dar:", "")/>
