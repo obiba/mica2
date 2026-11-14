@@ -5,6 +5,53 @@ one installed and the one being deployed.
 
 ## 8.0.0
 
+### Before upgrading
+
+**Back up.** Needed to roll back (see below). Stop Mica, then back up the database and
+the configuration folder, which holds the custom templates:
+
+```sh
+mongodump --db mica --out mica-backup
+tar czf mica-conf-backup.tar.gz -C $MICA_HOME conf
+```
+
+With Docker Compose, back up the database with
+`docker compose exec -T mongo mongodump --db mica --archive > mica-backup.archive`, and
+copy the folder mounted as `$MICA_HOME`. Add the connection options (e.g. `--uri`) if
+MongoDB requires them.
+
+**Update the custom templates.** Templates are now HTML-escaped automatically: every
+`${...}` is escaped when printed. Every template in `$MICA_HOME/conf/templates`
+(overrides of bundled templates and custom pages) must be updated. The changes are
+mostly mechanical, and the `check-templates.sh` script lists the lines to change:
+
+```sh
+/usr/share/mica2/tools/check-templates.sh $MICA_HOME/conf/templates
+```
+
+It is in the `tools` folder of the distribution (`tools` in the install folder of a ZIP
+install). Run it again until it reports no error, then review the warnings. In the
+templates:
+
+- Remove every `?html`: it is now an error and the page is not displayed.
+- Put each `<script>` block that prints values inside `<#outputformat "plainText">` ...
+  `</#outputformat>`. Without it, JSON values such as `configJson` break the page
+  scripts, and quotes show as `&#39;` or `&quot;`. In these blocks, print text values
+  with `?js_string`, including `localize(...)`, which no longer escapes quotes: a quote
+  in a value would break the script.
+- Print Markdown inside a `<template>` with `templateSafe(...)`, otherwise it shows
+  escaped. Print other trusted HTML with `?no_esc`. Translations printed with
+  `<@message>` need nothing more.
+- Values that Mica sends HTML-encoded must be printed with `htmlDecode(...)`, otherwise
+  they show `&amp;`, `&eacute;`...: user names (`fullName`) and profile attributes, and
+  the request titles of the data access list page.
+- `esc(...)` now returns the value unchanged and can be removed.
+
+After the upgrade, open each customised page: an error in a template only leaves part
+of the page blank, and is written to `$MICA_HOME/logs/mica.log` as
+`Error executing FreeMarker template`. Templates updated for 8.0.0 do not work with
+7.x.
+
 ### Upgrade
 
 Install the new version and restart as usual. No database migration runs at startup.
@@ -35,6 +82,16 @@ or project now also gets the editor role on its files. Documents created before 
 version only give their creator access to the document itself, not to its files. To
 give the creator access to the files, open the document's permissions, edit the
 creator's entry and check the files option.
+
+### Rolling back
+
+Stop Mica, reinstall 7.x and restore the configuration folder
+(`tar xzf mica-conf-backup.tar.gz -C $MICA_HOME`): the 8.0.0 templates do not work with
+7.x. If a data access form was saved in the new form builder, also restore the database
+(`mongorestore --drop mica-backup`, or with Docker Compose
+`docker compose exec -T mongo mongorestore --drop --archive < mica-backup.archive`): 7.x
+does not render the JSON Forms version. Restoring the database discards everything
+written to it after the backup. Then start Mica.
 
 ## 7.0.0
 

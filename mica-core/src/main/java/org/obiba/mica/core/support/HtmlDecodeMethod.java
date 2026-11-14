@@ -19,7 +19,7 @@ import org.jsoup.parser.Parser;
 
 /**
  * FreeMarker method that decodes the HTML entities of a value that may be stored HTML-encoded, so that it can be
- * HTML-escaped exactly once in the template: <code>${htmlDecode(value)?html}</code>.
+ * HTML-escaped exactly once when printed (templates are auto-escaped): <code>${htmlDecode(value)}</code>.
  * <p>
  * List names are stored raw before Mica 6.0, encoded since 6.0, and set operation names contain entities on purpose
  * (<code>S1 &amp;Union; S2</code>): decoding them all gives the text to display. Values that are not strings are
