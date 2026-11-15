@@ -190,6 +190,13 @@ FNR == 1 { depth = 0; fmt[0] = "HTML"; plain = 0; script = 0; comment = 0; nopar
     if (v ~ /\?no_esc([^a-zA-Z_]|$)/) report("ERROR", "user input printed with ?no_esc, it is no longer HTML-encoded by Mica: remove ?no_esc")
     else if (v ~ /htmlDecode\(/) report("INFO", "user names and attributes, data access titles and query are no longer HTML-encoded by Mica, htmlDecode() can be removed: " v)
   }
+  # list names are stored HTML-encoded: printed as is, & shows as &amp; (a URL parameter is fine)
+  s = line
+  while (match(s, /\$\{[^}]*\}/)) {
+    v = substr(s, RSTART, RLENGTH); s = substr(s, RSTART + RLENGTH)
+    if (v ~ /(^\$\{|[^a-zA-Z_.])(set|[a-zA-Z]*(List|Set))\.name([^a-zA-Z_]|$)/ && v !~ /(htmlDecode|listName)\(|\?url/)
+      report("WARN", "list names are stored HTML-encoded, & shows as &amp;: print them with listName(set) or htmlDecode(): " v)
+  }
   if (line ~ /(^|[^a-zA-Z_.])esc\(/) report("INFO", "esc() is deprecated and returns the value unchanged, remove it")
 
   if (lc ~ /<\/script[ \t]*>/) { script = 0; xtemplate = 0 }

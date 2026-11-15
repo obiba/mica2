@@ -53,7 +53,7 @@ the script then reports `not a directory`.
 
 It is in the `tools` folder of the distribution (`tools` in the install folder of a ZIP
 install). Run it again until it reports no error, then review the warnings. It reads
-each line on its own and does not see, so check them by hand: a value written over
+each line on its own and misses these cases, check them by hand: a value written over
 several lines, a value made raw in an assignment (`<#assign t = x?no_esc>`), and a
 value of an included file printed inside a Vue application mounted in another file
 (e.g. a custom `libs/navbar-menus-right.ftl`, included in the search page). In the
@@ -89,6 +89,8 @@ templates:
   the list and cart pages, `search-application`), print values in an element with
   `v-pre`: `<span v-pre>${listName(set)}</span>`. Vue compiles that HTML, and escaping
   does not stop a `{{ ... }}` typed in a value (e.g. a list name) from running.
+- List names are stored HTML-encoded: print them with `listName(set)` (from
+  `libs/list.ftl`) or `htmlDecode(set.name)`, otherwise `&` shows as `&amp;`.
 - `esc(...)` now returns the value unchanged and can be removed.
 
 After the upgrade, open each customised page: an error in a template only leaves part
