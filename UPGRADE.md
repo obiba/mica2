@@ -52,7 +52,11 @@ Without a `conf/templates` folder there are no custom templates and nothing to u
 the script then reports `not a directory`.
 
 It is in the `tools` folder of the distribution (`tools` in the install folder of a ZIP
-install). Run it again until it reports no error, then review the warnings. In the
+install). Run it again until it reports no error, then review the warnings. It reads
+each line on its own and does not see, so check them by hand: a value written over
+several lines, a value made raw in an assignment (`<#assign t = x?no_esc>`), and a
+value of an included file printed inside a Vue application mounted in another file
+(e.g. a custom `libs/navbar-menus-right.ftl`, included in the search page). In the
 templates:
 
 - Remove every `?html`: it is now an error and the page is not displayed.
@@ -65,18 +69,22 @@ templates:
   escaped. Print other trusted HTML with `?no_esc`. Translations printed with
   `<@message>` need nothing more. In a custom `libs/head.ftl`, print the translation
   with `?no_esc` in the `message` macro (`${text?no_esc}`), or copy the macro from the
-  8.0.0 version; the same for `getMessage(...)` printed directly (e.g. a custom
-  `error.ftl`). Otherwise translations holding HTML (links, bold) show their tags.
+  8.0.0 version; the same for `getMessage(...)` printed directly. Otherwise
+  translations holding HTML (links, bold) show their tags. In a custom `error.ftl`,
+  copy the status and message lines from the 8.0.0 version: Mica no longer
+  HTML-encodes `status` and `msg`, they can come from the request and must not be
+  printed with `?no_esc` (nor `getMessage(msg, msg)?no_esc`).
 - `<@message>` prints the translation as is: in a script or an attribute, a quote in it
   (`L'invitation`) breaks the script or the tag. Print a translation in a script, in a
   script attribute (`onclick`, a Vue `:title`) or in a Vue `{{ ... }}` with
   `${messageJs("code")}`, and in another attribute (`title`, `placeholder`) with
   `${messageAttr("code")}`. A custom `libs/head.ftl` must define these two functions:
   copy them from the 8.0.0 version.
-- Values that Mica sends HTML-encoded must be printed with `htmlDecode(...)`, otherwise
-  they show `&amp;`, `&eacute;`...: user names (`fullName`) and profile attributes, the
+- Mica no longer HTML-encodes user names (`fullName`) and profile attributes, the
   request titles of the data access list page, and the URL parameters of custom pages
-  (`${htmlDecode(query.topic)}`).
+  (`query`): the template escapes them like any other value. Remove `?no_esc` on them,
+  and print them with `?js_string` in a script; otherwise they can inject HTML or
+  JavaScript.
 - Inside an element where a Vue application is mounted (e.g. `query-vue-container` of
   the list and cart pages, `search-application`), print values in an element with
   `v-pre`: `<span v-pre>${listName(set)}</span>`. Vue compiles that HTML, and escaping

@@ -24,25 +24,21 @@ public class DataAccessCollaboratorBundleTest {
   private final DataAccessCollaborator collaborator = DataAccessCollaborator.newBuilder("dar1").email(EMAIL).invited().build();
 
   /**
-   * The template prints the full name as is (#4742).
+   * Without profile, the email is the full name (#4742). Raw: the template escapes it when printed.
    */
   @Test
-  public void test_getFullName_without_profile_encodes_email() {
+  public void test_getFullName_without_profile_is_email() {
     DataAccessCollaboratorBundle bundle = new DataAccessCollaboratorBundle(collaborator, Map.of());
 
-    assertThat(bundle.getFullName()).isEqualTo("&lt;img src&#x3d;x onerror&#x3d;alert&#x28;1&#x29;&gt;&#x40;x.org");
-    // the template encodes it for the mailto link and the scripts
+    assertThat(bundle.getFullName()).isEqualTo(EMAIL);
     assertThat(bundle.getEmail()).isEqualTo(EMAIL);
   }
 
-  /**
-   * The profile full name is already encoded by UserProfileService.asMap.
-   */
   @Test
-  public void test_getFullName_from_profile_is_not_encoded_again() {
-    DataAccessCollaboratorBundle bundle = new DataAccessCollaboratorBundle(collaborator, Map.of("fullName", "Tom &amp; Jerry"));
+  public void test_getFullName_from_profile() {
+    DataAccessCollaboratorBundle bundle = new DataAccessCollaboratorBundle(collaborator, Map.of("fullName", "Tom & Jerry"));
 
-    assertThat(bundle.getFullName()).isEqualTo("Tom &amp; Jerry");
+    assertThat(bundle.getFullName()).isEqualTo("Tom & Jerry");
   }
 
 }

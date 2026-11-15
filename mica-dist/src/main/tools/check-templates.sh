@@ -4,16 +4,19 @@
 # Usage: check-templates.sh DIR    (e.g. $MICA_HOME/conf/templates)
 #
 # Prints file:line: LEVEL message, then a count. Exit code 1 when an ERROR is found.
-#   ERROR  the template fails, or the page or its scripts break
+#   ERROR  the template fails, the page or its scripts break, or user input can inject HTML or JavaScript
 #   WARN   the page shows wrong text (escaped twice or not decoded) or a script can break on some values
 #   INFO   to review, works as before
-# A line is checked as a whole: a value written over several lines is not seen.
+# A line is checked as a whole: a value written over several lines is not seen, nor a value made raw in an assignment
+# (<#assign t = x?no_esc>), nor a value of an included file printed inside a Vue app mounted in another file.
 set -u
 dir=${1:?usage: check-templates.sh DIR}
 [ -d "$dir" ] || { echo "not a directory: $dir" >&2; exit 2; }
 
-# hidden folders (.git, editor history) are skipped; one awk run for all the files, for a single count and exit code
-mapfile -d '' files < <(find "$dir" -name '.?*' -prune -o -name '*.ftl' -print0 | sort -z)
+# hidden folders (.git, editor history) below DIR are skipped, DIR itself can be hidden (-mindepth 1); one awk run for
+# all the files, for a single count and exit code; a read loop, not mapfile -d: bash 3.2 on macOS
+files=()
+while IFS= read -r -d '' f; do files+=("$f"); done < <(find "$dir" -mindepth 1 -name '.?*' -prune -o -name '*.ftl' -print0 | sort -z)
 [ ${#files[@]} -gt 0 ] || { echo "no .ftl file in $dir"; exit 0; }
 awk '
 function report(level, msg) {
@@ -35,6 +38,12 @@ function systemId(v) {
   return (v ~ /^\$\{[a-zA-Z_.]*(\.id|\.parentId|\.datasetId|\.language)\}$/ && v !~ /[vV]ariable\.id\}$/) ||
     v ~ /^\$\{(dceId|popId|type\?lower_case)\}$/
 }
+# user input that Mica 7 sent HTML-encoded: user names and profile attributes, data access list titles, URL parameters
+# of custom pages; variable and category attributes are localized texts, printed with localize()
+function userValue(v) {
+  if (v ~ /localize(Raw)?\([^)]*attributes\./ || v ~ /attributes(\[[^]]*\]|\.[a-zA-Z_]+)\.toString\(\)/) return 0
+  return v ~ /fullName/ || v ~ /attributes(\[|\.[a-zA-Z])/ || v ~ /dar\.title/ || v ~ /(^\$\{|[^a-zA-Z_.])query(\.|\[)/
+}
 # a custom libs/head.ftl replaces the built-in one: the built-in templates call the messageJs() and messageAttr() it defines
 # (called once the file is read: on the first line of the next one, FILENAME is already that one)
 function checkHead(file) {
@@ -45,7 +54,9 @@ function checkHead(file) {
 }
 FNR == 1 && NR > 1 { checkHead(previous) }
 FNR == 1 { messageJsDefined = 0; messageAttrDefined = 0; previous = FILENAME }
-FNR == 1 { plain = 0; script = 0; comment = 0; noparse = 0; xtemplate = 0; messageMacro = 0; vueApp = 0; vuePre = 0 }
+# output formats: fmt[0] is the one of the file (HTML, or set by the <#ftl> header), then one per open <#outputformat>
+function isPlain(f) { return f == "plainText" || f == "JavaScript" || f == "JSON" }
+FNR == 1 { depth = 0; fmt[0] = "HTML"; plain = 0; script = 0; comment = 0; noparse = 0; xtemplate = 0; messageMacro = 0; vueApp = 0; vuePre = 0 }
 {
   line = $0
   # FreeMarker comments and noparse blocks are not output
@@ -56,11 +67,26 @@ FNR == 1 { plain = 0; script = 0; comment = 0; noparse = 0; xtemplate = 0; messa
   if (noparse) { if (line ~ /<\/#noparse>/) noparse = 0; next }
   if (line ~ /<#noparse>/ && line !~ /<\/#noparse>/) { noparse = 1; next }
 
-  if (line ~ /<#outputformat[ \t]+"(plainText|JavaScript|JSON)"/) plain++
-  if (line ~ /<script([ \t>]|$)/ && line !~ /<script[^>]*src=/) {
+  # a plainText, JavaScript or JSON header applies to the whole file (a script-only include); other formats are reported below
+  if (FNR == 1 || depth == 0) if (match(line, /<#ftl[^>]*output_format=("[^"]*"|\047[^\047]*\047)/)) {
+    f = substr(line, RSTART, RLENGTH); sub(/.*output_format=./, "", f); f = substr(f, 1, length(f) - 1)
+    if (isPlain(f)) fmt[0] = f
+  }
+  # nested output formats are opened at the start of the line and closed at its end
+  s = line
+  while (match(s, /<#outputformat[ \t]+("[^"]*"|\047[^\047]*\047)/)) {
+    f = substr(s, RSTART, RLENGTH); s = substr(s, RSTART + RLENGTH)
+    sub(/^<#outputformat[ \t]+./, "", f); fmt[++depth] = substr(f, 1, length(f) - 1)
+  }
+  plain = isPlain(fmt[depth])
+  # each script tag of the line, any case; a script loaded with src does not hide an inline one after it
+  lc = tolower(line); s = lc
+  while (match(s, /<script([ \t][^>]*)?(>|$)/)) {
+    tag = substr(s, RSTART, RLENGTH); s = substr(s, RSTART + RLENGTH)
+    if (tag ~ /[ \t]src[ \t]*=/) continue
     script = 1
     # HTML templates for Vue: their content is HTML
-    xtemplate = line ~ /<script[^>]*type="text\/(x-template|template|html)"/
+    xtemplate = tag ~ /type="text\/(x-template|template|html)"/
   }
   inScript = script && !xtemplate
 
@@ -69,8 +95,11 @@ FNR == 1 { plain = 0; script = 0; comment = 0; noparse = 0; xtemplate = 0; messa
 
   # template errors
   if (line ~ /<#escape[ \t>]/) report("ERROR", "#escape is not allowed with auto-escaping, remove it with its #noescape")
-  if (line ~ /<#ftl[^>]*output_format/ && line !~ /output_format="HTML"/) report("ERROR", "the <#ftl output_format> header turns auto-escaping off or changes it, remove it")
-  if (!plain && line ~ /(\$\{[^}]*|<[#@][^>]*)\?html([^a-zA-Z_]|$)/) report("ERROR", "?html is an error, remove it (?html still works in a plainText block)")
+  if (line ~ /<#ftl[^>]*output_format/ && line !~ /output_format=("|\047)(HTML|plainText|JavaScript|JSON)("|\047)/) report("ERROR", "the <#ftl output_format> header turns auto-escaping off or changes it, remove it (plainText, JavaScript and JSON are fine for a script-only file)")
+  if (!plain && match(line, /(\$\{[^}]*|<[#@][^>]*)\?(html|xhtml|xml|web_safe)([^a-zA-Z_]|$)/)) {
+    b = substr(line, RSTART, RLENGTH); sub(/.*\?/, "?", b); sub(/[^a-zA-Z_?]$/, "", b)
+    report("ERROR", b " is an error with auto-escaping, remove it (it still works in a plainText block)")
+  }
   if (plain && line ~ /\?no_esc([^a-zA-Z_]|$)/) report("ERROR", "?no_esc is an error inside a plainText block, remove it")
 
   # scripts
@@ -93,6 +122,7 @@ FNR == 1 { plain = 0; script = 0; comment = 0; noparse = 0; xtemplate = 0; messa
       v = substr(s, RSTART, RLENGTH); s = substr(s, RSTART + RLENGTH)
       if (v ~ /\?(js_string|c|json_string)\}$/ || v ~ /^\$\{messageJs\(/ || configValue(v) || systemId(v)) continue
       if (v ~ /(localize(Raw)?\(|esc\()/) report("WARN", "localize()/esc() in a script no longer escape quotes, add ?js_string: " v)
+      else if (userValue(v)) report("ERROR", "user input in a script is no longer HTML-encoded by Mica, it can inject JavaScript: add ?js_string: " v)
       else report("INFO", "script value without ?js_string (or ?c for a number): " v)
     }
   }
@@ -112,7 +142,11 @@ FNR == 1 { plain = 0; script = 0; comment = 0; noparse = 0; xtemplate = 0; messa
   # translations can hold HTML: printed escaped, their tags show
   if (line ~ /<#macro[ \t]+message[ \t>]/) messageMacro = 1
   if (messageMacro && !plain && line ~ /\$\{text\}/) report("WARN", "translation printed escaped in the message macro, its HTML shows as text: print it with ${text?no_esc}")
-  if (!plain && line ~ /\$\{[^}]*getMessage\(/ && line !~ /getMessage\([^}]*\?(no_esc|js_string)/) report("WARN", "translation printed escaped, its HTML shows as text: add ?no_esc")
+  # the error page: status and msg can come from the request, Mica 7 sent them HTML-encoded
+  errorValue = FILENAME ~ /(^|\/)error\.ftl$/ && line ~ /\$\{([^}]*[^a-zA-Z_.])?(msg|status|code)([^a-zA-Z_]|$)/
+  if (errorValue && line ~ /\$\{([^}]*[^a-zA-Z_.])?(msg|status|code)([^a-zA-Z_][^}]*)?\?no_esc/) report("ERROR", "status and msg are no longer HTML-encoded by Mica, ?no_esc on them injects HTML: copy the status and message lines from the 8.0.0 error.ftl")
+  else if (errorValue && line ~ /\$\{[^}]*getMessage\(/) report("WARN", "translation printed escaped, its HTML shows as text: copy the status and message lines from the 8.0.0 error.ftl (?no_esc on the message injects HTML)")
+  else if (!plain && line ~ /\$\{[^}]*getMessage\(/ && line !~ /getMessage\([^}]*\?(no_esc|js_string)/) report("WARN", "translation printed escaped, its HTML shows as text: add ?no_esc")
   if (messageMacro && line ~ /<\/#macro>/) messageMacro = 0
 
   # Vue apps mounted on the page compile its HTML: {{ }} in a value would run, HTML escaping keeps the braces.
@@ -148,16 +182,18 @@ FNR == 1 { plain = 0; script = 0; comment = 0; noparse = 0; xtemplate = 0; messa
   # values that are not escaped as before
   if (line ~ /<template[ >]/ && line ~ /\$\{/ && line !~ /templateSafe\(/) report("WARN", "Markdown in <template> without templateSafe() is shown escaped")
   if (line ~ /class="[^"]*marked[^"]*"[^<]*\$\{/ && line !~ /templateSafe\(/) report("WARN", "Markdown in .marked without <template> and templateSafe() is shown escaped")
-  if (line ~ /\$\{[^}]*fullName/ && line !~ /htmlDecode\([^)]*fullName/) report("WARN", "fullName is HTML-encoded by Mica, print it with htmlDecode()")
-  if (line ~ /\$\{[^}]*attributes\[/ && line !~ /htmlDecode\(/ && line !~ /attributes\[[^]]*\]\.toString\(\)/ && line !~ /attributes\["realm"\]/) report("WARN", "profile attributes are HTML-encoded by Mica, print them with htmlDecode()")
-  # same with a dot (user.attributes.email); variable and category attributes are localized texts, printed with localize()
-  else if (line ~ /\$\{[^}]*attributes\.[a-zA-Z]/ && line !~ /htmlDecode\(/ && line !~ /localize(Raw)?\([^)]*attributes\./ && line !~ /attributes\.[a-zA-Z_]+\.toString\(\)/ && line !~ /attributes\.realm/) report("WARN", "profile attributes are HTML-encoded by Mica, print them with htmlDecode()")
-  if (line ~ /\$\{[^}]*dar\.title/ && line !~ /htmlDecode\([^)]*dar\.title/) report("WARN", "the data access list titles are HTML-encoded, print them with htmlDecode()")
-  if (!plain && line ~ /\$\{([^}]*[^a-zA-Z_.])?query(\.|\[)/ && line !~ /htmlDecode\([^)]*query(\.|\[)/) report("WARN", "the URL parameters of custom pages (query) are HTML-encoded, print them with htmlDecode()")
+  # user input that Mica 7 sent HTML-encoded and Mica 8 sends raw: the template escaping is the only protection
+  s = line
+  while (match(s, /\$\{[^}]*\}/)) {
+    v = substr(s, RSTART, RLENGTH); s = substr(s, RSTART + RLENGTH)
+    if (!userValue(v)) continue
+    if (v ~ /\?no_esc([^a-zA-Z_]|$)/) report("ERROR", "user input printed with ?no_esc, it is no longer HTML-encoded by Mica: remove ?no_esc")
+    else if (v ~ /htmlDecode\(/) report("INFO", "user names and attributes, data access titles and query are no longer HTML-encoded by Mica, htmlDecode() can be removed: " v)
+  }
   if (line ~ /(^|[^a-zA-Z_.])esc\(/) report("INFO", "esc() is deprecated and returns the value unchanged, remove it")
 
-  if (line ~ /<\/script>/) { script = 0; xtemplate = 0 }
-  if (line ~ /<\/#outputformat>/ && plain > 0) plain--
+  if (lc ~ /<\/script[ \t]*>/) { script = 0; xtemplate = 0 }
+  n = occurrences(line, "</#outputformat>"); while (n-- > 0 && depth > 0) depth--
 }
 END {
   if (NR > 0) checkHead(previous)
