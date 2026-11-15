@@ -56,11 +56,11 @@
             <form id="form" method="post">
               <div class="form-group">
                 <label for="contact-name"><@message "contact-name"/></label>
-                <input name="name" type="text" class="form-control" id="contact-name" <#if user??>value="${htmlDecode(user.fullName!"")}"</#if>>
+                <input name="name" type="text" class="form-control" id="contact-name" <#if user??>value="${user.fullName!""}"</#if>>
               </div>
               <div class="form-group">
                 <label for="contact-email"><@message "contact-email"/></label>
-                <input name="email" type="email" class="form-control" id="contact-email" <#if user?? && user.attributes??>value="${htmlDecode(user.attributes["email"]!"")}"</#if>>
+                <input name="email" type="email" class="form-control" id="contact-email" <#if user?? && user.attributes??>value="${user.attributes["email"]!""}"</#if>>
               </div>
               <div class="form-group">
                 <label for="contact-subject"><@message "contact-subject"/></label>

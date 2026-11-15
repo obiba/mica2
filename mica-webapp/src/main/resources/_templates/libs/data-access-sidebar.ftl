@@ -29,7 +29,7 @@
             class="fa-solid fa-circle fa-2x ps-2 text-${statusColor(dar.status.toString())}"></i></span>
       </div>
       <div class="info">
-        <a href="${contextPath}/data-access/${dar.id}" class="d-inline">${htmlDecode(mainApplicant.fullName)} </a>
+        <a href="${contextPath}/data-access/${dar.id}" class="d-inline">${mainApplicant.fullName} </a>
       </div>
     </div>
 

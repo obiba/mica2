@@ -11,22 +11,47 @@
 </#macro>
 <#-- Translation of a code in a JavaScript string, in a script or in a script attribute (onclick, Vue :title, {{ }}):
      ${messageJs("code")}, or ${messageJs("code", "text")} to show another text than the code when there is no
-     translation. Functions, not macros: ${} escapes the text for where it is written (HTML in an attribute) -->
+     translation. Functions, not macros: ${} escapes the text for where it is written (HTML in an attribute).
+     Mica's message source returns the code itself when there is no translation, whatever the default: compare with it -->
 <#function messageJs code default=code>
-  <#return springMacroRequestContext.getMessage(code, default)?js_string/>
+  <#local text = springMacroRequestContext.getMessage(code, code)/>
+  <#return ((text == code)?then(default, text))?js_string/>
 </#function>
-<#-- Translation of a code in an HTML attribute (title, placeholder...): ${messageAttr("code")}, HTML-escaped -->
+<#-- Translation of a code in an HTML attribute (title, placeholder...): ${messageAttr("code")}, HTML-escaped. Its HTML
+     entities (R&eacute;sum&eacute;, A &amp; B) are decoded first, the attribute shows the characters as with <@message> -->
 <#function messageAttr code default=code>
-  <#return springMacroRequestContext.getMessage(code, default)/>
+  <#local text = springMacroRequestContext.getMessage(code, code)/>
+  <#return htmlDecode((text == code)?then(default, text))/>
 </#function>
 
 <!-- Context path setting -->
 <#assign contextPath = "${config.contextPath}"/>
 
 <!-- From a localized text get the value in the current language or in the default one or in the undefined one;
-     escaped when printed (templates are auto-escaped) -->
+     escaped when printed (templates are auto-escaped). In a script, print it with ?js_string; Markdown in a <template>
+     with templateSafe(), a method provided by Mica that keeps the value from closing the block -->
 <#function localize txt={} default="">
-  <#return localizeRaw(txt, default)/>
+  <#if txt?? && txt?keys??>
+    <#if txt[.lang]??>
+      <!-- page language -->
+      <#return txt[.lang]/>
+    <#elseif txt[defaultLang]??>
+      <!-- default language setting -->
+      <#return txt[defaultLang]/>
+    <#elseif txt["und"]??>
+      <!-- undefined lang, can happen in variables -->
+      <#return txt["und"]/>
+    <#elseif txt?values[0]??>
+      <!-- first non null value -->
+      <#return txt?values[0]/>
+    </#if>
+  </#if>
+  <#return default/>
+</#function>
+
+<!-- Alias of localize, kept for the templates calling it: no escaping difference, templates are auto-escaped -->
+<#function localizeRaw txt={} default="">
+  <#return localize(txt, default)/>
 </#function>
 
 <!-- Deprecated, the value is returned as is: templates are auto-escaped. Kept for custom templates still calling it -->
@@ -45,27 +70,6 @@
     <#return "#"/>
   </#if>
   <#return url/>
-</#function>
-
-<!-- Same as localize, the name says the value is used raw on purpose: Markdown in a <template> inside templateSafe(), a
-     method provided by Mica that keeps the value from closing the block; scripts with ?js_string -->
-<#function localizeRaw txt={} default="">
-  <#if txt?? && txt?keys??>
-    <#if txt[.lang]??>
-      <!-- page language -->
-      <#return txt[.lang]/>
-    <#elseif txt[defaultLang]??>
-      <!-- default language setting -->
-      <#return txt[defaultLang]/>
-    <#elseif txt["und"]??>
-      <!-- undefined lang, can happen in variables -->
-      <#return txt["und"]/>
-    <#elseif txt?values[0]??>
-      <!-- first non null value -->
-      <#return txt?values[0]/>
-    </#if>
-  </#if>
-  <#return default/>
 </#function>
 
 

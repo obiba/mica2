@@ -95,7 +95,7 @@
                         </#if>
                       </td>
                       <td><i class="fa-solid fa-circle text-${statusColor(event.status.toString())}"></i> <@message event.status.toString()/></td>
-                      <td>${htmlDecode(event.profile.fullName)}</td>
+                      <td>${event.profile.fullName}</td>
                       <td data-sort="${event.date.toString()}" class="moment-datetime">${event.date.toString()}</td>
                     </tr>
                   </#list>

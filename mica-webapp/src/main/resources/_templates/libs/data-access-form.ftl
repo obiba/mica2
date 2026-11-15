@@ -74,7 +74,7 @@
       </span>
     </div>
     <div class="float-end text-muted">
-      <span><@message type/> - ${form.id} - [<@message form.status.toString()/>] - ${htmlDecode(applicant.fullName)}</span>
+      <span><@message type/> - ${form.id} - [<@message form.status.toString()/>] - ${applicant.fullName}</span>
     </div>
   </div>
 </#macro>

@@ -17,7 +17,6 @@ import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.shiro.realm.ObibaRealm;
 import org.obiba.mica.web.controller.domain.DataAccessRequestBundle;
-import org.owasp.esapi.ESAPI;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -117,7 +116,7 @@ public class DataAccessesController extends BaseController {
         DataAccessEntityCounts feasibilities = feasibilityCounts.getOrDefault(req.getId(), DataAccessEntityCounts.NONE);
         DataAccessEntityCounts agreements = agreementCounts.getOrDefault(req.getId(), DataAccessEntityCounts.NONE);
         return new DataAccessRequestBundle(req, preliminary,
-          ESAPI.encoder().encodeForHTML(title),
+          title,
           amendments.total(), amendments.pending(),
           feasibilities.total(), feasibilities.pending(),
           agreements.total(), agreements.pending());

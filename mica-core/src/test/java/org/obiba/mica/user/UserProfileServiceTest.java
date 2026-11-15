@@ -24,35 +24,35 @@ public class UserProfileServiceTest {
 
   /**
    * Profile of an invited collaborator without account: the username is the email typed by the inviter (#4742).
+   * Values are raw, the templates escape them when printed (auto-escaping).
    */
   @Test
-  public void test_asMap_encodes_username_full_name() {
+  public void test_asMap_username_full_name_is_raw() {
     Subject profile = new Subject();
     profile.setUsername("<img src=x onerror=alert(1)>@x.org");
 
     Map<String, Object> map = userProfileService.asMap(profile);
 
-    assertThat(map.get("fullName")).isEqualTo("&lt;img src&#x3d;x onerror&#x3d;alert&#x28;1&#x29;&gt;&#x40;x.org");
-    // compared with other usernames in templates, it stays as is
+    assertThat(map.get("fullName")).isEqualTo("<img src=x onerror=alert(1)>@x.org");
     assertThat(map.get("username")).isEqualTo("<img src=x onerror=alert(1)>@x.org");
   }
 
   @Test
-  public void test_asMap_encodes_username_full_name_without_last_name() {
+  public void test_asMap_username_full_name_without_last_name() {
     Subject profile = new Subject();
     profile.setUsername("<b>bob</b>");
     profile.setAttributes(List.of(Map.of("key", "firstName", "value", "Bob")));
 
-    assertThat(userProfileService.asMap(profile).get("fullName")).isEqualTo("Bob &lt;b&gt;bob&lt;&#x2f;b&gt;");
+    assertThat(userProfileService.asMap(profile).get("fullName")).isEqualTo("Bob <b>bob</b>");
   }
 
   @Test
-  public void test_asMap_encodes_username_full_name_without_names() {
+  public void test_asMap_username_full_name_without_names() {
     Subject profile = new Subject();
     profile.setUsername("<b>bob</b>");
     profile.setAttributes(List.of(Map.of("key", "email", "value", "bob@example.org")));
 
-    assertThat(userProfileService.asMap(profile).get("fullName")).isEqualTo("&lt;b&gt;bob&lt;&#x2f;b&gt;");
+    assertThat(userProfileService.asMap(profile).get("fullName")).isEqualTo("<b>bob</b>");
   }
 
   @Test
@@ -65,14 +65,17 @@ public class UserProfileServiceTest {
   }
 
   @Test
-  public void test_asMap_full_name_is_encoded_once() {
+  public void test_asMap_full_name_and_attributes_are_raw() {
     Subject profile = new Subject();
     profile.setUsername("bob");
     profile.setAttributes(List.of(
       Map.of("key", "firstName", "value", "Tom & Jerry"),
       Map.of("key", "lastName", "value", "O'Brien")));
 
-    assertThat(userProfileService.asMap(profile).get("fullName")).isEqualTo("Tom &amp; Jerry O&#x27;Brien");
+    Map<String, Object> map = userProfileService.asMap(profile);
+
+    assertThat(map.get("fullName")).isEqualTo("Tom & Jerry O'Brien");
+    assertThat(((Map<?, ?>) map.get("attributes")).get("firstName")).isEqualTo("Tom & Jerry");
   }
 
   @Test

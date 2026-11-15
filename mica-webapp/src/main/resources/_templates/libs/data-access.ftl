@@ -178,7 +178,7 @@
         <#list collaborators as collaborator>
           <tr>
             <td>
-              <a href="mailto:${collaborator.email}">${htmlDecode(collaborator.fullName)}</a>
+              <a href="mailto:${collaborator.email}">${collaborator.fullName}</a>
             </td>
             <td>
               <#if collaborator.invitationPending>

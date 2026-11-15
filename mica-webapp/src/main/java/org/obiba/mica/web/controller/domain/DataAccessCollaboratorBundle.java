@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 import org.obiba.mica.access.domain.DataAccessCollaborator;
-import org.owasp.esapi.ESAPI;
 
 public class DataAccessCollaboratorBundle {
 
@@ -18,10 +17,10 @@ public class DataAccessCollaboratorBundle {
   }
 
   /**
-   * HTML-encoded, as the profile full name: the email is user input.
+   * Raw, as the profile full name: templates escape it when printed.
    */
   public String getFullName() {
-    return profile.containsKey("fullName") ? profile.get("fullName").toString() : ESAPI.encoder().encodeForHTML(getEmail());
+    return profile.containsKey("fullName") ? profile.get("fullName").toString() : getEmail();
   }
 
   public String getPrincipal() {

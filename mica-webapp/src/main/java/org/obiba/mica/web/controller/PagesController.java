@@ -3,7 +3,6 @@ package org.obiba.mica.web.controller;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import org.owasp.esapi.ESAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -53,9 +52,8 @@ public class PagesController extends BaseController {
         String[] tokens = param.split("=");
         if (tokens.length>1) {
           try {
-            // values are HTML-encoded: custom pages are not expected to escape them
-            query.put(ESAPI.encoder().encodeForHTML(URLDecoder.decode(tokens[0], "UTF-8")),
-              ESAPI.encoder().encodeForHTML(URLDecoder.decode(tokens[1], "UTF-8")));
+            // values are raw: templates escape them when printed (auto-escaping)
+            query.put(URLDecoder.decode(tokens[0], "UTF-8"), URLDecoder.decode(tokens[1], "UTF-8"));
           } catch (UnsupportedEncodingException | IllegalArgumentException e) {
             // not supposed to happen / malformed encoding: ignore the parameter
           }

@@ -132,8 +132,7 @@ public class TemplatesRenderTest {
 
   private static final List<String> UNSAFE = List.of("injection", "breakout", "apostrophe", "vue");
 
-  // values printed raw on purpose ("template | path"): JSON built by the controllers, values HTML-encoded by the
-  // controllers
+  // values printed raw on purpose ("template | path"): JSON built by the controllers
   private static final List<String> RAW_ON_PURPOSE = List.of(
     "libs/search-scripts.ftl | configJson |",
     "libs/entities-list-scripts.ftl | configJson |",
@@ -141,8 +140,6 @@ public class TemplatesRenderTest {
     "libs/data-access-form-scripts.ftl | formConfig.schema |",
     "libs/data-access-form-scripts.ftl | formConfig.definition |",
     "libs/data-access-form-scripts.ftl | formConfig.model |",
-    "error.ftl | msg |",
-    "error.ftl | status |",
     // numbers, they cannot hold the braces of a {{ }} expression
     "cart.ftl | sets.variablesCart.count |",
     "cart.ftl | sets.studiesCart.count |",
@@ -784,7 +781,9 @@ public class TemplatesRenderTest {
         String name = marker.matches() ? origin(Integer.parseInt(marker.group(1))).path() : code;
         return "TQ" + name.replaceAll("[|<>\\s]", "_") + "|" + PAYLOAD + "TQ";
       }
-      if (text == null) return string(arguments.get(arguments.size() - 1));
+      // as the application: the JSON translator returns the code itself when there is no translation, the default
+      // given to getMessage is never used
+      if (text == null) return code;
       if (arguments.size() == 3 && arguments.get(1) instanceof TemplateSequenceModel args) {
         Object[] values = new Object[args.size()];
         for (int i = 0; i < values.length; i++) values[i] = string(args.get(i));

@@ -26,7 +26,6 @@ import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.service.MicaGroupsToRolesMapper;
 import org.obiba.shiro.realm.ObibaRealm;
 import org.obiba.shiro.realm.ObibaRealm.Subject;
-import org.owasp.esapi.ESAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -219,9 +218,8 @@ public class UserProfileService extends AgateRestService {
 
   public Map<String, Object> asMap(@NotNull Subject profile) {
     Map<String, Object> params = Maps.newHashMap();
-    // username can be an email typed by a user (invited collaborator without account), encode it like the attributes
-    String encodedUsername = ESAPI.encoder().encodeForHTML(profile.getUsername());
-    String fullName = encodedUsername;
+    // values are raw: templates escape them when printed (auto-escaping)
+    String fullName = profile.getUsername();
     Map<String, Object> attributes = Maps.newHashMap();
     if (profile.getAttributes() != null) {
       profile.getAttributes().forEach(attr -> {
@@ -235,12 +233,10 @@ public class UserProfileService extends AgateRestService {
           }
         }
         else
-          // templates print profile values as is, they must stay HTML-encoded here
-          attributes.put(key, ESAPI.encoder().encodeForHTML(attr.get("value")));
+          attributes.put(key, attr.get("value"));
       });
-      fullName = attributes.getOrDefault("firstName", "") + (attributes.containsKey("firstName") ? " " : "") + attributes.getOrDefault("lastName", encodedUsername);
+      fullName = attributes.getOrDefault("firstName", "") + (attributes.containsKey("firstName") ? " " : "") + attributes.getOrDefault("lastName", profile.getUsername());
     }
-    // the username is the only value that is not encoded (it is a key): a template must escape it
     params.put("username", profile.getUsername());
     params.put("fullName", fullName);
     params.put("groups", profile.getGroups());
