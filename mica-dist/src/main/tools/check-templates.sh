@@ -12,8 +12,10 @@ set -u
 dir=${1:?usage: check-templates.sh DIR}
 [ -d "$dir" ] || { echo "not a directory: $dir" >&2; exit 2; }
 
-# hidden folders (.git, editor history) are skipped
-find "$dir" -name '.?*' -prune -o -name '*.ftl' -print0 | sort -z | xargs -0 awk '
+# hidden folders (.git, editor history) are skipped; one awk run for all the files, for a single count and exit code
+mapfile -d '' files < <(find "$dir" -name '.?*' -prune -o -name '*.ftl' -print0 | sort -z)
+[ ${#files[@]} -gt 0 ] || { echo "no .ftl file in $dir"; exit 0; }
+awk '
 function report(level, msg) {
   printf "%s:%d: %s %s: %s\n", FILENAME, FNR, level, msg, substr(trim($0), 1, 160)
   count[level]++
@@ -28,9 +30,10 @@ function configValue(v) {
   return v ~ /^\$\{(contextPath|assetsPath|\.lang|defaultLang|defaultSearchMode|mapName|title|isPrivate|[a-zA-Z]*Icon|[a-zA-Z]*Color)\}$/ ||
     v ~ /^\$\{(configJson|formConfig\.|postLogoutRedirectUri)/ || v ~ /\?join\(/ || v ~ /\?replace\("<", "\\\\u003c"\)/
 }
-# identifiers made by Mica (documents, requests, sets, languages): no quotes in them
+# identifiers made by Mica (documents, requests, sets, languages): no quotes in them; a variable id holds its name
 function systemId(v) {
-  return v ~ /^\$\{[a-zA-Z_.]*(\.id|\.parentId|Id|\.language)\}$/ || v ~ /^\$\{type\?lower_case\}$/
+  return (v ~ /^\$\{[a-zA-Z_.]*(\.id|\.parentId|\.datasetId|\.language)\}$/ && v !~ /[vV]ariable\.id\}$/) ||
+    v ~ /^\$\{(dceId|popId|type\?lower_case)\}$/
 }
 FNR == 1 { plain = 0; script = 0; comment = 0; noparse = 0; xtemplate = 0; messageMacro = 0; vueApp = 0; vuePre = 0 }
 {
@@ -84,7 +87,7 @@ FNR == 1 { plain = 0; script = 0; comment = 0; noparse = 0; xtemplate = 0; messa
   # translations can hold HTML: printed escaped, their tags show
   if (line ~ /<#macro[ \t]+message[ \t>]/) messageMacro = 1
   if (messageMacro && !plain && line ~ /\$\{text\}/) report("WARN", "translation printed escaped in the message macro, its HTML shows as text: print it with ${text?no_esc}")
-  if (!plain && line ~ /\$\{[^}]*getMessage\(/ && line !~ /getMessage\([^}]*\?no_esc/) report("WARN", "translation printed escaped, its HTML shows as text: add ?no_esc")
+  if (!plain && line ~ /\$\{[^}]*getMessage\(/ && line !~ /getMessage\([^}]*\?(no_esc|js_string)/) report("WARN", "translation printed escaped, its HTML shows as text: add ?no_esc")
   if (messageMacro && line ~ /<\/#macro>/) messageMacro = 0
 
   # Vue apps mounted on the page compile its HTML: {{ }} in a value would run, HTML escaping keeps the braces.
@@ -133,4 +136,4 @@ FNR == 1 { plain = 0; script = 0; comment = 0; noparse = 0; xtemplate = 0; messa
 END {
   printf "%d error(s), %d warning(s), %d to review\n", count["ERROR"], count["WARN"], count["INFO"]
   exit count["ERROR"] > 0
-}'
+}' "${files[@]}"

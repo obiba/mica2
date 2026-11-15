@@ -103,11 +103,20 @@ public class TemplatesRenderTest {
   // the value is in a Vue attribute (v-bind, :prop, @event...) of the tag being written
   private static final Pattern VUE_ATTRIBUTE = Pattern.compile("\\s(v-[\\w:.-]+|:[\\w.-]+|@[\\w.:-]+)\\s*=\\s*\"[^\"]*$");
 
+  // every permission, so that the parts of the data access pages they show are rendered
+  private static final List<String> PERMISSIONS = List.of("ADD_COLLABORATORS", "ARCHIVE", "DELETE",
+    "DELETE_COLLABORATORS", "EDIT", "EDIT_STATUS", "UNARCHIVE", "VIEW_PRIVATE_COMMENTS");
+
   // model values with a real value, as the pages compute on them
   private static final Map<String, Object> OVERRIDES = Map.of(
     "contextPath", "",
     "config.contextPath", "",
-    "user.roles", List.of("mica-administrator", "mica-reviewer", "mica-editor", "mica-data-access-officer"));
+    "user.roles", List.of("mica-administrator", "mica-reviewer", "mica-editor", "mica-data-access-officer"),
+    "permissions", PERMISSIONS,
+    "agreementPermissions", PERMISSIONS,
+    "amendmentPermissions", PERMISSIONS,
+    "feasibilityPermissions", PERMISSIONS,
+    "preliminaryPermissions", PERMISSIONS);
 
   // helper templates: a value read there is reported where its parent was read (e.g. localize(study.name))
   private static final List<String> HELPERS = List.of("libs/head.ftl");
@@ -129,6 +138,13 @@ public class TemplatesRenderTest {
     "libs/data-access-form-scripts.ftl | formConfig.model |",
     "error.ftl | msg |",
     "error.ftl | status |");
+
+  // the translations shipped with Mica, see i18n/messages_{language}.properties
+  private static final List<String> LANGUAGES = List.of("en", "fr");
+
+  // an attribute whose value is a script (event handler, Vue binding or directive) of the tag being written
+  private static final Pattern SCRIPT_ATTRIBUTE = Pattern.compile(
+    "\\s(on\\w+|v-[\\w:.-]+|:[\\w.-]+|@[\\w.:-]+)\\s*=\\s*\"[^\"]*$", Pattern.CASE_INSENSITIVE);
 
   // stops recursive macros (trees): lists are empty from this path depth
   private static final int MAX_DEPTH = 6;
@@ -186,6 +202,30 @@ public class TemplatesRenderTest {
     assertThat(unsafe).as("values printed unescaped, see target/template-render/report.md").isEmpty();
   }
 
+  /**
+   * Renders every built-in page in each language and reports the translations that end the quoted string they are
+   * written in (e.g. French L'invitation in '...'): printed raw, or HTML-escaped in a script attribute, where the
+   * browser decodes the entities before the script runs.
+   */
+  @Test
+  public void test_render_every_page_with_each_translation() throws Exception {
+    Configuration configuration = newConfiguration();
+    List<String> pages = listPages();
+    List<String> broken = new ArrayList<>();
+    for (String language : LANGUAGES) {
+      Map<String, String> quoted = quotedTranslations(language);
+      // the harness works: there are translations with a quote to look for
+      assertThat(quoted).as(language).isNotEmpty();
+      for (String page : pages) {
+        String output = render(configuration, page, false, language).output();
+        broken.addAll(findBrokenTranslations(language, page, output, quoted));
+      }
+    }
+    assertThat(broken.stream().distinct().sorted().toList())
+      .as("translations that break the quoted string they are written in, use getMessage(code)?js_string")
+      .isEmpty();
+  }
+
   //
   // Rendering
   //
@@ -235,7 +275,12 @@ public class TemplatesRenderTest {
   }
 
   private PageResult render(Configuration configuration, String page, boolean scriptLinks) throws Exception {
-    Stubs stubs = new Stubs(configuration.getObjectWrapper(), scriptLinks);
+    return render(configuration, page, scriptLinks, "en");
+  }
+
+  private PageResult render(Configuration configuration, String page, boolean scriptLinks, String language)
+    throws Exception {
+    Stubs stubs = new Stubs(configuration.getObjectWrapper(), scriptLinks, language);
     List<String> errors = new ArrayList<>();
     StringWriter writer = new StringWriter();
     Template template = configuration.getTemplate(page);
@@ -391,6 +436,61 @@ public class TemplatesRenderTest {
   }
 
   //
+  // Translations
+  //
+
+  private static Properties translations(String language) throws IOException {
+    Properties messages = new Properties();
+    try (InputStream input = TemplatesRenderTest.class.getResourceAsStream("/i18n/messages_" + language + ".properties")) {
+      messages.load(new InputStreamReader(input, StandardCharsets.UTF_8));
+    }
+    return messages;
+  }
+
+  // the translations with a quote, as printed without arguments (with arguments, MessageFormat changes the quotes)
+  private static Map<String, String> quotedTranslations(String language) throws IOException {
+    Map<String, String> quoted = new TreeMap<>();
+    translations(language).forEach((code, text) -> {
+      String value = text.toString();
+      if (value.matches("(?s).*['\"`].*") && !value.contains("{")) quoted.put(code.toString(), value);
+    });
+    return quoted;
+  }
+
+  private static List<String> findBrokenTranslations(String language, String page, String output,
+                                                     Map<String, String> translations) {
+    List<String> broken = new ArrayList<>();
+    translations.forEach((code, text) -> {
+      String escaped = escapeHtml(text);
+      for (String printed : List.of(text, escaped)) {
+        int at = output.indexOf(printed, 1);
+        while (at >= 0) {
+          char quote = output.charAt(at - 1);
+          boolean inString = (quote == '\'' || quote == '"' || quote == '`') && text.indexOf(quote) >= 0;
+          if (inString && (printed.equals(text) || isScriptAttribute(output, at))) {
+            String around = output.substring(Math.max(0, at - 60), Math.min(output.length(), at + printed.length() + 10));
+            broken.add(language + " | " + code + " | " + page + " | " + around.replaceAll("\\s+", " ").strip());
+          }
+          at = output.indexOf(printed, at + 1);
+        }
+      }
+    });
+    return broken;
+  }
+
+  private static boolean isScriptAttribute(String output, int position) {
+    int tagStart = output.lastIndexOf('<', position);
+    if (tagStart < 0 || tagStart < output.lastIndexOf('>', position)) return false;
+    return SCRIPT_ATTRIBUTE.matcher(output.substring(tagStart, position)).find();
+  }
+
+  // as FreeMarker's HTML output format
+  private static String escapeHtml(String text) {
+    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;")
+      .replace("'", "&#39;");
+  }
+
+  //
   // Report
   //
 
@@ -450,14 +550,12 @@ public class TemplatesRenderTest {
 
     private final List<Origin> origins = new ArrayList<>();
 
-    private final Properties messages = new Properties();
+    private final Properties messages;
 
-    Stubs(ObjectWrapper wrapper, boolean scriptLinks) throws IOException {
+    Stubs(ObjectWrapper wrapper, boolean scriptLinks, String language) throws IOException {
       this.wrapper = wrapper;
       this.scriptLinks = scriptLinks;
-      try (InputStream input = TemplatesRenderTest.class.getResourceAsStream("/i18n/messages_en.properties")) {
-        messages.load(new InputStreamReader(input, StandardCharsets.UTF_8));
-      }
+      this.messages = translations(language);
     }
 
     TemplateHashModel root() {

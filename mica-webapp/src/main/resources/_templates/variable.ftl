@@ -116,10 +116,10 @@
               <#if cartEnabled && variablesCartEnabled>
                 <div class="card-footer">
                   <#if user?? || cartAnonymousEnabled>
-                    <a id="cart-add" href="javascript:void(0)" onclick="onVariablesCartAdd('${variableCartId}')" style="display: none;">
+                    <a id="cart-add" href="javascript:void(0)" onclick="onVariablesCartAdd('${variableCartId?js_string}')" style="display: none;">
                       <@message "sets.cart.add-to-cart"/> <i class="fa-solid fa-cart-plus"></i>
                     </a>
-                    <a id="cart-remove" href="javascript:void(0)" onclick="onVariablesCartRemove('${variableCartId}')" style="display: none;">
+                    <a id="cart-remove" href="javascript:void(0)" onclick="onVariablesCartRemove('${variableCartId?js_string}')" style="display: none;">
                       <@message "sets.cart.remove-from-cart"/> <i class="fa-solid fa-cart-arrow-down"></i>
                     </a>
                   <#else>

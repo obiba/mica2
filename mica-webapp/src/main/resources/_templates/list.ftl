@@ -193,7 +193,7 @@
 
             <#if config.harmonizationDatasetEnabled && config.studyDatasetEnabled>
             <div class="float-start">
-              <ul class="nav nav-pills" id="studyClassNameChoice" :title="countWarning ? '<@message "count-warning"/>' : ''" role="tablist" v-cloak>
+              <ul class="nav nav-pills" id="studyClassNameChoice" :title="countWarning ? '${springMacroRequestContext.getMessage("count-warning")?js_string}' : ''" role="tablist" v-cloak>
                 <li class="nav-item" role="presentation">
                   <a class="nav-link active" id="individual-tab" @click="onStudyClassNameChange('Study')" href="" data-bs-toggle="tab" role="tab" aria-controls="home" aria-selected="true"><@message "individual-search"/> <span :class="{ 'badge text-bg-warning': countWarning, 'badge text-bg-light': !countWarning }" class="badge right">{{individualSubCount}}</span></a>
                 </li>

@@ -121,19 +121,19 @@
 
   const totalCounts = {
     <#if variablesCartEnabled>
-    variablesCount: parseInt("${sets.variablesCart.count?c}".replace(',', '')),
+    variablesCount: ${sets.variablesCart.count?c},
     </#if>
 
     <#if studiesCartEnabled>
-    studiesCount: parseInt("${sets.studiesCart.count?c}".replace(',', '')),
+    studiesCount: ${sets.studiesCart.count?c},
     </#if>
 
     <#if networksCartEnabled>
-    networksCount: parseInt("${sets.networksCart.count?c}".replace(',', '')),
+    networksCount: ${sets.networksCart.count?c},
     </#if>
 
     <#if rc.requestUri?starts_with("/list/")>
-    currentSetIdentifiersCount: parseInt("${set.identifiers?size?c}".replace(',', '')),
+    currentSetIdentifiersCount: ${set.identifiers?size?c},
     </#if>
   };
 
