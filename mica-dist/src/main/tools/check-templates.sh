@@ -54,7 +54,7 @@ FNR == 1 { plain = 0; script = 0; comment = 0; noparse = 0; xtemplate = 0; messa
   # template errors
   if (line ~ /<#escape[ \t>]/) report("ERROR", "#escape is not allowed with auto-escaping, remove it with its #noescape")
   if (line ~ /<#ftl[^>]*output_format/ && line !~ /output_format="HTML"/) report("ERROR", "the <#ftl output_format> header turns auto-escaping off or changes it, remove it")
-  if (!plain && line ~ /(\$\{[^}]*|<#[^>]*)\?html([^a-zA-Z_]|$)/) report("ERROR", "?html is an error, remove it (?html still works in a plainText block)")
+  if (!plain && line ~ /(\$\{[^}]*|<[#@][^>]*)\?html([^a-zA-Z_]|$)/) report("ERROR", "?html is an error, remove it (?html still works in a plainText block)")
   if (plain && line ~ /\?no_esc([^a-zA-Z_]|$)/) report("ERROR", "?no_esc is an error inside a plainText block, remove it")
 
   # scripts
@@ -121,6 +121,8 @@ FNR == 1 { plain = 0; script = 0; comment = 0; noparse = 0; xtemplate = 0; messa
   if (line ~ /class="[^"]*marked[^"]*"[^<]*\$\{/ && line !~ /templateSafe\(/) report("WARN", "Markdown in .marked without <template> and templateSafe() is shown escaped")
   if (line ~ /\$\{[^}]*fullName/ && line !~ /htmlDecode\([^)]*fullName/) report("WARN", "fullName is HTML-encoded by Mica, print it with htmlDecode()")
   if (line ~ /\$\{[^}]*attributes\[/ && line !~ /htmlDecode\(/ && line !~ /attributes\[[^]]*\]\.toString\(\)/ && line !~ /attributes\["realm"\]/) report("WARN", "profile attributes are HTML-encoded by Mica, print them with htmlDecode()")
+  # same with a dot (user.attributes.email); variable and category attributes are localized texts, printed with localize()
+  else if (line ~ /\$\{[^}]*attributes\.[a-zA-Z]/ && line !~ /htmlDecode\(/ && line !~ /localize(Raw)?\([^)]*attributes\./ && line !~ /attributes\.[a-zA-Z_]+\.toString\(\)/ && line !~ /attributes\.realm/) report("WARN", "profile attributes are HTML-encoded by Mica, print them with htmlDecode()")
   if (line ~ /\$\{[^}]*dar\.title/ && line !~ /htmlDecode\([^)]*dar\.title/) report("WARN", "the data access list titles are HTML-encoded, print them with htmlDecode()")
   if (!plain && line ~ /\$\{([^}]*[^a-zA-Z_.])?query(\.|\[)/ && line !~ /htmlDecode\([^)]*query(\.|\[)/) report("WARN", "the URL parameters of custom pages (query) are HTML-encoded, print them with htmlDecode()")
   if (line ~ /(^|[^a-zA-Z_.])esc\(/) report("INFO", "esc() is deprecated and returns the value unchanged, remove it")
