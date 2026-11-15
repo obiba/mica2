@@ -69,7 +69,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * <p>
  * The report and the rendered pages are written to target/template-render. Rendering errors are recorded and the
  * rendering goes on, as with the ignore exception handler of the application: an error means a blank part of a page.
- * The test fails when a value is printed unescaped (injection, breakout, apostrophe), except the raw ones on purpose.
+ * The test fails when a template cannot be included, imported or parsed (that part of the pages would be blank), and
+ * when a value is printed unescaped (injection, breakout, apostrophe), except the raw ones on purpose,
+ * or inside a Vue app mounted on the page without v-pre (vue): HTML escaping keeps the braces of a {{ }} expression.
  */
 public class TemplatesRenderTest {
 
@@ -91,6 +93,16 @@ public class TemplatesRenderTest {
   // a plain template block, holding Markdown sources; Vue ones have attributes (v-if, v-else...)
   private static final Pattern TEMPLATE_BLOCK = Pattern.compile("<template>(.*?)</template>", Pattern.DOTALL);
 
+  // Vue apps mounted on the server-rendered HTML: Vue compiles their content, a {{ }} in a printed value would run
+  private static final Pattern VUE_MOUNT = Pattern.compile(
+    "<(\\w+)\\b[^>]*\\sid=\"(query-vue-container|search-application|summary-statistics|cards|data-access-form|[\\w-]*files-app)\"[^>]*>");
+
+  // elements Vue does not compile, their own attributes included
+  private static final Pattern V_PRE = Pattern.compile("<(\\w+)\\b[^>]*\\sv-pre\\b[^>]*>");
+
+  // the value is in a Vue attribute (v-bind, :prop, @event...) of the tag being written
+  private static final Pattern VUE_ATTRIBUTE = Pattern.compile("\\s(v-[\\w:.-]+|:[\\w.-]+|@[\\w.:-]+)\\s*=\\s*\"[^\"]*$");
+
   // model values with a real value, as the pages compute on them
   private static final Map<String, Object> OVERRIDES = Map.of(
     "contextPath", "",
@@ -100,7 +112,11 @@ public class TemplatesRenderTest {
   // helper templates: a value read there is reported where its parent was read (e.g. localize(study.name))
   private static final List<String> HELPERS = List.of("libs/head.ftl");
 
-  private static final List<String> UNSAFE = List.of("injection", "breakout", "apostrophe");
+  // errors of a template that cannot be included, imported or parsed
+  private static final Pattern BROKEN_TEMPLATE = Pattern.compile(
+    "Template inclusion failed|Template importing failed|Syntax error|ParseException", Pattern.CASE_INSENSITIVE);
+
+  private static final List<String> UNSAFE = List.of("injection", "breakout", "apostrophe", "vue");
 
   // values printed raw on purpose ("template | path"): JSON built by the controllers, values HTML-encoded by the
   // controllers
@@ -117,7 +133,7 @@ public class TemplatesRenderTest {
   // stops recursive macros (trees): lists are empty from this path depth
   private static final int MAX_DEPTH = 6;
 
-  enum Context {HTML, SCRIPT, TEMPLATE}
+  enum Context {HTML, SCRIPT, TEMPLATE, VUE}
 
   enum Encoding {RAW, HTML, HTML_APOS_RAW, JS, JS_HTML, DOUBLE_HTML, OTHER}
 
@@ -147,6 +163,16 @@ public class TemplatesRenderTest {
     assertThat(pages.size()).isGreaterThan(35);
     assertThat(results).allSatisfy(result -> assertThat(result.output()).as(result.page()).isNotBlank());
     assertThat(results.stream().mapToInt(PageResult::markers).sum()).isGreaterThan(100);
+
+    // a template that cannot be included or imported (syntax error, e.g. ?html, or missing) blanks that part of every
+    // page using it; the other errors come from the stub values (comparisons, numbers) and are expected
+    List<String> brokenTemplates = results.stream()
+      .flatMap(result -> result.errors().stream().map(error -> result.page() + ": " + error))
+      .filter(error -> BROKEN_TEMPLATE.matcher(error).find())
+      .distinct()
+      .toList();
+    assertThat(brokenTemplates).as("templates that cannot be included or parsed, see target/template-render/report.md")
+      .isEmpty();
 
     // no value reaches the output unescaped, except the raw ones on purpose
     List<String> unsafe = results.stream()
@@ -241,6 +267,8 @@ public class TemplatesRenderTest {
   private PageResult analyze(String page, String output, Stubs stubs, List<String> errors) {
     List<int[]> scripts = ranges(SCRIPT_BLOCK, output, true);
     List<int[]> templates = ranges(TEMPLATE_BLOCK, output, false);
+    List<int[]> vueApps = elements(VUE_MOUNT, output, false);
+    List<int[]> vuePre = elements(V_PRE, output, true);
     List<Finding> findings = new ArrayList<>();
     int markers = 0;
     Matcher marker = MARKER.matcher(output);
@@ -253,8 +281,44 @@ public class TemplatesRenderTest {
       if (isFinding(context, encoding)) {
         findings.add(new Finding(origin.template(), origin.path(), context, encoding));
       }
+      // HTML escaping keeps the braces: in a Vue app, the value needs an element with v-pre
+      if (context != Context.SCRIPT && inside(vueApps, marker.start()) && !inside(vuePre, marker.start())
+        && isCompiledByVue(output, marker.start())) {
+        findings.add(new Finding(origin.template(), origin.path(), Context.VUE, encoding));
+      }
     }
     return new PageResult(page, output, markers, findings, errors);
+  }
+
+  /**
+   * The ranges of the elements whose opening tag matches the pattern (group 1 is the tag name), up to their closing
+   * tag; with the opening tag itself or only the content.
+   */
+  private static List<int[]> elements(Pattern openingTag, String output, boolean withOpeningTag) {
+    List<int[]> ranges = new ArrayList<>();
+    Matcher matcher = openingTag.matcher(output);
+    while (matcher.find()) {
+      if (matcher.group().endsWith("/>")) continue;
+      Matcher tag = Pattern.compile("<(/?)" + Pattern.quote(matcher.group(1)) + "\\b[^>]*>", Pattern.CASE_INSENSITIVE)
+        .matcher(output);
+      int depth = 1;
+      int end = output.length();
+      int from = matcher.end();
+      while (depth > 0 && tag.find(from)) {
+        depth += tag.group(1).isEmpty() ? 1 : -1;
+        if (depth == 0) end = tag.start();
+        from = tag.end();
+      }
+      ranges.add(new int[]{withOpeningTag ? matcher.start() : matcher.end(), end});
+    }
+    return ranges;
+  }
+
+  // text, or the value of a Vue attribute; Vue does not read the other attributes
+  private static boolean isCompiledByVue(String output, int position) {
+    int tagStart = output.lastIndexOf('<', position);
+    if (tagStart < output.lastIndexOf('>', position)) return true;
+    return VUE_ATTRIBUTE.matcher(output.substring(tagStart, position)).find();
   }
 
   private List<Finding> findScriptLinks(String page, String output, Stubs stubs) {
@@ -310,10 +374,12 @@ public class TemplatesRenderTest {
       case TEMPLATE -> false;
       case HTML -> encoding != Encoding.HTML;
       case SCRIPT -> encoding != Encoding.JS;
+      case VUE -> true;
     };
   }
 
   private static String severity(Finding finding) {
+    if (finding.context() == Context.VUE) return "vue";
     if (finding.encoding() == Encoding.RAW || finding.context() == Context.HTML && finding.encoding() == Encoding.JS) {
       return finding.context() == Context.SCRIPT ? "breakout" : "injection";
     }
@@ -332,7 +398,7 @@ public class TemplatesRenderTest {
     StringBuilder report = new StringBuilder("# Template render report\n\n");
     report.append("Severity: injection (raw in HTML), breakout (raw in a script), apostrophe (HTML-escaped but ' kept, ")
       .append("breaks single-quoted attributes), display (encoded for another context, shows entities), check (other ")
-      .append("encoding, e.g. truncated or URL-encoded).\n\n");
+      .append("encoding, e.g. truncated or URL-encoded), vue (in a Vue app without v-pre: {{ }} in the value runs).\n\n");
 
     report.append("## Pages\n\n| Page | Markers | Findings | Errors | Size |\n|---|---|---|---|---|\n");
     for (PageResult result : results) {

@@ -24,7 +24,7 @@
             alt="Logo"
             class="brand-image ${brandImageClass}"
             style="opacity: .8">
-        <span class="brand-text ${brandTextClass}">
+        <span class="brand-text ${brandTextClass}" v-pre>
           <#if brandTextEnabled>
             ${config.name!""}
           <#else>&nbsp;

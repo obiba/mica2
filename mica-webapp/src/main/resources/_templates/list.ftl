@@ -94,7 +94,8 @@
           <div class="col-sm-12">
             <h1 class="m-0 float-start">
               <span class="text-white-50"><@message "search.list"/> /</span>
-                ${listName(set)}
+                <#-- v-pre: the page is a Vue template, {{ }} typed in a list name would run -->
+                <span v-pre>${listName(set)}</span>
                 <#if set.name?starts_with("dar:")>
                   [<@message "data-access-request"/>]
                 </#if>
@@ -115,7 +116,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h4 class="modal-title"><@message "cart-confirm-deletion-title"/> (${listName(set)})</h4>
+            <h4 class="modal-title"><@message "cart-confirm-deletion-title"/> (<span v-pre>${listName(set)}</span>)</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
 
             </button>
@@ -142,7 +143,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h4 class="modal-title"><@message "cart-confirm-deletion-title"/> (${listName(set)})</h4>
+            <h4 class="modal-title"><@message "cart-confirm-deletion-title"/> (<span v-pre>${listName(set)}</span>)</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
 
             </button>
