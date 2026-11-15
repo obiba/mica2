@@ -35,6 +35,16 @@ function systemId(v) {
   return (v ~ /^\$\{[a-zA-Z_.]*(\.id|\.parentId|\.datasetId|\.language)\}$/ && v !~ /[vV]ariable\.id\}$/) ||
     v ~ /^\$\{(dceId|popId|type\?lower_case)\}$/
 }
+# a custom libs/head.ftl replaces the built-in one: the built-in templates call the messageJs() and messageAttr() it defines
+# (called once the file is read: on the first line of the next one, FILENAME is already that one)
+function checkHead(file) {
+  if (file ~ /(^|\/)libs\/head\.ftl$/ && !(messageJsDefined && messageAttrDefined)) {
+    printf "%s:1: ERROR the built-in templates call messageJs() and messageAttr(): copy them from the 8.0.0 libs/head.ftl\n", file
+    count["ERROR"]++
+  }
+}
+FNR == 1 && NR > 1 { checkHead(previous) }
+FNR == 1 { messageJsDefined = 0; messageAttrDefined = 0; previous = FILENAME }
 FNR == 1 { plain = 0; script = 0; comment = 0; noparse = 0; xtemplate = 0; messageMacro = 0; vueApp = 0; vuePre = 0 }
 {
   line = $0
@@ -54,6 +64,9 @@ FNR == 1 { plain = 0; script = 0; comment = 0; noparse = 0; xtemplate = 0; messa
   }
   inScript = script && !xtemplate
 
+  if (line ~ /<#function[ \t]+messageJs[ \t>]/) messageJsDefined = 1
+  if (line ~ /<#function[ \t]+messageAttr[ \t>]/) messageAttrDefined = 1
+
   # template errors
   if (line ~ /<#escape[ \t>]/) report("ERROR", "#escape is not allowed with auto-escaping, remove it with its #noescape")
   if (line ~ /<#ftl[^>]*output_format/ && line !~ /output_format="HTML"/) report("ERROR", "the <#ftl output_format> header turns auto-escaping off or changes it, remove it")
@@ -62,11 +75,23 @@ FNR == 1 { plain = 0; script = 0; comment = 0; noparse = 0; xtemplate = 0; messa
 
   # scripts
   if (inScript && !plain && line ~ /\$\{/) report("ERROR", "value in a <script> outside <#outputformat \"plainText\">: JSON breaks, quotes show as &#39;")
+  # translations: the message macro prints them as is, a quote in them ends the JavaScript string or the attribute
+  # (directives removed, their quotes are not the ones of the HTML; a > in a string or in parentheses does not end them)
+  m = line; gsub(/<\/?#("[^"]*"|\([^)]*\)|[^>"(])*>/, "", m)
+  if (inScript && m ~ /<@message[ \t]/) report("WARN", "translation in a script: a quote in it breaks the script, use ${messageJs(\"code\")}")
+  if (!inScript && m ~ /\{\{[^}]*<@message[ \t]/) report("WARN", "translation in a Vue {{ }} expression: a quote in it breaks the page, use ${messageJs(\"code\")}")
+  # each attribute, double or single quoted; the script ones are reported below
+  s = inScript ? "" : m
+  while (match(s, /[ \t][a-zA-Z@:][a-zA-Z0-9_.:@-]*=("[^"]*|\047[^\047]*)<@message[ \t]/)) {
+    a = substr(s, RSTART + 1, RLENGTH - 1); s = substr(s, RSTART + RLENGTH)
+    sub(/=.*/, "", a)
+    if (a !~ /^(on[a-z]+|:[a-zA-Z.-]+|v-[a-z:.-]+|@[a-zA-Z.:-]+)$/) report("WARN", "translation in an attribute: a quote in it breaks the tag, use ${messageAttr(\"code\")}")
+  }
   if (inScript && line ~ /\$\{/) {
     s = line
     while (match(s, /\$\{[^}]*\}/)) {
       v = substr(s, RSTART, RLENGTH); s = substr(s, RSTART + RLENGTH)
-      if (v ~ /\?(js_string|c|json_string)\}$/ || configValue(v) || systemId(v)) continue
+      if (v ~ /\?(js_string|c|json_string)\}$/ || v ~ /^\$\{messageJs\(/ || configValue(v) || systemId(v)) continue
       if (v ~ /(localize(Raw)?\(|esc\()/) report("WARN", "localize()/esc() in a script no longer escape quotes, add ?js_string: " v)
       else report("INFO", "script value without ?js_string (or ?c for a number): " v)
     }
@@ -75,11 +100,11 @@ FNR == 1 { plain = 0; script = 0; comment = 0; noparse = 0; xtemplate = 0; messa
   s = line
   while (match(s, /[ \t](on[a-z]+|:[a-zA-Z.-]+|v-[a-z:.-]+|@[a-zA-Z.:-]+)="[^"]*(\$\{|<@message)[^"]*"/)) {
     a = substr(s, RSTART, RLENGTH); s = substr(s, RSTART + RLENGTH)
-    if (a ~ /<@message/ && a ~ /'\''<@message/) report("WARN", "translation in a JavaScript string of an attribute: an apostrophe breaks it, use getMessage(...)?js_string")
+    if (a ~ /<@message[ \t]/) report("WARN", "translation in JavaScript of an attribute: a quote in it breaks the script, use ${messageJs(\"code\")}")
     t = a; bad = 0
     while (match(t, /\$\{[^}]*\}/)) {
       v = substr(t, RSTART, RLENGTH); t = substr(t, RSTART + RLENGTH)
-      if (v !~ /\?(js_string|c)\}$/ && !configValue(v) && !systemId(v)) bad = 1
+      if (v !~ /\?(js_string|c)\}$/ && v !~ /^\$\{messageJs\(/ && !configValue(v) && !systemId(v)) bad = 1
     }
     if (bad) report("WARN", "value in JavaScript of an attribute without ?js_string")
   }
@@ -106,7 +131,8 @@ FNR == 1 { plain = 0; script = 0; comment = 0; noparse = 0; xtemplate = 0; messa
     while (match(s, /\$\{[^}]*\}/)) {
       v = substr(s, RSTART, RLENGTH); s = substr(s, RSTART + RLENGTH)
       # numbers cannot hold braces
-      if (v !~ /(\?c|\?size|[cC]ount)\}$/ && !configValue(v) && !systemId(v)) bad = 1
+      # translations are written by the administrators, as with the message macro
+      if (v !~ /(\?c|\?size|[cC]ount)\}$/ && v !~ /^\$\{message(Js|Attr)\(/ && !configValue(v) && !systemId(v)) bad = 1
     }
     if (bad) report("WARN", "value in a Vue app without v-pre: {{ }} in it would run, print it in an element with v-pre")
   }
@@ -134,6 +160,7 @@ FNR == 1 { plain = 0; script = 0; comment = 0; noparse = 0; xtemplate = 0; messa
   if (line ~ /<\/#outputformat>/ && plain > 0) plain--
 }
 END {
+  if (NR > 0) checkHead(previous)
   printf "%d error(s), %d warning(s), %d to review\n", count["ERROR"], count["WARN"], count["INFO"]
   exit count["ERROR"] > 0
 }' "${files[@]}"

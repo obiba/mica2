@@ -8,10 +8,10 @@
     const formDefinition = ${formConfig.definition!"['*']"};
     const formModel = ${formConfig.model!"{}"};
     const formMessages = {
-        validationSuccess: "<@message "form-validation-success"/>",
-        validationError: "<@message "form-validation-error"/>",
-        validationErrorOnSubmit: "<@message "form-validation-submit-error"/>",
-        errorOnSave: "<@message "form-save-error"/>"
+        validationSuccess: "${messageJs("form-validation-success")}",
+        validationError: "${messageJs("form-validation-error")}",
+        validationErrorOnSubmit: "${messageJs("form-validation-submit-error")}",
+        errorOnSave: "${messageJs("form-save-error")}"
     };
 </script>
 

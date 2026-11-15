@@ -4,7 +4,7 @@
 <#macro dceModel dce>
   <dl class="row">
     <#if dce.model.dataSources?? && dce.model.dataSources?size != 0>
-      <dt class="col-sm-4" title="<@message "study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.description"/>">
+      <dt class="col-sm-4" title="${messageAttr("study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.description")}">
         <@message "study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.title"/>
       </dt>
       <dd class="col-sm-8">
@@ -23,7 +23,7 @@
     </#if>
 
     <#if dce.model.bioSamples?? && dce.model.bioSamples?size != 0>
-      <dt class="col-sm-4" title="<@message "study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.description"/>">
+      <dt class="col-sm-4" title="${messageAttr("study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.description")}">
           <@message "study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.title"/>
       </dt>
       <dd class="col-sm-8">
@@ -44,7 +44,7 @@
     </#if>
 
     <#if dce.model.administrativeDatabases?? && dce.model.administrativeDatabases?size != 0>
-      <dt class="col-sm-4" title="<@message "study_taxonomy.vocabulary.populations-dataCollectionEvents-administrativeDatabases.description"/>">
+      <dt class="col-sm-4" title="${messageAttr("study_taxonomy.vocabulary.populations-dataCollectionEvents-administrativeDatabases.description")}">
           <@message "study_taxonomy.vocabulary.populations-dataCollectionEvents-administrativeDatabases.title"/>
       </dt>
       <dd class="col-sm-8">

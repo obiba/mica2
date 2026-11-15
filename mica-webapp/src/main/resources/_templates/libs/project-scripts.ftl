@@ -14,13 +14,13 @@
         path: '/',
         folder: {},
         tr: {
-          "item": "<@message "item"/>",
-          "items": "<@message "items"/>",
-          "download": "<@message "download"/>",
-          "name": "<@message "name"/>",
-          "description": "<@message "description"/>",
-          "size": "<@message "size"/>",
-          "actions": "<@message "actions"/>"
+          "item": "${messageJs("item")}",
+          "items": "${messageJs("items")}",
+          "download": "${messageJs("download")}",
+          "name": "${messageJs("name")}",
+          "description": "${messageJs("description")}",
+          "size": "${messageJs("size")}",
+          "actions": "${messageJs("actions")}"
         },
         locale: '${.lang}',
         contextPath: '${contextPath}'

@@ -2,14 +2,14 @@
   <#include "../models/navbar-menus-right.ftl"/>
   <#if cartEnabled>
     <li class="nav-item">
-      <a href="${contextPath}/cart<#if defaultCartType??>?type=${defaultCartType}</#if>" class="nav-link" title="<@message "sets.cart.title"/>">
+      <a href="${contextPath}/cart<#if defaultCartType??>?type=${defaultCartType}</#if>" class="nav-link" title="${messageAttr("sets.cart.title")}">
         <i class="fa-solid fa-shopping-cart"></i>
         <span id="cart-count" class="badge text-bg-danger navbar-badge"></span>
       </a>
     </li>
     <#if listsEnabled && user??>
       <li class="nav-item">
-        <a href="${contextPath}/lists" class="nav-link" title="<@message "sets.set.title"/>">
+        <a href="${contextPath}/lists" class="nav-link" title="${messageAttr("sets.set.title")}">
           <i class="fa-regular fa-list-alt"></i>
           <span id="list-count" class="badge text-bg-danger navbar-badge" <#if !(sets?? && sets.variablesLists?has_content)>style="display: none"</#if>>
             <#if sets?? && sets.variablesLists?has_content>${sets.variablesLists?size}</#if>
@@ -20,7 +20,7 @@
   </#if>
   <#if contactEnabled>
     <li class="nav-item">
-      <a href="${contextPath}/contact" class="nav-link" title="<@message "contact-menu"/>">
+      <a href="${contextPath}/contact" class="nav-link" title="${messageAttr("contact-menu")}">
         <i class="fa-solid fa-envelope"></i>
       </a>
     </li>

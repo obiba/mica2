@@ -35,21 +35,21 @@
 
         <#if authConfig.joinWithUsername>
           <div class="input-group mb-3">
-            <input name="username" type="text" autocomplete="nope" class="form-control" placeholder="<@message "username"/>">
+            <input name="username" type="text" autocomplete="nope" class="form-control" placeholder="${messageAttr("username")}">
             <span class="input-group-text">
               <i class="fa-solid fa-user"></i>
             </span>
           </div>
         </#if>
         <div class="input-group mb-3">
-          <input name="email" type="email" autocomplete="nope" class="form-control" placeholder="<@message "email"/>">
+          <input name="email" type="email" autocomplete="nope" class="form-control" placeholder="${messageAttr("email")}">
           <span class="input-group-text">
             <i class="fa-solid fa-envelope"></i>
           </span>
         </div>
         <#if config.signupWithPassword>
           <div class="input-group mb-3">
-            <input name="password" type="password" autocomplete="new-password" class="form-control" placeholder="<@message "password"/>">
+            <input name="password" type="password" autocomplete="new-password" class="form-control" placeholder="${messageAttr("password")}">
             <span class="input-group-text">
               <i class="fa-solid fa-lock"></i>
             </span>
@@ -62,13 +62,13 @@
         </div>
 
         <div class="input-group mb-3">
-          <input name="firstname" type="text" class="form-control" placeholder="<@message "firstname"/>">
+          <input name="firstname" type="text" class="form-control" placeholder="${messageAttr("firstname")}">
           <span class="input-group-text">
             <i class="fa-solid fa-user"></i>
           </span>
         </div>
         <div class="input-group mb-3">
-          <input name="lastname" type="text" class="form-control" placeholder="<@message "lastname"/>">
+          <input name="lastname" type="text" class="form-control" placeholder="${messageAttr("lastname")}">
           <span class="input-group-text">
             <i class="fa-solid fa-user"></i>
           </span>
@@ -102,7 +102,7 @@
                 </#list>
               </select>
             <#else>
-              <input name="${attribute.name}" type="${attribute.inputType}" class="form-control" placeholder="<@message attribute.name/>">
+              <input name="${attribute.name}" type="${attribute.inputType}" class="form-control" placeholder="${messageAttr(attribute.name)}">
             </#if>
           </div>
         </#list>
@@ -147,22 +147,22 @@
 <#include "libs/scripts.ftl">
 <#outputformat "plainText"><script>
   const requiredFields = [
-    { name: "email", title: "<@message "email"/>" }
+    { name: "email", title: "${messageJs("email")}" }
     <#if config.signupWithPassword>
-      , { name: "password", title: "<@message "password"/>" }
+      , { name: "password", title: "${messageJs("password")}" }
     </#if>
-    , { name: "firstname", title: "<@message "firstname"/>" }
-    , { name: "lastname", title: "<@message "lastname"/>" }
+    , { name: "firstname", title: "${messageJs("firstname")}" }
+    , { name: "lastname", title: "${messageJs("lastname")}" }
     <#if authConfig.joinWithUsername>
-      , { name: "username", title: "<@message "username"/>" }
+      , { name: "username", title: "${messageJs("username")}" }
     </#if>
     <#list authConfig.userAttributes as attribute>
       <#if attribute.required>
-        , { name: "${attribute.name?js_string}", title: "<@message attribute.name/>" }
+        , { name: "${attribute.name?js_string}", title: "${messageJs(attribute.name)}" }
       </#if>
     </#list>
     <#if authConfig.reCaptchaKey?has_content>
-    , { name: "g-recaptcha-response", title: "<@message "captcha"/>" }
+    , { name: "g-recaptcha-response", title: "${messageJs("captcha")}" }
     </#if>
   ];
 </script></#outputformat>

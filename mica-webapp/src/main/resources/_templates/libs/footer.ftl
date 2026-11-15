@@ -6,7 +6,7 @@
       <strong><@message "copyright"/> &copy; 2026 <a href="${portalLink}" v-pre>${config.name!""}</a>.</strong> <@message "all-rights-reserved"/>
     </div>
   </#if>
-  <a href="${contextPath}/administration" title="<@message "administration"/>" class="float-end"><i class="fa-solid fa-lock"></i></a>
+  <a href="${contextPath}/administration" title="${messageAttr("administration")}" class="float-end"><i class="fa-solid fa-lock"></i></a>
   <!-- Default to the left -->
   <small><@message "powered-by"/> <a href="https://www.obiba.org">OBiBa Mica</a></small>
 </footer>

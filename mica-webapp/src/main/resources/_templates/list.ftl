@@ -51,7 +51,7 @@
                 <a class="nav-link ${variableListActiveClass} d-flex align-items-center" href="${contextPath}/list/${variableList.id}">
                   <i class="fa-regular fa-circle nav-icon"></i>
                   <p class="mb-0">
-                    <span title="${listName(variableList)} <#if variableList.name?starts_with("dar:")>[<@message "data-access-request"/>]</#if>">
+                    <span title="${listName(variableList)} <#if variableList.name?starts_with("dar:")>[${messageAttr("data-access-request")}]</#if>">
                         ${listName(variableList)?truncate_c(20, "...")}
                     </span>
                     <#if variableList.name?starts_with("dar:")>
@@ -193,7 +193,7 @@
 
             <#if config.harmonizationDatasetEnabled && config.studyDatasetEnabled>
             <div class="float-start">
-              <ul class="nav nav-pills" id="studyClassNameChoice" :title="countWarning ? '${springMacroRequestContext.getMessage("count-warning")?js_string}' : ''" role="tablist" v-cloak>
+              <ul class="nav nav-pills" id="studyClassNameChoice" :title="countWarning ? '${messageJs("count-warning")}' : ''" role="tablist" v-cloak>
                 <li class="nav-item" role="presentation">
                   <a class="nav-link active" id="individual-tab" @click="onStudyClassNameChange('Study')" href="" data-bs-toggle="tab" role="tab" aria-controls="home" aria-selected="true"><@message "individual-search"/> <span :class="{ 'badge text-bg-warning': countWarning, 'badge text-bg-light': !countWarning }" class="badge right">{{individualSubCount}}</span></a>
                 </li>
