@@ -42,7 +42,7 @@
                     <@message "global.additional-information"/>
                 </h3>
                 <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#additional-card" title="<@message "collapse"/>">
+                  <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#additional-card" title="${messageAttr("collapse")}">
                     <i class="fa-solid fa-minus"></i></button>
                 </div>
               </div>
@@ -113,7 +113,7 @@
         <@message "design"/>
       </h3>
       <div class="card-tools">
-        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#study-design-card" title="<@message "collapse"/>">
+        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#study-design-card" title="${messageAttr("collapse")}">
           <i class="fa-solid fa-minus"></i></button>
       </div>
     </div>
@@ -122,7 +122,7 @@
 
       <dl class="row">
         <#if study.model.methods.design??>
-          <dt class="col-sm-4" title="<@message "study_taxonomy.vocabulary.methods-design.description"/>">
+          <dt class="col-sm-4" title="${messageAttr("study_taxonomy.vocabulary.methods-design.description")}">
             <@message "study_taxonomy.vocabulary.methods-design.title"/>
           </dt>
           <dd class="col-sm-8">
@@ -163,7 +163,7 @@
           <@message "study.marker-paper"/>
       </h3>
       <div class="card-tools">
-        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#publication-card" title="<@message "collapse"/>">
+        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#publication-card" title="${messageAttr("collapse")}">
           <i class="fa-solid fa-minus"></i></button>
       </div>
     </div>
@@ -188,14 +188,14 @@
           <@message "population.recruitment"/>
       </h3>
       <div class="card-tools">
-        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#recruitment-card" title="<@message "collapse"/>">
+        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#recruitment-card" title="${messageAttr("collapse")}">
           <i class="fa-solid fa-minus"></i></button>
       </div>
     </div>
     <!-- /.card-header -->
     <div id="recruitment-card" class="card-body collapse show">
       <dl class="row">
-        <dt class="col-sm-6" title="<@message "study_taxonomy.vocabulary.methods-recruitments.description"/>">
+        <dt class="col-sm-6" title="${messageAttr("study_taxonomy.vocabulary.methods-recruitments.description")}">
             <@message "study.recruitment-sources.label"/>
         </dt>
         <dd class="col-sm-6">
@@ -223,7 +223,7 @@
           <@message "numberOfParticipants.label"/>
       </h3>
       <div class="card-tools">
-        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#participants-card" title="<@message "collapse"/>">
+        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#participants-card" title="${messageAttr("collapse")}">
           <i class="fa-solid fa-minus"></i></button>
       </div>
     </div>
@@ -296,7 +296,7 @@
           <@message "study.access.label"/>
       </h3>
       <div class="card-tools">
-        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#access-card" title="<@message "collapse"/>">
+        <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#access-card" title="${messageAttr("collapse")}">
           <i class="fa-solid fa-minus"></i></button>
       </div>
     </div>

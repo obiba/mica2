@@ -13,13 +13,13 @@
     var2: ${(variable2!"undefined")?replace("<", "\\u003c")},
     locale: "${.lang}",
     tr: {
-      "chi-squared-test": "<@message "chi-squared-test"/>",
-      "n-total": "<@message "n-total"/>",
-      "min": "<@message "min"/>",
-      "max": "<@message "max"/>",
-      "mean": "<@message "mean"/>",
-      "stdDev": "<@message "stdDev"/>",
-      "all": "<@message "all"/>"
+      "chi-squared-test": "${messageJs("chi-squared-test")}",
+      "n-total": "${messageJs("n-total")}",
+      "min": "${messageJs("min")}",
+      "max": "${messageJs("max")}",
+      "mean": "${messageJs("mean")}",
+      "stdDev": "${messageJs("stdDev")}",
+      "all": "${messageJs("all")}"
     }
   };
 </script>

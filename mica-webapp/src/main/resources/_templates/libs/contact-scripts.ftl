@@ -3,16 +3,16 @@
 <script>
   $(function () {
     const errorMessages = {
-      "server.error.bad-request": "<@message "server.error.bad-request"/>",
-      "server.error.bad-captcha": "<@message "server.error.bad-captcha"/>",
+      "server.error.bad-request": "${messageJs("server.error.bad-request")}",
+      "server.error.bad-captcha": "${messageJs("server.error.bad-captcha")}",
     };
     const requiredFields = [
-      { name: "name", title: "<@message "contact-name"/>" },
-      { name: "email", title: "<@message "contact-email"/>" },
-      { name: "subject", title: "<@message "contact-subject"/>" },
-      { name: "message", title: "<@message "contact-message"/>" }
+      { name: "name", title: "${messageJs("contact-name")}" },
+      { name: "email", title: "${messageJs("contact-email")}" },
+      { name: "subject", title: "${messageJs("contact-subject")}" },
+      { name: "message", title: "${messageJs("contact-message")}" }
       <#if reCaptchaKey?has_content>
-      , { name: "g-recaptcha-response", title: "<@message "captcha"/>" }
+      , { name: "g-recaptcha-response", title: "${messageJs("captcha")}" }
       </#if>
     ];
     UserService.contact("#form", requiredFields, function() {
@@ -24,7 +24,7 @@
       var alertId = "#alertFailure";
       var msg = "";
       if (Array.isArray(messageItems)) {
-        msg = "<@message "contact-fields-required"/>: " + messageItems.map(item => item.title).join(", ");
+        msg = "${messageJs("contact-fields-required")}: " + messageItems.map(item => item.title).join(", ");
         messageItems.map(item => item.name).forEach(itemName => {
           $('#contact-' + itemName).addClass('is-invalid');
         });

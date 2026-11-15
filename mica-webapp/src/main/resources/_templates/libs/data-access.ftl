@@ -123,7 +123,7 @@
       <p>
         <a class="btn btn-outline-secondary" href="${contextPath}/data-access-agreement-form/${agreement.id}">
           <i class="fa-solid fa-circle nav-icon text-${statusColor(agreement.status.toString())}"
-             title="<@message agreement.status.toString()/>"></i>
+             title="${messageAttr(agreement.status.toString())}"></i>
             <@message "agreement-current-user"/>
         </a>
       </p>
@@ -194,7 +194,7 @@
                       <#if collaborator.principal?? && agreement.applicant == collaborator.principal>
                         <a href="${contextPath}/data-access-agreement-form/${agreement.id}">
                           <i class="fa-solid fa-circle nav-icon text-${statusColor(agreement.status.toString())}"
-                             title="<@message agreement.status.toString()/>"></i>
+                             title="${messageAttr(agreement.status.toString())}"></i>
                         </a>
                       </#if>
                   </#list>
@@ -208,7 +208,7 @@
                   </button>
                   <ul class="dropdown-menu" style="">
                     <#if permissions?seq_contains("ADD_COLLABORATORS") && collaborator.invitationPending>
-                      <li><a class="dropdown-item" href="#" onclick="DataAccessService.reinviteCollaborator('${dar.id}', '${collaborator.email?js_string}', '<@message "invitation-resent"/>')"><i class="fa-solid fa-paper-plane me-2"></i> <@message "invite"/></a></li>
+                      <li><a class="dropdown-item" href="#" onclick="DataAccessService.reinviteCollaborator('${dar.id}', '${collaborator.email?js_string}', '${messageJs("invitation-resent")}')"><i class="fa-solid fa-paper-plane me-2"></i> <@message "invite"/></a></li>
                     </#if>
                     <#if permissions?seq_contains("DELETE_COLLABORATORS")>
                       <li><a class="dropdown-item" href="#" onclick="$('#collaborator-to-delete').text('${collaborator.email?js_string}')" data-bs-toggle="modal" data-bs-target="#modal-collaborator-delete"><i class="fa-solid fa-trash me-2"></i> <@message "remove"/></a></li>

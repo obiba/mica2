@@ -36,9 +36,9 @@
     NetworksSetService.addToCart([id], function(cart, oldCart) {
       NetworksSetService.showCount('#cart-count', cart, '${.lang}');
       if (cart.count === oldCart.count) {
-        MicaService.toastInfo("<@message "sets.cart.no-network-added"/>");
+        MicaService.toastInfo("${messageJs("sets.cart.no-network-added")}");
       } else {
-        MicaService.toastSuccess("<@message "network-added-to-cart"/>");
+        MicaService.toastSuccess("${messageJs("network-added-to-cart")}");
       }
       $('#cart-add').hide();
       $('#cart-remove').show();
@@ -49,9 +49,9 @@
       NetworksSetService.showCount('#cart-count', cart, '${.lang}');
       // TODO toast cart update
       if (cart.count === oldCart.count) {
-        MicaService.toastInfo("<@message "sets.cart.no-network-removed"/>");
+        MicaService.toastInfo("${messageJs("sets.cart.no-network-removed")}");
       } else {
-        MicaService.toastSuccess("<@message "network-removed-from-cart"/>");
+        MicaService.toastSuccess("${messageJs("network-removed-from-cart")}");
       }
       $('#cart-remove').hide();
       $('#cart-add').show();
@@ -62,17 +62,17 @@
   const Mica = {
     options: {},
     tr: {
-      "studies": "<@message "studies"/>",
-      "geographical-distribution-chart-title": "<@message "geographical-distribution-chart-title"/>",
-      "geographical-distribution-chart-text": "<@message "geographical-distribution-chart-text"/>",
-      "study-design-chart-title": "<@message "study-design-chart-title"/>",
-      "study-design-chart-text": "<@message "study-design-chart-text"/>",
-      "number-participants-chart-title": "<@message "number-participants-chart-title"/>",
-      "number-participants-chart-text": "<@message "number-participants-chart-text"/>",
-      "bio-samples-chart-title": "<@message "bio-samples-chart-title"/>",
-      "bio-samples-chart-text": "<@message "bio-samples-chart-text"/>",
-      "study-start-year-chart-title": "<@message "study-start-year-chart-title"/>",
-      "study-start-year-chart-text": "<@message "study-start-year-chart-text"/>",
+      "studies": "${messageJs("studies")}",
+      "geographical-distribution-chart-title": "${messageJs("geographical-distribution-chart-title")}",
+      "geographical-distribution-chart-text": "${messageJs("geographical-distribution-chart-text")}",
+      "study-design-chart-title": "${messageJs("study-design-chart-title")}",
+      "study-design-chart-text": "${messageJs("study-design-chart-text")}",
+      "number-participants-chart-title": "${messageJs("number-participants-chart-title")}",
+      "number-participants-chart-text": "${messageJs("number-participants-chart-text")}",
+      "bio-samples-chart-title": "${messageJs("bio-samples-chart-title")}",
+      "bio-samples-chart-text": "${messageJs("bio-samples-chart-text")}",
+      "study-start-year-chart-title": "${messageJs("study-start-year-chart-title")}",
+      "study-start-year-chart-text": "${messageJs("study-start-year-chart-text")}",
     }
   };
 
@@ -336,7 +336,7 @@
 
         const chartConfig = makeVariablesClassificationsChartSettings(chartData, {
           key: key,
-          label: "<@message "variables"/>",
+          label: "${messageJs("variables")}",
           borderColor: '${barChartBorderColor}',
           backgroundColor: '${barChartBackgroundColor}',
           useColorsArray: ${useColorsArrayForClassificationsChart?c}
@@ -382,8 +382,8 @@
 
   const toMembershipsAnchors = function(urlPrefix, membershipsArray) {
     const roleTr = {
-      'contact': "${springMacroRequestContext.getMessage("contact.label.contact", "contact")?js_string}",
-      'investigator': "${springMacroRequestContext.getMessage("contact.label.investigator", "investigator")?js_string}"
+      'contact': "${messageJs("contact.label.contact", "contact")}",
+      'investigator': "${messageJs("contact.label.investigator", "investigator")}"
     };
 
     const memberships = (membershipsArray || []).reduce((accumulator, membership) => {
@@ -446,7 +446,7 @@
           });
 
           $('#affiliatedMembersTable').dataTable({
-            columns: [{ title: "<@message "full-name"/>" }, { title: "<@message "email"/>" }, { title: "<@message "studies"/>" }, { title: "<@message "networks"/>" }],
+            columns: [{ title: "${messageJs("full-name")}" }, { title: "${messageJs("email")}" }, { title: "${messageJs("studies")}" }, { title: "${messageJs("networks")}" }],
             data: dataset
           });
 
@@ -468,13 +468,13 @@
         path: '/',
         folder: {},
         tr: {
-          "item": "<@message "item"/>",
-          "items": "<@message "items"/>",
-          "download": "<@message "download"/>",
-          "name": "<@message "name"/>",
-          "description": "<@message "description"/>",
-          "size": "<@message "size"/>",
-          "actions": "<@message "actions"/>"
+          "item": "${messageJs("item")}",
+          "items": "${messageJs("items")}",
+          "download": "${messageJs("download")}",
+          "name": "${messageJs("name")}",
+          "description": "${messageJs("description")}",
+          "size": "${messageJs("size")}",
+          "actions": "${messageJs("actions")}"
         },
         locale: '${.lang}',
         contextPath: '${contextPath}'

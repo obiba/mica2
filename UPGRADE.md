@@ -67,6 +67,12 @@ templates:
   with `?no_esc` in the `message` macro (`${text?no_esc}`), or copy the macro from the
   8.0.0 version; the same for `getMessage(...)` printed directly (e.g. a custom
   `error.ftl`). Otherwise translations holding HTML (links, bold) show their tags.
+- `<@message>` prints the translation as is: in a script or an attribute, a quote in it
+  (`L'invitation`) breaks the script or the tag. Print a translation in a script, in a
+  script attribute (`onclick`, a Vue `:title`) or in a Vue `{{ ... }}` with
+  `${messageJs("code")}`, and in another attribute (`title`, `placeholder`) with
+  `${messageAttr("code")}`. A custom `libs/head.ftl` must define these two functions:
+  copy them from the 8.0.0 version.
 - Values that Mica sends HTML-encoded must be printed with `htmlDecode(...)`, otherwise
   they show `&amp;`, `&eacute;`...: user names (`fullName`) and profile attributes, the
   request titles of the data access list page, and the URL parameters of custom pages

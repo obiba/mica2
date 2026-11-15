@@ -7,9 +7,9 @@
     $("#networks").DataTable(dataTablesDefaultOpts);
 
     const sortOptionsTranslations = {
-      'name': "<@message "global.name"/>",
-      'acronym': "<@message "acronym"/>",
-      'numberOfStudies': "<@message "network.number-of-studies"/>"
+      'name': "${messageJs("global.name")}",
+      'acronym': "${messageJs("acronym")}",
+      'numberOfStudies': "${messageJs("network.number-of-studies")}"
     };
 
     if (document.querySelector("#cards")) {

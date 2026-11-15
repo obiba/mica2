@@ -21,9 +21,9 @@
     VariablesSetService.addQueryToCart('dataset(in(Mica_dataset.id,' + id + ')),variable(limit(0,10000),fields(variableType))', function(cart, oldCart) {
       VariablesSetService.showCount('#cart-count', cart, '${.lang}');
       if (cart.count === oldCart.count) {
-        MicaService.toastInfo("<@message "sets.cart.no-variable-added"/>");
+        MicaService.toastInfo("${messageJs("sets.cart.no-variable-added")}");
       } else {
-        MicaService.toastSuccess("<@message "variables-added-to-cart"/>".replace('{0}', (cart.count - oldCart.count).toLocaleString('${.lang}')));
+        MicaService.toastSuccess("${messageJs("variables-added-to-cart")}".replace('{0}', (cart.count - oldCart.count).toLocaleString('${.lang}')));
       }
     });
   };
@@ -41,7 +41,7 @@
 
         const chartConfig = makeVariablesClassificationsChartSettings(chartData, {
           key: '${dataset.id?js_string}',
-          label: "<@message "variables"/>",
+          label: "${messageJs("variables")}",
           borderColor: '${barChartBorderColor}',
           backgroundColor: '${barChartBackgroundColor}',
           useColorsArray: ${useColorsArrayForClassificationsChart?c}
@@ -150,13 +150,13 @@
 
     <!-- Files -->
     const filesTr = {
-      'item': "<@message "item"/>",
-      'items': "<@message "items"/>",
-      'download': "<@message "download"/>",
-      'name': "<@message "name"/>",
-      'description': "<@message "description"/>",
-      'size': "<@message "size"/>",
-      'actions': "<@message "actions"/>"
+      'item': "${messageJs("item")}",
+      'items': "${messageJs("items")}",
+      'download': "${messageJs("download")}",
+      'name': "${messageJs("name")}",
+      'description': "${messageJs("description")}",
+      'size': "${messageJs("size")}",
+      'actions': "${messageJs("actions")}"
     };
     <#if showDatasetFiles>
       makeFilesVue('#files-app', {

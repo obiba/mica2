@@ -33,9 +33,9 @@
     StudiesSetService.addToCart([id], function(cart, oldCart) {
       StudiesSetService.showCount('#cart-count', cart, '${.lang}');
       if (cart.count === oldCart.count) {
-        MicaService.toastInfo("<@message "sets.cart.no-study-added"/>");
+        MicaService.toastInfo("${messageJs("sets.cart.no-study-added")}");
       } else {
-        MicaService.toastSuccess("<@message "study-added-to-cart"/>");
+        MicaService.toastSuccess("${messageJs("study-added-to-cart")}");
       }
       $('#cart-add').hide();
       $('#cart-remove').show();
@@ -46,9 +46,9 @@
       StudiesSetService.showCount('#cart-count', cart, '${.lang}');
       // TODO toast cart update
       if (cart.count === oldCart.count) {
-        MicaService.toastInfo("<@message "sets.cart.no-study-removed"/>");
+        MicaService.toastInfo("${messageJs("sets.cart.no-study-removed")}");
       } else {
-        MicaService.toastSuccess("<@message "study-removed-from-cart"/>");
+        MicaService.toastSuccess("${messageJs("study-removed-from-cart")}");
       }
       $('#cart-remove').hide();
       $('#cart-add').show();
@@ -84,7 +84,7 @@
 
         const chartConfig = makeVariablesClassificationsChartSettings(chartData, {
           key: key,
-          label: "<@message "variables"/>",
+          label: "${messageJs("variables")}",
           borderColor: '${barChartBorderColor}',
           backgroundColor: '${barChartBackgroundColor}',
           useColorsArray: ${useColorsArrayForClassificationsChart?c}
@@ -153,13 +153,13 @@
 
     <!-- Files -->
     const filesTr = {
-      "item": "<@message "item"/>",
-      "items": "<@message "items"/>",
-      "download": "<@message "download"/>",
-      "name": "<@message "name"/>",
-      "description": "<@message "description"/>",
-      "size": "<@message "size"/>",
-      "actions": "<@message "actions"/>"
+      "item": "${messageJs("item")}",
+      "items": "${messageJs("items")}",
+      "download": "${messageJs("download")}",
+      "name": "${messageJs("name")}",
+      "description": "${messageJs("description")}",
+      "size": "${messageJs("size")}",
+      "actions": "${messageJs("actions")}"
     };
     <#if showStudyFiles>
       makeFilesVue('#study-files-app', {

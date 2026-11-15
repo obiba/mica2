@@ -163,7 +163,7 @@
 
                 <#if config.harmonizationDatasetEnabled && config.studyDatasetEnabled>
                   <div class="float-start">
-                    <ul class="nav nav-pills" id="studyClassNameChoice" :title="countWarning ? '<@message "count-warning"/>' : ''" role="tablist" v-cloak>
+                    <ul class="nav nav-pills" id="studyClassNameChoice" :title="countWarning ? '${messageJs("count-warning")}' : ''" role="tablist" v-cloak>
                       <li class="nav-item" role="presentation">
                         <a class="nav-link active" id="individual-tab" @click="onStudyClassNameChange('Study')" href="" data-bs-toggle="tab" role="tab" aria-controls="home" aria-selected="true"><@message "individual-search"/> <span :class="{ 'badge text-bg-warning': countWarning, 'badge text-bg-light': !countWarning }" class="badge right">{{individualSubCount}}</span></a>
                       </li>
@@ -200,7 +200,7 @@
 
                           <div class="form-group mb-0">
                             <div class="input-group">
-                              <input id="newVariableSetName" type="text" class="form-control" placeholder="<@message "sets.add.modal.create-new"/>">
+                              <input id="newVariableSetName" type="text" class="form-control" placeholder="${messageAttr("sets.add.modal.create-new")}">
                               <button id="addToNewSetButton" class="btn btn-success disabled" type="button" onclick="onClickAddToNewSet()">
                                 <i class="fa-solid fa-plus"></i> <@message "global.add"/>
                               </button>
@@ -299,7 +299,7 @@
               <#if sets.studiesCart?? && sets.studiesCart.count gt 0>
                 <#if config.harmonizationDatasetEnabled>
                   <div class="float-start">
-                    <ul class="nav nav-pills" id="studyClassNameChoice" :title="countWarning ? '<@message "count-warning"/>' : ''" role="tablist" v-cloak>
+                    <ul class="nav nav-pills" id="studyClassNameChoice" :title="countWarning ? '${messageJs("count-warning")}' : ''" role="tablist" v-cloak>
                       <li class="nav-item" role="presentation">
                         <a class="nav-link active" id="individual-tab" @click="onStudyClassNameChange('Study')" href="" data-bs-toggle="tab" role="tab" aria-controls="home" aria-selected="true"><@message "individual-search"/> <span :class="{ 'badge text-bg-warning': countWarning, 'badge text-bg-light': !countWarning }" class="badge right">{{individualSubCount}}</span></a>
                       </li>

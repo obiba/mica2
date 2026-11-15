@@ -21,60 +21,60 @@
   Mica.useOnlyOpalTaxonomiesForCoverage = ${useOnlyOpalTaxonomiesForCoverage?c};
 
   Mica.tr = {
-    "variables": "<@message "variables"/>",
-    "variable": "<@message "variable"/>",
-    "datasets": "<@message "datasets"/>",
-    "studies": "<@message "studies"/>",
-    "networks": "<@message "networks"/>",
-    "network": "<@message "network"/>",
-    "initiatives": "<@message "initiatives"/>",
-    "initiative": "<@message "initiative"/>",
-    "protocol": "<@message "protocol"/>",
-    "protocols": "<@message "protocols"/>",
-    "name": "<@message "name"/>",
-    "label": "<@message "label"/>",
-    "annotations": "<@message "annotations"/>",
-    "study": "<@message "study"/>",
-    "dataset": "<@message "dataset"/>",
-    "population": "<@message "population"/>",
-    "data-collection-event": "<@message "data-collection-event"/>",
-    "dce": "<@message "search.study.dce-name"/>",
-    "acronym": "<@message "acronym"/>",
-    "valueType": "<@message "value-type"/>",
-    "text-type": "<@message "text-type"/>",
-    "integer-type": "<@message "integer-type"/>",
-    "decimal-type": "<@message "decimal-type"/>",
-    "boolean-type": "<@message "boolean-type"/>",
-    "binary-type": "<@message "binary-type"/>",
-    "date-type": "<@message "date-type"/>",
-    "datetime-type": "<@message "datetime-type"/>",
-    "point-type": "<@message "point-type"/>",
-    "linestring-type": "<@message "linestring-type"/>",
-    "polygon-type": "<@message "polygon-type"/>",
-    "locale-type": "<@message "locale-type"/>",
-    "type": "<@message "type"/>",
-    "study-design": "<@message "study-design"/>",
-    "data-sources-available": "<@message "data-sources-available"/>",
-    "participants": "<@message "participants"/>",
-    "individual": "<@message "individual"/>",
-    "harmonization": "<@message "harmonization"/>",
-    "collected": "<@message "collected"/>",
-    "harmonized": "<@message "harmonized"/>",
-    "dataschema": "<@message "Dataschema"/>",
-    "no-variable-found": "<@message "no-variable-found"/>",
-    "no-dataset-found": "<@message "no-dataset-found"/>",
-    "no-study-found": "<@message "no-study-found"/>",
-    "no-network-found": "<@message "no-network-found"/>",
-    "no-variable-added": "<@message "sets.cart.no-variable-added"/>",
-    "variables-added-to-cart": "<@message "variables-added-to-cart"/>",
-    "no-variable-added-set": "<@message "sets.set.no-variable-added"/>",
-    "variables-added-to-set": "<@message "variables-added-to-set"/>",
-    "no-study-added": "<@message "sets.cart.no-study-added"/>",
-    "studies-added-to-cart": "<@message "studies-added-to-cart"/>",
-    "no-network-added": "<@message "sets.cart.no-network-added"/>",
-    "networks-added-to-cart": "<@message "networks-added-to-cart"/>",
-    "data-access-request": "<@message "data-access-request"/>",
-    "count-warning": "<@message "count-warning"/>"
+    "variables": "${messageJs("variables")}",
+    "variable": "${messageJs("variable")}",
+    "datasets": "${messageJs("datasets")}",
+    "studies": "${messageJs("studies")}",
+    "networks": "${messageJs("networks")}",
+    "network": "${messageJs("network")}",
+    "initiatives": "${messageJs("initiatives")}",
+    "initiative": "${messageJs("initiative")}",
+    "protocol": "${messageJs("protocol")}",
+    "protocols": "${messageJs("protocols")}",
+    "name": "${messageJs("name")}",
+    "label": "${messageJs("label")}",
+    "annotations": "${messageJs("annotations")}",
+    "study": "${messageJs("study")}",
+    "dataset": "${messageJs("dataset")}",
+    "population": "${messageJs("population")}",
+    "data-collection-event": "${messageJs("data-collection-event")}",
+    "dce": "${messageJs("search.study.dce-name")}",
+    "acronym": "${messageJs("acronym")}",
+    "valueType": "${messageJs("value-type")}",
+    "text-type": "${messageJs("text-type")}",
+    "integer-type": "${messageJs("integer-type")}",
+    "decimal-type": "${messageJs("decimal-type")}",
+    "boolean-type": "${messageJs("boolean-type")}",
+    "binary-type": "${messageJs("binary-type")}",
+    "date-type": "${messageJs("date-type")}",
+    "datetime-type": "${messageJs("datetime-type")}",
+    "point-type": "${messageJs("point-type")}",
+    "linestring-type": "${messageJs("linestring-type")}",
+    "polygon-type": "${messageJs("polygon-type")}",
+    "locale-type": "${messageJs("locale-type")}",
+    "type": "${messageJs("type")}",
+    "study-design": "${messageJs("study-design")}",
+    "data-sources-available": "${messageJs("data-sources-available")}",
+    "participants": "${messageJs("participants")}",
+    "individual": "${messageJs("individual")}",
+    "harmonization": "${messageJs("harmonization")}",
+    "collected": "${messageJs("collected")}",
+    "harmonized": "${messageJs("harmonized")}",
+    "dataschema": "${messageJs("Dataschema")}",
+    "no-variable-found": "${messageJs("no-variable-found")}",
+    "no-dataset-found": "${messageJs("no-dataset-found")}",
+    "no-study-found": "${messageJs("no-study-found")}",
+    "no-network-found": "${messageJs("no-network-found")}",
+    "no-variable-added": "${messageJs("sets.cart.no-variable-added")}",
+    "variables-added-to-cart": "${messageJs("variables-added-to-cart")}",
+    "no-variable-added-set": "${messageJs("sets.set.no-variable-added")}",
+    "variables-added-to-set": "${messageJs("variables-added-to-set")}",
+    "no-study-added": "${messageJs("sets.cart.no-study-added")}",
+    "studies-added-to-cart": "${messageJs("studies-added-to-cart")}",
+    "no-network-added": "${messageJs("sets.cart.no-network-added")}",
+    "networks-added-to-cart": "${messageJs("networks-added-to-cart")}",
+    "data-access-request": "${messageJs("data-access-request")}",
+    "count-warning": "${messageJs("count-warning")}"
   };
 
   Mica.querySettings = {
@@ -121,19 +121,19 @@
 
   const totalCounts = {
     <#if variablesCartEnabled>
-    variablesCount: parseInt("${sets.variablesCart.count?c}".replace(',', '')),
+    variablesCount: ${sets.variablesCart.count?c},
     </#if>
 
     <#if studiesCartEnabled>
-    studiesCount: parseInt("${sets.studiesCart.count?c}".replace(',', '')),
+    studiesCount: ${sets.studiesCart.count?c},
     </#if>
 
     <#if networksCartEnabled>
-    networksCount: parseInt("${sets.networksCart.count?c}".replace(',', '')),
+    networksCount: ${sets.networksCart.count?c},
     </#if>
 
     <#if rc.requestUri?starts_with("/list/")>
-    currentSetIdentifiersCount: parseInt("${set.identifiers?size?c}".replace(',', '')),
+    currentSetIdentifiersCount: ${set.identifiers?size?c},
     </#if>
   };
 
@@ -144,9 +144,9 @@
     VariablesSetService.addQueryToCart('variable(in(Mica_variable.sets,' + id + '),limit(0,10000),fields(variableType))', function(cart, oldCart) {
       VariablesSetService.showCount('#cart-count', cart, '${.lang}');
       if (cart.count === oldCart.count) {
-        MicaService.toastInfo("<@message "sets.cart.no-variable-added"/>");
+        MicaService.toastInfo("${messageJs("sets.cart.no-variable-added")}");
       } else {
-        MicaService.toastSuccess("<@message "variables-added-to-cart"/>".replace('{0}', (cart.count - oldCart.count).toLocaleString('${.lang}')));
+        MicaService.toastSuccess("${messageJs("variables-added-to-cart")}".replace('{0}', (cart.count - oldCart.count).toLocaleString('${.lang}')));
       }
     });
   };
@@ -212,7 +212,7 @@
             this.pageSizeSelector.update(this.size);
 
             if (badTotals) {
-              MicaService.toastWarning("<@message "count-warning"/>");
+              MicaService.toastWarning("${messageJs("count-warning")}");
 
               this.countWarning = true;
               this.verifyTotalCount();

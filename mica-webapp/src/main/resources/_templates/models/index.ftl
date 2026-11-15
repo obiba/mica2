@@ -78,7 +78,7 @@
           </div><!-- /.col -->
           <div class="col-sm-2">
             <div class="text-end">
-              <button type="button"  onclick="location.href='<#if !config.openAccess && !user??>${contextPath}/signin?redirect=${contextPath}/search${defaultSearchState?url('UTF-8')}<#else>${contextPath}/search${defaultSearchState}</#if>';" class="btn btn-success btn-lg">
+              <button type="button"  onclick="location.href='<#if !config.openAccess && !user??>${contextPath}/signin?redirect=${contextPath}/search${defaultSearchState?url('UTF-8')?js_string}<#else>${contextPath}/search${defaultSearchState?js_string}</#if>';" class="btn btn-success btn-lg">
                 <i class="fa-solid fa-search"></i> <@message "search"/>
               </button>
             </div>

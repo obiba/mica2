@@ -9,6 +9,16 @@
 <#macro messageArgs code args>
   <@spring.messageArgsText code args code/>
 </#macro>
+<#-- Translation of a code in a JavaScript string, in a script or in a script attribute (onclick, Vue :title, {{ }}):
+     ${messageJs("code")}, or ${messageJs("code", "text")} to show another text than the code when there is no
+     translation. Functions, not macros: ${} escapes the text for where it is written (HTML in an attribute) -->
+<#function messageJs code default=code>
+  <#return springMacroRequestContext.getMessage(code, default)?js_string/>
+</#function>
+<#-- Translation of a code in an HTML attribute (title, placeholder...): ${messageAttr("code")}, HTML-escaped -->
+<#function messageAttr code default=code>
+  <#return springMacroRequestContext.getMessage(code, default)/>
+</#function>
 
 <!-- Context path setting -->
 <#assign contextPath = "${config.contextPath}"/>

@@ -37,13 +37,13 @@
           <span class="input-group-text">
             <i class="fa-solid fa-user"></i>
           </span>
-          <input name="username" type="text" class="form-control" placeholder="<@message "username"/>" value="${uAuth.username?default("")}" readonly>
+          <input name="username" type="text" class="form-control" placeholder="${messageAttr("username")}" value="${uAuth.username?default("")}" readonly>
         </div>
         <div class="input-group mb-3">
           <span class="input-group-text">
             <i class="fa-solid fa-envelope"></i>
           </span>
-          <input name="email" type="email" class="form-control" placeholder="<@message "email"/>" value="${uAuth.email?default("")}" readonly>
+          <input name="email" type="email" class="form-control" placeholder="${messageAttr("email")}" value="${uAuth.email?default("")}" readonly>
         </div>
         <input type="hidden" name="realm" value="${uAuth.realm?default("")}"/>
 
@@ -52,13 +52,13 @@
         </div>
 
         <div class="input-group mb-3">
-          <input name="firstname" type="text" class="form-control" placeholder="<@message "firstname"/>" value="${uAuth.firstname?default("")}">
+          <input name="firstname" type="text" class="form-control" placeholder="${messageAttr("firstname")}" value="${uAuth.firstname?default("")}">
           <span class="input-group-text">
             <i class="fa-solid fa-user"></i>
           </span>
         </div>
         <div class="input-group mb-3">
-          <input name="lastname" type="text" class="form-control" placeholder="<@message "lastname"/>"  value="${uAuth.lastname?default("")}">
+          <input name="lastname" type="text" class="form-control" placeholder="${messageAttr("lastname")}"  value="${uAuth.lastname?default("")}">
           <span class="input-group-text">
             <i class="fa-solid fa-user"></i>
           </span>
@@ -92,7 +92,7 @@
                 </#list>
               </select>
             <#else>
-              <input name="${attribute.name}" type="${attribute.inputType}" class="form-control" placeholder="<@message attribute.name/>">
+              <input name="${attribute.name}" type="${attribute.inputType}" class="form-control" placeholder="${messageAttr(attribute.name)}">
             </#if>
           </div>
         </#list>
@@ -132,19 +132,19 @@
   UserService.refreshSignupWith()
   </#if>
   const requiredFields = [
-    { name: "email", title: "<@message "email"/>" }
-    , { name: "firstname", title: "<@message "firstname"/>" }
-    , { name: "lastname", title: "<@message "lastname"/>" }
+    { name: "email", title: "${messageJs("email")}" }
+    , { name: "firstname", title: "${messageJs("firstname")}" }
+    , { name: "lastname", title: "${messageJs("lastname")}" }
     <#if authConfig.joinWithUsername>
-      , { name: "username", title: "<@message "username"/>" }
+      , { name: "username", title: "${messageJs("username")}" }
     </#if>
     <#list authConfig.userAttributes as attribute>
       <#if attribute.required>
-        , { name: "${attribute.name?js_string}", title: "<@message attribute.name/>" }
+        , { name: "${attribute.name?js_string}", title: "${messageJs(attribute.name)}" }
       </#if>
     </#list>
     <#if authConfig.reCaptchaKey?has_content>
-    , { name: "g-recaptcha-response", title: "<@message "captcha"/>" }
+    , { name: "g-recaptcha-response", title: "${messageJs("captcha")}" }
     </#if>
   ];
 </script></#outputformat>

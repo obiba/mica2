@@ -31,6 +31,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.TemplateLoader;
@@ -103,11 +105,23 @@ public class TemplatesRenderTest {
   // the value is in a Vue attribute (v-bind, :prop, @event...) of the tag being written
   private static final Pattern VUE_ATTRIBUTE = Pattern.compile("\\s(v-[\\w:.-]+|:[\\w.-]+|@[\\w.:-]+)\\s*=\\s*\"[^\"]*$");
 
+  // every permission, so that the parts of the data access pages they show are rendered
+  private static final List<String> PERMISSIONS = List.of("ADD_COLLABORATORS", "ARCHIVE", "DELETE",
+    "DELETE_COLLABORATORS", "EDIT", "EDIT_STATUS", "UNARCHIVE", "VIEW_PRIVATE_COMMENTS");
+
   // model values with a real value, as the pages compute on them
   private static final Map<String, Object> OVERRIDES = Map.of(
     "contextPath", "",
     "config.contextPath", "",
-    "user.roles", List.of("mica-administrator", "mica-reviewer", "mica-editor", "mica-data-access-officer"));
+    // otherwise the studies and networks carts are disabled
+    "config.singleStudyEnabled", false,
+    "config.singleNetworkEnabled", false,
+    "user.roles", List.of("mica-administrator", "mica-reviewer", "mica-editor", "mica-data-access-officer"),
+    "permissions", PERMISSIONS,
+    "agreementPermissions", PERMISSIONS,
+    "amendmentPermissions", PERMISSIONS,
+    "feasibilityPermissions", PERMISSIONS,
+    "preliminaryPermissions", PERMISSIONS);
 
   // helper templates: a value read there is reported where its parent was read (e.g. localize(study.name))
   private static final List<String> HELPERS = List.of("libs/head.ftl");
@@ -128,7 +142,27 @@ public class TemplatesRenderTest {
     "libs/data-access-form-scripts.ftl | formConfig.definition |",
     "libs/data-access-form-scripts.ftl | formConfig.model |",
     "error.ftl | msg |",
-    "error.ftl | status |");
+    "error.ftl | status |",
+    // numbers, they cannot hold the braces of a {{ }} expression
+    "cart.ftl | sets.variablesCart.count |",
+    "cart.ftl | sets.studiesCart.count |",
+    "cart.ftl | sets.networksCart.count |");
+
+  // the translations shipped with Mica, see i18n/messages_{language}.properties
+  private static final List<String> LANGUAGES = List.of("en", "fr");
+
+  // a language whose translations are TQ{code}|{payload}TQ, to find where translations are printed without the
+  // encoding of their context
+  private static final String SYNTHETIC = "synthetic";
+
+  private static final Pattern TRANSLATION = Pattern.compile("TQ([^|<>\\s]+)\\|(.*?)TQ", Pattern.DOTALL);
+
+  // a call of the message macro, its argument can be a quoted code
+  private static final Pattern MESSAGE_MACRO = Pattern.compile("<@message\\s+(\"[^\"]*\"|'[^']*'|[^/>\"'])*/>");
+
+  // an attribute whose value is a script (event handler, Vue binding or directive) of the tag being written
+  private static final Pattern SCRIPT_ATTRIBUTE = Pattern.compile(
+    "\\s(on\\w+|v-[\\w:.-]+|:[\\w.-]+|@[\\w.:-]+)\\s*=\\s*\"[^\"]*$", Pattern.CASE_INSENSITIVE);
 
   // stops recursive macros (trees): lists are empty from this path depth
   private static final int MAX_DEPTH = 6;
@@ -186,6 +220,102 @@ public class TemplatesRenderTest {
     assertThat(unsafe).as("values printed unescaped, see target/template-render/report.md").isEmpty();
   }
 
+  /**
+   * Renders every built-in page in each language and reports the translations that end the quoted string they are
+   * written in (e.g. French L'invitation in '...'): printed raw, or HTML-escaped in a script attribute, where the
+   * browser decodes the entities before the script runs.
+   */
+  @Test
+  public void test_render_every_page_with_each_translation() throws Exception {
+    Configuration configuration = newConfiguration();
+    List<String> pages = listPages();
+    List<String> broken = new ArrayList<>();
+    for (String language : LANGUAGES) {
+      Map<String, String> quoted = quotedTranslations(language);
+      // the harness works: there are translations with a quote to look for
+      assertThat(quoted).as(language).isNotEmpty();
+      Files.createDirectories(OUTPUT.resolve(language));
+      for (String page : pages) {
+        String output = render(configuration, page, false, language).output();
+        Files.writeString(OUTPUT.resolve(language).resolve(page.replace(".ftl", ".html")), output, StandardCharsets.UTF_8);
+        broken.addAll(findBrokenTranslations(language, page, output, quoted));
+      }
+    }
+    assertThat(broken.stream().distinct().sorted().toList())
+      .as("translations that break the quoted string they are written in, use messageJs(code)")
+      .isEmpty();
+  }
+
+  /**
+   * Renders every built-in page with translations holding HTML and quotes, and reports the ones printed without the
+   * encoding of their context: in a script, they must be JavaScript-escaped (messageJs), in an attribute
+   * HTML-escaped (messageAttr), or both in a script attribute or a Vue {{ }} expression (messageJs). In HTML text
+   * they are printed as is, as translations can hold HTML.
+   */
+  @Test
+  public void test_render_every_page_with_quoted_translations() throws Exception {
+    Configuration configuration = newConfiguration();
+    List<String> unescaped = new ArrayList<>();
+    int[] checked = new int[1];
+    for (String page : listPages()) {
+      String output = render(configuration, page, false, SYNTHETIC).output();
+      unescaped.addAll(findUnescapedTranslations(page, output, checked));
+    }
+    List<String> report = unescaped.stream().distinct().sorted().toList();
+    Files.createDirectories(OUTPUT);
+    Files.write(OUTPUT.resolve("quoted-translations.txt"), report, StandardCharsets.UTF_8);
+    // the harness works: translations are found in scripts and attributes
+    assertThat(checked[0]).isGreaterThan(200);
+    assertThat(report)
+      .as("translations printed without the encoding of their context (code | page | context | encoding), see "
+        + "target/template-render/quoted-translations.txt")
+      .isEmpty();
+  }
+
+  /**
+   * Reads every built-in template, the parts not rendered with the stubs included (else branches, negated settings):
+   * a translation printed with the message macro is raw, it must not be in a script, an attribute or a Vue {{ }}
+   * expression, where messageJs() or messageAttr() encode it.
+   */
+  @Test
+  public void test_no_raw_translation_in_scripts_or_attributes() throws Exception {
+    Path root = Path.of(getClass().getResource("/_templates/libs/head.ftl").toURI()).getParent().getParent();
+    List<String> raw = new ArrayList<>();
+    try (Stream<Path> files = Files.walk(root)) {
+      for (Path file : files.filter(path -> path.toString().endsWith(".ftl")).sorted().toList()) {
+        String source = Files.readString(file, StandardCharsets.UTF_8);
+        String html = blankFreemarker(source);
+        List<int[]> scripts = ranges(SCRIPT_BLOCK, html, true);
+        Matcher message = MESSAGE_MACRO.matcher(source);
+        while (message.find()) {
+          int at = message.start();
+          String attribute = attributeName(html, at);
+          String context = inside(scripts, at) ? "script"
+            : attribute != null ? "attribute " + attribute
+            : html.lastIndexOf("{{", at) > html.lastIndexOf("}}", at) ? "vue {{ }}" : null;
+          if (context != null) {
+            int line = (int) source.substring(0, at).chars().filter(c -> c == '\n').count() + 1;
+            raw.add(root.relativize(file) + ":" + line + " | " + context + " | " + message.group());
+          }
+        }
+      }
+    }
+    assertThat(raw).as("translations printed raw in a script, an attribute or {{ }}: use messageJs() or messageAttr()")
+      .isEmpty();
+  }
+
+  // FreeMarker comments, directives, macro calls and interpolations blanked, positions kept: the HTML around; a > in a
+  // string or in parentheses does not end a directive
+  private static String blankFreemarker(String source) {
+    String html = source;
+    for (Pattern pattern : List.of(Pattern.compile("<#--.*?-->", Pattern.DOTALL),
+      Pattern.compile("</?[#@](?:\"[^\"]*\"|'[^']*'|\\([^)]*\\)|[^>\"'(])*>"),
+      Pattern.compile("\\$\\{[^}]*}"))) {
+      html = pattern.matcher(html).replaceAll(match -> " ".repeat(match.group().length()));
+    }
+    return html;
+  }
+
   //
   // Rendering
   //
@@ -235,7 +365,12 @@ public class TemplatesRenderTest {
   }
 
   private PageResult render(Configuration configuration, String page, boolean scriptLinks) throws Exception {
-    Stubs stubs = new Stubs(configuration.getObjectWrapper(), scriptLinks);
+    return render(configuration, page, scriptLinks, "en");
+  }
+
+  private PageResult render(Configuration configuration, String page, boolean scriptLinks, String language)
+    throws Exception {
+    Stubs stubs = new Stubs(configuration.getObjectWrapper(), scriptLinks, language);
     List<String> errors = new ArrayList<>();
     StringWriter writer = new StringWriter();
     Template template = configuration.getTemplate(page);
@@ -391,6 +526,145 @@ public class TemplatesRenderTest {
   }
 
   //
+  // Translations
+  //
+
+  /**
+   * The translations as the application finds them (ExtendedResourceBundleMessageSource): the messages bundle first,
+   * then the JSON translations (i18n/{language}.json, the defaults of the translations in the Mica settings).
+   */
+  private static Properties translations(String language) throws IOException {
+    Properties messages = new Properties();
+    String bundle = SYNTHETIC.equals(language) ? "en" : language;
+    try (InputStream input = TemplatesRenderTest.class.getResourceAsStream("/i18n/messages_" + bundle + ".properties")) {
+      messages.load(new InputStreamReader(input, StandardCharsets.UTF_8));
+    }
+    try (InputStream input = TemplatesRenderTest.class.getResourceAsStream("/i18n/" + bundle + ".json")) {
+      flatten("", new ObjectMapper().readTree(input), messages);
+    }
+    if (SYNTHETIC.equals(language)) {
+      messages.replaceAll((code, text) -> "TQ" + code + "|" + PAYLOAD + "TQ");
+    }
+    return messages;
+  }
+
+  private static List<String> findUnescapedTranslations(String page, String output, int[] checked) {
+    List<int[]> scripts = ranges(SCRIPT_BLOCK, output, true);
+    List<int[]> templates = ranges(TEMPLATE_BLOCK, output, false);
+    List<String> unescaped = new ArrayList<>();
+    Matcher translation = TRANSLATION.matcher(output);
+    while (translation.find()) {
+      int at = translation.start();
+      if (inside(templates, at)) continue;
+      Encoding encoding = encoding(translation.group(2));
+      String context;
+      List<Encoding> expected;
+      String attribute = inside(scripts, at) ? null : attributeName(output, at);
+      if (inside(scripts, at)) {
+        context = "script";
+        expected = List.of(Encoding.JS);
+      } else if (attribute != null) {
+        boolean script = attribute.matches("(?i)on\\w+|v-.*|:.*|@.*");
+        context = "attribute " + attribute;
+        expected = List.of(script ? Encoding.JS_HTML : Encoding.HTML);
+      } else if (output.lastIndexOf("{{", at) > output.lastIndexOf("}}", at)) {
+        context = "vue {{ }}";
+        expected = List.of(Encoding.JS_HTML);
+      } else {
+        continue;
+      }
+      checked[0]++;
+      if (!expected.contains(encoding)) {
+        unescaped.add(translation.group(1) + " | " + page + " | " + context + " | " + encoding);
+      }
+    }
+    return unescaped;
+  }
+
+  /**
+   * The name of the attribute whose value holds the position, null when it is not in a tag: the tag is read from its
+   * start, quotes followed, as attribute values can hold a &gt;.
+   */
+  private static String attributeName(String output, int position) {
+    Matcher tagStart = Pattern.compile("<[a-zA-Z]").matcher(output);
+    int start = -1;
+    int from = Math.max(0, output.lastIndexOf('<', position) - 2000);
+    while (tagStart.find(from) && tagStart.start() < position) {
+      start = tagStart.start();
+      from = start + 1;
+    }
+    if (start < 0) return null;
+    char quote = 0;
+    int valueStart = -1;
+    for (int i = start; i < position; i++) {
+      char c = output.charAt(i);
+      if (quote != 0) {
+        if (c == quote) quote = 0;
+      } else if (c == '"' || c == '\'') {
+        quote = c;
+        valueStart = i;
+      } else if (c == '>') {
+        return null;
+      }
+    }
+    if (quote == 0) return null;
+    Matcher name = Pattern.compile("([^\\s=<>\"']+)\\s*=\\s*$").matcher(output.substring(start, valueStart));
+    return name.find() ? name.group(1) : "?";
+  }
+
+  // the texts of a JSON translation tree, by their dotted path; the bundle comes first
+  private static void flatten(String prefix, JsonNode node, Properties messages) {
+    if (node.isObject()) {
+      node.properties().forEach(field -> flatten(prefix + field.getKey() + ".", field.getValue(), messages));
+    } else if (node.isValueNode()) {
+      messages.putIfAbsent(prefix.substring(0, prefix.length() - 1), node.asText());
+    }
+  }
+
+  // the translations with a quote, as printed without arguments (with arguments, MessageFormat changes the quotes)
+  private static Map<String, String> quotedTranslations(String language) throws IOException {
+    Map<String, String> quoted = new TreeMap<>();
+    translations(language).forEach((code, text) -> {
+      String value = text.toString();
+      if (value.matches("(?s).*['\"`].*") && !value.contains("{")) quoted.put(code.toString(), value);
+    });
+    return quoted;
+  }
+
+  private static List<String> findBrokenTranslations(String language, String page, String output,
+                                                     Map<String, String> translations) {
+    List<String> broken = new ArrayList<>();
+    translations.forEach((code, text) -> {
+      String escaped = escapeHtml(text);
+      for (String printed : List.of(text, escaped)) {
+        int at = output.indexOf(printed, 1);
+        while (at >= 0) {
+          char quote = output.charAt(at - 1);
+          boolean inString = (quote == '\'' || quote == '"' || quote == '`') && text.indexOf(quote) >= 0;
+          if (inString && (printed.equals(text) || isScriptAttribute(output, at))) {
+            String around = output.substring(Math.max(0, at - 60), Math.min(output.length(), at + printed.length() + 10));
+            broken.add(language + " | " + code + " | " + page + " | " + around.replaceAll("\\s+", " ").strip());
+          }
+          at = output.indexOf(printed, at + 1);
+        }
+      }
+    });
+    return broken;
+  }
+
+  private static boolean isScriptAttribute(String output, int position) {
+    int tagStart = output.lastIndexOf('<', position);
+    if (tagStart < 0 || tagStart < output.lastIndexOf('>', position)) return false;
+    return SCRIPT_ATTRIBUTE.matcher(output.substring(tagStart, position)).find();
+  }
+
+  // as FreeMarker's HTML output format
+  private static String escapeHtml(String text) {
+    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;")
+      .replace("'", "&#39;");
+  }
+
+  //
   // Report
   //
 
@@ -450,14 +724,15 @@ public class TemplatesRenderTest {
 
     private final List<Origin> origins = new ArrayList<>();
 
-    private final Properties messages = new Properties();
+    private final Properties messages;
 
-    Stubs(ObjectWrapper wrapper, boolean scriptLinks) throws IOException {
+    private final boolean synthetic;
+
+    Stubs(ObjectWrapper wrapper, boolean scriptLinks, String language) throws IOException {
       this.wrapper = wrapper;
       this.scriptLinks = scriptLinks;
-      try (InputStream input = TemplatesRenderTest.class.getResourceAsStream("/i18n/messages_en.properties")) {
-        messages.load(new InputStreamReader(input, StandardCharsets.UTF_8));
-      }
+      this.messages = translations(language);
+      this.synthetic = SYNTHETIC.equals(language);
     }
 
     TemplateHashModel root() {
@@ -503,6 +778,12 @@ public class TemplatesRenderTest {
     String message(List<?> arguments) throws TemplateModelException {
       String code = string(arguments.get(0));
       String text = messages.getProperty(code);
+      if (text == null && synthetic) {
+        // codes not in the bundles, values (dar.status) or missing ones, are checked as well
+        Matcher marker = MARKER.matcher(code);
+        String name = marker.matches() ? origin(Integer.parseInt(marker.group(1))).path() : code;
+        return "TQ" + name.replaceAll("[|<>\\s]", "_") + "|" + PAYLOAD + "TQ";
+      }
       if (text == null) return string(arguments.get(arguments.size() - 1));
       if (arguments.size() == 3 && arguments.get(1) instanceof TemplateSequenceModel args) {
         Object[] values = new Object[args.size()];

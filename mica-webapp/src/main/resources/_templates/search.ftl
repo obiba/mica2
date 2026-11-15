@@ -90,8 +90,8 @@
           <h3 class="card-title"><@message "query"/></h3>
           <div class="card-tools">
             <a class="btn btn-secondary btn-sm ms-2" href="javascript:void(0)" @click="onSearchModeToggle" v-cloak>
-              <span v-if="advanceQueryMode" title="<@message "search.basic-help"/>"><@message "search-basic-mode"/></span>
-              <span v-else title="<@message "search.advanced-help"/>"><@message "search-advanced-mode"/></span>
+              <span v-if="advanceQueryMode" title="${messageAttr("search.basic-help")}"><@message "search-basic-mode"/></span>
+              <span v-else title="${messageAttr("search.advanced-help")}"><@message "search-advanced-mode"/></span>
             </a>
             <#if showCopyQuery>
               <div class="btn-group ms-2">
@@ -101,7 +101,7 @@
                     <div class="input-group mb-2">
                       <input v-model="queryToCopy" disabled type="text" class="form-control" style="width: 300px;">
                         <button class="btn btn-outline-secondary" type="button" @click="onCopyQuery"
-                                title="<@message "global.copy-to-clipboard"/>">
+                                title="${messageAttr("global.copy-to-clipboard")}">
                           <i class="fa-solid fa-copy"></i></button>
                     </div>
                     <div class="text-muted">
@@ -112,7 +112,7 @@
               </div>
             </#if>
             <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#query-card"
-                    title="<@message "collapse"/>">
+                    title="${messageAttr("collapse")}">
               <i class="fa-solid fa-minus"></i></button>
           </div>
         </div>
@@ -189,13 +189,13 @@
                           <#if searchDatasetListDisplay>
                             <li class="nav-item" v-if="showVariableAndDatasetTabsInIndividualMode">
                               <a class="nav-link" id="datasets-tab" data-bs-toggle="pill" href="#datasets" role="tab" @click="onSelectResult('datasets', 'dataset')"
-                                 aria-controls="datasets" aria-selected="false"><span>{{currentStudyTypeSelection && currentStudyTypeSelection.harmonization ? '<@message "protocols"/>' : '<@message "datasets"/>'}}</span> <span id="dataset-count" class="badge text-bg-light">{{counts.datasets}}</span></a>
+                                 aria-controls="datasets" aria-selected="false"><span>{{currentStudyTypeSelection && currentStudyTypeSelection.harmonization ? '${messageJs("protocols")}' : '${messageJs("datasets")}'}}</span> <span id="dataset-count" class="badge text-bg-light">{{counts.datasets}}</span></a>
                             </li>
                           </#if>
                           <#if searchStudyListDisplay>
                             <li class="nav-item">
                               <a class="nav-link" id="studies-tab" data-bs-toggle="pill" href="#studies" role="tab" @click="onSelectResult('studies', 'study')"
-                                 aria-controls="studies" aria-selected="false"><span>{{currentStudyTypeSelection && currentStudyTypeSelection.harmonization ? '<@message "initiatives"/>' : '<@message "studies"/>'}}</span> <span id="study-count" class="badge text-bg-light">{{counts.studies}}</span></a>
+                                 aria-controls="studies" aria-selected="false"><span>{{currentStudyTypeSelection && currentStudyTypeSelection.harmonization ? '${messageJs("initiatives")}' : '${messageJs("studies")}'}}</span> <span id="study-count" class="badge text-bg-light">{{counts.studies}}</span></a>
                             </li>
                           </#if>
                           <#if searchNetworkListDisplay>
@@ -231,14 +231,14 @@
                                   <#if variablesCartEnabled>
                                       <#if listsEnabled>
                                         <div class="btn-group" v-if="isVariablesToolsVisible">
-                                          <button id="cart-add-variables" type="button" class="btn btn-sm btn-success" @click="onAddToCart" title="<@message "sets.cart.add-variables-to-cart"/>">
+                                          <button id="cart-add-variables" type="button" class="btn btn-sm btn-success" @click="onAddToCart" title="${messageAttr("sets.cart.add-variables-to-cart")}">
                                             <i class="fa-solid fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
                                           <button type="button" class="btn btn-sm btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"></button>
                                           <div ref="listsDropdownMenu" class="dropdown-menu dropdown-menu-right" style="min-width: 24em;">
                                             <form class="px-3 py-3" v-if="numberOfSetsRemaining > 0">
                                               <div class="form-group mb-0">
                                                 <div class="input-group">
-                                                  <input type="text" class="form-control" placeholder="<@message "sets.add.modal.create-new"/>" v-model="newVariableSetName" @keyup.enter.prevent.stop="onAddToSet()">
+                                                  <input type="text" class="form-control" placeholder="${messageAttr("sets.add.modal.create-new")}" v-model="newVariableSetName" @keyup.enter.prevent.stop="onAddToSet()">
                                                   <button v-bind:class="{ disabled: !newVariableSetName }" class="btn btn-success" type="button" @click="onAddToSet()">
                                                     <i class="fa-solid fa-plus"></i> <@message "global.add"/>
                                                   </button>
@@ -253,20 +253,20 @@
                                           </div>
                                         </div>
                                       <#else>
-                                        <button id="cart-add-variables" type="button" class="btn btn-sm btn-success" v-if="isVariablesToolsVisible" @click="onAddToCart" title="<@message "sets.cart.add-variables-to-cart"/>">
+                                        <button id="cart-add-variables" type="button" class="btn btn-sm btn-success" v-if="isVariablesToolsVisible" @click="onAddToCart" title="${messageAttr("sets.cart.add-variables-to-cart")}">
                                           <i class="fa-solid fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
                                       </#if>
                                   </#if>
                                   <#if studiesCartEnabled>
-                                    <button id="cart-add-studies" type="button" class="btn btn-sm btn-success" v-if="isStudiesToolsVisible" @click="onAddToCart" title="<@message "sets.cart.add-studies-to-cart"/>">
+                                    <button id="cart-add-studies" type="button" class="btn btn-sm btn-success" v-if="isStudiesToolsVisible" @click="onAddToCart" title="${messageAttr("sets.cart.add-studies-to-cart")}">
                                       <i class="fa-solid fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
                                   </#if>
                                   <#if networksCartEnabled>
-                                    <button id="cart-add-networks" type="button" class="btn btn-sm btn-success" v-if="isNetworksToolsVisible" @click="onAddToCart" title="<@message "sets.cart.add-networks-to-cart"/>">
+                                    <button id="cart-add-networks" type="button" class="btn btn-sm btn-success" v-if="isNetworksToolsVisible" @click="onAddToCart" title="${messageAttr("sets.cart.add-networks-to-cart")}">
                                       <i class="fa-solid fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
                                   </#if>
                               <#else>
-                                <a href="${contextPath}/signin?redirect=${contextPath}/search" class="btn btn-sm btn-success" title="<@message "sets.cart.signin-to-add-to-cart"/>">
+                                <a href="${contextPath}/signin?redirect=${contextPath}/search" class="btn btn-sm btn-success" title="${messageAttr("sets.cart.signin-to-add-to-cart")}">
                                   <i class="fa-solid fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></a>
                               </#if>
                           </#if>
