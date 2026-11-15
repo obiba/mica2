@@ -25,11 +25,20 @@ import PersonForm from 'src/components/persons/PersonForm.vue';
 import type { FormModel } from 'src/composables/useDocumentModel';
 import { usePersonsStore } from 'src/stores/persons';
 import { notifyError } from 'src/utils/notify';
-import { fromPersonModel, fullName, toPersonModel } from 'src/utils/persons';
+import {
+  fromPersonModel,
+  fullName,
+  isVersionConflict,
+  toPersonModel,
+  withMemberships,
+  type NewMembership,
+} from 'src/utils/persons';
 
 interface Props {
   /** the person to edit, a new one when undefined */
   person?: PersonDto | undefined;
+  /** a new person is created with this membership, in one request (no person left without it on a failure) */
+  membership?: NewMembership | undefined;
 }
 
 const props = defineProps<Props>();
@@ -73,6 +82,12 @@ async function onCancel() {
   show.value = false;
 }
 
+/** the new person with its membership */
+function newMember(dto: PersonDto, membership: NewMembership): PersonDto {
+  const parent = { id: membership.parentId, acronym: [], name: [] };
+  return withMemberships(dto, membership.parent, [parent], [membership.role]);
+}
+
 async function onSave() {
   invalid.value = !form.value?.validate();
   if (invalid.value) return;
@@ -97,11 +112,22 @@ async function onSave() {
       ))
     )
       return;
-    const result = props.person ? await personsStore.update(dto) : await personsStore.create(dto);
+    const result = props.person
+      ? await personsStore.update(dto)
+      : props.membership
+        ? await personsStore.createStrict(newMember(dto, props.membership))
+        : await personsStore.create(dto);
     show.value = false;
     emit('saved', result);
   } catch (error) {
-    notifyError(error);
+    if (props.person?.id && isVersionConflict(error)) {
+      // modified meanwhile: the stored person is shown, to edit again; other errors (e.g. email used) keep the edits
+      notifyError('persons.save_conflict');
+      show.value = false;
+      await personsStore.get(props.person.id).then((stored) => emit('saved', stored), notifyError);
+    } else {
+      notifyError(error);
+    }
   } finally {
     saving.value = false;
   }

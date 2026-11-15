@@ -315,6 +315,10 @@ message PersonDto {
   repeated MembershipDto studyMemberships = 10;
   repeated MembershipDto networkMemberships = 11;
   optional TimestampsDto timestamps = 12;
+  // detail update guard: send the value read, 409 when the person changed meanwhile
+  optional int32 version = 13; // int32: a JSON number (int64 is a JSON string)
+  // whether the caller can update the details (single person reads only)
+  optional bool canEdit = 14;
 
   message InstitutionDto {
     repeated LocalizedStringDto name = 1;

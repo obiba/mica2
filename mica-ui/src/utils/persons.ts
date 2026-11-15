@@ -235,6 +235,16 @@ export function checkDuplicates(person: PersonDto, found: PersonsDto | undefined
   };
 }
 
+/** the server error template of a person modified since it was read (stale version) */
+export const VERSION_CONFLICT = 'server.error.person.version-conflict';
+
+/** whether a failed person save is a stale version (to reload), not another conflict such as a used email */
+export function isVersionConflict(error: unknown): boolean {
+  const response = (error as { response?: { status?: number; data?: { messageTemplate?: string } } } | undefined)
+    ?.response;
+  return response?.status === 409 && response.data?.messageTemplate === VERSION_CONFLICT;
+}
+
 const LUCENE_SPECIAL = /[+\-&|!(){}[\]^"~*?:\\/]/g;
 
 /**
@@ -267,6 +277,13 @@ export function fieldQuery(query: string, field: string, localized: boolean, loc
 
 /** the entities with members: the network ones, the study ones (individual studies and initiatives) */
 export type MembersParent = 'network' | 'study';
+
+/** a membership given to a person created from the members of a network or study */
+export interface NewMembership {
+  parent: MembersParent;
+  parentId: string;
+  role: string;
+}
 
 /** the members of a network or study with a role */
 export interface RoleMembers {
@@ -328,32 +345,33 @@ export function moveMember(
   });
 }
 
-/** the content of a person, without its id and timestamps, the memberships in any order */
-function personSignature(person: PersonDto): string {
-  const content = { ...person };
-  delete content.id;
-  delete content.timestamps;
-  const memberships = (list: PersonDto_MembershipDto[] | undefined) =>
-    (list ?? []).map((membership) => JSON.stringify(membership)).sort();
-  return JSON.stringify({
-    ...content,
-    studyMemberships: memberships(content.studyMemberships),
-    networkMemberships: memberships(content.networkMemberships),
-  });
+/** one membership added or removed, saved with the role endpoints */
+export interface MembershipChange {
+  parent: MembersParent;
+  parentId: string;
+  role: string;
 }
 
-/** the persons that are exact copies of another one, the oldest of each group being kept */
-export function redundantPersons(persons: PersonDto[]): PersonDto[] {
-  const created = (person: PersonDto) => person.timestamps?.created ?? '';
-  const kept = new Set<string>();
-  return [...persons]
-    .sort((a, b) => created(a).localeCompare(created(b)))
-    .filter((person) => {
-      const signature = personSignature(person);
-      if (!kept.has(signature)) {
-        kept.add(signature);
-        return false;
-      }
-      return true;
-    });
+/** the memberships added and removed between two copies of a person */
+export function membershipChanges(
+  before: PersonDto,
+  after: PersonDto,
+): { added: MembershipChange[]; removed: MembershipChange[] } {
+  const list = (person: PersonDto): MembershipChange[] => [
+    ...(person.studyMemberships ?? []).map((m) => ({ parent: 'study' as const, parentId: m.parentId, role: m.role })),
+    ...(person.networkMemberships ?? []).map((m) => ({
+      parent: 'network' as const,
+      parentId: m.parentId,
+      role: m.role,
+    })),
+  ];
+  const key = (change: MembershipChange) => `${change.parent}|${change.parentId}|${change.role}`;
+  const beforeList = list(before);
+  const afterList = list(after);
+  const beforeKeys = new Set(beforeList.map(key));
+  const afterKeys = new Set(afterList.map(key));
+  return {
+    added: afterList.filter((change) => !beforeKeys.has(key(change))),
+    removed: beforeList.filter((change) => !afterKeys.has(key(change))),
+  };
 }

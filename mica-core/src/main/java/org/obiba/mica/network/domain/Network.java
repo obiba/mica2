@@ -165,21 +165,6 @@ public class Network extends AbstractModelAware implements AttributeAware, Perso
     this.published = published;
   }
 
-  @Override
-  public void addToPerson(Membership membership) {
-    membership.getPerson().addNetwork(this, membership.getRole());
-  }
-
-  @Override
-  public void removeFromPerson(Membership membership) {
-    membership.getPerson().removeNetwork(this, membership.getRole());
-  }
-
-  @Override
-  public void removeFromPerson(Person person) {
-    person.removeNetwork(this);
-  }
-
   public LocalizedString getDescription() {
     return description;
   }
@@ -254,13 +239,8 @@ public class Network extends AbstractModelAware implements AttributeAware, Perso
     this.logo = attachment;
   }
 
-  public List<Person> removeRole(String role) {
-    List<Membership> members = this.memberships.getOrDefault(role, Lists.newArrayList());
+  public void removeRole(String role) {
     this.memberships.remove(role);
-    return members.stream().map(m -> {
-      m.getPerson().removeNetwork(this, role);
-      return m.getPerson();
-    }).collect(toList());
   }
 
   public Set<String> membershipRoles() {

@@ -18,7 +18,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 public interface HarmonizationStudyRepository
-  extends MongoRepository<HarmonizationStudy, String>, HarmonizationStudyRepositoryCustom {
+  extends MongoRepository<HarmonizationStudy, String> {
 
   @Query(value = "{}", fields = "{_id : 1}")
   List<Study> findAllExistingIds();

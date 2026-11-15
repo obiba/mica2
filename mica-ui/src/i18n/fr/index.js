@@ -131,6 +131,7 @@ export default {
     remove_duplicates_title: 'Supprimer les doublons',
     remove_duplicates_text: "Supprimer les personnes qui sont des copies exactes d'une autre (mêmes champs et appartenances) ? La plus ancienne copie est conservée.",
     duplicates_removed: '{count} doublon(s) supprimé(s)',
+    save_conflict: 'Quelqu’un d’autre a modifié cette personne entre-temps. Modifiez-la de nouveau.',
     identification: 'Identification',
     institution: 'Institution',
     search_study: 'Étude / Initiative',
@@ -198,6 +199,21 @@ export default {
       },
       application: {
         'not-orphan': 'Impossible de supprimer une application ayant des utilisateurs ou des groupes.',
+      },
+      person: {
+        missing: 'La personne est manquante.',
+        'id-not-allowed': "Une nouvelle personne n'a pas d'identifiant.",
+        'id-mismatch': "L'identifiant de la personne ne correspond pas.",
+        'version-missing': 'La version de la personne est manquante.',
+        'membership-required': "Une nouvelle personne doit être membre d'une étude ou d'un réseau.",
+        'no-such-study': 'Étude inconnue : {0}',
+        'no-such-network': 'Réseau inconnu : {0}',
+        'invalid-role': "'{0}' n'est pas un rôle valide.",
+        invalid: "La personne n'est pas valide : {0}",
+        'email-used': 'Le courriel est déjà utilisé par une autre personne.',
+        'email-used-link-existing':
+          'Le courriel est déjà utilisé par une autre personne : ajoutez plutôt la personne existante.',
+        'version-conflict': 'Quelqu’un d’autre a modifié cette personne entre-temps. Modifiez-la de nouveau.',
       },
       'data-access-form': {
         'invalid-schema': "Le schéma du formulaire n'est pas un objet JSON valide.",

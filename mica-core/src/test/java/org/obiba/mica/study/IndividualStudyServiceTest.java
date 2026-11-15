@@ -35,6 +35,7 @@ import org.obiba.mica.core.notification.EntityPublishedMailNotification;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
 import org.obiba.mica.core.repository.CommentsRepository;
+import org.obiba.mica.core.repository.PersonRepository;
 import org.obiba.mica.core.service.AgateServerConfigService;
 import org.obiba.mica.core.service.CommentsService;
 import org.obiba.mica.core.service.GitService;
@@ -115,6 +116,9 @@ public class IndividualStudyServiceTest {
   private CommentsRepository commentsRepository;
 
   @Inject
+  private PersonRepository personRepository;
+
+  @Inject
   private EventBus eventBus;
 
   @Inject
@@ -193,6 +197,30 @@ public class IndividualStudyServiceTest {
 
     List<Person> retrievedPersons = retrievedStudy.getMemberships().get(Membership.CONTACT).stream().map(Membership::getPerson).collect(Collectors.toList());
     assertThat(retrievedPersons).contains(person);
+  }
+
+  /**
+   * A study replaced by another one with the same id and no members (study import) keeps its local members: the
+   * study save never writes persons (#4753).
+   */
+  @Test
+  public void test_replace_study_keeps_its_members() throws Exception {
+    Study study = new Study();
+    study.setName(en("local"));
+    individualStudyService.save(study);
+
+    Person person = new Person();
+    person.setLastName("Doe");
+    person.getStudyMemberships().add(new Person.Membership(study.getId(), Membership.CONTACT));
+    personRepository.insert(person);
+
+    Study replacement = new Study();
+    replacement.setId(study.getId());
+    replacement.setName(en("remote"));
+    individualStudyService.save(replacement);
+
+    assertThat(personRepository.findById(person.getId()).orElseThrow().getStudyMemberships())
+      .containsExactly(new Person.Membership(study.getId(), Membership.CONTACT));
   }
 
   @Test
