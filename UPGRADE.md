@@ -48,6 +48,9 @@ the container, `/srv`):
 docker compose exec mica bash -c 'bash /usr/share/mica2/tools/check-templates.sh "$MICA_HOME/conf/templates"'
 ```
 
+Without a `conf/templates` folder there are no custom templates and nothing to update;
+the script then reports `not a directory`.
+
 It is in the `tools` folder of the distribution (`tools` in the install folder of a ZIP
 install). Run it again until it reports no error, then review the warnings. In the
 templates:
