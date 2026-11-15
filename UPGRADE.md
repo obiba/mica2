@@ -7,12 +7,20 @@ one installed and the one being deployed.
 
 ### Before upgrading
 
+**Mica folders.** The commands below use `MICA_HOME`, the Mica home folder. It is only
+set for the Mica service, not in your shell: set it first.
+
+- Debian/RPM packages: `export MICA_HOME=/var/lib/mica2`. Its `conf` folder is a link to
+  `/etc/mica2`, and the logs are in `/var/log/mica2`.
+- ZIP install: the folder `MICA_HOME` was set to when starting Mica; the logs are in
+  `$MICA_HOME/logs`.
+
 **Back up.** Needed to roll back (see below). Stop Mica, then back up the database and
 the configuration folder, which holds the custom templates:
 
 ```sh
 mongodump --db mica --out mica-backup
-tar czf mica-conf-backup.tar.gz -C $MICA_HOME conf
+tar czf mica-conf-backup.tar.gz -C $MICA_HOME/conf .
 ```
 
 With Docker Compose, back up the database with
@@ -20,13 +28,24 @@ With Docker Compose, back up the database with
 copy the folder mounted as `$MICA_HOME`. Add the connection options (e.g. `--uri`) if
 MongoDB requires them.
 
+**Try it first.** If you can, upgrade a staging copy first (same database dump and
+configuration folder). Otherwise, check the portal pages and the administration right
+after the upgrade, before users add data: rolling back is then simplest.
+
 **Update the custom templates.** Templates are now HTML-escaped automatically: every
 `${...}` is escaped when printed. Every template in `$MICA_HOME/conf/templates`
 (overrides of bundled templates and custom pages) must be updated. The changes are
 mostly mechanical, and the `check-templates.sh` script lists the lines to change:
 
 ```sh
-/usr/share/mica2/tools/check-templates.sh $MICA_HOME/conf/templates
+bash /usr/share/mica2/tools/check-templates.sh $MICA_HOME/conf/templates
+```
+
+With Docker Compose, run it in the container (single quotes: `MICA_HOME` is the one of
+the container, `/srv`):
+
+```sh
+docker compose exec mica bash -c 'bash /usr/share/mica2/tools/check-templates.sh "$MICA_HOME/conf/templates"'
 ```
 
 It is in the `tools` folder of the distribution (`tools` in the install folder of a ZIP
@@ -41,14 +60,22 @@ templates:
   in a value would break the script.
 - Print Markdown inside a `<template>` with `templateSafe(...)`, otherwise it shows
   escaped. Print other trusted HTML with `?no_esc`. Translations printed with
-  `<@message>` need nothing more.
+  `<@message>` need nothing more. In a custom `libs/head.ftl`, print the translation
+  with `?no_esc` in the `message` macro (`${text?no_esc}`), or copy the macro from the
+  8.0.0 version; the same for `getMessage(...)` printed directly (e.g. a custom
+  `error.ftl`). Otherwise translations holding HTML (links, bold) show their tags.
 - Values that Mica sends HTML-encoded must be printed with `htmlDecode(...)`, otherwise
-  they show `&amp;`, `&eacute;`...: user names (`fullName`) and profile attributes, and
-  the request titles of the data access list page.
+  they show `&amp;`, `&eacute;`...: user names (`fullName`) and profile attributes, the
+  request titles of the data access list page, and the URL parameters of custom pages
+  (`${htmlDecode(query.topic)}`).
+- Inside an element where a Vue application is mounted (e.g. `query-vue-container` of
+  the list and cart pages, `search-application`), print values in an element with
+  `v-pre`: `<span v-pre>${listName(set)}</span>`. Vue compiles that HTML, and escaping
+  does not stop a `{{ ... }}` typed in a value (e.g. a list name) from running.
 - `esc(...)` now returns the value unchanged and can be removed.
 
 After the upgrade, open each customised page: an error in a template only leaves part
-of the page blank, and is written to `$MICA_HOME/logs/mica.log` as
+of the page blank, and is written to `mica.log` in the logs folder (see Mica folders) as
 `Error executing FreeMarker template`. Templates updated for 8.0.0 do not work with
 7.x.
 
@@ -66,7 +93,9 @@ angular-schema-form dialect is converted on load; save it, then publish it, so t
 the portal renders the JSON Forms version. Until a form is published again, the
 portal keeps rendering its current published revision, and a request submitted with
 an older revision keeps being displayed and exported with that revision. No data
-changes: the request contents have the same schema in both dialects.
+changes: the request contents have the same schema in both dialects. Save the forms
+once the upgrade is checked: from then on, rolling back requires restoring the
+database.
 
 **Study import.** Importing studies from another Mica server (`/ws/draft/studies/import/*`)
 now requires the `mica-administrator`, `mica-reviewer` or `mica-editor` role, the
@@ -85,13 +114,24 @@ creator's entry and check the files option.
 
 ### Rolling back
 
-Stop Mica, reinstall 7.x and restore the configuration folder
-(`tar xzf mica-conf-backup.tar.gz -C $MICA_HOME`): the 8.0.0 templates do not work with
-7.x. If a data access form was saved in the new form builder, also restore the database
-(`mongorestore --drop mica-backup`, or with Docker Compose
-`docker compose exec -T mongo mongorestore --drop --archive < mica-backup.archive`): 7.x
-does not render the JSON Forms version. Restoring the database discards everything
-written to it after the backup. Then start Mica.
+Stop Mica, reinstall 7.x and restore the configuration folder, with `MICA_HOME` set as
+in Mica folders (`tar xzf mica-conf-backup.tar.gz -C $MICA_HOME/conf`; with Docker
+Compose, copy the saved folder back): the 8.0.0 templates do not work with 7.x.
+Templates added after the backup are kept: remove them.
+
+Then choose for the database:
+
+- Restore it (`mongorestore --drop mica-backup`, or with Docker Compose
+  `docker compose exec -T mongo mongorestore --drop --archive < mica-backup.archive`):
+  always works, but everything written after the backup is lost (requests, comments,
+  document edits).
+- Keep it, only if no form was saved in the new form builder (a data access form, as
+  the *Data access forms* step after upgrading does, or the form of a document type:
+  study, network, dataset, population, data collection event, project): 7.x does not
+  render those JSON Forms versions. The data written with 8.0.0 is kept. If unsure,
+  restore.
+
+Then start Mica.
 
 ## 7.0.0
 
