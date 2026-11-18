@@ -9,13 +9,10 @@
     </#if>
   };
   const decodeMappings = Object.fromEntries(Object.entries(encodeMappings).map(([key, value]) => [value, key]));
-  <#noparse>
   Mica.encodeRqlSafe = (str) => {
     if (typeof str !== "string") return str;
-    const pattern = new RegExp(`[${Object.keys(encodeMappings).map(char => '\\\\' + char).join('')}]`,'g');
-    return str.replace(pattern, match => encodeMappings[match]);
+    return Array.from(str, char => Object.hasOwn(encodeMappings, char) ? encodeMappings[char] : char).join('');
   }
-  </#noparse>
 
   Mica.decodeRqlSafe = (str) => {
     if (typeof str !== "string") return str;
