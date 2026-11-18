@@ -25,14 +25,29 @@ import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.BadRequestException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
 public class EsPersonService extends AbstractIdentifiedDocumentService<Person> {
+
+  /**
+   * The person fields the public free text search is applied on: the ones the public endpoint returns.
+   */
+  private static final List<String> PUBLIC_QUERY_FIELDS = List.of("firstName", "lastName", "email",
+    "institution.name.\\*", "institution.department.\\*");
+
+  /**
+   * The members query sent by the former study and network page templates.
+   */
+  private static final Pattern STUDY_MEMBERS_QUERY = Pattern.compile("\\s*studyMemberships\\.parentId:\\(([^()]+)\\)\\s*");
 
   @Inject
   private ObjectMapper objectMapper;
@@ -69,11 +84,26 @@ public class EsPersonService extends AbstractIdentifiedDocumentService<Person> {
    * current subject can access. The others are filtered out in the search, so the total and the paging only count
    * these persons. When the search engine fails, these persons are listed from the database, without applying the
    * query.
+   *
+   * The query is either the members query of studies, <code>studyMemberships.parentId:(id1 OR id2)</code>, restricted
+   * to the accessible published ones, or a free text searched on the returned person fields only, so that the hidden
+   * memberships and fields cannot be queried.
    */
   public Documents<Person> findPublished(int from, int limit, @Nullable String sort, @Nullable String order,
-                                         @Nullable String queryString) {
+                                         @Nullable String queryString, @Nullable Collection<String> excludes) {
     List<String> studyIds = publishedStudyService.findAccessibleIds();
     List<String> networkIds = publishedNetworkService.findAccessibleIds();
+    String text = queryString;
+    Matcher membersQuery = Strings.isNullOrEmpty(queryString) ? null : STUDY_MEMBERS_QUERY.matcher(queryString);
+    if (membersQuery != null && membersQuery.matches()) {
+      List<String> queried = Arrays.stream(membersQuery.group(1).split("\\s+OR\\s+"))
+        .map(id -> id.trim().replaceAll("^\"|\"$", "")).collect(Collectors.toList());
+      studyIds = studyIds.stream().filter(queried::contains).collect(Collectors.toList());
+      networkIds = List.of();
+      text = null;
+    } else if (!Strings.isNullOrEmpty(queryString) && queryString.contains("Memberships")) {
+      throw new BadRequestException("Unsupported memberships query, use studyMemberships.parentId:(id1 OR id2)");
+    }
     List<String> roles = micaConfigService.getConfig().getRoles();
     if ((studyIds.isEmpty() && networkIds.isEmpty()) || roles.isEmpty()) return new Documents<>(0, from, limit);
 
@@ -82,12 +112,29 @@ public class EsPersonService extends AbstractIdentifiedDocumentService<Person> {
     List<String> parents = new ArrayList<>();
     if (!studyIds.isEmpty()) parents.add(termsQuery("studyMemberships.parentId", studyIds));
     if (!networkIds.isEmpty()) parents.add(termsQuery("networkMemberships.parentId", networkIds));
-    String members = "(" + String.join(" OR ", parents) + ") AND (" + termsQuery("studyMemberships.role", roles)
+    String query = "(" + String.join(" OR ", parents) + ") AND (" + termsQuery("studyMemberships.role", roles)
       + " OR " + termsQuery("networkMemberships.role", roles) + ")";
-    String query = Strings.isNullOrEmpty(queryString) ? members : "(" + queryString + ") AND " + members;
+    if (text != null && !text.isBlank()) query = "(" + publicTextQuery(text) + ") AND " + query;
+    if (excludes != null && !excludes.isEmpty()) query += " AND NOT " + termsQuery("id", excludes);
 
+    List<String> fallbackStudyIds = studyIds;
+    List<String> fallbackNetworkIds = networkIds;
     return find(from, limit, sort, order, null, query, null, null, null,
-      () -> page(personRepository.findByMemberships(studyIds, networkIds, roles, byLastName(order)), from, limit, true));
+      () -> page(personRepository.findByMemberships(fallbackStudyIds, fallbackNetworkIds, roles, byLastName(order)), from, limit, true));
+  }
+
+  /**
+   * Each term of the text is searched on the public person fields. The query syntax characters are escaped, except
+   * the wildcards, so that no other field can be queried.
+   */
+  static String publicTextQuery(String text) {
+    return Arrays.stream(text.trim().split("\\s+"))
+      .map(term -> {
+        if (term.equals("AND") || term.equals("OR") || term.equals("NOT")) return term;
+        String escaped = term.replaceAll("([+\\-=&|><!(){}\\[\\]^\"~:\\\\/])", "\\\\$1");
+        return "(" + PUBLIC_QUERY_FIELDS.stream().map(f -> f + ":" + escaped).collect(Collectors.joining(" OR ")) + ")";
+      })
+      .collect(Collectors.joining(" "));
   }
 
   /**

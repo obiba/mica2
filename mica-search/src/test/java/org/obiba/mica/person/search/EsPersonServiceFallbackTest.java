@@ -26,7 +26,10 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
+import jakarta.ws.rs.BadRequestException;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -94,20 +97,70 @@ public class EsPersonServiceFallbackTest {
     when(searcher.getDocuments(any(), any(), any(Integer.class), any(Integer.class), any(), any(), any(), any(), any(), any(), any()))
       .thenReturn(mock(Searcher.DocumentResults.class));
 
-    service.findPublished(0, 10, "lastName", "asc", "doe*");
+    service.findPublished(0, 10, "lastName", "asc", "doe*", List.of("p1"));
 
     verify(searcher).getDocuments(eq(Indexer.PERSON_INDEX), eq(Indexer.PERSON_TYPE), eq(0), eq(10), eq("lastName"),
-      eq("asc"), eq("(doe*) AND (studyMemberships.parentId:(\"study1\" OR \"hstudy1\") OR networkMemberships.parentId:(\"network1\"))"
-        + " AND (studyMemberships.role:(\"contact\" OR \"investigator\") OR networkMemberships.role:(\"contact\" OR \"investigator\"))"),
+      eq("asc"), eq("((firstName:doe* OR lastName:doe* OR email:doe* OR institution.name.\\*:doe* OR institution.department.\\*:doe*))"
+        + " AND (studyMemberships.parentId:(\"study1\" OR \"hstudy1\") OR networkMemberships.parentId:(\"network1\"))"
+        + " AND (studyMemberships.role:(\"contact\" OR \"investigator\") OR networkMemberships.role:(\"contact\" OR \"investigator\")) AND NOT id:(\"p1\")"),
       any(), any(), any(), any());
     verify(repository, never()).findByMemberships(any(), any(), any(), any());
+  }
+
+  /**
+   * The free text cannot query the hidden fields: the field syntax is escaped and searched on the public fields.
+   */
+  @Test
+  public void publishedSearchTextOnlyQueriesPublicFields() {
+    assertThat(EsPersonService.publicTextQuery("lastModifiedBy:jdoe OR (x)"))
+      .isEqualTo("(firstName:lastModifiedBy\\:jdoe OR lastName:lastModifiedBy\\:jdoe OR email:lastModifiedBy\\:jdoe"
+        + " OR institution.name.\\*:lastModifiedBy\\:jdoe OR institution.department.\\*:lastModifiedBy\\:jdoe)"
+        + " OR (firstName:\\(x\\) OR lastName:\\(x\\) OR email:\\(x\\) OR institution.name.\\*:\\(x\\) OR institution.department.\\*:\\(x\\))");
+  }
+
+  /**
+   * A members query on an unpublished study does not reveal its published members.
+   */
+  @Test
+  public void publishedMembersQueryIsRestrictedToPublishedStudies() {
+    published(List.of("study1"), List.of("network1"));
+    searchFails();
+    when(repository.findByMemberships(List.of(), List.of(), ROLES, BY_LAST_NAME)).thenReturn(List.of(person("p1", "a")));
+
+    DocumentService.Documents<Person> documents = service.findPublished(0, 10, "lastName", "asc",
+      "studyMemberships.parentId:(unpublished)", null);
+
+    assertThat(documents.getTotal()).isZero();
+    verify(searcher, never()).getDocuments(any(), any(), any(Integer.class), any(Integer.class), any(), any(), any(), any(), any(), any(), any());
+  }
+
+  @Test
+  public void publishedMembersQueryOnPublishedStudy() {
+    published(List.of("study1", "study2"), List.of("network1"));
+    when(searcher.getDocuments(any(), any(), any(Integer.class), any(Integer.class), any(), any(), any(), any(), any(), any(), any()))
+      .thenReturn(mock(Searcher.DocumentResults.class));
+
+    service.findPublished(0, 10, "lastName", "asc", "studyMemberships.parentId:(study1 OR unpublished)", null);
+
+    verify(searcher).getDocuments(any(), any(), eq(0), eq(10), any(), any(),
+      eq("(studyMemberships.parentId:(\"study1\")) AND (studyMemberships.role:(\"contact\" OR \"investigator\")"
+        + " OR networkMemberships.role:(\"contact\" OR \"investigator\"))"),
+      any(), any(), any(), any());
+  }
+
+  @Test
+  public void publishedOtherMembershipsQueryIsRejected() {
+    published(List.of("study1"), List.of());
+
+    assertThatThrownBy(() -> service.findPublished(0, 10, "lastName", "asc", "studyMemberships.parentId:b*", null))
+      .isInstanceOf(BadRequestException.class);
   }
 
   @Test
   public void publishedSearchWithoutPublishedEntitiesFindsNothing() {
     published(List.of(), List.of());
 
-    DocumentService.Documents<Person> documents = service.findPublished(0, 10, "lastName", "asc", "*");
+    DocumentService.Documents<Person> documents = service.findPublished(0, 10, "lastName", "asc", "*", null);
 
     assertThat(documents.getTotal()).isZero();
     verify(searcher, never()).getDocuments(any(), any(), any(Integer.class), any(Integer.class), any(), any(), any(), any(), any(), any(), any());
@@ -120,7 +173,7 @@ public class EsPersonServiceFallbackTest {
     when(repository.findByMemberships(List.of("study1"), List.of("network1"), ROLES, BY_LAST_NAME))
       .thenReturn(List.of(person("p1", "a"), person("p3", "c")));
 
-    DocumentService.Documents<Person> documents = service.findPublished(0, 10, "lastName", "asc", "*");
+    DocumentService.Documents<Person> documents = service.findPublished(0, 10, "lastName", "asc", "*", null);
 
     assertThat(documents.isDegraded()).isTrue();
     assertThat(documents.getTotal()).isEqualTo(2);

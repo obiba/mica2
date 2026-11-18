@@ -53,16 +53,17 @@ public abstract class AbstractPersonsSearchResource {
     @QueryParam("order") @DefaultValue("asc") String order, @QueryParam("query") String query,
     @QueryParam("exclude") List<String> excludes, @Context HttpServletResponse response) throws IOException {
 
-    String ids = excludes.stream().map(s -> "id:" + s).collect(Collectors.joining(" "));
-
-    if(!Strings.isNullOrEmpty(ids)) {
-      if (Strings.isNullOrEmpty(query)) query = String.format("NOT(%s)", ids);
-      else query += String.format(" AND NOT(%s)", ids);
+    PublishedDocumentService.Documents<Person> contacts;
+    if (isDraft()) {
+      String ids = excludes.stream().map(s -> "id:" + s).collect(Collectors.joining(" "));
+      if (!Strings.isNullOrEmpty(ids)) {
+        if (Strings.isNullOrEmpty(query)) query = String.format("NOT(%s)", ids);
+        else query += String.format(" AND NOT(%s)", ids);
+      }
+      contacts = esPersonService.find(from, limit, sort, order, null, query);
+    } else {
+      contacts = esPersonService.findPublished(from, limit, sort, order, query, excludes);
     }
-
-    PublishedDocumentService.Documents<Person> contacts = isDraft()
-      ? esPersonService.find(from, limit, sort, order, null, query)
-      : esPersonService.findPublished(from, limit, sort, order, query);
 
     // the persons are listed from the database, without applying the query
     if (contacts.isDegraded() && response != null) response.addHeader("X-Search-Degraded", "true");
