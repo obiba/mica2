@@ -80,11 +80,12 @@ public class CustomTranslationsResource {
     JsonNode node = objectMapper.readTree(translations);
     if (node == null || !node.isObject()) throw new BadRequestException("Translations must be a JSON object");
 
-    if (merge) {
-      micaConfigService.mergeJson(getTranslations(locale), node);
-    } else {
-      config.getTranslations().put(locale, node.toString());
+    if (!config.hasTranslations()) {
+      config.setTranslations(new LocalizedString());
     }
+
+    JsonNode saved = merge ? micaConfigService.mergeJson(getTranslations(locale), node) : node;
+    config.getTranslations().put(locale, saved.toString());
 
     micaConfigService.save(config);
     return Response.ok().build();
