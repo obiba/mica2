@@ -138,8 +138,8 @@ class NetworkService {
     QueryService.getVariablesCoverage(url, onsuccess, onfailure);
   }
 
-  static getAffiliatedMembers(affiliatedMembersQuery, onSuccess, onFailure) {
-    const url = '/ws/persons/_search?limit=1000&query=' + affiliatedMembersQuery;
+  static getAffiliatedMembers(affiliatedMembersParams, onSuccess, onFailure) {
+    const url = '/ws/persons/_search/_members?limit=1000&' + affiliatedMembersParams;
 
     axios.get(MicaService.normalizeUrl(url))
       .then(response => {

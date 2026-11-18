@@ -58,6 +58,8 @@ public class StudyController extends BaseController {
     params.put("study", study);
     params.put("type", (study instanceof Study) ? "Individual" : "Harmonization");
     params.put("draft", !Strings.isNullOrEmpty(shareKey));
+    // the members download only lists the members of the published studies the user can access
+    params.put("membersDownload", Strings.isNullOrEmpty(shareKey) || publishedStudyService.findAccessibleIds().contains(study.getId()));
 
     if (study instanceof Study) {
       String timelineData = asJSONTimelineData((Study) study);

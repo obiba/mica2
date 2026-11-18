@@ -428,8 +428,8 @@
     });
 
     <!-- Affiliated Members -->
-    <#if affiliatedMembersQuery??>
-      NetworkService.getAffiliatedMembers('${affiliatedMembersQuery?js_string}', function(data) {
+    <#if affiliatedMembersParams??>
+      NetworkService.getAffiliatedMembers('${affiliatedMembersParams?js_string}', function(data) {
         if (data && data.total > 0) {
           const dataset = data.persons.map(person => {
             const item = [];

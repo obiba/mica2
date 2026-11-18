@@ -196,7 +196,7 @@
                         <i class="fa-solid fa-minus"></i></button>
                     </div>
 
-                      <#if affiliatedMembersQuery??>
+                      <#if affiliatedMembersParams??>
                         <button type="button" class="btn btn-primary float-end me-2" data-bs-toggle="modal" data-bs-target="#affiliatedMembersModal">
                             <@message "network.associated-people"/>
                         </button>
@@ -406,7 +406,7 @@
               <div class="modal-body">
                 <div class="container-fluid">
                   <div class="mb-2">
-                    <a href="${contextPath}/ws/persons/_search/_download?limit=1000&query=${affiliatedMembersQuery?url('utf-8')}" class="btn btn-primary mb-2">
+                    <a href="${contextPath}/ws/persons/_search/_members/_download?limit=1000&${affiliatedMembersParams}" class="btn btn-primary mb-2">
                       <i class="fa-solid fa-download"></i> <@message "download"/>
                     </a>
                   </div>

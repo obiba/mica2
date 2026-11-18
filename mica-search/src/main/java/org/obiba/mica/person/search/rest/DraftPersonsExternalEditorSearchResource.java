@@ -16,6 +16,8 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
@@ -39,13 +41,14 @@ public class DraftPersonsExternalEditorSearchResource extends AbstractPersonsSea
   public Mica.PersonsDto query(@QueryParam("from") @DefaultValue("0") int from,
                                @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") @DefaultValue(DEFAULT_SORT) String sort,
                                @QueryParam("order") @DefaultValue("asc") String order, @QueryParam("query") String query,
-                               @QueryParam("exclude") List<String> excludes) throws IOException {
+                               @QueryParam("exclude") List<String> excludes,
+                               @Context HttpServletResponse response) throws IOException {
 
     if (!SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN) && !SecurityUtils.getSubject().hasRole(Roles.MICA_EXTERNAL_EDITOR)) {
       throw new AuthorizationException();
     }
 
-    return super.query(from, limit, sort, order, query, excludes);
+    return super.query(from, limit, sort, order, query, excludes, response);
 
   }
 

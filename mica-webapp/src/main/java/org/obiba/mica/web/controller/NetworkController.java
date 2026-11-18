@@ -1,6 +1,5 @@
 package org.obiba.mica.web.controller;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.domain.LocalizedString;
@@ -24,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.inject.Inject;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -85,7 +86,8 @@ public class NetworkController extends BaseController {
     List<String> ids = individualStudies.stream().map(AbstractGitPersistable::getId).collect(Collectors.toList());
     ids.addAll(harmonizationStudies.stream().map(AbstractGitPersistable::getId).collect(Collectors.toList()));
     if (!ids.isEmpty()) {
-      params.put("affiliatedMembersQuery", "studyMemberships.parentId:(" + Joiner.on(" OR ").join(ids) + ")");
+      params.put("affiliatedMembersParams", ids.stream()
+        .map(sid -> "studyId=" + URLEncoder.encode(sid, StandardCharsets.UTF_8)).collect(Collectors.joining("&")));
     }
 
     Map<String, List<Membership>> membershipMap = personService.getNetworkMembershipMap(network.getId());

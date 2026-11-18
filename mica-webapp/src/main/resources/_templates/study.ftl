@@ -163,9 +163,11 @@
                     <button type="button" class="btn btn-tool" data-bs-toggle="collapse" data-bs-target="#member-card" aria-expanded="true" title="${messageAttr("collapse")}">
                       <i class="fa-solid fa-minus"></i></button>
                   </div>
-                  <a href="${contextPath}/ws/persons/_search/_download?limit=1000&query=studyMemberships.parentId:(${study.id})" class="btn btn-primary float-end me-2">
-                    <i class="fa-solid fa-download"></i> <@message "download"/>
-                  </a>
+                  <#if membersDownload>
+                    <a href="${contextPath}/ws/persons/_search/_members/_download?limit=1000&studyId=${study.id?url('utf-8')}" class="btn btn-primary float-end me-2">
+                      <i class="fa-solid fa-download"></i> <@message "download"/>
+                    </a>
+                  </#if>
                 </div>
                 <div id="member-card" class="card-body collapse show">
                   <div class="table-responsive">
