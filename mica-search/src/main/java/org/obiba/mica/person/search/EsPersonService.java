@@ -96,8 +96,9 @@ public class EsPersonService extends AbstractIdentifiedDocumentService<Person> {
     String text = queryString;
     Matcher membersQuery = Strings.isNullOrEmpty(queryString) ? null : STUDY_MEMBERS_QUERY.matcher(queryString);
     if (membersQuery != null && membersQuery.matches()) {
-      List<String> queried = Arrays.stream(membersQuery.group(1).split("\\s+OR\\s+"))
-        .map(id -> id.trim().replaceAll("^\"|\"$", "")).collect(Collectors.toList());
+      List<String> queried = Arrays.stream(membersQuery.group(1).trim().split("\\s+"))
+        .filter(id -> !id.equalsIgnoreCase("OR"))
+        .map(id -> id.replaceAll("^\"|\"$", "")).collect(Collectors.toList());
       studyIds = studyIds.stream().filter(queried::contains).collect(Collectors.toList());
       networkIds = List.of();
       text = null;
