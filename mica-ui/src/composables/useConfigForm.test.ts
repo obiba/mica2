@@ -288,7 +288,9 @@ describe('useConfigForm', () => {
     mocked.get.mockImplementation((url: string, config?: { params?: { revision?: string } }) =>
       url === '/config/data-access-form'
         ? Promise.resolve({ data: config?.params?.revision === 'latest' ? latest : draft })
-        : Promise.reject(new Error(`unexpected ${url}`)),
+        : url.includes('/i18n/')
+          ? Promise.resolve({ data: bundles[url.includes('/fr.') ? 'fr' : 'en'] })
+          : Promise.reject(new Error(`unexpected ${url}`)),
     );
     mocked.put.mockResolvedValue({ status: 200 });
     interface DraftDto extends ConfigFormDto {
