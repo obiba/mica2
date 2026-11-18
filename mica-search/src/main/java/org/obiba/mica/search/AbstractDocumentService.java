@@ -25,6 +25,7 @@ import jakarta.inject.Inject;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -72,12 +73,19 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   public Documents<T> find(int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String studyId,
                            @Nullable String queryString, @Nullable List<String> fields, @Nullable List<String> excludedFields,
                            Searcher.IdFilter idFilter) {
-    if (idFilter == null) {
-      idFilter = getAccessibleIdFilter();
-    }
+    Searcher.IdFilter filter = idFilter == null ? getAccessibleIdFilter() : idFilter;
+    return find(from, limit, sort, order, studyId, queryString, fields, excludedFields, filter,
+      () -> findFallback(from, limit, order, studyId, filter));
+  }
 
+  /**
+   * Search the documents, the given fallback lists them from the database when the search engine cannot answer.
+   */
+  protected Documents<T> find(int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String studyId,
+                              @Nullable String queryString, @Nullable List<String> fields, @Nullable List<String> excludedFields,
+                              @Nullable Searcher.IdFilter idFilter, Supplier<Documents<T>> fallbackSupplier) {
     if (!indexExists()) {
-      Documents<T> fallback = findFallback(from, limit, order, studyId, idFilter);
+      Documents<T> fallback = fallbackSupplier.get();
       return fallback == null ? new Documents<>(0, from, limit) : fallback;
     }
 
@@ -96,7 +104,7 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
       });
       return documents;
     } catch (RuntimeException e) {
-      Documents<T> fallback = findFallback(from, limit, order, studyId, idFilter);
+      Documents<T> fallback = fallbackSupplier.get();
       if (fallback == null) throw e;
       log.warn("Search in index {} failed, documents listed from the database: {}", getIndexName(), e.getMessage());
       return fallback;

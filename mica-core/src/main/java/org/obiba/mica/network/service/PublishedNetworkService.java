@@ -10,11 +10,18 @@
 
 package org.obiba.mica.network.service;
 
+import java.util.List;
+
 import org.obiba.mica.core.service.PublishedDocumentService;
 import org.obiba.mica.network.domain.Network;
 
 public interface PublishedNetworkService extends PublishedDocumentService<Network> {
 
   NetworkService getNetworkService();
+
+  /**
+   * Ids of the published networks the current subject can access.
+   */
+  List<String> findAccessibleIds();
 
 }

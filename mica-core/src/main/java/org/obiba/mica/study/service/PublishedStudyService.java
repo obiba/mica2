@@ -21,4 +21,9 @@ public interface PublishedStudyService extends PublishedDocumentService<BaseStud
   long getHarmonizationStudyCount();
 
   List<BaseStudy> findAllByClassName(String className);
+
+  /**
+   * Ids of the published individual and harmonization studies the current subject can access.
+   */
+  List<String> findAccessibleIds();
 }

@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.obiba.mica.core.domain.Person;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
@@ -26,14 +27,13 @@ public interface PersonRepository extends MongoRepository<Person, String>, Perso
   List<Person> findByNetworkMemberships(String networkId);
 
   /**
-   * Persons with a membership, in one of the given roles, of one of the given studies or networks. Only the ids are
-   * loaded.
+   * Persons with a membership, in one of the given roles, of one of the given studies or networks.
    */
-  @Query(value = "{$or: [" +
+  @Query("{$or: [" +
     "{'studyMemberships': {$elemMatch: {'parentId': {$in: ?0}, 'role': {$in: ?2}}}}, " +
-    "{'networkMemberships': {$elemMatch: {'parentId': {$in: ?1}, 'role': {$in: ?2}}}}]}",
-    fields = "{'_id': 1}")
-  List<Person> findIdsByMemberships(Collection<String> studyIds, Collection<String> networkIds, Collection<String> roles);
+    "{'networkMemberships': {$elemMatch: {'parentId': {$in: ?1}, 'role': {$in: ?2}}}}]}")
+  List<Person> findByMemberships(Collection<String> studyIds, Collection<String> networkIds, Collection<String> roles,
+                                 Sort sort);
 
   Person findOneByEmail(String email);
 

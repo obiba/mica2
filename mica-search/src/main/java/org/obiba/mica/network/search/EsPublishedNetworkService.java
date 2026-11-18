@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
 import java.io.IOException;
-import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,13 +59,14 @@ public class EsPublishedNetworkService extends AbstractIdentifiedDocumentService
   @Override
   protected Searcher.IdFilter getAccessibleIdFilter() {
     if (isOpenAccess()) return null;
-    return new Searcher.IdFilter() {
-      @Override
-      public Collection<String> getValues() {
-        return networkService.findPublishedIds().stream()
-          .filter(s -> subjectAclService.isAccessible("/network", s))
-          .collect(Collectors.toList());
-      }
-    };
+    return this::findAccessibleIds;
+  }
+
+  @Override
+  public List<String> findAccessibleIds() {
+    boolean openAccess = isOpenAccess();
+    return networkService.findPublishedIds().stream()
+      .filter(s -> openAccess || subjectAclService.isAccessible("/network", s))
+      .collect(Collectors.toList());
   }
 }

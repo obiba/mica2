@@ -28,7 +28,6 @@ import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
 import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -82,16 +81,17 @@ public class EsPublishedStudyService extends AbstractEsStudyService<BaseStudy> i
   @Override
   protected Searcher.IdFilter getAccessibleIdFilter() {
     if (isOpenAccess()) return null;
-    return new Searcher.IdFilter() {
-      @Override
-      public Collection<String> getValues() {
-        List<String> ids = individualStudyService.findPublishedIds().stream()
-            .filter(s -> subjectAclService.isAccessible("/individual-study", s)).collect(Collectors.toList());
-        ids.addAll(harmonizationStudyService.findPublishedIds().stream()
-            .filter(s -> subjectAclService.isAccessible("/harmonization-study", s)).collect(Collectors.toList()));
-        return ids;
-      }
-    };
+    return this::findAccessibleIds;
+  }
+
+  @Override
+  public List<String> findAccessibleIds() {
+    boolean openAccess = isOpenAccess();
+    List<String> ids = individualStudyService.findPublishedIds().stream()
+        .filter(s -> openAccess || subjectAclService.isAccessible("/individual-study", s)).collect(Collectors.toList());
+    ids.addAll(harmonizationStudyService.findPublishedIds().stream()
+        .filter(s -> openAccess || subjectAclService.isAccessible("/harmonization-study", s)).collect(Collectors.toList()));
+    return ids;
   }
 
   private Class getClass(String className) {

@@ -11,26 +11,25 @@
 package org.obiba.mica.person.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.repository.PersonRepository;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
-import org.obiba.mica.network.service.NetworkService;
+import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.search.AbstractIdentifiedDocumentService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
-import org.obiba.mica.study.service.HarmonizationStudyService;
-import org.obiba.mica.study.service.IndividualStudyService;
+import org.obiba.mica.study.service.PublishedStudyService;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class EsPersonService extends AbstractIdentifiedDocumentService<Person> {
@@ -42,13 +41,10 @@ public class EsPersonService extends AbstractIdentifiedDocumentService<Person> {
   private PersonRepository personRepository;
 
   @Inject
-  private IndividualStudyService individualStudyService;
+  private PublishedStudyService publishedStudyService;
 
   @Inject
-  private HarmonizationStudyService harmonizationStudyService;
-
-  @Inject
-  private NetworkService networkService;
+  private PublishedNetworkService publishedNetworkService;
 
   @Inject
   private MicaConfigService micaConfigService;
@@ -70,50 +66,69 @@ public class EsPersonService extends AbstractIdentifiedDocumentService<Person> {
 
   /**
    * Find the persons that have a membership, in one of the configured roles, of a published study or network the
-   * current subject can access. Other persons are filtered out in the search, so the total and the paging only count
-   * the published persons.
+   * current subject can access. The others are filtered out in the search, so the total and the paging only count
+   * these persons. When the search engine fails, these persons are listed from the database, without applying the
+   * query.
    */
   public Documents<Person> findPublished(int from, int limit, @Nullable String sort, @Nullable String order,
                                          @Nullable String queryString) {
-    List<String> personIds = findPublishedPersonIds();
-    if (personIds.isEmpty()) return new Documents<>(0, from, limit);
-    return find(from, limit, sort, order, null, queryString, null, null, () -> personIds);
+    List<String> studyIds = publishedStudyService.findAccessibleIds();
+    List<String> networkIds = publishedNetworkService.findAccessibleIds();
+    List<String> roles = micaConfigService.getConfig().getRoles();
+    if ((studyIds.isEmpty() && networkIds.isEmpty()) || roles.isEmpty()) return new Documents<>(0, from, limit);
+
+    // ponytail: the memberships are not nested in the index, so the role can match another membership than the
+    // published one; findPublishedStudyMembers lists the members of given studies exactly
+    List<String> parents = new ArrayList<>();
+    if (!studyIds.isEmpty()) parents.add(termsQuery("studyMemberships.parentId", studyIds));
+    if (!networkIds.isEmpty()) parents.add(termsQuery("networkMemberships.parentId", networkIds));
+    String members = "(" + String.join(" OR ", parents) + ") AND (" + termsQuery("studyMemberships.role", roles)
+      + " OR " + termsQuery("networkMemberships.role", roles) + ")";
+    String query = Strings.isNullOrEmpty(queryString) ? members : "(" + queryString + ") AND " + members;
+
+    return find(from, limit, sort, order, null, query, null, null, null,
+      () -> page(personRepository.findByMemberships(studyIds, networkIds, roles, byLastName(order)), from, limit, true));
   }
 
   /**
-   * When the search engine fails, the persons are listed from the database, sorted by last name, restricted to the
-   * id filter if any. The query is not applied.
+   * Find the persons that have a membership, in one of the configured roles, of the given studies, restricted to the
+   * published ones the current subject can access. Listed from the database, sorted by last name.
+   */
+  public Documents<Person> findPublishedStudyMembers(int from, int limit, @Nullable String order,
+                                                     Collection<String> studyIds) {
+    List<String> ids = publishedStudyService.findAccessibleIds().stream()
+      .filter(studyIds::contains)
+      .collect(Collectors.toList());
+    List<String> roles = micaConfigService.getConfig().getRoles();
+    if (ids.isEmpty() || roles.isEmpty()) return new Documents<>(0, from, limit);
+    return page(personRepository.findByMemberships(ids, List.of(), roles, byLastName(order)), from, limit, false);
+  }
+
+  /**
+   * When the search engine fails, the persons are listed from the database, sorted by last name. The query is not
+   * applied.
    */
   @Override
   protected Documents<Person> findFallback(int from, int limit, @Nullable String order, @Nullable String studyId,
                                            @Nullable Searcher.IdFilter idFilter) {
-    Sort.Direction direction = "desc".equalsIgnoreCase(order) ? Sort.Direction.DESC : Sort.Direction.ASC;
-    Set<String> ids = idFilter == null ? null : new HashSet<>(idFilter.getValues());
     // ponytail: loads all persons to page them, use a paged query if there are too many
-    List<Person> found = personRepository.findAll(Sort.by(direction, "lastName")).stream()
-      .filter(p -> ids == null || ids.contains(p.getId()))
-      .collect(Collectors.toList());
+    return page(personRepository.findAll(byLastName(order)), from, limit, true);
+  }
+
+  private static Sort byLastName(@Nullable String order) {
+    return Sort.by("desc".equalsIgnoreCase(order) ? Sort.Direction.DESC : Sort.Direction.ASC, "lastName");
+  }
+
+  private static Documents<Person> page(List<Person> found, int from, int limit, boolean degraded) {
     Documents<Person> documents = new Documents<>(found.size(), from, limit);
-    documents.setDegraded(true);
+    documents.setDegraded(degraded);
     found.stream().skip(from).limit(limit).forEach(documents::add);
     return documents;
   }
 
-  private List<String> findPublishedPersonIds() {
-    List<String> studyIds = Stream.concat(
-        individualStudyService.findPublishedIds().stream()
-          .filter(id -> subjectAclService.isAccessible("/individual-study", id)),
-        harmonizationStudyService.findPublishedIds().stream()
-          .filter(id -> subjectAclService.isAccessible("/harmonization-study", id)))
-      .collect(Collectors.toList());
-    List<String> networkIds = networkService.findPublishedIds().stream()
-      .filter(id -> subjectAclService.isAccessible("/network", id))
-      .collect(Collectors.toList());
-    if (studyIds.isEmpty() && networkIds.isEmpty()) return List.of();
-
-    List<String> roles = micaConfigService.getConfig().getRoles();
-    return personRepository.findIdsByMemberships(studyIds, networkIds, roles).stream()
-      .map(Person::getId)
-      .collect(Collectors.toList());
+  private static String termsQuery(String field, Collection<String> values) {
+    return field + ":(" + values.stream()
+      .map(v -> "\"" + v.replace("\\", "\\\\").replace("\"", "\\\"") + "\"")
+      .collect(Collectors.joining(" OR ")) + ")";
   }
 }

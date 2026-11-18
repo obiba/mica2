@@ -67,12 +67,16 @@ public abstract class AbstractPersonsSearchResource {
       ? esPersonService.find(from, limit, sort, order, null, query)
       : esPersonService.findPublished(from, limit, sort, order, query);
 
+    return asDto(contacts, from, limit);
+  }
+
+  protected Mica.PersonsDto asDto(PublishedDocumentService.Documents<Person> contacts, int from, int limit) {
     List<Mica.PersonDto> persons = contacts.getList().stream().map(p -> dtos.asDto(p, isDraft())).collect(Collectors.toList());
 
     Mica.PersonsDto.Builder builder = Mica.PersonsDto.newBuilder().setFrom(from).setLimit(limit)
       .setTotal(contacts.getTotal());
     builder.addAllPersons(persons);
-    // the persons are listed from the database, without applying the query (published ones only on the published endpoint)
+    // the persons are listed from the database, without applying the query
     if (contacts.isDegraded() && response != null) response.addHeader("X-Search-Degraded", "true");
 
     return builder.build();
@@ -86,7 +90,10 @@ public abstract class AbstractPersonsSearchResource {
     @QueryParam("order") @DefaultValue("asc") String order, @QueryParam("query") String query,
     @QueryParam("exclude") List<String> excludes) throws IOException {
 
-    Mica.PersonsDto persons = query(from, limit, sort, order, query, excludes);
+    return asCSV(query(from, limit, sort, order, query, excludes));
+  }
+
+  protected Response asCSV(Mica.PersonsDto persons) throws IOException {
     CsvPersonsWriter writer = new CsvPersonsWriter();
     ByteArrayOutputStream values = writer.write(persons);
 

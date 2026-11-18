@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.googlecode.protobuf.format.JsonFormat;
 import org.obiba.mica.core.domain.Attribute;
-import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.micaConfig.service.TaxonomiesService;
@@ -59,8 +58,8 @@ public class StudyController extends BaseController {
     params.put("study", study);
     params.put("type", (study instanceof Study) ? "Individual" : "Harmonization");
     params.put("draft", !Strings.isNullOrEmpty(shareKey));
-    // the members download uses the published persons search, which only lists the members of published studies
-    params.put("membersDownload", Strings.isNullOrEmpty(shareKey) || isPublishedAndAccessible(study));
+    // the members download only lists the members of the published studies the user can access
+    params.put("membersDownload", Strings.isNullOrEmpty(shareKey) || publishedStudyService.findAccessibleIds().contains(study.getId()));
 
     if (study instanceof Study) {
       String timelineData = asJSONTimelineData((Study) study);
@@ -92,12 +91,6 @@ public class StudyController extends BaseController {
     study.setMemberships(personService.setMembershipOrder(study.getMembershipSortOrder(), personService.getStudyMembershipMap(id)));
 
     return study;
-  }
-
-  private boolean isPublishedAndAccessible(BaseStudy study) {
-    EntityState state = draftStudyService.findStateById(study.getId());
-    return state != null && state.isPublished()
-      && subjectAclService.isAccessible((study instanceof Study) ? "/individual-study" : "/harmonization-study", study.getId());
   }
 
   private String asJSONTimelineData(Study study) {
