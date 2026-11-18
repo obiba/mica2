@@ -198,6 +198,24 @@ public class PersonServiceTest {
     verify(gitService, never()).deleteGitRepository(changed);
   }
 
+  @Test
+  public void duplicates_are_grouped_by_data_or_by_name() {
+    Person oldest = copy("p1", 1);
+    Person copy = copy("p2", 2);
+    Person other = copy("p3", 3);
+    other.getStudyMemberships().add(new Person.Membership(OTHER_STUDY, "contact"));
+    other.setLastName(" doe ");
+    Person unnamed = new Person();
+    unnamed.setId("p4");
+    Person unnamed2 = new Person();
+    unnamed2.setId("p5");
+    unnamed2.setEmail("x@y.org");
+    when(personRepository.findAll()).thenReturn(Lists.newArrayList(other, copy, oldest, unnamed, unnamed2));
+
+    assertThat(personService.findDuplicates(false)).containsExactly(List.of(oldest, copy));
+    assertThat(personService.findDuplicates(true)).containsExactly(List.of(oldest, copy, other));
+  }
+
   /** the same person, created on day {@code day} of 2020 */
   private static Person copy(String id, int day) {
     Person person = person(OWN_STUDY);

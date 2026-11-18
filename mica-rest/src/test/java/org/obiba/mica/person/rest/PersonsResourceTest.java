@@ -160,6 +160,12 @@ public class PersonsResourceTest {
       .containsExactly(Roles.MICA_ADMIN);
   }
 
+  @Test
+  public void duplicates_are_for_administrators_only() throws NoSuchMethodException {
+    assertThat(PersonsResource.class.getMethod("getDuplicates", String.class).getAnnotation(RequiresRoles.class).value())
+      .containsExactly(Roles.MICA_ADMIN);
+  }
+
   private static PersonDto.Builder dto() {
     return PersonDto.newBuilder().setLastName("Doe");
   }

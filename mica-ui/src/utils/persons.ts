@@ -245,6 +245,12 @@ export function isVersionConflict(error: unknown): boolean {
   return response?.status === 409 && response.data?.messageTemplate === VERSION_CONFLICT;
 }
 
+/** the search query restricted to the persons that are not member of any study, initiative or network */
+export function noMembershipsQuery(query: string | undefined): string {
+  const none = 'NOT _exists_:studyMemberships AND NOT _exists_:networkMemberships';
+  return query ? `(${query}) AND ${none}` : none;
+}
+
 const LUCENE_SPECIAL = /[+\-&|!(){}[\]^"~*?:\\/]/g;
 
 /**
