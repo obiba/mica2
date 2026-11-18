@@ -108,7 +108,6 @@ public class StudiesImportResource {
   private static final String WS_DRAFT_INDIVIDUAL_STUDY_ID = "/ws/draft/individual-study/{id}";
 
   private static final String SCHEMA = "schema";
-  private static final String DEFINITION = "definition";
 
   private static final String BASIC_AUTHENTICATION = "Basic ";
   private static final String USERNAME_HEADER = "X-Mica-Remote-Username";
@@ -324,25 +323,39 @@ public class StudiesImportResource {
 
     Map<String, Object> content = this.getJSONContent(url, username, password, null, endpoint);
 
-    String schema = (mapper.readValue((String) content.get(SCHEMA), JsonNode.class)).toString();
-    String definition = (mapper.readValue((String) content.get(DEFINITION), JsonNode.class)).toString();
+    // the definition (layout) and the schema annotations differ between the angular-schema-form and the
+    // JSON Forms dialects of a same form (#4612): only the data shape decides whether a study can be imported
+    JsonNode shape = dataShape(mapper.readTree((String) content.get(SCHEMA)));
 
     EntityConfig entityConfig = configService.findPartial().get();
 
-    String localSchema = (mapper.readValue(entityConfig.getSchema(), JsonNode.class)).toString();
-    String localDefinition = (mapper.readValue(entityConfig.getDefinition(), JsonNode.class)).toString();
+    JsonNode localShape = dataShape(mapper.readTree(entityConfig.getSchema()));
 
     JsonNode jsonDTO = mapper.createObjectNode();
     ((ObjectNode) jsonDTO).put("formSection", formSection);
     ((ObjectNode) jsonDTO).put("parentFormSection", parentFormSection);
     ((ObjectNode) jsonDTO).put("endpoint", endpoint);
 
-    result.put(jsonDTO.toString(), Boolean.valueOf(schema.equals(localSchema) && definition.equals(localDefinition)));
+    result.put(jsonDTO.toString(), shape.equals(localShape));
 
     return result;
   }
 
-
+  /**
+   * The property tree of a JSON schema with the types only, without titles, enums, formats or constraints.
+   */
+  static JsonNode dataShape(JsonNode schema) {
+    ObjectNode shape = new ObjectMapper().createObjectNode();
+    if (schema == null || !schema.isObject()) return shape;
+    if (schema.has("type")) shape.set("type", schema.get("type"));
+    JsonNode properties = schema.get("properties");
+    if (properties != null && properties.isObject()) {
+      ObjectNode shapeProperties = shape.putObject("properties");
+      properties.fields().forEachRemaining(entry -> shapeProperties.set(entry.getKey(), dataShape(entry.getValue())));
+    }
+    if (schema.has("items")) shape.set("items", dataShape(schema.get("items")));
+    return shape;
+  }
 
   private Study saveIndividualStudy(String id, String remoteContent,
                                     Mica.StudyDto.Builder builder, ExtensionRegistry extensionRegistry, List<String> listDiffsForm) throws ParseException {
