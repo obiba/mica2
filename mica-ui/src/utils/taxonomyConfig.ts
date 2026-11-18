@@ -1,0 +1,297 @@
+import type { AttributeDto, LocaleTextDto, TaxonomyDto, TermDto, VocabularyDto } from 'src/models/Opal';
+
+/**
+ * The rules of the Mica entity taxonomies (`/config/{target}/taxonomy`) edition, ported from the
+ * legacy `entity-taxonomy-config-service.js`: how the vocabulary attributes drive the index mapping
+ * and the search.
+ */
+
+export const VOCABULARY_TYPES = ['string', 'keyword', 'integer', 'decimal'] as const;
+export type VocabularyType = (typeof VOCABULARY_TYPES)[number];
+
+export const TERMS_SORT_KEYS = ['', 'name', 'title'] as const;
+
+/** the document class a vocabulary can be restricted to, per target */
+export const CLASS_NAMES: Record<string, string[]> = {
+  study: ['Study', 'HarmonizationStudy'],
+  dataset: ['CollectedDataset', 'HarmonizedDataset'],
+};
+
+/** the forms whose fields can be searched, with the path of their model in the indexed document */
+export const TARGET_FORMS: Record<string, { form: string; prefix: string }[]> = {
+  network: [{ form: 'network', prefix: 'model.' }],
+  study: [
+    { form: 'individual-study', prefix: 'model.' },
+    { form: 'harmonization-study', prefix: 'model.' },
+    { form: 'population', prefix: 'populations.model.' },
+    { form: 'data-collection-event', prefix: 'populations.dataCollectionEvents.model.' },
+  ],
+  dataset: [
+    { form: 'collected-dataset', prefix: 'model.' },
+    { form: 'harmonized-dataset', prefix: 'model.' },
+  ],
+};
+
+/** the rebuild request of the index of the documents of a target, the variables are indexed with their dataset */
+export const TARGET_INDEX_PATHS: Record<string, string> = {
+  network: '/draft/networks/_index',
+  study: '/draft/studies/_index',
+  dataset: '/draft/datasets/_index',
+  variable: '/draft/datasets/_index',
+};
+
+/** the localized texts of a form, by language */
+export type LocaleTexts = Record<string, string>;
+
+export interface VocabularyForm {
+  name: string;
+  title: LocaleTexts;
+  description: LocaleTexts;
+  field: string;
+  type: VocabularyType;
+  repeatable: boolean;
+  localized: boolean;
+  range: boolean;
+  hidden: boolean;
+  facet: boolean;
+  facetPosition: number;
+  facetExpanded: boolean;
+  termsSortKey: string;
+  forClassName: string;
+}
+
+export interface TermForm {
+  name: string;
+  title: LocaleTexts;
+  description: LocaleTexts;
+  /** the bounds of a term of a range vocabulary, its name is `from:to`, `*` when open */
+  from: number | null;
+  to: number | null;
+}
+
+export function getAttribute(entity: { attributes?: AttributeDto[] } | undefined, key: string): string | undefined {
+  return entity?.attributes?.find((attribute) => attribute.key === key)?.value;
+}
+
+/** sets the attribute in place, removes it when the value is empty */
+export function setAttribute(entity: { attributes?: AttributeDto[] }, key: string, value: string | undefined) {
+  const attributes = entity.attributes || [];
+  const idx = attributes.findIndex((attribute) => attribute.key === key);
+  if (value === undefined || value === '') {
+    if (idx !== -1) attributes.splice(idx, 1);
+  } else if (idx !== -1) attributes[idx] = { key, value };
+  else attributes.push({ key, value });
+  entity.attributes = attributes;
+}
+
+/** sets the attribute, unless it is absent and the value is its default: an unchanged item stays as is */
+function setValue(entity: { attributes?: AttributeDto[] }, key: string, value: string, defaultValue: string) {
+  if (getAttribute(entity, key) === undefined && value === defaultValue) return;
+  setAttribute(entity, key, value);
+}
+
+function isTrue(entity: { attributes?: AttributeDto[] } | undefined, key: string) {
+  return getAttribute(entity, key) === 'true';
+}
+
+/** a built-in vocabulary the application relies on: it cannot be deleted, its definition cannot change */
+export function isStatic(vocabulary: VocabularyDto | undefined): boolean {
+  return isTrue(vocabulary, 'static');
+}
+
+export function vocabularyType(vocabulary: VocabularyDto | undefined): VocabularyType {
+  const type = getAttribute(vocabulary, 'type');
+  return (VOCABULARY_TYPES as readonly string[]).includes(type || '') ? (type as VocabularyType) : 'string';
+}
+
+/** the terms of a numeric vocabulary are ranges */
+export function isRangeType(type: VocabularyType): boolean {
+  return type === 'integer' || type === 'decimal';
+}
+
+/** the aggregation name of the field, as the server derives it (`AggregationHelper.formatName`) */
+export function aliasOf(field: string, range: boolean): string {
+  return field ? field.replace(/\./g, '-') + (range ? '-range' : '') : '';
+}
+
+function vocabularyAlias(vocabulary: VocabularyDto): string {
+  const field = getAttribute(vocabulary, 'field');
+  if (!field) return '';
+  return getAttribute(vocabulary, 'alias') || aliasOf(field, false);
+}
+
+export function toLocaleTexts(texts: LocaleTextDto[] | undefined): LocaleTexts {
+  return Object.fromEntries((texts || []).map((text) => [text.locale, text.text]));
+}
+
+/** sets the texts of the form, none when there were none and none were given */
+function setTexts(entity: TermDto, key: 'title' | 'description', texts: LocaleTexts) {
+  const result = fromLocaleTexts(texts);
+  if (result.length || entity[key]) entity[key] = result;
+}
+
+export function fromLocaleTexts(texts: LocaleTexts): LocaleTextDto[] {
+  return Object.entries(texts)
+    .filter(([, text]) => text?.trim())
+    .map(([locale, text]) => ({ locale, text: text.trim() }));
+}
+
+export function vocabularyForm(vocabulary?: VocabularyDto): VocabularyForm {
+  return {
+    name: vocabulary?.name || '',
+    title: toLocaleTexts(vocabulary?.title),
+    description: toLocaleTexts(vocabulary?.description),
+    field: getAttribute(vocabulary, 'field') || '',
+    type: vocabulary ? vocabularyType(vocabulary) : 'keyword',
+    repeatable: vocabulary?.repeatable === true,
+    localized: isTrue(vocabulary, 'localized'),
+    range: isTrue(vocabulary, 'range'),
+    hidden: isTrue(vocabulary, 'hidden'),
+    facet: isTrue(vocabulary, 'facet'),
+    facetPosition: Number(getAttribute(vocabulary, 'facetPosition') || 0),
+    facetExpanded: isTrue(vocabulary, 'facetExpanded'),
+    termsSortKey: getAttribute(vocabulary, 'termsSortKey') || '',
+    forClassName: getAttribute(vocabulary, 'forClassName') || '',
+  };
+}
+
+/**
+ * The vocabulary edited by the form, its other attributes and its terms kept. Only the texts and
+ * the display attributes of a static vocabulary are changed.
+ */
+export function toVocabulary(form: VocabularyForm, vocabulary?: VocabularyDto): VocabularyDto {
+  const result: VocabularyDto = JSON.parse(JSON.stringify(vocabulary || { name: form.name, terms: [] }));
+  // required by the server, not repeatable unless stated
+  result.repeatable = vocabulary?.repeatable === true;
+  setTexts(result, 'title', form.title);
+  setTexts(result, 'description', form.description);
+  setValue(result, 'hidden', `${form.hidden}`, 'false');
+  setValue(result, 'facet', `${form.facet}`, 'false');
+  if (form.facet) {
+    setValue(result, 'facetPosition', `${form.facetPosition || 0}`, '0');
+    setValue(result, 'facetExpanded', `${form.facetExpanded}`, 'false');
+  } else if (isTrue(vocabulary, 'facet')) {
+    setAttribute(result, 'facetPosition', undefined);
+    setAttribute(result, 'facetExpanded', undefined);
+  }
+  if (isStatic(vocabulary)) return result;
+
+  // the range aggregation applies to the numbers only
+  const range = isRangeType(form.type) && form.range;
+  const field = form.field.trim();
+  // a stored alias is kept while the field and the range are: the search and the facets use it
+  const unchanged = field === getAttribute(vocabulary, 'field') && range === isTrue(vocabulary, 'range');
+  result.name = form.name.trim();
+  result.repeatable = form.repeatable;
+  setAttribute(result, 'field', field);
+  setAttribute(result, 'alias', (unchanged && getAttribute(vocabulary, 'alias')) || aliasOf(field, range));
+  setValue(result, 'type', form.type, 'string');
+  setValue(result, 'localized', `${form.localized}`, 'false');
+  setValue(result, 'range', `${range}`, 'false');
+  setAttribute(result, 'termsSortKey', form.termsSortKey);
+  setAttribute(result, 'forClassName', form.forClassName);
+  return result;
+}
+
+/**
+ * The i18n key of the first rule the vocabulary breaks among its siblings, if any. Its field must be
+ * one of the form fields, unless it is the stored one (the built-in document properties are in no form).
+ */
+export function vocabularyError(
+  vocabulary: VocabularyDto,
+  others: VocabularyDto[],
+  fields: string[],
+  storedField?: string,
+): string | undefined {
+  if (!vocabulary.name) return 'taxonomies.edit.name_required';
+  if (others.some((other) => other.name === vocabulary.name)) return 'taxonomies.edit.name_exists';
+  if (isStatic(vocabulary)) return undefined;
+  const field = getAttribute(vocabulary, 'field');
+  if (!field) return 'taxonomies.edit.field_required';
+  if (field !== storedField && !fields.includes(field)) return 'taxonomies.edit.field_unknown';
+  const alias = vocabularyAlias(vocabulary);
+  if (others.some((other) => vocabularyAlias(other) === alias)) return 'taxonomies.edit.alias_exists';
+  return undefined;
+}
+
+/** the i18n key of the first rule the taxonomy breaks, checked as the server does before saving */
+export function taxonomyError(taxonomy: TaxonomyDto): { error: string; vocabulary: string } | undefined {
+  const aliases = new Set<string>();
+  for (const vocabulary of taxonomy.vocabularies || []) {
+    const alias = vocabularyAlias(vocabulary);
+    if (!alias) continue;
+    if (aliases.has(alias)) return { error: 'taxonomies.edit.alias_duplicate', vocabulary: vocabulary.name };
+    aliases.add(alias);
+    const hasTerms = (vocabulary.terms || []).length > 0;
+    const range = isTrue(vocabulary, 'range');
+    if (isRangeType(vocabularyType(vocabulary)) && hasTerms !== range) {
+      return {
+        error: range ? 'taxonomies.edit.range_terms_missing' : 'taxonomies.edit.range_missing',
+        vocabulary: vocabulary.name,
+      };
+    }
+  }
+  return undefined;
+}
+
+function parseBound(value: string | undefined): number | null {
+  return value && value !== '*' && !isNaN(Number(value)) ? Number(value) : null;
+}
+
+/** an empty bound is open: a cleared number input gives an empty string */
+function isOpen(bound: number | null | string | undefined): bound is null | undefined | '' {
+  return bound === null || bound === undefined || `${bound}`.trim() === '';
+}
+
+export function rangeName(from: number | null, to: number | null): string {
+  return `${isOpen(from) ? '*' : from}:${isOpen(to) ? '*' : to}`;
+}
+
+/** the i18n key of the first rule the bounds of a range term break, if any */
+export function rangeError(from: number | null, to: number | null, type: VocabularyType): string | undefined {
+  if (isOpen(from) && isOpen(to)) return 'taxonomies.edit.range_bounds_required';
+  const bounds = [from, to].filter((bound) => !isOpen(bound)).map(Number);
+  if (bounds.some((bound) => isNaN(bound))) return 'number_invalid';
+  if (type === 'integer' && bounds.some((bound) => !Number.isInteger(bound))) return 'taxonomies.edit.range_integer';
+  if (bounds.length === 2 && bounds[0]! > bounds[1]!) return 'taxonomies.edit.range_order';
+  return undefined;
+}
+
+export function termForm(term?: TermDto): TermForm {
+  const [from, to] = (term?.name || '').split(':');
+  return {
+    name: term?.name || '',
+    title: toLocaleTexts(term?.title),
+    description: toLocaleTexts(term?.description),
+    from: parseBound(from),
+    to: parseBound(to),
+  };
+}
+
+/** the term edited by the form, its keywords, attributes and sub-terms kept */
+export function toTerm(form: TermForm, range: boolean, term?: TermDto): TermDto {
+  const result: TermDto = JSON.parse(JSON.stringify(term || { name: '' }));
+  result.name = range ? rangeName(form.from, form.to) : form.name.trim();
+  setTexts(result, 'title', form.title);
+  setTexts(result, 'description', form.description);
+  return result;
+}
+
+/** moves the item by one position, within the bounds */
+export function moveItem<T>(items: T[], index: number, up: boolean) {
+  const other = up ? index - 1 : index + 1;
+  if (index < 0 || other < 0 || other >= items.length) return;
+  [items[index], items[other]] = [items[other]!, items[index]!];
+}
+
+/** the dotted paths of the leaf fields of a form JSON schema, the mandatory ones (`_name`) excepted */
+export function schemaFields(schema: Record<string, unknown> | undefined, prefix = ''): string[] {
+  const properties = schema?.properties as Record<string, Record<string, unknown>> | undefined;
+  if (!properties || typeof properties !== 'object') return [];
+  return Object.entries(properties)
+    .filter(([key]) => !key.startsWith('_'))
+    .flatMap(([key, child]) => {
+      const path = `${prefix}${key}`;
+      return child?.properties ? schemaFields(child, `${path}.`) : [path];
+    });
+}

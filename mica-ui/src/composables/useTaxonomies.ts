@@ -148,3 +148,81 @@ export function useTaxonomies() {
 
   return { moving, loadTarget, move };
 }
+
+/** the taxonomy of the Mica documents of a target, the one an administrator can edit: `Mica_study` */
+export function micaTaxonomyName(target: TaxonomyTarget): string {
+  return `Mica_${target}`;
+}
+
+/** whether the node belongs to the Mica taxonomy of its target */
+export function isMicaNode(node: TaxonomyNode): boolean {
+  return node.type !== 'target' && node.key.split('/')[1] === micaTaxonomyName(node.target);
+}
+
+/** the configuration of a Mica taxonomy, as edited and saved */
+function configPath(target: TaxonomyTarget) {
+  return `/config/${target}/taxonomy`;
+}
+
+interface TaxonomyDraft {
+  taxonomy: TaxonomyDto;
+  /** the configuration as loaded, to detect the changes made since by someone else */
+  loaded: string;
+}
+
+/**
+ * The working copies of the Mica taxonomies an administrator edits: changes are made on the copy
+ * and saved at once, the whole taxonomy replacing the stored one.
+ */
+export function useTaxonomyEditor() {
+  const drafts = ref<Partial<Record<TaxonomyTarget, TaxonomyDraft>>>({});
+
+  const dirtyTargets = computed(() =>
+    (Object.keys(drafts.value) as TaxonomyTarget[]).filter((target) => {
+      const draft = drafts.value[target]!;
+      return JSON.stringify(draft.taxonomy) !== draft.loaded;
+    }),
+  );
+
+  const dirty = computed(() => dirtyTargets.value.length > 0);
+
+  /** the loads in flight: concurrent edits share the same working copy */
+  const loading = new Map<TaxonomyTarget, Promise<TaxonomyDto>>();
+
+  /** the working copy of the Mica taxonomy of the target, loaded on the first edit */
+  function draft(target: TaxonomyTarget): Promise<TaxonomyDto> {
+    const current = drafts.value[target];
+    if (current) return Promise.resolve(current.taxonomy);
+    let request = loading.get(target);
+    if (!request) {
+      request = api
+        .get<TaxonomyDto>(configPath(target))
+        .then((response) => {
+          const loaded = JSON.stringify(response.data);
+          drafts.value[target] = { taxonomy: JSON.parse(loaded), loaded };
+          return drafts.value[target]!.taxonomy;
+        })
+        .finally(() => loading.delete(target));
+      loading.set(target, request);
+    }
+    return request;
+  }
+
+  /** whether the stored taxonomy changed since its working copy was loaded */
+  async function changedSince(target: TaxonomyTarget): Promise<boolean> {
+    const response = await api.get<TaxonomyDto>(configPath(target));
+    return JSON.stringify(response.data) !== drafts.value[target]?.loaded;
+  }
+
+  /** saves the working copy of the target, then forgets it */
+  async function save(target: TaxonomyTarget) {
+    await api.put(configPath(target), drafts.value[target]!.taxonomy);
+    delete drafts.value[target];
+  }
+
+  function discard() {
+    drafts.value = {};
+  }
+
+  return { drafts, dirty, dirtyTargets, draft, changedSince, save, discard };
+}
