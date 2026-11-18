@@ -703,6 +703,7 @@ export default {
       name_required: 'The name is required.',
       name_exists: 'This name is already used.',
       field_required: 'The field is required.',
+      field_unknown: 'This field is not in the forms of this document type.',
       alias_exists: 'Another criterion already searches this field.',
       alias_duplicate: 'The criterion "{name}" searches a field already searched by another criterion.',
       range_terms_missing: 'The range criterion "{name}" must have terms.',

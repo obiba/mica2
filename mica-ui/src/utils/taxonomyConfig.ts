@@ -161,6 +161,8 @@ export function vocabularyForm(vocabulary?: VocabularyDto): VocabularyForm {
  */
 export function toVocabulary(form: VocabularyForm, vocabulary?: VocabularyDto): VocabularyDto {
   const result: VocabularyDto = JSON.parse(JSON.stringify(vocabulary || { name: form.name, terms: [] }));
+  // required by the server, not repeatable unless stated
+  result.repeatable = vocabulary?.repeatable === true;
   setTexts(result, 'title', form.title);
   setTexts(result, 'description', form.description);
   setValue(result, 'hidden', `${form.hidden}`, 'false');
@@ -180,7 +182,7 @@ export function toVocabulary(form: VocabularyForm, vocabulary?: VocabularyDto): 
   // a stored alias is kept while the field and the range are: the search and the facets use it
   const unchanged = field === getAttribute(vocabulary, 'field') && range === isTrue(vocabulary, 'range');
   result.name = form.name.trim();
-  if (form.repeatable !== (vocabulary?.repeatable === true)) result.repeatable = form.repeatable;
+  result.repeatable = form.repeatable;
   setAttribute(result, 'field', field);
   setAttribute(result, 'alias', (unchanged && getAttribute(vocabulary, 'alias')) || aliasOf(field, range));
   setValue(result, 'type', form.type, 'string');
@@ -191,12 +193,22 @@ export function toVocabulary(form: VocabularyForm, vocabulary?: VocabularyDto): 
   return result;
 }
 
-/** the i18n key of the first rule the vocabulary breaks among its siblings, if any */
-export function vocabularyError(vocabulary: VocabularyDto, others: VocabularyDto[]): string | undefined {
+/**
+ * The i18n key of the first rule the vocabulary breaks among its siblings, if any. Its field must be
+ * one of the form fields, unless it is the stored one (the built-in document properties are in no form).
+ */
+export function vocabularyError(
+  vocabulary: VocabularyDto,
+  others: VocabularyDto[],
+  fields: string[],
+  storedField?: string,
+): string | undefined {
   if (!vocabulary.name) return 'taxonomies.edit.name_required';
   if (others.some((other) => other.name === vocabulary.name)) return 'taxonomies.edit.name_exists';
   if (isStatic(vocabulary)) return undefined;
-  if (!getAttribute(vocabulary, 'field')) return 'taxonomies.edit.field_required';
+  const field = getAttribute(vocabulary, 'field');
+  if (!field) return 'taxonomies.edit.field_required';
+  if (field !== storedField && !fields.includes(field)) return 'taxonomies.edit.field_unknown';
   const alias = vocabularyAlias(vocabulary);
   if (others.some((other) => vocabularyAlias(other) === alias)) return 'taxonomies.edit.alias_exists';
   return undefined;

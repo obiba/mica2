@@ -703,6 +703,7 @@ export default {
       name_required: 'Le nom est requis.',
       name_exists: 'Ce nom est déjà utilisé.',
       field_required: 'Le champ est requis.',
+      field_unknown: "Ce champ n'est pas dans les formulaires de ce type de document.",
       alias_exists: 'Un autre critère cherche déjà ce champ.',
       alias_duplicate: 'Le critère "{name}" cherche un champ déjà cherché par un autre critère.',
       range_terms_missing: 'Le critère intervalle "{name}" doit avoir des termes.',

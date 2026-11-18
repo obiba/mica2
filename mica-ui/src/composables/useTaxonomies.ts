@@ -176,7 +176,6 @@ interface TaxonomyDraft {
  */
 export function useTaxonomyEditor() {
   const drafts = ref<Partial<Record<TaxonomyTarget, TaxonomyDraft>>>({});
-  const saving = ref(false);
 
   const dirtyTargets = computed(() =>
     (Object.keys(drafts.value) as TaxonomyTarget[]).filter((target) => {
@@ -217,18 +216,13 @@ export function useTaxonomyEditor() {
 
   /** saves the working copy of the target, then forgets it */
   async function save(target: TaxonomyTarget) {
-    saving.value = true;
-    try {
-      await api.put(configPath(target), drafts.value[target]!.taxonomy);
-      delete drafts.value[target];
-    } finally {
-      saving.value = false;
-    }
+    await api.put(configPath(target), drafts.value[target]!.taxonomy);
+    delete drafts.value[target];
   }
 
   function discard() {
     drafts.value = {};
   }
 
-  return { drafts, dirty, dirtyTargets, saving, draft, changedSince, save, discard };
+  return { drafts, dirty, dirtyTargets, draft, changedSince, save, discard };
 }

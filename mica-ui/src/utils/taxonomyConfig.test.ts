@@ -16,6 +16,7 @@ import {
 function vocabulary(name: string, attributes: Record<string, string>, terms: string[] = []): VocabularyDto {
   return {
     name,
+    repeatable: false,
     attributes: Object.entries(attributes).map(([key, value]) => ({ key, value })),
     terms: terms.map((term) => ({ name: term })),
   };
@@ -43,6 +44,15 @@ describe('taxonomyConfig', () => {
     expect(result.title).toEqual([{ locale: 'en', text: 'Age' }]);
   });
 
+  it('states the repeatable flag, the server requires it', () => {
+    const added = toVocabulary({ ...vocabularyForm(), name: 'v', field: 'model.v' });
+    expect(added.repeatable).toBe(false);
+    const repeatable = toVocabulary({ ...vocabularyForm(), name: 'v', field: 'model.v', repeatable: true });
+    expect(repeatable.repeatable).toBe(true);
+    const id: VocabularyDto = { name: 'id', attributes: [{ key: 'static', value: 'true' }] };
+    expect(toVocabulary({ ...vocabularyForm(id), repeatable: true }, id).repeatable).toBe(false);
+  });
+
   it('applies the range to the numbers only', () => {
     const result = toVocabulary({ ...vocabularyForm(), name: 'v', field: 'model.v', type: 'keyword', range: true });
     expect(getAttribute(result, 'range')).toBeUndefined();
@@ -56,16 +66,31 @@ describe('taxonomyConfig', () => {
     expect(getAttribute(result, 'field')).toBeUndefined();
     expect(getAttribute(result, 'type')).toBe('keyword');
     expect(getAttribute(result, 'hidden')).toBe('true');
-    expect(vocabularyError(result, [])).toBeUndefined();
+    expect(vocabularyError(result, [], [])).toBeUndefined();
   });
 
   it('checks the names, fields and aliases', () => {
     const other = vocabulary('design', { field: 'model.methods.design', alias: 'model-methods-design' });
-    expect(vocabularyError(vocabulary('design', { field: 'model.x' }), [other])).toBe('taxonomies.edit.name_exists');
-    expect(vocabularyError(vocabulary('x', {}), [other])).toBe('taxonomies.edit.field_required');
-    expect(vocabularyError(vocabulary('x', { field: 'model.methods.design' }), [other])).toBe(
+    const fields = ['model.methods.design', 'model.x'];
+    expect(vocabularyError(vocabulary('design', { field: 'model.x' }), [other], fields)).toBe(
+      'taxonomies.edit.name_exists',
+    );
+    expect(vocabularyError(vocabulary('x', {}), [other], fields)).toBe('taxonomies.edit.field_required');
+    expect(vocabularyError(vocabulary('x', { field: 'model.methods.design' }), [other], fields)).toBe(
       'taxonomies.edit.alias_exists',
     );
+  });
+
+  it('requires a field of the forms, the stored one excepted', () => {
+    const fields = ['model.external'];
+    expect(vocabularyError(vocabulary('x', { field: 'model.extrnal' }), [], fields)).toBe(
+      'taxonomies.edit.field_unknown',
+    );
+    expect(vocabularyError(vocabulary('x', { field: 'model.external' }), [], fields)).toBeUndefined();
+    // a new vocabulary of a taxonomy without forms (variable)
+    expect(vocabularyError(vocabulary('x', { field: 'model.external' }), [], [])).toBe('taxonomies.edit.field_unknown');
+    // a built-in document property, unchanged
+    expect(vocabularyError(vocabulary('name', { field: 'name' }), [], fields, 'name')).toBeUndefined();
   });
 
   it('checks the taxonomy as the server does', () => {
@@ -109,6 +134,7 @@ describe('taxonomyConfig review fixes', () => {
   it('leaves an unchanged vocabulary as it is', () => {
     const design: VocabularyDto = {
       name: 'design',
+      repeatable: false,
       title: [{ locale: 'en', text: 'Design' }],
       attributes: [
         { key: 'field', value: 'model.methods.design' },

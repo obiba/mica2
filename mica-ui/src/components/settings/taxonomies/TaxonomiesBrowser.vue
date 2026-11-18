@@ -7,10 +7,10 @@
           flat
           :label="t('taxonomies.edit.discard')"
           color="secondary"
-          :disable="editor.saving.value"
+          :disable="saving"
           @click="onDiscard"
         />
-        <q-btn :label="t('save')" color="primary" :loading="editor.saving.value" @click="onSave" />
+        <q-btn :label="t('save')" color="primary" :loading="saving" @click="onSave" />
       </template>
     </q-banner>
     <q-splitter v-model="splitter" :limits="[20, 60]" class="taxonomies-browser">
@@ -73,16 +73,23 @@
                 </q-btn>
               </template>
               <template v-if="editable">
-                <q-btn v-if="canAdd" flat dense round icon="add" @click="onAdd">
+                <q-btn v-if="canAdd" flat dense round icon="add" :disable="saving" @click="onAdd">
                   <q-tooltip>{{
                     t(selected.type === 'taxonomy' ? 'taxonomies.edit.vocabulary_add' : 'taxonomies.edit.term_add')
                   }}</q-tooltip>
                 </q-btn>
-                <q-btn flat dense round icon="edit" @click="onEdit">
+                <q-btn flat dense round icon="edit" :disable="saving" @click="onEdit">
                   <q-tooltip>{{ t('edit') }}</q-tooltip>
                 </q-btn>
                 <template v-if="selected.type !== 'taxonomy'">
-                  <q-btn flat dense round icon="arrow_upward" :disable="position <= 0" @click="onMoveItem(true)">
+                  <q-btn
+                    flat
+                    dense
+                    round
+                    icon="arrow_upward"
+                    :disable="saving || position <= 0"
+                    @click="onMoveItem(true)"
+                  >
                     <q-tooltip>{{ t('taxonomies.move_up') }}</q-tooltip>
                   </q-btn>
                   <q-btn
@@ -90,12 +97,21 @@
                     dense
                     round
                     icon="arrow_downward"
-                    :disable="position >= itemSiblings.length - 1"
+                    :disable="saving || position >= itemSiblings.length - 1"
                     @click="onMoveItem(false)"
                   >
                     <q-tooltip>{{ t('taxonomies.move_down') }}</q-tooltip>
                   </q-btn>
-                  <q-btn v-if="!locked" flat dense round icon="delete" color="negative" @click="onDelete">
+                  <q-btn
+                    v-if="!locked"
+                    flat
+                    dense
+                    round
+                    icon="delete"
+                    color="negative"
+                    :disable="saving"
+                    @click="onDelete"
+                  >
                     <q-tooltip>{{ t('delete') }}</q-tooltip>
                   </q-btn>
                 </template>
@@ -153,6 +169,7 @@ import {
   schemaFields,
   taxonomyError,
 } from 'src/utils/taxonomyConfig';
+import { onBeforeRouteUpdate } from 'vue-router';
 
 /** the key of the selected node */
 const selectedKey = defineModel<string | null>({ default: null });
@@ -164,7 +181,9 @@ const systemStore = useSystemStore();
 const formsStore = useFormsStore();
 const { moving, loadTarget, move } = useTaxonomies();
 const editor = useTaxonomyEditor();
-useConfirmLeave(editor.dirty);
+const { confirmLeave } = useConfirmLeave(editor.dirty);
+// the page tabs are the same route: switching to Files removes the browser and its working copies
+onBeforeRouteUpdate((to, from) => to.path === from.path || confirmLeave());
 
 const splitter = ref(25);
 const filter = ref<string | null>('');
@@ -456,7 +475,20 @@ function onDiscard() {
   void reload(targets);
 }
 
+/** the save in progress, from the click to the reload: a second click is ignored */
+const saving = ref(false);
+
 async function onSave() {
+  if (saving.value) return;
+  saving.value = true;
+  try {
+    await saveDrafts();
+  } finally {
+    saving.value = false;
+  }
+}
+
+async function saveDrafts() {
   const targets = [...editor.dirtyTargets.value];
   for (const target of targets) {
     const invalid = taxonomyError(editor.drafts.value[target]!.taxonomy);

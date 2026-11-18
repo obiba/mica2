@@ -58,7 +58,7 @@
               :readonly="locked"
               :label="t('taxonomies.edit.field') + (locked ? '' : ' *')"
               :hint="t('taxonomies.edit.field_help')"
-              :input-attrs="{ list: 'taxonomy-fields' }"
+              list="taxonomy-fields"
             />
             <datalist id="taxonomy-fields">
               <option v-for="field in fields" :key="field" :value="field" />
@@ -220,7 +220,12 @@ function onSave() {
     };
   } else if (props.kind === 'vocabulary') {
     result = toVocabulary(voc.value, props.entity as VocabularyDto | undefined);
-    const key = vocabularyError(result as VocabularyDto, others as VocabularyDto[]);
+    const key = vocabularyError(
+      result as VocabularyDto,
+      others as VocabularyDto[],
+      props.fields,
+      getAttribute(props.entity as VocabularyDto | undefined, 'field'),
+    );
     if (key) error.value = t(key);
   } else {
     result = toTerm(term.value, range.value, props.entity as TermDto | undefined);
