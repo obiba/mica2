@@ -35,6 +35,10 @@
           </q-list>
         </template>
 
+        <q-banner v-if="!hasMemberships" dense rounded class="bg-warning text-dark q-mb-md">
+          <template #avatar><q-icon name="warning" /></template>
+          {{ t('persons.no_memberships', { name: fullName(person) }) }}
+        </q-banner>
         <div class="row items-center q-mb-md">
           <div class="col text-caption text-grey-7">
             {{ t('last_modified') }}: {{ getDateLabel(person.timestamps?.lastUpdate) }}
@@ -56,9 +60,6 @@
           <q-tab-panel name="view" class="q-pa-none">
             <person-form :model-value="toPersonModel(person)" readonly />
             <div class="text-h6 q-mt-lg">{{ t('persons.memberships') }}</div>
-            <q-banner v-if="!hasMemberships" dense class="bg-orange-1 q-mt-sm">
-              {{ t('persons.no_memberships', { name: fullName(person) }) }}
-            </q-banner>
             <person-memberships-panel
               v-for="kind in MEMBERSHIP_KINDS"
               :key="kind"

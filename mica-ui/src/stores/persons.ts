@@ -79,6 +79,12 @@ export const usePersonsStore = defineStore('persons', () => {
     return (await api.delete<{ count: number }>('/draft/persons/_redundants')).data.count;
   }
 
+  /** the groups of persons that are exact copies, or that have the same names (admin only), oldest first */
+  async function duplicateGroups(by: 'identical' | 'name'): Promise<PersonDto[][]> {
+    const groups = (await api.get<PersonsDto[]>('/draft/persons/_duplicates', { params: { by } })).data ?? [];
+    return groups.map((group) => group.persons ?? []);
+  }
+
   /** the other persons with the same name, and the same email among them */
   async function findDuplicates(person: PersonDto): Promise<DuplicateCheck> {
     const query = duplicateQuery(person);
@@ -100,6 +106,7 @@ export const usePersonsStore = defineStore('persons', () => {
     removeRole,
     remove,
     removeRedundants,
+    duplicateGroups,
     findDuplicates,
   };
 });

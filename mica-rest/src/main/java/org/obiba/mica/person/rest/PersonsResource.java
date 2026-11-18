@@ -2,17 +2,20 @@ package org.obiba.mica.person.rest;
 
 import com.google.common.eventbus.EventBus;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -26,6 +29,7 @@ import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica.PersonDto;
+import org.obiba.mica.web.model.Mica.PersonsDto;
 import org.springframework.stereotype.Component;
 
 
@@ -81,6 +85,20 @@ public class PersonsResource {
   public Response index() {
     eventBus.post(new IndexContactsEvent());
     return Response.noContent().build();
+  }
+
+  /**
+   * The groups of persons that are exact copies of each other (stored fields and memberships), or that have the same
+   * first and last names when {@code by} is {@code name}, for review: one PersonsDto per group, oldest first.
+   */
+  @GET
+  @Path("/_duplicates")
+  @RequiresRoles(Roles.MICA_ADMIN)
+  public List<PersonsDto> getDuplicates(@QueryParam("by") @DefaultValue("identical") String by) {
+    return personService.findDuplicates("name".equals(by)).stream()
+      .map(group -> PersonsDto.newBuilder().setTotal(group.size()).setFrom(0).setLimit(group.size())
+        .addAllPersons(group.stream().map(p -> dtos.asDto(p, true)).collect(Collectors.toList())).build())
+      .collect(Collectors.toList());
   }
 
   /**

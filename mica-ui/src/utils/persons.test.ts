@@ -10,6 +10,7 @@ import {
   membersByRole,
   membershipChanges,
   moveMember,
+  noMembershipsQuery,
   personOrigin,
   searchQuery,
   toPersonModel,
@@ -219,5 +220,14 @@ describe('isVersionConflict', () => {
     expect(isVersionConflict(failure(409))).toBe(false);
     expect(isVersionConflict(new Error('network'))).toBe(false);
     expect(isVersionConflict(undefined)).toBe(false);
+  });
+});
+
+describe('noMembershipsQuery', () => {
+  it('restricts the query to the persons without memberships', () => {
+    const none = 'NOT _exists_:studyMemberships AND NOT _exists_:networkMemberships';
+    expect(noMembershipsQuery(undefined)).toBe(none);
+    expect(noMembershipsQuery('')).toBe(none);
+    expect(noMembershipsQuery('doe* john*')).toBe(`(doe* john*) AND ${none}`);
   });
 });

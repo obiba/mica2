@@ -272,13 +272,8 @@ public class PersonService {
    * @return the number of persons deleted
    */
   public int deleteRedundants() {
-    Map<List<Object>, List<Person>> groups = new LinkedHashMap<>();
-    personRepository.findAll().forEach(p -> groups.computeIfAbsent(signature(p), k -> new ArrayList<>()).add(p));
     int count = 0;
-    for (List<Person> group : groups.values()) {
-      if (group.size() < 2) continue;
-      group.sort(Comparator.comparing((Person p) -> p.getCreatedDate().orElse(LocalDateTime.MAX))
-        .thenComparing(Person::getId));
+    for (List<Person> group : findDuplicates(false)) {
       for (Person redundant : group.subList(1, group.size())) {
         // not deleted when written since read (e.g. linked to a study meanwhile): it may no longer be a copy
         if (personRepository.deleteIfUnchanged(redundant)) {
@@ -292,6 +287,35 @@ public class PersonService {
       }
     }
     return count;
+  }
+
+  /**
+   * The groups of persons that are copies of each other: all their stored fields and memberships are the same, or
+   * only their first and last names (case and spaces ignored) when {@code sameName}. Each group is ordered from the
+   * oldest, the groups by name.
+   */
+  public List<List<Person>> findDuplicates(boolean sameName) {
+    Map<List<Object>, List<Person>> groups = new LinkedHashMap<>();
+    personRepository.findAll().forEach(p -> {
+      List<Object> key = sameName ? nameKey(p) : signature(p);
+      // persons without names are not the same person
+      if (!sameName || !key.equals(List.of("", ""))) groups.computeIfAbsent(key, k -> new ArrayList<>()).add(p);
+    });
+    Comparator<Person> oldest = Comparator.comparing((Person p) -> p.getCreatedDate().orElse(LocalDateTime.MAX))
+      .thenComparing(Person::getId);
+    List<List<Person>> duplicates = groups.values().stream().filter(group -> group.size() > 1)
+      .collect(Collectors.toList());
+    duplicates.forEach(group -> group.sort(oldest));
+    duplicates.sort(Comparator.comparing((List<Person> group) -> nameKey(group.get(0)).toString()));
+    return duplicates;
+  }
+
+  private static List<Object> nameKey(Person person) {
+    return Lists.newArrayList(normalizedName(person.getLastName()), normalizedName(person.getFirstName()));
+  }
+
+  private static String normalizedName(String name) {
+    return name == null ? "" : name.trim().replaceAll("\\s+", " ").toLowerCase();
   }
 
   private List<Object> signature(Person person) {

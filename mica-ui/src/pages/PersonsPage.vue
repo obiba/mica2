@@ -11,7 +11,33 @@
         <template #avatar><q-icon name="warning" /></template>
         {{ t('persons.search_degraded') }}
       </q-banner>
+      <q-btn-toggle
+        v-model="show"
+        :options="showOptions"
+        no-caps
+        unelevated
+        toggle-color="primary"
+        color="grey-3"
+        text-color="dark"
+        size="sm"
+        class="q-mb-md"
+      />
+      <template v-if="show === 'identical' || show === 'name'">
+        <q-btn
+          v-if="show === 'identical'"
+          outline
+          color="primary"
+          icon="cleaning_services"
+          :label="t('persons.remove_duplicates')"
+          size="sm"
+          class="q-mb-sm"
+          :loading="removing"
+          @click="onRemoveDuplicates"
+        />
+        <person-duplicates-panel ref="duplicatesPanel" :by="show" />
+      </template>
       <q-table
+        v-else
         v-model:pagination="pagination"
         flat
         :rows="rows"
@@ -35,15 +61,6 @@
               :label="t('persons.download')"
               size="sm"
               :href="personsStore.downloadUrl(personsQuery(search), pagination.rowsNumber ?? 0)"
-            />
-            <q-btn
-              outline
-              color="primary"
-              icon="cleaning_services"
-              :label="t('persons.remove_duplicates')"
-              size="sm"
-              :loading="removing"
-              @click="onRemoveDuplicates"
             />
           </div>
         </template>
@@ -92,6 +109,7 @@
 import { useQuasar, type QTableColumn, type QTableProps } from 'quasar';
 import type { PersonDto, TimestampsDto } from 'src/models/Mica';
 import PersonDialog from 'src/components/persons/PersonDialog.vue';
+import PersonDuplicatesPanel from 'src/components/persons/PersonDuplicatesPanel.vue';
 import { getDateLabel } from 'src/utils/dates';
 import { notifyError, notifySuccess } from 'src/utils/notify';
 import {
@@ -100,6 +118,7 @@ import {
   MEMBERSHIP_INFO,
   MEMBERSHIP_KINDS,
   fieldQuery,
+  noMembershipsQuery,
   searchQuery,
 } from 'src/utils/persons';
 import { usePersonsStore } from 'src/stores/persons';
@@ -117,15 +136,21 @@ const SEARCH_FIELDS: Record<string, string> = {
   network: 'networkMemberships.parentId',
 };
 
+/** what the page lists: the persons searched, the ones without memberships, or the groups of duplicates */
+const SHOW = ['all', 'no_memberships', 'identical', 'name'] as const;
+type Show = (typeof SHOW)[number];
+
 interface PersonsSearch {
   text: string;
   field: string;
+  show: Show;
 }
 
-/** the search query of the text, restricted to the membership field if any */
-function personsQuery({ text, field }: PersonsSearch): string | undefined {
+/** the search query of the text, restricted to the membership field if any, and to the persons without memberships */
+function personsQuery({ text, field, show }: PersonsSearch): string | undefined {
   const query = searchQuery(text);
-  return query && fieldQuery(query, SEARCH_FIELDS[field] ?? 'all', false, '');
+  const searched = query && fieldQuery(query, SEARCH_FIELDS[field] ?? 'all', false, '');
+  return show === 'no_memberships' ? noMembershipsQuery(searched) : searched;
 }
 
 const personsStore = usePersonsStore();
@@ -146,7 +171,15 @@ const query = route.query;
 const filter = ref(typeof query.q === 'string' ? query.q : '');
 /** the membership field the search is restricted to, `all` for none */
 const field = ref(typeof query.field === 'string' && query.field in SEARCH_FIELDS ? query.field : 'all');
-const search = computed<PersonsSearch>(() => ({ text: filter.value ?? '', field: field.value }));
+const show = ref<Show>(SHOW.find((value) => value === query.show) ?? 'all');
+const showOptions = computed(() => [
+  { value: 'all', label: t('persons.show_all') },
+  { value: 'no_memberships', label: t('persons.show_no_memberships') },
+  { value: 'identical', label: t('persons.show_identical') },
+  { value: 'name', label: t('persons.show_same_name') },
+]);
+const duplicatesPanel = ref<InstanceType<typeof PersonDuplicatesPanel>>();
+const search = computed<PersonsSearch>(() => ({ text: filter.value ?? '', field: field.value, show: show.value }));
 const searchFields = computed(() => [
   { value: 'all', label: t('documents.search_all') },
   { value: 'study', label: t('persons.search_study') },
@@ -185,11 +218,11 @@ const columns = computed<QTableColumn[]>(() => [
 
 async function onRequest(props: { pagination: Pagination; filter?: unknown }) {
   const { page = 1, rowsPerPage = 10, sortBy, descending } = props.pagination;
-  const { text, field } = props.filter as PersonsSearch;
+  const { text, field, show } = props.filter as PersonsSearch;
   loading.value = true;
   try {
     const result = await personsStore.search({
-      query: personsQuery({ text, field }),
+      query: personsQuery({ text, field, show }),
       from: (page - 1) * rowsPerPage,
       limit: rowsPerPage,
       sort: SORT_FIELDS[sortBy ?? 'name'] ?? 'lastName',
@@ -204,6 +237,7 @@ async function onRequest(props: { pagination: Pagination; filter?: unknown }) {
       query: {
         ...(text ? { q: text } : {}),
         ...(field !== 'all' ? { field } : {}),
+        ...(show !== 'all' ? { show } : {}),
         sort: sortBy ?? 'name',
         order: descending ? 'desc' : 'asc',
         page: String(page),
@@ -228,7 +262,7 @@ function onRemoveDuplicates() {
     try {
       const count = await personsStore.removeRedundants();
       notifySuccess(t('persons.duplicates_removed', { count }));
-      await onRequest({ pagination: pagination.value, filter: search.value });
+      await duplicatesPanel.value?.load();
     } catch (error) {
       notifyError(error);
     } finally {
@@ -237,5 +271,16 @@ function onRemoveDuplicates() {
   });
 }
 
-onMounted(() => onRequest({ pagination: pagination.value, filter: search.value }));
+const isDuplicates = (value: Show) => value === 'identical' || value === 'name';
+
+// the duplicates are not searched; the table searches again when its filter changes, not when it is shown again
+watch(show, (value, previous) => {
+  if (isDuplicates(value)) router.replace({ query: { show: value } });
+  else if (isDuplicates(previous)) onRequest({ pagination: { ...pagination.value, page: 1 }, filter: search.value });
+});
+
+onMounted(() => {
+  if (isDuplicates(show.value)) router.replace({ query: { show: show.value } });
+  else onRequest({ pagination: pagination.value, filter: search.value });
+});
 </script>
