@@ -1,3 +1,5 @@
+<#-- scripts: values are escaped by hand (js_string), not for HTML -->
+<#outputformat "plainText">
 <script>
   const encodeMappings = {
     <#if specialCharCodec?? && specialCharCodec?has_content>
@@ -24,3 +26,4 @@
     return decoded;
   }
 </script>
+</#outputformat>

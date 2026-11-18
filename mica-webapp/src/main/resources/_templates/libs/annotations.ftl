@@ -8,10 +8,10 @@
         <div class="card-header">
           <h3 class="card-title pt-2"><@message "classifications" /></h3>
           <ul class="nav nav-pills ms-auto float-end">
-            <li class="nav-item"><a class="nav-link active" title="<@message "summary-view" />" href="#summary" data-bs-toggle="tab">
+            <li class="nav-item"><a class="nav-link active" title="${messageAttr("summary-view")}" href="#summary" data-bs-toggle="tab">
                 <i class="fa-solid fa-grip-lines"></i></a>
             </li>
-            <li class="nav-item"><a class="nav-link " title="<@message "detail-view" />" href="#detail" data-bs-toggle="tab">
+            <li class="nav-item"><a class="nav-link " title="${messageAttr("detail-view")}" href="#detail" data-bs-toggle="tab">
                 <i class="fa-solid fa-grip-horizontal"></i></a>
             </li>
           </ul>
@@ -97,7 +97,7 @@
 
 <#macro itemCount item={}>
     <#if item.count gt -1>
-      <span class="px-1 text-muted" style="cursor: default" title="<@message 'number-of-studies-annotated'/>">${item.count}</span>
+      <span class="px-1 text-muted" style="cursor: default" title="${messageAttr('number-of-studies-annotated')}">${item.count}</span>
     </#if>
 </#macro>
 

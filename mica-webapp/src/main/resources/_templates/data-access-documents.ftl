@@ -97,7 +97,7 @@
                   <tbody>
                   <#list dar.attachments as attachment>
                     <tr>
-                      <td><a href="${contextPath}/ws/data-access-request/${dar.id}/attachments/${attachment.id}/_download" download="${attachment.name?html}">${attachment.name?html}</a></td>
+                      <td><a href="${contextPath}/ws/data-access-request/${dar.id}/attachments/${attachment.id}/_download" download="${attachment.name}">${attachment.name}</a></td>
                       <td data-sort="${attachment.createdDate.get().toString()}" class="moment-datetime">${attachment.createdDate.get().toString()}</td>
                       <td>${si(attachment.size)}</td>
                       <#if !dar.archived>
@@ -172,14 +172,14 @@
 
 <#include "libs/scripts.ftl">
 <#include "libs/data-access-scripts.ftl">
-<script>
+<#outputformat "plainText"><script>
   $(function () {
     $('#documents-menu').addClass('active').attr('href', '#');
     $("#documents").DataTable(dataTablesSortSearchOpts);
     $('#upload-document-submit').click(function() {
       var fileId = $('#file-id').val();
       if (fileId) {
-        DataAccessService.attachFile('${dar.id}', fileId);
+        DataAccessService.attachFile('${dar.id?js_string}', fileId);
       }
     }).prop('disabled', true);
   });
@@ -197,6 +197,6 @@
       });
     }
   }
-</script>
+</script></#outputformat>
 </body>
 </html>

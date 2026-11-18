@@ -1,23 +1,25 @@
+<#-- scripts: values are escaped by hand (js_string), not for HTML -->
+<#outputformat "plainText">
 <!-- Repository -->
 <script src="${assetsPath}/js/mica-repo.js"></script>
 
 <script>
   const Mica = {
     contextPath: "${contextPath}",
-    type: "${type}".toLowerCase(),
-    dataset: "${dataset.id}",
+    type: "${type?js_string}".toLowerCase(),
+    dataset: "${dataset.id?js_string}",
     <#-- JSON in a script: escape < so that a value cannot close the script element -->
     var1: ${(variable1!"undefined")?replace("<", "\\u003c")},
     var2: ${(variable2!"undefined")?replace("<", "\\u003c")},
     locale: "${.lang}",
     tr: {
-      "chi-squared-test": "<@message "chi-squared-test"/>",
-      "n-total": "<@message "n-total"/>",
-      "min": "<@message "min"/>",
-      "max": "<@message "max"/>",
-      "mean": "<@message "mean"/>",
-      "stdDev": "<@message "stdDev"/>",
-      "all": "<@message "all"/>"
+      "chi-squared-test": "${messageJs("chi-squared-test")}",
+      "n-total": "${messageJs("n-total")}",
+      "min": "${messageJs("min")}",
+      "max": "${messageJs("max")}",
+      "mean": "${messageJs("mean")}",
+      "stdDev": "${messageJs("stdDev")}",
+      "all": "${messageJs("all")}"
     }
   };
 </script>
@@ -26,3 +28,4 @@
 <script src="${assetsPath}/libs/node_modules/select2/dist/js/select2.full.js"></script>
 <script src="${assetsPath}/libs/node_modules/select2/dist/js/i18n/${.lang}.js"></script>
 <script src="${assetsPath}/js/mica-dataset-crosstab.js"></script>
+</#outputformat>

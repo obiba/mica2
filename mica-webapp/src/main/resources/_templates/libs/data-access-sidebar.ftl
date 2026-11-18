@@ -25,7 +25,7 @@
 
     <div class="user-panel mt-3 pb-3 mb-3 d-flex align-items-center gap-2">
       <div>
-        <span title="<@message dar.status.toString()/>"><i
+        <span title="${messageAttr(dar.status.toString())}"><i
             class="fa-solid fa-circle fa-2x ps-2 text-${statusColor(dar.status.toString())}"></i></span>
       </div>
       <div class="info">
@@ -60,7 +60,7 @@
                 <li class="nav-item">
                   <a id="feasibility-form-menu-${feasibility.id}" href="${contextPath}/data-access-feasibility-form/${feasibility.id}" class="nav-link d-flex align-items-center">
                     <i class="fa-solid fa-circle nav-icon text-${statusColor(feasibility.status.toString())}"
-                       title="<@message feasibility.status.toString()/>"></i>
+                       title="${messageAttr(feasibility.status.toString())}"></i>
                     <p class="mb-0">${feasibility.id}</p>
                   </a>
                 </li>
@@ -157,7 +157,7 @@
                 <li class="nav-item">
                   <a id="amendment-form-menu-${amendment.id}" href="${contextPath}/data-access-amendment-form/${amendment.id}" class="nav-link d-flex align-items-center">
                     <i class="fa-solid fa-circle nav-icon text-${statusColor(amendment.status.toString())}"
-                       title="<@message amendment.status.toString()/>"></i>
+                       title="${messageAttr(amendment.status.toString())}"></i>
                     <p class="mb-0">${amendment.id}</p>
                   </a>
                 </li>
@@ -193,7 +193,7 @@
                   <li class="nav-item">
                     <a id="agreement-form-menu-${agreement.id}" href="${contextPath}/data-access-agreement-form/${agreement.id}" class="nav-link d-flex align-items-center">
                       <i class="fa-solid fa-circle nav-icon text-${statusColor(agreement.status.toString())}"
-                         title="<@message agreement.status.toString()/>"></i>
+                         title="${messageAttr(agreement.status.toString())}"></i>
                       <p class="mb-0">${agreement.id}</p>
                       <#if agreement.applicant == user.username>
                         <i class="fa-solid fa-star ms-auto"></i>

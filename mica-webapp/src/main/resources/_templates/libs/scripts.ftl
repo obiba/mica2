@@ -1,3 +1,5 @@
+<#-- scripts: values are escaped by hand (js_string), not for HTML -->
+<#outputformat "plainText">
 <!-- REQUIRED SCRIPTS -->
 
 <!-- jQuery -->
@@ -122,7 +124,7 @@
 
   <#if variablesCartEnabled && sets?? && sets.variablesCart??>
   Carts.push({
-    id: '${sets.variablesCart.id}',
+    id: '${sets.variablesCart.id?js_string}',
     type: 'variables',
     count: ${sets.variablesCart.count?c}
   });
@@ -130,7 +132,7 @@
 
   <#if studiesCartEnabled && sets?? && sets.studiesCart??>
   Carts.push({
-    id: '${sets.studiesCart.id}',
+    id: '${sets.studiesCart.id?js_string}',
     type: 'studies',
     count: ${sets.studiesCart.count?c}
   });
@@ -138,7 +140,7 @@
 
   <#if networksCartEnabled && sets?? && sets.networksCart??>
   Carts.push({
-    id: '${sets.networksCart.id}',
+    id: '${sets.networksCart.id?js_string}',
     type: 'networks',
     count: ${sets.networksCart.count?c}
   });
@@ -220,3 +222,4 @@
       })
   });
 </script>
+</#outputformat>

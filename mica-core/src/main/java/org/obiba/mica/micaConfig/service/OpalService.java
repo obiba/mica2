@@ -12,7 +12,7 @@ package org.obiba.mica.micaConfig.service;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.Pair;
 import org.obiba.magma.support.Initialisables;
 import org.obiba.mica.dataset.service.KeyStoreService;

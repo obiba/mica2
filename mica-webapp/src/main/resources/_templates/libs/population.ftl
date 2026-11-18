@@ -33,7 +33,7 @@
                   <@message "population.ageMin"/>
                 </dt>
                 <dd class="col-sm-8">
-                  <div>${esc(population.model.selectionCriteria.ageMin)}</div>
+                  <div>${population.model.selectionCriteria.ageMin}</div>
                 </dd>
               </#if>
 
@@ -42,12 +42,12 @@
                   <@message "population.ageMax"/>
                 </dt>
                 <dd class="col-sm-8">
-                  <div>${esc(population.model.selectionCriteria.ageMax)}</div>
+                  <div>${population.model.selectionCriteria.ageMax}</div>
                 </dd>
               </#if>
 
               <#if population.model.selectionCriteria.pregnantWomen?? && population.model.selectionCriteria.pregnantWomen?size != 0>
-                <dt class="col-sm-4" title="<@message "study_taxonomy.vocabulary.populations-selectionCriteria-pregnantWomen.description"/>">
+                <dt class="col-sm-4" title="${messageAttr("study_taxonomy.vocabulary.populations-selectionCriteria-pregnantWomen.description")}">
                   <@message "study.selection-criteria.pregnant-women"/>
                 </dt>
                 <dd class="col-sm-8">
@@ -173,7 +173,7 @@
               <dl class="row">
 
                 <#if population.model.recruitment.dataSources?? && population.model.recruitment.dataSources?size != 0>
-                  <dt class="col-sm-6" title="<@message "study_taxonomy.vocabulary.populations-recruitment-dataSources.description"/>">
+                  <dt class="col-sm-6" title="${messageAttr("study_taxonomy.vocabulary.populations-recruitment-dataSources.description")}">
                       <@message "study_taxonomy.vocabulary.populations-recruitment-dataSources.title"/>
                   </dt>
                   <dd class="col-sm-6">
@@ -192,7 +192,7 @@
                 </#if>
 
                 <#if population.model.recruitment.generalPopulationSources?? && population.model.recruitment.generalPopulationSources?size != 0>
-                  <dt class="col-sm-6" title="<@message "study_taxonomy.vocabulary.populations-recruitment-generalPopulationSources.description"/>">
+                  <dt class="col-sm-6" title="${messageAttr("study_taxonomy.vocabulary.populations-recruitment-generalPopulationSources.description")}">
                     <@message "study.recruitment-sources.general-population"/>
                   </dt>
                   <dd class="col-sm-6">
@@ -208,7 +208,7 @@
                 </#if>
 
                 <#if population.model.recruitment.specificPopulationSources?? && population.model.recruitment.specificPopulationSources?size != 0>
-                  <dt class="col-sm-6" title="<@message "study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.description"/>">
+                  <dt class="col-sm-6" title="${messageAttr("study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.description")}">
                     <@message "study.recruitment-sources.specific-population"/>
                   </dt>
                   <dd class="col-sm-6">
@@ -227,7 +227,7 @@
                 </#if>
 
                 <#if localizedStringNotEmpty((population.model.recruitment.info))>
-                  <dt class="col-sm-6" title="<@message "study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.description"/>">
+                  <dt class="col-sm-6" title="${messageAttr("study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.description")}">
                       <@message "suppl-info"/>
                   </dt>
                   <dd class="col-sm-6">
@@ -269,7 +269,7 @@
                     <@message "numberOfParticipants.participants"/>
                   </dt>
                   <dd class="col-sm-6">
-                    ${esc(population.model.numberOfParticipants.participant.number)}
+                    ${population.model.numberOfParticipants.participant.number}
                     <#if population.model.numberOfParticipants.participant.noLimit == true>
                         (<@message "numberOfParticipants.no-limit"/>)
                     </#if>
@@ -292,7 +292,7 @@
                     <@message "numberOfParticipants.sample"/>
                   </dt>
                   <dd class="col-sm-6">
-                    ${esc(population.model.numberOfParticipants.sample.number)}
+                    ${population.model.numberOfParticipants.sample.number}
                     <#if population.model.numberOfParticipants.sample.noLimit == true>
                       (<@message "numberOfParticipants.no-limit"/>)
                     </#if>

@@ -9,8 +9,16 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class ExtendedResourceBundleMessageSource extends ReloadableResourceBundleMessageSource {
+
+  /**
+   * The JSON translator evaluates the code as a JsonPath expression: a code holding its syntax could build a text
+   * (concat()) that templates print as a translation, unescaped, or run costly filters. Codes can come from the request
+   * (error page) or from documents and user profiles; translation keys never hold these characters.
+   */
+  private static final Pattern JSON_PATH_SYNTAX = Pattern.compile("[$\\[\\]()@?*'\"]");
 
   private final MicaConfigService micaConfigService;
 
@@ -24,6 +32,7 @@ public class ExtendedResourceBundleMessageSource extends ReloadableResourceBundl
   protected String resolveCodeWithoutArguments(String code, Locale locale) {
     String result = super.resolveCodeWithoutArguments(code, locale);
     if (result != null) return result;
+    if (code == null || JSON_PATH_SYNTAX.matcher(code).find()) return null;
 
     final String key = locale.getLanguage();
     JsonTranslator translator = getTranslator(key);
@@ -42,7 +51,8 @@ public class ExtendedResourceBundleMessageSource extends ReloadableResourceBundl
     translations.clear();
   }
 
-  private JsonTranslator getTranslator(String locale) {
+  // package-private for the tests
+  JsonTranslator getTranslator(String locale) {
     try {
       if (!translations.containsKey(locale)) {
         String tr = micaConfigService.getTranslations(locale, false);

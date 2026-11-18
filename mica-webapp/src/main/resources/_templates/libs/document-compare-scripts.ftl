@@ -1,3 +1,5 @@
+<#-- scripts: values are escaped by hand (js_string), not for HTML -->
+<#outputformat "plainText">
 <script>
   const onRemoveRow = function(field) {
     $('#' + field).remove();
@@ -18,7 +20,7 @@
   let harmonizationStudiesCompareTableInitialized = false;
 
   $(function () {
-    if ("${type}" === "studies") {
+    if ("${type?js_string}" === "studies") {
       <#if individualStudies?size gt 0>
         makeCompareTable("compare-individual-studies");
         $("#harmonization-studies-tab").click(function() {
@@ -31,6 +33,7 @@
         makeCompareTable("compare-harmonization-studies");
       </#if>
     } else
-      makeCompareTable("compare-${type}");
+      makeCompareTable("compare-${type?js_string}");
   });
 </script>
+</#outputformat>

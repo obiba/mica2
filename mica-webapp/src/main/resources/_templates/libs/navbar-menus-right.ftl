@@ -2,14 +2,14 @@
   <#include "../models/navbar-menus-right.ftl"/>
   <#if cartEnabled>
     <li class="nav-item">
-      <a href="${contextPath}/cart<#if defaultCartType??>?type=${defaultCartType}</#if>" class="nav-link" title="<@message "sets.cart.title"/>">
+      <a href="${contextPath}/cart<#if defaultCartType??>?type=${defaultCartType}</#if>" class="nav-link" title="${messageAttr("sets.cart.title")}">
         <i class="fa-solid fa-shopping-cart"></i>
         <span id="cart-count" class="badge text-bg-danger navbar-badge"></span>
       </a>
     </li>
     <#if listsEnabled && user??>
       <li class="nav-item">
-        <a href="${contextPath}/lists" class="nav-link" title="<@message "sets.set.title"/>">
+        <a href="${contextPath}/lists" class="nav-link" title="${messageAttr("sets.set.title")}">
           <i class="fa-regular fa-list-alt"></i>
           <span id="list-count" class="badge text-bg-danger navbar-badge" <#if !(sets?? && sets.variablesLists?has_content)>style="display: none"</#if>>
             <#if sets?? && sets.variablesLists?has_content>${sets.variablesLists?size}</#if>
@@ -20,7 +20,7 @@
   </#if>
   <#if contactEnabled>
     <li class="nav-item">
-      <a href="${contextPath}/contact" class="nav-link" title="<@message "contact-menu"/>">
+      <a href="${contextPath}/contact" class="nav-link" title="${messageAttr("contact-menu")}">
         <i class="fa-solid fa-envelope"></i>
       </a>
     </li>
@@ -44,7 +44,7 @@
       </li>
     </#if>
     <li class="nav-item dropdown">
-      <a id="userMenu" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><i class="fa-solid fa-user"></i> ${user.fullName}</a>
+      <a id="userMenu" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><i class="fa-solid fa-user"></i> <span v-pre>${user.fullName}</span></a>
       <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
         <li><a href="${contextPath}/profile" class="dropdown-item"><@message "profile"/></a></li>
         <li><a href="${contextPath}/signout" class="dropdown-item"><@message "sign-out"/></a></li>

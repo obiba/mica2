@@ -1,47 +1,36 @@
 <!-- Spring utils for translations -->
 <#import "/spring.ftl" as spring/>
-<!-- Translation of a code; when there is none, the code itself is shown, HTML-escaped as it can be a document value -->
+<!-- Translation of a code, printed as is (translations can hold HTML); when there is none, the code itself is shown,
+     HTML-escaped as it can be a document value -->
 <#macro message code>
   <#local text = springMacroRequestContext.getMessage(code, code)/>
-  <#if text == code>${esc(code)}<#else>${text}</#if><#t>
+  <#if text == code>${code}<#else>${text?no_esc}</#if><#t>
 </#macro>
 <#macro messageArgs code args>
   <@spring.messageArgsText code args code/>
 </#macro>
+<#-- Translation of a code in a JavaScript string, in a script or in a script attribute (onclick, Vue :title, {{ }}):
+     ${messageJs("code")}, or ${messageJs("code", "text")} to show another text than the code when there is no
+     translation. Functions, not macros: ${} escapes the text for where it is written (HTML in an attribute).
+     Mica's message source returns the code itself when there is no translation, whatever the default: compare with it -->
+<#function messageJs code default=code>
+  <#local text = springMacroRequestContext.getMessage(code, code)/>
+  <#return ((text == code)?then(default, text))?js_string/>
+</#function>
+<#-- Translation of a code in an HTML attribute (title, placeholder...): ${messageAttr("code")}, HTML-escaped. Its HTML
+     entities (R&eacute;sum&eacute;, A &amp; B) are decoded first, the attribute shows the characters as with <@message> -->
+<#function messageAttr code default=code>
+  <#local text = springMacroRequestContext.getMessage(code, code)/>
+  <#return htmlDecode((text == code)?then(default, text))/>
+</#function>
 
 <!-- Context path setting -->
 <#assign contextPath = "${config.contextPath}"/>
 
-<!-- From a localized text get the value in the current language or in the default one or in the undefined one, HTML-escaped -->
+<!-- From a localized text get the value in the current language or in the default one or in the undefined one;
+     escaped when printed (templates are auto-escaped). In a script, print it with ?js_string; Markdown in a <template>
+     with templateSafe(), a method provided by Mica that keeps the value from closing the block -->
 <#function localize txt={} default="">
-  <#return localizeRaw(txt, default)?html/>
-</#function>
-
-<!-- HTML-escape a value of unknown type (model fields can be strings or numbers) -->
-<#function esc value="">
-  <#if value?is_string>
-    <#return value?html/>
-  </#if>
-  <#return value/>
-</#function>
-
-<!-- HTML-escape a link and neutralize script schemes (javascript:, data:...), other values are kept as before -->
-<#function safeUrl url="">
-  <#if !url?is_string>
-    <#return url/>
-  </#if>
-  <!-- browsers ignore whitespace and control characters in the scheme -->
-  <#local compact = url?replace("[\\s\\x00-\\x1f]", "", "r")/>
-  <#if compact?matches("^[a-zA-Z][a-zA-Z0-9+.-]*:.*", "s") && !compact?matches("^(https?|mailto|ftp):.*", "is")>
-    <#return "#"/>
-  </#if>
-  <#return url?html/>
-</#function>
-
-<!-- Same as localize but not escaped: only for Markdown in a <template> (sanitized when rendered) and inside templateSafe(),
-     a method provided by Mica that keeps the value from closing the block; for scripts with ?js_string; or with ?html
-     after another built-in (e.g. ?truncate_w) -->
-<#function localizeRaw txt={} default="">
   <#if txt?? && txt?keys??>
     <#if txt[.lang]??>
       <!-- page language -->
@@ -58,6 +47,29 @@
     </#if>
   </#if>
   <#return default/>
+</#function>
+
+<!-- Alias of localize, kept for the templates calling it: no escaping difference, templates are auto-escaped -->
+<#function localizeRaw txt={} default="">
+  <#return localize(txt, default)/>
+</#function>
+
+<!-- Deprecated, the value is returned as is: templates are auto-escaped. Kept for custom templates still calling it -->
+<#function esc value="">
+  <#return value/>
+</#function>
+
+<!-- Neutralize script schemes of a link (javascript:, data:...), other values are kept as before; escaped when printed -->
+<#function safeUrl url="">
+  <#if !url?is_string>
+    <#return url/>
+  </#if>
+  <!-- browsers ignore whitespace and control characters in the scheme -->
+  <#local compact = url?replace("[\\s\\x00-\\x1f]", "", "r")/>
+  <#if compact?matches("^[a-zA-Z][a-zA-Z0-9+.-]*:.*", "s") && !compact?matches("^(https?|mailto|ftp):.*", "is")>
+    <#return "#"/>
+  </#if>
+  <#return url/>
 </#function>
 
 

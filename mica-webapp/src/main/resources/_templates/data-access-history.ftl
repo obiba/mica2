@@ -131,8 +131,8 @@
                     <tbody>
                     <#list dar.actionLogHistory as act>
                       <tr>
-                        <td>${act.action?html}</td>
-                        <td>${act.author?html}</td>
+                        <td>${act.action}</td>
+                        <td>${act.author}</td>
                         <td data-sort="${act.changedOn.toString()}" class="moment-date">${act.changedOn.toString()}</td>
                       </tr>
                     </#list>
@@ -201,7 +201,7 @@
 <#include "libs/data-access-scripts.ftl">
 <!-- Datepicker -->
 <script src="${assetsPath}/libs/node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
-<script>
+<#outputformat "plainText"><script>
     $(function () {
         $('#history-menu').addClass('active').attr('href', '#')
         $("#status").DataTable(dataTablesNoSortSearchOpts);
@@ -215,9 +215,9 @@
             text: $('#action-text').val(),
             date: $('#action-date').val()
           };
-          DataAccessService.addAction('${dar.id}', action);
+          DataAccessService.addAction('${dar.id?js_string}', action);
         });
     });
-</script>
+</script></#outputformat>
 </body>
 </html>

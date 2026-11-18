@@ -23,7 +23,7 @@
 
       <form id="form" method="post">
         <div class="input-group mb-3">
-          <input name="username" type="text" class="form-control" placeholder="<@message "sign-in-username"/>">
+          <input name="username" type="text" class="form-control" placeholder="${messageAttr("sign-in-username")}">
           <span class="input-group-text">
             <span class="fa-solid fa-envelope"></span>
           </span>

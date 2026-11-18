@@ -1,3 +1,5 @@
+<#-- scripts: values are escaped by hand (js_string), not for HTML -->
+<#outputformat "plainText">
 <!-- ChartJS -->
 <script src="${assetsPath}/libs/node_modules/chart.js/dist/chart.umd.js"></script>
 <script src="${assetsPath}/js/mica-charts.js"></script>
@@ -19,7 +21,7 @@
   const Mica = {
     contextPath: "${contextPath}",
     currentLanguage: '${.lang}',
-    variableId: '${variable.id}',
+    variableId: '${variable.id?js_string}',
     categories: {},
     backgroundColors: ['${colors?join("', '")}'],
     barChartBorderColor: '${barChartBorderColor}',
@@ -37,18 +39,18 @@
       }
     },
     tr: {
-      "chi-squared-test": "<@message "chi-squared-test"/>",
-      "n-total": "<@message "n-total"/>",
-      "min": "<@message "min"/>",
-      "max": "<@message "max"/>",
-      "mean": "<@message "mean"/>",
-      "stdDev": "<@message "stdDev"/>",
-      "all": "<@message "all"/>",
-      "not-empty-values": "<@message "not-empty-values"/>",
-      "not-empty-values-description": "<@message "not-empty-values-description"/>",
-      "empty-values": "<@message "empty-values"/>",
-      "empty-values-description": "<@message "empty-values-description"/>",
-      "dataset.harmonized-table": "<@message "dataset.harmonized-table"/>"
+      "chi-squared-test": "${messageJs("chi-squared-test")}",
+      "n-total": "${messageJs("n-total")}",
+      "min": "${messageJs("min")}",
+      "max": "${messageJs("max")}",
+      "mean": "${messageJs("mean")}",
+      "stdDev": "${messageJs("stdDev")}",
+      "all": "${messageJs("all")}",
+      "not-empty-values": "${messageJs("not-empty-values")}",
+      "not-empty-values-description": "${messageJs("not-empty-values-description")}",
+      "empty-values": "${messageJs("empty-values")}",
+      "empty-values-description": "${messageJs("empty-values-description")}",
+      "dataset.harmonized-table": "${messageJs("dataset.harmonized-table")}"
     }
   };
 
@@ -62,7 +64,7 @@
   // cart
   <#if cartEnabled && variablesCartEnabled>
     const onVariablesCartGet = function(cart) {
-      VariablesSetService.contains(cart, '${variableCartId}', function() {
+      VariablesSetService.contains(cart, '${variableCartId?js_string}', function() {
         $('#cart-remove').show();
       }, function () {
         $('#cart-add').show();
@@ -72,9 +74,9 @@
       VariablesSetService.addToCart([id], function(cart, oldCart) {
         VariablesSetService.showCount('#cart-count', cart, '${.lang}');
         if (cart.count === oldCart.count) {
-          MicaService.toastInfo("<@message "sets.cart.no-variable-added"/>");
+          MicaService.toastInfo("${messageJs("sets.cart.no-variable-added")}");
         } else {
-          MicaService.toastSuccess("<@message "variable-added-to-cart"/>");
+          MicaService.toastSuccess("${messageJs("variable-added-to-cart")}");
         }
         $('#cart-add').hide();
         $('#cart-remove').show();
@@ -85,9 +87,9 @@
         VariablesSetService.showCount('#cart-count', cart, '${.lang}');
         // TODO toast cart update
         if (cart.count === oldCart.count) {
-          MicaService.toastInfo("<@message "sets.cart.no-variable-removed"/>");
+          MicaService.toastInfo("${messageJs("sets.cart.no-variable-removed")}");
         } else {
-          MicaService.toastSuccess("<@message "variable-removed-from-cart"/>");
+          MicaService.toastSuccess("${messageJs("variable-removed-from-cart")}");
         }
         $('#cart-remove').hide();
         $('#cart-add').show();
@@ -103,22 +105,23 @@
 
     <!-- Files -->
     <#if showStudyDCEFiles && study?? && population?? && dce??>
-      makeFilesVue('#study-${population.id}-${dce.id}-files-app', {
+      makeFilesVue('#study-${population.id?js_string}-${dce.id?js_string}-files-app', {
         type: 'individual-study',
-        id: '${study.id}',
-        basePath: '/population/${population.id}/data-collection-event/${dce.id}',
+        id: '${study.id?js_string}',
+        basePath: '/population/${population.id?js_string}/data-collection-event/${dce.id?js_string}',
         path: '/',
         folder: {},
         tr: {
-          "item": "<@message "item"/>",
-          "items": "<@message "items"/>",
-          "download": "<@message "download"/>"
+          "item": "${messageJs("item")}",
+          "items": "${messageJs("items")}",
+          "download": "${messageJs("download")}"
         },
         locale: '${.lang}',
         contextPath: '${contextPath}'
       });
     </#if>
 
-    makeSummary('${config.summaryStatisticsAccessPolicy}', ${showHarmonizedVariableSummarySelector?c});
+    makeSummary('${config.summaryStatisticsAccessPolicy?js_string}', ${showHarmonizedVariableSummarySelector?c});
   });
 </script>
+</#outputformat>

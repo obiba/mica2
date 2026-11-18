@@ -57,6 +57,7 @@
       <excludes>
         <exclude>*.bat</exclude>
         <exclude>*.js</exclude>
+        <exclude>*.sh</exclude>
       </excludes>
       <includes>
         <include>*</include>
@@ -71,6 +72,16 @@
       <fileMode>0644</fileMode>
       <includes>
         <include>*.js</include>
+      </includes>
+    </fileSet>
+
+    <!-- Copy shell scripts, not filtered: they use ${...} shell variables -->
+    <fileSet>
+      <directory>src/main/tools</directory>
+      <outputDirectory>tools</outputDirectory>
+      <fileMode>0755</fileMode>
+      <includes>
+        <include>*.sh</include>
       </includes>
     </fileSet>
 

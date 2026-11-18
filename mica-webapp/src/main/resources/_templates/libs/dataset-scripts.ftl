@@ -1,3 +1,5 @@
+<#-- scripts: values are escaped by hand (js_string), not for HTML -->
+<#outputformat "plainText">
 <!-- ChartJS -->
 <script src="${assetsPath}/libs/node_modules/chart.js/dist/chart.umd.js"></script>
 <script src="${assetsPath}/js/mica-charts.js"></script>
@@ -19,9 +21,9 @@
     VariablesSetService.addQueryToCart('dataset(in(Mica_dataset.id,' + id + ')),variable(limit(0,10000),fields(variableType))', function(cart, oldCart) {
       VariablesSetService.showCount('#cart-count', cart, '${.lang}');
       if (cart.count === oldCart.count) {
-        MicaService.toastInfo("<@message "sets.cart.no-variable-added"/>");
+        MicaService.toastInfo("${messageJs("sets.cart.no-variable-added")}");
       } else {
-        MicaService.toastSuccess("<@message "variables-added-to-cart"/>".replace('{0}', (cart.count - oldCart.count).toLocaleString('${.lang}')));
+        MicaService.toastSuccess("${messageJs("variables-added-to-cart")}".replace('{0}', (cart.count - oldCart.count).toLocaleString('${.lang}')));
       }
     });
   };
@@ -38,8 +40,8 @@
         chartsElem.append('<div id="bar-graph-' + chartData.taxonomy + '" class="mb-4"></div>');
 
         const chartConfig = makeVariablesClassificationsChartSettings(chartData, {
-          key: '${dataset.id}',
-          label: "<@message "variables"/>",
+          key: '${dataset.id?js_string}',
+          label: "${messageJs("variables")}",
           borderColor: '${barChartBorderColor}',
           backgroundColor: '${barChartBackgroundColor}',
           useColorsArray: ${useColorsArrayForClassificationsChart?c}
@@ -61,7 +63,7 @@
   };
 
   $(function () {
-    QueryService.getCounts('datasets', {query: "dataset(in(Mica_dataset.id,${dataset.id}))"}, function (stats) {
+    QueryService.getCounts('datasets', {query: "dataset(in(Mica_dataset.id,${dataset.id?js_string}))"}, function (stats) {
       $('#network-hits').text(numberFormatter.format(stats.networkResultDto.totalHits));
       $('#study-hits').text(numberFormatter.format(stats.studyResultDto.totalHits));
       $('#variable-hits').text(numberFormatter.format(stats.variableResultDto.totalHits));
@@ -97,7 +99,7 @@
         "serverSide": true,
         "ajax": function(data, callback) {
           const search = 'search' in data && data.search.value ? data.search.value : null;
-          DatasetService.getHarmonizedVariables('${dataset.id}', search, data.start, data.length, function(response) {
+          DatasetService.getHarmonizedVariables('${dataset.id?js_string}', search, data.start, data.length, function(response) {
             $('#loadingSummary').hide();
             if (response.variableHarmonizations) {
               let rows = [];
@@ -105,7 +107,7 @@
                 let row = [];
                 const variableHarmonization = response.variableHarmonizations[i];
                 const name = variableHarmonization.dataschemaVariableRef.name;
-                row.push('<a href="${contextPath}/variable/${dataset.id}:' + encodeURIComponent(name) + ':Dataschema">' + escapeHtml(name) + '</a>');
+                row.push('<a href="${contextPath}/variable/${dataset.id?js_string}:' + encodeURIComponent(name) + ':Dataschema">' + escapeHtml(name) + '</a>');
                 for (const j in variableHarmonization.harmonizedVariables) {
                   const harmonizedVariable = variableHarmonization.harmonizedVariables[j];
                   let iconClass = VariableService.getHarmoStatusClass(harmonizedVariable.status);
@@ -148,18 +150,18 @@
 
     <!-- Files -->
     const filesTr = {
-      'item': "<@message "item"/>",
-      'items': "<@message "items"/>",
-      'download': "<@message "download"/>",
-      'name': "<@message "name"/>",
-      'description': "<@message "description"/>",
-      'size': "<@message "size"/>",
-      'actions': "<@message "actions"/>"
+      'item': "${messageJs("item")}",
+      'items': "${messageJs("items")}",
+      'download': "${messageJs("download")}",
+      'name': "${messageJs("name")}",
+      'description': "${messageJs("description")}",
+      'size': "${messageJs("size")}",
+      'actions': "${messageJs("actions")}"
     };
     <#if showDatasetFiles>
       makeFilesVue('#files-app', {
-        type: '${type?lower_case}-dataset',
-        id: '${dataset.id}',
+        type: '${type?lower_case?js_string}-dataset',
+        id: '${dataset.id?js_string}',
         basePath: '',
         path: '/',
         folder: {},
@@ -170,10 +172,10 @@
     </#if>
     <#if showStudyPopulationFiles>
       <#if study?? && population??>
-        makeFilesVue('#study-${population.id}-files-app', {
+        makeFilesVue('#study-${population.id?js_string}-files-app', {
           type: '<#if type == "Harmonized">harmonization<#else>individual</#if>-study',
-          id: '${study.id}',
-          basePath: '/population/${population.id}',
+          id: '${study.id?js_string}',
+          basePath: '/population/${population.id?js_string}',
           path: '/',
           folder: {},
           tr: filesTr,
@@ -186,10 +188,10 @@
       <#if studyTables?? && studyTables?size != 0>
         <#list studyTables as table>
           <#if table.population??>
-            makeFilesVue('#study-${table.study.id}-${table.population.id}-files-app', {
+            makeFilesVue('#study-${table.study.id?js_string}-${table.population.id?js_string}-files-app', {
               type: 'individual-study',
-              id: '${table.study.id}',
-              basePath: '/population/${table.population.id}',
+              id: '${table.study.id?js_string}',
+              basePath: '/population/${table.population.id?js_string}',
               path: '/',
               folder: {},
               tr: filesTr,
@@ -204,10 +206,10 @@
     </#if>
     <#if showStudyDCEFiles>
       <#if study?? && population?? && dce??>
-        makeFilesVue('#study-${population.id}-${dce.id}-files-app', {
+        makeFilesVue('#study-${population.id?js_string}-${dce.id?js_string}-files-app', {
           type: 'individual-study',
-          id: '${study.id}',
-          basePath: '/population/${population.id}/data-collection-event/${dce.id}',
+          id: '${study.id?js_string}',
+          basePath: '/population/${population.id?js_string}/data-collection-event/${dce.id?js_string}',
           path: '/',
           folder: {},
           tr: filesTr,
@@ -218,10 +220,10 @@
       <#if studyTables?? && studyTables?size != 0>
         <#list studyTables as table>
           <#if table.population?? && table.dce??>
-            makeFilesVue('#study-${table.study.id}-${table.population.id}-${table.dce.id}-files-app', {
+            makeFilesVue('#study-${table.study.id?js_string}-${table.population.id?js_string}-${table.dce.id?js_string}-files-app', {
               type: 'individual-study',
-              id: '${table.study.id}',
-              basePath: '/population/${table.population.id}/data-collection-event/${table.dce.id}',
+              id: '${table.study.id?js_string}',
+              basePath: '/population/${table.population.id?js_string}/data-collection-event/${table.dce.id?js_string}',
               path: '/',
               folder: {},
               tr: filesTr,
@@ -235,7 +237,7 @@
 
     <#if datasetVariablesClassificationsTaxonomies?? && datasetVariablesClassificationsTaxonomies?size gt 0>
       const taxonomies = ['${datasetVariablesClassificationsTaxonomies?join("', '")}'];
-      DatasetService.getVariablesCoverage('${dataset.id}', taxonomies, '${.lang}', function(data, vocabulariesColorsMapFunc) {
+      DatasetService.getVariablesCoverage('${dataset.id?js_string}', taxonomies, '${.lang}', function(data, vocabulariesColorsMapFunc) {
         if (data && data.charts) {
           Mica.variablesCoverage = data.charts.map(chart => prepareVariablesClassificationsData(chart, vocabulariesColorsMapFunc(['${colors?join("', '")}'])));
         }
@@ -246,3 +248,4 @@
     </#if>
   });
 </script>
+</#outputformat>

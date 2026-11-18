@@ -4,13 +4,13 @@
   <#include "libs/head.ftl">
   <title>${config.name!""} | <@message "contact-title"/></title>
   <#if reCaptchaKey?has_content>
-  <script type="text/javascript">
+  <#outputformat "plainText"><script type="text/javascript">
     var onloadCallback = function() {
       grecaptcha.render('html_element', {
-        'sitekey' : '${reCaptchaKey}'
+        'sitekey' : '${reCaptchaKey?js_string}'
       });
     };
-  </script>
+  </script></#outputformat>
   </#if>
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed">

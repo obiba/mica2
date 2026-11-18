@@ -1,3 +1,5 @@
+<#-- scripts: values are escaped by hand (js_string), not for HTML -->
+<#outputformat "plainText">
 <!-- Files -->
 <script src="${assetsPath}/libs/node_modules/vue/dist/vue.global.js"></script>
 <script src="${assetsPath}/js/mica-files.js"></script>
@@ -7,18 +9,18 @@
     <#if showProjectFiles>
       makeFilesVue('#project-files-app', {
         type: 'project',
-        id: '${project.id}',
+        id: '${project.id?js_string}',
         basePath: '',
         path: '/',
         folder: {},
         tr: {
-          "item": "<@message "item"/>",
-          "items": "<@message "items"/>",
-          "download": "<@message "download"/>",
-          "name": "<@message "name"/>",
-          "description": "<@message "description"/>",
-          "size": "<@message "size"/>",
-          "actions": "<@message "actions"/>"
+          "item": "${messageJs("item")}",
+          "items": "${messageJs("items")}",
+          "download": "${messageJs("download")}",
+          "name": "${messageJs("name")}",
+          "description": "${messageJs("description")}",
+          "size": "${messageJs("size")}",
+          "actions": "${messageJs("actions")}"
         },
         locale: '${.lang}',
         contextPath: '${contextPath}'
@@ -26,3 +28,4 @@
     </#if>
   });
 </script>
+</#outputformat>

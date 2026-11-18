@@ -128,9 +128,9 @@
                 <tr>
                   <td>
                     <#if v[0]??>
-                      <div><strong>${v[0]?html}</strong></div>
+                      <div><strong>${v[0]}</strong></div>
                     </#if>
-                    <smalll><code>${k?html}</code></smalll>
+                    <smalll><code>${k}</code></smalll>
                   </td>
                   <td class="marked"><template>${templateSafe(v[1])}</template></td>
                   <td class="marked"><template>${templateSafe(v[2])}</template></td>

@@ -11,7 +11,7 @@
               <@message title/>
             </#if>
           </h1>
-          <small>${subtitle?html}</small>
+          <small>${subtitle}</small>
         </div><!-- /.col -->
         <#if breadcrumb?? && breadcrumb?size != 0>
           <div class="col-sm-6">

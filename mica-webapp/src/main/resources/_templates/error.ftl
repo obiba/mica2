@@ -36,9 +36,12 @@
 
           <div class="error-content">
             <h3><i class="fa-solid fa-exclamation-triangle text-warning"></i>
-              <#-- msg and status are HTML-encoded in the controllers: the translation or the text is printed as is -->
+              <#-- msg and status are raw (they can come from the request): a translation can hold HTML and is printed
+                   as is, otherwise the text is escaped. Mica's message source returns the code itself when there is
+                   no translation, whatever the default: compare with the code -->
               <#assign code = msg!("http-" + status)/>
-              ${springMacroRequestContext.getMessage(code, code)}
+              <#assign text = springMacroRequestContext.getMessage(code, code)/>
+              <#if text != code>${text?no_esc}<#else>${code}</#if>
             </h3>
             <p>
               <@messageArgs code="error-help" args=[contextPath + "/"]/>
