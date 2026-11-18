@@ -144,7 +144,7 @@ import {
 } from 'src/composables/useTaxonomies';
 import type { TaxonomyDto, TermDto, VocabularyDto } from 'src/models/Opal';
 import { localeText } from 'src/utils/config';
-import { notifyError, notifySuccess } from 'src/utils/notify';
+import { notifyError, notifyInfo, notifySuccess } from 'src/utils/notify';
 import {
   TARGET_FORMS,
   TARGET_INDEX_PATHS,
@@ -297,6 +297,7 @@ async function locate(node: TaxonomyNode) {
 }
 
 async function loadFields(target: TaxonomyTarget) {
+  fields.value = [];
   const forms = TARGET_FORMS[target] || [];
   const results = await Promise.allSettled(
     forms.map(({ form }) => formsStore.getForm(`/config/${form}/form`, locale.value)),
@@ -304,7 +305,8 @@ async function loadFields(target: TaxonomyTarget) {
   const paths = results.flatMap((result, idx) =>
     result.status === 'fulfilled' ? schemaFields(result.value.schema, forms[idx]!.prefix) : [],
   );
-  fields.value = [...new Set(paths)].sort();
+  // a later dialog of another target may have been opened meanwhile
+  if (dialog.value.show && dialog.value.target === target) fields.value = [...new Set(paths)].sort();
 }
 
 function openDialog(options: Omit<typeof dialog.value, 'show'>) {
@@ -406,8 +408,17 @@ async function locateItem() {
 }
 
 async function onMoveItem(up: boolean) {
+  const node = selected.value;
+  if (!node) return;
+  const loaded = !!editor.drafts.value[node.target];
+  const shown = itemSiblings.value.map((sibling) => sibling.name);
   const found = await locateItem();
   if (!found || found.index === -1) return;
+  // the browsed taxonomy can differ from its configuration: the move applies to the order shown
+  if (!loaded && JSON.stringify(found.list.map((item) => item.name)) !== JSON.stringify(shown)) {
+    notifyInfo('taxonomies.edit.order_reloaded');
+    return;
+  }
   moveItem(found.list, found.index, up);
   showDraft(found.node.target);
 }
@@ -455,15 +466,16 @@ async function onSave() {
     }
   }
   const saved: TaxonomyTarget[] = [];
-  try {
-    for (const target of targets) {
+  for (const target of targets) {
+    try {
       const text = t('taxonomies.edit.changed_text', { name: micaTaxonomyName(target) });
-      if ((await editor.changedSince(target)) && !(await ask(t('taxonomies.edit.changed_title'), text))) break;
+      // a declined overwrite leaves this working copy unsaved, the other ones are saved
+      if ((await editor.changedSince(target)) && !(await ask(t('taxonomies.edit.changed_title'), text))) continue;
       await editor.save(target);
       saved.push(target);
+    } catch (error) {
+      notifyError(error);
     }
-  } catch (error) {
-    notifyError(error);
   }
   if (!saved.length) return;
   // the working copies left unchanged are dropped as well

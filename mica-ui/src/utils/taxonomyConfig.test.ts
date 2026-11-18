@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { VocabularyDto } from 'src/models/Opal';
 import {
   getAttribute,
+  rangeError,
   rangeName,
   schemaFields,
   taxonomyError,
@@ -31,7 +32,10 @@ describe('taxonomyConfig', () => {
       range: true,
       facet: false,
     };
-    const result = toVocabulary(form, vocabulary('age', { facetPosition: '2', facetExpanded: 'true', custom: 'x' }));
+    const result = toVocabulary(
+      form,
+      vocabulary('age', { facet: 'true', facetPosition: '2', facetExpanded: 'true', custom: 'x' }),
+    );
     expect(getAttribute(result, 'alias')).toBe('model-age-value-range');
     expect(getAttribute(result, 'range')).toBe('true');
     expect(getAttribute(result, 'facetPosition')).toBeUndefined();
@@ -41,7 +45,7 @@ describe('taxonomyConfig', () => {
 
   it('applies the range to the numbers only', () => {
     const result = toVocabulary({ ...vocabularyForm(), name: 'v', field: 'model.v', type: 'keyword', range: true });
-    expect(getAttribute(result, 'range')).toBe('false');
+    expect(getAttribute(result, 'range')).toBeUndefined();
     expect(getAttribute(result, 'alias')).toBe('model-v');
   });
 
@@ -90,5 +94,45 @@ describe('taxonomyConfig', () => {
       },
     };
     expect(schemaFields(schema, 'model.')).toEqual(['model.website', 'model.methods.design']);
+  });
+});
+
+describe('taxonomyConfig review fixes', () => {
+  it('keeps a stored alias while the field and the range are unchanged', () => {
+    const access = vocabulary('access_data', { field: 'model.access.access_data', alias: 'model-access-data' });
+    const form = { ...vocabularyForm(access), title: { en: 'Data access' } };
+    expect(getAttribute(toVocabulary(form, access), 'alias')).toBe('model-access-data');
+    const moved = { ...form, field: 'model.access.other' };
+    expect(getAttribute(toVocabulary(moved, access), 'alias')).toBe('model-access-other');
+  });
+
+  it('leaves an unchanged vocabulary as it is', () => {
+    const design: VocabularyDto = {
+      name: 'design',
+      title: [{ locale: 'en', text: 'Design' }],
+      attributes: [
+        { key: 'field', value: 'model.methods.design' },
+        { key: 'alias', value: 'model-methods-design' },
+        { key: 'facet', value: 'true' },
+        { key: 'type', value: 'keyword' },
+        { key: 'facetPosition', value: '0' },
+        { key: 'facetExpanded', value: 'false' },
+        { key: 'forClassName', value: 'Study' },
+      ],
+      terms: [{ name: 'cohort_study' }],
+    };
+    expect(toVocabulary(vocabularyForm(design), design)).toEqual(design);
+    const id = vocabulary('id', { static: 'true', type: 'keyword' });
+    expect(toVocabulary(vocabularyForm(id), id)).toEqual(id);
+  });
+
+  it('checks the range bounds', () => {
+    const cleared = '' as unknown as null;
+    expect(rangeName(cleared, 20)).toBe('*:20');
+    expect(rangeError(null, cleared, 'integer')).toBe('taxonomies.edit.range_bounds_required');
+    expect(rangeError(50, 10, 'integer')).toBe('taxonomies.edit.range_order');
+    expect(rangeError(1.5, 10, 'integer')).toBe('taxonomies.edit.range_integer');
+    expect(rangeError(1.5, 10, 'decimal')).toBeUndefined();
+    expect(rangeError(null, 10, 'integer')).toBeUndefined();
   });
 });

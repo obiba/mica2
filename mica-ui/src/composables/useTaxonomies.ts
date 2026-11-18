@@ -187,14 +187,26 @@ export function useTaxonomyEditor() {
 
   const dirty = computed(() => dirtyTargets.value.length > 0);
 
+  /** the loads in flight: concurrent edits share the same working copy */
+  const loading = new Map<TaxonomyTarget, Promise<TaxonomyDto>>();
+
   /** the working copy of the Mica taxonomy of the target, loaded on the first edit */
-  async function draft(target: TaxonomyTarget): Promise<TaxonomyDto> {
+  function draft(target: TaxonomyTarget): Promise<TaxonomyDto> {
     const current = drafts.value[target];
-    if (current) return current.taxonomy;
-    const response = await api.get<TaxonomyDto>(configPath(target));
-    const loaded = JSON.stringify(response.data);
-    drafts.value[target] = { taxonomy: JSON.parse(loaded), loaded };
-    return drafts.value[target]!.taxonomy;
+    if (current) return Promise.resolve(current.taxonomy);
+    let request = loading.get(target);
+    if (!request) {
+      request = api
+        .get<TaxonomyDto>(configPath(target))
+        .then((response) => {
+          const loaded = JSON.stringify(response.data);
+          drafts.value[target] = { taxonomy: JSON.parse(loaded), loaded };
+          return drafts.value[target]!.taxonomy;
+        })
+        .finally(() => loading.delete(target));
+      loading.set(target, request);
+    }
+    return request;
   }
 
   /** whether the stored taxonomy changed since its working copy was loaded */

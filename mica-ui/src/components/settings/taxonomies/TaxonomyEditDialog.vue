@@ -142,6 +142,8 @@ import {
   getAttribute,
   isRangeType,
   isStatic,
+  rangeError,
+  vocabularyType,
   termForm,
   toLocaleTexts,
   toTerm,
@@ -222,7 +224,11 @@ function onSave() {
     if (key) error.value = t(key);
   } else {
     result = toTerm(term.value, range.value, props.entity as TermDto | undefined);
-    if (others.some((other) => other.name === result.name)) error.value = t('taxonomies.edit.name_exists');
+    const invalid = range.value
+      ? rangeError(term.value.from, term.value.to, vocabularyType(props.vocabulary))
+      : !result.name && 'taxonomies.edit.name_required';
+    if (invalid) error.value = t(invalid);
+    else if (others.some((other) => other.name === result.name)) error.value = t('taxonomies.edit.name_exists');
   }
   if (!error.value) {
     emit('save', result);

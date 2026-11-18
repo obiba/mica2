@@ -73,11 +73,21 @@ export function getAttribute(entity: { attributes?: AttributeDto[] } | undefined
   return entity?.attributes?.find((attribute) => attribute.key === key)?.value;
 }
 
-/** sets the attribute, removes it when the value is empty */
+/** sets the attribute in place, removes it when the value is empty */
 export function setAttribute(entity: { attributes?: AttributeDto[] }, key: string, value: string | undefined) {
-  const attributes = (entity.attributes || []).filter((attribute) => attribute.key !== key);
-  if (value !== undefined && value !== '') attributes.push({ key, value });
+  const attributes = entity.attributes || [];
+  const idx = attributes.findIndex((attribute) => attribute.key === key);
+  if (value === undefined || value === '') {
+    if (idx !== -1) attributes.splice(idx, 1);
+  } else if (idx !== -1) attributes[idx] = { key, value };
+  else attributes.push({ key, value });
   entity.attributes = attributes;
+}
+
+/** sets the attribute, unless it is absent and the value is its default: an unchanged item stays as is */
+function setValue(entity: { attributes?: AttributeDto[] }, key: string, value: string, defaultValue: string) {
+  if (getAttribute(entity, key) === undefined && value === defaultValue) return;
+  setAttribute(entity, key, value);
 }
 
 function isTrue(entity: { attributes?: AttributeDto[] } | undefined, key: string) {
@@ -114,6 +124,12 @@ export function toLocaleTexts(texts: LocaleTextDto[] | undefined): LocaleTexts {
   return Object.fromEntries((texts || []).map((text) => [text.locale, text.text]));
 }
 
+/** sets the texts of the form, none when there were none and none were given */
+function setTexts(entity: TermDto, key: 'title' | 'description', texts: LocaleTexts) {
+  const result = fromLocaleTexts(texts);
+  if (result.length || entity[key]) entity[key] = result;
+}
+
 export function fromLocaleTexts(texts: LocaleTexts): LocaleTextDto[] {
   return Object.entries(texts)
     .filter(([, text]) => text?.trim())
@@ -145,24 +161,31 @@ export function vocabularyForm(vocabulary?: VocabularyDto): VocabularyForm {
  */
 export function toVocabulary(form: VocabularyForm, vocabulary?: VocabularyDto): VocabularyDto {
   const result: VocabularyDto = JSON.parse(JSON.stringify(vocabulary || { name: form.name, terms: [] }));
-  result.title = fromLocaleTexts(form.title);
-  result.description = fromLocaleTexts(form.description);
-  setAttribute(result, 'hidden', `${form.hidden}`);
-  setAttribute(result, 'facet', `${form.facet}`);
-  setAttribute(result, 'facetPosition', form.facet ? `${form.facetPosition || 0}` : undefined);
-  setAttribute(result, 'facetExpanded', form.facet ? `${form.facetExpanded}` : undefined);
+  setTexts(result, 'title', form.title);
+  setTexts(result, 'description', form.description);
+  setValue(result, 'hidden', `${form.hidden}`, 'false');
+  setValue(result, 'facet', `${form.facet}`, 'false');
+  if (form.facet) {
+    setValue(result, 'facetPosition', `${form.facetPosition || 0}`, '0');
+    setValue(result, 'facetExpanded', `${form.facetExpanded}`, 'false');
+  } else if (isTrue(vocabulary, 'facet')) {
+    setAttribute(result, 'facetPosition', undefined);
+    setAttribute(result, 'facetExpanded', undefined);
+  }
   if (isStatic(vocabulary)) return result;
 
   // the range aggregation applies to the numbers only
   const range = isRangeType(form.type) && form.range;
   const field = form.field.trim();
+  // a stored alias is kept while the field and the range are: the search and the facets use it
+  const unchanged = field === getAttribute(vocabulary, 'field') && range === isTrue(vocabulary, 'range');
   result.name = form.name.trim();
-  result.repeatable = form.repeatable;
+  if (form.repeatable !== (vocabulary?.repeatable === true)) result.repeatable = form.repeatable;
   setAttribute(result, 'field', field);
-  setAttribute(result, 'alias', aliasOf(field, range));
-  setAttribute(result, 'type', form.type);
-  setAttribute(result, 'localized', `${form.localized}`);
-  setAttribute(result, 'range', `${range}`);
+  setAttribute(result, 'alias', (unchanged && getAttribute(vocabulary, 'alias')) || aliasOf(field, range));
+  setValue(result, 'type', form.type, 'string');
+  setValue(result, 'localized', `${form.localized}`, 'false');
+  setValue(result, 'range', `${range}`, 'false');
   setAttribute(result, 'termsSortKey', form.termsSortKey);
   setAttribute(result, 'forClassName', form.forClassName);
   return result;
@@ -203,8 +226,23 @@ function parseBound(value: string | undefined): number | null {
   return value && value !== '*' && !isNaN(Number(value)) ? Number(value) : null;
 }
 
+/** an empty bound is open: a cleared number input gives an empty string */
+function isOpen(bound: number | null | string | undefined): bound is null | undefined | '' {
+  return bound === null || bound === undefined || `${bound}`.trim() === '';
+}
+
 export function rangeName(from: number | null, to: number | null): string {
-  return `${from ?? '*'}:${to ?? '*'}`;
+  return `${isOpen(from) ? '*' : from}:${isOpen(to) ? '*' : to}`;
+}
+
+/** the i18n key of the first rule the bounds of a range term break, if any */
+export function rangeError(from: number | null, to: number | null, type: VocabularyType): string | undefined {
+  if (isOpen(from) && isOpen(to)) return 'taxonomies.edit.range_bounds_required';
+  const bounds = [from, to].filter((bound) => !isOpen(bound)).map(Number);
+  if (bounds.some((bound) => isNaN(bound))) return 'number_invalid';
+  if (type === 'integer' && bounds.some((bound) => !Number.isInteger(bound))) return 'taxonomies.edit.range_integer';
+  if (bounds.length === 2 && bounds[0]! > bounds[1]!) return 'taxonomies.edit.range_order';
+  return undefined;
 }
 
 export function termForm(term?: TermDto): TermForm {
@@ -222,8 +260,8 @@ export function termForm(term?: TermDto): TermForm {
 export function toTerm(form: TermForm, range: boolean, term?: TermDto): TermDto {
   const result: TermDto = JSON.parse(JSON.stringify(term || { name: '' }));
   result.name = range ? rangeName(form.from, form.to) : form.name.trim();
-  result.title = fromLocaleTexts(form.title);
-  result.description = fromLocaleTexts(form.description);
+  setTexts(result, 'title', form.title);
+  setTexts(result, 'description', form.description);
   return result;
 }
 
