@@ -44,9 +44,6 @@ public abstract class AbstractPersonsSearchResource {
   @Inject
   private Dtos dtos;
 
-  @Context
-  private HttpServletResponse response;
-
   protected abstract boolean isDraft();
 
   @GET
@@ -54,7 +51,7 @@ public abstract class AbstractPersonsSearchResource {
   public Mica.PersonsDto query(@QueryParam("from") @DefaultValue("0") int from,
     @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") @DefaultValue(DEFAULT_SORT) String sort,
     @QueryParam("order") @DefaultValue("asc") String order, @QueryParam("query") String query,
-    @QueryParam("exclude") List<String> excludes) throws IOException {
+    @QueryParam("exclude") List<String> excludes, @Context HttpServletResponse response) throws IOException {
 
     String ids = excludes.stream().map(s -> "id:" + s).collect(Collectors.joining(" "));
 
@@ -67,6 +64,8 @@ public abstract class AbstractPersonsSearchResource {
       ? esPersonService.find(from, limit, sort, order, null, query)
       : esPersonService.findPublished(from, limit, sort, order, query);
 
+    // the persons are listed from the database, without applying the query
+    if (contacts.isDegraded() && response != null) response.addHeader("X-Search-Degraded", "true");
     return asDto(contacts, from, limit);
   }
 
@@ -76,8 +75,6 @@ public abstract class AbstractPersonsSearchResource {
     Mica.PersonsDto.Builder builder = Mica.PersonsDto.newBuilder().setFrom(from).setLimit(limit)
       .setTotal(contacts.getTotal());
     builder.addAllPersons(persons);
-    // the persons are listed from the database, without applying the query
-    if (contacts.isDegraded() && response != null) response.addHeader("X-Search-Degraded", "true");
 
     return builder.build();
   }
@@ -90,7 +87,7 @@ public abstract class AbstractPersonsSearchResource {
     @QueryParam("order") @DefaultValue("asc") String order, @QueryParam("query") String query,
     @QueryParam("exclude") List<String> excludes) throws IOException {
 
-    return asCSV(query(from, limit, sort, order, query, excludes));
+    return asCSV(query(from, limit, sort, order, query, excludes, null));
   }
 
   protected Response asCSV(Mica.PersonsDto persons) throws IOException {
