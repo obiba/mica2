@@ -9,7 +9,7 @@ const map: Record<string, string> = JSON.parse(
 const ftl = readFileSync(resolve(__dirname, '../resources/_templates/libs/special-char-codec.ftl'), 'utf8');
 // the FreeMarker list renders the map entries: substitute them, keep the script body as is
 const script = ftl
-  .match(/<script>([\s\S]*)<\/script>/)![1]
+  .slice(ftl.indexOf('<script>') + '<script>'.length, ftl.lastIndexOf('</script>'))
   .replace(/<#if[\s\S]*<\/#if>/, JSON.stringify(map).slice(1, -1))
   .replace(/<\/?#noparse>/g, '');
 const Mica: { encodeRqlSafe: (s: unknown) => unknown; decodeRqlSafe: (s: unknown) => unknown } = {} as never;
