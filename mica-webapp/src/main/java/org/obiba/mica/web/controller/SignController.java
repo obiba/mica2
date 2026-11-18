@@ -257,14 +257,19 @@ public class SignController extends BaseController {
    */
   private String verifyRedirect(String redirect) {
     if (Strings.isNullOrEmpty(redirect)) return redirect;
-    if (isAgateUrl(redirect)) return redirect;
-    return isLocalPath(redirect) ? redirect : "";
+    if (isLocalPath(redirect)) return redirect;
+    return isAgateUrl(redirect) ? redirect : "";
   }
 
   private boolean isAgateUrl(String redirect) {
+    if (isSameOrigin(redirect, agateServerConfigService.getAgateUri())) return true;
     // browser redirects use Agate's public URL, which can differ from the internal agate.url
-    return isSameOrigin(redirect, agateServerConfigService.getAgateUri())
-      || isSameOrigin(redirect, URI.create(userAuthService.getAgatePublicUrl()));
+    try {
+      return isSameOrigin(redirect, URI.create(userAuthService.getAgatePublicUrl()));
+    } catch (IllegalArgumentException e) {
+      // malformed publicUrl in Agate
+      return false;
+    }
   }
 
   private static boolean isSameOrigin(String redirect, URI agate) {
