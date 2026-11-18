@@ -131,6 +131,14 @@ version only give their creator access to the document itself, not to its files.
 give the creator access to the files, open the document's permissions, edit the
 creator's entry and check the files option.
 
+**Case-insensitive sorting.** With the Elasticsearch search plugin
+(`mica-search-es8`) 2.1.0 or later, names and acronyms of networks, studies and
+datasets, and variable names, sort ignoring case and accents. Update the plugin,
+restart Mica, then rebuild the indices (Settings › Indexing › Rebuild all
+indices). Until then, sorting stays case-sensitive. To keep the case-sensitive order,
+set `sort.caseInsensitive=false` in the plugin's `site.properties` and restart; no
+re-index is needed.
+
 ### Rolling back
 
 Stop Mica, reinstall 7.x and restore the configuration folder, with `MICA_HOME` set as
