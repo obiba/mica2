@@ -55,6 +55,10 @@
   },
   "overrides": {
     "serialize-javascript": "^7.1.4",
+    "js-beautify": {
+      "glob": "^14.0.6",
+      "editorconfig": "^4.0.1"
+    },
     "front-matter": {
       "js-yaml": {
         "argparse": "^2.0.1"
