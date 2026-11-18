@@ -96,6 +96,16 @@ public class UserAuthService extends AgateRestService {
     return config;
   }
 
+  /**
+   * Agate URL as seen by the browser: Agate's own publicUrl, falling back to agate.url (which can be
+   * an internal name, e.g. in a container network).
+   */
+  public String getAgatePublicUrl() {
+    String url = getPublicConfiguration().optString("publicUrl", "");
+    if (Strings.isNullOrEmpty(url)) url = agateServerConfigService.getAgateUrl();
+    return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
+  }
+
   public synchronized JSONObject getClientConfiguration() {
     JSONObject config;
     try {
