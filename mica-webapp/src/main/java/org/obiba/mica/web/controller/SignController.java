@@ -164,7 +164,7 @@ public class SignController extends BaseController {
     UriBuilder micaBuilder = UriBuilder.fromUri(String.format("%s/signout", micaConfigService.getPublicUrl()))
       .queryParam("cb", "true");
     // agate signout url
-    UriBuilder agateBuilder = UriBuilder.fromUri(String.format("%s/signout", agateServerConfigService.getAgateUrl()))
+    UriBuilder agateBuilder = UriBuilder.fromUri(String.format("%s/signout", userAuthService.getAgatePublicUrl()))
       .queryParam("post_logout_redirect_uri", micaBuilder.build());
     return agateBuilder.build().toString();
   }
@@ -190,7 +190,7 @@ public class SignController extends BaseController {
   private String getOidcSigninUrl(String oidcName, HttpServletRequest request, String redirect) {
     // http://localhost:8081/auth/signin/kc-test?redirect=http://localhost:8082
 
-    String agateUrl = agateServerConfigService.getAgateUrl();
+    String agateUrl = userAuthService.getAgatePublicUrl();
 
     String requestUrl = getRequestUrl(request);
     String requestUri = request.getRequestURI();
@@ -217,7 +217,7 @@ public class SignController extends BaseController {
   private String getOidcSignupUrl(String oidcName, HttpServletRequest request, String redirect) {
     // http://localhost:8081/auth/signup/kc-test?redirect=http://localhost:8082
 
-    String agateUrl = agateServerConfigService.getAgateUrl();
+    String agateUrl = userAuthService.getAgatePublicUrl();
 
     String requestUrl = getRequestUrl(request);
     String requestUri = request.getRequestURI();
@@ -257,13 +257,23 @@ public class SignController extends BaseController {
    */
   private String verifyRedirect(String redirect) {
     if (Strings.isNullOrEmpty(redirect)) return redirect;
-    if (isAgateUrl(redirect)) return redirect;
-    return isLocalPath(redirect) ? redirect : "";
+    if (isLocalPath(redirect)) return redirect;
+    return isAgateUrl(redirect) ? redirect : "";
   }
 
   private boolean isAgateUrl(String redirect) {
+    if (isSameOrigin(redirect, agateServerConfigService.getAgateUri())) return true;
+    // browser redirects use Agate's public URL, which can differ from the internal agate.url
     try {
-      URI agate = agateServerConfigService.getAgateUri();
+      return isSameOrigin(redirect, URI.create(userAuthService.getAgatePublicUrl()));
+    } catch (IllegalArgumentException e) {
+      // malformed publicUrl in Agate
+      return false;
+    }
+  }
+
+  private static boolean isSameOrigin(String redirect, URI agate) {
+    try {
       URI uri = new URI(redirect);
       // compare origins, a prefix check would accept https://agate.example.org.evil.com
       return uri.getScheme() != null && uri.getScheme().equalsIgnoreCase(agate.getScheme())

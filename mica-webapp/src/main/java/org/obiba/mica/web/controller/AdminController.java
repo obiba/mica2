@@ -4,7 +4,7 @@ import jakarta.inject.Inject;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
-import org.obiba.mica.core.service.AgateServerConfigService;
+import org.obiba.mica.core.service.UserAuthService;
 import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
@@ -32,7 +32,7 @@ public class AdminController extends BaseController {
   private MicaConfigService micaConfigService;
 
   @Inject
-  protected AgateServerConfigService agateServerConfigService;
+  private UserAuthService userAuthService;
 
   @Inject
   private NetworkService networkService;
@@ -102,7 +102,7 @@ public class AdminController extends BaseController {
       || subject.hasRole(Roles.MICA_EDITOR)
       || subject.hasRole(Roles.MICA_REVIEWER)
       || hasPermissionOnAnyDraftDocument()) {
-      String agateUrl = agateServerConfigService.getAgateUrl();
+      String agateUrl = userAuthService.getAgatePublicUrl();
       ModelAndView mv = new ModelAndView("administration");
       mv.getModel().put("agateUrl", agateUrl);
       return mv;
