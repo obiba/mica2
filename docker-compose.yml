@@ -1,7 +1,7 @@
 services:
         es8:
                 #image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTICSEARCH_VERSION}
-                image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+                image: docker.elastic.co/elasticsearch/elasticsearch:8.19.25
                 ports:
                   - 9300:9300
                   - 9200:9200
