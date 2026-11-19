@@ -94,20 +94,124 @@ public class EsPersonServiceFallbackTest {
     when(searcher.getDocuments(any(), any(), any(Integer.class), any(Integer.class), any(), any(), any(), any(), any(), any(), any()))
       .thenReturn(mock(Searcher.DocumentResults.class));
 
-    service.findPublished(0, 10, "lastName", "asc", "doe*");
+    service.findPublished(0, 10, "lastName", "asc", "doe*", List.of("p1"));
 
     verify(searcher).getDocuments(eq(Indexer.PERSON_INDEX), eq(Indexer.PERSON_TYPE), eq(0), eq(10), eq("lastName"),
-      eq("asc"), eq("(doe*) AND (studyMemberships.parentId:(\"study1\" OR \"hstudy1\") OR networkMemberships.parentId:(\"network1\"))"
-        + " AND (studyMemberships.role:(\"contact\" OR \"investigator\") OR networkMemberships.role:(\"contact\" OR \"investigator\"))"),
+      eq("asc"), eq("(" + EsPersonService.publicTextQuery("doe*") + ")"
+        + " AND (studyMemberships.parentId:(\"study1\" OR \"hstudy1\") OR networkMemberships.parentId:(\"network1\"))"
+        + " AND (studyMemberships.role:(\"contact\" OR \"investigator\") OR networkMemberships.role:(\"contact\" OR \"investigator\")) AND NOT id:(\"p1\")"),
       any(), any(), any(), any());
     verify(repository, never()).findByMemberships(any(), any(), any(), any());
+  }
+
+  /**
+   * The free text cannot query the hidden fields: the field syntax is escaped and searched on the public fields.
+   */
+  @Test
+  public void publishedSearchTextOnlyQueriesPublicFields() {
+    String query = EsPersonService.publicTextQuery("lastModifiedBy:jdoe OR (x)");
+    assertThat(query).contains("lastName.analyzed:lastModifiedBy\\:jdoe", "institution.address.city.\\*:\\(x\\)", ") OR (")
+      .doesNotContain(" lastModifiedBy:");
+  }
+
+  /**
+   * The keyword mapped fields are case-sensitive and match the whole value: the text is searched on their analyzed
+   * sub-field, so that doe* finds Doe.
+   */
+  @Test
+  public void publishedSearchTextQueriesKeywordFieldsOnAnalyzedSubField() {
+    String query = EsPersonService.publicTextQuery("doe*");
+    assertThat(query).contains("firstName.analyzed:doe*", "lastName.analyzed:doe*", "email.analyzed:doe*")
+      .doesNotContainPattern("(^|[( ])(firstName|lastName|email):");
+  }
+
+  /**
+   * The public search is sorted on the keyword fields, not on their analyzed sub-field.
+   */
+  @Test
+  public void publishedSearchSortsOnKeywordFields() {
+    assertThat(EsPersonService.isPublicField("firstName")).isTrue();
+    assertThat(EsPersonService.isPublicField("lastName")).isTrue();
+    assertThat(EsPersonService.isPublicField("email")).isTrue();
+    assertThat(EsPersonService.isPublicField("lastName.analyzed")).isFalse();
+  }
+
+  /**
+   * The boolean operators that would not parse are dropped, instead of failing the search.
+   */
+  @Test
+  public void publishedSearchTextDropsDanglingOperators() {
+    assertThat(EsPersonService.publicTextQuery("doe AND")).isEqualTo(EsPersonService.publicTextQuery("doe"));
+    assertThat(EsPersonService.publicTextQuery("OR")).isEmpty();
+    assertThat(EsPersonService.publicTextQuery("a AND OR NOT NOT b"))
+      .isEqualTo(EsPersonService.publicTextQuery("a") + " AND NOT " + EsPersonService.publicTextQuery("b"));
+  }
+
+  @Test
+  public void publishedSearchIsOnlySortedOnPublicFields() {
+    published(List.of("study1"), List.of());
+    when(searcher.getDocuments(any(), any(), any(Integer.class), any(Integer.class), any(), any(), any(), any(), any(), any(), any()))
+      .thenReturn(mock(Searcher.DocumentResults.class));
+
+    service.findPublished(0, 10, "studyMemberships.role", "asc", null, null);
+    service.findPublished(0, 10, "institution.name.en", "asc", null, null);
+
+    verify(searcher).getDocuments(any(), any(), eq(0), eq(10), eq("lastName"), any(), any(), any(), any(), any(), any());
+    verify(searcher).getDocuments(any(), any(), eq(0), eq(10), eq("institution.name.en"), any(), any(), any(), any(), any(), any());
+  }
+
+  /**
+   * A members query on an unpublished study does not reveal its published members.
+   */
+  @Test
+  public void publishedMembersQueryIsRestrictedToPublishedStudies() {
+    published(List.of("study1"), List.of("network1"));
+
+    DocumentService.Documents<Person> documents = service.findPublished(0, 10, "lastName", "asc",
+      "studyMemberships.parentId:(unpublished)", null);
+
+    assertThat(documents.getTotal()).isZero();
+    verify(repository, never()).findByMemberships(any(), any(), any(), any());
+    verify(searcher, never()).getDocuments(any(), any(), any(Integer.class), any(Integer.class), any(), any(), any(), any(), any(), any(), any());
+  }
+
+  /**
+   * The members query lists the members of the published studies exactly, from the database.
+   */
+  @Test
+  public void publishedMembersQueryOnPublishedStudy() {
+    published(List.of("study1", "study2"), List.of("network1"));
+    when(repository.findByMemberships(List.of("study1"), List.of(), ROLES, BY_LAST_NAME))
+      .thenReturn(List.of(person("p1", "a"), person("p2", "b")));
+
+    DocumentService.Documents<Person> documents = service.findPublished(0, 10, "lastName", "asc",
+      "studyMemberships.parentId:(study1 or unpublished)", List.of("p2"));
+
+    assertThat(documents.isDegraded()).isFalse();
+    assertThat(documents.getList().stream().map(Person::getId)).containsExactly("p1");
+    verify(searcher, never()).getDocuments(any(), any(), any(Integer.class), any(Integer.class), any(), any(), any(), any(), any(), any(), any());
+  }
+
+  /**
+   * Another memberships query is searched as text on the public fields.
+   */
+  @Test
+  public void publishedOtherMembershipsQueryIsSearchedAsText() {
+    published(List.of("study1"), List.of());
+    when(searcher.getDocuments(any(), any(), any(Integer.class), any(Integer.class), any(), any(), any(), any(), any(), any(), any()))
+      .thenReturn(mock(Searcher.DocumentResults.class));
+
+    service.findPublished(0, 10, "lastName", "asc", "studyMemberships.role:b*", null);
+
+    verify(searcher).getDocuments(any(), any(), eq(0), eq(10), any(), any(),
+      org.mockito.ArgumentMatchers.startsWith("((title:studyMemberships.role\\:b* OR"), any(), any(), any(), any());
   }
 
   @Test
   public void publishedSearchWithoutPublishedEntitiesFindsNothing() {
     published(List.of(), List.of());
 
-    DocumentService.Documents<Person> documents = service.findPublished(0, 10, "lastName", "asc", "*");
+    DocumentService.Documents<Person> documents = service.findPublished(0, 10, "lastName", "asc", "*", null);
 
     assertThat(documents.getTotal()).isZero();
     verify(searcher, never()).getDocuments(any(), any(), any(Integer.class), any(Integer.class), any(), any(), any(), any(), any(), any(), any());
@@ -120,11 +224,11 @@ public class EsPersonServiceFallbackTest {
     when(repository.findByMemberships(List.of("study1"), List.of("network1"), ROLES, BY_LAST_NAME))
       .thenReturn(List.of(person("p1", "a"), person("p3", "c")));
 
-    DocumentService.Documents<Person> documents = service.findPublished(0, 10, "lastName", "asc", "*");
+    DocumentService.Documents<Person> documents = service.findPublished(0, 10, "lastName", "asc", "*", List.of("p3"));
 
     assertThat(documents.isDegraded()).isTrue();
-    assertThat(documents.getTotal()).isEqualTo(2);
-    assertThat(documents.getList().stream().map(Person::getId)).containsExactly("p1", "p3");
+    assertThat(documents.getTotal()).isEqualTo(1);
+    assertThat(documents.getList().stream().map(Person::getId)).containsExactly("p1");
     verify(repository, never()).findAll(any(Sort.class));
   }
 

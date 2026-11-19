@@ -27,12 +27,40 @@ import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
 public class EsPersonService extends AbstractIdentifiedDocumentService<Person> {
+
+  /**
+   * The person fields the public endpoint returns, which the public search can be sorted on.
+   */
+  private static final List<String> PUBLIC_FIELDS = List.of("title", "firstName", "lastName", "academicLevel",
+    "email", "phone", "institution.name.\\*", "institution.department.\\*", "institution.address.street.\\*",
+    "institution.address.city.\\*", "institution.address.zip", "institution.address.state",
+    "institution.address.countryIso");
+
+  /**
+   * The public fields mapped as keywords (case-sensitive, whole value), searched as text on their analyzed sub-field.
+   */
+  private static final List<String> KEYWORD_FIELDS = List.of("firstName", "lastName", "email");
+
+  /**
+   * The fields the public free text search is applied on.
+   */
+  private static final List<String> PUBLIC_QUERY_FIELDS = PUBLIC_FIELDS.stream()
+    .map(f -> KEYWORD_FIELDS.contains(f) ? f + ".analyzed" : f)
+    .collect(Collectors.toList());
+
+  /**
+   * The members query sent by the former study and network page templates.
+   */
+  private static final Pattern STUDY_MEMBERS_QUERY = Pattern.compile("\\s*studyMemberships\\.parentId:\\(([^()]+)\\)\\s*");
 
   @Inject
   private ObjectMapper objectMapper;
@@ -69,25 +97,72 @@ public class EsPersonService extends AbstractIdentifiedDocumentService<Person> {
    * current subject can access. The others are filtered out in the search, so the total and the paging only count
    * these persons. When the search engine fails, these persons are listed from the database, without applying the
    * query.
+   *
+   * The query is either the members query of studies, <code>studyMemberships.parentId:(id1 OR id2)</code>, restricted
+   * to the accessible published ones, or a free text searched on the returned person fields only, so that the hidden
+   * memberships and fields cannot be queried.
    */
   public Documents<Person> findPublished(int from, int limit, @Nullable String sort, @Nullable String order,
-                                         @Nullable String queryString) {
+                                         @Nullable String queryString, @Nullable Collection<String> excludes) {
+    Matcher membersQuery = Strings.isNullOrEmpty(queryString) ? null : STUDY_MEMBERS_QUERY.matcher(queryString);
+    if (membersQuery != null && membersQuery.matches()) {
+      List<String> queried = Arrays.stream(membersQuery.group(1).trim().split("\\s+"))
+        .filter(id -> !id.equalsIgnoreCase("OR"))
+        .map(id -> id.replaceAll("^\"|\"$", "")).collect(Collectors.toList());
+      return studyMembers(from, limit, order, queried, excludes);
+    }
+
     List<String> studyIds = publishedStudyService.findAccessibleIds();
     List<String> networkIds = publishedNetworkService.findAccessibleIds();
     List<String> roles = micaConfigService.getConfig().getRoles();
     if ((studyIds.isEmpty() && networkIds.isEmpty()) || roles.isEmpty()) return new Documents<>(0, from, limit);
 
     // ponytail: the memberships are not nested in the index, so the role can match another membership than the
-    // published one; findPublishedStudyMembers lists the members of given studies exactly
+    // published one; the members query is listed exactly from the database
     List<String> parents = new ArrayList<>();
     if (!studyIds.isEmpty()) parents.add(termsQuery("studyMemberships.parentId", studyIds));
     if (!networkIds.isEmpty()) parents.add(termsQuery("networkMemberships.parentId", networkIds));
-    String members = "(" + String.join(" OR ", parents) + ") AND (" + termsQuery("studyMemberships.role", roles)
+    String query = "(" + String.join(" OR ", parents) + ") AND (" + termsQuery("studyMemberships.role", roles)
       + " OR " + termsQuery("networkMemberships.role", roles) + ")";
-    String query = Strings.isNullOrEmpty(queryString) ? members : "(" + queryString + ") AND " + members;
+    String text = Strings.isNullOrEmpty(queryString) ? "" : publicTextQuery(queryString);
+    if (!text.isEmpty()) query = "(" + text + ") AND " + query;
+    if (excludes != null && !excludes.isEmpty()) query += " AND NOT " + termsQuery("id", excludes);
 
-    return find(from, limit, sort, order, null, query, null, null, null,
-      () -> page(personRepository.findByMemberships(studyIds, networkIds, roles, byLastName(order)), from, limit, true));
+    return find(from, limit, isPublicField(sort) ? sort : "lastName", order, null, query, null, null, null,
+      () -> page(personRepository.findByMemberships(studyIds, networkIds, roles, byLastName(order)), excludes, from, limit, true));
+  }
+
+  /**
+   * Each term of the text is searched on the public person fields. The query syntax characters are escaped, except
+   * the wildcards, so that no other field can be queried. The boolean operators that would not parse are dropped.
+   */
+  static String publicTextQuery(String text) {
+    List<String> terms = new ArrayList<>();
+    for (String term : text.trim().split("\\s+")) {
+      String last = terms.isEmpty() ? null : terms.get(terms.size() - 1);
+      if (term.equals("AND") || term.equals("OR")) {
+        if (last != null && !isOperator(last)) terms.add(term);
+      } else if (term.equals("NOT")) {
+        if (!"NOT".equals(last)) terms.add(term);
+      } else if (!term.isEmpty()) {
+        String escaped = term.replaceAll("([+\\-=&|><!(){}\\[\\]^\"~:\\\\/])", "\\\\$1");
+        terms.add("(" + PUBLIC_QUERY_FIELDS.stream().map(f -> f + ":" + escaped).collect(Collectors.joining(" OR ")) + ")");
+      }
+    }
+    while (!terms.isEmpty() && isOperator(terms.get(terms.size() - 1))) terms.remove(terms.size() - 1);
+    return String.join(" ", terms);
+  }
+
+  private static boolean isOperator(String term) {
+    return term.equals("AND") || term.equals("OR") || term.equals("NOT");
+  }
+
+  /**
+   * Whether the field is one of the public person fields, which the public search can be sorted on.
+   */
+  static boolean isPublicField(@Nullable String field) {
+    return field != null && PUBLIC_FIELDS.stream()
+      .anyMatch(f -> f.endsWith("\\*") ? field.startsWith(f.substring(0, f.length() - 2)) : field.equals(f));
   }
 
   /**
@@ -96,12 +171,17 @@ public class EsPersonService extends AbstractIdentifiedDocumentService<Person> {
    */
   public Documents<Person> findPublishedStudyMembers(int from, int limit, @Nullable String order,
                                                      Collection<String> studyIds) {
+    return studyMembers(from, limit, order, studyIds, null);
+  }
+
+  private Documents<Person> studyMembers(int from, int limit, @Nullable String order, Collection<String> studyIds,
+                                         @Nullable Collection<String> excludes) {
     List<String> ids = publishedStudyService.findAccessibleIds().stream()
       .filter(studyIds::contains)
       .collect(Collectors.toList());
     List<String> roles = micaConfigService.getConfig().getRoles();
     if (ids.isEmpty() || roles.isEmpty()) return new Documents<>(0, from, limit);
-    return page(personRepository.findByMemberships(ids, List.of(), roles, byLastName(order)), from, limit, false);
+    return page(personRepository.findByMemberships(ids, List.of(), roles, byLastName(order)), excludes, from, limit, false);
   }
 
   /**
@@ -112,21 +192,24 @@ public class EsPersonService extends AbstractIdentifiedDocumentService<Person> {
   protected Documents<Person> findFallback(int from, int limit, @Nullable String order, @Nullable String studyId,
                                            @Nullable Searcher.IdFilter idFilter) {
     // ponytail: loads all persons to page them, use a paged query if there are too many
-    return page(personRepository.findAll(byLastName(order)), from, limit, true);
+    return page(personRepository.findAll(byLastName(order)), null, from, limit, true);
   }
 
   private static Sort byLastName(@Nullable String order) {
     return Sort.by("desc".equalsIgnoreCase(order) ? Sort.Direction.DESC : Sort.Direction.ASC, "lastName");
   }
 
-  private static Documents<Person> page(List<Person> found, int from, int limit, boolean degraded) {
+  private static Documents<Person> page(List<Person> persons, @Nullable Collection<String> excludes, int from, int limit,
+                                       boolean degraded) {
+    List<Person> found = excludes == null ? persons
+      : persons.stream().filter(p -> !excludes.contains(p.getId())).collect(Collectors.toList());
     Documents<Person> documents = new Documents<>(found.size(), from, limit);
     documents.setDegraded(degraded);
     found.stream().skip(from).limit(limit).forEach(documents::add);
     return documents;
   }
 
-  private static String termsQuery(String field, Collection<String> values) {
+  public static String termsQuery(String field, Collection<String> values) {
     return field + ":(" + values.stream()
       .map(v -> "\"" + v.replace("\\", "\\\\").replace("\"", "\\\"") + "\"")
       .collect(Collectors.joining(" OR ")) + ")";
