@@ -38,12 +38,24 @@ import java.util.stream.Collectors;
 public class EsPersonService extends AbstractIdentifiedDocumentService<Person> {
 
   /**
-   * The person fields the public free text search is applied on: the ones the public endpoint returns.
+   * The person fields the public endpoint returns, which the public search can be sorted on.
    */
-  private static final List<String> PUBLIC_QUERY_FIELDS = List.of("title", "firstName", "lastName", "academicLevel",
+  private static final List<String> PUBLIC_FIELDS = List.of("title", "firstName", "lastName", "academicLevel",
     "email", "phone", "institution.name.\\*", "institution.department.\\*", "institution.address.street.\\*",
     "institution.address.city.\\*", "institution.address.zip", "institution.address.state",
     "institution.address.countryIso");
+
+  /**
+   * The public fields mapped as keywords (case-sensitive, whole value), searched as text on their analyzed sub-field.
+   */
+  private static final List<String> KEYWORD_FIELDS = List.of("firstName", "lastName", "email");
+
+  /**
+   * The fields the public free text search is applied on.
+   */
+  private static final List<String> PUBLIC_QUERY_FIELDS = PUBLIC_FIELDS.stream()
+    .map(f -> KEYWORD_FIELDS.contains(f) ? f + ".analyzed" : f)
+    .collect(Collectors.toList());
 
   /**
    * The members query sent by the former study and network page templates.
@@ -149,7 +161,7 @@ public class EsPersonService extends AbstractIdentifiedDocumentService<Person> {
    * Whether the field is one of the public person fields, which the public search can be sorted on.
    */
   static boolean isPublicField(@Nullable String field) {
-    return field != null && PUBLIC_QUERY_FIELDS.stream()
+    return field != null && PUBLIC_FIELDS.stream()
       .anyMatch(f -> f.endsWith("\\*") ? field.startsWith(f.substring(0, f.length() - 2)) : field.equals(f));
   }
 

@@ -110,8 +110,30 @@ public class EsPersonServiceFallbackTest {
   @Test
   public void publishedSearchTextOnlyQueriesPublicFields() {
     String query = EsPersonService.publicTextQuery("lastModifiedBy:jdoe OR (x)");
-    assertThat(query).contains("lastName:lastModifiedBy\\:jdoe", "institution.address.city.\\*:\\(x\\)", ") OR (")
+    assertThat(query).contains("lastName.analyzed:lastModifiedBy\\:jdoe", "institution.address.city.\\*:\\(x\\)", ") OR (")
       .doesNotContain(" lastModifiedBy:");
+  }
+
+  /**
+   * The keyword mapped fields are case-sensitive and match the whole value: the text is searched on their analyzed
+   * sub-field, so that doe* finds Doe.
+   */
+  @Test
+  public void publishedSearchTextQueriesKeywordFieldsOnAnalyzedSubField() {
+    String query = EsPersonService.publicTextQuery("doe*");
+    assertThat(query).contains("firstName.analyzed:doe*", "lastName.analyzed:doe*", "email.analyzed:doe*")
+      .doesNotContainPattern("(^|[( ])(firstName|lastName|email):");
+  }
+
+  /**
+   * The public search is sorted on the keyword fields, not on their analyzed sub-field.
+   */
+  @Test
+  public void publishedSearchSortsOnKeywordFields() {
+    assertThat(EsPersonService.isPublicField("firstName")).isTrue();
+    assertThat(EsPersonService.isPublicField("lastName")).isTrue();
+    assertThat(EsPersonService.isPublicField("email")).isTrue();
+    assertThat(EsPersonService.isPublicField("lastName.analyzed")).isFalse();
   }
 
   /**
