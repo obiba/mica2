@@ -55,10 +55,9 @@ public abstract class AbstractPersonsSearchResource {
 
     PublishedDocumentService.Documents<Person> contacts;
     if (isDraft()) {
-      String ids = excludes.stream().map(s -> "id:" + s).collect(Collectors.joining(" "));
-      if (!Strings.isNullOrEmpty(ids)) {
-        if (Strings.isNullOrEmpty(query)) query = String.format("NOT(%s)", ids);
-        else query += String.format(" AND NOT(%s)", ids);
+      if (!excludes.isEmpty()) {
+        String notIds = "NOT " + EsPersonService.termsQuery("id", excludes);
+        query = Strings.isNullOrEmpty(query) ? notIds : "(" + query + ") AND " + notIds;
       }
       contacts = esPersonService.find(from, limit, sort, order, null, query);
     } else {
