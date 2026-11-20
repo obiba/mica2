@@ -1362,7 +1362,7 @@ class TableFixedHeaderUtility {
             };
 
             // Emit 'query-type-selection' to pickup a URL query to be executed; if nothing found a Variable query is executed
-            EventBus.$emit(EVENTS.QUERY_TYPE_SELECTION, {});
+            EventBus.$emit(EVENTS.QUERY_TYPE_SELECTION, {noUrlUpdate: true});
 
             return this.taxonomies;
           }));
