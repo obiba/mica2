@@ -1,11 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { api } from 'src/boot/api';
 import { notifyError } from 'src/utils/notify';
+import type { MicaConfigDto } from 'src/models/Mica';
 import type { TaxonomyDto } from 'src/models/Opal';
 import {
+  TAXONOMY_TARGETS,
   ancestorKeys,
   canMove,
   findNode,
+  hiddenByConfig,
+  metaVisibility,
   sortByOrder,
   swapNode,
   taxonomyNodes,
@@ -27,10 +31,21 @@ const meta: TaxonomyDto = {
     {
       name: 'variable',
       terms: [
-        { name: 'Variable_chars', terms: [{ name: 'Mlstr_area' }, { name: 'Mica_variable' }, { name: 'Other' }] },
+        {
+          name: 'Variable_chars',
+          terms: [
+            { name: 'Mlstr_area' },
+            { name: 'Mica_variable' },
+            { name: 'Other', attributes: [{ key: 'hidden', value: 'true' }] },
+          ],
+        },
+        {
+          name: 'Scales',
+          terms: [{ name: 'Mlstr_social', attributes: [{ key: 'hidden', value: 'TRUE' }] }, { name: 'Mlstr_habits' }],
+        },
       ],
     },
-    { name: 'study', terms: [{ name: 'Mica_study' }] },
+    { name: 'study', terms: [{ name: 'Mica_study', attributes: [{ key: 'hidden', value: 'false' }] }] },
   ],
 };
 
@@ -98,11 +113,66 @@ describe('useTaxonomies', () => {
     expect(nodes.map((n) => n.name)).toEqual(['Mlstr_area', 'Mica_variable', 'Other', 'Unordered']);
   });
 
-  it('loads the other targets without the meta-taxonomy', async () => {
-    mocked.get.mockResolvedValueOnce({ data: [{ name: 'Mica_study' }] });
+  it('loads the other targets visibility from the meta-taxonomy, not movable', async () => {
+    mocked.get.mockResolvedValueOnce({ data: [{ name: 'Mica_study' }] }).mockResolvedValueOnce({ data: meta });
     const nodes = await useTaxonomies().loadTarget('study');
-    expect(mocked.get).toHaveBeenCalledTimes(1);
-    expect(nodes[0]).toMatchObject({ key: 'study/Mica_study', movable: false });
+    expect(mocked.get).toHaveBeenCalledWith('/meta-taxonomy');
+    expect(nodes[0]).toMatchObject({ key: 'study/Mica_study', movable: false, hideable: true, hidden: false });
+  });
+
+  it('reads the visibility of the taxonomies of all the groups', () => {
+    const variable = metaVisibility(meta, 'variable');
+    expect([...variable.entries()]).toEqual([
+      ['Mlstr_area', false],
+      ['Mica_variable', false],
+      ['Other', true],
+      ['Mlstr_social', true],
+      ['Mlstr_habits', false],
+    ]);
+    expect(metaVisibility(meta, 'network').size).toBe(0);
+  });
+
+  it('marks the variable taxonomies hideable when in the meta-taxonomy', async () => {
+    const taxonomies = [...variableTaxonomies, { name: 'Mlstr_social' }];
+    mocked.get.mockResolvedValueOnce({ data: taxonomies }).mockResolvedValueOnce({ data: meta });
+    const nodes = await useTaxonomies().loadTarget('variable');
+    expect(findNode(nodes, 'variable/Other')).toMatchObject({ hideable: true, hidden: true });
+    expect(findNode(nodes, 'variable/Mlstr_social')).toMatchObject({ hideable: true, hidden: true, movable: false });
+    expect(findNode(nodes, 'variable/Mlstr_area')).toMatchObject({ hideable: true, hidden: false });
+    expect(findNode(nodes, 'variable/Unordered')).toMatchObject({ hideable: false, hidden: false });
+  });
+
+  it('tells the targets whose taxonomies the Mica config hides', () => {
+    const all = { isNetworkEnabled: true, isCollectedDatasetEnabled: true, isHarmonizedDatasetEnabled: true };
+    const config = (overrides: Partial<MicaConfigDto>) => ({ ...all, ...overrides }) as MicaConfigDto;
+    expect(TAXONOMY_TARGETS.filter((target) => hiddenByConfig(target, config({})))).toEqual([]);
+    expect(hiddenByConfig('network', config({ isNetworkEnabled: false }))).toBe(true);
+    expect(hiddenByConfig('network', config({ isSingleNetworkEnabled: true }))).toBe(true);
+    expect(hiddenByConfig('study', config({ isSingleStudyEnabled: true }))).toBe(false);
+    expect(hiddenByConfig('study', config({ isSingleStudyEnabled: true, isHarmonizedDatasetEnabled: false }))).toBe(
+      true,
+    );
+    const noDatasets = config({ isCollectedDatasetEnabled: false, isHarmonizedDatasetEnabled: false });
+    expect(TAXONOMY_TARGETS.filter((target) => hiddenByConfig(target, noDatasets))).toEqual(['variable', 'dataset']);
+  });
+
+  it('hides and shows a taxonomy', async () => {
+    mocked.put.mockResolvedValue({ status: 200 });
+    const { setHidden } = useTaxonomies();
+    expect(await setHidden('variable', 'Mlstr_social', true)).toBe(true);
+    expect(mocked.put).toHaveBeenCalledWith('/meta-taxonomy/variable/Mlstr_social/_attribute', null, {
+      params: { name: 'hidden', value: 'true' },
+    });
+    expect(await setHidden('study', 'Mica_study', false)).toBe(true);
+    expect(mocked.put).toHaveBeenLastCalledWith('/meta-taxonomy/study/Mica_study/_attribute', null, {
+      params: { name: 'hidden', value: 'false' },
+    });
+  });
+
+  it('notifies a failed visibility change', async () => {
+    mocked.put.mockRejectedValueOnce(new Error('forbidden'));
+    expect(await useTaxonomies().setHidden('variable', 'Mlstr_area', true)).toBe(false);
+    expect(notifyError).toHaveBeenCalled();
   });
 
   it('moves a taxonomy', async () => {

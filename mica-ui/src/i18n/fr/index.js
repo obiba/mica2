@@ -671,6 +671,13 @@ export default {
     move_up: 'Monter',
     move_down: 'Descendre',
     moved: 'Ordre des taxonomies mis à jour.',
+    shown: 'Affichée dans la recherche, cliquer pour la masquer',
+    hidden: "Masquée dans la recherche, cliquer pour l'afficher",
+    shown_done: 'Taxonomie affichée dans la recherche.',
+    hidden_done: 'Taxonomie masquée dans la recherche.',
+    hidden_by_config:
+      'Masquée dans la recherche par la configuration de Mica (étude ou réseau unique, ou aucun jeu de données)',
+    hidden_in_search: 'Masquée dans la recherche',
     edit: {
       taxonomy_edit: 'Modifier la taxonomie',
       vocabulary_add: 'Ajouter un critère',

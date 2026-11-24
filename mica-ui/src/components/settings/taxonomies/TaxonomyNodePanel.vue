@@ -5,7 +5,10 @@
         <q-chip dense square :icon="TAXONOMY_NODE_ICONS[node.type]" class="q-ml-none">
           {{ t(`taxonomies.types.${node.type}`) }}
         </q-chip>
-        <div class="text-h6">{{ title }}</div>
+        <div class="row items-center no-wrap">
+          <div class="text-h6">{{ title }}</div>
+          <slot name="title-actions" />
+        </div>
         <div v-if="title !== node.name" class="text-caption text-grey-7">{{ node.name }}</div>
       </div>
       <slot name="actions" />

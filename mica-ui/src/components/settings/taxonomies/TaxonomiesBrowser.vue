@@ -41,7 +41,16 @@
                 size="xs"
                 class="q-mr-xs text-grey-7"
               />
-              <span>{{ nodeLabel(node) }}</span>
+              <span
+                >{{ nodeLabel(node) }}<q-icon
+                  v-if="node.hidden"
+                  name="visibility_off"
+                  size="xs"
+                  class="q-ml-xs text-grey-6"
+                >
+                  <q-tooltip>{{ t('taxonomies.hidden_in_search') }}</q-tooltip>
+                </q-icon></span
+              >
             </template>
           </q-tree>
         </div>
@@ -49,6 +58,24 @@
       <template #after>
         <div class="q-pl-md">
           <taxonomy-node-panel v-if="selected" :node="selected">
+            <template v-if="authStore.isAdministrator && selected.hideable" #title-actions>
+              <q-icon v-if="selectedHiddenByConfig" name="visibility_off" size="sm" class="q-ml-sm text-grey-6">
+                <q-tooltip>{{ t('taxonomies.hidden_by_config') }}</q-tooltip>
+              </q-icon>
+              <q-btn
+                v-else
+                flat
+                dense
+                round
+                size="sm"
+                :icon="selected.hidden ? 'visibility_off' : 'visibility'"
+                :class="selected.hidden ? 'text-grey-6' : 'text-primary'"
+                :disable="moving"
+                @click="onToggleHidden"
+              >
+                <q-tooltip>{{ t(selected.hidden ? 'taxonomies.hidden' : 'taxonomies.shown') }}</q-tooltip>
+              </q-btn>
+            </template>
             <template v-if="authStore.isAdministrator" #actions>
               <template v-if="selected.movable">
                 <q-btn
@@ -147,6 +174,7 @@ import {
   ancestorKeys,
   canMove,
   findNode,
+  hiddenByConfig,
   isMicaNode,
   micaTaxonomyName,
   swapNode,
@@ -179,7 +207,7 @@ const $q = useQuasar();
 const authStore = useAuthStore();
 const systemStore = useSystemStore();
 const formsStore = useFormsStore();
-const { moving, loadTarget, move } = useTaxonomies();
+const { moving, loadTarget, move, setHidden } = useTaxonomies();
 const editor = useTaxonomyEditor();
 const { confirmLeave } = useConfirmLeave(editor.dirty);
 // the page tabs are the same route: switching to Files removes the browser and its working copies
@@ -193,6 +221,11 @@ const expanded = ref<string[]>([]);
 const nodes = ref<TaxonomyNode[]>([]);
 
 const selected = computed(() => (selectedKey.value ? findNode(nodes.value, selectedKey.value) : undefined));
+
+/** the Mica config hides the selected taxonomy in the search, its visibility cannot be changed */
+const selectedHiddenByConfig = computed(
+  () => !!selected.value && hiddenByConfig(selected.value.target, systemStore.configuration),
+);
 
 /** the nodes among which the selected taxonomy moves */
 const siblings = computed(() => (selected.value ? findNode(nodes.value, selected.value.target)?.children || [] : []));
@@ -277,6 +310,16 @@ async function onMove(up: boolean) {
   }
 }
 
+async function onToggleHidden() {
+  const node = selected.value;
+  if (!node) return;
+  const hidden = !node.hidden;
+  if (await setHidden(node.target, node.name, hidden)) {
+    node.hidden = hidden;
+    notifySuccess(hidden ? 'taxonomies.hidden_done' : 'taxonomies.shown_done');
+  }
+}
+
 function ask(title: string, message: string): Promise<boolean> {
   return new Promise((resolve) => {
     $q.dialog({ title, message, cancel: true, persistent: true })
@@ -291,8 +334,10 @@ function showDraft(target: TaxonomyTarget) {
   const taxonomy = editor.drafts.value[target]?.taxonomy;
   const idx = (root?.children || []).findIndex((node) => node.name === micaTaxonomyName(target));
   if (!root?.children || !taxonomy || idx === -1) return;
-  const movable = root.children[idx]!.movable ? [taxonomy.name] : [];
-  root.children[idx] = taxonomyNodes(target, [taxonomy], movable)[0]!;
+  const current = root.children[idx]!;
+  const movable = current.movable ? [taxonomy.name] : [];
+  const visibility = new Map(current.hideable ? [[taxonomy.name, current.hidden === true]] : []);
+  root.children[idx] = taxonomyNodes(target, [taxonomy], movable, visibility)[0]!;
 }
 
 function select(key: string) {
