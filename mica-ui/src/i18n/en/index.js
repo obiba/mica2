@@ -671,6 +671,12 @@ export default {
     move_up: 'Move up',
     move_down: 'Move down',
     moved: 'Taxonomy order updated.',
+    shown: 'Shown in search, click to hide',
+    hidden: 'Hidden in search, click to show',
+    shown_done: 'Taxonomy shown in search.',
+    hidden_done: 'Taxonomy hidden in search.',
+    hidden_by_config: 'Hidden in search by the Mica configuration (single study or network, or no datasets)',
+    hidden_in_search: 'Hidden in search',
     edit: {
       taxonomy_edit: 'Edit taxonomy',
       vocabulary_add: 'Add criterion',

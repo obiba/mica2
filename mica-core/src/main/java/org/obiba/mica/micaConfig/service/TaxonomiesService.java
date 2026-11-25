@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -243,22 +244,54 @@ public class TaxonomiesService {
    * @param up
    */
   public void moveTaxonomy(TaxonomyTarget target, String name, boolean up) {
-    Taxonomy metaTaxonomy = getTaxonomyTaxonomy();
+    updateMetaTaxonomy(target, name, siblings -> moveTerm(siblings, name, up));
+  }
+
+  /**
+   * Apply a change to the stored meta-taxonomy, not to the in-memory one: the latter has the taxonomies hidden by the
+   * Mica config (see {@link #initializeTaxonomyTaxonomy()}), which must not be saved. The in-memory one is then
+   * rebuilt from the saved one.
+   *
+   * @param target
+   * @param taxonomyName
+   * @param change Applied to the siblings of the taxonomy, returns whether they were modified
+   */
+  private synchronized void updateMetaTaxonomy(TaxonomyTarget target, String taxonomyName, Predicate<List<Term>> change) {
+    // saves the newly found variable taxonomies first
+    getTaxonomyTaxonomy();
+    Taxonomy metaTaxonomy = findTaxonomy(TaxonomyTarget.TAXONOMY);
     boolean modified = false;
-    for (Vocabulary vocabulary : taxonomyTaxonomy.getVocabularies()) {
+    for (Vocabulary vocabulary : metaTaxonomy.getVocabularies()) {
       if (vocabulary.getName().equals(target.asId())) {
-        if (TaxonomyTarget.VARIABLE.equals(target)) {
-          Term variableChars = vocabulary.getTerm("Variable_chars");
-          modified = moveTerm(variableChars.getTerms(), name, up);
-        } else if (vocabulary.hasTerm(name) && vocabulary.getTerms().size() > 1) {
-          modified = moveTerm(vocabulary.getTerms(), name, up);
-        }
+        modified = change.test(taxonomySiblings(target, vocabulary, taxonomyName));
       }
     }
     if (modified) {
-      this.taxonomyTaxonomy = metaTaxonomy;
+      // rebuilt from the saved one, by the update event listeners as well
+      this.taxonomyTaxonomy = null;
       taxonomyConfigService.update(TaxonomyTarget.TAXONOMY, metaTaxonomy);
     }
+  }
+
+  /**
+   * The terms of the meta-taxonomy target vocabulary that include the described taxonomy: for the variable
+   * target, the terms of the group (e.g. Variable_chars, Scales) that has it, otherwise the vocabulary terms.
+   *
+   * @param target
+   * @param vocabulary
+   * @param taxonomyName
+   * @return The sibling terms, including the taxonomy one, or an empty list if not found
+   */
+  static List<Term> taxonomySiblings(TaxonomyTarget target, Vocabulary vocabulary, String taxonomyName) {
+    if (!vocabulary.hasTerms()) return Collections.emptyList();
+    if (TaxonomyTarget.VARIABLE.equals(target)) {
+      return vocabulary.getTerms().stream()
+        .filter(group -> group.hasTerms() && group.hasTerm(taxonomyName))
+        .map(Term::getTerms)
+        .findFirst()
+        .orElse(Collections.emptyList());
+    }
+    return vocabulary.hasTerm(taxonomyName) ? vocabulary.getTerms() : Collections.emptyList();
   }
 
   /**
@@ -269,11 +302,11 @@ public class TaxonomiesService {
    * @param up
    * @return Whether the list was modified
    */
-  private boolean moveTerm(List<Term> terms, String taxonomyName, boolean up) {
+  static boolean moveTerm(List<Term> terms, String taxonomyName, boolean up) {
     int idx = -1;
-    for (Term term : terms) {
-      idx++;
-      if (term.getName().equals(taxonomyName)) {
+    for (int i = 0; i < terms.size(); i++) {
+      if (terms.get(i).getName().equals(taxonomyName)) {
+        idx = i;
         break;
       }
     }
@@ -298,29 +331,11 @@ public class TaxonomiesService {
    */
   public void setTaxonomyAttribute(TaxonomyTarget target, String taxonomyName, String name, String value) {
     if (Strings.isNullOrEmpty(name)) return;
-    Taxonomy metaTaxonomy = getTaxonomyTaxonomy();
-    boolean modified = false;
-    for (Vocabulary vocabulary : taxonomyTaxonomy.getVocabularies()) {
-      if (vocabulary.getName().equals(target.asId())) {
-        if (TaxonomyTarget.VARIABLE.equals(target)) {
-          Term variableChars = vocabulary.getTerm("Variable_chars");
-          Optional<Term> found = variableChars.getTerms().stream().filter(term -> term.getName().equals(taxonomyName)).findFirst();
-          if (found.isPresent()) {
-            Term term = found.get();
-            term.getAttributes().put(name, value);
-            modified = true;
-          }
-        } else if (vocabulary.hasTerm(taxonomyName)) {
-          Term term = vocabulary.getTerm(taxonomyName);
-          term.getAttributes().put(name, value);
-          modified = true;
-        }
-      }
-    }
-    if (modified) {
-      this.taxonomyTaxonomy = metaTaxonomy;
-      taxonomyConfigService.update(TaxonomyTarget.TAXONOMY, metaTaxonomy);
-    }
+    updateMetaTaxonomy(target, taxonomyName, siblings -> {
+      Optional<Term> found = siblings.stream().filter(term -> term.getName().equals(taxonomyName)).findFirst();
+      found.ifPresent(term -> term.getAttributes().put(name, value));
+      return found.isPresent();
+    });
   }
 
   /**

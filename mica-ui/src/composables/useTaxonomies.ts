@@ -1,4 +1,5 @@
 import { api } from 'src/boot/api';
+import type { MicaConfigDto } from 'src/models/Mica';
 import type { TaxonomyDto, TermDto, VocabularyDto } from 'src/models/Opal';
 import { notifyError } from 'src/utils/notify';
 
@@ -28,6 +29,10 @@ export interface TaxonomyNode {
   lazy?: boolean;
   /** a taxonomy whose position can be changed in the meta-taxonomy */
   movable?: boolean;
+  /** a taxonomy whose visibility in the search can be changed in the meta-taxonomy */
+  hideable?: boolean;
+  /** a taxonomy hidden in the search */
+  hidden?: boolean;
 }
 
 export function targetNodes(targets: readonly TaxonomyTarget[]): TaxonomyNode[] {
@@ -46,6 +51,7 @@ export function taxonomyNodes(
   target: TaxonomyTarget,
   taxonomies: TaxonomyDto[],
   movable: string[] = [],
+  visibility: Map<string, boolean> = new Map(),
 ): TaxonomyNode[] {
   return taxonomies.map((taxonomy) => {
     const key = `${target}/${taxonomy.name}`;
@@ -56,6 +62,8 @@ export function taxonomyNodes(
       target,
       entity: taxonomy,
       movable: movable.includes(taxonomy.name),
+      hideable: visibility.has(taxonomy.name),
+      hidden: visibility.get(taxonomy.name) === true,
       children: (taxonomy.vocabularies || []).map((vocabulary) => {
         const vocabularyKey = `${key}/${vocabulary.name}`;
         return {
@@ -76,6 +84,36 @@ export function variableOrder(meta: TaxonomyDto): string[] {
   const vocabulary = meta.vocabularies?.find((v) => v.name === 'variable');
   const chars = vocabulary?.terms?.find((term) => term.name === 'Variable_chars');
   return (chars?.terms || []).map((term) => term.name);
+}
+
+function isHidden(term: TermDto): boolean {
+  return term.attributes?.some((attr) => attr.key === 'hidden' && attr.value?.toLowerCase() === 'true') === true;
+}
+
+/**
+ * The taxonomies of the target listed in the meta-taxonomy, and whether each is hidden in the search: the
+ * variable ones are grouped (`Variable_chars`, `Scales`...), the other targets ones are not.
+ */
+export function metaVisibility(meta: TaxonomyDto, target: TaxonomyTarget): Map<string, boolean> {
+  const vocabulary = meta.vocabularies?.find((v) => v.name === target);
+  const terms =
+    target === 'variable' ? (vocabulary?.terms || []).flatMap((group) => group.terms || []) : vocabulary?.terms || [];
+  return new Map(terms.map((term) => [term.name, isHidden(term)]));
+}
+
+/**
+ * Whether the Mica config hides the taxonomies of the target in the search, whatever their stored visibility: the
+ * server applies it when reading the meta-taxonomy (`TaxonomiesService#initializeTaxonomyTaxonomy`).
+ */
+export function hiddenByConfig(target: TaxonomyTarget, config: MicaConfigDto): boolean {
+  switch (target) {
+    case 'network':
+      return !config.isNetworkEnabled || config.isSingleNetworkEnabled === true;
+    case 'study':
+      return config.isSingleStudyEnabled === true && !config.isHarmonizedDatasetEnabled;
+    default:
+      return !config.isCollectedDatasetEnabled && !config.isHarmonizedDatasetEnabled;
+  }
 }
 
 /** the taxonomies sorted by the order, the ones not in it last, in their original order */
@@ -127,10 +165,26 @@ export function useTaxonomies() {
   async function loadTarget(target: TaxonomyTarget): Promise<TaxonomyNode[]> {
     const response = await api.get<TaxonomyDto[]>('/taxonomies/_filter', { params: { target, mode: 'list' } });
     const taxonomies = response.data || [];
-    if (target !== 'variable') return taxonomyNodes(target, taxonomies);
     const meta = await api.get<TaxonomyDto>('/meta-taxonomy');
+    const visibility = metaVisibility(meta.data, target);
+    if (target !== 'variable') return taxonomyNodes(target, taxonomies, [], visibility);
     const order = variableOrder(meta.data);
-    return taxonomyNodes(target, sortByOrder(taxonomies, order), order);
+    return taxonomyNodes(target, sortByOrder(taxonomies, order), order, visibility);
+  }
+
+  async function setHidden(target: TaxonomyTarget, taxonomy: string, hidden: boolean): Promise<boolean> {
+    moving.value = true;
+    try {
+      await api.put(`/meta-taxonomy/${target}/${taxonomy}/_attribute`, null, {
+        params: { name: 'hidden', value: hidden ? 'true' : 'false' },
+      });
+      return true;
+    } catch (error) {
+      notifyError(error);
+      return false;
+    } finally {
+      moving.value = false;
+    }
   }
 
   async function move(target: TaxonomyTarget, taxonomy: string, up: boolean): Promise<boolean> {
@@ -146,7 +200,7 @@ export function useTaxonomies() {
     }
   }
 
-  return { moving, loadTarget, move };
+  return { moving, loadTarget, move, setHidden };
 }
 
 /** the taxonomy of the Mica documents of a target, the one an administrator can edit: `Mica_study` */
