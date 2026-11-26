@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import jakarta.inject.Inject;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,13 +30,15 @@ public class AggregationMetaDataResolver implements InitializingBean {
   @Inject
   private DefaultAggregationMetaDataProvider defaultAggregationTitleProvider;
 
+  // the providers are tried in their registration order: several of them can resolve the same aggregation (e.g. the
+  // cached taxonomy and the sets helper for the sets aggregation), the first one wins
   private Set<AggregationMetaDataProvider> providers;
 
   private Map<String, AggregationMetaDataProvider> aggregationProviderMap;
 
   @Override
   public void afterPropertiesSet() throws Exception {
-    providers = new HashSet<>();
+    providers = new LinkedHashSet<>();
     aggregationProviderMap = Maps.newHashMap();
   }
 
@@ -79,6 +81,6 @@ public class AggregationMetaDataResolver implements InitializingBean {
   }
 
   public void unregisterAllProviders() {
-    providers = Sets.newHashSet();
+    providers = Sets.newLinkedHashSet();
   }
 }

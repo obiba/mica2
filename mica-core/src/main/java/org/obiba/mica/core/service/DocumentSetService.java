@@ -90,6 +90,16 @@ public abstract class DocumentSetService {
   }
 
   /**
+   * Get all documents of type, without their identifiers: the sets are for reading their other properties, they
+   * must not be saved.
+   *
+   * @return
+   */
+  public List<DocumentSet> getAllWithoutIdentifiers() {
+    return documentSetRepository.findByTypeWithoutIdentifiers(getType());
+  }
+
+  /**
    * Get all documents of type associated with current user.
    *
    * @return
