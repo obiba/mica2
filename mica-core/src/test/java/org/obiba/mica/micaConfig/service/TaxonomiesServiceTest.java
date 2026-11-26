@@ -127,6 +127,36 @@ public class TaxonomiesServiceTest {
     assertNull(store.saved);
   }
 
+  @Test
+  public void newVariableTaxonomyDoesNotSaveTheTaxonomiesHiddenByTheConfig() {
+    MetaTaxonomyStore store = new MetaTaxonomyStore();
+    TaxonomiesService service = service(store, networksDisabled(), "Mlstr_area", "Mlstr_new");
+
+    Taxonomy meta = service.getTaxonomyTaxonomy();
+
+    assertEquals("true", variableTerm(meta, "Mlstr_new").getAttributeValue("hidden"));
+    assertEquals(1, store.saves);
+    assertEquals("true", variableTerm(store.saved, "Mlstr_new").getAttributeValue("hidden"));
+    assertNull(store.saved.getVocabulary("network").getTerm("Mica_network").getAttributeValue("hidden"));
+    // rebuilt from the saved one, with the config overlay, and nothing more to save
+    meta = service.getTaxonomyTaxonomy();
+    assertEquals(List.of("Mica_variable", "Mlstr_area", "Mlstr_new"),
+      names(meta.getVocabulary("variable").getTerm("Variable_chars").getTerms()));
+    assertEquals("true", meta.getVocabulary("network").getTerm("Mica_network").getAttributeValue("hidden"));
+    assertEquals(1, store.saves);
+  }
+
+  @Test
+  public void syncIgnoresTheGroupsWithoutTerms() {
+    Taxonomy meta = new Taxonomy("Mica_taxonomy");
+    Vocabulary variable = new Vocabulary("variable");
+    variable.addTerm(group("Variable_chars", "Mica_variable"));
+    variable.addTerm(new Term("Scales"));
+    meta.addVocabulary(variable);
+
+    assertFalse(TaxonomiesService.syncVariableTaxonomies(meta, List.of(new Taxonomy("Mica_variable"))));
+  }
+
   private static MicaConfig networksDisabled() {
     MicaConfig config = new MicaConfig();
     config.setNetworkEnabled(false);
@@ -142,6 +172,8 @@ public class TaxonomiesServiceTest {
    */
   private static class MetaTaxonomyStore {
     Taxonomy saved;
+
+    int saves;
 
     Taxonomy read() {
       Taxonomy meta = new Taxonomy("Mica_taxonomy");
@@ -172,10 +204,15 @@ public class TaxonomiesServiceTest {
   }
 
   private static TaxonomiesService service(MetaTaxonomyStore store, MicaConfig config) {
+    return service(store, config, "Mlstr_area");
+  }
+
+  private static TaxonomiesService service(MetaTaxonomyStore store, MicaConfig config, String... variableTaxonomies) {
     MicaConfigService micaConfigService = mock(MicaConfigService.class);
     when(micaConfigService.getConfig()).thenReturn(config);
     VariableTaxonomiesService variableTaxonomiesService = mock(VariableTaxonomiesService.class);
-    when(variableTaxonomiesService.getTaxonomies()).thenReturn(List.of(new Taxonomy("Mlstr_area")));
+    when(variableTaxonomiesService.getTaxonomies())
+      .thenReturn(Arrays.stream(variableTaxonomies).map(Taxonomy::new).collect(Collectors.toList()));
     TaxonomyConfigService taxonomyConfigService = mock(TaxonomyConfigService.class);
     when(taxonomyConfigService.findByTarget(any())).thenAnswer(invocation -> {
       TaxonomyTarget target = invocation.getArgument(0);
@@ -183,6 +220,7 @@ public class TaxonomiesServiceTest {
     });
     doAnswer(invocation -> {
       store.saved = invocation.getArgument(1);
+      store.saves++;
       return null;
     }).when(taxonomyConfigService).update(eq(TaxonomyTarget.TAXONOMY), any());
     return new TaxonomiesService(variableTaxonomiesService, micaConfigService,

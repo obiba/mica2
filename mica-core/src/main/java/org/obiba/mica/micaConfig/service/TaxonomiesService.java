@@ -154,14 +154,48 @@ public class TaxonomiesService {
   @NotNull
   public Taxonomy getTaxonomyTaxonomy() {
     initialize();
-    boolean modified = false;
+    Taxonomy meta = taxonomyTaxonomy;
     List<Taxonomy> variableTaxonomies = getAllVariableTaxonomies();
-    for (Vocabulary vocabulary : taxonomyTaxonomy.getVocabularies()) {
+    // the in-memory one is checked first, so that the stored one is read only when there is something to save
+    if (syncVariableTaxonomies(meta, variableTaxonomies)) {
+      saveSyncedMetaTaxonomy(variableTaxonomies);
+    }
+    return meta;
+  }
+
+  /**
+   * Save the variable taxonomies changes to the stored meta-taxonomy, not to the in-memory one: the latter has the
+   * taxonomies hidden by the Mica config (see {@link #initializeTaxonomyTaxonomy()}), which must not be saved. The
+   * in-memory one is then rebuilt from the saved one.
+   *
+   * @param variableTaxonomies
+   */
+  private synchronized void saveSyncedMetaTaxonomy(List<Taxonomy> variableTaxonomies) {
+    Taxonomy metaTaxonomy = findTaxonomy(TaxonomyTarget.TAXONOMY);
+    // a concurrent call may have saved it already
+    if (syncVariableTaxonomies(metaTaxonomy, variableTaxonomies)) {
+      log.debug("Taxonomy of taxonomies was modified");
+      this.taxonomyTaxonomy = null;
+      taxonomyConfigService.update(TaxonomyTarget.TAXONOMY, metaTaxonomy);
+    }
+  }
+
+  /**
+   * Add the new variable taxonomies to the meta-taxonomy (hidden), update their title and description, and hide the
+   * ones that do not exist anymore.
+   *
+   * @param meta
+   * @param variableTaxonomies
+   * @return Whether the meta-taxonomy was modified
+   */
+  static boolean syncVariableTaxonomies(Taxonomy meta, List<Taxonomy> variableTaxonomies) {
+    boolean modified = false;
+    for (Vocabulary vocabulary : meta.getVocabularies()) {
 
       if (vocabulary.getName().equals("variable")) {
         Term variableChars = vocabulary.getTerm("Variable_chars");
         Set<String> termsInOtherGroups = vocabulary.getTerms().stream()
-          .filter(term -> !term.equals(variableChars))
+          .filter(term -> !term.equals(variableChars) && term.hasTerms())
           .flatMap(term -> term.getTerms().stream())
           .map(Term::getName)
           .collect(Collectors.toSet());
@@ -210,11 +244,7 @@ public class TaxonomiesService {
         }
       }
     }
-    if (modified) {
-      log.debug("Taxonomy of taxonomies was modified");
-      taxonomyConfigService.update(TaxonomyTarget.TAXONOMY, taxonomyTaxonomy);
-    }
-    return taxonomyTaxonomy;
+    return modified;
   }
 
   public boolean metaTaxonomyContains(String taxonomy) {
