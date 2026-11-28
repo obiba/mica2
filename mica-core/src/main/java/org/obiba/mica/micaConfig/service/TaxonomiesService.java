@@ -16,10 +16,12 @@ import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 
 import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.core.event.DocumentSetUpdatedEvent;
+import org.obiba.mica.core.event.DocumentSetCreatedEvent;
+import org.obiba.mica.core.event.DocumentSetDeletedEvent;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
+import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
 import org.obiba.mica.micaConfig.service.helper.DatasetIdAggregationMetaDataHelper;
 import org.obiba.mica.micaConfig.service.helper.DceIdAggregationMetaDataHelper;
 import org.obiba.mica.micaConfig.service.helper.NetworkIdAggregationMetaDataHelper;
@@ -623,7 +625,21 @@ public class TaxonomiesService {
 
   @Async
   @Subscribe
-  public void documentSetUpdated(DocumentSetUpdatedEvent event) {
+  public void documentSetCreated(DocumentSetCreatedEvent event) {
+    // the taxonomies have the set names, not their identifiers: only a new or a deleted set changes them
+    refresh();
+  }
+
+  @Async
+  @Subscribe
+  public void documentSetDeleted(DocumentSetDeletedEvent event) {
+    refresh();
+  }
+
+  @Async
+  @Subscribe
+  public void micaConfigUpdated(MicaConfigUpdatedEvent event) {
+    // the term titles depend on the locales and the translations (e.g. the cart title of the sets terms)
     refresh();
   }
 

@@ -10,8 +10,14 @@
 
 package org.obiba.mica.micaConfig.service;
 
+import com.google.common.eventbus.EventBus;
 import org.junit.jupiter.api.Test;
+import org.obiba.mica.core.domain.DocumentSet;
+import org.obiba.mica.core.event.DocumentSetCreatedEvent;
+import org.obiba.mica.core.event.DocumentSetDeletedEvent;
+import org.obiba.mica.core.event.DocumentSetUpdatedEvent;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
+import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
 import org.obiba.mica.micaConfig.service.helper.DatasetIdAggregationMetaDataHelper;
 import org.obiba.mica.micaConfig.service.helper.DceIdAggregationMetaDataHelper;
 import org.obiba.mica.micaConfig.service.helper.NetworkIdAggregationMetaDataHelper;
@@ -28,6 +34,7 @@ import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -157,6 +164,50 @@ public class TaxonomiesServiceTest {
     assertFalse(TaxonomiesService.syncVariableTaxonomies(meta, List.of(new Taxonomy("Mica_variable"))));
   }
 
+  @Test
+  public void onlyANewOrADeletedSetRebuildsTheTaxonomies() {
+    MetaTaxonomyStore store = new MetaTaxonomyStore();
+    TaxonomiesService service = service(store, new MicaConfig());
+    EventBus eventBus = new EventBus();
+    eventBus.register(service);
+    DocumentSet set = new DocumentSet();
+    set.setId("set1");
+
+    service.getStudyTaxonomy();
+    service.getVariableTaxonomy();
+    assertEquals(1, store.reads(TaxonomyTarget.STUDY));
+    assertEquals(1, store.reads(TaxonomyTarget.VARIABLE));
+
+    eventBus.post(new DocumentSetUpdatedEvent(set, null));
+    service.getStudyTaxonomy();
+    service.getVariableTaxonomy();
+    assertEquals(1, store.reads(TaxonomyTarget.STUDY));
+    assertEquals(1, store.reads(TaxonomyTarget.VARIABLE));
+
+    eventBus.post(new DocumentSetCreatedEvent(set));
+    service.getVariableTaxonomy();
+    assertEquals(2, store.reads(TaxonomyTarget.VARIABLE));
+
+    eventBus.post(new DocumentSetDeletedEvent(set));
+    service.getVariableTaxonomy();
+    assertEquals(3, store.reads(TaxonomyTarget.VARIABLE));
+  }
+
+  @Test
+  public void aConfigUpdateRebuildsTheTaxonomies() {
+    MetaTaxonomyStore store = new MetaTaxonomyStore();
+    TaxonomiesService service = service(store, new MicaConfig());
+    EventBus eventBus = new EventBus();
+    eventBus.register(service);
+
+    service.getVariableTaxonomy();
+    assertEquals(1, store.reads(TaxonomyTarget.VARIABLE));
+
+    eventBus.post(new MicaConfigUpdatedEvent(new MicaConfig(), List.of()));
+    service.getVariableTaxonomy();
+    assertEquals(2, store.reads(TaxonomyTarget.VARIABLE));
+  }
+
   private static MicaConfig networksDisabled() {
     MicaConfig config = new MicaConfig();
     config.setNetworkEnabled(false);
@@ -174,6 +225,12 @@ public class TaxonomiesServiceTest {
     Taxonomy saved;
 
     int saves;
+
+    final Map<TaxonomyTarget, Integer> reads = new HashMap<>();
+
+    int reads(TaxonomyTarget target) {
+      return reads.getOrDefault(target, 0);
+    }
 
     Taxonomy read() {
       Taxonomy meta = new Taxonomy("Mica_taxonomy");
@@ -216,6 +273,7 @@ public class TaxonomiesServiceTest {
     TaxonomyConfigService taxonomyConfigService = mock(TaxonomyConfigService.class);
     when(taxonomyConfigService.findByTarget(any())).thenAnswer(invocation -> {
       TaxonomyTarget target = invocation.getArgument(0);
+      store.reads.merge(target, 1, Integer::sum);
       return TaxonomyTarget.TAXONOMY.equals(target) ? store.read() : new Taxonomy("Mica_" + target.asId());
     });
     doAnswer(invocation -> {
