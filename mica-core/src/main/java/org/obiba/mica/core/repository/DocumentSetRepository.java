@@ -28,6 +28,16 @@ public interface DocumentSetRepository extends MongoRepository<DocumentSet, Stri
   List<DocumentSet> findByType(String type);
 
   /**
+   * Find document sets of a given type, without their identifiers (a set can have thousands): the found sets
+   * are for reading their other properties, not for being saved.
+   *
+   * @param type
+   * @return
+   */
+  @Query(value = "{'type': ?0}", fields = "{'identifiers': 0}")
+  List<DocumentSet> findByTypeWithoutIdentifiers(String type);
+
+  /**
    * Find document sets of a given type and user name.
    *
    * @param type

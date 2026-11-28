@@ -32,7 +32,8 @@ public abstract class SetsAggregationMetaDataHelper extends AbstractIdAggregatio
     Map<String, Translator> translators = locales.stream()
       .collect(Collectors.toMap(Function.identity(), locale -> JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(locale, false))));
 
-    return getDocumentSetService().getAll().stream()
+    // only the set names are needed, not the identifiers
+    return getDocumentSetService().getAllWithoutIdentifiers().stream()
       .collect(Collectors.toMap(
         DocumentSet::getId,
         set -> {
