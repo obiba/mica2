@@ -20,6 +20,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.domain.InvalidDocumentSetTypeException;
+import org.obiba.mica.core.event.DocumentSetCreatedEvent;
 import org.obiba.mica.core.event.DocumentSetDeletedEvent;
 import org.obiba.mica.core.event.DocumentSetUpdatedEvent;
 import org.obiba.mica.core.repository.DocumentSetRepository;
@@ -149,7 +150,9 @@ public abstract class DocumentSetService {
     if (!Strings.isNullOrEmpty(name)) documentSet.setName(name);
     documentSet.setIdentifiers(identifiers);
     documentSet.setType(getType());
-    return save(documentSet, null);
+    DocumentSet saved = save(documentSet, null);
+    eventBus.post(new DocumentSetCreatedEvent(saved));
+    return saved;
   }
 
   public DocumentSet create(@Nullable String name, List<String> identifiers, String userId) {
